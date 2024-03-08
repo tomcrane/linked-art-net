@@ -1,0 +1,43 @@
+{
+  "@context": [
+    "https://linked.art/ns/v1/linked-art.json"
+  ],
+  "id": "https://example.org/11733",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "300148696",
+      "type": "Type",
+      "_label": "Amphora"
+    }
+  ],
+  "produced_by": [
+    {
+      "id": "https://example.org/11733/prod",
+      "type": "Production",
+      "carried_out_by": [
+        {
+          "id": "500029118",
+          "type": "Person",
+          "_label": "Affecter"
+        }
+      ],
+      "timespan": [
+        {
+          "id": "https://example.org/11733/prod/ts",
+          "type": "TimeSpan",
+          "_label": "about 530 BC",
+          "begin_of_the_begin": "-0540-01-01 00:00:00",
+          "end_of_the_end": "-0520-01-01 00:00:00"
+        }
+      ],
+      "took_place_at": [
+        {
+          "id": "7001393",
+          "type": "Place",
+          "_label": "Athens, Greece"
+        }
+      ]
+    }
+  ]
+}

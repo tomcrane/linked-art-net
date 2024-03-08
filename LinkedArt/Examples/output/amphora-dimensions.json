@@ -1,0 +1,76 @@
+{
+  "@context": [
+    "https://linked.art/ns/v1/linked-art.json"
+  ],
+  "id": "https://example.org/11733",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "300148696",
+      "type": "Type",
+      "_label": "Amphora"
+    }
+  ],
+  "identified_by": [
+    {
+      "id": "https://example.org/11733/name1",
+      "type": "Name",
+      "content": "Attic Black Figure Neck Amphora",
+      "classified_as": [
+        {
+          "id": "300404670",
+          "type": "Type",
+          "_label": "Primary Title"
+        }
+      ]
+    },
+    {
+      "id": "https://example.org/11733/id",
+      "type": "Identifier",
+      "content": "86.AE.75",
+      "classified_as": [
+        {
+          "id": "300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
+    }
+  ],
+  "dimension": [
+    {
+      "id": "https://example.org/11733/h1",
+      "type": "Dimension",
+      "classified_as": [
+        {
+          "id": "300055644",
+          "type": "Type",
+          "_label": "height"
+        }
+      ],
+      "value": "38.7",
+      "unit": {
+        "id": "300379098",
+        "type": "MeasurementUnit",
+        "_label": "centimetres"
+      }
+    },
+    {
+      "id": "https://example.org/11733/w1",
+      "type": "Dimension",
+      "classified_as": [
+        {
+          "id": "300055647",
+          "type": "Type",
+          "_label": "width"
+        }
+      ],
+      "value": "25.7",
+      "unit": {
+        "id": "300379098",
+        "type": "MeasurementUnit",
+        "_label": "centimetres"
+      }
+    }
+  ]
+}

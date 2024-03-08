@@ -1,0 +1,33 @@
+{
+  "@context": [
+    "https://linked.art/ns/v1/linked-art.json"
+  ],
+  "id": "https://example.org/11733",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "300148696",
+      "type": "Type",
+      "_label": "Amphora"
+    }
+  ],
+  "shows": [
+    {
+      "type": "VisualItem",
+      "represents": [
+        {
+          "id": "icc:94M",
+          "type": "Person",
+          "_label": "Theseus"
+        }
+      ],
+      "about": [
+        {
+          "id": "icc:45A3",
+          "type": "Type",
+          "_label": "Victory ~ Armed Conflict"
+        }
+      ]
+    }
+  ]
+}

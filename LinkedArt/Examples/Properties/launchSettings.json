@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Examples": {
-      "commandName": "Project",
-      "commandLineArgs": "amphora-work"
+      "commandName": "Project"
     }
   }
 }

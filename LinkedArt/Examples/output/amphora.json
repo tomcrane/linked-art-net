@@ -1,0 +1,55 @@
+{
+  "@context": [
+    "https://linked.art/ns/v1/linked-art.json"
+  ],
+  "id": "https://example.org/11733",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "300148696",
+      "type": "Type",
+      "_label": "Amphora"
+    }
+  ],
+  "identified_by": [
+    {
+      "id": "https://example.org/11733/name1",
+      "type": "Name",
+      "content": "Attic Black Figure Neck Amphora",
+      "classified_as": [
+        {
+          "id": "300404670",
+          "type": "Type",
+          "_label": "Primary Title"
+        }
+      ],
+      "language": "en"
+    },
+    {
+      "id": "https://example.org/11733/id",
+      "type": "Identifier",
+      "content": "86.AE.75",
+      "classified_as": [
+        {
+          "id": "300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "id": "https://example.org/11733/desc1",
+      "type": "LinguisticObject",
+      "content": "38.7 x 26.7 cm",
+      "classified_as": [
+        {
+          "id": "300435430",
+          "type": "Type",
+          "_label": "Dimension Statement"
+        }
+      ]
+    }
+  ]
+}

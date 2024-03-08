@@ -11,20 +11,26 @@ Dictionary<string, Func<HumanMadeObject>> dict = new()
     ["amphora-work"] = AmphoraWork,
 };
 
+static void Make(string key, Dictionary<string, Func<HumanMadeObject>> dict)
+{
+    var options = new JsonSerializerOptions { WriteIndented = true };
+    var laObj = dict[key.ToLowerInvariant()]();
+    var json = JsonSerializer.Serialize(laObj, options);
+    Console.WriteLine(json);
+    File.WriteAllText($"../../../output/{key}.json", json);
+}
+
 
 if (args.Length == 1 && dict.ContainsKey(args[0].ToLowerInvariant()))
 {
-    var options = new JsonSerializerOptions { WriteIndented = true };
-    var laObj = dict[args[0].ToLowerInvariant()]();
-    Console.WriteLine(JsonSerializer.Serialize(laObj, options));
+    var key = args[0].ToLowerInvariant();
+    Make(key, dict);
 }
 else
 {
-    Console.WriteLine("Valid args are:");
-    Console.WriteLine();
     foreach(var key in dict.Keys)
     {
-        Console.WriteLine($"{key}");
+        Make(key, dict);
     }
 }
 
@@ -139,3 +145,4 @@ HumanMadeObject AmphoraWork()
 
     return amphora;
 }
+

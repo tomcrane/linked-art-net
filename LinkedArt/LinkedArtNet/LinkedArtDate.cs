@@ -20,5 +20,9 @@ public class LinkedArtDate
         Year = year;
         Month = month;
         Day = day;
+        if(year >= 0)
+        {
+            Date = new DateTime(year, month, day);
+        }
     }
 }

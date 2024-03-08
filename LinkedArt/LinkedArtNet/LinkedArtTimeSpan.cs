@@ -25,4 +25,22 @@ public class LinkedArtTimeSpan : LinkedArtObject
     [JsonPropertyOrder(124)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public LinkedArtDate? EndOfTheEnd { get; set; }
+
+
+    public static LinkedArtTimeSpan FromYear(string id, int year)
+    {
+        var ts = new LinkedArtTimeSpan()
+            .WithId(id)
+            .WithLabel($"{year}");
+        ts.BeginOfTheBegin = new LinkedArtDate(year, 1, 1);
+        if (ts.BeginOfTheBegin.Date.HasValue)
+        {
+            ts.EndOfTheEnd = new LinkedArtDate(ts.BeginOfTheBegin.Date.Value.AddYears(1).AddSeconds(-1));
+        }
+        else
+        {
+            ts.EndOfTheEnd = new LinkedArtDate(year, 12, 31);
+        }
+        return ts;
+    }
 }

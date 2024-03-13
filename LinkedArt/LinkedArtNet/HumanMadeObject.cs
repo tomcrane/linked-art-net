@@ -32,4 +32,10 @@ public class HumanMadeObject : LinkedArtObject
     public List<Work>? Shows { get; set; }
 
 
+    [JsonPropertyName("made_of")]
+    [JsonPropertyOrder(31)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? MadeOf { get; set; }
+
+
 }

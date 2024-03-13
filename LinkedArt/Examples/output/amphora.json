@@ -4,26 +4,19 @@
   ],
   "id": "https://example.org/11733",
   "type": "HumanMadeObject",
-  "classified_as": [
-    {
-      "id": "300148696",
-      "type": "Type",
-      "_label": "Amphora"
-    }
-  ],
   "identified_by": [
     {
       "id": "https://example.org/11733/name1",
       "type": "Name",
       "content": "Attic Black Figure Neck Amphora",
+      "language": "en",
       "classified_as": [
         {
           "id": "300404670",
           "type": "Type",
           "_label": "Primary Title"
         }
-      ],
-      "language": "en"
+      ]
     },
     {
       "id": "https://example.org/11733/id",
@@ -50,6 +43,13 @@
           "_label": "Dimension Statement"
         }
       ]
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "300148696",
+      "type": "Type",
+      "_label": "Amphora"
     }
   ]
 }

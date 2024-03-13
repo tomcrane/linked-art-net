@@ -14,4 +14,13 @@ public class MeasurementUnit : LinkedArtObject
         Label = "centimetres"
     };
 
+
+    public static MeasurementUnit Millimetres => _millimetres;
+
+    private static MeasurementUnit _millimetres = new MeasurementUnit
+    {
+        Id = "300379099", // check
+        Label = "millimetres"
+    };
+
 }

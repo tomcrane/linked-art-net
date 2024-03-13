@@ -1,0 +1,201 @@
+{
+  "@context": [
+    "https://linked.art/ns/v1/linked-art.json"
+  ],
+  "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653",
+  "type": "HumanMadeObject",
+  "_label": "Portret van Katherine Stieglitz",
+  "identified_by": [
+    {
+      "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/name-nl",
+      "type": "Name",
+      "content": "Portret van Katherine Stieglitz",
+      "language": "nl",
+      "classified_as": [
+        {
+          "id": "300404670",
+          "type": "Type",
+          "_label": "Primary Title"
+        }
+      ]
+    },
+    {
+      "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/name-en",
+      "type": "Name",
+      "content": "Portrait of Katherine Stieglitz",
+      "language": "en",
+      "classified_as": [
+        {
+          "id": "300404670",
+          "type": "Type",
+          "_label": "Primary Title"
+        }
+      ]
+    },
+    {
+      "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/id",
+      "type": "Identifier",
+      "content": "RP-F-F17653",
+      "classified_as": [
+        {
+          "id": "aat:300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ],
+      "assigned_by": [
+        {
+          "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/id/attribAssign",
+          "type": "AttribAssign",
+          "carried_out_by": [
+            {
+              "id": "https://www.rijksmuseum.nl/",
+              "type": "Organisation",
+              "_label": "Rijksmuseum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/name-alt",
+      "type": "Name",
+      "content": "Portrait of daughter of Stieglitz",
+      "language": "en",
+      "classified_as": [
+        {
+          "id": "300404671",
+          "type": "Type",
+          "_label": "Alternate Title"
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/desc1",
+      "type": "LinguisticObject",
+      "content": "h 302 mm x w 210 mm",
+      "language": "en",
+      "classified_as": [
+        {
+          "id": "300435430",
+          "type": "Type",
+          "_label": "Measurement Statement",
+          "classified_as": [
+            {
+              "id": "la-tot",
+              "type": "Type",
+              "_label": "Type of Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "produced_by": [
+    {
+      "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/prod",
+      "type": "Production",
+      "classified_as": [
+        {
+          "id": "aat:Printing",
+          "type": "Type",
+          "_label": "Negative printing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://www.wikidata.org/wiki/Q313055",
+          "type": "Person",
+          "_label": "Alfred Stieglitz"
+        }
+      ],
+      "timespan": [
+        {
+          "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/ts",
+          "type": "TimeSpan",
+          "_label": "1905",
+          "begin_of_the_begin": "1905-01-01 12:00:00",
+          "end_of_the_end": "1905-12-31 11:59:59"
+        }
+      ],
+      "used_specific_object": [
+        {
+          "id": "https://stieglitz.org/neg-of-portret-van-ks",
+          "type": "HumanMadeObject",
+          "_label": "Negative of Portret van Katherine Stieglitz"
+        }
+      ]
+    }
+  ],
+  "dimension": [
+    {
+      "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/h1",
+      "type": "Dimension",
+      "value": "302",
+      "unit": {
+        "id": "300379099",
+        "type": "MeasurementUnit",
+        "_label": "millimetres"
+      },
+      "classified_as": [
+        {
+          "id": "300055644",
+          "type": "Type",
+          "_label": "height"
+        }
+      ]
+    },
+    {
+      "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/w1",
+      "type": "Dimension",
+      "value": "210",
+      "unit": {
+        "id": "300379099",
+        "type": "MeasurementUnit",
+        "_label": "millimetres"
+      },
+      "classified_as": [
+        {
+          "id": "300055647",
+          "type": "Type",
+          "_label": "width"
+        }
+      ]
+    }
+  ],
+  "shows": [
+    {
+      "type": "VisualItem",
+      "represents": [
+        {
+          "id": "icc:61bb2",
+          "type": "Person",
+          "_label": "Katherine Stieglitz"
+        }
+      ],
+      "about": [
+        {
+          "id": "icc:Woman",
+          "type": "Type",
+          "_label": "Woman"
+        }
+      ]
+    }
+  ],
+  "made_of": [
+    {
+      "id": "aat:Paper",
+      "type": "Type",
+      "_label": "Paper"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "aat:Photograph",
+      "type": "Type",
+      "_label": "Photograph"
+    }
+  ]
+}

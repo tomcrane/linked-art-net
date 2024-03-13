@@ -4,13 +4,6 @@
   ],
   "id": "https://example.org/11733",
   "type": "HumanMadeObject",
-  "classified_as": [
-    {
-      "id": "300148696",
-      "type": "Type",
-      "_label": "Amphora"
-    }
-  ],
   "identified_by": [
     {
       "id": "https://example.org/11733/name1",
@@ -41,36 +34,43 @@
     {
       "id": "https://example.org/11733/h1",
       "type": "Dimension",
+      "value": "38.7",
+      "unit": {
+        "id": "300379098",
+        "type": "MeasurementUnit",
+        "_label": "centimetres"
+      },
       "classified_as": [
         {
           "id": "300055644",
           "type": "Type",
           "_label": "height"
         }
-      ],
-      "value": "38.7",
-      "unit": {
-        "id": "300379098",
-        "type": "MeasurementUnit",
-        "_label": "centimetres"
-      }
+      ]
     },
     {
       "id": "https://example.org/11733/w1",
       "type": "Dimension",
+      "value": "25.7",
+      "unit": {
+        "id": "300379098",
+        "type": "MeasurementUnit",
+        "_label": "centimetres"
+      },
       "classified_as": [
         {
           "id": "300055647",
           "type": "Type",
           "_label": "width"
         }
-      ],
-      "value": "25.7",
-      "unit": {
-        "id": "300379098",
-        "type": "MeasurementUnit",
-        "_label": "centimetres"
-      }
+      ]
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "300148696",
+      "type": "Type",
+      "_label": "Amphora"
     }
   ]
 }

@@ -49,9 +49,14 @@ public class LinkedArtObject
 
     // P2 has type - https://www.cidoc-crm.org/Property/p2-has-type/version-6.2
     [JsonPropertyName("classified_as")]
-    [JsonPropertyOrder(20)]
+    [JsonPropertyOrder(100)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<LinkedArtObject>? ClassifiedAs { get; set; }
+
+    [JsonPropertyName("assigned_by")]
+    [JsonPropertyOrder(110)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<Activity>? AssignedBy { get; set; }
 
 
 

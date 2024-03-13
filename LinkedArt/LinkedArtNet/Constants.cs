@@ -1,4 +1,6 @@
-﻿namespace LinkedArtNet;
+﻿using System;
+
+namespace LinkedArtNet;
 
 public static class Constants
 {
@@ -47,5 +49,12 @@ public static class Constants
     {
         laObj.Label = label;
         return laObj;
+    }
+
+    public static HumanMadeObject WithMadeOf(this HumanMadeObject hmo, string materialTypeId, string? materialTypeLabel)
+    {
+        hmo.MadeOf ??= [];
+        hmo.MadeOf.Add(new LinkedArtObject(Types.Type) { Id = materialTypeId, Label = materialTypeLabel });
+        return hmo;
     }
 }

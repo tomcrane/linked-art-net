@@ -4,13 +4,6 @@
   ],
   "id": "https://example.org/11733",
   "type": "HumanMadeObject",
-  "classified_as": [
-    {
-      "id": "300148696",
-      "type": "Type",
-      "_label": "Amphora"
-    }
-  ],
   "shows": [
     {
       "type": "VisualItem",
@@ -28,6 +21,13 @@
           "_label": "Victory ~ Armed Conflict"
         }
       ]
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "300148696",
+      "type": "Type",
+      "_label": "Amphora"
     }
   ]
 }

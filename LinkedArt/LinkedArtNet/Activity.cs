@@ -33,4 +33,31 @@ public class Activity : LinkedArtObject
     [JsonPropertyOrder(103)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<Place>? TookPlaceAt { get; set; }
+
+
+    [JsonPropertyName("used_specific_object")]
+    [JsonPropertyOrder(104)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<HumanMadeObject>? UsedSpecificObject { get; set; }
+
+
+    [JsonPropertyName("transferred_title_of")]
+    [JsonPropertyOrder(109)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<HumanMadeObject>? TransferredTitleOf { get; set; }
+
+    [JsonPropertyName("transferred_title_to")]
+    [JsonPropertyOrder(109)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? TransferredTitleTo { get; set; }
+
+
+
+    [JsonPropertyName("part")]
+    [JsonPropertyOrder(130)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Activity>? Part { get; set; }
+
+
+
 }

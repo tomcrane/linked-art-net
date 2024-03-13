@@ -10,10 +10,16 @@
       "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/name-nl",
       "type": "Name",
       "content": "Portret van Katherine Stieglitz",
-      "language": "nl",
+      "language": [
+        {
+          "id": "http://vocab.getty.edu/aat/300388277",
+          "type": "Language",
+          "_label": "Dutch"
+        }
+      ],
       "classified_as": [
         {
-          "id": "300404670",
+          "id": "http://vocab.getty.edu/aat/300404670",
           "type": "Type",
           "_label": "Primary Title"
         }
@@ -23,10 +29,16 @@
       "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/name-en",
       "type": "Name",
       "content": "Portrait of Katherine Stieglitz",
-      "language": "en",
+      "language": [
+        {
+          "id": "http://vocab.getty.edu/aat/300388277",
+          "type": "Language",
+          "_label": "English"
+        }
+      ],
       "classified_as": [
         {
-          "id": "300404670",
+          "id": "http://vocab.getty.edu/aat/300404670",
           "type": "Type",
           "_label": "Primary Title"
         }
@@ -46,7 +58,7 @@
       "assigned_by": [
         {
           "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/id/attribAssign",
-          "type": "AttribAssign",
+          "type": "AttributeAssignment",
           "carried_out_by": [
             {
               "id": "https://www.rijksmuseum.nl/",
@@ -61,7 +73,13 @@
       "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/name-alt",
       "type": "Name",
       "content": "Portrait of daughter of Stieglitz",
-      "language": "en",
+      "language": [
+        {
+          "id": "http://vocab.getty.edu/aat/300388277",
+          "type": "Language",
+          "_label": "English"
+        }
+      ],
       "classified_as": [
         {
           "id": "300404671",
@@ -76,7 +94,13 @@
       "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/desc1",
       "type": "LinguisticObject",
       "content": "h 302 mm x w 210 mm",
-      "language": "en",
+      "language": [
+        {
+          "id": "http://vocab.getty.edu/aat/300388277",
+          "type": "Language",
+          "_label": "English"
+        }
+      ],
       "classified_as": [
         {
           "id": "300435430",
@@ -133,9 +157,9 @@
     {
       "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/h1",
       "type": "Dimension",
-      "value": "302",
+      "value": 302,
       "unit": {
-        "id": "300379099",
+        "id": "http://vocab.getty.edu/aat/300379099",
         "type": "MeasurementUnit",
         "_label": "millimetres"
       },
@@ -150,9 +174,9 @@
     {
       "id": "https://www.rijksmuseum.nl/en/collection/RP-F-F17653/w1",
       "type": "Dimension",
-      "value": "210",
+      "value": 210,
       "unit": {
-        "id": "300379099",
+        "id": "http://vocab.getty.edu/aat/300379099",
         "type": "MeasurementUnit",
         "_label": "millimetres"
       },
@@ -187,7 +211,7 @@
   "made_of": [
     {
       "id": "aat:Paper",
-      "type": "Type",
+      "type": "Material",
       "_label": "Paper"
     }
   ],

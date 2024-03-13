@@ -3,7 +3,7 @@
 public static class DimensionExtensions
 {
     public static HumanMadeObject WithHeightDimension(this HumanMadeObject hmObj, 
-        string id, string value, MeasurementUnit unit)
+        string id, double value, MeasurementUnit unit)
     {
         var height = new Dimension().WithId(id).WithClassifiedAs("300055644", "height");
         height.Value = value;
@@ -15,7 +15,7 @@ public static class DimensionExtensions
 
 
     public static HumanMadeObject WithWidthDimension(this HumanMadeObject hmObj,
-        string id, string value, MeasurementUnit unit)
+        string id, double value, MeasurementUnit unit)
     {
         var width = new Dimension().WithId(id).WithClassifiedAs("300055647", "width");
         width.Value = value;

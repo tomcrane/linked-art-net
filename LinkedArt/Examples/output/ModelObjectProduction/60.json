@@ -1,0 +1,52 @@
+{
+  "@context": [
+    "https://linked.art/ns/v1/linked-art.json"
+  ],
+  "id": "https://tomcrane.github.io/linked-art-net/LinkedArt/Examples/output/ModelObjectProduction/60.json",
+  "type": "HumanMadeObject",
+  "_label": "Painting",
+  "produced_by": [
+    {
+      "type": "Production",
+      "carried_out_by": [
+        {
+          "type": "Person",
+          "_label": "Artist"
+        }
+      ],
+      "timespan": [
+        {
+          "type": "TimeSpan",
+          "_label": "1780-03-05 00:00:00",
+          "begin_of_the_begin": "1780-03-05 00:00:00",
+          "end_of_the_end": "1780-03-06 00:00:00"
+        }
+      ],
+      "took_place_at": [
+        {
+          "type": "Place",
+          "_label": "Artist\u0027s Studio"
+        }
+      ]
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300033618",
+      "type": "Type",
+      "_label": "Painting",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435443",
+          "type": "Type",
+          "_label": "Type of Work"
+        }
+      ]
+    },
+    {
+      "id": "http://vocab.getty.edu/aat/300133025",
+      "type": "Type",
+      "_label": "Artwork"
+    }
+  ]
+}

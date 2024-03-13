@@ -56,7 +56,13 @@ public class Activity : LinkedArtObject
     [JsonPropertyName("part")]
     [JsonPropertyOrder(130)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Activity>? Part { get; set; }
+    public new List<Activity>? Part { get; set; }
+
+
+    [JsonPropertyName("technique")]
+    [JsonPropertyOrder(150)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? Technique { get; set; }
 
 
 

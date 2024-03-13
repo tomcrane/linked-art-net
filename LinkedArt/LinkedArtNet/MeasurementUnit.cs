@@ -1,4 +1,6 @@
-﻿namespace LinkedArtNet;
+﻿using LinkedArtNet.Vocabulary;
+
+namespace LinkedArtNet;
 
 public class MeasurementUnit : LinkedArtObject
 {
@@ -10,7 +12,7 @@ public class MeasurementUnit : LinkedArtObject
 
     private static MeasurementUnit _centimetres = new MeasurementUnit
     {
-        Id = "300379098",
+        Id = $"{Getty.Aat}300379098",
         Label = "centimetres"
     };
 
@@ -19,7 +21,7 @@ public class MeasurementUnit : LinkedArtObject
 
     private static MeasurementUnit _millimetres = new MeasurementUnit
     {
-        Id = "300379099", // check
+        Id = $"{Getty.Aat}300379099", // check
         Label = "millimetres"
     };
 

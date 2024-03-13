@@ -45,7 +45,7 @@ public class LinkedArtObject
     [JsonPropertyName("language")]
     [JsonPropertyOrder(80)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string? Language { get; set; }
+    public virtual List<LinkedArtObject>? Language { get; set; }
 
     // P2 has type - https://www.cidoc-crm.org/Property/p2-has-type/version-6.2
     [JsonPropertyName("classified_as")]
@@ -58,6 +58,29 @@ public class LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<Activity>? AssignedBy { get; set; }
 
+
+    [JsonPropertyName("part")]
+    [JsonPropertyOrder(130)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<LinkedArtObject>? Part { get; set; }
+
+
+    [JsonPropertyName("part_of")]
+    [JsonPropertyOrder(130)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<LinkedArtObject>? PartOf { get; set; }
+
+
+    [JsonPropertyName("member")]
+    [JsonPropertyOrder(140)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<LinkedArtObject>? Member { get; set; }
+
+
+    [JsonPropertyName("member_of")]
+    [JsonPropertyOrder(140)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<LinkedArtObject>? MemberOf { get; set; }
 
 
 }

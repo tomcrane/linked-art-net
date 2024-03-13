@@ -11,7 +11,7 @@
       "content": "Attic Black Figure Neck Amphora",
       "classified_as": [
         {
-          "id": "300404670",
+          "id": "http://vocab.getty.edu/aat/300404670",
           "type": "Type",
           "_label": "Primary Title"
         }
@@ -34,9 +34,9 @@
     {
       "id": "https://example.org/11733/h1",
       "type": "Dimension",
-      "value": "38.7",
+      "value": 38.7,
       "unit": {
-        "id": "300379098",
+        "id": "http://vocab.getty.edu/aat/300379098",
         "type": "MeasurementUnit",
         "_label": "centimetres"
       },
@@ -51,9 +51,9 @@
     {
       "id": "https://example.org/11733/w1",
       "type": "Dimension",
-      "value": "25.7",
+      "value": 25.7,
       "unit": {
-        "id": "300379098",
+        "id": "http://vocab.getty.edu/aat/300379098",
         "type": "MeasurementUnit",
         "_label": "centimetres"
       },

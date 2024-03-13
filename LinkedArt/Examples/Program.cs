@@ -1,7 +1,8 @@
 ﻿
+using Examples;
 using LinkedArtNet;
 using System.Text.Json;
-using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 
 Dictionary<string, Func<HumanMadeObject>> dict = new()
@@ -29,6 +30,24 @@ if (args.Length == 1 && dict.ContainsKey(args[0].ToLowerInvariant()))
     var key = args[0].ToLowerInvariant();
     Make(key, dict);
 }
+else if(args.Length == 2 && args[0] == "examples")
+{
+    var options = new JsonSerializerOptions { WriteIndented = true };
+    var type = Type.GetType($"Examples.{args[1]}, Examples");
+    var examplePage = Activator.CreateInstance(type!) as ExamplePage;
+    if(examplePage != null)
+    {
+        foreach(var example in examplePage.GetHumanMadeObjects())
+        {
+            var filename = example!.Id!.Split("/").Last();
+            var json = JsonSerializer.Serialize(example, options);
+            Console.WriteLine(json);
+            string directory = $"../../../output/{args[1]}/";
+            Directory.CreateDirectory(directory);
+            File.WriteAllText($"{directory}{filename}", json);
+        }
+    }
+}
 else
 {
     foreach(var key in dict.Keys)
@@ -44,11 +63,11 @@ HumanMadeObject Amphora()
         .WithId("https://example.org/11733")
         .WithClassifiedAs("300148696", "Amphora");
 
-        var name = new LinkedArtObject(Types.Name)
-            .WithId($"{amphora.Id}/name1")
-            .WithContent("Attic Black Figure Neck Amphora")
-            .WithLanguage("en")
-            .WithClassifiedAs("300404670", "Primary Title");
+    var name = new LinkedArtObject(Types.Name)
+        .WithId($"{amphora.Id}/name1")
+        .WithContent("Attic Black Figure Neck Amphora")
+        .WithLanguage("300388277", "English")
+        .AsPrimaryTitle();
     var id = new LinkedArtObject(Types.Identifier)
         .WithId($"{amphora.Id}/id")
         .WithContent("86.AE.75")
@@ -74,15 +93,15 @@ HumanMadeObject AmphoraWithDimensions()
     var name = new LinkedArtObject(Types.Name)
         .WithId($"{amphora.Id}/name1")
         .WithContent("Attic Black Figure Neck Amphora")
-        .WithClassifiedAs("300404670", "Primary Title");
+        .AsPrimaryTitle();
     var id = new LinkedArtObject(Types.Identifier)
         .WithId($"{amphora.Id}/id")
         .WithContent("86.AE.75")
         .WithClassifiedAs("300312355", "Accession Number");
     amphora.IdentifiedBy = [name, id];
 
-    amphora.WithHeightDimension($"{amphora.Id}/h1", "38.7", MeasurementUnit.Centimetres);
-    amphora.WithWidthDimension($"{amphora.Id}/w1", "25.7", MeasurementUnit.Centimetres);
+    amphora.WithHeightDimension($"{amphora.Id}/h1", 38.7, MeasurementUnit.Centimetres);
+    amphora.WithWidthDimension($"{amphora.Id}/w1", 25.7, MeasurementUnit.Centimetres);
 
     return amphora;
 }
@@ -165,13 +184,13 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     var nameDutch = new LinkedArtObject(Types.Name)
         .WithId($"{photograph.Id}/name-nl")
         .WithContent("Portret van Katherine Stieglitz")
-        .WithLanguage("nl")
-        .WithClassifiedAs("300404670", "Primary Title");
+        .WithLanguage("300388277", "Dutch")
+        .AsPrimaryTitle();
     var nameEnglish = new LinkedArtObject(Types.Name)
         .WithId($"{photograph.Id}/name-en")
         .WithContent("Portrait of Katherine Stieglitz")
-        .WithLanguage("en")
-        .WithClassifiedAs("300404670", "Primary Title");
+        .WithLanguage("300388277", "English")
+        .AsPrimaryTitle();
 
     photograph.IdentifiedBy = [nameDutch, nameEnglish];
 
@@ -185,7 +204,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     var rijksmuseum = new LinkedArtObject(Types.Group) // tbc
         .WithId("https://www.rijksmuseum.nl/")
         .WithLabel("Rijksmuseum");
-    var assignment = new Activity(Types.AttribAssign) // tbc
+    var assignment = new Activity(Types.AttributeAssignment) // tbc
         .WithId($"{photograph.Id}/id/attribAssign");
     assignment.CarriedOutBy = [rijksmuseum];
     identifier.AssignedBy = [assignment];
@@ -205,7 +224,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
             .WithId("https://stieglitz.org/neg-of-portret-van-ks")
             .WithLabel("Negative of Portret van Katherine Stieglitz")
     ];
-    production.TimeSpan = [LinkedArtTimeSpan.FromYear($"{photograph.Id}/ts", 1905)];
+    production.TimeSpan = [LinkedArtTimeSpan.FromYear(1905, $"{photograph.Id}/ts")];
     photograph.ProducedBy = [production];
 
     photograph.WithMadeOf("aat:Paper", "Paper");
@@ -213,21 +232,21 @@ HumanMadeObject PortraitOfKatherineStieglitz()
 
     var desc = new LinkedArtObject(Types.LinguisticObject)
         .WithId($"{photograph.Id}/desc1")
-        .WithLanguage("en")
+        .WithLanguage("300388277", "English")
         .WithContent("h 302 mm x w 210 mm")
         .WithClassifiedAs("300435430", "Measurement Statement");
     desc.ClassifiedAs[0].WithClassifiedAs("la-tot", "Type of Text");
     photograph.ReferredToBy = [desc];
 
     // make this numers npt strings
-    photograph.WithHeightDimension($"{photograph.Id}/h1", "302", MeasurementUnit.Millimetres);
-    photograph.WithWidthDimension($"{photograph.Id}/w1", "210", MeasurementUnit.Millimetres);
+    photograph.WithHeightDimension($"{photograph.Id}/h1", 302, MeasurementUnit.Millimetres);
+    photograph.WithWidthDimension($"{photograph.Id}/w1", 210, MeasurementUnit.Millimetres);
 
     // digression into order, using alternate name:
     var nameAlternate = new LinkedArtObject(Types.Name)
         .WithId($"{photograph.Id}/name-alt")
         .WithContent("Portrait of daughter of Stieglitz")
-        .WithLanguage("en")
+        .WithLanguage("300388277", "English")
         .WithClassifiedAs("300404671", "Alternate Title");
     photograph.IdentifiedBy.Add(nameAlternate);
 
@@ -251,7 +270,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
         .WithId($"{photograph.Id}/acquisition");
     acquisition.TransferredTitleOf = [photograph];
     acquisition.TransferredTitleTo = [rijksmuseum];
-    acquisition.TimeSpan = [LinkedArtTimeSpan.FromYear($"{acquisition.Id}/ts", 1994)];
+    acquisition.TimeSpan = [LinkedArtTimeSpan.FromYear(1994, $"{acquisition.Id}/ts")];
     var provenance = new Activity(Types.Provenance)
         .WithId($"{photograph.Id}/provenance")
         .WithClassifiedAs("aat:Provenance", "Provenance");

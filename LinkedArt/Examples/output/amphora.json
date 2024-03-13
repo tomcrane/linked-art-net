@@ -9,10 +9,16 @@
       "id": "https://example.org/11733/name1",
       "type": "Name",
       "content": "Attic Black Figure Neck Amphora",
-      "language": "en",
+      "language": [
+        {
+          "id": "http://vocab.getty.edu/aat/300388277",
+          "type": "Language",
+          "_label": "English"
+        }
+      ],
       "classified_as": [
         {
-          "id": "300404670",
+          "id": "http://vocab.getty.edu/aat/300404670",
           "type": "Type",
           "_label": "Primary Title"
         }

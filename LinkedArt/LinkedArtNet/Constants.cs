@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LinkedArtNet.Vocabulary;
+using System;
 
 namespace LinkedArtNet;
 
@@ -21,9 +22,12 @@ public static class Constants
         return laObj;
     }
 
-    public static T WithId<T>(this T laObj, string id) where T : LinkedArtObject
+    public static T WithId<T>(this T laObj, string? id) where T : LinkedArtObject
     {
-        laObj.Id = id;
+        if (!string.IsNullOrWhiteSpace(id))
+        {
+            laObj.Id = id;
+        }
         return laObj;
     }
     public static T WithClassifiedAs<T>(this T laObj, string typeId, string? typeLabel) where T : LinkedArtObject
@@ -33,15 +37,31 @@ public static class Constants
         return laObj;
     }
 
+    public static T WithClassifiedAs<T>(this T laObj, LinkedArtObject typeObj) where T : LinkedArtObject
+    {
+        laObj.ClassifiedAs ??= [];
+        laObj.ClassifiedAs.Add(typeObj);
+        return laObj;
+    }
+
+    public static T AsPrimaryTitle<T>(this T laObj) where T : LinkedArtObject
+    {
+        laObj.ClassifiedAs ??= [];
+        laObj.ClassifiedAs.Add(Getty.PrimaryTitle);
+        return laObj;
+    }
+
+
     public static T WithContent<T>(this T laObj, string content) where T : LinkedArtObject
     {
         laObj.Content = content;
         return laObj;
     }
 
-    public static T WithLanguage<T>(this T laObj, string language) where T : LinkedArtObject
+    public static T WithLanguage<T>(this T laObj, string aatCode, string label) where T : LinkedArtObject
     {
-        laObj.Language = language;
+        laObj.Language ??= [];
+        laObj.Language.Add(new LinkedArtObject(Types.Language) { Id = $"{Getty.Aat}{aatCode}", Label = label });
         return laObj;
     }
 
@@ -54,7 +74,7 @@ public static class Constants
     public static HumanMadeObject WithMadeOf(this HumanMadeObject hmo, string materialTypeId, string? materialTypeLabel)
     {
         hmo.MadeOf ??= [];
-        hmo.MadeOf.Add(new LinkedArtObject(Types.Type) { Id = materialTypeId, Label = materialTypeLabel });
+        hmo.MadeOf.Add(new LinkedArtObject(Types.Material) { Id = materialTypeId, Label = materialTypeLabel });
         return hmo;
     }
 }

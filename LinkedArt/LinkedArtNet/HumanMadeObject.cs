@@ -38,4 +38,16 @@ public class HumanMadeObject : LinkedArtObject
     public List<LinkedArtObject>? MadeOf { get; set; }
 
 
+    [JsonPropertyName("part")]
+    [JsonPropertyOrder(130)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual new List<HumanMadeObject>? Part { get; set; }
+
+
+    [JsonPropertyName("part_of")]
+    [JsonPropertyOrder(130)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual new List<HumanMadeObject>? PartOf { get; set; }
+
+
 }

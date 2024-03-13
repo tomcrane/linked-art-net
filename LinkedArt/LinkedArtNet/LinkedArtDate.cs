@@ -5,7 +5,7 @@ namespace LinkedArtNet;
 [JsonConverter(typeof(LinkedArtDateConverter))]
 public class LinkedArtDate
 {
-    public const string Format = "yyyy-MM-dd hh:mm:ss";
+    public const string Format = "yyyy-MM-dd HH:mm:ss";
  
     public DateTime? Date;
     public int Year, Month, Day;
@@ -13,6 +13,9 @@ public class LinkedArtDate
     public LinkedArtDate(DateTime dt)
     {
         Date = dt;
+        Year = dt.Year;
+        Month = dt.Month;
+        Day = dt.Day;
     }
 
     public LinkedArtDate(int year, int month, int day)
@@ -22,7 +25,7 @@ public class LinkedArtDate
         Day = day;
         if(year >= 0)
         {
-            Date = new DateTime(year, month, day);
+            Date = new DateTime(year, month, day, 0, 0, 0);
         }
     }
 }

@@ -11,7 +11,7 @@ public class Dimension : LinkedArtObject
     [JsonPropertyName("value")]
     [JsonPropertyOrder(31)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Value { get; set; }
+    public double? Value { get; set; }
 
     [JsonPropertyName("unit")]
     [JsonPropertyOrder(32)]

@@ -4,10 +4,11 @@
     {
         Acquisition,
         AttribAssign, // TBC
+        Concept,
+        Group,
         Identifier,
         LinguisticObject,
         Name,
-        Organisation, // TBC
         Person,
         Production,
         Provenance,

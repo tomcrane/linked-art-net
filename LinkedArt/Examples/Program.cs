@@ -140,7 +140,7 @@ HumanMadeObject AmphoraWork()
             .WithLabel("Theseus")
     ];
     visualWork.About = [
-        new LinkedArtObject(Types.Type)
+        new LinkedArtObject(Types.Concept)
             .WithId("icc:45A3")
             .WithLabel("Victory ~ Armed Conflict")
     ];
@@ -182,7 +182,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
         .WithId($"{photograph.Id}/id")
         .WithContent("RP-F-F17653")
         .WithClassifiedAs("aat:300312355", "Accession Number");
-    var rijksmuseum = new LinkedArtObject(Types.Organisation) // tbc
+    var rijksmuseum = new LinkedArtObject(Types.Group) // tbc
         .WithId("https://www.rijksmuseum.nl/")
         .WithLabel("Rijksmuseum");
     var assignment = new Activity(Types.AttribAssign) // tbc
@@ -240,7 +240,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
             .WithLabel("Katherine Stieglitz")
     ];
     visualWork.About = [
-        new LinkedArtObject(Types.Type)
+        new LinkedArtObject(Types.Concept)
             .WithId("icc:Woman")
             .WithLabel("Woman")
     ];

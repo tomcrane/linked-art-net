@@ -50,7 +50,7 @@
           "carried_out_by": [
             {
               "id": "https://www.rijksmuseum.nl/",
-              "type": "Organisation",
+              "type": "Group",
               "_label": "Rijksmuseum"
             }
           ]
@@ -178,7 +178,7 @@
       "about": [
         {
           "id": "icc:Woman",
-          "type": "Type",
+          "type": "Concept",
           "_label": "Woman"
         }
       ]

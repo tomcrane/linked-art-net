@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://linked.art/ns/v1/linked-art.json"
+  ],
+  "id": "https://tomcrane.github.io/linked-art-net/LinkedArt/Examples/output/ModelObjectProduction/62.json",
+  "type": "HumanMadeObject",
+  "_label": "Graffiti",
+  "produced_by": [
+    {
+      "type": "Production",
+      "_label": "Production of Graffiti",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300055299",
+          "type": "Type",
+          "_label": "Vandalism"
+        }
+      ],
+      "technique": [
+        {
+          "id": "http://vocab.getty.edu/aat/300053816",
+          "type": "Type",
+          "_label": "Spraypainting"
+        }
+      ]
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300133025",
+      "type": "Type",
+      "_label": "Artwork"
+    }
+  ]
+}

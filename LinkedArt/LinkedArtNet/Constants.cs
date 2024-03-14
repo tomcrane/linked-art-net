@@ -44,6 +44,20 @@ public static class Constants
         return laObj;
     }
 
+    public static Activity WithTechnique(this Activity activity, string typeId, string? typeLabel)
+    {
+        activity.Technique ??= [];
+        activity.Technique.Add(new LinkedArtObject(Types.Type) { Id = typeId, Label = typeLabel });
+        return activity;
+    }
+
+    public static Activity WithTechnique(this Activity activity, LinkedArtObject typeObj)
+    {
+        activity.Technique ??= [];
+        activity.Technique.Add(typeObj);
+        return activity;
+    }
+
     public static T AsPrimaryTitle<T>(this T laObj) where T : LinkedArtObject
     {
         laObj.ClassifiedAs ??= [];

@@ -14,6 +14,7 @@ public class Getty
     // These are utility methods; this class could get very long, but you might want to constrain to a reduced set
 
     public static LinkedArtObject Painting => AatType("Painting", "300033618");
+    public static LinkedArtObject Sculpture => AatType("Sculpture", "300047090");
     public static LinkedArtObject Artwork => AatType("Artwork", "300133025");
     public static LinkedArtObject TypeOfWork => AatType("Type of Work", "300435443");
 

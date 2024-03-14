@@ -65,5 +65,8 @@ public class Activity : LinkedArtObject
     public List<LinkedArtObject>? Technique { get; set; }
 
 
-
+    [JsonPropertyName("influenced_by")]
+    [JsonPropertyOrder(160)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<HumanMadeObject>? InfluencedBy { get; set; }
 }

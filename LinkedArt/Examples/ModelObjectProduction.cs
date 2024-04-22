@@ -41,7 +41,7 @@ public class ModelObjectProduction : ExamplePage
             {
                 TimeSpan = [LinkedArtTimeSpan.FromDay(1780, 3, 5)],
                 TookPlaceAt = [new Place().WithLabel("Artist's Studio")],
-                CarriedOutBy = [new LinkedArtObject(Types.Person).WithLabel("Artist")]
+                CarriedOutBy = [new Person().WithLabel("Artist")]
             }
         ];
 
@@ -65,7 +65,7 @@ public class ModelObjectProduction : ExamplePage
         [
             new Activity(Types.Production)
             {
-                CarriedOutBy = [new LinkedArtObject(Types.Person).WithLabel("Glassblowing Artist")],
+                CarriedOutBy = [new Person().WithLabel("Glassblowing Artist")],
                 Technique = [ Getty.AatType("Glassblowing", "300053932") ]
             }
         ];
@@ -114,12 +114,12 @@ public class ModelObjectProduction : ExamplePage
                 new Activity(Types.Production)
                 {
                     Technique = [Getty.AatType("Sculpting", "300264383")],
-                    CarriedOutBy = [new LinkedArtObject(Types.Person).WithLabel("Sculptor")]
+                    CarriedOutBy = [new Person().WithLabel("Sculptor")]
                 },
                 new Activity(Types.Production)
                 {
                     Technique = [Getty.AatType("Painting", "300054216")],
-                    CarriedOutBy = [new LinkedArtObject(Types.Person).WithLabel("Painter")]
+                    CarriedOutBy = [new Person().WithLabel("Painter")]
                 }
             ]
         };
@@ -142,7 +142,7 @@ public class ModelObjectProduction : ExamplePage
         fishCopy.ProducedBy = [
             new Activity(Types.Production)
             {
-                CarriedOutBy = [new LinkedArtObject(Types.Person).WithLabel("Copyist")],
+                CarriedOutBy = [new Person().WithLabel("Copyist")],
                 InfluencedBy = [
                     new HumanMadeObject()
                         .WithLabel("Painting of a Fish")

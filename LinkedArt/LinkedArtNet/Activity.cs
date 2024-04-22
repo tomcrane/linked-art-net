@@ -5,7 +5,7 @@ namespace LinkedArtNet;
 
 public class Activity : LinkedArtObject
 {
-    public Activity()
+    public Activity() : base("Activity")
     {
     }
 
@@ -22,7 +22,7 @@ public class Activity : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<LinkedArtObject>? CarriedOutBy { get; set; }
 
-
+    // QUESTION - is TimeSpan an array? LA site example is not.
     [JsonPropertyName("timespan")]
     [JsonPropertyOrder(102)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

@@ -5,6 +5,7 @@ namespace LinkedArtNet;
 [JsonConverter(typeof(LinkedArtDateConverter))]
 public class LinkedArtDate
 {
+    // TODO: This is not the correct datetime format
     public const string Format = "yyyy-MM-dd HH:mm:ss";
  
     public DateTime? Date;

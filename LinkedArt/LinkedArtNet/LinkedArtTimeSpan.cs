@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace LinkedArtNet;
 
@@ -56,7 +57,7 @@ public class LinkedArtTimeSpan : LinkedArtObject
         ts.BeginOfTheBegin = new LinkedArtDate(year, month, day);
         if (ts.BeginOfTheBegin.Date.HasValue)
         {
-            ts.EndOfTheEnd = new LinkedArtDate(ts.BeginOfTheBegin.Date.Value.AddDays(1)); //.AddSeconds(-1));
+            ts.EndOfTheEnd = new LinkedArtDate(ts.BeginOfTheBegin.Date.Value.AddDays(1).AddSeconds(-1));
         }
         else
         {
@@ -68,4 +69,5 @@ public class LinkedArtTimeSpan : LinkedArtObject
         ts.WithLabel(LinkedArtDateConverter.DayFormat(year, month, day));
         return ts;
     }
+
 }

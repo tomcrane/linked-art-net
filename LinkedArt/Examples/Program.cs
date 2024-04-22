@@ -1,10 +1,10 @@
 ﻿
 using Examples;
+using Examples.NewDocExamples;
 using LinkedArtNet;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
-
+// From old documentation; use the new examples
 Dictionary<string, Func<HumanMadeObject>> dict = new()
 {
     ["amphora"] = Amphora,
@@ -14,17 +14,16 @@ Dictionary<string, Func<HumanMadeObject>> dict = new()
     ["stieglitz"] = PortraitOfKatherineStieglitz
 };
 
-
-static void Make(string key, Dictionary<string, Func<HumanMadeObject>> dict)
+if(args.Length == 0)
 {
-    var options = new JsonSerializerOptions { WriteIndented = true };
-    var laObj = dict[key.ToLowerInvariant()]();
-    var json = JsonSerializer.Serialize(laObj, options);
-    Console.WriteLine(json);
-    File.WriteAllText($"../../../output/{key}.json", json);
+    // The new LA documentation
+    Documentation.Create();
+    return;
 }
 
 
+
+// Examples from old documenation
 if (args.Length == 1 && dict.ContainsKey(args[0].ToLowerInvariant()))
 {
     var key = args[0].ToLowerInvariant();
@@ -56,6 +55,16 @@ else
     }
 }
 
+
+static void Make(string key, Dictionary<string, Func<HumanMadeObject>> dict)
+{
+    var options = new JsonSerializerOptions { WriteIndented = true };
+    var laObj = dict[key.ToLowerInvariant()]();
+    var json = JsonSerializer.Serialize(laObj, options);
+    Console.WriteLine(json);
+    File.WriteAllText($"../../../output/{key}.json", json);
+}
+
 HumanMadeObject Amphora()
 {
     var amphora = new HumanMadeObject()
@@ -67,7 +76,7 @@ HumanMadeObject Amphora()
         .WithId($"{amphora.Id}/name1")
         .WithContent("Attic Black Figure Neck Amphora")
         .WithLanguage("300388277", "English")
-        .AsPrimaryTitle();
+        .AsPrimaryName();
     var id = new LinkedArtObject(Types.Identifier)
         .WithId($"{amphora.Id}/id")
         .WithContent("86.AE.75")
@@ -93,7 +102,7 @@ HumanMadeObject AmphoraWithDimensions()
     var name = new LinkedArtObject(Types.Name)
         .WithId($"{amphora.Id}/name1")
         .WithContent("Attic Black Figure Neck Amphora")
-        .AsPrimaryTitle();
+        .AsPrimaryName();
     var id = new LinkedArtObject(Types.Identifier)
         .WithId($"{amphora.Id}/id")
         .WithContent("86.AE.75")
@@ -119,7 +128,7 @@ HumanMadeObject AmphoraProduction()
     var production = new Activity(Types.Production)
         .WithId($"{amphora.Id}/prod");
     
-    var affecter = new LinkedArtObject(Types.Person)
+    var affecter = new Person()
         .WithId("500029118")
         .WithLabel("Affecter");
     production.CarriedOutBy = [affecter];
@@ -154,7 +163,7 @@ HumanMadeObject AmphoraWork()
     // omit some info for brevity
     var visualWork = new Work(Types.VisualItem);
     visualWork.Represents = [
-        new LinkedArtObject(Types.Person)
+        new Person()
             .WithId("icc:94M")
             .WithLabel("Theseus")
     ];
@@ -185,12 +194,12 @@ HumanMadeObject PortraitOfKatherineStieglitz()
         .WithId($"{photograph.Id}/name-nl")
         .WithContent("Portret van Katherine Stieglitz")
         .WithLanguage("300388277", "Dutch")
-        .AsPrimaryTitle();
+        .AsPrimaryName();
     var nameEnglish = new LinkedArtObject(Types.Name)
         .WithId($"{photograph.Id}/name-en")
         .WithContent("Portrait of Katherine Stieglitz")
         .WithLanguage("300388277", "English")
-        .AsPrimaryTitle();
+        .AsPrimaryName();
 
     photograph.IdentifiedBy = [nameDutch, nameEnglish];
 
@@ -214,7 +223,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     var production = new Activity(Types.Production)
         .WithId($"{photograph.Id}/prod")
         .WithClassifiedAs("aat:Printing", "Negative printing");        
-    var stieglitz = new LinkedArtObject(Types.Person)
+    var stieglitz = new Person()
         .WithId("https://www.wikidata.org/wiki/Q313055") // yes but no but
         .WithLabel("Alfred Stieglitz");
     production.CarriedOutBy = [stieglitz];
@@ -254,7 +263,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
 
     var visualWork = new Work(Types.VisualItem); // Is this a work?
     visualWork.Represents = [
-        new LinkedArtObject(Types.Person)
+        new Person()
             .WithId("icc:61bb2")
             .WithLabel("Katherine Stieglitz")
     ];

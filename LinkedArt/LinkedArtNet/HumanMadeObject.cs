@@ -6,10 +6,6 @@ public class HumanMadeObject : LinkedArtObject
 {
     public HumanMadeObject() { Type = nameof(HumanMadeObject); }
 
-    [JsonPropertyName("identified_by")]
-    [JsonPropertyOrder(21)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<LinkedArtObject>? IdentifiedBy { get; set; }
 
     [JsonPropertyName("referred_to_by")]
     [JsonPropertyOrder(22)]

@@ -18,6 +18,7 @@ public class LinkedArtObject
     [JsonPropertyName("@context")]
     [JsonPropertyOrder(1)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonConverter(typeof(SingleStringJsonLDConverter))]
     public virtual string[]? Context { get; set; }
 
 
@@ -58,6 +59,11 @@ public class LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<Activity>? AssignedBy { get; set; }
 
+    [JsonPropertyName("identified_by")]
+    [JsonPropertyOrder(120)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? IdentifiedBy { get; set; }
+
 
     [JsonPropertyName("part")]
     [JsonPropertyOrder(130)]
@@ -82,5 +88,16 @@ public class LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<LinkedArtObject>? MemberOf { get; set; }
 
+
+    [JsonPropertyName("equivalent")]
+    [JsonPropertyOrder(150)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<LinkedArtObject>? Equivalent { get; set; }
+
+
+    [JsonPropertyName("created_by")]
+    [JsonPropertyOrder(210)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Activity? CreatedBy { get; set; }
 
 }

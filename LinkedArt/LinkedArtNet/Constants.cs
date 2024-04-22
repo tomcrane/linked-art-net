@@ -58,10 +58,10 @@ public static class Constants
         return activity;
     }
 
-    public static T AsPrimaryTitle<T>(this T laObj) where T : LinkedArtObject
+    public static T AsPrimaryName<T>(this T laObj) where T : LinkedArtObject
     {
         laObj.ClassifiedAs ??= [];
-        laObj.ClassifiedAs.Add(Getty.PrimaryTitle);
+        laObj.ClassifiedAs.Add(Getty.PrimaryName);
         return laObj;
     }
 
@@ -75,7 +75,7 @@ public static class Constants
     public static T WithLanguage<T>(this T laObj, string aatCode, string label) where T : LinkedArtObject
     {
         laObj.Language ??= [];
-        laObj.Language.Add(new LinkedArtObject(Types.Language) { Id = $"{Getty.Aat}{aatCode}", Label = label });
+        laObj.Language.Add(Getty.Language(aatCode, label));
         return laObj;
     }
 

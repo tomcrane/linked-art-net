@@ -4,6 +4,7 @@ namespace LinkedArtNet;
 
 public class Work : LinkedArtObject
 {
+    // There is no Work class in Linked Art...
     public Work()
     {
     }

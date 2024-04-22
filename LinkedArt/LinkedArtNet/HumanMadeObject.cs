@@ -15,7 +15,7 @@ public class HumanMadeObject : LinkedArtObject
     [JsonPropertyName("produced_by")]
     [JsonPropertyOrder(23)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Activity>? ProducedBy { get; set; }
+    public Activity? ProducedBy { get; set; }
 
     [JsonPropertyName("dimension")]
     [JsonPropertyOrder(24)]

@@ -15,6 +15,7 @@ namespace Examples.NewDocExamples
         public static void Create()
         {
             BasicPatterns.Create();
+            ProductionDestruction.Create();
 
         }
 

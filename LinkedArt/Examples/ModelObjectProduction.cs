@@ -35,15 +35,13 @@ public class ModelObjectProduction : ExamplePage
             Getty.Artwork
         ];
 
-        painting.ProducedBy = 
-        [
+        painting.ProducedBy =
             new Activity(Types.Production)
             {
                 TimeSpan = [LinkedArtTimeSpan.FromDay(1780, 3, 5)],
                 TookPlaceAt = [new Place().WithLabel("Artist's Studio")],
                 CarriedOutBy = [new Person().WithLabel("Artist")]
-            }
-        ];
+            };
 
         return painting;
     }
@@ -62,13 +60,11 @@ public class ModelObjectProduction : ExamplePage
         ];
 
         glassSculpture.ProducedBy =
-        [
             new Activity(Types.Production)
             {
                 CarriedOutBy = [new Person().WithLabel("Glassblowing Artist")],
-                Technique = [ Getty.AatType("Glassblowing", "300053932") ]
-            }
-        ];
+                Technique = [Getty.AatType("Glassblowing", "300053932")]
+            };
 
         return glassSculpture;
     }
@@ -83,12 +79,10 @@ public class ModelObjectProduction : ExamplePage
             .WithClassifiedAs(Getty.Artwork);
 
         graffiti.ProducedBy =
-        [
             new Activity(Types.Production)
                 .WithLabel("Production of Graffiti")
                 .WithClassifiedAs(Getty.AatType("Vandalism", "300055299"))
-                .WithTechnique(Getty.AatType("Spraypainting", "300053816"))
-        ];
+                .WithTechnique(Getty.AatType("Spraypainting", "300053816"));
 
         return graffiti;
     }
@@ -124,7 +118,7 @@ public class ModelObjectProduction : ExamplePage
             ]
         };
 
-        paintedSculpture.ProducedBy = [ production ];
+        paintedSculpture.ProducedBy = production;
 
         return paintedSculpture;
     }
@@ -139,7 +133,7 @@ public class ModelObjectProduction : ExamplePage
             .WithClassifiedAs(Getty.Painting.WithClassifiedAs(Getty.TypeOfWork))
             .WithClassifiedAs(Getty.Artwork);
 
-        fishCopy.ProducedBy = [
+        fishCopy.ProducedBy =
             new Activity(Types.Production)
             {
                 CarriedOutBy = [new Person().WithLabel("Copyist")],
@@ -149,8 +143,7 @@ public class ModelObjectProduction : ExamplePage
                         .WithClassifiedAs(Getty.Painting)
                         .WithClassifiedAs(Getty.Artwork)
                 ]
-            }
-        ];
+            };
 
         return fishCopy;
     }

@@ -3,31 +3,29 @@
   "id": "https://linked.art/example/object/spring/4",
   "type": "HumanMadeObject",
   "_label": "Jeanne (Spring) by Manet",
-  "produced_by": [
-    {
-      "type": "Production",
-      "carried_out_by": [
-        {
-          "id": "https://linked.art/example/person/manet",
-          "type": "Person",
-          "_label": "Manet"
-        }
-      ],
-      "timespan": [
-        {
-          "type": "TimeSpan",
-          "_label": "1881",
-          "begin_of_the_begin": "1881-01-01 00:00:00",
-          "end_of_the_end": "1881-12-31 23:59:59"
-        }
-      ],
-      "took_place_at": [
-        {
-          "id": "https://linked.art/example/place/france",
-          "type": "Place",
-          "_label": "France"
-        }
-      ]
-    }
-  ]
+  "produced_by": {
+    "type": "Production",
+    "carried_out_by": [
+      {
+        "id": "https://linked.art/example/person/manet",
+        "type": "Person",
+        "_label": "Manet"
+      }
+    ],
+    "timespan": [
+      {
+        "type": "TimeSpan",
+        "_label": "1881",
+        "begin_of_the_begin": "1881-01-01 00:00:00",
+        "end_of_the_end": "1881-12-31 23:59:59"
+      }
+    ],
+    "took_place_at": [
+      {
+        "id": "https://linked.art/example/place/france",
+        "type": "Place",
+        "_label": "France"
+      }
+    ]
+  }
 }

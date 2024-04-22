@@ -1,12 +1,5 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Vocabulary;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace Examples.NewDocExamples
 {
@@ -185,7 +178,6 @@ namespace Examples.NewDocExamples
 
 
             spring.ProducedBy =
-            [
                 new Activity(Types.Production)
                 {
                     TimeSpan = [  // QUESTION - is TimeSpan an array? LA site example is not.
@@ -193,16 +185,15 @@ namespace Examples.NewDocExamples
                     ],
                     TookPlaceAt = [
                         new Place()
-                            .WithId("https://linked.art/example/place/france")
+                            .WithId($"{Documentation.IdRoot}/place/france")
                             .WithLabel("France")
                     ],
                     CarriedOutBy = [
                         new Person()
-                            .WithId("https://linked.art/example/person/manet")
+                            .WithId($"{Documentation.IdRoot}/person/manet")
                             .WithLabel("Manet")
                     ]
-                }
-            ];
+                };
 
             Documentation.Save(spring);
         }
@@ -267,7 +258,7 @@ namespace Examples.NewDocExamples
 
             rembrandt.MemberOf = [
                 new LinkedArtObject(Types.Group)
-                    .WithId("https://linked.art/example/group/stluke")
+                    .WithId($"{Documentation.IdRoot}/group/stluke")
                     .WithLabel("Guild of St Luke")
             ];
 
@@ -288,12 +279,12 @@ namespace Examples.NewDocExamples
             var directorActivity = new Activity(Types.Creation)
                 .WithClassifiedAs(Getty.AatType("Director", "300025654"));
             directorActivity.CarriedOutBy = [
-                new Person().WithId("https://linked.art/example/person/greenaway").WithLabel("Peter Greenaway")
+                new Person().WithId($"{Documentation.IdRoot}/person/greenaway").WithLabel("Peter Greenaway")
             ];
             var producerActivity = new Activity(Types.Creation)
                 .WithClassifiedAs(Getty.AatType("Producer", "300197742"));
             producerActivity.CarriedOutBy = [
-                new Person().WithId("https://linked.art/example/person/wolting").WithLabel("Femke Wolting")
+                new Person().WithId($"{Documentation.IdRoot}/person/wolting").WithLabel("Femke Wolting")
             ];
             jaccuse.CreatedBy.Part = [
                 directorActivity,

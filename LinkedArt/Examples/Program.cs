@@ -148,7 +148,7 @@ HumanMadeObject AmphoraProduction()
     //when.EndOfTheEnd = new LinkedArtDate(DateTime.Now.AddDays(20));
     production.TimeSpan = [when];
 
-    amphora.ProducedBy = [production];
+    amphora.ProducedBy = production;
 
     return amphora;
 }
@@ -234,7 +234,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
             .WithLabel("Negative of Portret van Katherine Stieglitz")
     ];
     production.TimeSpan = [LinkedArtTimeSpan.FromYear(1905, $"{photograph.Id}/ts")];
-    photograph.ProducedBy = [production];
+    photograph.ProducedBy = production;
 
     photograph.WithMadeOf("aat:Paper", "Paper");
 

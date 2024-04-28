@@ -10,6 +10,8 @@ namespace Examples.NewDocExamples
             Nightwatch_6_wh();
             Nightwatch_7_Dimension_Statement();
             Nightwatch_8_Display_Titles();
+            Nightwatch_9_Measurement_Assigned();
+            Spring_29_Measurement_of_Features();
         }
 
 
@@ -57,5 +59,55 @@ namespace Examples.NewDocExamples
 
             Documentation.Save(nightWatch);
         }
+
+
+        private static void Nightwatch_9_Measurement_Assigned()
+        {
+            var nightWatch = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/nightwatch/9")
+                .WithLabel("Night Watch by Rembrandt")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithHeightDimension(379.5, MeasurementUnit.Centimetres);
+
+            var attrAssignment = new Activity(Types.AttributeAssignment)
+                .WithLabel("Measurement of the Night Watch");
+            attrAssignment.CarriedOutBy = [
+                new LinkedArtObject(Types.Group)
+                    .WithId($"{Documentation.IdRoot}/group/nightwatchteam")
+                    .WithLabel("Operation Night Watch Team")
+            ];
+            attrAssignment.PartOf = [
+                new Activity()
+                    .WithId($"{Documentation.IdRoot}/event/operationnightwatch")
+                    .WithLabel("Operation Night Watch")
+            ];
+
+            nightWatch.Dimension![0].AssignedBy = [attrAssignment];
+
+            Documentation.Save(nightWatch);
+        }
+
+
+        private static void Spring_29_Measurement_of_Features()
+        {
+            var spring = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/spring/29")
+                .WithLabel("Spring")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithHeightDimension(74, MeasurementUnit.Centimetres)
+                .WithWidthDimension(51.5, MeasurementUnit.Centimetres);
+
+            var attrAssignment = new Activity(Types.AttributeAssignment)
+                .WithLabel("Unframed Measuring")
+                .WithTechnique($"{Documentation.IdRoot}/concept/measuring_unframed", "Unframed Measuring");
+
+            spring.Dimension![0].AssignedBy = [attrAssignment];
+            spring.Dimension![1].AssignedBy = [attrAssignment];
+
+            Documentation.Save(spring);
+        }
+
     }
 }

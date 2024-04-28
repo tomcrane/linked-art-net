@@ -68,4 +68,16 @@ public class Activity : LinkedArtObject
     [JsonPropertyOrder(160)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<LinkedArtObject>? InfluencedBy { get; set; }
+
+
+    [JsonPropertyName("diminished")]
+    [JsonPropertyOrder(200)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public HumanMadeObject? Diminished { get; set; }
+
+
+    [JsonPropertyName("caused_by")]
+    [JsonPropertyOrder(210)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public new List<LinkedArtObject>? CausedBy { get; set; }
 }

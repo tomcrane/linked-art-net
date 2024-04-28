@@ -14,6 +14,7 @@ namespace Examples.NewDocExamples
         {
             BasicPatterns.Create();
             ProductionDestruction.Create();
+            PhysicalCharacteristics.Create();
 
         }
 

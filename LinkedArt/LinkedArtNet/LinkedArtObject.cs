@@ -100,4 +100,21 @@ public class LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Activity? CreatedBy { get; set; }
 
+
+    [JsonPropertyName("formed_by")]
+    [JsonPropertyOrder(220)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Activity? FormedBy { get; set; }
+
+
+    [JsonPropertyName("destroyed_by")]
+    [JsonPropertyOrder(225)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Activity? DestroyedBy { get; set; }
+
+
+    [JsonPropertyName("removed_by")]
+    [JsonPropertyOrder(230)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Activity>? RemovedBy { get; set; }
 }

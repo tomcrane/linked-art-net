@@ -23,6 +23,11 @@ public class Getty
     public static LinkedArtObject PartType => AatType("Part Type", "300241583");
 
 
+    public static LinkedArtObject DimensionStatement => AatType("Dimension Statement", "300435430");
+    public static LinkedArtObject BriefText => AatType("Brief Text", "300418049");
+    public static LinkedArtObject DisplayTitle => AatType("Display Title", "300404669");
+
+
 
     public static LinkedArtObject Language(string aatCode, string label)
     {

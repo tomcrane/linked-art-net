@@ -19,7 +19,10 @@ namespace Examples.NewDocExamples
             Canterbury_Plate_1();
             Coppa_1_Unknown();
             Washday_1_Influenced();
-
+            HarwoodStudio_1_Group();
+            GradualPage_1_PartRemoval();
+            LePeintre_1_Destruction();
+            LePeintre_2_Destruction_CausedBy();
         }
 
 
@@ -274,6 +277,99 @@ namespace Examples.NewDocExamples
             };
 
             Documentation.Save(washday);
+        }
+
+        private static void HarwoodStudio_1_Group()
+        {
+            var grp = new LinkedArtObject(Types.Group)
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/group/harwoodstudio/1")
+                .WithLabel("Studio of Francis Harwood")
+                .WithClassifiedAs(Getty.AatType("Studio", "300404275"));
+
+            grp.FormedBy = new Activity(Types.Formation)
+            {
+                InfluencedBy = [
+                    new Person()
+                        .WithId("http://vocab.getty.edu/ulan/500015886")
+                        .WithLabel("Francis Harwood")
+                ]
+            };
+
+            Documentation.Save(grp);
+        }
+
+
+        private static void GradualPage_1_PartRemoval()
+        {
+            var gradualPage = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/gradualpage/1")
+                .WithLabel("Page from a Gradual")
+                .WithClassifiedAs(Getty.AatType("Page", "300194222"), Getty.TypeOfWork);
+
+            gradualPage.RemovedBy = [
+                new Activity(Types.PartRemoval)
+                {
+                    Diminished = new HumanMadeObject()
+                        .WithId($"{Documentation.IdRoot}/object/gradual")
+                        .WithLabel("Gradual")
+                }
+            ];
+
+            Documentation.Save(gradualPage);
+        }
+
+
+        private static void LePeintre_1_Destruction()
+        {
+            var lepeintre = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/lepeintre/1")
+                .WithLabel("Le Peintre by Picasso")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+
+            var destruction = new Activity(Types.Destruction)
+                .WithLabel("Destruction of Le Peintre");
+            destruction.TimeSpan = new LinkedArtTimeSpan
+            {
+                BeginOfTheBegin = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 20, 0, TimeSpan.Zero)),
+                EndOfTheEnd = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 40, 0, TimeSpan.Zero))
+            };
+            lepeintre.DestroyedBy = destruction;
+
+            // https://linked.art/example/object/lepeintre/1.json
+            // This has end_of_the_end "1998-09-02T022:40:00Z"
+            //                                     ^  (typo?)
+            Documentation.Save(lepeintre, false);
+        }
+
+        private static void LePeintre_2_Destruction_CausedBy()
+        {
+            var lepeintre2 = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/lepeintre/2")
+                .WithLabel("Le Peintre by Picasso")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+
+            var destruction = new Activity(Types.Destruction)
+                .WithLabel("Destruction of Le Peintre");
+            destruction.TimeSpan = new LinkedArtTimeSpan
+            {
+                BeginOfTheBegin = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 20, 0, TimeSpan.Zero)),
+                EndOfTheEnd = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 40, 0, TimeSpan.Zero))
+            };
+            destruction.CausedBy = [
+                new LinkedArtObject(Types.Event)
+                    .WithId($"{Documentation.IdRoot}/event/sr111crash")
+                    .WithLabel("Crash of Swiss Air 111")
+            ];
+            lepeintre2.DestroyedBy = destruction;
+
+            // https://linked.art/example/object/lepeintre/2.json
+            // This has end_of_the_end "1998-09-02T022:40:00Z"
+            //                                     ^  (typo?)
+            Documentation.Save(lepeintre2, false);
         }
     }
 }

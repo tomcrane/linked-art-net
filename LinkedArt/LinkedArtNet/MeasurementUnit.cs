@@ -13,7 +13,7 @@ public class MeasurementUnit : LinkedArtObject
     private static MeasurementUnit _centimetres = new MeasurementUnit
     {
         Id = $"{Getty.Aat}300379098",
-        Label = "centimetres"
+        Label = "centimeters"
     };
 
 
@@ -22,7 +22,7 @@ public class MeasurementUnit : LinkedArtObject
     private static MeasurementUnit _millimetres = new MeasurementUnit
     {
         Id = $"{Getty.Aat}300379099", // check
-        Label = "millimetres"
+        Label = "millimeters"
     };
 
 }

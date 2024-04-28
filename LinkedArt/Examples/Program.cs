@@ -146,7 +146,7 @@ HumanMadeObject AmphoraProduction()
     // For AD dates:
     //when.BeginOfTheBegin = new LinkedArtDate(DateTime.Now);
     //when.EndOfTheEnd = new LinkedArtDate(DateTime.Now.AddDays(20));
-    production.TimeSpan = [when];
+    production.TimeSpan = when;
 
     amphora.ProducedBy = production;
 
@@ -233,10 +233,10 @@ HumanMadeObject PortraitOfKatherineStieglitz()
             .WithId("https://stieglitz.org/neg-of-portret-van-ks")
             .WithLabel("Negative of Portret van Katherine Stieglitz")
     ];
-    production.TimeSpan = [LinkedArtTimeSpan.FromYear(1905, $"{photograph.Id}/ts")];
+    production.TimeSpan = LinkedArtTimeSpan.FromYear(1905, $"{photograph.Id}/ts");
     photograph.ProducedBy = production;
 
-    photograph.WithMadeOf("aat:Paper", "Paper");
+    photograph.WithMadeOf("Paper", "aat:Paper");
 
 
     var desc = new LinkedArtObject(Types.LinguisticObject)
@@ -244,7 +244,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
         .WithLanguage("300388277", "English")
         .WithContent("h 302 mm x w 210 mm")
         .WithClassifiedAs("300435430", "Measurement Statement");
-    desc.ClassifiedAs[0].WithClassifiedAs("la-tot", "Type of Text");
+    desc.ClassifiedAs![0].WithClassifiedAs("la-tot", "Type of Text");
     photograph.ReferredToBy = [desc];
 
     // make this numers npt strings
@@ -279,7 +279,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
         .WithId($"{photograph.Id}/acquisition");
     acquisition.TransferredTitleOf = [photograph];
     acquisition.TransferredTitleTo = [rijksmuseum];
-    acquisition.TimeSpan = [LinkedArtTimeSpan.FromYear(1994, $"{acquisition.Id}/ts")];
+    acquisition.TimeSpan = LinkedArtTimeSpan.FromYear(1994, $"{acquisition.Id}/ts");
     var provenance = new Activity(Types.Provenance)
         .WithId($"{photograph.Id}/provenance")
         .WithClassifiedAs("aat:Provenance", "Provenance");

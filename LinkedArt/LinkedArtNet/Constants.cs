@@ -37,10 +37,17 @@ public static class Constants
         return laObj;
     }
 
-    public static T WithClassifiedAs<T>(this T laObj, LinkedArtObject typeObj) where T : LinkedArtObject
+    public static T WithClassifiedAs<T>(
+        this T laObj, 
+        LinkedArtObject typeObj, 
+        LinkedArtObject? furtherClassifiedAs = null) where T : LinkedArtObject
     {
         laObj.ClassifiedAs ??= [];
         laObj.ClassifiedAs.Add(typeObj);
+        if(furtherClassifiedAs != null)
+        {
+            typeObj.WithClassifiedAs(furtherClassifiedAs);
+        }
         return laObj;
     }
 
@@ -85,8 +92,12 @@ public static class Constants
         return laObj;
     }
 
-    public static HumanMadeObject WithMadeOf(this HumanMadeObject hmo, string materialTypeId, string? materialTypeLabel)
+    public static HumanMadeObject WithMadeOf(this HumanMadeObject hmo, string? materialTypeLabel, string materialTypeId)
     {
+        if(!materialTypeId.StartsWith("http"))
+        {
+            materialTypeId = $"{Getty.Aat}{materialTypeId}";
+        }
         hmo.MadeOf ??= [];
         hmo.MadeOf.Add(new LinkedArtObject(Types.Material) { Id = materialTypeId, Label = materialTypeLabel });
         return hmo;

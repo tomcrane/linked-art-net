@@ -22,11 +22,10 @@ public class Activity : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<LinkedArtObject>? CarriedOutBy { get; set; }
 
-    // QUESTION - is TimeSpan an array? LA site example is not.
     [JsonPropertyName("timespan")]
     [JsonPropertyOrder(102)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<LinkedArtTimeSpan>? TimeSpan { get; set; }
+    public LinkedArtTimeSpan? TimeSpan { get; set; }
 
 
     [JsonPropertyName("took_place_at")]
@@ -68,5 +67,5 @@ public class Activity : LinkedArtObject
     [JsonPropertyName("influenced_by")]
     [JsonPropertyOrder(160)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<HumanMadeObject>? InfluencedBy { get; set; }
+    public List<LinkedArtObject>? InfluencedBy { get; set; }
 }

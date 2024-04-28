@@ -38,7 +38,7 @@ public class ModelObjectProduction : ExamplePage
         painting.ProducedBy =
             new Activity(Types.Production)
             {
-                TimeSpan = [LinkedArtTimeSpan.FromDay(1780, 3, 5)],
+                TimeSpan = LinkedArtTimeSpan.FromDay(1780, 3, 5),
                 TookPlaceAt = [new Place().WithLabel("Artist's Studio")],
                 CarriedOutBy = [new Person().WithLabel("Artist")]
             };

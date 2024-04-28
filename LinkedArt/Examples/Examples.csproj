@@ -12,7 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="cached\" />
     <Folder Include="output\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LateApexEarlySpeed.Json.Schema" Version="1.1.3" />
+    <PackageReference Include="LateApexEarlySpeed.Xunit.Assertion.Json" Version="1.0.2" />
   </ItemGroup>
 
 </Project>

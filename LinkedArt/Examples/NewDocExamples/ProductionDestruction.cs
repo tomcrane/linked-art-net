@@ -15,7 +15,10 @@ namespace Examples.NewDocExamples
             KellerDana_1_Influenced();
             OKeeffe_Gok_1();
             OKeeffe_Yuag_1();
-
+            Canterbury_1();
+            Canterbury_Plate_1();
+            Coppa_1_Unknown();
+            Washday_1_Influenced();
 
         }
 
@@ -29,7 +32,7 @@ namespace Examples.NewDocExamples
 
             nightWatch.ProducedBy = new Activity(Types.Production)
                 {
-                    TimeSpan = [LinkedArtTimeSpan.FromYear(1642)],
+                    TimeSpan = LinkedArtTimeSpan.FromYear(1642, false),
                     TookPlaceAt = [
                         new Place()
                         .WithId($"{Documentation.IdRoot}/place/amsterdam")
@@ -51,8 +54,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/bust/1")
                 .WithLabel("Bust of a Man")
-                .WithClassifiedAs(Getty.Sculpture);
-            bust.ClassifiedAs![0].WithClassifiedAs(Getty.TypeOfWork);
+                .WithClassifiedAs(Getty.Sculpture, Getty.TypeOfWork);
 
             bust.ProducedBy = new Activity(Types.Production)
                 {
@@ -73,8 +75,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/run/1")
                 .WithLabel("RUN")
-                .WithClassifiedAs(Getty.Painting);
-            run.ClassifiedAs![0].WithClassifiedAs(Getty.TypeOfWork);
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             run.ProducedBy = new Activity(Types.Production)
             {
@@ -110,8 +111,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/kellerdana/1")
                 .WithLabel("Copy of Huntington Portrait")
-                .WithClassifiedAs(Getty.Painting); 
-            dana.ClassifiedAs![0].WithClassifiedAs(Getty.TypeOfWork);
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             dana.ProducedBy =
                 new Activity(Types.Production)
@@ -138,8 +138,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/okeeffe-gok/1")
                 .WithLabel("GOK 1918, GOKM")
-                .WithClassifiedAs(Getty.Photograph);
-            gok.ClassifiedAs![0].WithClassifiedAs(Getty.TypeOfWork);
+                .WithClassifiedAs(Getty.Photograph, Getty.TypeOfWork);
 
             gok.IdentifiedBy = [
                 new LinkedArtObject(Types.Identifier)
@@ -169,8 +168,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/okeeffe-yuag/1")
                 .WithLabel("GOK 1918, YUAG")
-                .WithClassifiedAs(Getty.Photograph);
-            gok.ClassifiedAs![0].WithClassifiedAs(Getty.TypeOfWork);
+                .WithClassifiedAs(Getty.Photograph, Getty.TypeOfWork);
 
             gok.IdentifiedBy = [
                 new LinkedArtObject(Types.Identifier)
@@ -192,6 +190,90 @@ namespace Examples.NewDocExamples
             ];
 
             Documentation.Save(gok);
+        }
+
+
+        private static void Canterbury_1()
+        {
+            var ccp = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/ccp/1")
+                .WithLabel("Chaucer's Canterbury Pilgrims")
+                .WithClassifiedAs(Getty.AatType("Print", "300041273"), Getty.TypeOfWork);
+
+            ccp.ProducedBy = new Activity(Types.Production).WithLabel("Printing from Plate");
+            ccp.ProducedBy.UsedSpecificObject = [
+                new HumanMadeObject()
+                    .WithId($"{Documentation.IdRoot}/object/ccp-plate")
+                    .WithLabel("Plate for CCP")
+            ];
+
+            Documentation.Save(ccp);
+        }
+
+
+        private static void Canterbury_Plate_1()
+        {
+            var plate = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/ccp-plate/1")
+                .WithLabel("Plate for CCP")
+                .WithMadeOf("copper", "300011020");
+
+            Documentation.Save(plate);
+        }
+
+
+        private static void Coppa_1_Unknown()
+        {
+            var coppa = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/coppa/1")
+                .WithLabel("Coppa Amatoria");
+
+            coppa.IdentifiedBy = [
+                new LinkedArtObject(Types.Name)
+                    .WithContent("Coppa Amatoria")
+                    .AsPrimaryName()
+            ];
+
+            coppa.ProducedBy = new Activity(Types.Production)
+            {
+                CarriedOutBy = [
+                    new LinkedArtObject(Types.Group)
+                        .WithId($"{Documentation.IdRoot}/group/unknown_italian")
+                        .WithLabel("Unidentified Italian")
+                ]
+            };
+
+            Documentation.Save(coppa);
+        }
+
+
+        private static void Washday_1_Influenced()
+        {
+            var washday = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/washday/1")
+                .WithLabel("Wash Day")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+
+            washday.IdentifiedBy = [
+                new LinkedArtObject(Types.Name)
+                    .WithContent("Wash Day")
+                    .AsPrimaryName()
+            ];
+
+            washday.ProducedBy = new Activity(Types.Production)
+            {
+                InfluencedBy = [
+                    new Person()
+                        .WithId($"{Documentation.IdRoot}/person/whomer")
+                        .WithLabel("Winslow Homer")
+                ]
+            };
+
+            Documentation.Save(washday);
         }
     }
 }

@@ -5,13 +5,6 @@
   "_label": "Night Watch by Rembrandt",
   "produced_by": {
     "type": "Production",
-    "carried_out_by": [
-      {
-        "id": "https://linked.art/example/person/rembrandt",
-        "type": "Person",
-        "_label": "Rembrandt"
-      }
-    ],
     "timespan": {
       "type": "TimeSpan",
       "_label": "1642",
@@ -23,6 +16,13 @@
         "id": "https://linked.art/example/place/amsterdam",
         "type": "Place",
         "_label": "Amsterdam"
+      }
+    ],
+    "carried_out_by": [
+      {
+        "id": "https://linked.art/example/person/rembrandt",
+        "type": "Person",
+        "_label": "Rembrandt"
       }
     ]
   }

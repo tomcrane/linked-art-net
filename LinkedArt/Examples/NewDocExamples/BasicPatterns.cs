@@ -158,11 +158,12 @@ namespace Examples.NewDocExamples
                 .WithLabel("Night Watch by Rembrandt");
 
             var materials = new LinkedArtObject(Types.LinguisticObject)
-                .WithClassifiedAs(Getty.AatType("Material Statement", "300435429"))
+                .WithClassifiedAs(
+                    Getty.AatType("Material Statement", "300435429"),
+                    Getty.AatType("Brief Text", "300418049"))
                 .WithContent("Oil on Canvas")
                 .WithLanguage("300388277", "English");
             
-            materials.ClassifiedAs![0].WithClassifiedAs(Getty.AatType("Brief Text", "300418049"));
             nightWatch.ReferredToBy = [materials];
 
             Documentation.Save(nightWatch);
@@ -180,9 +181,8 @@ namespace Examples.NewDocExamples
             spring.ProducedBy =
                 new Activity(Types.Production)
                 {
-                    TimeSpan = [  // QUESTION - is TimeSpan an array? LA site example is not.
-                        LinkedArtTimeSpan.FromYear(1881)
-                    ],
+                    // https://linked.art/example/object/spring/4.json has no Z timespan
+                    TimeSpan = LinkedArtTimeSpan.FromYear(1881, false),
                     TookPlaceAt = [
                         new Place()
                             .WithId($"{Documentation.IdRoot}/place/france")
@@ -216,7 +216,7 @@ namespace Examples.NewDocExamples
                     .WithContent("40 days in August and September, 1848")
             ];
 
-            stowe.TimeSpan = [timespan];
+            stowe.TimeSpan = timespan;
 
             Documentation.Save(stowe);
         }
@@ -227,15 +227,17 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/support")
                 .WithLabel("Support of Spring")
-                .WithClassifiedAs(Getty.AatType("Support", "300014844"));
-            spring.ClassifiedAs![0].WithClassifiedAs(Getty.PartType);
+                .WithClassifiedAs(
+                    Getty.AatType("Support", "300014844"),
+                    Getty.PartType);
 
 
             var materials = new LinkedArtObject(Types.LinguisticObject)
-                .WithClassifiedAs(Getty.AatType("Material Statement", "300435429"))
+                .WithClassifiedAs(
+                    Getty.AatType("Material Statement", "300435429"),
+                    Getty.AatType("Brief Text", "300418049"))
                 .WithContent("Canvas");
 
-            materials.ClassifiedAs![0].WithClassifiedAs(Getty.AatType("Brief Text", "300418049"));
             spring.ReferredToBy = [materials];
 
             spring.PartOf = [
@@ -274,7 +276,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt's J'accuse");
 
             jaccuse.CreatedBy = new Activity(Types.Creation);
-            jaccuse.CreatedBy.TimeSpan = [LinkedArtTimeSpan.FromYear(2008)];
+            jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008, false);
 
             var directorActivity = new Activity(Types.Creation)
                 .WithClassifiedAs(Getty.AatType("Director", "300025654"));
@@ -291,7 +293,11 @@ namespace Examples.NewDocExamples
                 producerActivity
             ];
 
-            Documentation.Save(jaccuse);
+            // https://linked.art/example/text/rembrandtjaccuse/1.json
+            // has https://vocab.getty.edu/aat/300025654
+            // note    ^  (https not http)
+            // Therefore skip validation_____
+            Documentation.Save(jaccuse, false);
         }
     }
 }

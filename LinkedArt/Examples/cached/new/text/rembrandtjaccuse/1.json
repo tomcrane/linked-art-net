@@ -2,7 +2,7 @@
   "@context": "https://linked.art/ns/v1/linked-art.json",
   "id": "https://linked.art/example/text/rembrandtjaccuse/1",
   "type": "LinguisticObject",
-  "_label": "Rembrandt\u0027s J\u0027accuse",
+  "_label": "Rembrandt's J'accuse",
   "created_by": {
     "type": "Creation",
     "timespan": {

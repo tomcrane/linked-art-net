@@ -276,7 +276,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt's J'accuse");
 
             jaccuse.CreatedBy = new Activity(Types.Creation);
-            jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008, false);
+            jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008);
 
             var directorActivity = new Activity(Types.Creation)
                 .WithClassifiedAs(Getty.AatType("Director", "300025654"));
@@ -293,11 +293,7 @@ namespace Examples.NewDocExamples
                 producerActivity
             ];
 
-            // https://linked.art/example/text/rembrandtjaccuse/1.json
-            // has https://vocab.getty.edu/aat/300025654
-            // note    ^  (https not http)
-            // Therefore skip validation_____
-            Documentation.Save(jaccuse, false);
+            Documentation.Save(jaccuse);
         }
     }
 }

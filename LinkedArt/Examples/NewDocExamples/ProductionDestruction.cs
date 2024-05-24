@@ -365,10 +365,6 @@ namespace Examples.NewDocExamples
                     .WithLabel("Crash of Swiss Air 111")
             ];
             lepeintre2.DestroyedBy = destruction;
-
-            // https://linked.art/example/object/lepeintre/2.json
-            // This has end_of_the_end "1998-09-02T022:40:00Z"
-            //                                     ^  (typo?)
             Documentation.Save(lepeintre2);
         }
     }

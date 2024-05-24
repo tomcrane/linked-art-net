@@ -22,6 +22,12 @@ public class Work : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<LinkedArtObject>? Represents { get; set; }
 
+
+    [JsonPropertyName("represents_instance_of_type")]
+    [JsonPropertyOrder(102)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? RepresentsInstanceOfType { get; set; }
+
     [JsonPropertyName("about")]
     [JsonPropertyOrder(102)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

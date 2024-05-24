@@ -8,8 +8,8 @@
     "timespan": {
       "type": "TimeSpan",
       "_label": "2008",
-      "begin_of_the_begin": "2008-01-01T00:00:00",
-      "end_of_the_end": "2008-12-31T23:59:59"
+      "begin_of_the_begin": "2008-01-01T00:00:00Z",
+      "end_of_the_end": "2008-12-31T23:59:59Z"
     },
     "part": [
       {

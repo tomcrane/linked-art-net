@@ -35,7 +35,7 @@ namespace Examples.NewDocExamples
 
             nightWatch.ProducedBy = new Activity(Types.Production)
                 {
-                    TimeSpan = LinkedArtTimeSpan.FromYear(1642, false),
+                    TimeSpan = LinkedArtTimeSpan.FromYear(1642),
                     TookPlaceAt = [
                         new Place()
                         .WithId($"{Documentation.IdRoot}/place/amsterdam")
@@ -202,7 +202,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/ccp/1")
                 .WithLabel("Chaucer's Canterbury Pilgrims")
-                .WithClassifiedAs(Getty.AatType("Print", "300041273"), Getty.TypeOfWork);
+                .WithClassifiedAs(Getty.Print, Getty.TypeOfWork);
 
             ccp.ProducedBy = new Activity(Types.Production).WithLabel("Printing from Plate");
             ccp.ProducedBy.UsedSpecificObject = [
@@ -365,11 +365,7 @@ namespace Examples.NewDocExamples
                     .WithLabel("Crash of Swiss Air 111")
             ];
             lepeintre2.DestroyedBy = destruction;
-
-            // https://linked.art/example/object/lepeintre/2.json
-            // This has end_of_the_end "1998-09-02T022:40:00Z"
-            //                                     ^  (typo?)
-            Documentation.Save(lepeintre2, false);
+            Documentation.Save(lepeintre2);
         }
     }
 }

@@ -182,7 +182,7 @@ namespace Examples.NewDocExamples
                 new Activity(Types.Production)
                 {
                     // https://linked.art/example/object/spring/4.json has no Z timespan
-                    TimeSpan = LinkedArtTimeSpan.FromYear(1881, false),
+                    TimeSpan = LinkedArtTimeSpan.FromYear(1881),
                     TookPlaceAt = [
                         new Place()
                             .WithId($"{Documentation.IdRoot}/place/france")

@@ -1,4 +1,6 @@
 ﻿using LinkedArtNet.Vocabulary;
+using System.Drawing;
+using System.Reflection.Emit;
 
 namespace LinkedArtNet;
 
@@ -61,5 +63,51 @@ public static class DimensionExtensions
         days.Unit = new MeasurementUnit().WithId($"{Getty.Aat}300379242").WithLabel("days");
         ts.Duration = days;
         return ts;
+    }
+
+    public static HumanMadeObject WithRgbColor(this HumanMadeObject hmObj, string rgbColor, 
+        LinkedArtObject aatColor, string? label = null)
+    {
+        var rgbInt = Convert.ToInt32(rgbColor.Replace("#", ""), 16);
+        hmObj.WithRgbColor(rgbInt, aatColor, label);
+        hmObj.Dimension.Last().IdentifiedBy = [ new LinkedArtObject(Types.Identifier).WithContent(rgbColor) ];
+        return hmObj;
+    }
+
+
+    public static HumanMadeObject WithRgbColor(this HumanMadeObject hmObj, int rgbColor, 
+        LinkedArtObject aatColor, string? label = null)
+    {
+        label ??= aatColor.Label;
+        var color = new Dimension().WithLabel(label!);
+        color.ClassifiedAs = [
+            Getty.AatType("Color", "300080438"),
+            aatColor
+        ];
+        color.Value = rgbColor;
+        color.Unit = new MeasurementUnit().WithId($"{Getty.Aat}300266239").WithLabel("rgb");
+
+        hmObj.Dimension ??= [];
+        hmObj.Dimension.Add(color);
+
+        return hmObj;
+    }
+
+    public static HumanMadeObject WithShape(this HumanMadeObject hmObj, LinkedArtObject aatShape)
+    {
+        return hmObj.WithClassifiedAs(aatShape, Getty.Shape);
+    }
+
+    public static HumanMadeObject WithCount(this HumanMadeObject hmObj, int value)
+    {
+        var count = new Dimension()
+            .WithClassifiedAs(Getty.AatType("Count", "300404433"));
+        count.Value = value;
+        count.Unit = new MeasurementUnit().WithId($"{Getty.Aat}300241583").WithLabel("Components");
+
+        hmObj.Dimension ??= [];
+        hmObj.Dimension.Add(count);
+
+        return hmObj;
     }
 }

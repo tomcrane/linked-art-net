@@ -27,6 +27,11 @@ public class HumanMadeObject : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<Work>? Shows { get; set; }
 
+    [JsonPropertyName("carries")]
+    [JsonPropertyOrder(30)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? Carries{ get; set; }
+
 
     [JsonPropertyName("made_of")]
     [JsonPropertyOrder(31)]

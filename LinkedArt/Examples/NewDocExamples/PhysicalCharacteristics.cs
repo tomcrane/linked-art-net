@@ -12,6 +12,13 @@ namespace Examples.NewDocExamples
             Nightwatch_8_Display_Titles();
             Nightwatch_9_Measurement_Assigned();
             Spring_29_Measurement_of_Features();
+            Nightwatch_10_Color();
+            Nightwatch_11_Shape();
+            Nightwatch_12_Materials();
+            Nightwatch_13_Materials_Statement();
+            Nightwatch_Support();
+            Spring_Back();
+            Miniature_Chess_Parts();
         }
 
 
@@ -108,6 +115,127 @@ namespace Examples.NewDocExamples
 
             Documentation.Save(spring);
         }
+
+
+        private static void Nightwatch_10_Color()
+        {
+            var nightWatch = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/nightwatch/10")
+                .WithLabel("Night Watch by Rembrandt")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithRgbColor("#B35A1F", Getty.AatType("Brown", "300127490"), "brown");
+
+            Documentation.Save(nightWatch);
+        }
+
+
+        private static void Nightwatch_11_Shape()
+        {
+            var nightWatch = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/nightwatch/11")
+                .WithLabel("Night Watch by Rembrandt")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithShape(Getty.AatType("Oblong", "300311843"));
+
+            Documentation.Save(nightWatch);
+        }
+
+
+        private static void Nightwatch_12_Materials()
+        {
+            var nightWatch = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/nightwatch/12")
+                .WithLabel("Night Watch by Rembrandt")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithMadeOf("oil", "300015050")
+                .WithMadeOf("canvas", "300014078");
+
+            Documentation.Save(nightWatch);
+        }
+
+
+
+        private static void Nightwatch_13_Materials_Statement()
+        {
+            var nightWatch = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/nightwatch/13")
+                .WithLabel("Night Watch by Rembrandt")
+                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+
+            nightWatch.ReferredToBy = [
+                new LinkedArtObject(Types.LinguisticObject)
+                    .WithClassifiedAs(Getty.MaterialStatement, Getty.BriefText)
+                    .WithContent("Oil on Canvas")
+            ];
+
+            Documentation.Save(nightWatch);
+        }
+
+
+        private static void Nightwatch_Support()
+        {
+            var support = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/nightwatch/support")
+                .WithLabel("Support of Night Watch")
+                .WithClassifiedAs(Getty.Support, Getty.PartType)
+                .WithMadeOf("canvas", "300014078");
+
+            support.PartOf = [
+                new HumanMadeObject()
+                    .WithId($"{Documentation.IdRoot}/object/nightwatch")
+                    .WithLabel("Night Watch by Rembrandt")
+            ];
+
+            Documentation.Save(support);
+        }
+
+
+        private static void Spring_Back()
+        {
+            var springBack = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/spring/back")
+                .WithLabel("Back of Spring by Manet")
+                .WithClassifiedAs(Getty.BackPart, Getty.PartType);
+
+            springBack.ReferredToBy = [
+                new LinkedArtObject(Types.LinguisticObject)
+                    .WithClassifiedAs(Getty.Inscription, Getty.BriefText)
+                    .WithContent("11505F")
+            ];
+
+            springBack.PartOf = [
+                new HumanMadeObject()
+                    .WithId($"{Documentation.IdRoot}/object/spring")
+                    .WithLabel("Jeanne (Spring) by Manet")
+            ];
+
+            Documentation.Save(springBack);
+        }
+
+
+        private static void Miniature_Chess_Parts()
+        {
+            var chess = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/chess/1")
+                .WithLabel("Miniature Chess")
+                .WithCount(36);
+
+            chess.IdentifiedBy = [
+                new LinkedArtObject(Types.Name)
+                    .WithContent("Vessel with miniature chess set")
+                    .AsPrimaryName()
+            ];            
+
+            Documentation.Save(chess);
+        }
+
 
     }
 }

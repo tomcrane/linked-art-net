@@ -7,10 +7,6 @@ public class HumanMadeObject : LinkedArtObject
     public HumanMadeObject() { Type = nameof(HumanMadeObject); }
 
 
-    [JsonPropertyName("referred_to_by")]
-    [JsonPropertyOrder(22)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<LinkedArtObject>? ReferredToBy { get; set; }
 
     [JsonPropertyName("produced_by")]
     [JsonPropertyOrder(23)]

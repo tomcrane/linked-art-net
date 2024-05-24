@@ -1,10 +1,5 @@
 ﻿using LinkedArtNet.Vocabulary;
 using LinkedArtNet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Examples.NewDocExamples
 {
@@ -22,6 +17,7 @@ namespace Examples.NewDocExamples
             Exhibition_Catalog_1();
             Harpers_Poster();
             Harpers_Visual_Content();
+            Harpers_Textual_Content();
         }
 
 
@@ -186,9 +182,32 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/visual/harpers/1")
                 .WithLabel("Visual Content of Harpers");
 
-            //harpersVis.
+            harpersVis.ReferredToBy = [
+                new LinkedArtObject(Types.LinguisticObject)
+                    .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                    .WithContent("The text and image are primarily red and black")
+            ];
 
-            //Documentation.Save(harpersVis);
+            harpersVis.Represents = [Getty.AatType("Woman", "300025943")];
+
+            Documentation.Save(harpersVis);
+        }
+
+        private static void Harpers_Textual_Content()
+        {
+            var harpersText = new LinkedArtObject(Types.LinguisticObject)
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/text/harpers/1")
+                .WithLabel("Textual component of Harpers")
+                .WithContent("Harper's. January contains Roden's corner. A Novel by Henry Seton Merriman [...]");
+
+            harpersText.PartOf = [
+                new Work(Types.VisualItem)
+                    .WithId($"{Documentation.IdRoot}/visual/harpers")
+                    .WithLabel("Visual Content of Harpers")
+            ];
+
+            Documentation.Save(harpersText);
         }
 
     }

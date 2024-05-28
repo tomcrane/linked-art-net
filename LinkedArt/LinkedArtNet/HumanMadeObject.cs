@@ -13,10 +13,6 @@ public class HumanMadeObject : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Activity? ProducedBy { get; set; }
 
-    [JsonPropertyName("dimension")]
-    [JsonPropertyOrder(24)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Dimension>? Dimension { get; set; }
 
     [JsonPropertyName("shows")]
     [JsonPropertyOrder(30)]
@@ -46,5 +42,37 @@ public class HumanMadeObject : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual new List<HumanMadeObject>? PartOf { get; set; }
 
+
+    [JsonPropertyName("current_owner")]
+    [JsonPropertyOrder(210)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<LinkedArtObject>? CurrentOwner { get; set; }
+
+    [JsonPropertyName("current_permanent_custodian")]
+    [JsonPropertyOrder(211)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual LinkedArtObject? CurrentPermanentCustodian { get; set; }
+
+
+    [JsonPropertyName("current_custodian")]
+    [JsonPropertyOrder(212)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<LinkedArtObject>? CurrentCustodian { get; set; }
+
+    [JsonPropertyName("current_permanent_location")]
+    [JsonPropertyOrder(221)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual Place? CurrentPermanentLocation { get; set; }
+
+    [JsonPropertyName("current_location")]
+    [JsonPropertyOrder(222)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual Place? CurrentLocation { get; set; }
+
+
+    [JsonPropertyName("changed_ownership_through")]
+    [JsonPropertyOrder(251)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<Activity>? ChangedOwnershipThrough { get; set; }
 
 }

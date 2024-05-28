@@ -16,6 +16,11 @@ namespace Examples.NewDocExamples
             ProductionDestruction.Create();
             PhysicalCharacteristics.Create();
             Aboutness.Create();
+            Ownership.Create();
+            Rights.Create();
+            Digital.Create();
+            Places.Create();
+            Actors.Create();
 
         }
 

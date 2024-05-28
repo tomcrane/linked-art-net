@@ -25,4 +25,13 @@ public class MeasurementUnit : LinkedArtObject
         Label = "millimeters"
     };
 
+
+    public static MeasurementUnit Kilobytes => _kilobytes;
+
+    private static MeasurementUnit _kilobytes = new MeasurementUnit
+    {
+        Id = $"{Getty.Aat}300265870",
+        Label = "kilobytes"
+    };
+
 }

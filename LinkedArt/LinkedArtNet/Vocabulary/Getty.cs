@@ -12,6 +12,9 @@ public class Getty
     }
 
     public static LinkedArtObject PrimaryName => AatType("Primary Name", "300404670");
+    public static LinkedArtObject GivenName => AatType("Given Name", "300404651");
+    public static LinkedArtObject MiddleName => AatType("Middle Name", "300404654");
+    public static LinkedArtObject FamilyName => AatType("Family Name", "300404652");
 
     // These are utility methods; this class could get very long, but you might want to constrain to a reduced set
 
@@ -36,9 +39,22 @@ public class Getty
     public static LinkedArtObject DisplayTitle => AatType("Display Title", "300404669");
     public static LinkedArtObject Description => AatType("Description", "300435416");
     public static LinkedArtObject Inscription => AatType("Inscription", "300435414");
+    public static LinkedArtObject CreditStatement => AatType("Credit Statement", "300026687");
+    public static LinkedArtObject CopyrightLicenseStatement => AatType("Copyright/License Statement", "300435434");
+
+    public static LinkedArtObject WebPage => AatType("Web Page", "300264578");
+    public static LinkedArtObject DigitalImage => AatType("Digital Image", "300215302");
+    public static LinkedArtObject EmailAddress => AatType("Email Address", "300435686");
 
 
     public static LinkedArtObject Style => AatType("Style", "300015646");
+
+
+    public static LinkedArtObject Building => AatType("Building", "300004792");
+    public static LinkedArtObject TelephoneNumber => AatType("Telephone Number", "300435688");
+    public static LinkedArtObject StreetAddress => AatType("Street Address", "300386983");
+    public static LinkedArtObject City => AatType("City", "300008389");
+    public static LinkedArtObject Nation => AatType("Nation", "300128207");
 
     public static LinkedArtObject Language(string aatCode, string label)
     {

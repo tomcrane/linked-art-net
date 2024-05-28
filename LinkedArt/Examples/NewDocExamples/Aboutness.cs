@@ -5,6 +5,8 @@ namespace Examples.NewDocExamples
 {
     public class Aboutness
     {
+        // https://linked.art/model/object/aboutness/
+
         public static void Create()
         {
             Spring_5_Description();

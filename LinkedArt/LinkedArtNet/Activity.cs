@@ -41,12 +41,17 @@ public class Activity : LinkedArtObject
 
 
     [JsonPropertyName("transferred_title_of")]
-    [JsonPropertyOrder(109)]
+    [JsonPropertyOrder(108)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<HumanMadeObject>? TransferredTitleOf { get; set; }
 
-    [JsonPropertyName("transferred_title_to")]
+    [JsonPropertyName("transferred_title_from")]
     [JsonPropertyOrder(109)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? TransferredTitleFrom { get; set; }
+
+    [JsonPropertyName("transferred_title_to")]
+    [JsonPropertyOrder(110)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<LinkedArtObject>? TransferredTitleTo { get; set; }
 

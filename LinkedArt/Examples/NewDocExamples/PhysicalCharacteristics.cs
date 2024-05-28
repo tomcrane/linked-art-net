@@ -5,6 +5,8 @@ namespace Examples.NewDocExamples
 {
     public class PhysicalCharacteristics
     {
+        // https://linked.art/model/object/physical/
+
         public static void Create()
         {
             Nightwatch_6_wh();
@@ -80,7 +82,7 @@ namespace Examples.NewDocExamples
             var attrAssignment = new Activity(Types.AttributeAssignment)
                 .WithLabel("Measurement of the Night Watch");
             attrAssignment.CarriedOutBy = [
-                new LinkedArtObject(Types.Group)
+                new Group()
                     .WithId($"{Documentation.IdRoot}/group/nightwatchteam")
                     .WithLabel("Operation Night Watch Team")
             ];
@@ -228,9 +230,7 @@ namespace Examples.NewDocExamples
                 .WithCount(36);
 
             chess.IdentifiedBy = [
-                new LinkedArtObject(Types.Name)
-                    .WithContent("Vessel with miniature chess set")
-                    .AsPrimaryName()
+                new Name("Vessel with miniature chess set").AsPrimaryName()
             ];            
 
             Documentation.Save(chess);

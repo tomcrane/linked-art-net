@@ -32,4 +32,10 @@ public class Work : LinkedArtObject
     [JsonPropertyOrder(102)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<LinkedArtObject>? About { get; set; }
+
+
+    [JsonPropertyName("digitally_shown_by")]
+    [JsonPropertyOrder(202)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<DigitalObject>? DigitallyShownBy { get; set; }
 }

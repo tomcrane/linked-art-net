@@ -98,12 +98,10 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/1")
                 .WithLabel("Night Watch by Rembrandt");
 
-            var englishName = new LinkedArtObject(Types.Name)
-                .WithContent("The Night Watch")
+            var englishName = new Name("The Night Watch")
                 .AsPrimaryName()
                 .WithLanguage("300388277", "English");
-            var dutchName = new LinkedArtObject(Types.Name)
-                .WithContent("De Nachtwacht")
+            var dutchName = new Name("De Nachtwacht")
                 .AsPrimaryName()
                 .WithLanguage("300388256", "Dutch");
 
@@ -123,8 +121,7 @@ namespace Examples.NewDocExamples
             var accessionNumber =  new LinkedArtObject(Types.Identifier)
                 .WithContent("SK-C-5")
                 .WithClassifiedAs(Getty.AatType("Accession Number", "300312355"));
-            var name = new LinkedArtObject(Types.Name)
-                .WithContent("The Night Watch")
+            var name = new Name("The Night Watch")
                 .AsPrimaryName();
 
             nightWatch.IdentifiedBy = [accessionNumber, name];
@@ -212,8 +209,7 @@ namespace Examples.NewDocExamples
             timespan.BeginOfTheEnd = new LinkedArtDate(1848, 9, 9);
             timespan.EndOfTheEnd = new LinkedArtDate(1848, 9, 30).LastSecondOfDay();
             timespan.IdentifiedBy = [
-                new LinkedArtObject(Types.Name)
-                    .WithContent("40 days in August and September, 1848")
+                new Name("40 days in August and September, 1848")
             ];
 
             stowe.TimeSpan = timespan;
@@ -259,7 +255,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             rembrandt.MemberOf = [
-                new LinkedArtObject(Types.Group)
+                new Group()
                     .WithId($"{Documentation.IdRoot}/group/stluke")
                     .WithLabel("Guild of St Luke")
             ];

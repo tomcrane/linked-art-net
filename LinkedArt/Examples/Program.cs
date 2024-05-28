@@ -72,9 +72,8 @@ HumanMadeObject Amphora()
         .WithId("https://example.org/11733")
         .WithClassifiedAs("300148696", "Amphora");
 
-    var name = new LinkedArtObject(Types.Name)
+    var name = new Name("Attic Black Figure Neck Amphora")
         .WithId($"{amphora.Id}/name1")
-        .WithContent("Attic Black Figure Neck Amphora")
         .WithLanguage("300388277", "English")
         .AsPrimaryName();
     var id = new LinkedArtObject(Types.Identifier)
@@ -99,9 +98,8 @@ HumanMadeObject AmphoraWithDimensions()
         .WithId("https://example.org/11733")
         .WithClassifiedAs("300148696", "Amphora");
 
-    var name = new LinkedArtObject(Types.Name)
+    var name = new Name("Attic Black Figure Neck Amphora")
         .WithId($"{amphora.Id}/name1")
-        .WithContent("Attic Black Figure Neck Amphora")
         .AsPrimaryName();
     var id = new LinkedArtObject(Types.Identifier)
         .WithId($"{amphora.Id}/id")
@@ -190,14 +188,12 @@ HumanMadeObject PortraitOfKatherineStieglitz()
         .WithId("https://www.rijksmuseum.nl/en/collection/RP-F-F17653") // actually the web page but use for now
         .WithLabel("Portret van Katherine Stieglitz");
 
-    var nameDutch = new LinkedArtObject(Types.Name)
+    var nameDutch = new Name("Portret van Katherine Stieglitz")
         .WithId($"{photograph.Id}/name-nl")
-        .WithContent("Portret van Katherine Stieglitz")
         .WithLanguage("300388277", "Dutch")
         .AsPrimaryName();
-    var nameEnglish = new LinkedArtObject(Types.Name)
+    var nameEnglish = new Name("Portrait of Katherine Stieglitz")
         .WithId($"{photograph.Id}/name-en")
-        .WithContent("Portrait of Katherine Stieglitz")
         .WithLanguage("300388277", "English")
         .AsPrimaryName();
 
@@ -210,7 +206,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
         .WithId($"{photograph.Id}/id")
         .WithContent("RP-F-F17653")
         .WithClassifiedAs("aat:300312355", "Accession Number");
-    var rijksmuseum = new LinkedArtObject(Types.Group) // tbc
+    var rijksmuseum = new Group()
         .WithId("https://www.rijksmuseum.nl/")
         .WithLabel("Rijksmuseum");
     var assignment = new Activity(Types.AttributeAssignment) // tbc
@@ -252,9 +248,8 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     photograph.WithWidthDimension($"{photograph.Id}/w1", 210, MeasurementUnit.Millimetres);
 
     // digression into order, using alternate name:
-    var nameAlternate = new LinkedArtObject(Types.Name)
+    var nameAlternate = new Name("Portrait of daughter of Stieglitz")
         .WithId($"{photograph.Id}/name-alt")
-        .WithContent("Portrait of daughter of Stieglitz")
         .WithLanguage("300388277", "English")
         .WithClassifiedAs("300404671", "Alternate Title");
     photograph.IdentifiedBy.Add(nameAlternate);

@@ -5,10 +5,10 @@ namespace Examples.NewDocExamples
 {
     public class ProductionDestruction
     {
+        // https://linked.art/model/object/production/
+
         public static void Create()
         {
-            // https://linked.art/model/object/production/
-
             NightWatch_5_Production();
             Bust_1_Technique();
             RUN_1_Multiple_Artists();
@@ -63,7 +63,7 @@ namespace Examples.NewDocExamples
                 {
                     Technique = [Getty.AatType("Sculpting", "300264383")],
                     CarriedOutBy = [
-                        new LinkedArtObject(Types.Group)
+                        new Group()
                             .WithId($"{Documentation.IdRoot}/group/harwoodstudio")
                             .WithLabel("Studio of Francis Harwood")]
                 };
@@ -235,15 +235,13 @@ namespace Examples.NewDocExamples
                 .WithLabel("Coppa Amatoria");
 
             coppa.IdentifiedBy = [
-                new LinkedArtObject(Types.Name)
-                    .WithContent("Coppa Amatoria")
-                    .AsPrimaryName()
+                new Name("Coppa Amatoria").AsPrimaryName()
             ];
 
             coppa.ProducedBy = new Activity(Types.Production)
             {
                 CarriedOutBy = [
-                    new LinkedArtObject(Types.Group)
+                    new Group()
                         .WithId($"{Documentation.IdRoot}/group/unknown_italian")
                         .WithLabel("Unidentified Italian")
                 ]
@@ -262,9 +260,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             washday.IdentifiedBy = [
-                new LinkedArtObject(Types.Name)
-                    .WithContent("Wash Day")
-                    .AsPrimaryName()
+                new Name("Wash Day").AsPrimaryName()
             ];
 
             washday.ProducedBy = new Activity(Types.Production)
@@ -281,7 +277,7 @@ namespace Examples.NewDocExamples
 
         private static void HarwoodStudio_1_Group()
         {
-            var grp = new LinkedArtObject(Types.Group)
+            var grp = new Group()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/group/harwoodstudio/1")
                 .WithLabel("Studio of Francis Harwood")

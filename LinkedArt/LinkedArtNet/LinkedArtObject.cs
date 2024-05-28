@@ -43,6 +43,12 @@ public class LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual string? Content { get; set; }
 
+
+    [JsonPropertyName("dimension")]
+    [JsonPropertyOrder(24)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Dimension>? Dimension { get; set; }
+
     [JsonPropertyName("language")]
     [JsonPropertyOrder(80)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -107,12 +113,6 @@ public class LinkedArtObject
     public Activity? CreatedBy { get; set; }
 
 
-    [JsonPropertyName("formed_by")]
-    [JsonPropertyOrder(220)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Activity? FormedBy { get; set; }
-
-
     [JsonPropertyName("destroyed_by")]
     [JsonPropertyOrder(225)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -123,4 +123,34 @@ public class LinkedArtObject
     [JsonPropertyOrder(230)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<Activity>? RemovedBy { get; set; }
+
+
+    [JsonPropertyName("subject_to")]
+    [JsonPropertyOrder(310)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Right>? SubjectTo { get; set; }
+
+
+
+    [JsonPropertyName("representation")]
+    [JsonPropertyOrder(510)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Work>? Representation { get; set; }
+
+    [JsonPropertyName("subject_of")]
+    [JsonPropertyOrder(610)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? SubjectOf { get; set; }
+
+
+    [JsonPropertyName("digitally_carried_by")]
+    [JsonPropertyOrder(710)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<DigitalObject>? DigitallyCarriedBy { get; set; }
+
+
+    [JsonPropertyName("digitally_available_via")]
+    [JsonPropertyOrder(720)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<DigitalService>? DigitallyAvailableVia { get; set; }
 }

@@ -6,6 +6,36 @@ namespace LinkedArtNet;
 
 public static class DimensionExtensions
 {
+    public static LinkedArtObject WithFileSize(this LinkedArtObject laObj, double value, MeasurementUnit unit, string? label = null)
+    {
+        return laObj.WithFileSize(null, value, unit, label);
+    }
+
+    public static LinkedArtObject WithFileSize(this LinkedArtObject laObj, string? id, double value, MeasurementUnit unit, string? label = null)
+    {
+        var fileSize = new Dimension().WithId(id).WithClassifiedAs(Getty.AatType("File Size", "300265863"));
+        fileSize.Value = value;
+        fileSize.Unit = unit;
+        laObj.Dimension ??= [];
+        laObj.Dimension.Add(fileSize);
+
+        // Example doesn't do this...
+        //if (!string.IsNullOrWhiteSpace(displayTitle))
+        //{
+        //    fileSize.IdentifiedBy = [
+        //        new Name(displayTitle).WithClassifiedAs(Getty.DisplayTitle)
+        //    ];
+        //}
+
+        // ...but does this instead:
+        if (!string.IsNullOrWhiteSpace(label))
+        {
+            fileSize.Label = label;
+        }
+        return laObj;
+
+    }
+
     public static HumanMadeObject WithHeightDimension(this HumanMadeObject hmObj,
         double value, MeasurementUnit unit, string? displayTitle = null)
     {
@@ -23,9 +53,7 @@ public static class DimensionExtensions
         if (!string.IsNullOrWhiteSpace(displayTitle))
         {
             height.IdentifiedBy = [
-                new LinkedArtObject(Types.Name)
-                    .WithContent(displayTitle)
-                    .WithClassifiedAs(Getty.DisplayTitle)
+                new Name(displayTitle).WithClassifiedAs(Getty.DisplayTitle)
             ];
         }
         return hmObj;
@@ -48,9 +76,7 @@ public static class DimensionExtensions
         if (!string.IsNullOrWhiteSpace(displayTitle))
         {
             width.IdentifiedBy = [
-                new LinkedArtObject(Types.Name)
-                    .WithContent(displayTitle)
-                    .WithClassifiedAs(Getty.DisplayTitle)
+                new Name(displayTitle).WithClassifiedAs(Getty.DisplayTitle)
             ];
         }
         return hmObj;

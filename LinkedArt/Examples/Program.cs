@@ -82,7 +82,7 @@ HumanMadeObject Amphora()
         .WithClassifiedAs("300312355", "Accession Number");
     amphora.IdentifiedBy = [name, id];
 
-    var desc = new LinkedArtObject(Types.LinguisticObject)
+    var desc = new LinguisticObject()
         .WithId($"{amphora.Id}/desc1")
         .WithContent("38.7 x 26.7 cm")
         .WithClassifiedAs("300435430", "Dimension Statement");
@@ -235,7 +235,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     photograph.WithMadeOf("Paper", "aat:Paper");
 
 
-    var desc = new LinkedArtObject(Types.LinguisticObject)
+    var desc = new LinguisticObject()
         .WithId($"{photograph.Id}/desc1")
         .WithLanguage("300388277", "English")
         .WithContent("h 302 mm x w 210 mm")

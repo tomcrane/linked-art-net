@@ -47,7 +47,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             nightWatch.ReferredToBy = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithClassifiedAs(Getty.DimensionStatement, Getty.BriefText)
                     .WithContent("height 379.5 cm × width 453.5 cm × weight 337 kg")
             ];
@@ -169,7 +169,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             nightWatch.ReferredToBy = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithClassifiedAs(Getty.MaterialStatement, Getty.BriefText)
                     .WithContent("Oil on Canvas")
             ];
@@ -206,7 +206,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.BackPart, Getty.PartType);
 
             springBack.ReferredToBy = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithClassifiedAs(Getty.Inscription, Getty.BriefText)
                     .WithContent("11505F")
             ];

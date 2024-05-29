@@ -131,6 +131,11 @@ public class LinkedArtObject
     public List<Right>? SubjectTo { get; set; }
 
 
+    [JsonPropertyName("about")]
+    [JsonPropertyOrder(505)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? About { get; set; }
+
 
     [JsonPropertyName("representation")]
     [JsonPropertyOrder(510)]
@@ -153,4 +158,16 @@ public class LinkedArtObject
     [JsonPropertyOrder(720)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<DigitalService>? DigitallyAvailableVia { get; set; }
+
+
+    [JsonPropertyName("attributed_by")]
+    [JsonPropertyOrder(810)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<Activity>? AttributedBy { get; set; }
+
+
+    [JsonPropertyName("modified_by")]
+    [JsonPropertyOrder(820)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<Activity>? ModifiedBy { get; set; }
 }

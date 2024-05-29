@@ -29,7 +29,7 @@ namespace Examples.NewDocExamples
             amsterdam.IdentifiedBy = [new Name("Amsterdam")];
 
             amsterdam.ReferredToBy = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithClassifiedAs(Getty.Description, Getty.BriefText)
                     .WithContent("Amsterdam is a city in the Netherlands")
             ];

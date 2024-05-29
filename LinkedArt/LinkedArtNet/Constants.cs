@@ -30,10 +30,12 @@ public static class Constants
         }
         return laObj;
     }
-    public static T WithClassifiedAs<T>(this T laObj, string typeId, string? typeLabel) where T : LinkedArtObject
+    public static T WithClassifiedAs<T>(this T laObj, 
+        string typeId, string? typeLabel, 
+        LinkedArtObject? furtherClassifiedAs = null) where T : LinkedArtObject
     {
-        laObj.ClassifiedAs ??= [];
-        laObj.ClassifiedAs.Add(new LinkedArtObject(Types.Type) { Id = typeId, Label = typeLabel });
+        var typeObj = new LinkedArtObject(Types.Type) { Id = typeId, Label = typeLabel };
+        laObj.WithClassifiedAs(typeObj, furtherClassifiedAs);
         return laObj;
     }
 

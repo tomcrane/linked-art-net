@@ -2,6 +2,7 @@
 
 namespace LinkedArtNet
 {
+    [JsonDerivedType(typeof(DigitalService))]
     public class DigitalObject : LinkedArtObject
     {
         public DigitalObject() { Type = nameof(DigitalObject); }

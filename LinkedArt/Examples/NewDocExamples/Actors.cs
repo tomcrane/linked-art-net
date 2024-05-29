@@ -6,7 +6,8 @@ using LinkedArtNet.Vocabulary;
 namespace Examples.NewDocExamples
 {
     public class Actors
-    {    
+    {
+        // https://linked.art/model/actor/
         public static void Create()
         {
             Rembrandt_Guild();
@@ -19,6 +20,12 @@ namespace Examples.NewDocExamples
             Rembrandt_Residence();
             Rembrandt_Life();
             Rembrandt_Museum_Formed();
+            Rembrandt_Carried_Out();
+            Rembrandt_Participated_In();
+            Rembrandt_Biography();
+            Rembrandt_Was_Dutch();
+            Wiley_Is_African_American();
+            Rembrandt_Was_Male();
         }
 
 
@@ -208,5 +215,106 @@ namespace Examples.NewDocExamples
 
             Documentation.Save(museum);
         }
+
+
+        private static void Rembrandt_Carried_Out()
+        {
+            var rembrandt = new Person()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/person/rembrandt/7")
+                .WithLabel("Rembrandt");
+
+            var activity = new Activity()
+                .WithClassifiedAs(Getty.AatType("Professional Activities", "300393177"))
+                .WithClassifiedAs(Getty.AatType("Painter", "300025136"));
+            activity.TimeSpan = new LinkedArtTimeSpan
+            {
+                BeginOfTheBegin = new LinkedArtDate(1631, 1, 1),
+                EndOfTheEnd = new LinkedArtDate(1669, 10, 4).LastSecondOfDay()
+            };
+            rembrandt.CarriedOut = [activity];
+
+            Documentation.Save(rembrandt);
+        }
+
+
+        private static void Rembrandt_Participated_In()
+        {
+            var rembrandt = new Person()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/person/rembrandt/14")
+                .WithLabel("Rembrandt");
+
+            var activity = new Activity()
+                .WithClassifiedAs(Getty.AatType("Burial", "300263485"));
+            activity.TimeSpan = new LinkedArtTimeSpan
+            {
+                BeginOfTheBegin = new LinkedArtDate(1669, 10, 4),
+                EndOfTheEnd = new LinkedArtDate(1669, 11, 1).LastSecondOfDay()
+            };
+            activity.TookPlaceAt = [
+                new Place()
+                    .WithId($"{Documentation.IdRoot}/place/westerkerk")
+                    .WithLabel("Place of Westerkerk")
+            ];
+            rembrandt.ParticipatedIn = [activity];
+
+            Documentation.Save(rembrandt);
+        }
+
+
+        private static void Rembrandt_Biography()
+        {
+            var rembrandt = new Person()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/person/rembrandt/8")
+                .WithLabel("Rembrandt");
+
+            rembrandt.ReferredToBy = [
+                new LinguisticObject()
+                    .WithClassifiedAs(Getty.BiographyStatement, Getty.BriefText)
+                    .WithContent("Rembrandt's work is characterized by the Baroque interest in dramatic scenes and strong contrasts of light on a dark stage")
+            ];
+
+            Documentation.Save(rembrandt);
+        }
+
+
+
+        private static void Rembrandt_Was_Dutch()
+        {
+            var rembrandt = new Person()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/person/rembrandt/9")
+                .WithLabel("Rembrandt")
+                .WithClassifiedAs(Getty.AatType("Dutch", "300111175"), Getty.Nationality);
+
+            Documentation.Save(rembrandt);
+        }
+
+
+        private static void Wiley_Is_African_American()
+        {
+            var wiley = new Person()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/person/wiley/1")
+                .WithLabel("Kehinde Wiley")
+                .WithClassifiedAs("http://www.wikidata.org/entity/Q3007177", "African-American", Getty.Ethnicity);
+
+            Documentation.Save(wiley);
+        }
+
+
+        private static void Rembrandt_Was_Male()
+        {
+            var rembrandt = new Person()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/person/rembrandt/10")
+                .WithLabel("Rembrandt")
+                .WithClassifiedAs(Getty.AatType("Male", "300189559"), Getty.Gender);
+
+            Documentation.Save(rembrandt, false);
+        }
+
     }
 }

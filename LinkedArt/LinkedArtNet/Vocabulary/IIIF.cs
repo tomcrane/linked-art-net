@@ -1,10 +1,9 @@
 ﻿namespace LinkedArtNet.Vocabulary
 {
-    public class IIIFManifest : LinkedArtObject
+    public class IIIFManifest : LinguisticObject
     {
         public IIIFManifest(string format, string id)
         {
-            Type = nameof(Types.LinguisticObject);
             var IIIFDigital = new DigitalObject
             {
                 Format = format,

@@ -7,7 +7,7 @@ namespace Examples.NewDocExamples
 {
     public class Documentation
     {
-        static JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
+        static JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true,  };
         static HttpClient httpClient = new HttpClient();
 
         public static void Create()
@@ -21,6 +21,9 @@ namespace Examples.NewDocExamples
             Digital.Create();
             Places.Create();
             Actors.Create();
+            Provenance.Create();
+            Exhibitions.Create();
+            Conservation.Create();
 
         }
 

@@ -154,7 +154,7 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/4")
                 .WithLabel("Night Watch by Rembrandt");
 
-            var materials = new LinkedArtObject(Types.LinguisticObject)
+            var materials = new LinguisticObject()
                 .WithClassifiedAs(
                     Getty.AatType("Material Statement", "300435429"),
                     Getty.AatType("Brief Text", "300418049"))
@@ -228,7 +228,7 @@ namespace Examples.NewDocExamples
                     Getty.PartType);
 
 
-            var materials = new LinkedArtObject(Types.LinguisticObject)
+            var materials = new LinguisticObject()
                 .WithClassifiedAs(
                     Getty.AatType("Material Statement", "300435429"),
                     Getty.AatType("Brief Text", "300418049"))
@@ -266,7 +266,7 @@ namespace Examples.NewDocExamples
 
         private static void Jaccuse_Parts()
         {
-            var jaccuse = new LinkedArtObject(Types.LinguisticObject)
+            var jaccuse = new LinguisticObject()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/rembrandtjaccuse/1")
                 .WithLabel("Rembrandt's J'accuse");

@@ -39,8 +39,12 @@ public class Getty
     public static LinkedArtObject DisplayTitle => AatType("Display Title", "300404669");
     public static LinkedArtObject Description => AatType("Description", "300435416");
     public static LinkedArtObject Inscription => AatType("Inscription", "300435414");
+    public static LinkedArtObject BiographyStatement => AatType("Biography Statement", "300435422");
     public static LinkedArtObject CreditStatement => AatType("Credit Statement", "300026687");
     public static LinkedArtObject CopyrightLicenseStatement => AatType("Copyright/License Statement", "300435434");
+
+
+    public static LinkedArtObject ProvenanceActivity => AatType("Provenance Activity", "300055863");
 
     public static LinkedArtObject WebPage => AatType("Web Page", "300264578");
     public static LinkedArtObject DigitalImage => AatType("Digital Image", "300215302");
@@ -55,6 +59,17 @@ public class Getty
     public static LinkedArtObject StreetAddress => AatType("Street Address", "300386983");
     public static LinkedArtObject City => AatType("City", "300008389");
     public static LinkedArtObject Nation => AatType("Nation", "300128207");
+
+
+
+    public static LinkedArtObject Nationality => AatType("Nationality", "300379842");
+    public static LinkedArtObject Ethnicity => AatType("Ethnicity", "300250435");
+    public static LinkedArtObject Gender => AatType("Gender", "300055147");
+
+
+    public static LinkedArtObject Exhibiting => AatType("Exhibiting", "300054766");
+    public static LinkedArtObject Exhibition => AatType("Exhibition", "300417531");
+    public static LinkedArtObject Museum => AatType("Museum", "300312281");
 
     public static LinkedArtObject Language(string aatCode, string label)
     {

@@ -32,7 +32,7 @@ namespace Examples.NewDocExamples
 
 
             spring.ReferredToBy = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithClassifiedAs(Getty.Description, Getty.BriefText)
                     .WithContent("A chic young woman in a day dress with floral accents holds a parasol against a background of exuberant foliage.")
             ];
@@ -124,7 +124,7 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/18");
 
             nightWatch.ReferredToBy = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithClassifiedAs(Getty.AatType("Signature", "300028705"), Getty.BriefText)
                     .WithContent("signature and date: ‘Rembrandt f 1642’")
             ];
@@ -151,7 +151,7 @@ namespace Examples.NewDocExamples
             ];
 
             catalog.Carries = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithId($"{Documentation.IdRoot}/text/catalogtext")
                     .WithLabel("Exhibition Catalog Text")
             ];
@@ -185,7 +185,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Visual Content of Harpers");
 
             harpersVis.ReferredToBy = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithClassifiedAs(Getty.Description, Getty.BriefText)
                     .WithContent("The text and image are primarily red and black")
             ];
@@ -197,7 +197,7 @@ namespace Examples.NewDocExamples
 
         private static void Harpers_Textual_Content()
         {
-            var harpersText = new LinkedArtObject(Types.LinguisticObject)
+            var harpersText = new LinguisticObject()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/harpers/1")
                 .WithLabel("Textual component of Harpers")

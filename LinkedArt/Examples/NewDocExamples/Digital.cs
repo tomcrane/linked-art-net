@@ -53,7 +53,7 @@ namespace Examples.NewDocExamples
             nightwatchPublication.CreatedBy = creation;
 
             nightwatchPublication.DigitallyCarries = [
-                new LinkedArtObject(Types.LinguisticObject)
+                new LinguisticObject()
                     .WithId($"{Documentation.IdRoot}/text/operation_nw_en")
                     .WithLabel("Operation Night Watch in English")
             ];
@@ -132,7 +132,7 @@ namespace Examples.NewDocExamples
 
             spring.IdentifiedBy = [new Name("Jeanne (Spring)")];
 
-            var springWebLinguistic = new LinkedArtObject(Types.LinguisticObject);
+            var springWebLinguistic = new LinguisticObject();
             var springWebDigital = new DigitalObject()
                 .WithClassifiedAs(Getty.WebPage);
             springWebDigital.Format = "text/html";

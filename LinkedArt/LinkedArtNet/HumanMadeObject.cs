@@ -75,6 +75,4 @@ public class HumanMadeObject : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<Activity>? ChangedOwnershipThrough { get; set; }
 
-
-
 }

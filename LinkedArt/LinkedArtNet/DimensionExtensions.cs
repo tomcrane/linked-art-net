@@ -96,7 +96,7 @@ public static class DimensionExtensions
     {
         var rgbInt = Convert.ToInt32(rgbColor.Replace("#", ""), 16);
         hmObj.WithRgbColor(rgbInt, aatColor, label);
-        hmObj.Dimension.Last().IdentifiedBy = [ new LinkedArtObject(Types.Identifier).WithContent(rgbColor) ];
+        hmObj.Dimension.Last().IdentifiedBy = [ new Identifier(rgbColor) ];
         return hmObj;
     }
 
@@ -124,7 +124,7 @@ public static class DimensionExtensions
         return hmObj.WithClassifiedAs(aatShape, Getty.Shape);
     }
 
-    public static HumanMadeObject WithCount(this HumanMadeObject hmObj, int value)
+    public static HumanMadeObject WithComponentCount(this HumanMadeObject hmObj, int value)
     {
         var count = new Dimension()
             .WithClassifiedAs(Getty.AatType("Count", "300404433"));
@@ -135,5 +135,23 @@ public static class DimensionExtensions
         hmObj.Dimension.Add(count);
 
         return hmObj;
+    }
+
+    public static LinkedArtObject WithPageCount(this LinkedArtObject laObj, int value, string? label = null)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            label = value.ToString();
+        }
+        var count = new Dimension()
+            .WithLabel(label)
+            .WithClassifiedAs(Getty.AatType("Count Of", "300404433"));
+        count.Value = value;
+        count.Unit = new MeasurementUnit().WithId($"{Getty.Aat}300194222").WithLabel("Pages");
+
+        laObj.Dimension ??= [];
+        laObj.Dimension.Add(count);
+
+        return laObj;
     }
 }

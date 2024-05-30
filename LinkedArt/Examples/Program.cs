@@ -76,10 +76,8 @@ HumanMadeObject Amphora()
         .WithId($"{amphora.Id}/name1")
         .WithLanguage("300388277", "English")
         .AsPrimaryName();
-    var id = new LinkedArtObject(Types.Identifier)
-        .WithId($"{amphora.Id}/id")
-        .WithContent("86.AE.75")
-        .WithClassifiedAs("300312355", "Accession Number");
+    var id = new Identifier("86.AE.75").AsAccessionNumber()
+        .WithId($"{amphora.Id}/id");
     amphora.IdentifiedBy = [name, id];
 
     var desc = new LinguisticObject()
@@ -101,10 +99,8 @@ HumanMadeObject AmphoraWithDimensions()
     var name = new Name("Attic Black Figure Neck Amphora")
         .WithId($"{amphora.Id}/name1")
         .AsPrimaryName();
-    var id = new LinkedArtObject(Types.Identifier)
-        .WithId($"{amphora.Id}/id")
-        .WithContent("86.AE.75")
-        .WithClassifiedAs("300312355", "Accession Number");
+    var id = new Identifier("86.AE.75").AsAccessionNumber()
+        .WithId($"{amphora.Id}/id");
     amphora.IdentifiedBy = [name, id];
 
     amphora.WithHeightDimension($"{amphora.Id}/h1", 38.7, MeasurementUnit.Centimetres);
@@ -202,10 +198,8 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     photograph.WithClassifiedAs("aat:Photograph", "Photograph");
 
 
-    var identifier = new LinkedArtObject(Types.Identifier)
-        .WithId($"{photograph.Id}/id")
-        .WithContent("RP-F-F17653")
-        .WithClassifiedAs("aat:300312355", "Accession Number");
+    var identifier = new Identifier("RP-F-F17653").AsAccessionNumber()
+        .WithId($"{photograph.Id}/id");
     var rijksmuseum = new Group()
         .WithId("https://www.rijksmuseum.nl/")
         .WithLabel("Rijksmuseum");

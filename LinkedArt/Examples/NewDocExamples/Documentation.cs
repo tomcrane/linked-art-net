@@ -1,5 +1,4 @@
-﻿using LateApexEarlySpeed.Json.Schema.FluentGenerator;
-using LateApexEarlySpeed.Xunit.Assertion.Json;
+﻿using LateApexEarlySpeed.Xunit.Assertion.Json;
 using LinkedArtNet;
 using System.Text.Json;
 
@@ -24,6 +23,10 @@ namespace Examples.NewDocExamples
             Provenance.Create();
             Exhibitions.Create();
             Conservation.Create();
+            TextualDocuments.Create();
+            CollectionsAndSets.Create();
+            Archives.Create();
+            Assertions.Create();
 
         }
 

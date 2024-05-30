@@ -3,16 +3,20 @@
   "id": "https://linked.art/example/person/rembrandt/10",
   "type": "Person",
   "_label": "Rembrandt",
-  "classified_as": [
+  "identified_by": [
     {
-      "id": "http://vocab.getty.edu/aat/300189559",
-      "type": "Type",
-      "_label": "Male",
-      "classified_as": [
+      "type": "Name",
+      "content": "Rembrandt van Rijn",
+      "assigned_by": [
         {
-          "id": "http://vocab.getty.edu/aat/300055147",
-          "type": "Type",
-          "_label": "Gender"
+          "type": "AttributeAssignment",
+          "used_specific_object": [
+            {
+              "id": "https://linked.art/example/text/gardner-art",
+              "type": "LinguisticObject",
+              "_label": "Art through the Ages"
+            }
+          ]
         }
       ]
     }

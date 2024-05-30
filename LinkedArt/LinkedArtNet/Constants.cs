@@ -75,6 +75,22 @@ public static class Constants
     }
 
 
+    public static T AsSystemAssignedNumber<T>(this T laObj) where T : LinkedArtObject
+    {
+        laObj.ClassifiedAs ??= [];
+        laObj.ClassifiedAs.Add(Getty.SystemAssignedNumber);
+        return laObj;
+    }
+
+
+    public static T AsAccessionNumber<T>(this T laObj) where T : LinkedArtObject
+    {
+        laObj.ClassifiedAs ??= [];
+        laObj.ClassifiedAs.Add(Getty.AccessionNumber);
+        return laObj;
+    }
+
+
     public static T WithContent<T>(this T laObj, string content) where T : LinkedArtObject
     {
         laObj.Content = content;
@@ -88,7 +104,7 @@ public static class Constants
         return laObj;
     }
 
-    public static T WithLabel<T>(this T laObj, string label) where T : LinkedArtObject
+    public static T WithLabel<T>(this T laObj, string? label) where T : LinkedArtObject
     {
         laObj.Label = label;
         return laObj;
@@ -104,4 +120,5 @@ public static class Constants
         hmo.MadeOf.Add(new LinkedArtObject(Types.Material) { Id = materialTypeId, Label = materialTypeLabel });
         return hmo;
     }
+
 }

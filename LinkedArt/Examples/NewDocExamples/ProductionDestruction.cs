@@ -143,11 +143,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("GOK 1918, GOKM")
                 .WithClassifiedAs(Getty.Photograph, Getty.TypeOfWork);
 
-            gok.IdentifiedBy = [
-                new LinkedArtObject(Types.Identifier)
-                    .WithContent("2014.3.78")
-                    .WithClassifiedAs(Getty.AatType("Accession Number", "300312355"))
-            ];
+            gok.IdentifiedBy = [ new Identifier("2014.3.78").AsAccessionNumber() ];
 
             gok.Shows = [
                 new Work(Types.VisualItem)
@@ -173,11 +169,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("GOK 1918, YUAG")
                 .WithClassifiedAs(Getty.Photograph, Getty.TypeOfWork);
 
-            gok.IdentifiedBy = [
-                new LinkedArtObject(Types.Identifier)
-                    .WithContent("2016.101.242")
-                    .WithClassifiedAs(Getty.AatType("Accession Number", "300312355"))
-            ];
+            gok.IdentifiedBy = [ new Identifier("2016.101.242").AsAccessionNumber() ];
 
             gok.Shows = [
                 new Work(Types.VisualItem)

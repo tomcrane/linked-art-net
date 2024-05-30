@@ -1,0 +1,44 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linked.art/example/text/koot_nightwatch/1",
+  "type": "LinguisticObject",
+  "_label": "Content of Koot\u0027s Night Watch",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388277",
+      "type": "Language",
+      "_label": "English"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300060417",
+      "type": "Type",
+      "_label": "Monograph"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Rembrandt\u0027s Night Watch. A Fascinating Story",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "75441784",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    }
+  ]
+}

@@ -227,7 +227,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/chess/1")
                 .WithLabel("Miniature Chess")
-                .WithCount(36);
+                .WithComponentCount(36);
 
             chess.IdentifiedBy = [
                 new Name("Vessel with miniature chess set").AsPrimaryName()

@@ -88,8 +88,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             rembrandt.IdentifiedBy = [
-                new LinkedArtObject(Types.Identifier)
-                    .WithContent("Q5598")
+                new Identifier("Q5598")
                     .WithClassifiedAs(Getty.AatType("Owner-Assigned Number", "300404621"))
             ];
 
@@ -122,8 +121,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             rembrandt.ContactPoint = [
-                new LinkedArtObject(Types.Identifier)
-                    .WithContent("Jodenbreestraat 4, 1011 NK Amsterdam")
+                new Identifier("Jodenbreestraat 4, 1011 NK Amsterdam")
                     .WithClassifiedAs(Getty.StreetAddress)
             ];
 
@@ -138,14 +136,11 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt House Museum");
 
             museum.ContactPoint = [
-                new LinkedArtObject(Types.Identifier)
-                    .WithContent("Jodenbreestraat 4, 1011 NK Amsterdam")
+                new Identifier("Jodenbreestraat 4, 1011 NK Amsterdam")
                     .WithClassifiedAs(Getty.StreetAddress),
-                new LinkedArtObject(Types.Identifier)
-                    .WithContent("+31-20-520-0400")
+                new Identifier("+31-20-520-0400")
                     .WithClassifiedAs(Getty.TelephoneNumber),
-                new LinkedArtObject(Types.Identifier)
-                    .WithContent("museum@rembrandthuis.nl")
+                new Identifier("museum@rembrandthuis.nl")
                     .WithClassifiedAs(Getty.EmailAddress)
             ];
 

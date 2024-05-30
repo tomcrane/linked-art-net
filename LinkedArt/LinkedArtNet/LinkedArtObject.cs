@@ -1,7 +1,20 @@
-﻿using System.Text.Json.Serialization;
+﻿using LinkedArtNet.Vocabulary;
+using System.Text.Json.Serialization;
 
 namespace LinkedArtNet;
 
+[JsonDerivedType(typeof(HumanMadeObject))]
+[JsonDerivedType(typeof(LinguisticObject))]
+[JsonDerivedType(typeof(Name))]
+[JsonDerivedType(typeof(Identifier))]
+[JsonDerivedType(typeof(Work))]
+[JsonDerivedType(typeof(Place))]
+[JsonDerivedType(typeof(Person))]
+[JsonDerivedType(typeof(Group))]
+[JsonDerivedType(typeof(Activity))]
+[JsonDerivedType(typeof(DigitalObject))]
+[JsonDerivedType(typeof(IIIFManifest))]
+[JsonDerivedType(typeof(Dimension))]
 public class LinkedArtObject
 {
     public LinkedArtObject() { }
@@ -101,6 +114,12 @@ public class LinkedArtObject
     public virtual List<LinkedArtObject>? MemberOf { get; set; }
 
 
+    [JsonPropertyName("members_contained_by")]
+    [JsonPropertyOrder(144)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<HumanMadeObject>? MembersContainedBy { get; set; }
+
+
     [JsonPropertyName("equivalent")]
     [JsonPropertyOrder(150)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -111,6 +130,12 @@ public class LinkedArtObject
     [JsonPropertyOrder(210)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Activity? CreatedBy { get; set; }
+
+
+    [JsonPropertyName("used_for")]
+    [JsonPropertyOrder(220)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Activity>? UsedFor { get; set; }
 
 
     [JsonPropertyName("destroyed_by")]
@@ -170,4 +195,23 @@ public class LinkedArtObject
     [JsonPropertyOrder(820)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<Activity>? ModifiedBy { get; set; }
+
+
+    [JsonPropertyName("members_exemplified_by")]
+    [JsonPropertyOrder(920)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<LinkedArtObject>? MembersExemplifiedBy { get; set; }
+
+
+    // (laObj)?
+    [JsonPropertyName("holds_or_supports")]
+    [JsonPropertyOrder(1020)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<HumanMadeObject>? HoldsOrSupports { get; set; }
+
+    [JsonPropertyName("held_or_supported_by")]
+    [JsonPropertyOrder(1021)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual List<HumanMadeObject>? HeldOrSupportedBy { get; set; }
+
 }

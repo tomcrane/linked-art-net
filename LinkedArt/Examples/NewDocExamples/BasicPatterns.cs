@@ -118,11 +118,8 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/2")
                 .WithLabel("Night Watch by Rembrandt");
 
-            var accessionNumber =  new LinkedArtObject(Types.Identifier)
-                .WithContent("SK-C-5")
-                .WithClassifiedAs(Getty.AatType("Accession Number", "300312355"));
-            var name = new Name("The Night Watch")
-                .AsPrimaryName();
+            var accessionNumber = new Identifier("SK-C-5").AsAccessionNumber();
+            var name = new Name("The Night Watch").AsPrimaryName();
 
             nightWatch.IdentifiedBy = [accessionNumber, name];
 

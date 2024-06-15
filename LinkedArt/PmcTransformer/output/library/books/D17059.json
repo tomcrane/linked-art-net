@@ -1,0 +1,60 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/D17059",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026096",
+      "type": "Type",
+      "_label": "Exhibition catalogue"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D17059",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "Catalogue of an exhibition of paintings and drawings by Henry Lamb",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "LEICESTER GALLERIES-1929"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/136",
+            "type": "Group",
+            "_label": "Ernest Brown \u0026 Phillips"
+          }
+        ]
+      }
+    ]
+  },
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LS2",
+    "type": "Place",
+    "_label": "Library Store 2"
+  }
+}

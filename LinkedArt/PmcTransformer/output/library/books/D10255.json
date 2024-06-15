@@ -1,0 +1,51 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/D10255",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026096",
+      "type": "Type",
+      "_label": "Exhibition catalogue"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D10255",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "Their Majesties\u0027 Court, Buckingham Palace, 1931 : portrait studies and other sketches by Sir John Lavery, RA",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/1598",
+            "type": "Group",
+            "_label": "P. \u0026 D. Colnaghi \u0026 Co."
+          }
+        ]
+      }
+    ]
+  }
+}

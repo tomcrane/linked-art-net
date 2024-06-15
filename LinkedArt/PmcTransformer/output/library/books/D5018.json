@@ -1,0 +1,45 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/D5018",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D5018",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "The prebendal manor house, Nassington : Northamptonshire\u0027s oldest manor dating from the early thirteenth century",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "728 NAS (PAMPHLET)"
+    }
+  ],
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
+    "type": "Place",
+    "_label": "Public Study Room"
+  }
+}

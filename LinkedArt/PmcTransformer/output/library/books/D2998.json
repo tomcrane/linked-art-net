@@ -1,0 +1,60 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/D2998",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D2998",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "Liverpool Academy of Arts - 150th anniversary exhibitions",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "062 LIV-WAL"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/169",
+            "type": "Group",
+            "_label": "Walker Art Gallery"
+          }
+        ]
+      }
+    ]
+  },
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LS1",
+    "type": "Place",
+    "_label": "Library Store 1"
+  }
+}

@@ -1,5 +1,6 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Vocabulary;
+using PmcTransformer.Helpers;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -19,15 +20,12 @@ namespace PmcTransformer
             var library = root + "\\2024-03-11_library";
             var photo_archive = root + "\\2024-03-14_photo-archive";
 
-            var baseUrl = "https://linkedart.paul-mellon-centre.ac.uk/";
-            var booksBase = $"{baseUrl}library/books/";
-            var groupBase = $"{baseUrl}groups/";
-            var peopleBase = $"{baseUrl}people/";
-
             XNamespace libNs = "x-schema:EF-34074-Export.dtd";
 
             StreamReader reader = new StreamReader(library + "\\2024-03-11_library.xml", Encoding.UTF8);
             var xLibrary = XDocument.Load(reader);
+
+            
 
             // Common Types
             // Verify correct term "EDITION_STMT" https://vocab.getty.edu/aat/300435435
@@ -39,19 +37,28 @@ namespace PmcTransformer
             var allBooks = new Dictionary<string, HumanMadeObject>();
             var persAuthorFullDict = new Dictionary<string, List<string>>();
             var corpAuthorDict = new Dictionary<string, List<string>>();
+            int nullMediumCounter = 0;
+            var classCounter = new Dictionary<int, int>();
+            var accLocCounter = new Dictionary<int, int>();
+            var multipleAccLocCounter = new Dictionary<int, int>();
+            int classMatchesAccLocCounter = 0;
+            int classHasLocationButDifferentFromAcclocCounter = 0;
+            var placeDict = new Dictionary<string, List<string>>();
+            var publisherDict = new Dictionary<string, List<string>>();
 
 
-            foreach (var record in xLibrary.Root.Elements())
+            foreach (var record in xLibrary.Root!.Elements())
             {
-                bool outputAnyway = false;
-
                 // RS: /identified_by[type=Identifier,classified_as=REPOSITORY]/value
-                var id = record.Attribute("ID").Value;
+                var id = record.Attribute("ID")!.Value;
+
+                // "Missing record created by data verification program"
+                if (id == "Q$") continue;
 
                 // The first iteration will focus only on the books. 
                 var book = new HumanMadeObject()
                     .WithContext()
-                    .WithId($"{booksBase}{id}");
+                    .WithId($"{Identity.BooksBase}{id}");
 
                 allBooks.Add(id, book);
 
@@ -72,7 +79,6 @@ namespace PmcTransformer
                             .WithContent(edition)
                             .WithClassifiedAs(editionDescription)
                     ];
-                    outputAnyway = true;
                 }
 
                 // Repeatable. Personal name of a creator/contributor to the Work, plus the role they played. See notes on People below.
@@ -81,15 +87,7 @@ namespace PmcTransformer
                 var persAuthors = record.Elements(libNs + "persauthorfull");
                 foreach (var author in persAuthors)
                 {
-                    var persAuthorFull = author.Value.Trim();
-                    if (!string.IsNullOrWhiteSpace(persAuthorFull))
-                    {
-                        if (!persAuthorFullDict.ContainsKey(persAuthorFull))
-                        {
-                            persAuthorFullDict[persAuthorFull] = [];
-                        }
-                        persAuthorFullDict[persAuthorFull].Add(id);
-                    }
+                    persAuthorFullDict.AddToListForKey(author.Value.TrimSpecial(), id);
                 }
 
 
@@ -99,37 +97,179 @@ namespace PmcTransformer
                 var corpAuthors = record.Elements(libNs + "corpauthor");
                 foreach (var author in corpAuthors)
                 {
-                    var corpAuthorFull = author.Value;
-                    if (!string.IsNullOrWhiteSpace(corpAuthorFull))
+                    corpAuthorDict.AddToListForKey(author.Value.TrimSpecial(), id);
+                }
+
+
+                // Observed so far ALL records have exactly one medium.
+                // /classified_as/id
+                var medium = record.Elements(libNs + "medium").Single().Value;
+                var mediumClassifier = Media.FromRecordValue(medium);
+                if(mediumClassifier == null)
+                {
+                    // Image files
+                    nullMediumCounter++;
+                } 
+                else
+                {
+                    book.WithClassifiedAs(mediumClassifier);
+                }
+
+                // See notes (messy)
+                // /identified_by[type=Identifier]/value   OR   /current_location/id
+                // Distribution of class values:
+                // Unfiltered        Filtered as linq below
+                // 0: 0              15889
+                // 1: 38863          26457
+                // 2: 24481          21009
+                // 3: 39             28
+                // 4: 4              4
+                // 5: 1              1
+                // 9: 2              2
+                // 12: 1             1
+                var classes = record.Elements(libNs + "class")
+                    .Select(c => c.Value)
+                    .Where(v => !string.IsNullOrWhiteSpace(v))
+                    .Where(v => v != "AUCTION CATALOGUES")
+                    .Where(v => !v.StartsWith("IN PROCESS"))
+                    .ToList();
+                classCounter.IncrementCounter(classes.Count);
+
+                // /current_location/id
+                // Distribution of accloc values (book is in more than one physical location...):
+                // 1: 62088
+                // 2: 981
+                // 3: 159
+                // 4: 89
+                // 5: 24
+                // 6: 20
+                // 7: 6
+                // 8: 6
+                // 9: 3
+                // 11: 1
+                // 12: 5
+                // 14: 3
+                // 16: 1
+                // 18: 1
+                // 22: 1
+                // 30: 1
+                // 34: 1
+                // 37: 1
+                var acclocs = record.Elements(libNs + "accloc")
+                    .Select(c => c.Value)
+                    .ToList();
+                accLocCounter.IncrementCounter(acclocs.Count);
+
+                var alreadyMappedLocations = new HashSet<string>();   
+                foreach(var location in acclocs)
+                {
+                    if (alreadyMappedLocations.Contains(location))
                     {
-                        if (!corpAuthorDict.ContainsKey(corpAuthorFull))
+                        continue;
+                    }
+                    alreadyMappedLocations.Add(location);
+                    var mappedLocation = Locations.FromRecordValue(location);
+                    if(mappedLocation != null)
+                    {
+                        if (book.CurrentLocation == null)
                         {
-                            corpAuthorDict[corpAuthorFull] = [];
+                            book.CurrentLocation = mappedLocation;
                         }
-                        corpAuthorDict[corpAuthorFull].Add(id);
+                        else
+                        {
+                            Console.WriteLine("Book " + id + " already has a location");
+                        }
+                    }
+                }
+                multipleAccLocCounter.IncrementCounter(alreadyMappedLocations.Count);
+
+                var classesThatWillBecomeIdentifiers = new List<string>();
+                foreach (var classVal in classes)
+                {
+                    var locationAsClass = Locations.FromRecordValue(classVal, true);
+                    if(locationAsClass != null)
+                    {
+                        if (alreadyMappedLocations.Contains(classVal))
+                        {
+                            classMatchesAccLocCounter++;
+                        }
+                        else
+                        {
+                            classHasLocationButDifferentFromAcclocCounter++;
+                        }
+                    }
+                    else
+                    {
+                        // not a known location
+                        // Console.WriteLine($"{id}: {classVal}");
+                        classesThatWillBecomeIdentifiers.Add(classVal);
                     }
                 }
 
+                if(classesThatWillBecomeIdentifiers.Any())
+                {
+                    book.IdentifiedBy ??= [];
+                    book.IdentifiedBy.Add(new Identifier(string.Join(' ', classesThatWillBecomeIdentifiers)));
+                }
+
+
+                // place
+                // /used_for[classified_as=PUBLISHING]/took_place_at/id
+                var places = record.Elements(libNs + "place");
+                foreach (var place in places)
+                {
+                    placeDict.AddToListForKey(place.Value.TrimSpecial(), id);
+                }
+
+                // publisher
+                // /used_for[classified_as=PUBLISHING]/carried_out_by/id
+                var publishers = record.Elements(libNs + "publisher");
+                foreach (var publisher in publishers)
+                {
+                    publisherDict.AddToListForKey(publisher.Value.TrimSpecial(), id);
+                }
+
+                // also need year for publishing ^^ these three make a new Activity, see koot.UsedFor
+
             }
 
-
-            // Finished first pass through all records
+            // #######################################################################################
+            // ####################### Finished first pass through all records #######################
+            // #######################################################################################
 
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine();
 
+            Console.WriteLine("nullMediumCounter: " + nullMediumCounter);
             Console.WriteLine("allBooks keys: " + allBooks.Keys.Count);
             Console.WriteLine("persauthorfull keys: " + persAuthorFullDict.Keys.Count);
             Console.WriteLine("corpAuthor keys: " + corpAuthorDict.Keys.Count);
+            classCounter.Display("Distribution of class values:");
+            accLocCounter.Display("Distribution of accloc values:");
+            
+            Console.WriteLine("Temporarily mapped UO, QUA, DUP");
+            Locations.ShowUnmapped();
 
+            // What to do...
+            multipleAccLocCounter.Display("Books with more than one distinct accloc:");
+
+
+            Console.WriteLine("classMatchesAccLocCounter: " + classMatchesAccLocCounter);
+            Console.WriteLine("classHasLocationButDifferentFromAcclocCounter: " + classHasLocationButDifferentFromAcclocCounter);
+
+
+            Console.WriteLine("place keys: " + placeDict.Keys.Count);
+            Console.WriteLine("publisher keys: " + publisherDict.Keys.Count);
 
             // Create Groups for corpauthor and assert in book record.
+            // TODO - this needs to be consistent between runs so once we are sure about our corporation,
+            // mint a permanent id for it and store in DB
             int corpIdMinter = 1;
             foreach (var corpAuthor in corpAuthorDict)
             {
                 var group = new Group()
-                    .WithId(groupBase + corpIdMinter++)
+                    .WithId(Identity.GroupBase + corpIdMinter++)
                     .WithLabel(corpAuthor.Key);
 
                 foreach (var id in corpAuthor.Value)
@@ -186,7 +326,7 @@ namespace PmcTransformer
                     var tidyDate = TidyPersonDate(datePart);
                     if(tidyDate != datePart)
                     {
-                        Console.WriteLine($"Tidied {datePart} to {tidyDate} for {person.Key}");
+                        Console.WriteLine($"Tidied \"{datePart}\" to \"{tidyDate}\" for {person.Key}");
                         datePart = tidyDate;
                     }
                 }
@@ -227,7 +367,7 @@ namespace PmcTransformer
             // This will be right most of the time, but is not good enough...
 
             // TODO - Possibly using dates, reconcile with LOC / AAT
-            // Put the reconciled ID in rather than the local
+            // Add reconciled to equivalent
             // For unmatched - have a local one? Parse the dates?
             var normalisedLibraryPeople = new List<NormalisedLibraryPersonName>();
             foreach (var libraryPerson in libraryPeople) 
@@ -255,68 +395,70 @@ namespace PmcTransformer
 
 
             // Now we can create Person records and assert in book record.
+            // TODO - This needs to be a permanent IF
             int personIdMinter = 1;
             foreach (var libraryPerson in normalisedLibraryPeople)
             {
                 var person = new Person()
-                    .WithId(peopleBase + personIdMinter++)
+                    .WithId(Identity.PeopleBase + personIdMinter++)
                     .WithLabel(libraryPerson.Name);
 
                 foreach (var roleBooks in libraryPerson.RolesToBooks)
                 {
-                    var classifiedAs = GetClassificationForRole(roleBooks.Key);
+                    var activity = MappedRole.GetActivityWithPart(roleBooks.Key);
+
                     foreach(var id in roleBooks.Value)
                     {
                         var book = allBooks[id];
                         book.CreatedBy ??= new Activity(Types.Creation);
                         book.CreatedBy.Part ??= [];
-                        book.CreatedBy.Part.Add(new Activity(Types.Creation)
+                        book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
                         {
                             CarriedOutBy = [person],
-                            ClassifiedAs = [classifiedAs]
+                            ClassifiedAs = activity.Part[0].ClassifiedAs
                         });
                     }
                 }
             }
 
             Console.WriteLine("ROLES===============");
-            foreach(var role in Roles)
+            foreach(var role in MappedRole.Roles)
             {
                 Console.WriteLine($"{role.Key}: {role.Value}");
             }
 
+            // Now we can create Place records and assert in book record.
+            // Unlike people and groups I think we should reconcile these immediately - no local identity at all
+            // ... as we don't expect non-reconcilable or PMC-only places (or do we?)
+            // But still key recorded place in DB.
+            int placeIdMinter = 1;
+            foreach (var kvp in placeDict)
+            {
+                var place = new Place()
+                    .WithId(Identity.PlaceBase + "temp-" + placeIdMinter++)
+                    .WithLabel(kvp.Key);
 
+                // /used_for[classified_as=PUBLISHING]/took_place_at/id
+
+                foreach (var id in kvp.Value)
+                {
+                    var book = allBooks[id];
+                    book.CreatedBy ??= new Activity(Types.Creation);
+                    book.CreatedBy.Part ??= [];
+                    book.CreatedBy.Part.Add(new Activity(Types.Creation)
+                    {
+                        CarriedOutBy = [group]
+                    });
+                }
+            }
 
             // once serialised in short form, add context and add reconciled equivalents and serialise as groups/people  
             // add in person dates
             // make use of active string in date field (currently being stripped)
-            //Sample(allBooks, 1000);
+            Sample(allBooks, 1000, true);
         }
 
-        private static Dictionary<string, int> Roles = [];
 
-        private static LinkedArtObject GetClassificationForRole(string rawRole)
-        {
-            // See notes for full list
-            // use yul-role_mappings.json
-            if (!Roles.ContainsKey(rawRole))
-            {
-                Roles[rawRole] = 0;
-            }
-            Roles[rawRole] = Roles[rawRole] + 1;
-
-            switch (rawRole)
-            {
-                case "editor":
-                    return Getty.AatType("Editors", "300025526");
-                case "contributor":
-                    return Getty.AatType("Contributors", "300403974");
-                default:
-                    return Getty.AatType("Authorship", "300056110");
-
-                // etc etc
-            }
-        }
 
         private static string TidyPersonDate(string datePart)
         {
@@ -353,8 +495,9 @@ namespace PmcTransformer
             }
         }
 
-        private static void Sample(Dictionary<string, HumanMadeObject> allBooks, int interval)
+        private static void Sample(Dictionary<string, HumanMadeObject> allBooks, int interval, bool writeToDisk)
         {
+            var options = new JsonSerializerOptions { WriteIndented = true, };
             int count = 0;
             foreach(var book in allBooks)
             {
@@ -362,9 +505,16 @@ namespace PmcTransformer
                 {
                     var generatedJson = JsonSerializer.Serialize(book.Value, options);
                     Console.WriteLine(generatedJson);
+                    if(writeToDisk)
+                    {
+                        var json = JsonSerializer.Serialize(book.Value, options);
+                        File.WriteAllText($"../../../output/library/books/{book.Key}.json", json);
+                    }
                 }
                 count++;
             }
         }
+
+
     }
 }

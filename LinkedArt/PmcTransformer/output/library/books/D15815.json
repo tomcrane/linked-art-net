@@ -1,0 +1,97 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/D15815",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "The fourth edition",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435435",
+          "type": "Type",
+          "_label": "Edition"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D15815",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "Sculptura historico-technica, or, The history and art of engraving : containing, I. The rise and progress of engraving. II. Of engraving in general. III. Of engraving, etching, and scraping on copper, as now practised. IV. An idea of a fine collection of prints. V. The repertorium, or, A collection of various marks and cyphers, with additions : to which is now added, a chronological and historical series of the painters from the eleventh century, extracted from Baldinucci, Florent le Compte, Fairthorne, the Abecedario pittorico, and other authors : with copper-plates",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "OPPE-1770-2"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Provenance",
+        "classified_as": [
+          {
+            "id": "http://id.loc.gov/vocabulary/relators/fmo",
+            "type": "Type",
+            "_label": "former owner"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/176",
+            "type": "Person",
+            "_label": "Opp\u00E9, A. P."
+          }
+        ]
+      },
+      {
+        "type": "Publication",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025574",
+            "type": "Type",
+            "_label": "publisher"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/13433",
+            "type": "Person",
+            "_label": "Marks, James"
+          }
+        ]
+      }
+    ]
+  },
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LS2",
+    "type": "Place",
+    "_label": "Library Store 2"
+  }
+}

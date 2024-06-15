@@ -1,0 +1,60 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/D10664",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026096",
+      "type": "Type",
+      "_label": "Exhibition catalogue"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D10664",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "A one day walk : Anthony Caro, Phillip King, Richard Long, Hamish Fulton, Nicholas Pope, Barry Flanagan, Tony Cragg, Bill Woodrow",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "063 NET-OTT"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/2023",
+            "type": "Group",
+            "_label": "Kr\u00F6ller-M\u00FCller Museum"
+          }
+        ]
+      }
+    ]
+  },
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LS1",
+    "type": "Place",
+    "_label": "Library Store 1"
+  }
+}

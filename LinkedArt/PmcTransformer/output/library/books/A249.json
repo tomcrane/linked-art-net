@@ -1,0 +1,67 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/A249",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300028881",
+      "type": "Type",
+      "_label": "Information files"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "A249",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "New publications by Thomas Tegg, 111 Cheapside",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "INFORMATION FILES - PRINT PUBLISHERS"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Production",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/20252",
+            "type": "Person",
+            "_label": "Tegg, Thomas"
+          }
+        ]
+      }
+    ]
+  },
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LS2",
+    "type": "Place",
+    "_label": "Library Store 2"
+  }
+}

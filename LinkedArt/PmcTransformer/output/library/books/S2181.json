@@ -1,0 +1,51 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/S2181",
+  "type": "HumanMadeObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026068",
+      "type": "Type",
+      "_label": "Auction catalogue"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "S2181",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "Pictures and drawings by old and modern masters",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/158",
+            "type": "Group",
+            "_label": "Robinson, Fisher \u0026 Co"
+          }
+        ]
+      }
+    ]
+  }
+}

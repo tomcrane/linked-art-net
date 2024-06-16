@@ -52,6 +52,33 @@
       }
     ]
   },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-874",
+          "type": "Group",
+          "_label": "Museums Worcestershire"
+        }
+      ],
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-297",
+          "type": "Place",
+          "_label": "Worcester"
+        }
+      ]
+    }
+  ],
   "current_location": {
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
     "type": "Place",

@@ -41,6 +41,19 @@
       }
     ]
   },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ]
+    }
+  ],
   "current_location": {
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/2.2",
     "type": "Place",

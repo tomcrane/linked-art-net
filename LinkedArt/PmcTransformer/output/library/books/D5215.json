@@ -37,6 +37,33 @@
       "content": "728 ING (PAMPHLET)"
     }
   ],
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-4557",
+          "type": "Group",
+          "_label": "Ingatestone Hall"
+        }
+      ],
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-245",
+          "type": "Place",
+          "_label": "Essex"
+        }
+      ]
+    }
+  ],
   "current_location": {
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
     "type": "Place",

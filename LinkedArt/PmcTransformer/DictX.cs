@@ -43,18 +43,6 @@ namespace PmcTransformer
             return s.Split('/')[^1];
         }
 
-        public static string TrimSpecial(this string s)
-        {
-            var s2 = s.Trim();
-            if (s2.StartsWith('[') && s2.EndsWith(']'))
-            {
-                var s3 = s2.Substring(1, s2.Length - 2);
-                if(!s3.Contains('['))
-                {
-                    return s3;
-                }
-            }
-            return s2;
-        }
+
     }
 }

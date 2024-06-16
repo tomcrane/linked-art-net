@@ -1,4 +1,5 @@
 ﻿using LinkedArtNet;
+using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
 using PmcTransformer.Helpers;
 using System.Text;
@@ -25,7 +26,7 @@ namespace PmcTransformer
             StreamReader reader = new StreamReader(library + "\\2024-03-11_library.xml", Encoding.UTF8);
             var xLibrary = XDocument.Load(reader);
 
-            
+            var timespanParser = new TimespanParser();
 
             // Common Types
             // Verify correct term "EDITION_STMT" https://vocab.getty.edu/aat/300435435
@@ -87,7 +88,7 @@ namespace PmcTransformer
                 var persAuthors = record.Elements(libNs + "persauthorfull");
                 foreach (var author in persAuthors)
                 {
-                    persAuthorFullDict.AddToListForKey(author.Value.TrimSpecial(), id);
+                    persAuthorFullDict.AddToListForKey(author.Value.TrimOuterBrackets(), id);
                 }
 
 
@@ -97,7 +98,7 @@ namespace PmcTransformer
                 var corpAuthors = record.Elements(libNs + "corpauthor");
                 foreach (var author in corpAuthors)
                 {
-                    corpAuthorDict.AddToListForKey(author.Value.TrimSpecial(), id);
+                    corpAuthorDict.AddToListForKey(author.Value.TrimOuterBrackets(), id);
                 }
 
 
@@ -212,24 +213,48 @@ namespace PmcTransformer
                     book.IdentifiedBy.Add(new Identifier(string.Join(' ', classesThatWillBecomeIdentifiers)));
                 }
 
-
+                bool hasPlace = false;
                 // place
                 // /used_for[classified_as=PUBLISHING]/took_place_at/id
                 var places = record.Elements(libNs + "place");
                 foreach (var place in places)
                 {
-                    placeDict.AddToListForKey(place.Value.TrimSpecial(), id);
+                    hasPlace = true;
+                    placeDict.AddToListForKey(place.Value.TrimOuterBrackets(), id);
                 }
 
+                bool hasPublisher = false;
                 // publisher
                 // /used_for[classified_as=PUBLISHING]/carried_out_by/id
                 var publishers = record.Elements(libNs + "publisher");
                 foreach (var publisher in publishers)
                 {
-                    publisherDict.AddToListForKey(publisher.Value.TrimSpecial(), id);
+                    hasPublisher = true;
+                    publisherDict.AddToListForKey(publisher.Value.TrimOuterBrackets(), id);
                 }
 
-                // also need year for publishing ^^ these three make a new Activity, see koot.UsedFor
+                var year = record.Elements(libNs + "year").SingleOrDefault()?.Value;
+                if (string.IsNullOrWhiteSpace(year)) year = null;
+                var timespan = timespanParser.Parse(year);
+
+                if(year != null || hasPublisher || hasPlace)
+                {
+                    if (year != null && !char.IsDigit(year[0]))
+                    {
+                        //Console.WriteLine(year);
+                    }
+                    // create a publishing activity which we can populate with reconciled place and publisher later
+                    book.UsedFor = [
+                        new Activity()
+                        {
+                            Label = "Publishing",
+                            ClassifiedAs = [Getty.Publishing],
+                            TimeSpan = timespan, // which may be null
+                            CarriedOutBy = null, // [ group.. ]
+                            TookPlaceAt = null // [ place.. ]
+                        }
+                    ];
+                }
 
             }
 
@@ -439,16 +464,29 @@ namespace PmcTransformer
                     .WithLabel(kvp.Key);
 
                 // /used_for[classified_as=PUBLISHING]/took_place_at/id
-
+                // This .UsedFor must exist, created in first pass
                 foreach (var id in kvp.Value)
                 {
                     var book = allBooks[id];
-                    book.CreatedBy ??= new Activity(Types.Creation);
-                    book.CreatedBy.Part ??= [];
-                    book.CreatedBy.Part.Add(new Activity(Types.Creation)
-                    {
-                        CarriedOutBy = [group]
-                    });
+                    book.UsedFor![0].TookPlaceAt = [place];
+                }
+            }
+
+
+            // .. temporarily same for publishers...
+            int publisherIdMinter = 1;
+            foreach (var kvp in publisherDict)
+            {
+                var group = new Group()
+                    .WithId(Identity.GroupBase + "temp-" + publisherIdMinter++)
+                    .WithLabel(kvp.Key);
+
+                // /used_for[classified_as=PUBLISHING]/carried_out_by/id
+                // This .UsedFor must exist, created in first pass
+                foreach (var id in kvp.Value)
+                {
+                    var book = allBooks[id];
+                    book.UsedFor![0].CarriedOutBy = [group];
                 }
             }
 

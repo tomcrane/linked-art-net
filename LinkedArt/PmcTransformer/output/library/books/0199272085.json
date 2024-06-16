@@ -59,6 +59,33 @@
       }
     ]
   },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-89",
+          "type": "Group",
+          "_label": "Oxford University Press"
+        }
+      ],
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-18",
+          "type": "Place",
+          "_label": "Oxford"
+        }
+      ]
+    }
+  ],
   "current_location": {
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LA",
     "type": "Place",

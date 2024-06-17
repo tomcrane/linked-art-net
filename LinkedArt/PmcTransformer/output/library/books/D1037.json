@@ -9,6 +9,44 @@
       "_label": "Text"
     }
   ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "xxii, 138 p., [9] leaves of plates : ill. ; 18 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "British Artists",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027349",
+          "type": "Type",
+          "_label": "Series",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -35,6 +73,17 @@
     {
       "type": "Identifier",
       "content": "7 LELY(P).C"
+    },
+    {
+      "type": "Identifier",
+      "content": "B03601",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -77,6 +126,12 @@
           "_label": "Philip Allan"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "1922",
+        "begin_of_the_begin": "1922-01-01T00:00:00Z",
+        "end_of_the_end": "1922-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-1",
@@ -90,5 +145,15 @@
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
     "type": "Place",
     "_label": "Public Study Room"
-  }
+  },
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-6237",
+      "_label": "Kneller, Godfrey, Sir, 1646-1723"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-8183",
+      "_label": "Lely, Peter, Sir, 1618-1680"
+    }
+  ]
 }

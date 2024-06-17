@@ -9,6 +9,26 @@
       "_label": "Text"
     }
   ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "3 v. (xxxii, 545, 622, 607 p.) ; 25 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -35,6 +55,39 @@
     {
       "type": "Identifier",
       "content": "711.4(421) WHE"
+    },
+    {
+      "type": "Identifier",
+      "content": "B00572",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "B00573",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "B00574",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -94,6 +147,12 @@
           "_label": "Murray"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "1891",
+        "begin_of_the_begin": "1891-01-01T00:00:00Z",
+        "end_of_the_end": "1891-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-1",
@@ -107,5 +166,19 @@
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LA",
     "type": "Place",
     "_label": "Library Annex"
-  }
+  },
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-212",
+      "_label": "London (England)-History"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-3269",
+      "_label": "Buildings-England-London"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-18311",
+      "_label": "London (England)-Antiquities"
+    }
+  ]
 }

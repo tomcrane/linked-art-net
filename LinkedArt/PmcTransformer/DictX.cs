@@ -15,7 +15,7 @@ namespace PmcTransformer
             }
         }
 
-        public static void AddToListForKey(this Dictionary<string, List<string>> dict, string key, string value)
+        public static void AddToListForKey(this Dictionary<string, List<string>> dict, string? key, string value)
         {
             if (string.IsNullOrWhiteSpace(key))
             {

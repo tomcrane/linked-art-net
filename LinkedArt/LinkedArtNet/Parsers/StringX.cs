@@ -10,8 +10,10 @@ namespace LinkedArtNet.Parsers
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static string TrimOuterBrackets(this string s)
+        public static string? TrimOuterBrackets(this string? s)
         {
+            if(s == null) return null;
+
             var s2 = s.Trim();
             if (s2.StartsWith('[') && s2.EndsWith(']'))
             {
@@ -45,13 +47,20 @@ namespace LinkedArtNet.Parsers
             return sb.ToString();
         }
 
-        public static string RemoveCirca(this string s)
+        public static string? RemoveCirca(this string? s)
         {
+            if(s == null) return null;
+
             var s2 = s.Trim();
             var s3 = s2.Replace("circa", "").Trim();
             var len = s3.Length;
             if (len > 2)
             {
+                // observed in pmc but there's a much better way to do this.
+                if (s3.StartsWith('C') && char.IsDigit(s3[1]))
+                {
+                    return s3[1..];
+                }
                 if (s3.StartsWith('c') && char.IsDigit(s3[1]))
                 {
                     return s3[1..];
@@ -68,6 +77,14 @@ namespace LinkedArtNet.Parsers
                 {
                     return s3[3..];
                 }
+                if (s3.StartsWith("ca") && char.IsDigit(s3[2]))
+                {
+                    return s3[2..];
+                }
+                if (s3.StartsWith("ca.") && char.IsDigit(s3[3]))
+                {
+                    return s3[3..];
+                }
             }
             return s3;
         }
@@ -80,15 +97,17 @@ namespace LinkedArtNet.Parsers
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static string ExpandUncertainYears(this string s)
+        public static string? ExpandUncertainYears(this string? s)
         {
+            if (s == null) return null;
+
             var parts = s.Split(' ');
             Dictionary<int, string>? partDict = null;
             for (int i = 0; i < parts.Length; i++)
             {
                 string? part = parts[i];
                 // yearlike: starts with at least two digits; Allow for 198? or 198-?
-                if (part.Length <= 5 && part.Length > 1 && char.IsDigit(part[0]) && char.IsDigit(part[1]))
+                if (part.Length <= 5 && part.Length > 2 && char.IsDigit(part[0]) && char.IsDigit(part[1]))
                 {
                     // It's yearlike but not exactly a year!
                     string expanded = ExpandUncertainYear(part);
@@ -157,9 +176,27 @@ namespace LinkedArtNet.Parsers
             }
             else
             {
-                return $"{year}-{year + 99}";
+                return $"{year}-{year + 100}"; // we will subtract 1s for our LinkedArtDateTime
             }
-            return $"{year}-{year + 9}";
+            return $"{year}-{year + 10}"; // we will subtract 1s for our LinkedArtDateTime
+        }
+
+        public static bool IsStartOfYear(this DateTimeOffset? dt)
+        {
+            if (dt.HasValue)
+            {
+                return dt.Value.IsStartOfYear();
+            }
+            return false;
+        }
+
+        public static bool IsStartOfYear(this DateTimeOffset dt)
+        {
+            if (dt == new DateTimeOffset(dt.Year, 1, 1, 0, 0, 0, TimeSpan.Zero))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

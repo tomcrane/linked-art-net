@@ -9,6 +9,26 @@
       "_label": "Text"
     }
   ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "xvii, 373 p. : ill. ; 24 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -35,6 +55,17 @@
     {
       "type": "Identifier",
       "content": "366 BER"
+    },
+    {
+      "type": "Identifier",
+      "content": "B14304",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -77,6 +108,12 @@
           "_label": "Oxford University Press"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2005",
+        "begin_of_the_begin": "2005-01-01T00:00:00Z",
+        "end_of_the_end": "2005-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-18",

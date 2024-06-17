@@ -2,10 +2,12 @@
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
 using PmcTransformer.Helpers;
+using System.Diagnostics.Metrics;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Group = LinkedArtNet.Group;
 
 namespace PmcTransformer
@@ -46,6 +48,9 @@ namespace PmcTransformer
             int classHasLocationButDifferentFromAcclocCounter = 0;
             var placeDict = new Dictionary<string, List<string>>();
             var publisherDict = new Dictionary<string, List<string>>();
+            var accnofldCounter = new Dictionary<int, int>();
+            var collationCounter = new Dictionary<int, int>();
+            var keywordDict = new Dictionary<string, List<string>>();
 
 
             foreach (var record in xLibrary.Root!.Elements())
@@ -140,7 +145,7 @@ namespace PmcTransformer
                 // Distribution of accloc values (book is in more than one physical location...):
                 // 1: 62088
                 // 2: 981
-                // 3: 159
+                // 3: 159  // see 0955581036
                 // 4: 89
                 // 5: 24
                 // 6: 20
@@ -178,7 +183,7 @@ namespace PmcTransformer
                         }
                         else
                         {
-                            Console.WriteLine("Book " + id + " already has a location");
+                            // Console.WriteLine("Book " + id + " already has a location");
                         }
                     }
                 }
@@ -233,9 +238,22 @@ namespace PmcTransformer
                     publisherDict.AddToListForKey(publisher.Value.TrimOuterBrackets(), id);
                 }
 
-                var year = record.Elements(libNs + "year").SingleOrDefault()?.Value;
+                var yearEl = record.Elements(libNs + "year").SingleOrDefault()?.Value;
+                var year = yearEl;
                 if (string.IsNullOrWhiteSpace(year)) year = null;
+                var nobrackets = year.TrimOuterBrackets();
+                if (nobrackets != null && nobrackets.StartsWith("n.d")) year = null;
+                if (nobrackets == "Date of publication not identified") year = null;
+
+                
+                if (id == "00328898")
+                {
+                    // Console.WriteLine("pause");
+                }
                 var timespan = timespanParser.Parse(year);
+
+                //Console.WriteLine(yearEl);
+                //Console.WriteLine(JsonSerializer.Serialize(timespan, options));
 
                 if(year != null || hasPublisher || hasPlace)
                 {
@@ -255,6 +273,106 @@ namespace PmcTransformer
                         }
                     ];
                 }
+
+                // accnofld 
+                // /identified_by[type=Identifier,classified_as=ACCESSION]/value
+                // Distribution of accessionNumbers:
+                // This looks uncannily similar to Distribution of accloc values!
+                // 1: 62088
+                // 2: 981
+                // 3: 159  // see 0955581036
+                // 4: 89
+                // 5: 24
+                // 6: 20
+                // 7: 6
+                // 8: 6
+                // 9: 3
+                // 11: 1
+                // 12: 5
+                // 14: 3
+                // 16: 1
+                // 18: 1
+                // 22: 1
+                // 30: 1
+                // 34: 1
+                // 37: 1
+                var accessionNumbers = record.Elements(libNs + "accnofld")
+                    .Select(c => c.Value)
+                    .ToList();
+                accnofldCounter.IncrementCounter(accessionNumbers.Count);
+                foreach(var accessionNumer in accessionNumbers)
+                {
+                    // unlike locations we can allocate multiple accession numbers...
+                    // but should we?
+                    book.IdentifiedBy.Add(new Identifier(accessionNumer).AsAccessionNumber());
+                }
+
+                // collation
+                // /referred_to_by[classified_as=COLLATION/value
+                var collations = record.Elements(libNs + "collation")
+                    .Select(c => c.Value)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .ToList();
+                collationCounter.IncrementCounter(collations.Count);
+                if (collations.Count == 1)
+                {
+                    // There is only ever none or one
+                    var collationStatement = new LinguisticObject()
+                        .WithClassifiedAs(
+                            Getty.AatType("Collations Statement", "300311715"),  // Check this is the right one
+                            Getty.AatType("Brief Text", "300418049"))
+                        .WithContent(collations[0]);
+
+                    book.ReferredToBy ??= [];
+                    book.ReferredToBy.Add(collationStatement);
+                }
+
+                // Unreconciled!
+                // See example output E2865, D8326
+                // /about/id
+                var keywords = record.Elements(libNs + "keywords");
+                foreach (var keyword in keywords)
+                {
+                    keywordDict.AddToListForKey(keyword.Value.TrimOuterBrackets(), id);
+                }
+
+                // entrydate
+                // TODO: use in Activity Stream - in DB
+
+                // series - this is a statement
+                // /referred_to_by[classified_as=???]/value
+                var series = record.Elements(libNs + "series")
+                    .Select(c => c.Value)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .SingleOrDefault();
+                var seriesno = record.Elements(libNs + "seriesno")
+                    .Select(c => c.Value)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .SingleOrDefault();
+                if (series != null)
+                {
+                    if(seriesno != null)
+                    {
+                        series += " " + seriesno;
+                    }
+                    var seriesStatement = new LinguisticObject()
+                        .WithClassifiedAs(
+                            Getty.AatType("Series", "300027349"),  // THIS IS ALMOST CERTAINLY WRONG
+                            Getty.AatType("Brief Text", "300418049"))
+                        .WithContent(series);
+
+                    book.ReferredToBy ??= [];
+                    book.ReferredToBy.Add(seriesStatement);
+                }
+
+                // lng
+
+                // notescsvx 
+
+                // afilecsvx 
+
+
+
 
             }
 
@@ -286,6 +404,11 @@ namespace PmcTransformer
 
             Console.WriteLine("place keys: " + placeDict.Keys.Count);
             Console.WriteLine("publisher keys: " + publisherDict.Keys.Count);
+            accnofldCounter.Display("Distribution of accessionNumbers:");
+            collationCounter.Display("Distribution of collations:");
+
+
+
 
             // Create Groups for corpauthor and assert in book record.
             // TODO - this needs to be consistent between runs so once we are sure about our corporation,
@@ -487,6 +610,27 @@ namespace PmcTransformer
                 {
                     var book = allBooks[id];
                     book.UsedFor![0].CarriedOutBy = [group];
+                }
+            }
+
+
+
+            // .. temporarily same for keywords...
+            int keywordIdMinter = 1;
+            foreach (var kvp in keywordDict)
+            {
+                // These need to be reconciled to any kind of entity - people, places, concepts
+                var thing = new LinkedArtObject()
+                    .WithId(Identity.GroupBase + "temp-" + keywordIdMinter++)
+                    .WithLabel(kvp.Key);
+
+                // /used_for[classified_as=PUBLISHING]/carried_out_by/id
+                // This .UsedFor must exist, created in first pass
+                foreach (var id in kvp.Value)
+                {                    
+                    var book = allBooks[id];
+                    book.About ??= [];
+                    book.About.Add(thing);
                 }
             }
 

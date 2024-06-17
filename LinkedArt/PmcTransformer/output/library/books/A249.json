@@ -9,6 +9,26 @@
       "_label": "Information files"
     }
   ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "2 p.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -35,6 +55,17 @@
     {
       "type": "Identifier",
       "content": "INFORMATION FILES - PRINT PUBLISHERS"
+    },
+    {
+      "type": "Identifier",
+      "content": "C92",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -77,6 +108,12 @@
           "_label": "Thomas Tegg"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "1808",
+        "begin_of_the_begin": "1808-01-01T00:00:00Z",
+        "end_of_the_end": "1808-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-1",

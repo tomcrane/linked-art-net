@@ -9,6 +9,26 @@
       "_label": "Text"
     }
   ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "2 v. in 1 (viii, 56 p; [21] leaves of plates; 52 p; 10 leaves of plates) : ill. (1 col.) ; 29 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -35,6 +55,17 @@
     {
       "type": "Identifier",
       "content": "7 PUGI(W).P"
+    },
+    {
+      "type": "Identifier",
+      "content": "B14683",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -77,6 +108,12 @@
           "_label": "John Grant"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "1895",
+        "begin_of_the_begin": "1895-01-01T00:00:00Z",
+        "end_of_the_end": "1895-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-7",
@@ -90,5 +127,11 @@
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
     "type": "Place",
     "_label": "Public Study Room"
-  }
+  },
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-2109",
+      "_label": "Pugin, Augustus Welby Northmore, 1812-1852"
+    }
+  ]
 }

@@ -9,6 +9,44 @@
       "_label": "Text"
     }
   ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "143 p. : ill. (some col.) ;30 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "British sculptors and sculpture series",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027349",
+          "type": "Type",
+          "_label": "Series",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -35,6 +73,17 @@
     {
       "type": "Identifier",
       "content": "7 JAGG(C).C"
+    },
+    {
+      "type": "Identifier",
+      "content": "B13743",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -77,6 +126,12 @@
           "_label": "The Henry Moore Foundation in association with Lund Humphries"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2004",
+        "begin_of_the_begin": "2004-01-01T00:00:00Z",
+        "end_of_the_end": "2004-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-438",
@@ -90,5 +145,15 @@
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
     "type": "Place",
     "_label": "Public Study Room"
-  }
+  },
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-3240",
+      "_label": "Jagger, Charles Sargeant, 1885-1934"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-5268",
+      "_label": "War memorials"
+    }
+  ]
 }

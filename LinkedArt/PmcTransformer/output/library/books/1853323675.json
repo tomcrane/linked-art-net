@@ -9,6 +9,26 @@
       "_label": "Exhibition catalogue"
     }
   ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "114 pages : illustrations (black and white, and colour) ; 23 cm",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -35,6 +55,17 @@
     {
       "type": "Identifier",
       "content": "73.036(41) BRE"
+    },
+    {
+      "type": "Identifier",
+      "content": "B30800",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -87,6 +118,12 @@
           "_label": "Hayward Gallery Publishing"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2020",
+        "begin_of_the_begin": "2020-01-01T00:00:00Z",
+        "end_of_the_end": "2020-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-1",
@@ -100,5 +137,11 @@
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LA",
     "type": "Place",
     "_label": "Library Annex"
-  }
+  },
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-8415",
+      "_label": "Women sculptors-Great Britain-20th century-Exhibitions"
+    }
+  ]
 }

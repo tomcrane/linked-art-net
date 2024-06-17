@@ -20,6 +20,24 @@
           "_label": "Edition"
         }
       ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "xi, [1], 264 p., [10] leaves of plates : ill. ; 18 cm (12mo)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
     }
   ],
   "identified_by": [
@@ -48,6 +66,17 @@
     {
       "type": "Identifier",
       "content": "OPPE-1770-2"
+    },
+    {
+      "type": "Identifier",
+      "content": "B32119",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -107,6 +136,12 @@
           "_label": "Printed for J. Marks, in St. Martin\u0027s Lane"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "MDCCLXX [1770]",
+        "begin_of_the_begin": "1770-01-01T00:00:00Z",
+        "end_of_the_end": "1770-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-1",
@@ -120,5 +155,15 @@
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LS2",
     "type": "Place",
     "_label": "Library Store 2"
-  }
+  },
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-1328",
+      "_label": "Engraving-Early works to 1800"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-22593",
+      "_label": "Engravers\u0027 marks-Early works to 1800"
+    }
+  ]
 }

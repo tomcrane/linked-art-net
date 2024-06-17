@@ -9,6 +9,26 @@
       "_label": "Exhibition catalogue"
     }
   ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "14 pages : colour illustrations ; 30 cm",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300311715",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -35,6 +55,17 @@
     {
       "type": "Identifier",
       "content": "7 CANA (PAMPHLET)"
+    },
+    {
+      "type": "Identifier",
+      "content": "B39299",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
     }
   ],
   "created_by": {
@@ -70,6 +101,12 @@
           "_label": "Museums Worcestershire"
         }
       ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2022",
+        "begin_of_the_begin": "2022-01-01T00:00:00Z",
+        "end_of_the_end": "2022-12-31T23:59:59Z"
+      },
       "took_place_at": [
         {
           "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-297",
@@ -83,5 +120,15 @@
     "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
     "type": "Place",
     "_label": "Public Study Room"
-  }
+  },
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-2107",
+      "_label": "Canaletto [Canal, Giovanni Antonio], 1697-1768-Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-2108",
+      "_label": "Marlow, William, 1740-1813-Exhibitions"
+    }
+  ]
 }

@@ -1,14 +1,11 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
-using Microsoft.Recognizers.Definitions.Chinese;
 using PmcTransformer.Helpers;
-using System.Diagnostics.Metrics;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Group = LinkedArtNet.Group;
 
 namespace PmcTransformer
@@ -16,6 +13,7 @@ namespace PmcTransformer
     internal class Program
     {
         static JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true, };
+        static XNamespace libNs = "x-schema:EF-34074-Export.dtd";
 
         static void Main(string[] args)
         {
@@ -24,7 +22,6 @@ namespace PmcTransformer
             var library = root + "\\2024-03-11_library";
             var photo_archive = root + "\\2024-03-14_photo-archive";
 
-            XNamespace libNs = "x-schema:EF-34074-Export.dtd";
 
             StreamReader reader = new StreamReader(library + "\\2024-03-11_library.xml", Encoding.UTF8);
             var xLibrary = XDocument.Load(reader);
@@ -38,7 +35,9 @@ namespace PmcTransformer
 
 
             // Maps
-            var allBooks = new Dictionary<string, HumanMadeObject>();
+            var allWorks = new Dictionary<string, LinguisticObject>();
+            var allHMOs = new Dictionary<string, List<HumanMadeObject>>();
+
             var persAuthorFullDict = new Dictionary<string, List<string>>();
             var corpAuthorDict = new Dictionary<string, List<string>>();
             int nullMediumCounter = 0;
@@ -46,12 +45,12 @@ namespace PmcTransformer
 
             var distinctClasses = new HashSet<string>();
             var accLocCounter = new Dictionary<int, int>();
-            var multipleAccLocCounter = new Dictionary<int, int>();
+            // var multipleAccLocCounter = new Dictionary<int, int>();
             int classMatchesAccLocCounter = 0;
             int classHasLocationButDifferentFromAcclocCounter = 0;
             var placeDict = new Dictionary<string, List<string>>();
             var publisherDict = new Dictionary<string, List<string>>();
-            var accnofldCounter = new Dictionary<int, int>();
+            // var accnofldCounter = new Dictionary<int, int>();
             var collationCounter = new Dictionary<int, int>();
             var keywordDict = new Dictionary<string, List<string>>();
             var distinctLang = new HashSet<string>();
@@ -60,32 +59,38 @@ namespace PmcTransformer
 
             foreach (var record in xLibrary.Root!.Elements())
             {
-                // RS: /identified_by[type=Identifier,classified_as=REPOSITORY]/value
+                // Each of these is a work - a LinguisticObject
+                // These carry the semantic metadata, the Creation activities.
+                // Each work has one or more HumanMadeObjects, which carry the physical metadata.
+
+                if (ShouldSkipRecord(record))
+                {
+                    continue;
+                }
+
+                // /identified_by[type=Identifier,classified_as=REPOSITORY]/value
                 var id = record.Attribute("ID")!.Value;
 
-                // "Missing record created by data verification program"
-                if (id == "Q$") continue;
-
                 // The first iteration will focus only on the books. 
-                var book = new HumanMadeObject()
+                var work = new LinguisticObject()
                     .WithContext()
-                    .WithId($"{Identity.BooksBase}{id}");
+                    .WithId($"{Identity.LinguisticObjectBase}{id}");
 
-                allBooks.Add(id, book);
+                allWorks.Add(id, work);
 
-                // RS: /identified_by[type = Name, classified_as = PRIMARY] / value
+                // /identified_by[type = Name, classified_as = PRIMARY] / value
                 var title = record.Elements(libNs + "title").Single().Value;
 
-                book.IdentifiedBy = [
+                work.IdentifiedBy = [
                     new Identifier(id).AsSystemAssignedNumber(),
                     new Name(title).AsPrimaryName(),
                 ];
 
-                // RS: /referred_to_by[type=LinguisticObject,classified_as=EDITION_STMT]/value
+                // /referred_to_by[type=LinguisticObject,classified_as=EDITION_STMT]/value
                 var edition = record.Elements(libNs + "edition").Single().Value;
                 if (!string.IsNullOrWhiteSpace(edition))
                 {
-                    book.ReferredToBy = [
+                    work.ReferredToBy = [
                         new LinguisticObject()
                             .WithContent(edition)
                             .WithClassifiedAs(editionDescription)
@@ -101,7 +106,6 @@ namespace PmcTransformer
                     persAuthorFullDict.AddToListForKey(author.Value.TrimOuterBrackets(), id);
                 }
 
-
                 // corpauthor - Repeatable. Organization/Corporate name of a creator/contributor to the Work. No role provided, assume role=author.
                 // See notes on Groups below.
                 // /created_by/part/carried_out_by/id
@@ -111,12 +115,10 @@ namespace PmcTransformer
                     corpAuthorDict.AddToListForKey(author.Value.TrimOuterBrackets(), id);
                 }
 
-
                 // Observed so far ALL records have exactly one medium.
                 // /classified_as/id
                 var medium = record.Elements(libNs + "medium").Single().Value;
                 var mediumClassifier = Media.FromRecordValue(medium);
-                // IGNORE IF JOURNAL
                 if(mediumClassifier == null)
                 {
                     // Image files
@@ -124,7 +126,7 @@ namespace PmcTransformer
                 } 
                 else
                 {
-                    book.WithClassifiedAs(mediumClassifier);
+                    work.WithClassifiedAs(mediumClassifier);
                 }
 
                 // See notes (messy)
@@ -139,16 +141,24 @@ namespace PmcTransformer
                 // 5: 1              1
                 // 9: 2              2
                 // 12: 1             1
+                string[] ignoredClasses = [
+                    "AUCTION CATALOGUES",
+                    "PMC SUPPORTED",
+                    "PMC PUBLICATION"
+                ];
                 var classes = record.Elements(libNs + "class")
                     .Select(c => c.Value)
                     .Where(v => !string.IsNullOrWhiteSpace(v))
-                    .Where(v => v != "AUCTION CATALOGUES")
+                    .Where(v => !ignoredClasses.Contains(v))
                     .Where(v => !v.StartsWith("IN PROCESS"))
+                    .Where(v => !v.StartsWith("YCBA"))
+                    .Where(v => !v.StartsWith("With Grants &"))
                     .ToList();
                 classCounter.IncrementCounter(classes.Count);
 
                 // /current_location/id
-                // Distribution of accloc values (book is in more than one physical location...):
+                // Distribution of accloc values (HMO has parts each of which has a location):
+                // This distribution should match accnofld exactly and they are assumed to tally
                 // 1: 62088
                 // 2: 981
                 // 3: 159  // see 0955581036
@@ -169,33 +179,67 @@ namespace PmcTransformer
                 // 37: 1
                 var acclocs = record.Elements(libNs + "accloc")
                     .Select(c => c.Value)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
                     .ToList();
                 accLocCounter.IncrementCounter(acclocs.Count);
+                var accessionNumbers = record.Elements(libNs + "accnofld")
+                    .Select(c => c.Value)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .ToList();
 
-                var alreadyMappedLocations = new HashSet<string>();   
-                foreach(var location in acclocs)
+                if(acclocs.Count != accessionNumbers.Count)
                 {
-                    if (alreadyMappedLocations.Contains(location))
+                    throw new InvalidOperationException("Mismatch accloc/accnofld for " + id);
+                }
+
+                var alreadyMappedLocations = new HashSet<string>();
+                allHMOs[id] = [];
+                if (acclocs.Count == 0)
+                {
+                    var hmo = new HumanMadeObject()
+                        .WithContext()
+                        .WithId($"{Identity.HmoBase}{id}/1");
+                    hmo.IdentifiedBy = [ new Name(title).AsPrimaryName() ];
+                    allHMOs[id].Add(hmo);
+                }
+                else
+                {
+                    for(int i=0; i<acclocs.Count; i++)
                     {
-                        continue;
-                    }
-                    alreadyMappedLocations.Add(location);
-                    var mappedLocation = Locations.FromRecordValue(location);
-                    if(mappedLocation != null)
-                    {
-                        if (book.CurrentLocation == null)
+                        var hmo = new HumanMadeObject()
+                            .WithContext()
+                            .WithId($"{Identity.HmoBase}{id}/{i}");
+                        hmo.IdentifiedBy = [
+                            new Name(title).AsPrimaryName(),
+                            new Identifier(accessionNumbers[i]).AsAccessionNumber()
+                        ];
+                        var mappedLocation = Locations.FromRecordValue(acclocs[i]);
+                        alreadyMappedLocations.Add(acclocs[i]);
+                        if (mappedLocation != null)
                         {
-                            book.CurrentLocation = mappedLocation;
+                            hmo.CurrentLocation = mappedLocation;
                         }
-                        else
-                        {
-                            // Console.WriteLine("Book " + id + " already has a location");
-                        }
+                        allHMOs[id].Add(hmo);
                     }
                 }
-                multipleAccLocCounter.IncrementCounter(alreadyMappedLocations.Count);
+                foreach(var hmo in allHMOs[id])
+                {
+                    // add relationship from HMO to LO
+                    hmo.Carries = [
+                        new LinguisticObject().WithId(work.Id)
+                    ];
+                }
+
 
                 var classesThatWillBecomeIdentifiers = new List<string>();
+                string[] normalisedMediums = [
+                    "PAMPHLET",
+                    "LARGE",
+                    "EXTRA LARGE",
+                    "EXTRA EXTRA LARGE",
+                    "INFORMATION FILES",
+                    "REPORTS"
+                ];
                 foreach (var classVal in classes)
                 {
                     var locationAsClass = Locations.FromRecordValue(classVal, true);
@@ -208,27 +252,29 @@ namespace PmcTransformer
                         else
                         {
                             classHasLocationButDifferentFromAcclocCounter++;
+                            // TODO: So add a location?
+                            // To ALL of the HMOs?
+                            // TODO: count them here and warn if > 1
                         }
                     }
                     else
                     {
-                        // not a known location
-                        // Console.WriteLine($"{id}: {classVal}");
-                        classesThatWillBecomeIdentifiers.Add(classVal);
+                        var mediumClass = classVal.ToUpperInvariant().TrimOuterParentheses();
+                        if(normalisedMediums.Any(s => s.StartsWith(mediumClass!)))
+                        {
+                            // TODO: Need to add the mappings for these to Media.cs
+                        }
+                        else
+                        {
+                            classesThatWillBecomeIdentifiers.Add(classVal);
+                        }
                     }
                 }
-
-                if(classesThatWillBecomeIdentifiers.Any())
+                foreach(var idClass in classesThatWillBecomeIdentifiers)
                 {
-                    book.IdentifiedBy ??= [];
-                    book.IdentifiedBy.Add(new Identifier(string.Join(' ', classesThatWillBecomeIdentifiers)));
-
-
-                        foreach(var c in classesThatWillBecomeIdentifiers)
-                        {
-                            distinctClasses.Add(c);
-                        }
-                        // Console.WriteLine("CLASS CONCAT: " + string.Join('|', classesThatWillBecomeIdentifiers));
+                    work.IdentifiedBy ??= [];
+                    // work.IdentifiedBy.Add(new Identifier(idClass));
+                    work.IdentifiedBy.Add(new Identifier(string.Join(' ', classesThatWillBecomeIdentifiers)));
                 }
 
                 bool hasPlace = false;
@@ -258,11 +304,6 @@ namespace PmcTransformer
                 if (nobrackets != null && nobrackets.StartsWith("n.d")) year = null;
                 if (nobrackets == "Date of publication not identified") year = null;
 
-                
-                if (id == "00328898")
-                {
-                    // Console.WriteLine("pause");
-                }
                 var timespan = timespanParser.Parse(year);
 
                 //Console.WriteLine(yearEl);
@@ -275,7 +316,7 @@ namespace PmcTransformer
                         //Console.WriteLine(year);
                     }
                     // create a publishing activity which we can populate with reconciled place and publisher later
-                    book.UsedFor = [
+                    work.UsedFor = [
                         new Activity()
                         {
                             Label = "Publishing",
@@ -287,38 +328,6 @@ namespace PmcTransformer
                     ];
                 }
 
-                // accnofld 
-                // /identified_by[type=Identifier,classified_as=ACCESSION]/value
-                // Distribution of accessionNumbers:
-                // This looks uncannily similar to Distribution of accloc values!
-                // 1: 62088
-                // 2: 981
-                // 3: 159  // see 0955581036
-                // 4: 89
-                // 5: 24
-                // 6: 20
-                // 7: 6
-                // 8: 6
-                // 9: 3
-                // 11: 1
-                // 12: 5
-                // 14: 3
-                // 16: 1
-                // 18: 1
-                // 22: 1
-                // 30: 1
-                // 34: 1
-                // 37: 1
-                var accessionNumbers = record.Elements(libNs + "accnofld")
-                    .Select(c => c.Value)
-                    .ToList();
-                accnofldCounter.IncrementCounter(accessionNumbers.Count);
-                foreach(var accessionNumer in accessionNumbers)
-                {
-                    // unlike locations we can allocate multiple accession numbers...
-                    // but should we?
-                    book.IdentifiedBy.Add(new Identifier(accessionNumer).AsAccessionNumber());
-                }
 
                 // collation
                 // /referred_to_by[classified_as=COLLATION/value
@@ -336,8 +345,8 @@ namespace PmcTransformer
                             Getty.AatType("Brief Text", "300418049"))
                         .WithContent(collations[0]);
 
-                    book.ReferredToBy ??= [];
-                    book.ReferredToBy.Add(collationStatement);
+                    work.ReferredToBy ??= [];
+                    work.ReferredToBy.Add(collationStatement);
                 }
 
                 // Unreconciled!
@@ -363,6 +372,7 @@ namespace PmcTransformer
                     .Where(c => !string.IsNullOrWhiteSpace(c))
                     .SingleOrDefault();
 
+
                 // AAT 300417214
                 // A Name of work with classification of series title 
 
@@ -372,20 +382,10 @@ namespace PmcTransformer
                     {
                         series += ", number " + seriesno;
                     }
-
-                    book.IdentifiedBy ??= [];
-                    book.IdentifiedBy.Add(
+                    work.IdentifiedBy ??= [];
+                    work.IdentifiedBy.Add(
                         new Name(series)
                             .WithClassifiedAs(Getty.AatType("Series title", "300417214")));
-
-                    //var seriesStatement = new LinguisticObject()
-                    //    .WithClassifiedAs(
-                    //        Getty.AatType("Series", "300027349"),  // THIS IS ALMOST CERTAINLY WRONG
-                    //        Getty.AatType("Brief Text", "300418049"))
-                    //    .WithContent(series);
-
-                    //book.ReferredToBy ??= [];
-                    //book.ReferredToBy.Add(seriesStatement);
                 }
 
                 // lng
@@ -418,7 +418,7 @@ namespace PmcTransformer
             Console.WriteLine();
 
             Console.WriteLine("nullMediumCounter: " + nullMediumCounter);
-            Console.WriteLine("allBooks keys: " + allBooks.Keys.Count);
+            Console.WriteLine("allBooks keys: " + allWorks.Keys.Count);
             Console.WriteLine("persauthorfull keys: " + persAuthorFullDict.Keys.Count);
             Console.WriteLine("corpAuthor keys: " + corpAuthorDict.Keys.Count);
             classCounter.Display("Distribution of class values:");
@@ -461,7 +461,7 @@ namespace PmcTransformer
 
                 foreach (var id in corpAuthor.Value)
                 {
-                    var book = allBooks[id];
+                    var book = allWorks[id];
                     book.CreatedBy ??= new Activity(Types.Creation);
                     book.CreatedBy.Part ??= [];
                     book.CreatedBy.Part.Add(new Activity(Types.Creation)
@@ -596,7 +596,7 @@ namespace PmcTransformer
 
                     foreach(var id in roleBooks.Value)
                     {
-                        var book = allBooks[id];
+                        var book = allWorks[id];
                         book.CreatedBy ??= new Activity(Types.Creation);
                         book.CreatedBy.Part ??= [];
                         book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
@@ -629,7 +629,7 @@ namespace PmcTransformer
                 // This .UsedFor must exist, created in first pass
                 foreach (var id in kvp.Value)
                 {
-                    var book = allBooks[id];
+                    var book = allWorks[id];
                     book.UsedFor![0].TookPlaceAt = [place];
                 }
             }
@@ -648,7 +648,7 @@ namespace PmcTransformer
                 // This .UsedFor must exist, created in first pass
                 foreach (var id in kvp.Value)
                 {
-                    var book = allBooks[id];
+                    var book = allWorks[id];
                     book.UsedFor![0].CarriedOutBy = [group];
                 }
             }
@@ -668,7 +668,7 @@ namespace PmcTransformer
                 // This .UsedFor must exist, created in first pass
                 foreach (var id in kvp.Value)
                 {                    
-                    var book = allBooks[id];
+                    var book = allWorks[id];
                     book.About ??= [];
                     book.About.Add(thing);
                 }
@@ -677,10 +677,49 @@ namespace PmcTransformer
             // once serialised in short form, add context and add reconciled equivalents and serialise as groups/people  
             // add in person dates
             // make use of active string in date field (currently being stripped)
-            Sample(allBooks, 1000, true);
+            Sample(allWorks, 1000, true);
         }
 
+        private static bool ShouldSkipRecord(XElement record)
+        {
+            var id = record.Attribute("ID")!.Value;
+            // "Missing record created by data verification program"
+            if (id == "Q$") return true;
 
+            var medium = record.Elements(libNs + "medium").Single().Value;
+            if (medium == "Journal") return true;
+
+            var allClasses = record.Elements(libNs + "class")
+                .Select(c => c.Value.ToUpperInvariant().Replace("(", "").Replace(")", ""))
+                .ToList();
+
+            if (allClasses.Contains("PHOTOGRAPHIC ARCHIVES"))
+            {
+                if(record.Elements(libNs + "corpauthor").Any(ca => ca.Value.StartsWith("Paul Mellon Centre")))
+                {
+                    // PMC Photo Archive will be dealt with separately
+                    return true;
+                }
+            }
+            if (allClasses.Contains("MISSING"))
+            {
+                return true;
+            }
+            if (allClasses.Contains("ORDERED"))
+            {
+                return true;
+            }
+            if (allClasses.Contains("UNAVAILABLE"))
+            {
+                return true;
+            }
+            if (allClasses.Contains("IN QUARANTINE"))
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         private static string TidyPersonDate(string datePart)
         {

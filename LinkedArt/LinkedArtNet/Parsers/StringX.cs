@@ -3,8 +3,29 @@
 namespace LinkedArtNet.Parsers
 {
     public static class StringX
-    {        
-        
+    {
+
+        /// <summary>
+        /// Only trim outer X otherwise leave
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private static string? TrimOuterX(this string? s, char x1, char x2)
+        {
+            if (s == null) return null;
+
+            var s2 = s.Trim();
+            if (s2.StartsWith(x1) && s2.EndsWith(x2))
+            {
+                var s3 = s2.Substring(1, s2.Length - 2);
+                if (!s3.Contains(x1))
+                {
+                    return s3;
+                }
+            }
+            return s2;
+        }
+
         /// <summary>
         /// Only trim outer brackets otherwise leave
         /// </summary>
@@ -12,18 +33,19 @@ namespace LinkedArtNet.Parsers
         /// <returns></returns>
         public static string? TrimOuterBrackets(this string? s)
         {
-            if(s == null) return null;
+            return TrimOuterX(s, '[', ']');
+        }
 
-            var s2 = s.Trim();
-            if (s2.StartsWith('[') && s2.EndsWith(']'))
-            {
-                var s3 = s2.Substring(1, s2.Length - 2);
-                if (!s3.Contains('['))
-                {
-                    return s3;
-                }
-            }
-            return s2;
+
+
+        /// <summary>
+        /// Only trim outer parentheses otherwise leave
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string? TrimOuterParentheses(this string? s)
+        {
+            return TrimOuterX(s, '(', ')');
         }
 
         // remove repeated spaces and convert all space to proper space char (no funny unicode spaces..)

@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="output\library\books\" />
+    <Folder Include="output\library\linguistic\" />
+    <Folder Include="output\library\hmo\" />
   </ItemGroup>
 
 </Project>

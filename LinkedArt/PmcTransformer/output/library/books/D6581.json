@@ -15,7 +15,7 @@
       "content": "2 v. in 1 (viii, 56 p; [21] leaves of plates; 52 p; 10 leaves of plates) : ill. (1 col.) ; 29 cm.",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "The true principles of pointed or Christian architecture set forth in two lectures delivered at St Marie\u0027s, Oscott",
       "classified_as": [
         {

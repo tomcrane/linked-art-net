@@ -15,7 +15,7 @@
       "content": "xii, 57, 3 p., [80] p. of plates : ill. ; 29 cm.",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "The church architecture of Robert Mills",
       "classified_as": [
         {

@@ -1,6 +1,7 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
+using Microsoft.Recognizers.Definitions.Chinese;
 using PmcTransformer.Helpers;
 using System.Diagnostics.Metrics;
 using System.Text;
@@ -42,6 +43,8 @@ namespace PmcTransformer
             var corpAuthorDict = new Dictionary<string, List<string>>();
             int nullMediumCounter = 0;
             var classCounter = new Dictionary<int, int>();
+
+            var distinctClasses = new HashSet<string>();
             var accLocCounter = new Dictionary<int, int>();
             var multipleAccLocCounter = new Dictionary<int, int>();
             int classMatchesAccLocCounter = 0;
@@ -51,6 +54,8 @@ namespace PmcTransformer
             var accnofldCounter = new Dictionary<int, int>();
             var collationCounter = new Dictionary<int, int>();
             var keywordDict = new Dictionary<string, List<string>>();
+            var distinctLang = new HashSet<string>();
+            var langCounter = new Dictionary<int, int>();
 
 
             foreach (var record in xLibrary.Root!.Elements())
@@ -73,7 +78,7 @@ namespace PmcTransformer
 
                 book.IdentifiedBy = [
                     new Identifier(id).AsSystemAssignedNumber(),
-                    new Identifier(title).AsPrimaryName(),
+                    new Name(title).AsPrimaryName(),
                 ];
 
                 // RS: /referred_to_by[type=LinguisticObject,classified_as=EDITION_STMT]/value
@@ -111,6 +116,7 @@ namespace PmcTransformer
                 // /classified_as/id
                 var medium = record.Elements(libNs + "medium").Single().Value;
                 var mediumClassifier = Media.FromRecordValue(medium);
+                // IGNORE IF JOURNAL
                 if(mediumClassifier == null)
                 {
                     // Image files
@@ -216,6 +222,13 @@ namespace PmcTransformer
                 {
                     book.IdentifiedBy ??= [];
                     book.IdentifiedBy.Add(new Identifier(string.Join(' ', classesThatWillBecomeIdentifiers)));
+
+
+                        foreach(var c in classesThatWillBecomeIdentifiers)
+                        {
+                            distinctClasses.Add(c);
+                        }
+                        // Console.WriteLine("CLASS CONCAT: " + string.Join('|', classesThatWillBecomeIdentifiers));
                 }
 
                 bool hasPlace = false;
@@ -319,7 +332,7 @@ namespace PmcTransformer
                     // There is only ever none or one
                     var collationStatement = new LinguisticObject()
                         .WithClassifiedAs(
-                            Getty.AatType("Collations Statement", "300311715"),  // Check this is the right one
+                            Getty.AatType("Collations Statement", "300435452"),  
                             Getty.AatType("Brief Text", "300418049"))
                         .WithContent(collations[0]);
 
@@ -349,23 +362,43 @@ namespace PmcTransformer
                     .Select(c => c.Value)
                     .Where(c => !string.IsNullOrWhiteSpace(c))
                     .SingleOrDefault();
+
+                // AAT 300417214
+                // A Name of work with classification of series title 
+
                 if (series != null)
                 {
                     if(seriesno != null)
                     {
-                        series += " " + seriesno;
+                        series += ", number " + seriesno;
                     }
-                    var seriesStatement = new LinguisticObject()
-                        .WithClassifiedAs(
-                            Getty.AatType("Series", "300027349"),  // THIS IS ALMOST CERTAINLY WRONG
-                            Getty.AatType("Brief Text", "300418049"))
-                        .WithContent(series);
 
-                    book.ReferredToBy ??= [];
-                    book.ReferredToBy.Add(seriesStatement);
+                    book.IdentifiedBy ??= [];
+                    book.IdentifiedBy.Add(
+                        new Name(series)
+                            .WithClassifiedAs(Getty.AatType("Series title", "300417214")));
+
+                    //var seriesStatement = new LinguisticObject()
+                    //    .WithClassifiedAs(
+                    //        Getty.AatType("Series", "300027349"),  // THIS IS ALMOST CERTAINLY WRONG
+                    //        Getty.AatType("Brief Text", "300418049"))
+                    //    .WithContent(series);
+
+                    //book.ReferredToBy ??= [];
+                    //book.ReferredToBy.Add(seriesStatement);
                 }
 
                 // lng
+                var language = record.Elements(libNs + "lng")
+                    .Select(c => c.Value)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .ToList();
+                langCounter.IncrementCounter(language.Count);
+                foreach(var l in language)
+                {
+                    distinctLang.Add(l);
+                }
+
 
                 // notescsvx 
 
@@ -406,9 +439,15 @@ namespace PmcTransformer
             Console.WriteLine("publisher keys: " + publisherDict.Keys.Count);
             accnofldCounter.Display("Distribution of accessionNumbers:");
             collationCounter.Display("Distribution of collations:");
+            langCounter.Display("Distribution of languages:");
 
+            Console.WriteLine("-------------------");
+            foreach(var c in distinctLang)
+            {
+                Console.WriteLine(c);
+            }
 
-
+            //Console.WriteLine("-------------------");
 
             // Create Groups for corpauthor and assert in book record.
             // TODO - this needs to be consistent between runs so once we are sure about our corporation,
@@ -598,6 +637,7 @@ namespace PmcTransformer
 
             // .. temporarily same for publishers...
             int publisherIdMinter = 1;
+            const string yalePmc = "Published for The Paul Mellon Centre for Studies in British Art by Yale University Press";
             foreach (var kvp in publisherDict)
             {
                 var group = new Group()
@@ -679,11 +719,16 @@ namespace PmcTransformer
 
         private static void Sample(Dictionary<string, HumanMadeObject> allBooks, int interval, bool writeToDisk)
         {
+            List<string> pleaseDump = [
+                "0955581036",
+                "030020969X",
+                "0953238997"
+            ];
             var options = new JsonSerializerOptions { WriteIndented = true, };
             int count = 0;
             foreach(var book in allBooks)
             {
-                if(count % interval == 0)
+                if(count % interval == 0 || pleaseDump.Contains(book.Key))
                 {
                     var generatedJson = JsonSerializer.Serialize(book.Value, options);
                     Console.WriteLine(generatedJson);

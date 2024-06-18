@@ -15,27 +15,9 @@
       "content": "11 p. ; 15 cm.",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
-          "classified_as": [
-            {
-              "id": "http://vocab.getty.edu/aat/300418049",
-              "type": "Type",
-              "_label": "Brief Text"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "LinguisticObject",
-      "content": "Exhibition 476",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300027349",
-          "type": "Type",
-          "_label": "Series",
           "classified_as": [
             {
               "id": "http://vocab.getty.edu/aat/300418049",
@@ -60,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "Catalogue of an exhibition of paintings and drawings by Henry Lamb",
       "classified_as": [
         {
@@ -82,6 +64,17 @@
           "id": "http://vocab.getty.edu/aat/300312355",
           "type": "Type",
           "_label": "Accession Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Exhibition, number 476",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417214",
+          "type": "Type",
+          "_label": "Series title"
         }
       ]
     }

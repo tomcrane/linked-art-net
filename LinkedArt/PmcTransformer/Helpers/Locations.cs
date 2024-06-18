@@ -95,10 +95,13 @@ namespace PmcTransformer.Helpers
 
             // Strings that appear in <class> but are clearly the same as locations above
             PlaceDict["Library Store 2"] = LibraryStore2;
-            PlaceDict[$"Library{(char)160}Store{(char)160}2"] = LibraryStore2;            
+            PlaceDict["library Store"] = LibraryStore2;
+            PlaceDict[$"Library{(char)160}Store{(char)160}2"] = LibraryStore2;
+            PlaceDict[$"Library{(char)160}Store{(char)160}1"] = LibraryStore1;
             PlaceDict["Office 2.2"] = Offices22And23;
 
             // Going to invent a place for photo archive
+            // EXCLUDE THESE unless corpauthor==Tate Photographic Archive
             PhotoArchive = new Place().WithId(Identity.PlaceBase + "PHOTOGRAPHIC_ARCHIVE").WithLabel("!!! PHOTOGRAPHIC_ARCHIVE");
             PlaceDict["PHOTOGRAPHIC ARCHIVE"] = PhotoArchive;
             PlaceDict["Photo Archive"] = PhotoArchive;

@@ -15,7 +15,7 @@
       "content": "92 p., [2] leaves of plates : ill. ; 22 cm.",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "Catalogue raisonne, or, A list of the pictures in Blenheim Palace, with occasional remarks and illustrative notes",
       "classified_as": [
         {

@@ -15,7 +15,7 @@
       "content": "xii, 308 p., [8] p. of plates : ill. (some col.) ; 26 cm.",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "The Cambridge guide to the arts in Britain. Vol. 1 : Prehistoric, Roman and early Medieval",
       "classified_as": [
         {

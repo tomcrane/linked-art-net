@@ -15,7 +15,7 @@
       "content": "203 pages : colour illustrations ; 27 x 31 cm",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "Conversations with Turner : the watercolors",
       "classified_as": [
         {

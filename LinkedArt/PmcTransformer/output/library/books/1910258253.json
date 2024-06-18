@@ -15,7 +15,7 @@
       "content": "1 volume : illustrations (black and white, and colour) ; 25 cm",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "Improbable pioneers of the Romantic age : the lives of John Russell, 6th Duke of Bedford and Georgina Gordon, Duchess of Bedford",
       "classified_as": [
         {

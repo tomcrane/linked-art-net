@@ -15,7 +15,7 @@
       "content": "[12] p. : col. ill. ; 22 x 31 cm.",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "Life, light and colour : the rediscovery of William Christian Symons 1845-1911",
       "classified_as": [
         {

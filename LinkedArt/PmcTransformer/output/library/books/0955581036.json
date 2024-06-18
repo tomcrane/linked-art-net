@@ -1,6 +1,6 @@
 {
   "@context": "https://linked.art/ns/v1/linked-art.json",
-  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/D1037",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/books/0955581036",
   "type": "HumanMadeObject",
   "classified_as": [
     {
@@ -12,7 +12,7 @@
   "referred_to_by": [
     {
       "type": "LinguisticObject",
-      "content": "xxii, 138 p., [9] leaves of plates : ill. ; 18 cm.",
+      "content": "3 v. : ill. (chiefly col.) ; 24 cm",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435452",
@@ -32,7 +32,7 @@
   "identified_by": [
     {
       "type": "Identifier",
-      "content": "D1037",
+      "content": "0955581036",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435704",
@@ -43,7 +43,7 @@
     },
     {
       "type": "Name",
-      "content": "Lely and Kneller",
+      "content": "And so it goes : Richard Deacon, Merlin James, Heather \u0026 Ivan Morison : artists from Wales at the 52nd International Art Exhibition, Venice",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300404670",
@@ -54,11 +54,7 @@
     },
     {
       "type": "Identifier",
-      "content": "7 LELY(P).C"
-    },
-    {
-      "type": "Identifier",
-      "content": "B03601",
+      "content": "B39093",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300312355",
@@ -68,13 +64,24 @@
       ]
     },
     {
-      "type": "Name",
-      "content": "British Artists",
+      "type": "Identifier",
+      "content": "B39094",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300417214",
+          "id": "http://vocab.getty.edu/aat/300312355",
           "type": "Type",
-          "_label": "Series title"
+          "_label": "Accession Number"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "B39095",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
         }
       ]
     }
@@ -93,9 +100,26 @@
         ],
         "carried_out_by": [
           {
-            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/190",
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/15",
             "type": "Person",
-            "_label": "Baker, Charles Henry Collins"
+            "_label": "Firth, Hannah"
+          }
+        ]
+      },
+      {
+        "type": "Production",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/16",
+            "type": "Person",
+            "_label": "Roberts, Nia"
           }
         ]
       }
@@ -114,39 +138,51 @@
       ],
       "carried_out_by": [
         {
-          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-2373",
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-18",
           "type": "Group",
-          "_label": "Philip Allan"
+          "_label": "Wales at the Venice Biennale"
         }
       ],
       "timespan": {
         "type": "TimeSpan",
-        "_label": "1922",
-        "begin_of_the_begin": "1922-01-01T00:00:00Z",
-        "end_of_the_end": "1922-12-31T23:59:59Z"
+        "_label": "2007",
+        "begin_of_the_begin": "2007-01-01T00:00:00Z",
+        "end_of_the_end": "2007-12-31T23:59:59Z"
       },
       "took_place_at": [
         {
-          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-1",
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-9",
           "type": "Place",
-          "_label": "London"
+          "_label": "Cardiff"
         }
       ]
     }
   ],
   "current_location": {
-    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LO",
     "type": "Place",
-    "_label": "Public Study Room"
+    "_label": "Library Office"
   },
   "about": [
     {
-      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-6237",
-      "_label": "Kneller, Godfrey, Sir, 1646-1723"
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-28",
+      "_label": "Deacon, Richard, 1949- -Exhibitions"
     },
     {
-      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-8183",
-      "_label": "Lely, Peter, Sir, 1618-1680"
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-29",
+      "_label": "James, Merlin, 1960- -Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-30",
+      "_label": "Morison, Heather, 1973- -Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-31",
+      "_label": "Morison, Ivan, 1974- -Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-32",
+      "_label": "Art, Welsh-Italy-Venice-Exhibitions"
     }
   ]
 }

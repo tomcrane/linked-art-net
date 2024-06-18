@@ -15,7 +15,7 @@
       "content": "29 p., [4] p. of plates ; 19 cm.",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "The Ascott Collection, Ascott, Buckinghamshire",
       "classified_as": [
         {

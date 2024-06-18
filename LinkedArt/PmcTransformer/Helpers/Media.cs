@@ -21,7 +21,7 @@ namespace PmcTransformer.Helpers
             Text = Getty.AatType("Text", "300263751");
             ExhibitionCatalogue = Getty.AatType("Exhibition catalogue", "300026096");
             AuctionCatalogue = Getty.AatType("Auction catalogue", "300026068");
-            Journal = Getty.AatType("Journal", "300215390");
+            Journal = Getty.AatType("Journal", "300215390");  // IGNORE THE RECORD
             CDRom = Getty.AatType("CD-ROM", "300196583");
             Website = Getty.AatType("Web site", "300264578");
             Manuscript = Getty.AatType("Manuscript", "300265483");

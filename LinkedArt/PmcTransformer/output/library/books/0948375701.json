@@ -15,7 +15,7 @@
       "content": "283 p. : ill. (some col.) ; 25 x 32 cm.",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300311715",
+          "id": "http://vocab.getty.edu/aat/300435452",
           "type": "Type",
           "_label": "Collations Statement",
           "classified_as": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "type": "Identifier",
+      "type": "Name",
       "content": "Ravilious at war : the complete work of Eric Ravilious, September 1939 - September 1942",
       "classified_as": [
         {

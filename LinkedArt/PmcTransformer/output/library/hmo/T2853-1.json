@@ -1,0 +1,53 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/hmo/T2853-1",
+  "type": "HumanMadeObject",
+  "carries": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/T2853",
+      "type": "LinguisticObject"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Formerly the property of the art dealer Arthur Tooth \u0026 Sons",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Library\u0027s copy contains annotations including prices and names",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Pictures by old masters",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LS2",
+    "type": "Place",
+    "_label": "Library Store 2"
+  }
+}

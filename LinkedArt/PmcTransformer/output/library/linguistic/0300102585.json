@@ -1,0 +1,159 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/0300102585",
+  "type": "LinguisticObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "xii, 332 p. : ill. (chiefly col.) ; 22 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Bibliography : p. 304-306",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Includes index",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Joseph Sharples; with contributions by Richard Pollard",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "0300102585",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Liverpool",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "711 PEV"
+    },
+    {
+      "type": "Name",
+      "content": "Pevsner city guides",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417214",
+          "type": "Type",
+          "_label": "Series title"
+        }
+      ]
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/2852",
+            "type": "Person",
+            "_label": "Sharples, Joseph"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-60",
+          "type": "Group",
+          "_label": "Yale University Press"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2004",
+        "begin_of_the_begin": "2004-01-01T00:00:00Z",
+        "end_of_the_end": "2004-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-24",
+          "type": "Place",
+          "_label": "New Haven; London"
+        }
+      ]
+    }
+  ]
+}

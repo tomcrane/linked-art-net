@@ -1,0 +1,64 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/hmo/D7139-1",
+  "type": "HumanMadeObject",
+  "carries": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/D7139",
+      "type": "LinguisticObject"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Library\u0027s copy contains bookplate of Charles Francis Bell",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Library\u0027s copy from the collection of Sir Oliver Millar and donated by his family July 2007",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Exhibitions of historical portraits : Oxford, 1904-1906",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "B17879",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
+    }
+  ],
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/LA",
+    "type": "Place",
+    "_label": "Library Annex"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/hmo/0908180330/1",
+  "type": "HumanMadeObject",
+  "carries": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/0908180330",
+      "type": "LinguisticObject"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Library\u0027s copy donated by Peter and Renate Nahum, December 2012",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "E Phillips Fox, 1865-1915 \u0026 Ethel Carrick, 1872-1952 : 13 November - 6 December 1997",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ]
+}

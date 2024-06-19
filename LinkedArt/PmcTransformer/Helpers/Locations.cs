@@ -1,4 +1,5 @@
 ﻿using LinkedArtNet;
+using LinkedArtNet.Vocabulary;
 
 namespace PmcTransformer.Helpers
 {
@@ -39,11 +40,33 @@ namespace PmcTransformer.Helpers
 
         static Locations()
         {
+            // Set for Library, Archives and Photo Archives
+            // Group for each of these too
+            // Each Group is member_of PMC
+            // Each Set is curated by the group - used for activity classified as curation and carried out by group
+            // Each book HMO is a member of the Library set
+            // Each archival set and item is a member of the archive set
+            // https://lux.collections.yale.edu/data/set/feb70d01-0cfc-4c01-a643-5eec58b311b6
+
             PMCGroup = new Group()
                 .WithContext()
                 .WithId(Identity.GroupBase + "pmc")
                 .WithLabel("Paul Mellon Centre");
-            PMCGroup.IdentifiedBy = [new Name("Paul Mellon Centre").AsPrimaryName()];
+            PMCGroup.IdentifiedBy = [
+                new Name("Paul Mellon Centre").AsPrimaryName(),
+                new Identifier("GB3010")
+                    .WithClassifiedAs(Getty.AatType("Unique Identifier", "3004040012")),
+            ];
+            PMCGroup.IdentifiedBy[1].AssignedBy = [
+                new Activity(Types.AttributeAssignment)
+                {
+                    CarriedOutBy = [
+                        new Group()
+                            .WithId("http://vocab.getty.edu/ulan/500475815")
+                            .WithLabel("The National Archives")
+                    ]
+                }
+            ];
 
             PMCGroupRef = new Group()
                 .WithId(Identity.GroupBase + "pmc")
@@ -53,7 +76,9 @@ namespace PmcTransformer.Helpers
                 .WithContext()
                 .WithId(Identity.PlaceBase + "pmc")
                 .WithLabel("Paul Mellon Centre");
-            PMCPlace.IdentifiedBy = [new Name("Paul Mellon Centre").AsPrimaryName()];
+            PMCPlace.IdentifiedBy = [
+                new Name("Paul Mellon Centre").AsPrimaryName()
+            ];
 
             PMCPlaceRef = new Place()
                 .WithId(Identity.PlaceBase + "pmc")
@@ -95,6 +120,7 @@ namespace PmcTransformer.Helpers
 
             // Strings that appear in <class> but are clearly the same as locations above
             PlaceDict["Library Store 2"] = LibraryStore2;
+            PlaceDict["Library Store 1"] = LibraryStore1;
             PlaceDict["library Store"] = LibraryStore2;
             PlaceDict[$"Library{(char)160}Store{(char)160}2"] = LibraryStore2;
             PlaceDict[$"Library{(char)160}Store{(char)160}1"] = LibraryStore1;

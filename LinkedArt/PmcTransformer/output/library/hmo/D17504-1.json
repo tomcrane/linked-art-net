@@ -1,0 +1,53 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/hmo/D17504-1",
+  "type": "HumanMadeObject",
+  "carries": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/D17504",
+      "type": "LinguisticObject"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Library\u0027s copy donated by the Estate of Brian Sewell, July 2016",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "A memorial tribute to Sybil Andrews, 1898-1992",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "B33737",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300312355",
+          "type": "Type",
+          "_label": "Accession Number"
+        }
+      ]
+    }
+  ],
+  "current_location": {
+    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
+    "type": "Place",
+    "_label": "Public Study Room"
+  }
+}

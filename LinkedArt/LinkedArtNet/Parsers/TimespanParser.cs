@@ -79,7 +79,7 @@ namespace LinkedArtNet.Parsers
             // Console.WriteLine($"{s} ==> {start} - {end}");
             if (start == null || end == null)
             {
-                Console.WriteLine($"{s} ==> {start} - {end}");
+                // Console.WriteLine($"{s} ==> {start} - {end}");
             }
 
             // In this first implementation, we now have a start, and end, or both.

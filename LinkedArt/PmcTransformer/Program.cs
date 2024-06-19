@@ -1,11 +1,16 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
+using Microsoft.Recognizers.Text.Matcher;
+using Microsoft.Recognizers.Text;
 using PmcTransformer.Helpers;
+using System;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using static Microsoft.Recognizers.Text.DataTypes.TimexExpression.Resolution;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Group = LinkedArtNet.Group;
 
 namespace PmcTransformer
@@ -187,12 +192,12 @@ namespace PmcTransformer
                     .Where(c => !string.IsNullOrWhiteSpace(c))
                     .ToList();
 
-                if(acclocs.Count != accessionNumbers.Count)
+                if(accessionNumbers.Count > 0 && acclocs.Count != accessionNumbers.Count)
                 {
                     throw new InvalidOperationException("Mismatch accloc/accnofld for " + id);
                 }
 
-                var alreadyMappedLocations = new HashSet<string>();
+                var alreadyMappedLocations = new HashSet<Place>();
                 allHMOs[id] = [];
                 if (acclocs.Count == 0)
                 {
@@ -208,15 +213,19 @@ namespace PmcTransformer
                     {
                         var hmo = new HumanMadeObject()
                             .WithContext()
-                            .WithId($"{Identity.HmoBase}{id}/{i}");
+                            .WithId($"{Identity.HmoBase}{id}-{i+1}");
                         hmo.IdentifiedBy = [
-                            new Name(title).AsPrimaryName(),
-                            new Identifier(accessionNumbers[i]).AsAccessionNumber()
+                            new Name(title).AsPrimaryName()                            
                         ];
+                        if(accessionNumbers.Count > 0)
+                        {
+                            hmo.IdentifiedBy.Add(
+                                new Identifier(accessionNumbers[i]).AsAccessionNumber());
+                        }
                         var mappedLocation = Locations.FromRecordValue(acclocs[i]);
-                        alreadyMappedLocations.Add(acclocs[i]);
                         if (mappedLocation != null)
                         {
+                            alreadyMappedLocations.Add(mappedLocation);
                             hmo.CurrentLocation = mappedLocation;
                         }
                         allHMOs[id].Add(hmo);
@@ -245,24 +254,51 @@ namespace PmcTransformer
                     var locationAsClass = Locations.FromRecordValue(classVal, true);
                     if(locationAsClass != null)
                     {
-                        if (alreadyMappedLocations.Contains(classVal))
+                        if (alreadyMappedLocations.Contains(locationAsClass))
                         {
                             classMatchesAccLocCounter++;
                         }
-                        else
+                        else if(acclocs.Count > 0 && !(classVal == "PHOTOGRAPHIC ARCHIVE" || classVal == "Photo Archive"))
                         {
-                            classHasLocationButDifferentFromAcclocCounter++;
-                            // TODO: So add a location?
-                            // To ALL of the HMOs?
-                            // TODO: count them here and warn if > 1
+                            //Console.WriteLine(id + ": " +  classVal);
+                            //Console.WriteLine(string.Join(", ", alreadyMappedLocations));
+
                         }
+                        //else
+                        //{
+                        //    if(classVal == "PHOTOGRAPHIC ARCHIVE" || classVal == "Photo Archive")
+                        //    {
+                        //        continue;
+                        //    }
+                        //    classHasLocationButDifferentFromAcclocCounter++;
+                        //    Console.WriteLine(id + ": " +  classVal);
+                        //    // TODO: So add a location?
+                        //    // To ALL of the HMOs?
+                        //    // TODO: count them here and warn if > 1
+                        //}
                     }
                     else
                     {
-                        var mediumClass = classVal.ToUpperInvariant().TrimOuterParentheses();
-                        if(normalisedMediums.Any(s => s.StartsWith(mediumClass!)))
+                        var mediumClass = classVal.ToUpperInvariant().Replace("(", "").Replace(")", "");
+                        var normalisedMedium = normalisedMediums.FirstOrDefault(m => m.StartsWith(mediumClass));
+                        if(normalisedMedium != null)
                         {
-                            // TODO: Need to add the mappings for these to Media.cs
+                            switch(normalisedMedium)
+                            {
+                                case "PAMPHLET":
+                                    work.WithClassifiedAs(Media.FromRecordValue("Pamphlet")!);
+                                    break;
+                                case "LARGE":
+                                case "EXTRA LARGE":
+                                case "EXTRA EXTRA LARGE":
+                                    work.WithClassifiedAs(Media.FromRecordValue("Large")!);
+                                    break;
+                                case "INFORMATION FILES":
+                                    work.WithClassifiedAs(Media.FromRecordValue("Information files")!);
+                                    break;
+                                default:
+                                    throw new InvalidOperationException("Unexpected medium");
+                            }
                         }
                         else
                         {
@@ -270,12 +306,25 @@ namespace PmcTransformer
                         }
                     }
                 }
-                foreach(var idClass in classesThatWillBecomeIdentifiers)
+
+                foreach (var idClass in classesThatWillBecomeIdentifiers)
                 {
                     work.IdentifiedBy ??= [];
-                    // work.IdentifiedBy.Add(new Identifier(idClass));
-                    work.IdentifiedBy.Add(new Identifier(string.Join(' ', classesThatWillBecomeIdentifiers)));
+                    work.IdentifiedBy.Add(new Identifier(idClass));
                 }
+
+                //if (classesThatWillBecomeIdentifiers.Count > 1)
+                //{
+                //    Console.WriteLine("=====================================");
+                //    Console.WriteLine(JsonSerializer.Serialize(work, options));
+                //    Console.WriteLine("=====================================");
+                //    foreach(var hmo in allHMOs[id])
+                //    {
+                //        Console.WriteLine(JsonSerializer.Serialize(hmo, options));
+                //        Console.WriteLine("--------------------------------------");
+                //    }
+                //    //Console.WriteLine(string.Join('|', classesThatWillBecomeIdentifiers));
+                //}
 
                 bool hasPlace = false;
                 // place
@@ -401,6 +450,195 @@ namespace PmcTransformer
 
 
                 // notescsvx 
+                var notes = record.Elements(libNs + "notescsvx").Single().Value;
+                var noteParts = notes.Split("||")
+                    .Select(p => p.Trim());
+                var noteDict = new Dictionary<string, List<string>>();
+
+                string notePattern = @"^\(([A-Z]+)\) (.*)$";
+                foreach (var part in noteParts)
+                {
+                    var partMatch = Regex.Match(part, notePattern);
+                    if (partMatch.Success)
+                    {
+                        var key = partMatch.Groups[1].Value.Trim();
+                        noteDict.AddToListForKey(key, partMatch.Groups[2].Value);
+                    }
+                    else
+                    {
+                        //Console.WriteLine("Couldn't parse note from " + part);
+                        //Console.WriteLine(notes);
+                    }
+                }
+                foreach(var kvp in noteDict)
+                {
+                    // Console.WriteLine($"{kvp.Key}: " + string.Join(">>", kvp.Value));
+
+                    switch(kvp.Key)
+                    {
+
+
+
+                        case "BIB": // ': Bibliography for this entity.Type: BIBLIOGRAPHY
+                        case "REF": // Reference to published descriptions. Type: CITATION
+                            AddNoteToObject(work, kvp, Getty.BibliographyStatement);
+                            break;
+
+                        case "GEN": // General note.Type: NOTE
+                        case "RES": // Additional contributors in note form. Type: NOTE
+                        case "DIS": // Dissertation course details. Type: NOTE
+                        case "HIS": // Historical note. Type: NOTE
+                        case "ADD": // Added entry note. Type: NOTE
+                        case "REL": // Relationship with other serials. Type: NOTE
+                        case "AUT": // Authority note. Type: NOTE
+                        case "CHR": // Chronological (not really?). Type: NOTE
+                            AddNoteToObject(work, kvp, Getty.AatType("General note", "300027200"));
+                            break;
+
+
+                        case "COP": // Random notes about this copy. Type: NOTE
+                        case "ITE": // Item described. (not really?) Type: NOTE
+                            foreach(var hmo in allHMOs[id])
+                            {
+                                AddNoteToObject(hmo, kvp, Getty.AatType("General note", "300027200"));
+                            }
+                            break;
+
+
+                        case "LUG": // Lugt number of the Auction Catalog. e.g. per https://brill.com/display/db/lro?language=en Type: NOTE with display name Future work to investigate auctions as events.
+                            AddNoteToObject(work, kvp, Getty.AatType("General note", "300027200"), "Lugt Number");
+                            break;
+
+                        case "SEL": // Seller for the Auction. Type: NOTE with display name
+                            AddNoteToObject(work, kvp, Getty.AatType("General note", "300027200"), "Seller");
+                            break;
+
+                        case "DAT": // Date of the Auction described by this catalog.Type: DATING 
+                        case "AUC": // Auction Date, see also DAT. Type: DATING 
+                            AddNoteToObject(work, kvp, Getty.AatType("Dating", "300054714"));
+                            break;
+
+                        case "ACC": // Accompanying Material. Type: RELATEDMATERIAL
+                            AddNoteToObject(work, kvp, Getty.AatType("Related Material", "300444119"));
+                            break;
+
+                        case "CON": // Table of Contents for the Work. Type: TABLEOFCONTENTS
+                            AddNoteToObject(work, kvp, Getty.AatType("Table of Contents", "300195187"));
+                            break;
+
+                        case "PHY": // Physical description or note Type: PHYSDESC
+                            foreach (var hmo in allHMOs[id])
+                            {
+                                AddNoteToObject(hmo, kvp, Getty.AatType("Physical Description", "300435452"));
+                            }
+                            break;
+
+                        case "PMC": // Note that PMC supported the work. Type: CREDITLINE
+                            AddNoteToObject(work, kvp, Getty.AatType("Credit Line", "300026687"));
+                            break;
+
+                        case "DON": // Donation. Type: PROVENANCE
+                        case "ACD": // Accession date. Type: PROVENANCE
+                        case "OWN": // Former Owner of Object. Type: PROVENANCE
+                            foreach (var hmo in allHMOs[id])
+                            {
+                                AddNoteToObject(hmo, kvp, Getty.AatType("Provenance", "300435438"));
+                            }
+                            break;
+
+                        case "LAN": // Language note. Type: LANGUAGE
+                            AddNoteToObject(work, kvp, Getty.AatType("Language", "300435433"));
+                            break;
+
+                        case "VER": // Other Versions available. Type: REPRODUCTION
+                            AddNoteToObject(work, kvp, Getty.AatType("Reproduction", "300411336"));
+                            break;
+
+                        case "BND": // Binding Type: BINDING
+                            foreach (var hmo in allHMOs[id])
+                            {
+                                AddNoteToObject(hmo, kvp, Getty.AatType("Binding", "300055023"));
+                            }
+                            break;
+
+                        case "IND": // Indexes Note. Type: INDEXING
+                            AddNoteToObject(work, kvp, Getty.AatType("Indexing", "300054640"));
+                            break;
+
+
+                        case "WIT": // "With" note, but all are indexes.Type: INDEXING
+                            foreach (var hmo in allHMOs[id])
+                            {
+                                AddNoteToObject(hmo, kvp, Getty.AatType("Indexing", "300054640"));
+                            }
+                            break;
+
+                        case "PUB": // Publication, Distribution, etc. note. Type PUBLISHING
+                            AddNoteToObject(work, kvp, Getty.AatType("Publishing", "300435423"));
+                            break;
+
+                        case "NAT": // Nature or Scope of Work. Type: DESCRIPTION
+                        case "SUM": //  Summary. Type: DESCRIPTION
+                            AddNoteToObject(work, kvp, Getty.Description);
+                            break;
+
+
+                        case "DES": // Description of item.Type: DESCRIPTION
+                            foreach (var hmo in allHMOs[id])
+                            {
+                                AddNoteToObject(hmo, kvp, Getty.Description);
+                            }
+                            break;
+
+
+
+                        case "SER": // Series Note. Treat as if in <series>
+                        case "TIT": // Alternate Title.  /identified_by [type=Name]/value
+                        case "SBN": // ISSN or ISBN. /identified_by [type=Identifier, classified_as=ISBN]/value
+                        case "ACN": // HMO! Accession number /identified_by [type=Identifier, classified_as=ACCESSION]/value
+                        case "HIE": // Hierarchical version of the Place of publication. See Place discussion.
+                        case "EDN": // Edition statement. Treat as <edition> 
+                        case "BY":  // Edition by. Treat as <edition>
+
+                        case "CIP": // ignore
+                        case "AUD": // ignore
+                        case "ABS": // ignore
+                        case "CHA": // Change of control number, ignore
+                        case "HOL": // Holdings, ignore
+                        case "RUN": // ignore
+                        case "SUB": // ignore
+                        case "NUM": // Numbers borne by the item (e.g.auction catalogs) ignore for now
+                        case "FRE": // Publication Frequency note for serials. Type: FREQUENCY
+                        case "USE": // copyright fee note? Ignore
+                        case "BSH": // oversized, no longer used, ignore
+                            break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    }
+
+}
+
 
                 // afilecsvx 
 
@@ -428,7 +666,7 @@ namespace PmcTransformer
             Locations.ShowUnmapped();
 
             // What to do...
-            multipleAccLocCounter.Display("Books with more than one distinct accloc:");
+           // multipleAccLocCounter.Display("Books with more than one distinct accloc:");
 
 
             Console.WriteLine("classMatchesAccLocCounter: " + classMatchesAccLocCounter);
@@ -437,7 +675,7 @@ namespace PmcTransformer
 
             Console.WriteLine("place keys: " + placeDict.Keys.Count);
             Console.WriteLine("publisher keys: " + publisherDict.Keys.Count);
-            accnofldCounter.Display("Distribution of accessionNumbers:");
+          //  accnofldCounter.Display("Distribution of accessionNumbers:");
             collationCounter.Display("Distribution of collations:");
             langCounter.Display("Distribution of languages:");
 
@@ -461,10 +699,10 @@ namespace PmcTransformer
 
                 foreach (var id in corpAuthor.Value)
                 {
-                    var book = allWorks[id];
-                    book.CreatedBy ??= new Activity(Types.Creation);
-                    book.CreatedBy.Part ??= [];
-                    book.CreatedBy.Part.Add(new Activity(Types.Creation)
+                    var work = allWorks[id];
+                    work.CreatedBy ??= new Activity(Types.Creation);
+                    work.CreatedBy.Part ??= [];
+                    work.CreatedBy.Part.Add(new Activity(Types.Creation)
                     {
                         CarriedOutBy = [group]
                     });
@@ -677,7 +915,31 @@ namespace PmcTransformer
             // once serialised in short form, add context and add reconciled equivalents and serialise as groups/people  
             // add in person dates
             // make use of active string in date field (currently being stripped)
-            Sample(allWorks, 1000, true);
+            Sample(allWorks, allHMOs, 1000, true);
+        }
+
+        private static void AddNoteToObject(
+            LinkedArtObject thing, 
+            KeyValuePair<string, 
+            List<string>> kvp, 
+            LinkedArtObject classifier,
+            string? label = null)
+        {
+            foreach (var statement in kvp.Value)
+            {
+                var note = new LinguisticObject()
+                    .WithClassifiedAs(classifier)
+                    .WithContent(statement);
+                thing.ReferredToBy ??= [];
+                thing.ReferredToBy.Add(note);
+
+                if (!string.IsNullOrWhiteSpace(label))
+                {
+                    note.IdentifiedBy = [
+                        new Name(label).WithClassifiedAs(Getty.DisplayTitle)
+                    ];
+                }
+            }
         }
 
         private static bool ShouldSkipRecord(XElement record)
@@ -717,7 +979,14 @@ namespace PmcTransformer
             {
                 return true;
             }
-
+            if (allClasses.Contains("IN PROCESS"))
+            {
+                return true;
+            }
+            if(allClasses.Any(c => c.StartsWith("JOURNALS")))
+            {
+                return true;
+            }
             return false;
         }
 
@@ -756,7 +1025,10 @@ namespace PmcTransformer
             }
         }
 
-        private static void Sample(Dictionary<string, HumanMadeObject> allBooks, int interval, bool writeToDisk)
+        private static void Sample(
+            Dictionary<string, LinguisticObject> allWorks,
+            Dictionary<string, List<HumanMadeObject>> allHMOs,
+            int interval, bool writeToDisk)
         {
             List<string> pleaseDump = [
                 "0955581036",
@@ -765,16 +1037,23 @@ namespace PmcTransformer
             ];
             var options = new JsonSerializerOptions { WriteIndented = true, };
             int count = 0;
-            foreach(var book in allBooks)
+            foreach(var work in allWorks)
             {
-                if(count % interval == 0 || pleaseDump.Contains(book.Key))
+                if(count % interval == 0 || pleaseDump.Contains(work.Key))
                 {
-                    var generatedJson = JsonSerializer.Serialize(book.Value, options);
+                    var generatedJson = JsonSerializer.Serialize(work.Value, options);
                     Console.WriteLine(generatedJson);
+                    
                     if(writeToDisk)
                     {
-                        var json = JsonSerializer.Serialize(book.Value, options);
-                        File.WriteAllText($"../../../output/library/books/{book.Key}.json", json);
+                        var workJson = JsonSerializer.Serialize(work.Value, options);
+                        File.WriteAllText($"../../../output/library/linguistic/{work.Key}.json", workJson);
+                        int counter = 1;
+                        foreach (var hmo in allHMOs[work.Key])
+                        {
+                            var hmoJson = JsonSerializer.Serialize(hmo, options);
+                            File.WriteAllText($"../../../output/library/hmo/{work.Key}-{counter++}.json", hmoJson);
+                        }
                     }
                 }
                 count++;

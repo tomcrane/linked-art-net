@@ -1,0 +1,120 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/D7845",
+  "type": "LinguisticObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    },
+    {
+      "id": "http://vocab.getty.edu/aat/300220572",
+      "type": "Type",
+      "_label": "Pamphlet"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "15 p., [4] p. of plates : ill. ; 22 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D7845",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "\u0022The Derbyshire Times\u0022 guide to Winfield Manor : its history and its associations",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "728 SOU"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/10242",
+            "type": "Person",
+            "_label": "Edmunds, W Hawksley"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-6198",
+          "type": "Group",
+          "_label": "Wilfred Edmunds Ltd"
+        }
+      ],
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-205",
+          "type": "Place",
+          "_label": "Chesterfield"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-11837",
+      "_label": "South Wingfield Manor (Derbyshire)"
+    }
+  ]
+}

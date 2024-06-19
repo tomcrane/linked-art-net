@@ -52,6 +52,7 @@ public class Getty
     public static LinkedArtObject CopyrightLicenseStatement => AatType("Copyright/License Statement", "300435434");
     public static LinkedArtObject PhysicalStatement => AatType("Physical Statement", "300435452");
     public static LinkedArtObject PaginationStatement => AatType("Pagination Statement", "300435440");
+    public static LinkedArtObject BibliographyStatement => AatType("Bibliography Statement", "300026497");
 
     // Identifiers
     public static LinkedArtObject SystemAssignedNumber => AatType("System-Assigned Number", "300435704");

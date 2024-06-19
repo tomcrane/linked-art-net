@@ -1,0 +1,168 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/0903598159",
+  "type": "LinguisticObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026096",
+      "type": "Type",
+      "_label": "Exhibition catalogue"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "120 p. : ill. ; 28 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Bibliography: p.120",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Includes index",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "On back cover: National Galleries of Scotland",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "0903598159",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Hill and Adamson\u0027s The fishermen and women of the Firth of Forth",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "7 HILL(D).S"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/253",
+            "type": "Group",
+            "_label": "Scottish National Portrait Gallery"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/594",
+            "type": "Person",
+            "_label": "Stevenson, Sara"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-480",
+          "type": "Group",
+          "_label": "Scottish National Portrait Gallery"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "1991",
+        "begin_of_the_begin": "1991-01-01T00:00:00Z",
+        "end_of_the_end": "1991-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-6",
+          "type": "Place",
+          "_label": "Edinburgh"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-1144",
+      "_label": "Hill, David Octavius, 1802-1870-Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-1145",
+      "_label": "Adamson, Robert, 1821-1848-Exhibitions"
+    }
+  ]
+}

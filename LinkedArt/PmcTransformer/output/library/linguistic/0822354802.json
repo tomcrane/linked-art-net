@@ -1,0 +1,178 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/0822354802",
+  "type": "LinguisticObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "xv, 331 p. : ill. (some col.) ; 22 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Bibliography: p. 297-322",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Includes index",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "0822354802",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Mimesis across empires : artworks and networks in India, 1765-1860",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "7.035(54) EAT"
+    },
+    {
+      "type": "Name",
+      "content": "Objects / histories : critical perspectives on art, material culture, and representation",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417214",
+          "type": "Type",
+          "_label": "Series title"
+        }
+      ]
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/16304",
+            "type": "Person",
+            "_label": "Eaton, Natasha"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-734",
+          "type": "Group",
+          "_label": "Duke University Press"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2013",
+        "begin_of_the_begin": "2013-01-01T00:00:00Z",
+        "end_of_the_end": "2013-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-244",
+          "type": "Place",
+          "_label": "Durham, N.C."
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-3022",
+      "_label": "Hodges, William, 1744-1797"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-26609",
+      "_label": "Art, British-India"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-27263",
+      "_label": "Art, Indic-19th century"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-27264",
+      "_label": "Art, Indic-18th century"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-27265",
+      "_label": "Art, Colonial-India"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-27266",
+      "_label": "Art, Mogul-Influence"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-27267",
+      "_label": "Mogul Empire-Civilization-Influence"
+    }
+  ]
+}

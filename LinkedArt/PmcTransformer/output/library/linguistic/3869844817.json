@@ -1,0 +1,185 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/3869844817",
+  "type": "LinguisticObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026096",
+      "type": "Type",
+      "_label": "Exhibition catalogue"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "160 p. : ill. (chiefly col.) ; 30 cm",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Includes bibliographical references",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Catalogue concept and editing Melitta Kliege",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "3869844817",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Funktion dysfunktion : Kunstzentrum Glasgow : Claire Barclay, Martin Boyce, Nick Evans, Nicolas Party, Ciara Phillips, Mary Redmond = Function dysfunction : contemporary art from Glasgow : Claire Barclay, Martin Boyce, Nick Evans, Nicolas Party, Ciara Phillips, Mary Redmond",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "7.036(411) KLI"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/4434",
+            "type": "Group",
+            "_label": "Neues Museum - Staatliches Museum f\u00FCr Kunst und Design in N\u00FCrnberg"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025526",
+            "type": "Type",
+            "_label": "editor"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/18122",
+            "type": "Person",
+            "_label": "Kliege, Melitta"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-10702",
+          "type": "Group",
+          "_label": "Verlag f\u00FCr Moderne Kunst : Neues Museum - Staatliches Museum f\u00FCr Kunst und Design in N\u00FCrnberg"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2014",
+        "begin_of_the_begin": "2014-01-01T00:00:00Z",
+        "end_of_the_end": "2014-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-2524",
+          "type": "Place",
+          "_label": "N\u00FCrnberg"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-6376",
+      "_label": "Boyce, Martin, 1967- -Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-18803",
+      "_label": "Glasgow School of Art"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-30108",
+      "_label": "Art, Scottish-Scotland-Glasgow-20th century-Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-30109",
+      "_label": "Art, Scottish-Scotland-Glasgow-21st century-Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-30110",
+      "_label": "Barclay, Claire, 1968- -Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-30111",
+      "_label": "Evans, Nick, 1976- -Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-30112",
+      "_label": "Party, Nicolas, 1980- -Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-30113",
+      "_label": "Phillips, Ciara, 1976- -Exhibitions"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-30114",
+      "_label": "Redmond, Mary, 1973- -Exhibitions"
+    }
+  ]
+}

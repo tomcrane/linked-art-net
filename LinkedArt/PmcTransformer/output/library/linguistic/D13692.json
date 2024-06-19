@@ -1,0 +1,252 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/D13692",
+  "type": "LinguisticObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "2 v. (329, [1]; 320, [4] p.) ; 18 cm (12mo)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "At foot of both t.p.s: \u0027Avec approbation \u0026 privil\u00E9ge du roi\u0027",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Colophon on final page of v. 2: \u0027De l\u0027imprimerie de Cailleau, rue Saint-Severin, vis-a-vis des murs de l\u0027Eglise\u0027",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Signatures: v. 1: A-N[superscript 12] O[superscript 10](-O10) -- v. 2: A-N[superscript 12] O[superscript 6]",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "With head- and tail-pieces",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "par M. l\u0027Abb\u00E9 Coyer, des Acad\u00E9mies de Nancy, de Rome \u0026 de Londres",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D13692",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Voyages d\u0027Italie et de Hollande",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "FORD-1775-1"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Provenance",
+        "classified_as": [
+          {
+            "id": "http://id.loc.gov/vocabulary/relators/fmo",
+            "type": "Type",
+            "_label": "former owner"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/377",
+            "type": "Person",
+            "_label": "Ford, Brinsley"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/10558",
+            "type": "Person",
+            "_label": "Coyer, Gabriel-Fran\u00E7ois"
+          }
+        ]
+      },
+      {
+        "type": "Activity",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025574",
+            "type": "Type",
+            "_label": "publisher"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/10559",
+            "type": "Person",
+            "_label": "Duchesne, Marie-Antoinette"
+          }
+        ]
+      },
+      {
+        "type": "Production",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025733",
+            "type": "Type",
+            "_label": "printer"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/10560",
+            "type": "Person",
+            "_label": "Cailleau, Andr\u00E9-Charles"
+          }
+        ]
+      },
+      {
+        "type": "Provenance",
+        "classified_as": [
+          {
+            "id": "http://id.loc.gov/vocabulary/relators/fmo",
+            "type": "Type",
+            "_label": "former owner"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/10561",
+            "type": "Person",
+            "_label": "Waldie, John"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-6389",
+          "type": "Group",
+          "_label": "Chez la Veuve Duchesne, libraire, rue Saint Jacques, au Temple du Got"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "MDCCLXXV [1775]",
+        "begin_of_the_begin": "1775-01-01T00:00:00Z",
+        "end_of_the_end": "1775-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-1205",
+          "type": "Place",
+          "_label": "A Paris"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-3580",
+      "_label": "Italy-Description and travel-Early works to 1800"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-3710",
+      "_label": "Voyages and travels-Early works to 1800"
+    },
+    {
+      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-17920",
+      "_label": "Netherlands-Description and travel-Early works to 1800"
+    }
+  ]
+}

@@ -8,10 +8,13 @@ var archive = root + "\\2024-03-11_archive";
 var library = root + "\\2024-03-11_library";
 var photo_archive = root + "\\2024-03-14_photo-archive";
 
+var xArchive = XDocument.Load(archive + "\\2024-03-11_archive-descriptions.xml");
+var xAuthorities = XDocument.Load(archive + "\\2024-03-11_archive-authorities.xml");
+
 // var xLido = XDocument.Load(photo_archive + "\\2024-03-14_PMCPA_LIDO.xml");
 // xLido.Save(photo_archive + "\\2024-03-14_PMCPA_LIDO_PRETTY.xml");
 
-var xPhotoEAD = XDocument.Load(photo_archive + "\\2024-03-12_PMCPA_EAD.xml");
+//var xPhotoEAD = XDocument.Load(photo_archive + "\\2024-03-12_PMCPA_EAD.xml");
 
 // xPhotoEAD.Save(photo_archive + "\\2024-03-12_PMCPA_EAD_PRETTY.xml");
 
@@ -19,6 +22,7 @@ var xPhotoEAD = XDocument.Load(photo_archive + "\\2024-03-12_PMCPA_EAD.xml");
 
 // var sheet = GetSheet(eadWb.CurrentWorksheet);
 
+Console.WriteLine();
 
 List<Dictionary<string, string>>? GetSheet(Worksheet worksheet)
 {

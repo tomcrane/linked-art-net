@@ -29,6 +29,11 @@ namespace PmcTransformer.Helpers
             Microfilm = Getty.AatType("Microfilm", "300028598");
             CD = Getty.AatType("CD", "300028673");
 
+            // Mediums from class field:
+            Pamphlet = Getty.AatType("Pamphlet", "300220572");
+            Large = Getty.AatType("Large", "300379501");
+            Report = Getty.AatType("Report", "300027267");
+
             MediaDict[InformationFiles.Label!] = InformationFiles;
             MediaDict[Text.Label!] = Text;
             MediaDict[ExhibitionCatalogue.Label!] = ExhibitionCatalogue;
@@ -40,6 +45,11 @@ namespace PmcTransformer.Helpers
             MediaDict[DVD.Label!] = DVD;
             MediaDict[Microfilm.Label!] = Microfilm;
             MediaDict[CD.Label!] = CD;
+
+            MediaDict[Pamphlet.Label!] = Pamphlet;
+            MediaDict[Large.Label!] = Large;
+            MediaDict[Report.Label!] = Report;
+
         }
 
         private static readonly Dictionary<string, LinkedArtObject> MediaDict = [];
@@ -55,6 +65,11 @@ namespace PmcTransformer.Helpers
         public static LinkedArtObject DVD;
         public static LinkedArtObject Microfilm;
         public static LinkedArtObject CD;
+
+        public static LinkedArtObject Pamphlet;
+        public static LinkedArtObject Large;
+        public static LinkedArtObject Report;
+
 
     }
 }

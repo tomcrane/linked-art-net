@@ -690,7 +690,7 @@ namespace PmcTransformer
             // Create Groups for corpauthor and assert in book record.
             // TODO - this needs to be consistent between runs so once we are sure about our corporation,
             // mint a permanent id for it and store in DB
-            int corpIdMinter = 1;
+            cd cd ccdint corpIdMinter = 1;
             foreach (var corpAuthor in corpAuthorDict)
             {
                 var group = new Group()

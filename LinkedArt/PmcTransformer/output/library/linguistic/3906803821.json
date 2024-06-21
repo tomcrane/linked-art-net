@@ -1,0 +1,227 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/3906803821",
+  "type": "LinguisticObject",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388277",
+      "type": "Language",
+      "_label": "en"
+    },
+    {
+      "id": "http://vocab.getty.edu/aat/300388306",
+      "type": "Language",
+      "_label": "fr"
+    },
+    {
+      "id": "http://vocab.getty.edu/aat/300388474",
+      "type": "Language",
+      "_label": "it"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Edition Patrick Frey no. 282",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Printed in an edition limited to 800 copies",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Text in English, Italian or French language",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435433",
+          "type": "Type",
+          "_label": "Language"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Acquired on the back of exhibition Now : Monster Chetwynd, Henry Coombes, Moyna Flannigan, Betye Saar, Wael Shawky held Scottish National Gallery of Modern Art, until 28 April 2019",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "[texts: Denise Ackerl, Jack Brennan, Neil Mulholland, Jess Ramm, Guillaume Vandame, Natalie Wearden]",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "1 volume (unnumbered pages) : illustrations (black and white, and colour) ; 28 cm",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "3906803821",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "The supreme deluxe essential Monster Chetwynd handbook",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "9783906803821 paperback",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417443",
+          "type": "Type",
+          "_label": "ISBN"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Title from spine"
+    },
+    {
+      "type": "Identifier",
+      "content": "7 CHET(M).A"
+    },
+    {
+      "type": "Name",
+      "content": "Edition Patrick Frey (Series), number 282",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417214",
+          "type": "Type",
+          "_label": "Series title"
+        }
+      ]
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025499",
+            "type": "Type",
+            "_label": "essayist"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/15686",
+            "type": "Person",
+            "_label": "Ackerl, Denise"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-5568",
+          "type": "Group",
+          "_label": "Edition Patrick Frey"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2019",
+        "begin_of_the_begin": "2019-01-01T00:00:00Z",
+        "end_of_the_end": "2019-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-490",
+          "type": "Place",
+          "_label": "Zurich"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-4527",
+      "_label": "Performance art"
+    },
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-23476",
+      "_label": "Chetwynd, Marvin Gaye, 1973-"
+    },
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-23477",
+      "_label": "Interactive art"
+    }
+  ]
+}

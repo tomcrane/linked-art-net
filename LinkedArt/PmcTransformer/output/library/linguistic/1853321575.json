@@ -1,0 +1,199 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/1853321575",
+  "type": "LinguisticObject",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388277",
+      "type": "Language",
+      "_label": "en"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    },
+    {
+      "id": "http://vocab.getty.edu/aat/300220572",
+      "type": "Type",
+      "_label": "Pamphlet"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Includes bibliographical references",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Published to accompany an exhibition held Hayward Gallery, London, 19 September - 17 November 1996",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "1 folded sheet : ill. (some col.) ; 30 x 61 cm. folded to 30 x 13 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "1853321575",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Antony Gormley : Field for the British Isles",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "1853321575 (pbk.)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417443",
+          "type": "Type",
+          "_label": "ISBN"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Cover title"
+    },
+    {
+      "type": "Name",
+      "content": "Field for the British Isles"
+    },
+    {
+      "type": "Identifier",
+      "content": "7 GORM"
+    },
+    {
+      "type": "Name",
+      "content": "Spotlight (South Bank Centre)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417214",
+          "type": "Type",
+          "_label": "Series title"
+        }
+      ]
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/group/523",
+            "type": "Group",
+            "_label": "Hayward Gallery"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025499",
+            "type": "Type",
+            "_label": "essayist"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/1374",
+            "type": "Person",
+            "_label": "Searle, Adrian"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-466",
+          "type": "Group",
+          "_label": "Hayward Gallery"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "c1996",
+        "begin_of_the_begin": "1996-01-01T00:00:00Z",
+        "end_of_the_end": "1996-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-1",
+          "type": "Place",
+          "_label": "London"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-2980",
+      "_label": "Gormley, Antony, 1950- -Exhibitions"
+    },
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-5343",
+      "_label": "Sculpture-Exhibitions"
+    }
+  ]
+}

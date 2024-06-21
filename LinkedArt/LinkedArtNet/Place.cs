@@ -6,7 +6,7 @@ public class Place : LinkedArtObject
 {
     public Place() { Type = nameof(Place); }
 
-    // Place only? Or LinkedArtObject?
+    // Place only
     [JsonPropertyName("defined_by")]
     [JsonPropertyOrder(800)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

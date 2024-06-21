@@ -1,0 +1,152 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/D10782",
+  "type": "LinguisticObject",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388277",
+      "type": "Language",
+      "_label": "en"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026096",
+      "type": "Type",
+      "_label": "Exhibition catalogue"
+    },
+    {
+      "id": "http://vocab.getty.edu/aat/300220572",
+      "type": "Type",
+      "_label": "Pamphlet"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Cover title: Rebecca Salter and Japan; opposite cover title: Into the light of things : Rebecca Salter, works 1981-2010",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Published to accompany the exhibitions Rebecca Salter and Japan and Into the light of things : Rebecca Salter, works 1981-2010, held Yale University Art Gallery, New Haven, CT, 3 February - 1 May 2011",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "1 folded sheet (14 unnumbered pages) : colour illustrations ; 25 cm",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D10782",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Rebecca Salter and Japan ; Into the light of things : Rebecca Salter, works 1981-2010",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Into the light of things : Rebecca Salter, works 1981-2010"
+    },
+    {
+      "type": "Identifier",
+      "content": "7 SALT"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/group/1730",
+            "type": "Group",
+            "_label": "Yale University Art Gallery"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-3651",
+          "type": "Group",
+          "_label": "Yale University Art Gallery"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2011",
+        "begin_of_the_begin": "2011-01-01T00:00:00Z",
+        "end_of_the_end": "2011-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-42",
+          "type": "Place",
+          "_label": "New Haven, Conn."
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-11264",
+      "_label": "Salter, Rebecca, 1955- -Exhibitions"
+    }
+  ]
+}

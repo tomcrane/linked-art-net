@@ -1,7 +1,14 @@
 {
   "@context": "https://linked.art/ns/v1/linked-art.json",
-  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/030020969X",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/030020969X",
   "type": "LinguisticObject",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388277",
+      "type": "Language",
+      "_label": "en"
+    }
+  ],
   "classified_as": [
     {
       "id": "http://vocab.getty.edu/aat/300263751",
@@ -10,24 +17,6 @@
     }
   ],
   "referred_to_by": [
-    {
-      "type": "LinguisticObject",
-      "content": "3 v. (950 pages) : illustrations (black and white, and colour) ; 31 cm.",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300435452",
-          "type": "Type",
-          "_label": "Collations Statement",
-          "classified_as": [
-            {
-              "id": "http://vocab.getty.edu/aat/300418049",
-              "type": "Type",
-              "_label": "Brief Text"
-            }
-          ]
-        }
-      ]
-    },
     {
       "type": "LinguisticObject",
       "content": "Bibliography : p. 909-918",
@@ -52,12 +41,41 @@
     },
     {
       "type": "LinguisticObject",
+      "content": "Contents: v. 1. Part 1 : Named sitters A-I (except Emma Hart) -- ; ; v. 2. Part 1 : Named sitters J-Z -- ; ; v. 3. Part 2 : Portraits of Emma Hart, later Lady Hamilton -- Part 3 : Unknown sitters -- Part 4 : Subject pictures and copies -- Appendix 1 : Portraits in pastel and watercolour -- Appendix II : Index of names of people referred to in selected primary sources -- Appendix III : Concordance of paintings in the Christie\u0027s sales of 27 April 1807, 29 June 1810, 10 May 1834 and 25 May 1894 with this catalogue -- Appendix IV : Works in Ward and Roberts excluded from this catalogue or included under a different title -- Appendix V : Concordance of works by Romney exhibited in the artist\u0027s lifetime with this catalogue -- Appendix VI : Checklist of untraced standard-sized portraits of named sitters, not certainly destroyed, of which no image is available -- Bibliography -- Paintings by Romney in public collections",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300195187",
+          "type": "Type",
+          "_label": "Table of Contents"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
       "content": "Colls.",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300027200",
           "type": "Type",
           "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "3 v. (950 pages) : illustrations (black and white, and colour) ; 31 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
         }
       ]
     }
@@ -104,7 +122,7 @@
         ],
         "carried_out_by": [
           {
-            "id": "https://linkedart.paul-mellon-centre.ac.uk/people/596",
+            "id": "https://data.paul-mellon-centre.ac.uk/person/596",
             "type": "Person",
             "_label": "Kidson, Alex"
           }
@@ -125,7 +143,7 @@
       ],
       "carried_out_by": [
         {
-          "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-36",
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-36",
           "type": "Group",
           "_label": "Published for The Paul Mellon Centre for Studies in British Art by Yale University Press"
         }
@@ -138,7 +156,7 @@
       },
       "took_place_at": [
         {
-          "id": "https://linkedart.paul-mellon-centre.ac.uk/places/temp-24",
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-24",
           "type": "Place",
           "_label": "New Haven; London"
         }
@@ -147,7 +165,7 @@
   ],
   "about": [
     {
-      "id": "https://linkedart.paul-mellon-centre.ac.uk/groups/temp-18322",
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-16380",
       "_label": "Romney, George, 1734-1802-Catalogues raisonn\u00E9s"
     }
   ]

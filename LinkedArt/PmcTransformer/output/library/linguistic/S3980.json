@@ -1,0 +1,139 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/S3980",
+  "type": "LinguisticObject",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026068",
+      "type": "Type",
+      "_label": "Auction catalogue"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Wednesday 28 May, 1924",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054714",
+          "type": "Type",
+          "_label": "Dating"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Lugt 86974",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ],
+      "identified_by": [
+        {
+          "type": "Name",
+          "content": "Lugt Number",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300404669",
+              "type": "Type",
+              "_label": "Display Title"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "12 p.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "S3980",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Old Dutch and Italian pictures, old English landscapes and portraits, modern pictures and water-colour drawings",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/group/86",
+            "type": "Group",
+            "_label": "Messrs Foster"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-156",
+          "type": "Group",
+          "_label": "Messrs Foster"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "1924",
+        "begin_of_the_begin": "1924-01-01T00:00:00Z",
+        "end_of_the_end": "1924-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-1",
+          "type": "Place",
+          "_label": "London"
+        }
+      ]
+    }
+  ]
+}

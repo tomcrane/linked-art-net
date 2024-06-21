@@ -1,0 +1,205 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/1912690071",
+  "type": "LinguisticObject",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388277",
+      "type": "Language",
+      "_label": "en"
+    },
+    {
+      "id": "http://vocab.getty.edu/aat/300388306",
+      "type": "Language",
+      "_label": "fr"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Introduction -- 1. Before the war -- 2. Greetings cards and lino cuts -- 3. Portraits -- 4. Kerf\u00E9d\u00E9 -- 5. Hawkridge -- 6. Kerj\u00E9gu and favourite places -- 7. Boats and harbours -- 8. Still life -- 9. Frescoes and stained glass",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300195187",
+          "type": "Type",
+          "_label": "Table of Contents"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Parallel text in English and French",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435433",
+          "type": "Type",
+          "_label": "Language"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Annik Coatalen Heal ; introduction by Lachlan Goudie",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "143 pages : illustrations (black and white, and colour) ; 28 cm",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "1912690071",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Anna Coatalen : art for happiness et bonheur",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "9781912690077 hardback",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417443",
+          "type": "Type",
+          "_label": "ISBN"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "7 COAT(A).H"
+    },
+    {
+      "type": "Name",
+      "content": "Unicorn art solos",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417214",
+          "type": "Type",
+          "_label": "Series title"
+        }
+      ]
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/1849",
+            "type": "Person",
+            "_label": "Heal, Annik Coatalen"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300403974",
+            "type": "Type",
+            "_label": "contributor"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/1850",
+            "type": "Person",
+            "_label": "Goudie, Lachlan"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-269",
+          "type": "Group",
+          "_label": "Unicorn"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2019",
+        "begin_of_the_begin": "2019-01-01T00:00:00Z",
+        "end_of_the_end": "2019-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-1",
+          "type": "Place",
+          "_label": "London"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-3006",
+      "_label": "Coatalen, Anna"
+    }
+  ]
+}

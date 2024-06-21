@@ -1,0 +1,42 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/object/S2372-1",
+  "type": "HumanMadeObject",
+  "carries": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/library/work/S2372",
+      "type": "LinguisticObject"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Formerly the property of William Roberts, 1862-1940, and Ellis Kirkham Waterhouse, 1905-1985. This item is classed as \u0027Library Special Collections\u0027",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Old and modern pictures including works of the Dutch, Italian and Spanish schools",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
+  "current_location": {
+    "id": "https://data.paul-mellon-centre.ac.uk/place/LS2",
+    "type": "Place",
+    "_label": "Library Store 2"
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/D16879",
+  "type": "LinguisticObject",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388306",
+      "type": "Language",
+      "_label": "fr"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026096",
+      "type": "Type",
+      "_label": "Exhibition catalogue"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "\u0027Quelques ouvrages sur l\u0027art byzantin\u0027 -- p. [55]",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Catalogue of an exhibition held at the Mus\u00E9e des arts d\u00E9coratifs, Paris, 28 May-9 July 1931",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "201, [3] p., XXIV leaves of plates : ill. ; 19 cm",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "\u003Cspan class=\u0022lux_data\u0022\u003E\u003Ca href=\u0022https://www.paul-mellon-centre.ac.uk/visit\u0022\u003EFor information about access to \u0027Library Special Collections\u0027\u003C/a\u003E\u003C/span\u003E",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "D16879",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Exposition internationale d\u0027art byzantin : 28 mai-9 juillet 1931",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Cover title: Exposition d\u0027art byzantin"
+    },
+    {
+      "type": "Identifier",
+      "content": "OPPE-1931-11"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/group/2333",
+            "type": "Group",
+            "_label": "Mus\u00E9e des Arts D\u00E9coratifs"
+          }
+        ]
+      },
+      {
+        "type": "Provenance",
+        "classified_as": [
+          {
+            "id": "http://id.loc.gov/vocabulary/relators/fmo",
+            "type": "Type",
+            "_label": "former owner"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/172",
+            "type": "Person",
+            "_label": "Opp\u00E9, A. P."
+          }
+        ]
+      },
+      {
+        "type": "Provenance",
+        "classified_as": [
+          {
+            "id": "http://id.loc.gov/vocabulary/relators/fmo",
+            "type": "Type",
+            "_label": "former owner"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/2512",
+            "type": "Person",
+            "_label": "Opp\u00E9, Denys"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-5101",
+          "type": "Group",
+          "_label": "Mus\u00E9e des arts d\u00E9coratifs"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "1931",
+        "begin_of_the_begin": "1931-01-01T00:00:00Z",
+        "end_of_the_end": "1931-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-111",
+          "type": "Place",
+          "_label": "France-Paris"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-12541",
+      "_label": "Art, Byzantine-Exhibitions"
+    },
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-12542",
+      "_label": "Art objects, Byzantine-Exhibitions"
+    }
+  ]
+}

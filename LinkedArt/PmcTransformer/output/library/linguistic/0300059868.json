@@ -1,0 +1,198 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/0300059868",
+  "type": "LinguisticObject",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388277",
+      "type": "Language",
+      "_label": "en"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300263751",
+      "type": "Type",
+      "_label": "Text"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Bibliography: p.395-401",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Includes index",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Contents: Preface to the second edition -- Part one. The origins of modernism in England. Introduction : the turn of the century -- From new English to Camden Town -- \u0027Post-Impressionism\u0027 and the \u0027New Movement\u0027 -- Cubism, Futurism, Vorticism -- The Great War -- Part two : Between the wars. Hiatus : 1919-1924 -- Still life and landscape in the Twenties -- The development of modernism in sculpture -- The early Thirties : Unit One -- \u0027Abstract\u0027 and \u0027Constructive\u0027 art -- The later Thirties : Surrealism, \u0027Realism\u0027, Romanticism -- Postsript : The Euston Road School -- Appendix : The Seven and Five Society",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300195187",
+          "type": "Type",
+          "_label": "Table of Contents"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "First published: London: Allen Lane, 1981",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "2nd edition",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435435",
+          "type": "Type",
+          "_label": "Edition Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "417 p. : ill. (some col.) ; 21 cm.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "\u003Cspan class=\u0022lux_data\u0022\u003E\u003Ca href=\u0022https://www.aaeportal.com/?id=-19830\u0022\u003EE-book available via the A\u0026AePortal link. Access only available to in person visitors\u003C/a\u003E\u003C/span\u003E",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement"
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "0300059868",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "English art and modernism, 1900-1939 : with a new introduction",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "7.036(41) HAR"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/194",
+            "type": "Person",
+            "_label": "Harrison, Charles"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-36",
+          "type": "Group",
+          "_label": "Published for The Paul Mellon Centre for Studies in British Art by Yale University Press"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "1994",
+        "begin_of_the_begin": "1994-01-01T00:00:00Z",
+        "end_of_the_end": "1994-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-24",
+          "type": "Place",
+          "_label": "New Haven; London"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-335",
+      "_label": "Art, Modern-20th century-England"
+    },
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-336",
+      "_label": "Modernism (Art)"
+    }
+  ]
+}

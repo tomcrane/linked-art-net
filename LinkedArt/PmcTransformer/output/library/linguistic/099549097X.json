@@ -1,0 +1,237 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/work/099549097X",
+  "type": "LinguisticObject",
+  "language": [
+    {
+      "id": "http://vocab.getty.edu/aat/300388277",
+      "type": "Language",
+      "_label": "en"
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300026096",
+      "type": "Type",
+      "_label": "Exhibition catalogue"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Includes bibliographical references",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300026497",
+          "type": "Type",
+          "_label": "Bibliography Statement"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Foreword / Harry Blain -- A place where the charms of art and nature join / Oonagh Kennedy -- Looking at modern sculpture: Lynn Chadwick at Cliveden / Jon Wood -- Lynn Chadwick at Cliveden -- List of works -- Biography -- Acknowledgements",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300195187",
+          "type": "Type",
+          "_label": "Table of Contents"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Catalogue of an exhibition held at Cliveden, Buckinghamshire, 2 May - 14 October 2018",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Foreword by Harry Blain, text by Oonagh Kennedy and Jon Wood",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General note"
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "108 pages : illustrations (black and white, and colour) ; 31 cm",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Collations Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "099549097X",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "System-Assigned Number"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "Lynn Chadwick : at Cliveden",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "9780995490970 hardback",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300417443",
+          "type": "Type",
+          "_label": "ISBN"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "7 CHAD(L).K"
+    }
+  ],
+  "created_by": {
+    "type": "Creation",
+    "part": [
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/group/260",
+            "type": "Group",
+            "_label": "Blain/Southern (Gallery : London, England)"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/group/3622",
+            "type": "Group",
+            "_label": "Cliveden (House \u0026 Spa : Taplow, England)"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/452",
+            "type": "Person",
+            "_label": "Wood, Jon"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025687",
+            "type": "Type",
+            "_label": "photographer"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/1526",
+            "type": "Person",
+            "_label": "Wilde, Jonty"
+          }
+        ]
+      },
+      {
+        "type": "Creation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300025492",
+            "type": "Type",
+            "_label": "author"
+          }
+        ],
+        "carried_out_by": [
+          {
+            "id": "https://data.paul-mellon-centre.ac.uk/person/14115",
+            "type": "Person",
+            "_label": "Kennedy, Oonagh"
+          }
+        ]
+      }
+    ]
+  },
+  "used_for": [
+    {
+      "type": "Activity",
+      "_label": "Publishing",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300054686",
+          "type": "Type",
+          "_label": "Publishing"
+        }
+      ],
+      "carried_out_by": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/group/temp-496",
+          "type": "Group",
+          "_label": "Blain/Southern"
+        }
+      ],
+      "timespan": {
+        "type": "TimeSpan",
+        "_label": "2018",
+        "begin_of_the_begin": "2018-01-01T00:00:00Z",
+        "end_of_the_end": "2018-12-31T23:59:59Z"
+      },
+      "took_place_at": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/place/temp-1",
+          "type": "Place",
+          "_label": "London"
+        }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/group/temp-2245",
+      "_label": "Chadwick, Lynn, 1914-2003"
+    }
+  ]
+}

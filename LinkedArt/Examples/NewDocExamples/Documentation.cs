@@ -63,7 +63,6 @@ namespace Examples.NewDocExamples
             {
                 Console.WriteLine(ex.ToString());
                 
-                // slight hack for missing timezone
                 throw;
             }
         }

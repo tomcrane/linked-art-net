@@ -53,11 +53,13 @@ public class Getty
     public static LinkedArtObject PhysicalStatement => AatType("Physical Statement", "300435452");
     public static LinkedArtObject PaginationStatement => AatType("Pagination Statement", "300435440");
     public static LinkedArtObject BibliographyStatement => AatType("Bibliography Statement", "300026497");
+    public static LinkedArtObject EditionStatement => AatType("Edition Statement", "300435435");
 
     // Identifiers
     public static LinkedArtObject SystemAssignedNumber => AatType("System-Assigned Number", "300435704");
     public static LinkedArtObject AccessionNumber => AatType("Accession Number", "300312355");
     public static LinkedArtObject SortValue => AatType("Sort Value", "300456575");
+    public static LinkedArtObject ISBN => AatType("ISBN", "300417443");
 
 
 

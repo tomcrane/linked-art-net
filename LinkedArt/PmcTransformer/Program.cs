@@ -1,16 +1,11 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
-using Microsoft.Recognizers.Text.Matcher;
-using Microsoft.Recognizers.Text;
 using PmcTransformer.Helpers;
-using System;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using static Microsoft.Recognizers.Text.DataTypes.TimexExpression.Resolution;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Group = LinkedArtNet.Group;
 
 namespace PmcTransformer
@@ -18,7 +13,6 @@ namespace PmcTransformer
     internal class Program
     {
         static JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true, };
-        static XNamespace libNs = "x-schema:EF-34074-Export.dtd";
 
         static void Main(string[] args)
         {
@@ -33,12 +27,6 @@ namespace PmcTransformer
 
             var timespanParser = new TimespanParser();
 
-            // Common Types
-            // Verify correct term "EDITION_STMT" https://vocab.getty.edu/aat/300435435
-            var editionDescription = Getty.AatType("Edition", "300435435");
-
-
-
             // Maps
             var allWorks = new Dictionary<string, LinguisticObject>();
             var allHMOs = new Dictionary<string, List<HumanMadeObject>>();
@@ -50,16 +38,15 @@ namespace PmcTransformer
 
             var distinctClasses = new HashSet<string>();
             var accLocCounter = new Dictionary<int, int>();
-            // var multipleAccLocCounter = new Dictionary<int, int>();
             int classMatchesAccLocCounter = 0;
             int classHasLocationButDifferentFromAcclocCounter = 0;
             var placeDict = new Dictionary<string, List<string>>();
             var publisherDict = new Dictionary<string, List<string>>();
-            // var accnofldCounter = new Dictionary<int, int>();
             var collationCounter = new Dictionary<int, int>();
             var keywordDict = new Dictionary<string, List<string>>();
             var distinctLang = new HashSet<string>();
             var langCounter = new Dictionary<int, int>();
+            int accessionMismatch = 0;
 
 
             foreach (var record in xLibrary.Root!.Elements())
@@ -68,7 +55,7 @@ namespace PmcTransformer
                 // These carry the semantic metadata, the Creation activities.
                 // Each work has one or more HumanMadeObjects, which carry the physical metadata.
 
-                if (ShouldSkipRecord(record))
+                if (Library.ShouldSkipRecord(record))
                 {
                     continue;
                 }
@@ -80,119 +67,22 @@ namespace PmcTransformer
                 var work = new LinguisticObject()
                     .WithContext()
                     .WithId($"{Identity.LinguisticObjectBase}{id}");
-
                 allWorks.Add(id, work);
 
                 // /identified_by[type = Name, classified_as = PRIMARY] / value
-                var title = record.Elements(libNs + "title").Single().Value;
-
+                var title = record.LibStrings("title").Single();
                 work.IdentifiedBy = [
                     new Identifier(id).AsSystemAssignedNumber(),
                     new Name(title).AsPrimaryName(),
                 ];
 
-                // /referred_to_by[type=LinguisticObject,classified_as=EDITION_STMT]/value
-                var edition = record.Elements(libNs + "edition").Single().Value;
-                if (!string.IsNullOrWhiteSpace(edition))
-                {
-                    work.ReferredToBy = [
-                        new LinguisticObject()
-                            .WithContent(edition)
-                            .WithClassifiedAs(editionDescription)
-                    ];
-                }
-
-                // Repeatable. Personal name of a creator/contributor to the Work, plus the role they played. See notes on People below.
-                // /created_by/part/carried_out_by/id (for person)
-                // /created_by/part/classified_as/id (for role)
-                var persAuthors = record.Elements(libNs + "persauthorfull");
-                foreach (var author in persAuthors)
-                {
-                    persAuthorFullDict.AddToListForKey(author.Value.TrimOuterBrackets(), id);
-                }
-
-                // corpauthor - Repeatable. Organization/Corporate name of a creator/contributor to the Work. No role provided, assume role=author.
-                // See notes on Groups below.
-                // /created_by/part/carried_out_by/id
-                var corpAuthors = record.Elements(libNs + "corpauthor");
-                foreach (var author in corpAuthors)
-                {
-                    corpAuthorDict.AddToListForKey(author.Value.TrimOuterBrackets(), id);
-                }
-
-                // Observed so far ALL records have exactly one medium.
-                // /classified_as/id
-                var medium = record.Elements(libNs + "medium").Single().Value;
-                var mediumClassifier = Media.FromRecordValue(medium);
-                if(mediumClassifier == null)
-                {
-                    // Image files
-                    nullMediumCounter++;
-                } 
-                else
-                {
-                    work.WithClassifiedAs(mediumClassifier);
-                }
-
-                // See notes (messy)
-                // /identified_by[type=Identifier]/value   OR   /current_location/id
-                // Distribution of class values:
-                // Unfiltered        Filtered as linq below
-                // 0: 0              15889
-                // 1: 38863          26457
-                // 2: 24481          21009
-                // 3: 39             28
-                // 4: 4              4
-                // 5: 1              1
-                // 9: 2              2
-                // 12: 1             1
-                string[] ignoredClasses = [
-                    "AUCTION CATALOGUES",
-                    "PMC SUPPORTED",
-                    "PMC PUBLICATION"
-                ];
-                var classes = record.Elements(libNs + "class")
-                    .Select(c => c.Value)
-                    .Where(v => !string.IsNullOrWhiteSpace(v))
-                    .Where(v => !ignoredClasses.Contains(v))
-                    .Where(v => !v.StartsWith("IN PROCESS"))
-                    .Where(v => !v.StartsWith("YCBA"))
-                    .Where(v => !v.StartsWith("With Grants &"))
-                    .ToList();
-                classCounter.IncrementCounter(classes.Count);
-
-                // /current_location/id
-                // Distribution of accloc values (HMO has parts each of which has a location):
-                // This distribution should match accnofld exactly and they are assumed to tally
-                // 1: 62088
-                // 2: 981
-                // 3: 159  // see 0955581036
-                // 4: 89
-                // 5: 24
-                // 6: 20
-                // 7: 6
-                // 8: 6
-                // 9: 3
-                // 11: 1
-                // 12: 5
-                // 14: 3
-                // 16: 1
-                // 18: 1
-                // 22: 1
-                // 30: 1
-                // 34: 1
-                // 37: 1
-                var acclocs = record.Elements(libNs + "accloc")
-                    .Select(c => c.Value)
-                    .Where(c => !string.IsNullOrWhiteSpace(c))
-                    .ToList();
+                // Now create 1 or more HumanMadeObjects for the Work,
+                // based on the parallel accloc (location) and accnofld (accession number) fields.
+                var acclocs = record.LibStrings("accloc").ToList();
+                var accessionNumbers = record.LibStrings("accnofld").ToList();
                 accLocCounter.IncrementCounter(acclocs.Count);
-                var accessionNumbers = record.Elements(libNs + "accnofld")
-                    .Select(c => c.Value)
-                    .Where(c => !string.IsNullOrWhiteSpace(c))
-                    .ToList();
 
-                if(accessionNumbers.Count > 0 && acclocs.Count != accessionNumbers.Count)
+                if (accessionNumbers.Count > 0 && acclocs.Count != accessionNumbers.Count)
                 {
                     throw new InvalidOperationException("Mismatch accloc/accnofld for " + id);
                 }
@@ -204,20 +94,20 @@ namespace PmcTransformer
                     var hmo = new HumanMadeObject()
                         .WithContext()
                         .WithId($"{Identity.HmoBase}{id}/1");
-                    hmo.IdentifiedBy = [ new Name(title).AsPrimaryName() ];
+                    hmo.IdentifiedBy = [new Name(title).AsPrimaryName()];
                     allHMOs[id].Add(hmo);
                 }
                 else
                 {
-                    for(int i=0; i<acclocs.Count; i++)
+                    for (int i = 0; i < acclocs.Count; i++)
                     {
                         var hmo = new HumanMadeObject()
                             .WithContext()
-                            .WithId($"{Identity.HmoBase}{id}-{i+1}");
+                            .WithId($"{Identity.HmoBase}{id}-{i + 1}");
                         hmo.IdentifiedBy = [
-                            new Name(title).AsPrimaryName()                            
+                            new Name(title).AsPrimaryName()
                         ];
-                        if(accessionNumbers.Count > 0)
+                        if (accessionNumbers.Count > 0)
                         {
                             hmo.IdentifiedBy.Add(
                                 new Identifier(accessionNumbers[i]).AsAccessionNumber());
@@ -231,7 +121,7 @@ namespace PmcTransformer
                         allHMOs[id].Add(hmo);
                     }
                 }
-                foreach(var hmo in allHMOs[id])
+                foreach (var hmo in allHMOs[id])
                 {
                     // add relationship from HMO to LO
                     hmo.Carries = [
@@ -240,7 +130,78 @@ namespace PmcTransformer
                 }
 
 
-                var classesThatWillBecomeIdentifiers = new List<string>();
+                // Now augment from the <notes> field. 
+                // Gather notes that may supplement (or supplant) later field values 
+                var hierarchicalPlaces = new List<string>();
+                var editionStatementsFromNotes = new List<string>();
+                var accessionNumbersFromNotes = new List<string>();
+                LibraryNotes.ParseNotesField(
+                    record, work, allHMOs[id],  // !!! <<<< We haven't populated this yet!
+                    hierarchicalPlaces, editionStatementsFromNotes, accessionNumbersFromNotes
+                );
+                if (accessionNumbersFromNotes.Count == 1)
+                {
+                    var accParts = accessionNumbersFromNotes[0].Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                        .Select(x => x.Trim())
+                        .Where(x => x != "X")
+                        .Where(x => x != "All")
+                        .Where(x => x != "PMF")
+                        .Where(x => x != "(PMF)")
+                        .Where(x => x != "Archive")
+                        .Where(x => x != "(Missing)")
+                        .ToList();
+                    // The problem here is that the accession number belongs to the HMO, but from the notes
+                    // field we don't know _which_ HMO. But if there is only one we're OK.
+                    if (allHMOs[id].Count == 1)
+                    {
+                        foreach (var accessionNumber in accessionNumbersFromNotes)
+                        {
+                            allHMOs[id][0].IdentifiedBy!.Add(
+                                new Identifier(accessionNumber).AsAccessionNumber());
+                        }
+                    }
+                    else
+                    {
+                        if (accParts.Any())
+                        {
+                            if (accParts.Count == allHMOs[id].Count)
+                            {
+                                for (var i = 0; i < accParts.Count; i++)
+                                {
+                                    allHMOs[id][i].IdentifiedBy!.Add(new Identifier(accParts[i]).AsAccessionNumber());
+                                }
+                            }
+                            else if (accParts.Count == 1)
+                            {
+                                // !! Danger.. this may not be valid, typically records have different acclocs,
+                                // so do they all have the same accession number? Probably not.
+                                foreach (var hmo in allHMOs[id])
+                                {
+                                    hmo.IdentifiedBy!.Add(new Identifier(accParts[0]).AsAccessionNumber());
+                                }
+                            }
+                            else
+                            {
+                                // ?? We have more than one HMO, and one (or more) accession numbers from notes fields
+                                // Just give ALL the HMOs the accession number.
+                                Console.WriteLine($"{++accessionMismatch} (ACN) for {id}: {allHMOs[id].Count} HMOs, and notes is {string.Join("||(ACN)", accessionNumbersFromNotes)}");
+                            }
+                        }
+                    }
+                }
+                if (accessionNumbersFromNotes.Count > 1)
+                {
+                    Console.WriteLine($"{++accessionMismatch} MULTIPLE (ACN) for {id}: {allHMOs[id].Count} HMOs, and notes is {string.Join("||(ACN)", accessionNumbersFromNotes)}");
+                }
+                // NB 52 records that log messages above, mostly the first message. 466 if you don't do the "Danger" one.
+
+                Library.AddEdition(record, work, editionStatementsFromNotes);
+
+                bool missingMedium = Library.AddMedium(record, work);
+                if (missingMedium) nullMediumCounter++;
+
+                var classes = Library.GetClasses(record);
+                classCounter.IncrementCounter(classes.Count);
                 string[] normalisedMediums = [
                     "PAMPHLET",
                     "LARGE",
@@ -252,38 +213,20 @@ namespace PmcTransformer
                 foreach (var classVal in classes)
                 {
                     var locationAsClass = Locations.FromRecordValue(classVal, true);
-                    if(locationAsClass != null)
+                    if (locationAsClass != null)
                     {
                         if (alreadyMappedLocations.Contains(locationAsClass))
                         {
                             classMatchesAccLocCounter++;
                         }
-                        else if(acclocs.Count > 0 && !(classVal == "PHOTOGRAPHIC ARCHIVE" || classVal == "Photo Archive"))
-                        {
-                            //Console.WriteLine(id + ": " +  classVal);
-                            //Console.WriteLine(string.Join(", ", alreadyMappedLocations));
-
-                        }
-                        //else
-                        //{
-                        //    if(classVal == "PHOTOGRAPHIC ARCHIVE" || classVal == "Photo Archive")
-                        //    {
-                        //        continue;
-                        //    }
-                        //    classHasLocationButDifferentFromAcclocCounter++;
-                        //    Console.WriteLine(id + ": " +  classVal);
-                        //    // TODO: So add a location?
-                        //    // To ALL of the HMOs?
-                        //    // TODO: count them here and warn if > 1
-                        //}
                     }
                     else
                     {
                         var mediumClass = classVal.ToUpperInvariant().Replace("(", "").Replace(")", "");
                         var normalisedMedium = normalisedMediums.FirstOrDefault(m => m.StartsWith(mediumClass));
-                        if(normalisedMedium != null)
+                        if (normalisedMedium != null)
                         {
-                            switch(normalisedMedium)
+                            switch (normalisedMedium)
                             {
                                 case "PAMPHLET":
                                     work.WithClassifiedAs(Media.FromRecordValue("Pamphlet")!);
@@ -302,63 +245,52 @@ namespace PmcTransformer
                         }
                         else
                         {
-                            classesThatWillBecomeIdentifiers.Add(classVal);
+                            // This class value is an Identifier
+                            work.IdentifiedBy.Add(new Identifier(classVal));
                         }
                     }
                 }
 
-                foreach (var idClass in classesThatWillBecomeIdentifiers)
-                {
-                    work.IdentifiedBy ??= [];
-                    work.IdentifiedBy.Add(new Identifier(idClass));
-                }
 
-                //if (classesThatWillBecomeIdentifiers.Count > 1)
-                //{
-                //    Console.WriteLine("=====================================");
-                //    Console.WriteLine(JsonSerializer.Serialize(work, options));
-                //    Console.WriteLine("=====================================");
-                //    foreach(var hmo in allHMOs[id])
-                //    {
-                //        Console.WriteLine(JsonSerializer.Serialize(hmo, options));
-                //        Console.WriteLine("--------------------------------------");
-                //    }
-                //    //Console.WriteLine(string.Join('|', classesThatWillBecomeIdentifiers));
-                //}
-
-                bool hasPlace = false;
                 // place
+                bool hasPlace = hierarchicalPlaces.Count > 0;
                 // /used_for[classified_as=PUBLISHING]/took_place_at/id
-                var places = record.Elements(libNs + "place");
-                foreach (var place in places)
+                if (hasPlace)
                 {
-                    hasPlace = true;
-                    placeDict.AddToListForKey(place.Value.TrimOuterBrackets(), id);
+                    foreach (var place in hierarchicalPlaces)
+                    {
+                        placeDict.AddToListForKey(place.TrimOuterBrackets(), id);
+                    }
+                }
+                else
+                {
+                    // Only use place field if we didn't find a hierarchical place in notes->(HIE)
+                    var places = record.LibStrings("place");
+                    foreach (var place in places)
+                    {
+                        hasPlace = true;
+                        placeDict.AddToListForKey(place.TrimOuterBrackets(), id);
+                    }
                 }
 
                 bool hasPublisher = false;
                 // publisher
                 // /used_for[classified_as=PUBLISHING]/carried_out_by/id
-                var publishers = record.Elements(libNs + "publisher");
+                var publishers = record.LibStrings("publisher");
                 foreach (var publisher in publishers)
                 {
                     hasPublisher = true;
-                    publisherDict.AddToListForKey(publisher.Value.TrimOuterBrackets(), id);
+                    publisherDict.AddToListForKey(publisher.TrimOuterBrackets(), id);
                 }
 
-                var yearEl = record.Elements(libNs + "year").SingleOrDefault()?.Value;
-                var year = yearEl;
-                if (string.IsNullOrWhiteSpace(year)) year = null;
+                var year = record.LibStrings("year").SingleOrDefault();
                 var nobrackets = year.TrimOuterBrackets();
                 if (nobrackets != null && nobrackets.StartsWith("n.d")) year = null;
                 if (nobrackets == "Date of publication not identified") year = null;
 
                 var timespan = timespanParser.Parse(year);
 
-                //Console.WriteLine(yearEl);
-                //Console.WriteLine(JsonSerializer.Serialize(timespan, options));
-
-                if(year != null || hasPublisher || hasPlace)
+                if (year != null || hasPublisher || hasPlace)
                 {
                     if (year != null && !char.IsDigit(year[0]))
                     {
@@ -377,274 +309,50 @@ namespace PmcTransformer
                     ];
                 }
 
+                Library.AddCollation(record, work);
 
-                // collation
-                // /referred_to_by[classified_as=COLLATION/value
-                var collations = record.Elements(libNs + "collation")
-                    .Select(c => c.Value)
-                    .Where(c => !string.IsNullOrWhiteSpace(c))
-                    .ToList();
-                collationCounter.IncrementCounter(collations.Count);
-                if (collations.Count == 1)
-                {
-                    // There is only ever none or one
-                    var collationStatement = new LinguisticObject()
-                        .WithClassifiedAs(
-                            Getty.AatType("Collations Statement", "300435452"),  
-                            Getty.AatType("Brief Text", "300418049"))
-                        .WithContent(collations[0]);
-
-                    work.ReferredToBy ??= [];
-                    work.ReferredToBy.Add(collationStatement);
-                }
-
-                // Unreconciled!
-                // See example output E2865, D8326
-                // /about/id
-                var keywords = record.Elements(libNs + "keywords");
-                foreach (var keyword in keywords)
-                {
-                    keywordDict.AddToListForKey(keyword.Value.TrimOuterBrackets(), id);
-                }
 
                 // entrydate
                 // TODO: use in Activity Stream - in DB
 
-                // series - this is a statement
-                // /referred_to_by[classified_as=???]/value
-                var series = record.Elements(libNs + "series")
-                    .Select(c => c.Value)
-                    .Where(c => !string.IsNullOrWhiteSpace(c))
-                    .SingleOrDefault();
-                var seriesno = record.Elements(libNs + "seriesno")
-                    .Select(c => c.Value)
-                    .Where(c => !string.IsNullOrWhiteSpace(c))
-                    .SingleOrDefault();
+
+                Library.AddSeriesStatement(record, work);
+
+                int langCount = Library.AddLanguage(distinctLang, record, work);
+                langCounter.IncrementCounter(langCount);
+                
+                Library.AddAccessStatement(record, work);
 
 
-                // AAT 300417214
-                // A Name of work with classification of series title 
+                // =====================
+                // Entities to be reconciled
+                // =====================
 
-                if (series != null)
+                // Repeatable. Personal name of a creator/contributor to the Work, plus the role they played. See notes on People below.
+                // /created_by/part/carried_out_by/id (for person)
+                // /created_by/part/classified_as/id (for role)
+                var persAuthors = record.LibStrings("persauthorfull");
+                foreach (var author in persAuthors)
                 {
-                    if(seriesno != null)
-                    {
-                        series += ", number " + seriesno;
-                    }
-                    work.IdentifiedBy ??= [];
-                    work.IdentifiedBy.Add(
-                        new Name(series)
-                            .WithClassifiedAs(Getty.AatType("Series title", "300417214")));
+                    persAuthorFullDict.AddToListForKey(author.TrimOuterBrackets(), id);
                 }
 
-                // lng
-                var language = record.Elements(libNs + "lng")
-                    .Select(c => c.Value)
-                    .Where(c => !string.IsNullOrWhiteSpace(c))
-                    .ToList();
-                langCounter.IncrementCounter(language.Count);
-                foreach(var l in language)
+                // corpauthor - Repeatable. Organization/Corporate name of a creator/contributor to the Work. No role provided, assume role=author.
+                // See notes on Groups below.
+                // /created_by/part/carried_out_by/id
+                var corpAuthors = record.LibStrings("corpauthor");
+                foreach (var author in corpAuthors)
                 {
-                    distinctLang.Add(l);
+                    corpAuthorDict.AddToListForKey(author.TrimOuterBrackets(), id);
                 }
 
-
-                // notescsvx 
-                var notes = record.Elements(libNs + "notescsvx").Single().Value;
-                var noteParts = notes.Split("||")
-                    .Select(p => p.Trim());
-                var noteDict = new Dictionary<string, List<string>>();
-
-                string notePattern = @"^\(([A-Z]+)\) (.*)$";
-                foreach (var part in noteParts)
+                // See example output E2865, D8326
+                // /about/id
+                var keywords = record.LibStrings("keywords");
+                foreach (var keyword in keywords)
                 {
-                    var partMatch = Regex.Match(part, notePattern);
-                    if (partMatch.Success)
-                    {
-                        var key = partMatch.Groups[1].Value.Trim();
-                        noteDict.AddToListForKey(key, partMatch.Groups[2].Value);
-                    }
-                    else
-                    {
-                        //Console.WriteLine("Couldn't parse note from " + part);
-                        //Console.WriteLine(notes);
-                    }
+                    keywordDict.AddToListForKey(keyword.TrimOuterBrackets(), id);
                 }
-                foreach(var kvp in noteDict)
-                {
-                    // Console.WriteLine($"{kvp.Key}: " + string.Join(">>", kvp.Value));
-
-                    switch(kvp.Key)
-                    {
-
-
-
-                        case "BIB": // ': Bibliography for this entity.Type: BIBLIOGRAPHY
-                        case "REF": // Reference to published descriptions. Type: CITATION
-                            AddNoteToObject(work, kvp, Getty.BibliographyStatement);
-                            break;
-
-                        case "GEN": // General note.Type: NOTE
-                        case "RES": // Additional contributors in note form. Type: NOTE
-                        case "DIS": // Dissertation course details. Type: NOTE
-                        case "HIS": // Historical note. Type: NOTE
-                        case "ADD": // Added entry note. Type: NOTE
-                        case "REL": // Relationship with other serials. Type: NOTE
-                        case "AUT": // Authority note. Type: NOTE
-                        case "CHR": // Chronological (not really?). Type: NOTE
-                            AddNoteToObject(work, kvp, Getty.AatType("General note", "300027200"));
-                            break;
-
-
-                        case "COP": // Random notes about this copy. Type: NOTE
-                        case "ITE": // Item described. (not really?) Type: NOTE
-                            foreach(var hmo in allHMOs[id])
-                            {
-                                AddNoteToObject(hmo, kvp, Getty.AatType("General note", "300027200"));
-                            }
-                            break;
-
-
-                        case "LUG": // Lugt number of the Auction Catalog. e.g. per https://brill.com/display/db/lro?language=en Type: NOTE with display name Future work to investigate auctions as events.
-                            AddNoteToObject(work, kvp, Getty.AatType("General note", "300027200"), "Lugt Number");
-                            break;
-
-                        case "SEL": // Seller for the Auction. Type: NOTE with display name
-                            AddNoteToObject(work, kvp, Getty.AatType("General note", "300027200"), "Seller");
-                            break;
-
-                        case "DAT": // Date of the Auction described by this catalog.Type: DATING 
-                        case "AUC": // Auction Date, see also DAT. Type: DATING 
-                            AddNoteToObject(work, kvp, Getty.AatType("Dating", "300054714"));
-                            break;
-
-                        case "ACC": // Accompanying Material. Type: RELATEDMATERIAL
-                            AddNoteToObject(work, kvp, Getty.AatType("Related Material", "300444119"));
-                            break;
-
-                        case "CON": // Table of Contents for the Work. Type: TABLEOFCONTENTS
-                            AddNoteToObject(work, kvp, Getty.AatType("Table of Contents", "300195187"));
-                            break;
-
-                        case "PHY": // Physical description or note Type: PHYSDESC
-                            foreach (var hmo in allHMOs[id])
-                            {
-                                AddNoteToObject(hmo, kvp, Getty.AatType("Physical Description", "300435452"));
-                            }
-                            break;
-
-                        case "PMC": // Note that PMC supported the work. Type: CREDITLINE
-                            AddNoteToObject(work, kvp, Getty.AatType("Credit Line", "300026687"));
-                            break;
-
-                        case "DON": // Donation. Type: PROVENANCE
-                        case "ACD": // Accession date. Type: PROVENANCE
-                        case "OWN": // Former Owner of Object. Type: PROVENANCE
-                            foreach (var hmo in allHMOs[id])
-                            {
-                                AddNoteToObject(hmo, kvp, Getty.AatType("Provenance", "300435438"));
-                            }
-                            break;
-
-                        case "LAN": // Language note. Type: LANGUAGE
-                            AddNoteToObject(work, kvp, Getty.AatType("Language", "300435433"));
-                            break;
-
-                        case "VER": // Other Versions available. Type: REPRODUCTION
-                            AddNoteToObject(work, kvp, Getty.AatType("Reproduction", "300411336"));
-                            break;
-
-                        case "BND": // Binding Type: BINDING
-                            foreach (var hmo in allHMOs[id])
-                            {
-                                AddNoteToObject(hmo, kvp, Getty.AatType("Binding", "300055023"));
-                            }
-                            break;
-
-                        case "IND": // Indexes Note. Type: INDEXING
-                            AddNoteToObject(work, kvp, Getty.AatType("Indexing", "300054640"));
-                            break;
-
-
-                        case "WIT": // "With" note, but all are indexes.Type: INDEXING
-                            foreach (var hmo in allHMOs[id])
-                            {
-                                AddNoteToObject(hmo, kvp, Getty.AatType("Indexing", "300054640"));
-                            }
-                            break;
-
-                        case "PUB": // Publication, Distribution, etc. note. Type PUBLISHING
-                            AddNoteToObject(work, kvp, Getty.AatType("Publishing", "300435423"));
-                            break;
-
-                        case "NAT": // Nature or Scope of Work. Type: DESCRIPTION
-                        case "SUM": //  Summary. Type: DESCRIPTION
-                            AddNoteToObject(work, kvp, Getty.Description);
-                            break;
-
-
-                        case "DES": // Description of item.Type: DESCRIPTION
-                            foreach (var hmo in allHMOs[id])
-                            {
-                                AddNoteToObject(hmo, kvp, Getty.Description);
-                            }
-                            break;
-
-
-
-                        case "SER": // Series Note. Treat as if in <series>
-                        case "TIT": // Alternate Title.  /identified_by [type=Name]/value
-                        case "SBN": // ISSN or ISBN. /identified_by [type=Identifier, classified_as=ISBN]/value
-                        case "ACN": // HMO! Accession number /identified_by [type=Identifier, classified_as=ACCESSION]/value
-                        case "HIE": // Hierarchical version of the Place of publication. See Place discussion.
-                        case "EDN": // Edition statement. Treat as <edition> 
-                        case "BY":  // Edition by. Treat as <edition>
-
-                        case "CIP": // ignore
-                        case "AUD": // ignore
-                        case "ABS": // ignore
-                        case "CHA": // Change of control number, ignore
-                        case "HOL": // Holdings, ignore
-                        case "RUN": // ignore
-                        case "SUB": // ignore
-                        case "NUM": // Numbers borne by the item (e.g.auction catalogs) ignore for now
-                        case "FRE": // Publication Frequency note for serials. Type: FREQUENCY
-                        case "USE": // copyright fee note? Ignore
-                        case "BSH": // oversized, no longer used, ignore
-                            break;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    }
-
-}
-
-
-                // afilecsvx 
-
-
-
-
             }
 
             // #######################################################################################
@@ -690,7 +398,7 @@ namespace PmcTransformer
             // Create Groups for corpauthor and assert in book record.
             // TODO - this needs to be consistent between runs so once we are sure about our corporation,
             // mint a permanent id for it and store in DB
-            cd cd ccdint corpIdMinter = 1;
+            int corpIdMinter = 1;
             foreach (var corpAuthor in corpAuthorDict)
             {
                 var group = new Group()
@@ -918,78 +626,6 @@ namespace PmcTransformer
             Sample(allWorks, allHMOs, 1000, true);
         }
 
-        private static void AddNoteToObject(
-            LinkedArtObject thing, 
-            KeyValuePair<string, 
-            List<string>> kvp, 
-            LinkedArtObject classifier,
-            string? label = null)
-        {
-            foreach (var statement in kvp.Value)
-            {
-                var note = new LinguisticObject()
-                    .WithClassifiedAs(classifier)
-                    .WithContent(statement);
-                thing.ReferredToBy ??= [];
-                thing.ReferredToBy.Add(note);
-
-                if (!string.IsNullOrWhiteSpace(label))
-                {
-                    note.IdentifiedBy = [
-                        new Name(label).WithClassifiedAs(Getty.DisplayTitle)
-                    ];
-                }
-            }
-        }
-
-        private static bool ShouldSkipRecord(XElement record)
-        {
-            var id = record.Attribute("ID")!.Value;
-            // "Missing record created by data verification program"
-            if (id == "Q$") return true;
-
-            var medium = record.Elements(libNs + "medium").Single().Value;
-            if (medium == "Journal") return true;
-
-            var allClasses = record.Elements(libNs + "class")
-                .Select(c => c.Value.ToUpperInvariant().Replace("(", "").Replace(")", ""))
-                .ToList();
-
-            if (allClasses.Contains("PHOTOGRAPHIC ARCHIVES"))
-            {
-                if(record.Elements(libNs + "corpauthor").Any(ca => ca.Value.StartsWith("Paul Mellon Centre")))
-                {
-                    // PMC Photo Archive will be dealt with separately
-                    return true;
-                }
-            }
-            if (allClasses.Contains("MISSING"))
-            {
-                return true;
-            }
-            if (allClasses.Contains("ORDERED"))
-            {
-                return true;
-            }
-            if (allClasses.Contains("UNAVAILABLE"))
-            {
-                return true;
-            }
-            if (allClasses.Contains("IN QUARANTINE"))
-            {
-                return true;
-            }
-            if (allClasses.Contains("IN PROCESS"))
-            {
-                return true;
-            }
-            if(allClasses.Any(c => c.StartsWith("JOURNALS")))
-            {
-                return true;
-            }
-            return false;
-        }
-
         private static string TidyPersonDate(string datePart)
         {
             StringBuilder sb = new StringBuilder();
@@ -1033,7 +669,8 @@ namespace PmcTransformer
             List<string> pleaseDump = [
                 "0955581036",
                 "030020969X",
-                "0953238997"
+                "0953238997",
+                "0300059868"
             ];
             var options = new JsonSerializerOptions { WriteIndented = true, };
             int count = 0;

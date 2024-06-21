@@ -1,11 +1,24 @@
 {
   "@context": "https://linked.art/ns/v1/linked-art.json",
-  "id": "https://linkedart.paul-mellon-centre.ac.uk/library/hmo/030020969X-2",
+  "id": "https://data.paul-mellon-centre.ac.uk/library/object/030020969X-2",
   "type": "HumanMadeObject",
   "carries": [
     {
-      "id": "https://linkedart.paul-mellon-centre.ac.uk/library/linguistic/030020969X",
+      "id": "https://data.paul-mellon-centre.ac.uk/library/work/030020969X",
       "type": "LinguisticObject"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "In slip case",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Physical Description"
+        }
+      ]
     }
   ],
   "identified_by": [
@@ -33,7 +46,7 @@
     }
   ],
   "current_location": {
-    "id": "https://linkedart.paul-mellon-centre.ac.uk/places/PSR",
+    "id": "https://data.paul-mellon-centre.ac.uk/place/PSR",
     "type": "Place",
     "_label": "Public Study Room"
   }

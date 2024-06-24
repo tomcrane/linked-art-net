@@ -1,0 +1,36 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/3f108ac4-0c03-4ff6-9217-871ef9765624",
+  "type": "Set",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300375748",
+      "type": "Type",
+      "_label": "archives (groupings)"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "CW/1/2/54",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "Record Identifiers"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "CW/1/2/54 - London (Part 7)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ]
+}

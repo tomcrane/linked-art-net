@@ -1,11 +1,12 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Vocabulary;
+using PmcTransformer.Helpers;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace PmcTransformer
+namespace PmcTransformer.Library
 {
-    public class LibraryNotes
+    public class NotesField
     {
         public static void ParseNotesField(
             XElement record,

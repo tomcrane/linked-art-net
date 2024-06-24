@@ -29,8 +29,11 @@ public class Getty
     public static LinkedArtObject Letter => AatType("Letter", "300026879");
 
     //Archives
-    public static LinkedArtObject ArchivalSubGrouping => AatType("Archival SubGrouping", "300404023");
+    public static LinkedArtObject Archives => AatType("archives (groupings)", "300375748");
+    public static LinkedArtObject RecordIdentifiers => AatType("Record Identifiers", "300435704");
     public static LinkedArtObject ArchivalGrouping => AatType("Archival Grouping", "300404022");
+    public static LinkedArtObject ArchivalSubGrouping => AatType("Archival SubGrouping", "300404023");
+    public static LinkedArtObject ArchivalMaterials => AatType("Archival Materials", "300379505");
 
     // Parts
     public static LinkedArtObject PartType => AatType("Part Type", "300241583");

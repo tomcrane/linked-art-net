@@ -1,0 +1,67 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/ae0d8b46-9a14-459e-ad2b-6f71348dcb18",
+  "type": "Set",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300375748",
+      "type": "Type",
+      "_label": "archives (groupings)"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "WR/1375",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "Record Identifiers"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "WR/1375 - Material concerning the prices of pictures belonging to the late Sir John Aird Bt, and other sellers, sold at auction on 3 May 1935",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
+  "attributed_by": [
+    {
+      "type": "AttributeAssignment",
+      "identified_by": [
+        {
+          "type": "Name",
+          "content": "Related Library Record",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300404669",
+              "type": "Type",
+              "_label": "Display Title",
+              "classified_as": [
+                {
+                  "id": "http://vocab.getty.edu/aat/300418049",
+                  "type": "Type",
+                  "_label": "Brief Text"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "assigned": [
+        {
+          "id": "https://data.paul-mellon-centre.ac.uk/library/work/S5758",
+          "type": "LinguisticObject"
+        }
+      ]
+    }
+  ]
+}

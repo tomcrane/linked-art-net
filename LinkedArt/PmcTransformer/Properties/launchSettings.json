@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PmcTransformer": {
+      "commandName": "Project",
+      "commandLineArgs": "archive"
+    }
+  }
+}

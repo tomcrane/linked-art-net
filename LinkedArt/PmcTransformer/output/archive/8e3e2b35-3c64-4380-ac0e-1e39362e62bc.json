@@ -1,0 +1,36 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/8e3e2b35-3c64-4380-ac0e-1e39362e62bc",
+  "type": "Set",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300375748",
+      "type": "Type",
+      "_label": "archives (groupings)"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "BS/5/1/931",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "Record Identifiers"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "BS/5/1/931 - Sickert: Walter",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ]
+}

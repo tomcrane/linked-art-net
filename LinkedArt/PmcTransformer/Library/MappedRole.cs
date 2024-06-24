@@ -3,7 +3,7 @@ using LinkedArtNet;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PmcTransformer.Helpers
+namespace PmcTransformer.Library
 {
     public class MappedRole
     {

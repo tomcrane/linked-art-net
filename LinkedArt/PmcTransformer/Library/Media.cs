@@ -1,13 +1,13 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Vocabulary;
 
-namespace PmcTransformer.Helpers
+namespace PmcTransformer.Library
 {
     public class Media
     {
         public static LinkedArtObject? FromRecordValue(string value)
         {
-            if(value == "Image files")
+            if (value == "Image files")
             {
                 return null;
             }

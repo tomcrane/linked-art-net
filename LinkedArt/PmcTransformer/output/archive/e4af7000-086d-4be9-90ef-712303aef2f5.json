@@ -1,0 +1,36 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/e4af7000-086d-4be9-90ef-712303aef2f5",
+  "type": "Set",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300375748",
+      "type": "Type",
+      "_label": "archives (groupings)"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "JTH/1/5/6",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "Record Identifiers"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "JTH/1/5/6 - Gainsborough, Thomas, 1727-1788; Portraits, London",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ]
+}

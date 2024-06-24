@@ -1,5 +1,4 @@
-﻿
-namespace PmcTransformer
+﻿namespace PmcTransformer.Library
 {
     internal class LibraryPersonName
     {

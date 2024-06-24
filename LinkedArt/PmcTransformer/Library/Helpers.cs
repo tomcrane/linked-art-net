@@ -4,13 +4,13 @@ using LinkedArtNet.Vocabulary;
 using PmcTransformer.Helpers;
 using System.Xml.Linq;
 
-namespace PmcTransformer
+namespace PmcTransformer.Library
 {
-    public static class Library
+    public static class Helpers
     {
         public static readonly XNamespace LibNS = "x-schema:EF-34074-Export.dtd";
 
-        public static IEnumerable<string> LibStrings (this XElement record, string field)
+        public static IEnumerable<string> LibStrings(this XElement record, string field)
         {
             return record.Elements(LibNS + field)
                 .Select(el => el.Value)
@@ -79,10 +79,10 @@ namespace PmcTransformer
                         .WithClassifiedAs(Getty.EditionStatement)
                 );
             }
-            foreach(var statement in editionStatementsFromNotes)
+            foreach (var statement in editionStatementsFromNotes)
             {
                 // TODO: We may need a more subtle comparison.
-                if(statement != edition)
+                if (statement != edition)
                 {
                     work.ReferredToBy ??= [];
                     work.ReferredToBy.Add(
@@ -217,7 +217,7 @@ namespace PmcTransformer
                     var spacePos = link.IndexOf(' ');
                     string? linkText = null;
                     string? linkHref = null;
-                    if(spacePos > 0)
+                    if (spacePos > 0)
                     {
                         linkHref = link.Substring(0, spacePos);
                         linkText = link.Substring(spacePos + 1).TrimOuterBrackets();

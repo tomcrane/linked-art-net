@@ -1,6 +1,9 @@
 ﻿
 using NanoXLSX;
+using PMC;
+using System.Net;
 using System.Runtime.CompilerServices;
+using System.Xml;
 using System.Xml.Linq;
 
 var root = "C:\\Users\\TomCrane\\Dropbox\\digirati\\PMC\\linked.art\\2024-03-18";
@@ -8,9 +11,16 @@ var archive = root + "\\2024-03-11_archive";
 var library = root + "\\2024-03-11_library";
 var photo_archive = root + "\\2024-03-14_photo-archive";
 
-var xArchive = XDocument.Load(archive + "\\2024-03-11_archive-descriptions.xml");
-var xAuthorities = XDocument.Load(archive + "\\2024-03-11_archive-authorities.xml");
+//var xArchive = XDocument.Load(archive + "\\2024-03-11_archive-descriptions.xml");
+//var xAuthorities = XDocument.Load(archive + "\\2024-03-11_archive-authorities.xml");
 
+var settings = new XmlReaderSettings { 
+    DtdProcessing = DtdProcessing.Parse,
+    XmlResolver = new DScribeUrlResolver() { Credentials = CredentialCache.DefaultCredentials }    
+};
+// XmlReader reader = XmlReader.Create(archive + "\\2024-03-11_archive-descriptions.xml", settings);
+XmlReader reader = XmlReader.Create(archive + "\\2024-03-11_archive-descriptions.xml", settings);
+XDocument xArchive = XDocument.Load(reader);
 // var xLido = XDocument.Load(photo_archive + "\\2024-03-14_PMCPA_LIDO.xml");
 // xLido.Save(photo_archive + "\\2024-03-14_PMCPA_LIDO_PRETTY.xml");
 

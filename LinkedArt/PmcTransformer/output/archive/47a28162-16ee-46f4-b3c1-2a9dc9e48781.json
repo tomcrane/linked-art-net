@@ -31,6 +31,232 @@
           "_label": "Primary Name"
         }
       ]
+    },
+    {
+      "type": "Identifier",
+      "content": "BS/3/1/000011",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300456575",
+          "type": "Type",
+          "_label": "Sort Value"
+        }
+      ],
+      "assigned_by": [
+        {
+          "type": "AttributeAssignment",
+          "motivated_by": [
+            {
+              "id": "https://data.paul-mellon-centre.ac.uk/archive/5f787672-7093-4350-b7c1-01e3fd322c9e",
+              "type": "Set"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "1 journal",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435430",
+          "type": "Type",
+          "_label": "Dimension Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "In this journal, which Sewell titled \u0027Alexander\u0027s Path: David George, 1987\u0027, he records a visit made to Turkey from 1-13 October 1987 with photographer David George.  Locations mentioned include:\n\n-Sagalassos\n-Adada\n-Dinar\n-Midas\u0027 Tomb at Yazilikaya\n-the river Halys \n-the Soganli Valley\n-Kayseri\n-Eskigumus Monastery\n-Sungerbey Camii at Nigde\n-Tarsus\n-Hieropolis\n-Karatepe\n-Korykos\n\nRelated material can be found in: \n-BS/3/2/10 - Articles on Travel: Turkey: 1985-1987\n-BS/3/2/11 - Articles on Travel: Turkey: 1988-1989",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Open for research. Readers must fill in an \u0027Reader Agreement Form\u0027 which outlines the reading room rules and conditions concerning privacy and Data Protection",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "member_of": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/archive/5f787672-7093-4350-b7c1-01e3fd322c9e",
+      "type": "Set"
+    }
+  ],
+  "representation": [
+    {
+      "type": "VisualItem",
+      "digitally_shown_by": [
+        {
+          "type": "DigitalObject",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300215302",
+              "type": "Type",
+              "_label": "Digital Image"
+            }
+          ],
+          "referred_to_by": [
+            {
+              "type": "LinguisticObject",
+              "content": "Front cover of Sewell\u0027s journal titled Alexander\u0027s Path, and two pages recording details of a visit to Turkey, dated October 1987",
+              "classified_as": [
+                {
+                  "id": "http://vocab.getty.edu/aat/300435416",
+                  "type": "Type",
+                  "_label": "Description",
+                  "classified_as": [
+                    {
+                      "id": "http://vocab.getty.edu/aat/300418049",
+                      "type": "Type",
+                      "_label": "Brief Text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "access_point": [
+            {
+              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=BS_3_1_11a.jpg",
+              "type": "DigitalObject"
+            }
+          ],
+          "format": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "type": "VisualItem",
+      "digitally_shown_by": [
+        {
+          "type": "DigitalObject",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300215302",
+              "type": "Type",
+              "_label": "Digital Image"
+            }
+          ],
+          "referred_to_by": [
+            {
+              "type": "LinguisticObject",
+              "content": "Front cover of Sewell\u0027s journal titled Alexander\u0027s Path, and two pages recording details of a visit to Turkey, dated October 1987",
+              "classified_as": [
+                {
+                  "id": "http://vocab.getty.edu/aat/300435416",
+                  "type": "Type",
+                  "_label": "Description",
+                  "classified_as": [
+                    {
+                      "id": "http://vocab.getty.edu/aat/300418049",
+                      "type": "Type",
+                      "_label": "Brief Text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "access_point": [
+            {
+              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=BS_3_1_11b.jpg",
+              "type": "DigitalObject"
+            }
+          ],
+          "format": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "type": "VisualItem",
+      "digitally_shown_by": [
+        {
+          "type": "DigitalObject",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300215302",
+              "type": "Type",
+              "_label": "Digital Image"
+            }
+          ],
+          "referred_to_by": [
+            {
+              "type": "LinguisticObject",
+              "content": "Front cover of Sewell\u0027s journal titled Alexander\u0027s Path, and two pages recording details of a visit to Turkey, dated October 1987",
+              "classified_as": [
+                {
+                  "id": "http://vocab.getty.edu/aat/300435416",
+                  "type": "Type",
+                  "_label": "Description",
+                  "classified_as": [
+                    {
+                      "id": "http://vocab.getty.edu/aat/300418049",
+                      "type": "Type",
+                      "_label": "Brief Text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "access_point": [
+            {
+              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=BS_3_1_11c.jpg",
+              "type": "DigitalObject"
+            }
+          ],
+          "format": "image/jpeg"
+        }
+      ]
+    }
+  ],
+  "members_exemplified_by": [
+    {
+      "type": "HumanMadeObject",
+      "produced_by": {
+        "type": "Activity",
+        "timespan": {
+          "type": "TimeSpan",
+          "_label": "1987",
+          "begin_of_the_begin": "1987-01-01T00:00:00Z",
+          "end_of_the_end": "1987-12-31T23:59:59Z"
+        }
+      }
     }
   ]
 }

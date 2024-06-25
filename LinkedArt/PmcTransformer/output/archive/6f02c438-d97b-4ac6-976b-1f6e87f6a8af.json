@@ -1,6 +1,6 @@
 {
   "@context": "https://linked.art/ns/v1/linked-art.json",
-  "id": "https://data.paul-mellon-centre.ac.uk/archive/a6e8e48c-9a18-4411-9c7b-96218f7848ba",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/6f02c438-d97b-4ac6-976b-1f6e87f6a8af",
   "type": "Set",
   "classified_as": [
     {
@@ -12,7 +12,7 @@
   "identified_by": [
     {
       "type": "Identifier",
-      "content": "WR/109",
+      "content": "WR/368",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435704",
@@ -23,7 +23,7 @@
     },
     {
       "type": "Name",
-      "content": "WR/109 - Material concerning the sale of pictures belonging to R.T. Hamilton Bruce",
+      "content": "WR/368 - Material concerning the sale of pictures belonging to Arthur Kay of Glasgow",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300404670",
@@ -34,7 +34,7 @@
     },
     {
       "type": "Identifier",
-      "content": "WR/000109",
+      "content": "WR/000368",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300456575",
@@ -58,7 +58,7 @@
   "referred_to_by": [
     {
       "type": "LinguisticObject",
-      "content": "3 newspaper cuttings",
+      "content": "2 newspaper cuttings",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435430",
@@ -76,7 +76,7 @@
     },
     {
       "type": "LinguisticObject",
-      "content": "Includes:\n\n-newspaper cutting concerning Exposition Monticelli aux Galeries Shirleys, dated April 1907\n-newspaper cutting concerning the Sale of Modern Pictures\n-copy of the following newspaper cutting: 1903. Fine Arts: The Hamilton Bruce Sale. Glasgow Herald, 18 May 1903.\n\n3 items pasted into:  Christie, Manson \u0026 Woods (1903) Pictures and Drawings Chiefly of the Dutch and Barbizon Schools of the Late R.T. Hamilton Bruce, Esq. [Auction catalogue]. London: Christie, Manson \u0026 Woods.\n\n[Available in the Paul Mellon Centre\u0027s Library, see URL below] ",
+      "content": "Includes:\n\n-two newspaper cuttings concerning the prices of pictures belonging to Arthur Kay, sold at auction 11 \u0026 12 May 1911\n\n2 items pasted into: Christie, Manson \u0026 Woods (1911) Pictures by old masters and old drawings. [Auction catalogue] London: Christie, Manson \u0026 Woods\n\n[Available in the Paul Mellon Centre\u0027s Library, see URL below]",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435416",
@@ -142,7 +142,7 @@
       ],
       "assigned": [
         {
-          "id": "https://data.paul-mellon-centre.ac.uk/library/work/S734",
+          "id": "https://data.paul-mellon-centre.ac.uk/library/work/S2045",
           "type": "LinguisticObject"
         }
       ]
@@ -155,9 +155,9 @@
         "type": "Activity",
         "timespan": {
           "type": "TimeSpan",
-          "_label": "Apr-May 1903",
-          "begin_of_the_begin": "1903-04-01T00:00:00\u002B01:00",
-          "end_of_the_end": "1903-04-30T23:59:59\u002B01:00"
+          "_label": "1911",
+          "begin_of_the_begin": "1911-01-01T00:00:00Z",
+          "end_of_the_end": "1911-12-31T23:59:59Z"
         }
       }
     }

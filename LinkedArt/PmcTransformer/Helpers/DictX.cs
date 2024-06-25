@@ -3,7 +3,7 @@ namespace PmcTransformer
 {
     public static class DictX
     {
-        public static void IncrementCounter(this Dictionary<int, int> dict, int key)
+        public static void IncrementCounter<T>(this Dictionary<T, int> dict, T key) where T : notnull
         {
             if (!dict.ContainsKey(key))
             {

@@ -9,26 +9,6 @@
       "_label": "archives (groupings)"
     }
   ],
-  "referred_to_by": [
-    {
-      "type": "LinguisticObject",
-      "content": "Plates 136a",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300444119",
-          "type": "Type",
-          "_label": "Related Material",
-          "classified_as": [
-            {
-              "id": "http://vocab.getty.edu/aat/300418049",
-              "type": "Type",
-              "_label": "Brief Text"
-            }
-          ]
-        }
-      ]
-    }
-  ],
   "identified_by": [
     {
       "type": "Identifier",
@@ -51,6 +31,104 @@
           "_label": "Primary Name"
         }
       ]
+    },
+    {
+      "type": "Identifier",
+      "content": "WGC/1/1/000150",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300456575",
+          "type": "Type",
+          "_label": "Sort Value"
+        }
+      ],
+      "assigned_by": [
+        {
+          "type": "AttributeAssignment",
+          "motivated_by": [
+            {
+              "id": "https://data.paul-mellon-centre.ac.uk/archive/3d5fbb88-96ac-4a3a-bef9-8c59e78f5da5",
+              "type": "Set"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Plates 136a",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300444119",
+          "type": "Type",
+          "_label": "Related Material",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "9 items",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435430",
+          "type": "Type",
+          "_label": "Dimension Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Open for research. Readers must fill in an \u0027Reader Agreement Form\u0027 which outlines the reading room rules and conditions concerning privacy and Data Protection",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "member_of": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/archive/3d5fbb88-96ac-4a3a-bef9-8c59e78f5da5",
+      "type": "Set"
+    }
+  ],
+  "members_exemplified_by": [
+    {
+      "type": "HumanMadeObject",
+      "produced_by": {
+        "type": "Activity",
+        "timespan": {
+          "type": "TimeSpan",
+          "_label": "[c 1940s-1953]",
+          "begin_of_the_begin": "1940-01-01T00:00:00Z",
+          "end_of_the_end": "1952-12-31T23:59:59Z"
+        }
+      }
     }
   ]
 }

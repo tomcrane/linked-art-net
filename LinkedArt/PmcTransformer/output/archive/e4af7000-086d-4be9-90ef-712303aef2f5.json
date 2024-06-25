@@ -31,6 +31,104 @@
           "_label": "Primary Name"
         }
       ]
+    },
+    {
+      "type": "Identifier",
+      "content": "JTH/1/5/000006",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300456575",
+          "type": "Type",
+          "_label": "Sort Value"
+        }
+      ],
+      "assigned_by": [
+        {
+          "type": "AttributeAssignment",
+          "motivated_by": [
+            {
+              "id": "https://data.paul-mellon-centre.ac.uk/archive/4afa4aee-678e-4c29-b0fb-fa2861c86209",
+              "type": "Set"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "2 files (134 images; 2 photographs of versos of paintings; 1 sale catalogue; 4 letters; 1 journal article; 2 summary descriptions; 2 research notes)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435430",
+          "type": "Type",
+          "_label": "Dimension Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Includes: \n\n-image of label on reverse of painting of Lady Kinnoull, Sarah Countess of Kinnoull\n-sale catalogue of Sotheby Parke Bernet Monaco S.A.  Tableaux Anciens et du Debut du XIXe Siecle, Dimanche 26 Juin 1983 a 11h\n-letter from David Moore-Gwyn, Sotheby \u0026 Co., dated 19 May 1983, concerning a portrait of Mrs Gainsborough and 5 pages of related photocopy material\n-summary description of The Goddard Children\n-letter from James Miller, Sotheby\u0027s, dated 4 October 1989, concerning a portrait of Francois Hypolyte Barthelemon \n-letter from David Moore-Gwyn, Sotheby \u0026 Co., dated 13 August 1984, concerning a painting of Squire Denison\n-letter from Lynn E. Springer, The St. Louis Art Museum, dated 6 June 1977, concerning an unidentified portrait of a man in the collection of the Chatillon-DeMenil House Foundation, St. Louis, Missouri\n-Morgan, E.J.R. (October, 1964) \u0027The Gift of Gladys Penfold Hyland\u0027, Bulletin of the National Gallery of South Australia, Volume 26 (No. 2, Serial No. 98)\n-2 x images of labels on reverse of an unidentified painting\n-summary description from Leggatt Brothers of portrait of Dr Richard Warren\n-2 research notes concerning Colonel Whigan\n\nThe Paul Mellon Centre\u0027s Archives \u0026 Library collections contain additional material on this artist.  Please see the Artist Guide on our website for further information (link below).",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Open for research. Readers must fill in an \u0027Reader Agreement Form\u0027 which outlines the reading room rules and conditions concerning privacy and Data Protection",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "member_of": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/archive/4afa4aee-678e-4c29-b0fb-fa2861c86209",
+      "type": "Set"
+    }
+  ],
+  "members_exemplified_by": [
+    {
+      "type": "HumanMadeObject",
+      "produced_by": {
+        "type": "Activity",
+        "timespan": {
+          "type": "TimeSpan",
+          "_label": "1929-2006",
+          "begin_of_the_begin": "1929-01-01T00:00:00Z",
+          "end_of_the_end": "2005-12-31T23:59:59Z"
+        }
+      }
     }
   ]
 }

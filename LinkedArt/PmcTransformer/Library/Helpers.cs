@@ -230,7 +230,7 @@ namespace PmcTransformer.Library
                     var html = $"""<span class="lux_data"><a href="{linkHref}">{linkText}</a></span>""";
                     var accessStatement = new LinguisticObject()
                         .WithContent(html)
-                        .WithClassifiedAs(Getty.AatType("Access Statement", "300133046"));
+                        .WithClassifiedAs(Getty.AccessStatement);
                     work.ReferredToBy ??= [];
                     work.ReferredToBy.Add(accessStatement);
                 }

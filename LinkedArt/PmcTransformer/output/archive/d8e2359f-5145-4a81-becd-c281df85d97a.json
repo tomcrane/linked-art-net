@@ -1,6 +1,6 @@
 {
   "@context": "https://linked.art/ns/v1/linked-art.json",
-  "id": "https://data.paul-mellon-centre.ac.uk/archive/a6e8e48c-9a18-4411-9c7b-96218f7848ba",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/d8e2359f-5145-4a81-becd-c281df85d97a",
   "type": "Set",
   "classified_as": [
     {
@@ -12,7 +12,7 @@
   "identified_by": [
     {
       "type": "Identifier",
-      "content": "WR/109",
+      "content": "RBF/1/733",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435704",
@@ -23,7 +23,7 @@
     },
     {
       "type": "Name",
-      "content": "WR/109 - Material concerning the sale of pictures belonging to R.T. Hamilton Bruce",
+      "content": "RBF/1/733 - Whitbread-Wilbraham",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300404670",
@@ -34,7 +34,7 @@
     },
     {
       "type": "Identifier",
-      "content": "WR/000109",
+      "content": "RBF/1/000733",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300456575",
@@ -47,7 +47,7 @@
           "type": "AttributeAssignment",
           "motivated_by": [
             {
-              "id": "https://data.paul-mellon-centre.ac.uk/archive/76fae7e4-d7c8-40c9-97fe-96501874ebdb",
+              "id": "https://data.paul-mellon-centre.ac.uk/archive/b37707d5-2c75-4ba9-a6fb-bec49794d503",
               "type": "Set"
             }
           ]
@@ -58,7 +58,7 @@
   "referred_to_by": [
     {
       "type": "LinguisticObject",
-      "content": "3 newspaper cuttings",
+      "content": "1 file",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435430",
@@ -76,7 +76,7 @@
     },
     {
       "type": "LinguisticObject",
-      "content": "Includes:\n\n-newspaper cutting concerning Exposition Monticelli aux Galeries Shirleys, dated April 1907\n-newspaper cutting concerning the Sale of Modern Pictures\n-copy of the following newspaper cutting: 1903. Fine Arts: The Hamilton Bruce Sale. Glasgow Herald, 18 May 1903.\n\n3 items pasted into:  Christie, Manson \u0026 Woods (1903) Pictures and Drawings Chiefly of the Dutch and Barbizon Schools of the Late R.T. Hamilton Bruce, Esq. [Auction catalogue]. London: Christie, Manson \u0026 Woods.\n\n[Available in the Paul Mellon Centre\u0027s Library, see URL below] ",
+      "content": "Includes research material concerning the following travellers:\n\n-Whitbread, Samuel\n-Whitbread, Mr\n-White, Mr\n-White, James\n-White, John\n-White, Jane\n-White, Garett\n-Whithed, Francis\n-Whitehead, William\n-Whitelocke, John Carleton\n-Whitelock, George\n-Whitley, Roger\n-Whitmore, Thomas\n-Whitney, Frances\n-Wigan, John\n-Wiggin, Matthew\n-Whitecomb, William\n-Wigmore, Mr\n-Wickstead, Philip\n-Wilbraham, Randle\n-Wilbraham, Roger\n-Wilbraham, George\n-Wilbraham, Mr",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435416",
@@ -109,57 +109,30 @@
           ]
         }
       ]
-    }
-  ],
-  "member_of": [
+    },
     {
-      "id": "https://data.paul-mellon-centre.ac.uk/archive/76fae7e4-d7c8-40c9-97fe-96501874ebdb",
-      "type": "Set"
-    }
-  ],
-  "attributed_by": [
-    {
-      "type": "AttributeAssignment",
-      "identified_by": [
+      "type": "LinguisticObject",
+      "content": "Brinsley Ford\u0092s archive was the basis of John Ingamells (ed.) \u0091A Dictionary of British and Irish Travellers in Italy 1701-1800\u0092, (Published for The Paul Mellon Centre for Studies in British Art by Yale University Press, New Haven \u0026 London, 1997)",
+      "classified_as": [
         {
-          "type": "Name",
-          "content": "Related Library Record",
+          "id": "http://vocab.getty.edu/aat/300027200",
+          "type": "Type",
+          "_label": "General Note",
           "classified_as": [
             {
-              "id": "http://vocab.getty.edu/aat/300404669",
+              "id": "http://vocab.getty.edu/aat/300418049",
               "type": "Type",
-              "_label": "Display Title",
-              "classified_as": [
-                {
-                  "id": "http://vocab.getty.edu/aat/300418049",
-                  "type": "Type",
-                  "_label": "Brief Text"
-                }
-              ]
+              "_label": "Brief Text"
             }
           ]
-        }
-      ],
-      "assigned": [
-        {
-          "id": "https://data.paul-mellon-centre.ac.uk/library/work/S734",
-          "type": "LinguisticObject"
         }
       ]
     }
   ],
-  "members_exemplified_by": [
+  "member_of": [
     {
-      "type": "HumanMadeObject",
-      "produced_by": {
-        "type": "Activity",
-        "timespan": {
-          "type": "TimeSpan",
-          "_label": "Apr-May 1903",
-          "begin_of_the_begin": "1903-04-01T00:00:00\u002B01:00",
-          "end_of_the_end": "1903-04-30T23:59:59\u002B01:00"
-        }
-      }
+      "id": "https://data.paul-mellon-centre.ac.uk/archive/b37707d5-2c75-4ba9-a6fb-bec49794d503",
+      "type": "Set"
     }
   ]
 }

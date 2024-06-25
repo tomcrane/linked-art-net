@@ -31,6 +31,104 @@
           "_label": "Primary Name"
         }
       ]
+    },
+    {
+      "type": "Identifier",
+      "content": "CW/1/2/000054",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300456575",
+          "type": "Type",
+          "_label": "Sort Value"
+        }
+      ],
+      "assigned_by": [
+        {
+          "type": "AttributeAssignment",
+          "motivated_by": [
+            {
+              "id": "https://data.paul-mellon-centre.ac.uk/archive/e711e4e6-e8ba-4993-9216-9b25fcd469a9",
+              "type": "Set"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "1 file (2 lists)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435430",
+          "type": "Type",
+          "_label": "Dimension Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Includes the following lists: \n\n-List of paintings at the Royal Academy of Music, 2000 (192pp); and Attached Multimedia Report, Royal Academy of Music, [2005] (24pp)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Open for research. Readers must fill in an \u0027Reader Agreement Form\u0027 which outlines the reading room rules and conditions concerning privacy and Data Protection",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "member_of": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/archive/e711e4e6-e8ba-4993-9216-9b25fcd469a9",
+      "type": "Set"
+    }
+  ],
+  "members_exemplified_by": [
+    {
+      "type": "HumanMadeObject",
+      "produced_by": {
+        "type": "Activity",
+        "timespan": {
+          "type": "TimeSpan",
+          "_label": "2000-2005",
+          "begin_of_the_begin": "2000-01-01T00:00:00Z",
+          "end_of_the_end": "2004-12-31T23:59:59Z"
+        }
+      }
     }
   ]
 }

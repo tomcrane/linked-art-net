@@ -52,7 +52,7 @@ namespace PmcTransformer.Library
                         case "REL": // Relationship with other serials. Type: NOTE
                         case "AUT": // Authority note. Type: NOTE
                         case "CHR": // Chronological (not really?). Type: NOTE
-                            AddNotesToObject(work, kvp.Value, Getty.AatType("General note", "300027200"));
+                            AddNotesToObject(work, kvp.Value, Getty.GeneralNote);
                             break;
 
 
@@ -60,17 +60,17 @@ namespace PmcTransformer.Library
                         case "ITE": // Item described. (not really?) Type: NOTE
                             foreach (var hmo in HMOs)
                             {
-                                AddNotesToObject(hmo, kvp.Value, Getty.AatType("General note", "300027200"));
+                                AddNotesToObject(hmo, kvp.Value, Getty.GeneralNote);
                             }
                             break;
 
 
                         case "LUG": // Lugt number of the Auction Catalog. e.g. per https://brill.com/display/db/lro?language=en Type: NOTE with display name Future work to investigate auctions as events.
-                            AddNotesToObject(work, kvp.Value, Getty.AatType("General note", "300027200"), "Lugt Number");
+                            AddNotesToObject(work, kvp.Value, Getty.GeneralNote, "Lugt Number");
                             break;
 
                         case "SEL": // Seller for the Auction. Type: NOTE with display name
-                            AddNotesToObject(work, kvp.Value, Getty.AatType("General note", "300027200"), "Seller");
+                            AddNotesToObject(work, kvp.Value, Getty.GeneralNote, "Seller");
                             break;
 
                         case "DAT": // Date of the Auction described by this catalog.Type: DATING 
@@ -79,7 +79,7 @@ namespace PmcTransformer.Library
                             break;
 
                         case "ACC": // Accompanying Material. Type: RELATEDMATERIAL
-                            AddNotesToObject(work, kvp.Value, Getty.AatType("Related Material", "300444119"));
+                            AddNotesToObject(work, kvp.Value, Getty.RelatedMaterial);
                             break;
 
                         case "CON": // Table of Contents for the Work. Type: TABLEOFCONTENTS
@@ -102,7 +102,7 @@ namespace PmcTransformer.Library
                         case "OWN": // Former Owner of Object. Type: PROVENANCE
                             foreach (var hmo in HMOs)
                             {
-                                AddNotesToObject(hmo, kvp.Value, Getty.AatType("Provenance", "300435438"));
+                                AddNotesToObject(hmo, kvp.Value, Getty.ProvenanceStatement);
                             }
                             break;
 

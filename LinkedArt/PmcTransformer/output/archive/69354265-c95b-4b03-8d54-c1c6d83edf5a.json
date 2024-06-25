@@ -1,6 +1,6 @@
 {
   "@context": "https://linked.art/ns/v1/linked-art.json",
-  "id": "https://data.paul-mellon-centre.ac.uk/archive/016a460d-7423-426a-8bc3-a04ac0609038",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/69354265-c95b-4b03-8d54-c1c6d83edf5a",
   "type": "Set",
   "classified_as": [
     {
@@ -12,7 +12,7 @@
   "identified_by": [
     {
       "type": "Identifier",
-      "content": "FHS/3/1/110",
+      "content": "APO/1/19/1",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435704",
@@ -23,7 +23,7 @@
     },
     {
       "type": "Name",
-      "content": "FHS/3/1/110 - Dyck, Anthony van, 1599-1641 (Part 4)",
+      "content": "APO/1/19/1 - Research correspondence",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300404670",
@@ -34,7 +34,7 @@
     },
     {
       "type": "Identifier",
-      "content": "FHS/3/1/000110",
+      "content": "APO/1/19/000001",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300456575",
@@ -47,7 +47,7 @@
           "type": "AttributeAssignment",
           "motivated_by": [
             {
-              "id": "https://data.paul-mellon-centre.ac.uk/archive/0024672f-96b3-4628-91f3-2e874550ed60",
+              "id": "https://data.paul-mellon-centre.ac.uk/archive/41778cd5-0f0d-477a-9a24-42d2f21a7d02",
               "type": "Set"
             }
           ]
@@ -76,7 +76,7 @@
     },
     {
       "type": "LinguisticObject",
-      "content": "Includes information relating to the sale \u0026 purchase of, as well as general research about, the following works of art:\n\n-\u0027Emilie de Solms, Princess of Orange\u0027\n-\u0027Lord and Lady Southampton\u0027\n-\u0027Don Ambroglio Spinola, Marquis de las Balbases\u0027\n-\u0027Adriaen van Stalbent\u0027\n-\u0027Pierre Stevens\u0027\n-\u0027Frances Stuart, C\u0027tess of Portland\u0027, stock number A2952. Material includes images and pedigree information.\n-\u0027Time clipping the wings of love\u0027\n-\u0027Portrait of Alexander Triest, Baron D\u0027Auweghem\u0027\n-\u0027Genevieve d\u0027Urf\u00E9 Countess of Croye\u0027\n-\u0027Sir Edmund Verney\u0027\n-\u0027Portrait of William Villiers, Viscount Grandison\u0027\n-\u0027Virgin \u0026 Child w. St Catherine\u0027, stock number 7305\n-\u0027Simon de Vos\u0027\n-\u0027Sebastian Vrancx\u0027\n-\u0027Richard Weston, 1st Earl of Portland\u0027\n-\u0027Portrait of Philip Lord Wharton\u0027, stock number A1090. Material includes image and pedigree information.\n-\u0027William II of Nassau\u0027\n-\u0027Artus Wolfart\u0027\n-\u0027Wilhelm Wolfgang, Comte Palatini\u0027\n-\u0027Jan van der Wouver\u0027\n-six untitled works\n\nAlso includes list (x2) of van Dyck\u0027s works of art sold by Knoedler\u0027s, giving details of stock numbers, titles, and owners, undated.\n\nThe Paul Mellon Centre\u0027s Archives \u0026 Library collections contain additional material on this artist.  Please see the Artist Guide on our website for further information (link below).",
+      "content": "Includes:\n\n-letter from Anthony Blunt, Courtauld Institute, dated 29 September 1944, concerning engravings by J.B.S. Chardin in relation to their influence on Sandby\n-letter from the British Museum (not signed), dated 8 August 1944, concerning a Henry Flitcroft manuscript which describes drawings of St. Peter\u0027s Church, Rome \n-letter from R.A. MacDonald to Capt. Brinsley Ford (forwarded to Opp\u00E9), dated 21 August 1944, concerning a request to inspect some works by Paul Sandby\n-letter from Bruce S. Ingram, the London Illustrated News, dated 23 June 1944, concerning the attribution of works by Sandby\n-letter from T.D. Kendrick, The Athen\u00E6um, concerning an enquiry into Sandby\u0027s membership of an unidentified organisation\n-five letters from Owen Morshead, Librarian at Windsor Castle, dated between 8 May 1944-8 June 1946, concerning biographical, contextual and topographical information regarding Paul \u0026 Thomas Sandby\u0027s drawings at Windsor. Also includes a letter to Morshead from A.D. Cotton, Keeper at the Herbarium, Royal Botanic Gardens, concerning the same subjects.\n-letter from A.E. Popham, Keeper of Prints and Drawings at the British Museum, dated 1 July 1944, concerning drawings of the London Encampments in 1780, by Paul Sandy\n-letter from John Summerson, Curator at Sir John Soane\u0027s Museum, dated 4 June 1946, enclosing documentation of, and discussing, works by Thomas Sandby purchased by Soane at the Sotheby\u0027s sale of 4 May 1811 (Lugt: 7983)\n-eight letters from E.H. Ramsden, the London Museum, (some are addressed to Morshead), dated between 20 November 1945-19 August 1946, concerning a variety of research matters, including in particular attribution and biographical information\n-letter from Ayuda Scott-Elliot, Library at Windsor Castle, dated 13 June 1946, providing information about three drawings by Sandby\n-two letters from Sir Willy Worsley, dated 27 October 1944 \u0026 undated, concerning works by Thomas Sandby in his collection\n-letter from Carl Winter, Victoria \u0026 Albert Museum, dated 25 May 1944, concerning various works by Sandby \n",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435416",
@@ -113,7 +113,7 @@
   ],
   "member_of": [
     {
-      "id": "https://data.paul-mellon-centre.ac.uk/archive/0024672f-96b3-4628-91f3-2e874550ed60",
+      "id": "https://data.paul-mellon-centre.ac.uk/archive/41778cd5-0f0d-477a-9a24-42d2f21a7d02",
       "type": "Set"
     }
   ],
@@ -133,7 +133,7 @@
           "referred_to_by": [
             {
               "type": "LinguisticObject",
-              "content": "Pencil sketch of an untitled work of art by Van Dyck, dated c1920s",
+              "content": "Letter from Anthony Blunt, dated 29 Sep 1944  ",
               "classified_as": [
                 {
                   "id": "http://vocab.getty.edu/aat/300435416",
@@ -152,7 +152,7 @@
           ],
           "access_point": [
             {
-              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=FHS_3_1_110a.jpg",
+              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=APO_1_19_1a.jpg",
               "type": "DigitalObject"
             }
           ],
@@ -175,7 +175,7 @@
           "referred_to_by": [
             {
               "type": "LinguisticObject",
-              "content": "List of pictures by van Dyck sold by M. Knoedler \u0026 Co, 2pp, undated",
+              "content": "Letter from Owen Morshead, dated 26 Feb 1946  ",
               "classified_as": [
                 {
                   "id": "http://vocab.getty.edu/aat/300435416",
@@ -194,7 +194,7 @@
           ],
           "access_point": [
             {
-              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=FHS_3_1_110bpg1.jpg",
+              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=APO_1_19_1b_pg1.jpg",
               "type": "DigitalObject"
             }
           ],
@@ -217,7 +217,7 @@
           "referred_to_by": [
             {
               "type": "LinguisticObject",
-              "content": "List of pictures by van Dyck sold by M. Knoedler \u0026 Co, 2pp, undated",
+              "content": "Letter from Owen Morshead, dated 26 Feb 1946  ",
               "classified_as": [
                 {
                   "id": "http://vocab.getty.edu/aat/300435416",
@@ -236,7 +236,7 @@
           ],
           "access_point": [
             {
-              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=FHS_3_1_110bpg2.jpg",
+              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=APO_1_19_1b_pg2.jpg",
               "type": "DigitalObject"
             }
           ],
@@ -252,9 +252,9 @@
         "type": "Activity",
         "timespan": {
           "type": "TimeSpan",
-          "_label": "1914-1968",
-          "begin_of_the_begin": "1914-01-01T00:00:00Z",
-          "end_of_the_end": "1967-12-31T23:59:59Z"
+          "_label": "8 May 1944-19 Aug 1946",
+          "begin_of_the_begin": "1944-05-08T00:00:00\u002B01:00",
+          "end_of_the_end": "1946-08-18T23:59:59\u002B01:00"
         }
       }
     }

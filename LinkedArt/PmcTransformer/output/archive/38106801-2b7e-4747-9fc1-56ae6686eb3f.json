@@ -1,18 +1,27 @@
 {
   "@context": "https://linked.art/ns/v1/linked-art.json",
-  "id": "https://data.paul-mellon-centre.ac.uk/archive/a6e8e48c-9a18-4411-9c7b-96218f7848ba",
-  "type": "Set",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/38106801-2b7e-4747-9fc1-56ae6686eb3f",
+  "type": "HumanMadeObject",
+  "produced_by": {
+    "type": "Activity",
+    "timespan": {
+      "type": "TimeSpan",
+      "_label": "1935",
+      "begin_of_the_begin": "1935-01-01T00:00:00Z",
+      "end_of_the_end": "1935-12-31T23:59:59Z"
+    }
+  },
   "classified_as": [
     {
-      "id": "http://vocab.getty.edu/aat/300375748",
+      "id": "http://vocab.getty.edu/aat/300379505",
       "type": "Type",
-      "_label": "archives (groupings)"
+      "_label": "Archival Materials"
     }
   ],
   "identified_by": [
     {
       "type": "Identifier",
-      "content": "WR/109",
+      "content": "WR/1377",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435704",
@@ -23,7 +32,7 @@
     },
     {
       "type": "Name",
-      "content": "WR/109 - Material concerning the sale of pictures belonging to R.T. Hamilton Bruce",
+      "content": "WR/1377 - List with lot numbers, buyers\u0027 names and sale prices relating to Sotheby\u0027s auction sale held on 14 May 1935",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300404670",
@@ -34,7 +43,7 @@
     },
     {
       "type": "Identifier",
-      "content": "WR/000109",
+      "content": "WR/001377",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300456575",
@@ -58,7 +67,7 @@
   "referred_to_by": [
     {
       "type": "LinguisticObject",
-      "content": "3 newspaper cuttings",
+      "content": "1 list",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435430",
@@ -76,7 +85,7 @@
     },
     {
       "type": "LinguisticObject",
-      "content": "Includes:\n\n-newspaper cutting concerning Exposition Monticelli aux Galeries Shirleys, dated April 1907\n-newspaper cutting concerning the Sale of Modern Pictures\n-copy of the following newspaper cutting: 1903. Fine Arts: The Hamilton Bruce Sale. Glasgow Herald, 18 May 1903.\n\n3 items pasted into:  Christie, Manson \u0026 Woods (1903) Pictures and Drawings Chiefly of the Dutch and Barbizon Schools of the Late R.T. Hamilton Bruce, Esq. [Auction catalogue]. London: Christie, Manson \u0026 Woods.\n\n[Available in the Paul Mellon Centre\u0027s Library, see URL below] ",
+      "content": "1 item pasted into: Sotheby \u0026 Co (1935) Paintings and drawings. [Auction catalogue] London: Sotheby \u0026 Co\n\n[Available in the Paul Mellon Centre\u0027s Library, see URL below]",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300435416",
@@ -142,24 +151,10 @@
       ],
       "assigned": [
         {
-          "id": "https://data.paul-mellon-centre.ac.uk/library/work/S734",
+          "id": "https://data.paul-mellon-centre.ac.uk/library/work/S5764",
           "type": "LinguisticObject"
         }
       ]
-    }
-  ],
-  "members_exemplified_by": [
-    {
-      "type": "HumanMadeObject",
-      "produced_by": {
-        "type": "Activity",
-        "timespan": {
-          "type": "TimeSpan",
-          "_label": "Apr-May 1903",
-          "begin_of_the_begin": "1903-04-01T00:00:00\u002B01:00",
-          "end_of_the_end": "1903-04-30T23:59:59\u002B01:00"
-        }
-      }
     }
   ]
 }

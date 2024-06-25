@@ -73,6 +73,10 @@ public class LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<LinkedArtObject>? ClassifiedAs { get; set; }
 
+    [JsonPropertyName("identified_by")]
+    [JsonPropertyOrder(101)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtObject>? IdentifiedBy { get; set; }
 
     [JsonPropertyName("referred_to_by")]
     [JsonPropertyOrder(105)]
@@ -84,10 +88,6 @@ public class LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<Activity>? AssignedBy { get; set; }
 
-    [JsonPropertyName("identified_by")]
-    [JsonPropertyOrder(120)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<LinkedArtObject>? IdentifiedBy { get; set; }
 
 
     [JsonPropertyName("part")]

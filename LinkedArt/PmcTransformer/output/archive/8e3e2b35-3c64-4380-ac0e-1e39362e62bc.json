@@ -31,6 +31,104 @@
           "_label": "Primary Name"
         }
       ]
+    },
+    {
+      "type": "Identifier",
+      "content": "BS/5/1/000931",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300456575",
+          "type": "Type",
+          "_label": "Sort Value"
+        }
+      ],
+      "assigned_by": [
+        {
+          "type": "AttributeAssignment",
+          "motivated_by": [
+            {
+              "id": "https://data.paul-mellon-centre.ac.uk/archive/33239491-ea36-4fec-8153-463b1aaf973a",
+              "type": "Set"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "1 file",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435430",
+          "type": "Type",
+          "_label": "Dimension Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Includes:\n\n-review of an exhibition held at the Royal Academy in 1992\n-review of an exhibition held at the Royal Academy in 1992 written for Harper\u0027\u0027s and Queen\n-review of an exhibition held at Tate Britain in 2005\n-review of an exhibition held at the Courtald Gallery in 2007\n-review of an exhibition held at Dulwich Picture Gallery in 2009\n\nAlso includes:\n\n-printout of a fax from Henry Mee, artist, dated 4 December 1992, concerning Walter Sickert\n-research material",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Open for research. Readers must fill in an \u0027Reader Agreement Form\u0027 which outlines the reading room rules and conditions concerning privacy and Data Protection",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "member_of": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/archive/33239491-ea36-4fec-8153-463b1aaf973a",
+      "type": "Set"
+    }
+  ],
+  "members_exemplified_by": [
+    {
+      "type": "HumanMadeObject",
+      "produced_by": {
+        "type": "Activity",
+        "timespan": {
+          "type": "TimeSpan",
+          "_label": "1992-2009",
+          "begin_of_the_begin": "1992-01-01T00:00:00Z",
+          "end_of_the_end": "2008-12-31T23:59:59Z"
+        }
+      }
     }
   ]
 }

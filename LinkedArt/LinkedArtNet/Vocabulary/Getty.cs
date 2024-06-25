@@ -34,6 +34,11 @@ public class Getty
     public static LinkedArtObject ArchivalGrouping => AatType("Archival Grouping", "300404022");
     public static LinkedArtObject ArchivalSubGrouping => AatType("Archival SubGrouping", "300404023");
     public static LinkedArtObject ArchivalMaterials => AatType("Archival Materials", "300379505");
+    public static LinkedArtObject Accruals => AatType("Accruals", "300055458");
+    public static LinkedArtObject AccessStatement => AatType("Access Statement", "300133046");
+    public static LinkedArtObject AdministrativeHistory => AatType("Administrative History", "300077565");
+    public static LinkedArtObject RelatedMaterial => AatType("Related Material", "300444119");
+    public static LinkedArtObject ArrangementDescription => AatType("Arrangement Description", "300444118");
 
     // Parts
     public static LinkedArtObject PartType => AatType("Part Type", "300241583");
@@ -57,6 +62,7 @@ public class Getty
     public static LinkedArtObject PaginationStatement => AatType("Pagination Statement", "300435440");
     public static LinkedArtObject BibliographyStatement => AatType("Bibliography Statement", "300026497");
     public static LinkedArtObject EditionStatement => AatType("Edition Statement", "300435435");
+    public static LinkedArtObject GeneralNote => AatType("General Note", "300027200");
 
     // Identifiers
     public static LinkedArtObject SystemAssignedNumber => AatType("System-Assigned Number", "300435704");
@@ -68,6 +74,7 @@ public class Getty
 
 
     public static LinkedArtObject ProvenanceActivity => AatType("Provenance Activity", "300055863");
+    public static LinkedArtObject ProvenanceStatement => AatType("Provenance Statement", "300435438");
 
     public static LinkedArtObject WebPage => AatType("Web Page", "300264578");
     public static LinkedArtObject DigitalImage => AatType("Digital Image", "300215302");

@@ -1,0 +1,134 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://data.paul-mellon-centre.ac.uk/archive/19d48efb-e041-479a-83c9-a89963ee13c7",
+  "type": "Set",
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300375748",
+      "type": "Type",
+      "_label": "archives (groupings)"
+    }
+  ],
+  "identified_by": [
+    {
+      "type": "Identifier",
+      "content": "PRJ/1/31",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435704",
+          "type": "Type",
+          "_label": "Record Identifiers"
+        }
+      ]
+    },
+    {
+      "type": "Name",
+      "content": "PRJ/1/31 - Negatives and transparencies, partly identified",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    },
+    {
+      "type": "Identifier",
+      "content": "PRJ/1/000031",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300456575",
+          "type": "Type",
+          "_label": "Sort Value"
+        }
+      ],
+      "assigned_by": [
+        {
+          "type": "AttributeAssignment",
+          "motivated_by": [
+            {
+              "id": "https://data.paul-mellon-centre.ac.uk/archive/57081512-37c5-480a-9092-e7766819d9ba",
+              "type": "Set"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "2 files",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435430",
+          "type": "Type",
+          "_label": "Dimension Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Negatives and small transparencies of b\u0026w photographs of G.E. Street buildings, some by Paul Joyce and the rest probably by the architectural photographer Gordon Lansdown Barnes (c 1917-1985) [see Summary of Gordon Barnes\u0027s photography notebook, PRJ/8/3]. 35mm negatives and 2.25\u0022 x 3.25\u0022 transparencies.\n\nOriginally stored in glassine sleeves; Joyce identifed some of the buildings by labelling the sleeves, others were left blank. Labelled sleeves have been retained above the image. The sleeves are arranged alphabetically by location.\n\nIn January 2018 Geoff Brandwood identified some of the previously untitled images and this information has been added below.\n\nIt is likely prints of these photographs are present in the images files [PRJ/1/1-30].\n\nImages include:\n-Ardamine, Co. Wexford, St John the Evangelist (4)\n-Ashley Green, Buckinghamshire, St John the Evangelist (1)\n-Ashbury, Berkshire, Parochial School (1)\n-Barford St Michael, Oxfordshire (1)\n-Beauchampton, Buckinghamshire, The Assumption (1)\n-Bettisfield, Clwyd, St John the Baptist (4)\n-Biscovey, Cornwall, St Mary the Virgin (4)\n-Blithfield, Staffordshire (1)\n-Bloxham, Collegiate School (9)\n-Bournemouth, Dorset, Chapel of St Luke, Royal National Hospital (2)\n-Boyne Hill, Berkshire, All Saints church, schools, almshouses, etc (43)\n-? (2)\n-Brightwalton, Berkshire, All Saints (3)\n-Buckingham, Buckinghamshire, [chapel-cum-school] [?] [demolished 1976] (8)\n-Carlton, South Yorkshire, St John the Evangelist  (5)\n-Carlton, South Yorkshire, Vicarage (2)\n-Church Leigh, Staffordshire, School (1)\n-Clifton, Bristol (2)\n-Colnbrook, Buckinghamshire, School (1)\n-Colnbrook, Buckinghamshire, School House (1)\n-Colton, Staffordshire, St Mary (1)\n-Constantinople, [Istanbul], Turkey, Crimean Memorial Church (41)\n-Cowleigh, Worcestershire, St Peter (3)\n-? (2)\n-Cuddesdon, Oxfordshire, Theological College (12)\n-Dafen, Carmarthenshire, St Michael \u0026 All Angels (3)\n-? (4)\n-Denstone, Staffordshire (11)\n-Dorden, Warwickshire, St Leonard (2)\n-Dunecht, Aberdeenshire, Scotland, Dunecht House (1)\n-Dunecht, Aberdeenshire, Scotland, Dunecht House, courtyard (1)\n-Dunecht, Aberdeenshire, Scotland, Dunecht Chapel (2)\n-Dunecht, Aberdeenshire, Scotland, courtyard (1)\n-? (4)\n-Edinburgh, Scotland, St Mary\u0027s Cathedral (18)\n-East Heslerton, North Yorkshire (13)\n-Eton, Buckinghamshire, Porny School (3)\n-? church and parsonage (3)\n-Fawley, Berkshire, St Mary the Virgin (5)\n-Filkins, Oxfordshire, St Peter (6)\n-? (1)\n-Genoa, Italy, Holy Ghost (3)\n-Goosey, Oxfordshire, school (2)\n-Gravesend, Kent, Holy Trinity School (1)\n-Gravesend, Kent, St Andrew\u0027s Waterside Chapel (3)\n-Hollington, Staffordshire, St John (4)\n-? (51)\n-Kennington, London, St John the Divine (3)\n-Kildare, St Brigid\u0027s Cathedral, Ireland (4)\n-Kingston, Dorset, St James (1)\n-Possibly Kingston, Dorset, rectory (1)\n-Ladock, Cornwall, St Ladoca (1)\n-Lambourn, school (3)\n-Leek, Staffordshire, St Edward the Confessor (1)\n-? (10)\n-Llanilltern, Glamorgan, Wales, St Ellteryn (1)\n-? (11)\n-Lostwithiel, Cornwall, St Faith\u0027s House of Mercy [later called Peregrine Hall] (4)\n-? (9)\n-Lydford, Devon, parsonage (3)\n-? (1)\n-Middlesbrough, North Yorkshire, All Saints (10)\n-Milton-under-Wychwood, Oxfordshire, St Simon and St Jude (4)\n-Milton-under-Wychwood, Oxfordshire, school (2)\n-? (8)\n-Monkland, Herefordshire, All Saints (2)\n-? (10)\n-Oxford, Oxfordshire, [design for the Oxford museum] (1)\n-Oxford, Oxfordshire, St Ebbe\u0027s, Rectory (2)\n-Oxford, Oxfordshire, St Ebbe School (1)\n-Oxford, Oxfordshire, St Barnabas School (1)\n-? (1)\n-Paddington, London, St Mary Magdalene (6)\n-Piltdown, Co Kilkenny, Ireland, church2)\n-Probus, Cornwall, School (2)\n-Rome, Italy, All Saints English Church (1)\n-St George\u0027s, Shropshire, St George (1)\n-St Michael Penkevil, Cornwall, St Michael (2)\n-? (5)\n-Sandhurst, Berkshire, St Michael and All Angels (4)\n-Shipston-on-Stour, Warwickshire, St Edmund (1)\n-? (2)\n-Stanford in the Vale, Berkshire, school (3)\n-Steventon, Berkshire, School House (1)\n-Stone, Kent, St Mary (1)\n-Stowbridge, Worcestershire, St John the Evangelist (3)\n-Tilehurst, Berkshire, St Michael (2)\n-Tinsley, Sheffield, South Yorkshire, St Lawrence (1)\n-Toddington Park, Toddington, Gloucestershire, St Andrew (8)\n-Treverbyn, Cornwall, St Peter (1)\n-Upton Magna, Shropshire, rectory (2)\n-Watchfield, Berkshire, St Thomas (3)\n-Watchfield, Berkshire, school (3)\n-Westcott, Buckinghamshire, St Mary (4)\n-Westcott, Buckinghamshire, School (1)\n-West Malvern, Worcestershire, St James the Apostle (3)\n-Westminster, London, St James the Less (1)\n-Westminster, London, Guards\u0027 Chapel, Wellington Barracks (1)\n-Westminster, London, Royal Courts of Justice (3)\n-Westminster, London, National Gallery competition (1)\n-West Norwood, London, West Norwood Cemetery, Ralli Mausoleum (10)\n-Wheatley, Oxfordshire, St Mary the Virgin (3)\n-Wheatley, Oxfordshire, school (1)\n-Whelford, Gloucestershire, St Anne (2)\n-White Waltham, Berkshire, St Mary the Virgin (3)\n-Wigan, Lancashire, St Michael (1)\n-Wigan, Lancashire, school (3)\n-Windsor, Holy Trinity Rectory (1)\n-Windsor, Royal Free School (1)\n-Windsor, St Mark School (2)\n-Winkfield, Berkshire, school (6)\n-Wolverton, Buckinghamshire, Science and Art Institute (2)\n-Woodstock, Oxfordshire, Chapel of Woodstock Union Workhouse, Hensington (1)\n-Wycombe Marsh, Buckinghamshire, St Anne (1)\n-Yatton, Somerset, St Mary the Virgin (3)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "This collection is open for research. Readers must fill in an \u0027Reader Agreement Form\u0027 which outlines the reading room rules and conditions concerning privacy and Data Protection",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "member_of": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/archive/57081512-37c5-480a-9092-e7766819d9ba",
+      "type": "Set"
+    }
+  ],
+  "members_exemplified_by": [
+    {
+      "type": "HumanMadeObject",
+      "produced_by": {
+        "type": "Activity",
+        "timespan": {
+          "type": "TimeSpan",
+          "_label": "[c 1960s-c 1970s]",
+          "begin_of_the_begin": "1960-01-01T00:00:00Z",
+          "end_of_the_end": "1969-12-31T23:59:59Z"
+        }
+      }
+    }
+  ]
+}

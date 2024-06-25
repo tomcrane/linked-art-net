@@ -36,6 +36,167 @@
           "_label": "Primary Name"
         }
       ]
+    },
+    {
+      "type": "Identifier",
+      "content": "APO",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300456575",
+          "type": "Type",
+          "_label": "Sort Value"
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "64 boxes",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435430",
+          "type": "Type",
+          "_label": "Dimension Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "Adolph Paul Opp\u00E9 (known as Paul Opp\u00E9) was a British art historian, critic, museum official and collector with a particular interest in British drawings and watercolours of the 18th century. \n\nOpp\u00E9 was born on 22 September 1878 in London. His father, Siegmund Armin Opp\u00E9 (1835-1886), was a silk merchant and his mother, Pauline Jaff\u00E9 (1849-1940), was from a Belfast family of linen merchants and warehousemen. He was the fifth of eight children: Albert Sanvel (1869-1953), Marguerite (1870-1941), Ida (1871-1912), John Daniel (1876-1952), Henry Sigismund (1880-1915), Thomas Armin (1880-1917), and Ernest Frederic (1885-1970). He grew up in Denmark Hill, South London, but after the death of his father in 1886, his mother moved the family to Godalming so the children would be close to Charterhouse for their schooling.\n\nOpp\u00E9 attended Charterhouse from 1891-1893, but his studies were cut short by poor health. His mother decided to take the then 15-year-old Paul, along with twins, Harry and Tom, on an extended trip by sea to New Zealand. From here, Opp\u00E9 continued travelling alone, also visiting Japan and Sri Lanka. In Japan, he discovered an interest in collecting \u0027curios\u0027, sowing the seeds for later collecting activities. Rather than return to Charterhouse, in 1894 Opp\u00E9 enrolled at the University of St. Andrews. He had already begun to show a gift for scholarship. In 1897, he was awarded the Gray Prize for his essay, The New Comedy. Later that year, Opp\u00E9 left for Oxford, where he joined New College as an exhibitioner. Here, he earned first class honours in Classical Moderations (1899) and Literae Humaniores (1901).\n\nWhile at Oxford, Opp\u00E9 had embarked on an ambitious and wide-ranging research project into Greek oracles. This was developed during extensive travels throughout Europe and an extended stay at the British School at Athens. Upon his return in 1902, he took an academic post at St. Andrews as assistant to the Professor of Greek, John Burnet. This allowed Opp\u00E9 the space to develop a part of his research on Greek oracles and publish an article, The Chasm at Delphi, for the Journal of Hellenic Studies in 1904. In that same year, he moved to the University of Edinburgh where he took up a lectureship in Greek History, with an emphasis on Greek art. Here he met the art historian, Gerard Baldwin Brown, who was a Professor of Fine Art at the university. Baldwin Brown greatly encouraged Opp\u00E9\u0027s nascent interest in European art, and even though Opp\u00E9 moved to London shortly after, in 1905, they remained in contact, and it was Baldwin Brown who suggested Opp\u00E9 write his first published monograph, on Raphael, in 1909.\n\nRather than pursue an academic career, Opp\u00E9 decided to move to London and take up a career with the Board of Education. He remained in this post until he retired in 1938. Although not directly related to his interests in art, there were significant professional links to the Victoria and Albert Museum, where he worked on secondment as an adviser between 1906-1907, and as Deputy Director between 1910-1913.\n\nDuring this early period in London, Opp\u00E9 met his wife, Valentine (n\u00E9e Tollemarche) (1887-1951).  They married in 1909, and had two children, Armide Lyonesse (1910-1995) and Denys (1913-1992). The family lived at Cheyne Walk, Chelsea, and frequently visited the Opp\u00E9 family home at Pamber Heath, in Berkshire.\n\nOpp\u00E9\u0027s development as an art historian began in earnest following his move to London. He published works on Raphael (1909) and Botticelli (1911), as well as more diverse studies such as The Dance (1924) in collaboration with Cecil Sharp and a chapter in G.M. Young\u0027s Early Victorian England (1934).  However, these publications were largely overshadowed by his work on the drawings and watercolours of 18th century British artists. Initially working essentially as an amateur, Opp\u00E9 produced significant works on Francis Towne (1920), John White Abbott (1925) and Alexander Cozens (1928) for the Walpole Society. For Studio, he wrote on Thomas Rowlandson (1923), John Sell Cotman (1923) and produced a combined work on Turner, Cox and de Wint (1925). Alongside these, were several articles in the Burlington, which also helped gain him a reputation for exacting and meticulous research, a finely turned aesthetic sense and a formidable authority. After his retirement, Opp\u00E9 undertook larger research projects for Phaidon Press, two involving catalogues based on the collections at the Royal Library at Windsor, Paul and Thomas Sandby (1947) and English Drawings of the Stuart and Georgian eras (1950). He completed a third catalogue for Phaidon on William Hogarth (1948). Opp\u00E9\u0027s last publication - a monograph on Alexander and John Robert Cozens published in 1952 - was the result of decades of research and was arguably his finest and most developed work.  \n\nAlongside his publishing activities, Opp\u00E9 was also a collector of both British watercolours and drawings and wider European art. He made his first purchase - Llangollen by John Sell Cotman - in 1904.  This was soon followed by works from many of the most significant artists of the British school.  Italian views, painted by British artists on the Grand Tour, were a particular interest.  Opp\u00E9 was a shrewd and soulful collector, never spending too much on works but maintaining a robust aesthetic focus on quality. He saw value in the works of Francis Towne before they had reached the notice of other collectors and was responsible for establishing Towne\u0027s reputation as an important draughtsman.  Opp\u00E9 also acted as an independent adviser to other collections, most notably, the National Gallery of Canada, in Ottawa.\n\nOpp\u00E9 died suddenly in 1957 of his persistent health problems.  His collection, numbering over 2000 works, was celebrated in a memorial exhibition at the Royal Academy in 1958. A large part of it was purchased by the Tate in 1996 where it remains a discrete group (the Opp\u00E9 collection).  Opp\u00E9 inaugurated the study of British drawings as a scholarly pursuit. and is widely recognised as a pioneer in the field of British art.\n\nThis biography was written using the following as reference:\n\nByam Shaw, J. (1978) Paul Opp\u00E9 1878-1957. Proceedings of the British Academy, London, volume LXIV. Oxford University Press (see: APO/10/2/4)\nOpp\u00E9, E. [c 1958] Unpublished notes on Opp\u00E9\u0027s life by his brother, Ernest Opp\u00E9 (see: APO/10/2/4)\n\nBibliography\n\nOpp\u00E9, A.P. (1909) Raphael. London: Methuen. \nOpp\u00E9, A.P. (1911) Sandro Botticelli. London and New York: Hodder and Stoughton (The Arundel library of great masters)\nOpp\u00E9, A.P. (1919) Francis Towne, landscape painter. The Walpole Society, 8, pp. 95-126.  Oxford: The Walpole Society\nOpp\u00E9, A.P. (1919) The parentage of Alexander Cozens. The Burlington Magazine, 35(196), pp. 40-41.\nOpp\u00E9, A.P. (1921) Fresh light on Alexander Cozens. The Print Collector\u0027s Quarterly, 8(1) pp. 61-90.\nOpp\u00E9, A.P. (1923) The water-colour drawings of John Sell Cotman. London: The Studio.\nOpp\u00E9, A.P. (1923) Thomas Rowlandson: his drawings and water-colours. London: The Studio.\nOpp\u00E9, A.P. [c 1924] Portrait of an unknown man by Giovanni Battista Moroni. London: Chiswick Press\nOpp\u00E9, A.P. (1924) John White Abbott of Exeter (1763-1851). The Walpole Society, 13, pp. 67-84.  Oxford: The Walpole Society\nOpp\u00E9, A.P. (1925) The water-colours of Turner, Cox \u0026 de Wint. London: Halton \u0026 Truscott Smith, Ltd.\nOpp\u00E9, A.P. (1927) A Roman sketch-book by Alexander Cozens. The Walpole Society, 16, pp. 81-93.\nOpp\u00E9, A.P. (1934) \u0027Art\u0027 in Young, G.M., ed., Early Victorian England. Vol. II. London: Oxford University Press\nOpp\u00E9, A.P. (1936) John Constable 1976-1837. London: Old master drawings.\nOpp\u00E9, A.P. [introduction] and Burlington Fine Arts Club (1937) Catalogue of an exhibition of pictures and drawings by Richard Parkes Bonington and his circle. London: Burlington Fine Arts Club.\nOpp\u00E9, A.P. (1939) Talented amateurs: Julia Gordon and her circle. Country Life.\nOppe, A.P. (1941) English water-colours and pencil drawings. The Burlington Magazine, 78(457), pp. 131-132.\nOpp\u00E9, A.P. (1941) Bonington (book review). The Burlington Magazine, 79(462), pp. 99-101.\nOpp\u00E9, A.P. (1941) Sir Anthony van Dyck in England. The Burlington, Magazine 79(465), pp.186-191.\nOpp\u00E9, A.P. (1942) Cotman and his public. The Burlington Magazine, 81(472), pp. 163-171.\nOpp\u00E9, A.P. (1942) Rowlandson the Surprising. The Studio, 124(596), pp.147-158. \nOpp\u00E9, A.P. (1943) John Baptist Malchair of Oxford. The Burlington Magazine, 83(485), pp. 191-197.\nOpp\u00E9, A.P. (1943) British landscapes in oil at the Victoria and Albert Museum. The Burlington Magazine, p.50.\nOpp\u00E9, A.P. (1944) A drawing by Paul Sandby. The Burlington Magazine, 85(500), pp. 277-278.\nOpp\u00E9, A.P. (1944) Right and Left in Raphael Cartoons. Journal of the Warburg and Courtauld Institutes, 7,  pp. 82-94. \nOpp\u00E9, A.P. (1945) The Colman Exhibition of Cotman at Norwich. The Burlington Magazine, 87(509), pp. 196-200.\nOppe, A.P. (1946) The Hickman Bacon collection of water-colours. The Burlington Magazine, 88(518), pp. 127-128.\nOpp\u00E9, A.P. (1946) The memoir of Paul Sandby by his son. The Burlington Magazine, 88(519), pp. 143-147.\nOpp\u00E9, A.P. and Graves Art Gallery (1946) Catalogue of an exhibition of drawings and paintings by Alexander Cozens. Sheffield: Graves Art Gallery. \nOpp\u00E9, A.P. (1946) Drawings and paintings by Alexander Cozens. London: Tate Gallery.\nOpp\u00E9, A.P. (1946) The Drury collection of Alfred Stevens drawings. The Burlington Magazine, 88(597), pp. 98-99\nOpp\u00E9, A.P. (1947) The drawings of Paul and Thomas Sandby in the collection of His Majesty the King at Windsor Castle. Oxford; London: Phaidon.\nOpp\u00E9, A.P. (1948) The drawings of William Hogarth. London: Phaidon.\nOpp\u00E9, A.P. (1950) English drawings, Stuart and Georgian periods, in the collection of His Majesty the King at Windsor Castle. London: Phaidon.\nOpp\u00E9, A.P. (1952) Alexander \u0026 John Robert Cozens. London: Adam and Charles Black.\nOpp\u00E9, A.P. (1952) Book review: The drawings of Richard Wilson by Brinsley Ford. The Burlington Magazine, 94(587), p. 58.\nOpp\u00E9, A.P. (1953) Girtin\u0027s water-colours at Messrs. Agnew\u0027s. The Burlington Magazine, 95(600), pp. 94-97.\nOpp\u00E9, A.P. (1954) A landscape in oil by Alexander Cozens. The Burlington Magazine, 96(610), pp. 21-20.\nOpp\u00E9, A.P. (1954) Wilson, Hodges, and the View of Woburn Abbey. The Burlington Magazine, 96(612), p. 86.\nOpp\u00E9, A.P. (1955) Book review: The art of Thomas Girtin by Thomas Girtin and David Loshak. The Burlington Magazine, 97(633), pp. 392-395.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300077565",
+          "type": "Type",
+          "_label": "Administrative History",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "On Opp\u00E9\u0027s death in 1957, his papers and library were inherited by his children.  The material was moved between various properties by Opp\u00E9\u0027s daughter, Armide and eventually stored at her home in Corfe. Armide\u0027s niece, Paul\u0027s grandaughter, Charlotte Opp\u00E9 inherited the house and its contents when Armide passed away in 1995. Charlotte offered the research papers, and Library, to the Centre in  2017, under the government\u0027s Acceptance in Lieu scheme. The archive was allocated to the Centre by the Secretary of State in 2017.  ",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435438",
+          "type": "Type",
+          "_label": "Provenance Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "This archive includes material collected and compiled by Opp\u00E9 from his late adolescence until his death. The majority of the material concerns British art history of the 18th and 19th centuries and was created alongside his scholarship and published work, and also documents his professional engagements and collecting activities.  It includes a wide range of materials such as letters, annotated exhibition and auction catalogues, photographs and notebooks.  \n\nThe archive also includes a substantial amount of material relating to Opp\u00E9\u0027s personal life.  This includes his extensive diaries, his creative writing, personal letters, and photographs. In addition to this is a large amount of material which relates to his family. This is predominantly correspondence sent to his wife, Valentine (n\u00E9e Tollemache), his children, Armide and Denys, and his mother Pauline, with some additional material relating to his siblings, particularly his brothers, Harry and Tom Opp\u00E9. There are also a large amount of family photographs which depict Opp\u00E9 in his younger years, as well as the aforementioned family members.\n\nWhere possible, the original order has been maintained.  Where no order was apparent, the material was arranged during the cataloguing process.  The archive has been organised into the following sub-collections: \n\nAPO/1: Research files on artists\nAPO/2: Other projects and interests\nAPO/3: Professional correspondence\nAPO/4: Images\nAPO/5: General research material\nAPO/6: Paul Opp\u00E9\u0027s collection\nAPO/7: Work for other collections\nAPO/8: Notebooks, journals \u0026 diaries\nAPO/9: Personal correspondence\nAPO/10: Personal and biographical material\nAPO/11: Material inserted in Opp\u00E9\u0027s library\nAPO/12: Opp\u00E9 Family Papers",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435416",
+          "type": "Type",
+          "_label": "Description",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LinguisticObject",
+      "content": "This collection is open for research. Readers must fill in an \u0027Reader Agreement Form\u0027 which outlines the reading room rules and conditions concerning privacy and Data Protection",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300133046",
+          "type": "Type",
+          "_label": "Access Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "representation": [
+    {
+      "type": "VisualItem",
+      "digitally_shown_by": [
+        {
+          "type": "DigitalObject",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300215302",
+              "type": "Type",
+              "_label": "Digital Image"
+            }
+          ],
+          "referred_to_by": [
+            {
+              "type": "LinguisticObject",
+              "content": "Photograph of Opp\u00E9, c 1950s. Copyright: National Portrait Gallery, London",
+              "classified_as": [
+                {
+                  "id": "http://vocab.getty.edu/aat/300435416",
+                  "type": "Type",
+                  "_label": "Description",
+                  "classified_as": [
+                    {
+                      "id": "http://vocab.getty.edu/aat/300418049",
+                      "type": "Type",
+                      "_label": "Brief Text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "access_point": [
+            {
+              "id": "https://calmview.co.uk/PaulMellonCentre/CalmView/GetImage.ashx?db=Catalog\u0026type=default\u0026fname=APO_10_3b.jpg",
+              "type": "DigitalObject"
+            }
+          ],
+          "format": "image/jpeg"
+        }
+      ]
+    }
+  ],
+  "members_exemplified_by": [
+    {
+      "type": "HumanMadeObject",
+      "produced_by": {
+        "type": "Activity",
+        "timespan": {
+          "type": "TimeSpan",
+          "_label": "1 August 1876-[c 2016]",
+          "begin_of_the_begin": "2016-01-01T00:00:00Z",
+          "end_of_the_end": "2016-12-31T23:59:59Z"
+        }
+      }
     }
   ]
 }

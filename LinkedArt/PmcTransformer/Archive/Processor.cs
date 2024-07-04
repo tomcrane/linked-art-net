@@ -13,6 +13,7 @@ namespace PmcTransformer.Archive
             var archiveByGuid = new Dictionary<string, LinkedArtObject>();
             var archiveByRefNo = new Dictionary<string, LinkedArtObject>();
             var creatorDict = new Dictionary<string, List<string>>();
+            var relatedNameDict = new Dictionary<string, List<string>>();
 
             foreach (var record in xArchive.Root!.Elements())
             {
@@ -80,10 +81,20 @@ namespace PmcTransformer.Archive
                 Helpers.SimpleStatement(record, laObj, "PublnNote", Getty.GeneralNote);
                 Helpers.ProcessThumbnailAndDescription(record, laObj);
 
-
+                foreach (var creator in record.ArcStrings("RelatedNameCode"))
+                {
+                    relatedNameDict.AddToListForKey(creator, id);
+                }
+                var relatedNames = record.ArcStrings("RelatedName");
+                var relatedNameRelationShips = record.ArcStrings("RelatedNameRelationship");
+                var relatedNameDecription = record.ArcStrings("RelatedNameDecription");
+                if(relatedNames.Any() || relatedNameRelationShips.Any() || relatedNameDecription.Any()) 
+                {
+                    Console.WriteLine(refNo);
+                }
             }
 
-            // Load Authority File and align to names
+            var AuthorityMa
             // Then /created_by/carried_out_by
 
             foreach(var kvp in Helpers.thumbnailTextCounts)

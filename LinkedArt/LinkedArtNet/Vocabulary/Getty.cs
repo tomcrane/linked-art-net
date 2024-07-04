@@ -17,6 +17,9 @@ public class Getty
     public static LinkedArtObject MiddleName => AatType("Middle Name", "300404654");
     public static LinkedArtObject FamilyName => AatType("Family Name", "300404652");
 
+    public static LinkedArtObject Family => AatType("Family", "300055474");
+    public static LinkedArtObject Organization => AatType("Organization", "300025948");
+
     // WorkTypes
     public static LinkedArtObject TypeOfWork => AatType("Type of Work", "300435443");
     public static LinkedArtObject Painting => AatType("Painting", "300033618");

@@ -89,4 +89,10 @@ public class LinkedArtTimeSpan : LinkedArtObject
         return ts;
     }
 
+    public static void AsBornAndDied(LinkedArtTimeSpan tsRange, Person person)
+    {
+        // given a time span derived from a date range, 
+
+    }
+
 }

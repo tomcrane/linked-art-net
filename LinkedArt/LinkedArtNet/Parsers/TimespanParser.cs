@@ -1,10 +1,10 @@
-﻿
-using Microsoft.Recognizers.Text;
+﻿using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
+using System.Text.RegularExpressions;
 
 namespace LinkedArtNet.Parsers
 {
-    public class TimespanParser
+    public partial class TimespanParser
     {
         private DateTimeModel dateTimeModel;
 
@@ -12,6 +12,40 @@ namespace LinkedArtNet.Parsers
         {
             var recognizer = new DateTimeRecognizer(Culture.English);
             dateTimeModel = recognizer.GetDateTimeModel();
+        }
+
+        [GeneratedRegex(@"[\d]{4}")]
+        private static partial Regex FourDigitYear();
+
+        public Tuple<LinkedArtTimeSpan?, LinkedArtTimeSpan?, TimespanParserHints>? ParseSimpleYearDateRange(string? s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return null;
+            }
+            var hints = new TimespanParserHints();
+            if(s.Contains("active") || s.Contains("florit") || s.StartsWith("fl")) 
+            {
+                hints.IsDatesActive = true;
+            }
+            // variants of 1930-2010
+            // first pass, just find the first and last whole years; come back for more refinement later
+            var parsedYears = FourDigitYear().Matches(s).Skip(1).Select(m => Convert.ToInt32(m.Value)).ToList();
+            if(parsedYears.Count > 1)
+            {
+                return new(
+                    LinkedArtTimeSpan.FromYear(parsedYears[0]),
+                    LinkedArtTimeSpan.FromYear(parsedYears[^1]),
+                    hints);
+            }
+            if(parsedYears.Count == 1)
+            {
+                return new(
+                    LinkedArtTimeSpan.FromYear(parsedYears[0]),
+                    null,
+                    hints);
+            }
+            return null;
         }
 
         // TODO - bring logic in from UAL date parser and other sources
@@ -132,5 +166,6 @@ namespace LinkedArtNet.Parsers
 
             return null;
         }
+
     }
 }

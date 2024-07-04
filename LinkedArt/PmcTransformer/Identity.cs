@@ -10,6 +10,7 @@
 
         // Archive
         public const string ArchiveRecord = $"{BaseUrl}archive/";
+        public const string ArchiveAuthority = $"{BaseUrl}archive-authority/"; // for interim reconciliation
 
         public const string GroupBase = $"{BaseUrl}group/";
         public const string PeopleBase = $"{BaseUrl}person/";

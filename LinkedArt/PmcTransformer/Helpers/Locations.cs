@@ -10,6 +10,10 @@ namespace PmcTransformer.Helpers
         public static Group PMCGroupRef;
         public static Place PMCPlaceRef;
 
+        public static Group PhotoArchiveGroup;
+        public static Group PhotoArchiveGroupRef;
+        public static readonly string PhotoArchiveName = "Paul Mellon Centre for Studies in British Art photographic archive";
+
         public static Place? FromRecordValue(string value, bool ignoreNonMatch = false)
         {
             if(string.IsNullOrEmpty(value)) return null;
@@ -51,7 +55,7 @@ namespace PmcTransformer.Helpers
             PMCGroup = new Group()
                 .WithContext()
                 .WithId(Identity.GroupBase + "pmc")
-                .WithLabel("Paul Mellon Centre");
+                .WithLabel("Paul Mellon Centre for Studies in British Art (London)");
             PMCGroup.IdentifiedBy = [
                 new Name("Paul Mellon Centre").AsPrimaryName(),
                 new Identifier("GB3010")
@@ -66,6 +70,10 @@ namespace PmcTransformer.Helpers
                             .WithLabel("The National Archives")
                     ]
                 }
+            ];
+            PMCGroup.Equivalent = [
+                new Group()
+                    .WithId("https://lux.collections.yale.edu/data/group/cf6f8fdc-feb8-4f61-a787-0240d04c05a8")
             ];
 
             PMCGroupRef = new Group()
@@ -131,6 +139,17 @@ namespace PmcTransformer.Helpers
             PhotoArchive = new Place().WithId(Identity.PlaceBase + "PHOTOGRAPHIC_ARCHIVE").WithLabel("!!! PHOTOGRAPHIC_ARCHIVE");
             PlaceDict["PHOTOGRAPHIC ARCHIVE"] = PhotoArchive;
             PlaceDict["Photo Archive"] = PhotoArchive;
+
+
+            PhotoArchiveGroup = new Group()
+                .WithId(Identity.GroupBase + "pmc-photo-archive")
+                .WithLabel(PhotoArchiveName);
+            PhotoArchiveGroup.PartOf = [PMCGroupRef];
+            PhotoArchiveGroupRef = new Group()
+                .WithId(Identity.GroupBase + "pmc-photo-archive")
+                .WithLabel(PhotoArchiveName);
+            // TODO relations with PMC Group and PMC Place; serialise these all to disk.
+
 
         }
 

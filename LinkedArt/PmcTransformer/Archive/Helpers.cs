@@ -399,5 +399,16 @@ namespace PmcTransformer.Archive
             laObj.Representation ??= [];
             laObj.Representation.Add(visual);
         }
+
+        public static Actor GetReferenceObject(this Actor actor, bool withId = true)
+        {
+            // Should have a general one of these
+            Actor refActor = actor is Person ? new Person() : new LinkedArtNet.Group();
+            if(withId)
+            {
+                refActor.Id = actor.Id;
+            }
+            return refActor;
+        }
     }
 }

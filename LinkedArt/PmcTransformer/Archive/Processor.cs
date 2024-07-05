@@ -12,8 +12,24 @@ namespace PmcTransformer.Archive
         {
             var archiveByGuid = new Dictionary<string, LinkedArtObject>();
             var archiveByRefNo = new Dictionary<string, LinkedArtObject>();
-            var creatorDict = new Dictionary<string, List<string>>();
-            var relatedNameDict = new Dictionary<string, List<string>>();
+
+            var authorityDict = AuthorityParser.CreateArchiveAuthorityDict(xAuthorities);
+            // can't do this as we have duplicate primary names
+            // we'll just have to use the first
+            // var creatorNameDict = authorityDict.Values.ToDictionary(GetPrimaryName);
+            var creatorNameDict = new Dictionary<string, Actor>();
+            foreach (var item in authorityDict)
+            {
+                var primaryName = GetPrimaryName(item.Value);
+                if(creatorNameDict.ContainsKey(primaryName))
+                {
+                    Console.WriteLine(item.Key + " - Duplicate Authority PersonName: " + primaryName);
+                }
+                else
+                {
+                    creatorNameDict.Add(primaryName, item.Value);
+                }                
+            }
 
             foreach (var record in xArchive.Root!.Elements())
             {
@@ -64,9 +80,16 @@ namespace PmcTransformer.Archive
                 Helpers.ProcessAltRefNo(record, laObj);
                 Helpers.ProcessDate(record, laObj);
 
-                foreach (var creator in record.ArcStrings("CreatorName"))
+                foreach (var creatorName in record.ArcStrings("CreatorName"))
                 {
-                    creatorDict.AddToListForKey(creator, id);
+                    var creator = TryMatchCreator(creatorName, creatorNameDict);
+                    if(creator != null)
+                    {
+                        laObj.CreatedBy = new Activity(Types.Creation)
+                        {
+                            CarriedOutBy = [creator.GetReferenceObject()]
+                        };
+                    }
                 }
 
                 // statements/descriptions
@@ -81,20 +104,28 @@ namespace PmcTransformer.Archive
                 Helpers.SimpleStatement(record, laObj, "PublnNote", Getty.GeneralNote);
                 Helpers.ProcessThumbnailAndDescription(record, laObj);
 
-                foreach (var creator in record.ArcStrings("RelatedNameCode"))
+                foreach (var creatorCode in record.ArcStrings("RelatedNameCode"))
                 {
-                    relatedNameDict.AddToListForKey(creator, id);
+                    if (authorityDict.ContainsKey(creatorCode))
+                    {
+                        var authority = authorityDict[creatorCode];
+                        laObj.About ??= [];
+                        laObj.About.Add(authority.GetReferenceObject());
+                    }
+                    else
+                    {
+                        Console.WriteLine(creatorCode + " is NOT in Authority File");
+                    }
                 }
                 var relatedNames = record.ArcStrings("RelatedName");
                 var relatedNameRelationShips = record.ArcStrings("RelatedNameRelationship");
                 var relatedNameDecription = record.ArcStrings("RelatedNameDecription");
                 if(relatedNames.Any() || relatedNameRelationShips.Any() || relatedNameDecription.Any()) 
                 {
-                    Console.WriteLine(refNo);
+                    Console.WriteLine("SHOULD NOT HAVE relatedXXX: " + refNo);
                 }
             }
 
-            var AuthorityMa
             // Then /created_by/carried_out_by
 
             foreach(var kvp in Helpers.thumbnailTextCounts)
@@ -105,6 +136,50 @@ namespace PmcTransformer.Archive
             Sample(archiveByRefNo, 1000, true);
         }
 
+        private static Actor? TryMatchCreator(string creatorName, Dictionary<string, Actor> creatorDict)
+        {
+            // Dumb exact match:
+            if(creatorDict.ContainsKey(creatorName))
+            {
+                return creatorDict[creatorName];
+            }
+            if(CreatorDictEquivalents.ContainsKey(creatorName))
+            {
+                return creatorDict[CreatorDictEquivalents[creatorName]];
+            }
+            // ok so not an exact match... but is there a partial?
+            Console.WriteLine("No Creator: " + creatorName);
+            return null;
+        }
+
+        private static readonly Dictionary<string, string> CreatorDictEquivalents = new Dictionary<string, string>()
+        {
+            ["Paul Oppé"] = "Oppé; Adolf Paul (1878-1957)",
+            // ["Wright, Christopher (1945-)"] = "", 
+            ["Sharp, Dennis Charles (1933-2010) Architect and author"] = "Sharp; Dennis Charles (1933-2010)",
+            ["(Derick) Humphrey Waterfield"] = "Waterfield; Derick Humphrey (1908-1971); Mr",
+            ["Haldin, Daphne Louise (1899-1973)"] = "Haldin; Daphne Louise (1899\u00961973)",  // &ndash;
+            ["Waterhouse; Sir Ellis Kirkham(1905-1985)"] = "Waterhouse; Ellis Kirkham (1905-1985)",
+            // ["Simpson, Frank(Francis) Henry, (1911-2002)"] = "",
+            // ["Sunderland; John Norman(1942-2018)"] = "",
+            // ["John Anderson Stuart Ingamells"] = "", 
+            // ["Hayes, John Trevor(1933-2005)"] = "",
+            // ["Lionel Benedict Nicolson(1914-1978)"] = "",
+            ["Surry, Nigel W(1936-"] = "Surry; Nigel W (1936-)",
+            // ["Oliver Nicholas Millar"] = "",
+            // ["Paul R. Joyce"] = "",
+            ["Ford, Sir, Richard Brinsley (1908-1999) Knight"] = "Ford; Sir; Richard Brinsley (1908-1999)",
+            ["Constable; William George(1887-1976)"] = "Constable; William George (1887-1976)",
+            // ["William Roberts(1862-1940)"] = ""
+        };
+
+        private static string GetPrimaryName(Actor actor)
+        {
+            var primaryName = actor.IdentifiedBy!.Where(name => 
+                name.ClassifiedAs != null 
+                && name.ClassifiedAs.SingleOrDefault(ca => ca.Id == "http://vocab.getty.edu/aat/300404670") != null).Single();
+            return ((Name)primaryName).Content!;
+        }
 
         private static void Sample(
             Dictionary<string, LinkedArtObject> archiveByRefNo,

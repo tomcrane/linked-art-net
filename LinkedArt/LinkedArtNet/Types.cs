@@ -15,6 +15,7 @@
         // **DigitalObject,
         //DigitalService,
         // **Dimension,
+        Dissolution,
         Event,
         Formation, //?
         // **Group,

@@ -117,6 +117,12 @@
       "type": "Set"
     }
   ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/archive-authority/34e52db2-b3a1-47a1-899d-e38ecabe05a2",
+      "type": "Person"
+    }
+  ],
   "members_exemplified_by": [
     {
       "type": "HumanMadeObject",

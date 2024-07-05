@@ -134,5 +134,11 @@
       "id": "https://data.paul-mellon-centre.ac.uk/archive/b37707d5-2c75-4ba9-a6fb-bec49794d503",
       "type": "Set"
     }
+  ],
+  "about": [
+    {
+      "id": "https://data.paul-mellon-centre.ac.uk/archive-authority/dd543105-921a-40e1-b2c5-c9413cc93b90",
+      "type": "Person"
+    }
   ]
 }

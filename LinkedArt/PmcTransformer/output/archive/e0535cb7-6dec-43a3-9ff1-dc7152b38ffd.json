@@ -141,6 +141,15 @@
       ]
     }
   ],
+  "created_by": {
+    "type": "Creation",
+    "carried_out_by": [
+      {
+        "id": "https://data.paul-mellon-centre.ac.uk/archive-authority/83ef25ea-f28f-46a3-bafc-cae088074b88",
+        "type": "Person"
+      }
+    ]
+  },
   "representation": [
     {
       "type": "VisualItem",

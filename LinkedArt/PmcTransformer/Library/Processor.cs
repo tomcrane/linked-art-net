@@ -12,6 +12,8 @@ namespace PmcTransformer.Library
 {
     public class Processor
     {
+        private static readonly char[] separator = [',', ' '];
+
         public static void ProcessLibrary(XDocument xLibrary)
         {
             var timespanParser = new TimespanParser();
@@ -20,8 +22,13 @@ namespace PmcTransformer.Library
             var allWorks = new Dictionary<string, LinguisticObject>();
             var allHMOs = new Dictionary<string, List<HumanMadeObject>>();
 
+            // For reconciliation
             var persAuthorFullDict = new Dictionary<string, List<string>>();
             var corpAuthorDict = new Dictionary<string, List<string>>();
+            var publisherDict = new Dictionary<string, List<string>>();
+            var keywordDict = new Dictionary<string, List<string>>();
+            var placeDict = new Dictionary<string, List<string>>();
+
             int nullMediumCounter = 0;
             var classCounter = new Dictionary<int, int>();
 
@@ -29,10 +36,7 @@ namespace PmcTransformer.Library
             var accLocCounter = new Dictionary<int, int>();
             int classMatchesAccLocCounter = 0;
             int classHasLocationButDifferentFromAcclocCounter = 0;
-            var placeDict = new Dictionary<string, List<string>>();
-            var publisherDict = new Dictionary<string, List<string>>();
             var collationCounter = new Dictionary<int, int>();
-            var keywordDict = new Dictionary<string, List<string>>();
             var distinctLang = new HashSet<string>();
             var langCounter = new Dictionary<int, int>();
             int accessionMismatch = 0;
@@ -130,7 +134,7 @@ namespace PmcTransformer.Library
                 );
                 if (accessionNumbersFromNotes.Count == 1)
                 {
-                    var accParts = accessionNumbersFromNotes[0].Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    var accParts = accessionNumbersFromNotes[0].Split(separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                         .Select(x => x.Trim())
                         .Where(x => x != "X")
                         .Where(x => x != "All")
@@ -151,7 +155,7 @@ namespace PmcTransformer.Library
                     }
                     else
                     {
-                        if (accParts.Any())
+                        if (accParts.Count != 0)
                         {
                             if (accParts.Count == allHMOs[id].Count)
                             {
@@ -184,12 +188,12 @@ namespace PmcTransformer.Library
                 }
                 // NB 52 records that log messages above, mostly the first message. 466 if you don't do the "Danger" one.
 
-                Library.Helpers.AddEdition(record, work, editionStatementsFromNotes);
+                Helpers.AddEdition(record, work, editionStatementsFromNotes);
 
-                bool missingMedium = Library.Helpers.AddMedium(record, work);
+                bool missingMedium = Helpers.AddMedium(record, work);
                 if (missingMedium) nullMediumCounter++;
 
-                var classes = Library.Helpers.GetClasses(record);
+                var classes = Helpers.GetClasses(record);
                 classCounter.IncrementCounter(classes.Count);
                 string[] normalisedMediums = [
                     "PAMPHLET",
@@ -298,19 +302,19 @@ namespace PmcTransformer.Library
                     ];
                 }
 
-                Library.Helpers.AddCollation(record, work);
+                Helpers.AddCollation(record, work);
 
 
                 // entrydate
                 // TODO: use in Activity Stream - in DB
 
 
-                Library.Helpers.AddSeriesStatement(record, work);
+                Helpers.AddSeriesStatement(record, work);
 
-                int langCount = Library.Helpers.AddLanguage(distinctLang, record, work);
+                int langCount = Helpers.AddLanguage(distinctLang, record, work);
                 langCounter.IncrementCounter(langCount);
 
-                Library.Helpers.AddAccessStatement(record, work);
+                Helpers.AddAccessStatement(record, work);
 
 
                 // =====================
@@ -352,10 +356,25 @@ namespace PmcTransformer.Library
             Console.WriteLine();
             Console.WriteLine();
 
+
+            // For reconciliation:
+            //    persAuthorFullDict
+            //    corpAuthorDict
+            //    publisherDict
+            //    keywordDict
+            //    placeDict
+
             Console.WriteLine("nullMediumCounter: " + nullMediumCounter);
             Console.WriteLine("allBooks keys: " + allWorks.Keys.Count);
+            Console.WriteLine();
+
             Console.WriteLine("persauthorfull keys: " + persAuthorFullDict.Keys.Count);
             Console.WriteLine("corpAuthor keys: " + corpAuthorDict.Keys.Count);
+            Console.WriteLine("publisher keys: " + publisherDict.Keys.Count);
+            Console.WriteLine("keyword keys: " + keywordDict.Keys.Count);
+            Console.WriteLine("place keys: " + placeDict.Keys.Count);
+            Console.WriteLine();
+
             classCounter.Display("Distribution of class values:");
             accLocCounter.Display("Distribution of accloc values:");
 
@@ -370,8 +389,6 @@ namespace PmcTransformer.Library
             Console.WriteLine("classHasLocationButDifferentFromAcclocCounter: " + classHasLocationButDifferentFromAcclocCounter);
 
 
-            Console.WriteLine("place keys: " + placeDict.Keys.Count);
-            Console.WriteLine("publisher keys: " + publisherDict.Keys.Count);
             //  accnofldCounter.Display("Distribution of accessionNumbers:");
             collationCounter.Display("Distribution of collations:");
             langCounter.Display("Distribution of languages:");
@@ -382,29 +399,12 @@ namespace PmcTransformer.Library
                 Console.WriteLine(c);
             }
 
-            //Console.WriteLine("-------------------");
 
-            // Create Groups for corpauthor and assert in book record.
-            // TODO - this needs to be consistent between runs so once we are sure about our corporation,
-            // mint a permanent id for it and store in DB
-            int corpIdMinter = 1;
-            foreach (var corpAuthor in corpAuthorDict)
-            {
-                var group = new Group()
-                    .WithId(Identity.GroupBase + corpIdMinter++)
-                    .WithLabel(corpAuthor.Key);
 
-                foreach (var id in corpAuthor.Value)
-                {
-                    var work = allWorks[id];
-                    work.CreatedBy ??= new Activity(Types.Creation);
-                    work.CreatedBy.Part ??= [];
-                    work.CreatedBy.Part.Add(new Activity(Types.Creation)
-                    {
-                        CarriedOutBy = [group]
-                    });
-                }
-            }
+            
+            CorpAuthors.ReconcileCorpAuthors(allWorks, corpAuthorDict);
+
+
 
             // Now split people into roles and dates and do similar as above.
             // And work out how to reconcile with Getty and LoC.
@@ -612,11 +612,9 @@ namespace PmcTransformer.Library
             // once serialised in short form, add context and add reconciled equivalents and serialise as groups/people  
             // add in person dates
             // make use of active string in date field (currently being stripped)
-            Sample(allWorks, allHMOs, 1000, true);
+            // Sample(allWorks, allHMOs, 1000, true);
 
         }
-
-
 
         private static string TidyPersonDate(string datePart)
         {

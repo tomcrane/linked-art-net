@@ -595,8 +595,8 @@ namespace PmcTransformer.Library
             foreach (var kvp in keywordDict)
             {
                 // These need to be reconciled to any kind of entity - people, places, concepts
-                var thing = new LinkedArtObject()
-                    .WithId(Identity.GroupBase + "temp-" + keywordIdMinter++)
+                var thing = new LinkedArtObject(Types.Type)
+                    .WithId(Identity.ConceptBase + "temp-" + keywordIdMinter++)
                     .WithLabel(kvp.Key);
 
                 // /used_for[classified_as=PUBLISHING]/carried_out_by/id

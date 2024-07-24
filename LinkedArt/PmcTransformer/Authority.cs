@@ -6,12 +6,14 @@ namespace PmcTransformer
 {
     public class Authority
     {
-        public required string Identifier { get; set; }
-        public required string Type { get; set; }
+        public string? Identifier { get; set; }
+        public string? Type { get; set; }
         public string? Ulan { get; set; }
         public string? Aat { get; set; }
         public string? Lux { get; set; }
         public string? Loc { get; set; }
+        public string? Viaf { get; set; }
+        public string? WikiData { get; set; }
         public string? Label { get; set; }
 
         public LinkedArtObject? GetReference()

@@ -2,7 +2,6 @@
 using PmcTransformer.Helpers;
 using Group = LinkedArtNet.Group;
 using Dapper;
-using Npgsql;
 
 
 namespace PmcTransformer.Library
@@ -28,49 +27,73 @@ namespace PmcTransformer.Library
             // reconciliation pass
             foreach (var corpAuthor in corpAuthorDict)
             {
-                var source = corpAuthor.Key.Trim().TrimEnd('.');
+                var corpAuthorString = corpAuthor.Key.Trim().TrimEnd('.').Trim();
+                string? reduced = corpAuthorString.ReduceGroup();
+                if (reduced == corpAuthorString) reduced = null;
+
                 counter++;
-                string? authorityIdentifier = conn.GetAuthorityIdentifier("group_source_map", source, createEntryForSource:true);
+                string? authorityIdentifier = conn.GetAuthorityIdentifier("corpauthor", corpAuthorString, true);
                 if (string.IsNullOrEmpty(authorityIdentifier))
                 {
                     // need to find out what this thing is...
 
                     // try a simple match first
                     var ulans = conn.Query<IdentifierAndLabel>(
-                        "select identifier, label from ulan_labels where label=@Label and type='Group'", new { Label = source })
+                        "select identifier, label from ulan_labels where label=@Label and type='Group'", new { Label = corpAuthorString })
                         .ToList();
+
+                    if(ulans.Count == 0 && reduced != null)
+                    {
+                        ulans = conn.Query<IdentifierAndLabel>(
+                            "select identifier, label from ulan_labels where label=@Label and type='Group'", new { Label = reduced })
+                            .ToList();
+                        if(ulans.Count != 0)
+                        {
+                            Console.WriteLine();
+                        }
+                    }
 
                     if(ulans.Count > 1)
                     {
-                        Console.WriteLine("Warning - more than one ULAN label match for " + source);
+                        Console.WriteLine("Warning - more than one ULAN label match for " + corpAuthorString);
                     }
-                    else if(ulans.Count == 1)
+                    
+                    if(ulans.Count == 1)
                     {
                         matches++;
-                        var authority = conn.QuerySingleOrDefault<Authority>(
-                            "select * from authorities where ulan=@Ulan", new { Ulan = ulans[0].Identifier });
-                        // this only works if we ONLY use ULANs
-                        if(authority == null)
-                        {
-                            var newId = IdMinter.Generate();
-                            conn.Execute("insert into authorities (identifier, type, ulan, label) " +
-                                         "values (@Identifier, 'Group', @Ulan, @Label)",
-                                         new { Identifier = newId, Ulan = ulans[0].Identifier, Label = ulans[0].Label });
-                            authority = conn.QuerySingleOrDefault<Authority>(
-                                "select * from authorities where ulan=@Ulan", new { Ulan = ulans[0].Identifier });
-                        }
-                        // authority is not null here
-                        conn.Execute("update group_source_map set authority=@Authority where source_string=@Source",
-                            new { Authority = authority!.Identifier, Source = source });
-
+                        var ulanIdAndLabel = new IdentifierAndLabel { Identifier = ulans[0].Identifier, Label = ulans[0].Label };
+                        conn.UpsertAuthority("corpauthor", corpAuthorString, "ulan", "Group", ulanIdAndLabel);
                     }
                     else
                     {
                         // try different forms of the name against ULAN
+                        // TODO
 
-                        // try LOC next
-                        // https://id.loc.gov/authorities/names/suggest/?q=Hartnoll%20&%20Eyre
+                        var viafAuthority = ViafClient.SearchBestMatch("local.corporateNames all ", corpAuthorString);
+                        if(viafAuthority != null)
+                        {
+                            matches++;
+                            conn.UpsertAuthority("corpauthor", corpAuthorString, "Group", viafAuthority);
+                        }
+                        else
+                        {
+                            // try Library of Congress suggest
+                            // replace this with a local query service in future
+                            var locResults = LocClient.SuggestName(corpAuthorString);
+                            // first pass, just take the first result
+                            var firstLoc = locResults.FirstOrDefault();
+                            if (firstLoc == null && reduced != null)
+                            {
+                                locResults = LocClient.SuggestName(reduced);
+                                firstLoc = locResults.FirstOrDefault();
+                            }
 
+                            if (firstLoc != null)
+                            {
+                                matches++;
+                                conn.UpsertAuthority("corpauthor", corpAuthorString, "loc", "Group", firstLoc);
+                            }
+                        }
                     }
                 }
             }
@@ -84,15 +107,15 @@ namespace PmcTransformer.Library
             // assignment pass
             foreach (var corpAuthor in corpAuthorDict)
             {
-                var source = corpAuthor.Key.Trim().TrimEnd('.');
+                var corpAuthorString = corpAuthor.Key.Trim().TrimEnd('.');
                 Group? groupRef = null;
-                if(source.StartsWith(Locations.PhotoArchiveName))
+                if(corpAuthorString.StartsWith(Locations.PhotoArchiveName))
                 {
                     groupRef = Locations.PhotoArchiveGroupRef;
                 }
                 else
                 {
-                    string? authorityIdentifier = conn.GetAuthorityIdentifier("group_source_map", source);
+                    string? authorityIdentifier = conn.GetAuthorityIdentifier("corpauthor", corpAuthorString, false);
                     if (authorityIdentifier != null)
                     {
                         var authority = conn.QueryFirstOrDefault<Authority>(
@@ -115,7 +138,7 @@ namespace PmcTransformer.Library
                         // we DON'T want to get here - we need to create a non-aligned group with onlu a local identifier
                         groupRef = new Group()
                             .WithId(Identity.GroupBase + corpIdMinter++)
-                            .WithLabel(source);
+                            .WithLabel(corpAuthorString);
                     }
                 }
 

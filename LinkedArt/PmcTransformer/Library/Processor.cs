@@ -56,14 +56,16 @@ namespace PmcTransformer.Library
                 // /identified_by[type=Identifier,classified_as=REPOSITORY]/value
                 var id = record.Attribute("ID")!.Value;
 
+                // /identified_by[type = Name, classified_as = PRIMARY] / value
+                var title = record.LibStrings("title").Single();
+
                 // The first iteration will focus only on the books. 
                 var work = new LinguisticObject()
                     .WithContext()
-                    .WithId($"{Identity.LibraryLinguistic}{id}");
+                    .WithId($"{Identity.LibraryLinguistic}{id}")
+                    .WithLabel(title);
                 allWorks.Add(id, work);
 
-                // /identified_by[type = Name, classified_as = PRIMARY] / value
-                var title = record.LibStrings("title").Single();
                 work.IdentifiedBy = [
                     new Identifier(id).AsSystemAssignedNumber(),
                     new Name(title).AsPrimaryName(),

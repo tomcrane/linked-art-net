@@ -7,7 +7,16 @@ namespace LinkedArtNet
     {
         public override string[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            var s = reader.GetString();
+            if(s != null && s.Contains("["))
+            {
+                throw new NotSupportedException("Need to parse the array of strings");
+            }
+            if(s != null)
+            {
+                return [s];
+            }
+            return null;
         }
 
         public override void Write(Utf8JsonWriter writer, string[]? value, JsonSerializerOptions options)

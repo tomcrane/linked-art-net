@@ -3,7 +3,6 @@ using PmcTransformer.Helpers;
 using Group = LinkedArtNet.Group;
 using Dapper;
 
-
 namespace PmcTransformer.Library
 {
     public static class CorpAuthors
@@ -28,74 +27,105 @@ namespace PmcTransformer.Library
             foreach (var corpAuthor in corpAuthorDict)
             {
                 var corpAuthorString = corpAuthor.Key.Trim().TrimEnd('.').Trim();
+                Console.WriteLine("### " + corpAuthorString);
                 string? reduced = corpAuthorString.ReduceGroup();
                 if (reduced == corpAuthorString) reduced = null;
 
                 counter++;
-                string? authorityIdentifier = conn.GetAuthorityIdentifier("corpauthor", corpAuthorString, true);
-                if (string.IsNullOrEmpty(authorityIdentifier))
+                var authorityIdentifier = conn.GetAuthorityIdentifier("corpauthor", corpAuthorString, true);
+                if(authorityIdentifier!.Authority.HasText())
                 {
-                    // need to find out what this thing is...
-
-                    // try a simple match first
-                    var ulans = conn.Query<IdentifierAndLabel>(
-                        "select identifier, label from ulan_labels where label=@Label and type='Group'", new { Label = corpAuthorString })
-                        .ToList();
-
-                    if(ulans.Count == 0 && reduced != null)
-                    {
-                        ulans = conn.Query<IdentifierAndLabel>(
-                            "select identifier, label from ulan_labels where label=@Label and type='Group'", new { Label = reduced })
-                            .ToList();
-                        if(ulans.Count != 0)
-                        {
-                            Console.WriteLine();
-                        }
-                    }
-
-                    if(ulans.Count > 1)
-                    {
-                        Console.WriteLine("Warning - more than one ULAN label match for " + corpAuthorString);
-                    }
-                    
-                    if(ulans.Count == 1)
-                    {
-                        matches++;
-                        var ulanIdAndLabel = new IdentifierAndLabel { Identifier = ulans[0].Identifier, Label = ulans[0].Label };
-                        conn.UpsertAuthority("corpauthor", corpAuthorString, "ulan", "Group", ulanIdAndLabel);
-                    }
-                    else
-                    {
-                        // try different forms of the name against ULAN
-                        // TODO
-
-                        var viafAuthority = ViafClient.SearchBestMatch("local.corporateNames all ", corpAuthorString);
-                        if(viafAuthority != null)
-                        {
-                            matches++;
-                            conn.UpsertAuthority("corpauthor", corpAuthorString, "Group", viafAuthority);
-                        }
-                        else
-                        {
-                            // try Library of Congress suggest
-                            // replace this with a local query service in future
-                            var locResults = LocClient.SuggestName(corpAuthorString);
-                            // first pass, just take the first result
-                            var firstLoc = locResults.FirstOrDefault();
-                            if (firstLoc == null && reduced != null)
-                            {
-                                locResults = LocClient.SuggestName(reduced);
-                                firstLoc = locResults.FirstOrDefault();
-                            }
-
-                            if (firstLoc != null)
-                            {
-                                matches++;
-                                conn.UpsertAuthority("corpauthor", corpAuthorString, "loc", "Group", firstLoc);
-                            }
-                        }
-                    }
+                    Console.WriteLine("Already authorised: " + corpAuthorString);
+                    continue;
                 }
+                if (authorityIdentifier.Processed != null) // can have specific dates later
+                {
+                    Console.WriteLine("Already attempted: " + corpAuthorString);
+                    continue;
+                }
+
+                var knownGroup = KnownAuthorities.GetGroup(corpAuthorString);
+                if(knownGroup != null)
+                {
+                    Console.WriteLine($"Resolved '{corpAuthorString}' from known Authorities");
+                    conn.UpsertAuthority("corpauthor", corpAuthorString, "Group", knownGroup);
+                    conn.UpdateTimestamp(authorityIdentifier);
+                    continue;
+                }
+
+                var candidateAuthorities = new Dictionary<string, Authority>();
+
+                // need to find out what this thing is...
+                // We can ask LUX for a GROUP that CREATED the work(s)
+                var allActors = new List<Actor>();
+                foreach(var workId in corpAuthor.Value)
+                {
+                    var work = allWorks[workId];
+                    var actors = LuxClient.ActorsWhoCreatedWorks(corpAuthorString, work.Label!);
+                    allActors.AddRange(actors);
+                }
+                var distinctActors = allActors.DistinctBy(a => a.Id).ToList();
+                Console.WriteLine($"{distinctActors.Count} actors returned from LUX");
+                // Now we have a bunch of Groups (hopefully just 1).
+                int luxCounter = 1;
+                foreach(var actor in distinctActors)
+                {
+                    var authority = GetAuthorityFromEquivalents(actor);
+                    candidateAuthorities[$"lux{luxCounter++}"] = authority;
+                }
+
+                // ulans
+                // try a simple match first
+                var ulans = conn.Query<IdentifierAndLabel>(
+                    "select identifier, label from ulan_labels where label=@Label and type='Group'",
+                    new { Label = corpAuthorString })
+                    .ToList();
+
+                if(ulans.Count == 0 && reduced != null)
+                {
+                    ulans = conn.Query<IdentifierAndLabel>(
+                        "select identifier, label from ulan_labels where label=@Label and type='Group'",
+                        new { Label = reduced })
+                        .ToList();
+                }
+
+                int ulanCounter = 1;
+                foreach (var ulanMatch  in ulans)
+                {
+                    var authority = new Authority { Ulan = ulanMatch.Identifier, Label = ulanMatch.Label };
+                    candidateAuthorities[$"ulan{ulanCounter++}"] = authority;
+                }
+
+
+                var viafAuthority = ViafClient.SearchBestMatch("local.corporateNames all ", corpAuthorString);
+                if(viafAuthority != null)
+                {
+                    candidateAuthorities["viaf"] = viafAuthority;
+                }
+
+
+                var locResults = LocClient.SuggestName(corpAuthorString);
+                var firstLoc = locResults.FirstOrDefault();
+                if (firstLoc == null && reduced != null)
+                {
+                    locResults = LocClient.SuggestName(reduced);
+                    firstLoc = locResults.FirstOrDefault();
+                }
+                if (firstLoc != null)
+                {
+                    var authority = new Authority { Loc = firstLoc.Identifier, Label = firstLoc.Label };
+                    candidateAuthorities["loc"] = authority;
+                }
+
+                // Now we have multiple authorities. Lets see if they agree with each other.
+                if(candidateAuthorities.Keys.Count > 0)
+                {
+                    Console.WriteLine($"{candidateAuthorities.Keys.Count} candidates");
+                    // matches++;
+                    // conn.UpsertAuthority("corpauthor", corpAuthorString, "Group", bestAuthority);
+                }
+
+                conn.UpdateTimestamp(authorityIdentifier);
             }
 
             // exact match: Matched 709 of 4888
@@ -115,12 +145,12 @@ namespace PmcTransformer.Library
                 }
                 else
                 {
-                    string? authorityIdentifier = conn.GetAuthorityIdentifier("corpauthor", corpAuthorString, false);
-                    if (authorityIdentifier != null)
+                    var authorityIdentifier = conn.GetAuthorityIdentifier("corpauthor", corpAuthorString, false);
+                    if (authorityIdentifier?.Authority != null)
                     {
                         var authority = conn.QueryFirstOrDefault<Authority>(
                             "select * from authorities where identifier=@Identifier",
-                            new { Identifier = authorityIdentifier });
+                            new { Identifier = authorityIdentifier.Authority });
                         if(authority != null)
                         {
                             groupRef = authority.GetReference() as Group;
@@ -156,5 +186,9 @@ namespace PmcTransformer.Library
 
         }
 
+        private static Authority GetAuthorityFromEquivalents(Actor actor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

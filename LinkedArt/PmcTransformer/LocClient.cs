@@ -26,9 +26,14 @@ namespace PmcTransformer
             var uri = new Uri(url + name);
             var req = new HttpRequestMessage(HttpMethod.Get, uri);
             var resp = httpClient.Send(req);
+            var results = new List<IdentifierAndLabel>();
+            if (!resp.IsSuccessStatusCode)
+            {
+                Console.WriteLine("ERROR talking to LOC: " + resp.StatusCode + " " + uri);
+                return results;
+            }
             resp.EnsureSuccessStatusCode();
             var stream = resp.Content.ReadAsStream();
-            var results = new List<IdentifierAndLabel>();
             using (JsonDocument jDoc = JsonDocument.Parse(stream))
             {
                 Console.WriteLine(JsonSerializer.Serialize(jDoc, prettyJson));

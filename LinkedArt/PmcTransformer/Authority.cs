@@ -1,20 +1,55 @@
 ﻿
 using LinkedArtNet;
 using PmcTransformer.Helpers;
+using System.Text.Json.Serialization;
 
 namespace PmcTransformer
 {
     public class Authority
     {
+        [JsonPropertyName("identifier")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Identifier { get; set; }
+
+        [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Type { get; set; }
+
+        [JsonPropertyName("ulan")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Ulan { get; set; }
+
+        [JsonPropertyName("aat")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Aat { get; set; }
+
+        [JsonPropertyName("lux")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Lux { get; set; }
+
+        [JsonPropertyName("loc")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Loc { get; set; }
+
+        [JsonPropertyName("viaf")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Viaf { get; set; }
-        public string? WikiData { get; set; }
+
+        [JsonPropertyName("wikidata")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Wikidata { get; set; }
+
+        [JsonPropertyName("label")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Label { get; set; }
+
+        [JsonPropertyName("pmc")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Pmc { get; set; }
+
+        [JsonPropertyName("ignore")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Ignore { get; set; }
 
         public LinkedArtObject? GetReference()
         {
@@ -43,6 +78,7 @@ namespace PmcTransformer
             var laObj = GetReference();
             if (laObj == null) return null;
 
+            
             if(Ulan.HasText())
             {
                 laObj.Equivalent ??= [];
@@ -64,7 +100,25 @@ namespace PmcTransformer
             if (Loc.HasText())
             {
                 laObj.Equivalent ??= [];
-                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(Loc));
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://id.loc.gov/authorities/names/" + Loc));
+            }
+
+            if (Viaf.HasText())
+            {
+                laObj.Equivalent ??= [];
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://viaf.org/viaf/" + Viaf));
+            }
+
+            if (Wikidata.HasText())
+            {
+                laObj.Equivalent ??= [];
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://www.wikidata.org/entity/" + Wikidata));
+            }
+
+            if (Pmc.HasText())
+            {
+                laObj.Equivalent ??= [];
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(Pmc));
             }
 
             return laObj;

@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using PmcTransformer.Helpers;
+using System.Data.SqlTypes;
+using System.Text.Json;
 
 namespace PmcTransformer
 {
@@ -73,8 +75,17 @@ namespace PmcTransformer
                     var sidStrings = new Dictionary<string, string>();
                     if(sids.ValueKind == JsonValueKind.Array)
                     {
-                        sidStrings = sids.EnumerateArray().Select(sid => sid.GetString())
-                            .ToDictionary(s => s!.Split('|')[0], s => s!.Split('|')[1]);
+                        var sidStringList = sids.EnumerateArray().Select(sid => sid.GetString()).OfType<string>();
+                        //    .ToDictionary(s => s!.Split('|')[0], s => s!.Split('|')[1]); // can't do this because duplicate keys
+                        // see https://viaf.org/viaf/search?query=local.corporateNames%20all%20%22W/S%20Fine%20Art%20Ltd%22&recordSchema=BriefVIAF&httpAccept=application/json for an example
+                        foreach (string s in sidStringList)
+                        {
+                            var key = s.Split('|')[0];
+                            if(!sidStrings.ContainsKey(key))
+                            {
+                                sidStrings[key] = s.Split('|')[1];
+                            }
+                        }
                     }
                     else
                     {
@@ -88,7 +99,7 @@ namespace PmcTransformer
                     }
                     if(sidStrings.ContainsKey("WKP"))
                     {
-                        authority.WikiData = sidStrings["WKP"];
+                        authority.Wikidata = sidStrings["WKP"];
                     }
                     // anything else to pull from VIAF?
                     return authority;

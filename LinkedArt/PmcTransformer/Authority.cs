@@ -51,6 +51,12 @@ namespace PmcTransformer
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? Ignore { get; set; }
 
+        /// <summary>
+        /// When trying to match source strings
+        /// </summary>
+        [JsonIgnore]
+        public int Score { get; set; }
+
         public LinkedArtObject? GetReference()
         {
             LinkedArtObject? laRef = null;
@@ -123,5 +129,6 @@ namespace PmcTransformer
 
             return laObj;
         }
+
     }
 }

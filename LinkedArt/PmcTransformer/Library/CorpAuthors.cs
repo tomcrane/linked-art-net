@@ -2,6 +2,7 @@
 using PmcTransformer.Helpers;
 using Group = LinkedArtNet.Group;
 using Dapper;
+using PmcTransformer.Reconciliation;
 
 namespace PmcTransformer.Library
 {
@@ -26,7 +27,7 @@ namespace PmcTransformer.Library
             // reconciliation pass
             foreach (var corpAuthor in corpAuthorDict)
             {
-                var corpAuthorString = corpAuthor.Key.Trim().TrimEnd('.').Trim();
+                var corpAuthorString = corpAuthor.Key.Trim().TrimEnd('.').Trim().TrimEnd(',').Trim();
                 Console.WriteLine("### " + corpAuthorString);
                 string? reduced = corpAuthorString.ReduceGroup();
                 if (reduced == corpAuthorString) reduced = null;
@@ -58,37 +59,43 @@ namespace PmcTransformer.Library
                 // need to find out what this thing is...
                 // We can ask LUX for a GROUP that CREATED the work(s)
                 var allActors = new List<Actor>();
-                foreach(var workId in corpAuthor.Value)
+                Console.WriteLine($"{corpAuthor.Value.Count} works(s) for {corpAuthorString}");
+                var workIds = corpAuthor.Value;
+                if(workIds.Count > 50)
+                {
+                    var shuffled = workIds.Select(w => w).ToList();
+                    shuffled.Shuffle();
+                    workIds = shuffled.Take(50).ToList();
+                }
+                foreach (var workId in workIds)
                 {
                     var work = allWorks[workId];
+                    Console.WriteLine($"LUX: actors like '{corpAuthorString}' who created work '{work.Label}'");
                     var actors = LuxClient.ActorsWhoCreatedWorks(corpAuthorString, work.Label!);
+                    Console.WriteLine($"{actors.Count} found");
                     allActors.AddRange(actors);
                 }
                 var distinctActors = allActors.DistinctBy(a => a.Id).ToList();
-                Console.WriteLine($"{distinctActors.Count} actors returned from LUX");
+                var counts = distinctActors.ToDictionary(a => a.Id!, a => allActors.Count(aa => aa.Id == a.Id));
+                Console.WriteLine($"*** {distinctActors.Count} DISTINCT actors returned from LUX");
                 // Now we have a bunch of Groups (hopefully just 1).
                 int luxCounter = 1;
                 foreach(var actor in distinctActors)
                 {
-                    var authority = GetAuthorityFromEquivalents(actor);
+                    var authority = actor.AuthorityFromEquivalents(corpAuthorString);
+                    // This is misleading as it only really makes sense when there are lots of works for the same string
+                    // It is NOT a stting distance score
+                    authority.Score = Convert.ToInt32(counts[authority.Lux!] / (decimal)workIds.Count * 100);
                     candidateAuthorities[$"lux{luxCounter++}"] = authority;
                 }
 
                 // ulans
                 // try a simple match first
-                var ulans = conn.Query<IdentifierAndLabel>(
-                    "select identifier, label from ulan_labels where label=@Label and type='Group'",
-                    new { Label = corpAuthorString })
-                    .ToList();
-
+                var ulans = UlanClient.GetIdentifiersAndLabels(corpAuthorString, "Group");
                 if(ulans.Count == 0 && reduced != null)
                 {
-                    ulans = conn.Query<IdentifierAndLabel>(
-                        "select identifier, label from ulan_labels where label=@Label and type='Group'",
-                        new { Label = reduced })
-                        .ToList();
+                    ulans = UlanClient.GetIdentifiersAndLabels(reduced, "Group");
                 }
-
                 int ulanCounter = 1;
                 foreach (var ulanMatch  in ulans)
                 {
@@ -97,12 +104,12 @@ namespace PmcTransformer.Library
                 }
 
 
-                var viafAuthority = ViafClient.SearchBestMatch("local.corporateNames all ", corpAuthorString);
-                if(viafAuthority != null)
+                var viafAuthorities = ViafClient.SearchBestMatch("local.corporateNames all ", corpAuthorString);
+                int viafCounter = 1;
+                foreach (var viafAuthority in viafAuthorities)
                 {
-                    candidateAuthorities["viaf"] = viafAuthority;
+                    candidateAuthorities[$"viaf{viafCounter++}"] = viafAuthority;
                 }
-
 
                 var locResults = LocClient.SuggestName(corpAuthorString);
                 var firstLoc = locResults.FirstOrDefault();
@@ -120,9 +127,25 @@ namespace PmcTransformer.Library
                 // Now we have multiple authorities. Lets see if they agree with each other.
                 if(candidateAuthorities.Keys.Count > 0)
                 {
-                    Console.WriteLine($"{candidateAuthorities.Keys.Count} candidates");
-                    // matches++;
-                    // conn.UpsertAuthority("corpauthor", corpAuthorString, "Group", bestAuthority);
+                    Console.WriteLine("--------------");
+                    Console.Write("{0,-7}", "key");
+                    Console.Write("{0,-4}", "sc");
+                    Console.Write("{0,-12}", "Ulan");
+                    Console.Write("{0,-14}", "Loc");
+                    Console.Write("{0,-10}", "Wiki");
+                    Console.Write("{0,-20}", "Viaf");
+                    Console.WriteLine("Lux");
+                    foreach (var kvp in candidateAuthorities)
+                    {
+                        Console.Write("{0,-7}", kvp.Key);
+                        Console.Write("{0,-4}", kvp.Value.Score);
+                        Console.Write("{0,-12}", kvp.Value.Ulan);
+                        Console.Write("{0,-14}", kvp.Value.Loc);
+                        Console.Write("{0,-10}", kvp.Value.Wikidata);
+                        Console.Write("{0,-20}", kvp.Value.Viaf);
+                        Console.WriteLine(kvp.Value.Lux);
+                    }
+                    Console.WriteLine("--------------");
                 }
 
                 conn.UpdateTimestamp(authorityIdentifier);
@@ -183,12 +206,6 @@ namespace PmcTransformer.Library
                     });
                 }
             }
-
-        }
-
-        private static Authority GetAuthorityFromEquivalents(Actor actor)
-        {
-            throw new NotImplementedException();
         }
     }
 }

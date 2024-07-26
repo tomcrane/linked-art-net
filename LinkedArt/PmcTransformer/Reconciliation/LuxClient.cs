@@ -1,36 +1,23 @@
 ﻿using LinkedArtNet;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace PmcTransformer
+namespace PmcTransformer.Reconciliation
 {
     public class LuxClient
     {
         private static HttpClient httpClient;
-        private static JsonSerializerOptions prettyJson;
 
         static LuxClient()
         {
-            httpClient = new HttpClient(new SocketsHttpHandler
-            {
-                PooledConnectionLifetime = TimeSpan.FromMinutes(15)
-            });
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Paul Mellon Centre Linked Art Client");
-            prettyJson = new JsonSerializerOptions { WriteIndented = true };
+            httpClient = HttpClients.GetStandardClient();
         }
 
         public static List<Actor> ActorsWhoCreatedWorks(string actorName, string workName)
         {
-            Thread.Sleep(500);
+            // Thread.Sleep(500);
             const string template = "https://lux.collections.yale.edu/api/search/agent?q=%7B%22AND%22%3A%5B%7B%22name%22%3A%22{actor}%22%7D%2C%7B%22created%22%3A%7B%22name%22%3A%22{work}%22%7D%7D%5D%7D";
             var t1 = template.Replace("{actor}", Uri.EscapeDataString(actorName));
-            var uri = t1.Replace("{work}", Uri.EscapeDataString(workName));
+            var uri = t1.Replace("{work}", Uri.EscapeDataString(workName).Replace("%22", "\\%22"));
             var req = new HttpRequestMessage(HttpMethod.Get, uri);
             var resp = httpClient.Send(req);
             resp.EnsureSuccessStatusCode();

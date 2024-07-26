@@ -1,4 +1,5 @@
 ﻿using LinkedArtNet.Vocabulary;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
 
 namespace LinkedArtNet;
@@ -214,4 +215,27 @@ public class LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual List<HumanMadeObject>? HeldOrSupportedBy { get; set; }
 
+
+    public string? GetPrimaryName(bool fallbackToLabel = false)
+    {
+        if(IdentifiedBy == null || IdentifiedBy.Count == 0)
+        {
+            return fallbackToLabel ? Label : null;
+        }
+        const string aatPrimary = "http://vocab.getty.edu/aat/300404670";
+
+        var names = IdentifiedBy.Where(id => id.Type == "Name");
+        var primary = names.FirstOrDefault(n =>
+            n.ClassifiedAs != null && n.ClassifiedAs.Exists(
+                ca => ca.Id == aatPrimary ||
+                    ca.Equivalent != null && ca.Equivalent.Exists(
+                        cae => cae.Id == aatPrimary)));
+
+        if(primary != null && primary.Content != null)
+        {
+            return primary.Content;
+        }
+
+        return fallbackToLabel ? Label : null;
+    }
 }

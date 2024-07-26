@@ -3,8 +3,14 @@ namespace PmcTransformer
 {
     public class IdentifierAndLabel
     {
+        public int Score {  get; set; }
         public required string Identifier { get; set; }
         public required string Label { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Identifier} ({Label})";
+        }
     }
 
 

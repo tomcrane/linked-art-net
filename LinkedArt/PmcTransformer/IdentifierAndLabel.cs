@@ -14,7 +14,7 @@ namespace PmcTransformer
     }
 
 
-    public class SourceStringAndAuthority
+    public class AuthorityStringWithSource
     {
         public required string Source { get; set; }
         public required string String { get; set; }

@@ -24,6 +24,7 @@ namespace PmcTransformer.Library
             int matches = 0;
             int counter = 0;
 
+            const string corpAuthorDataSource = "corpauthor";
             // reconciliation pass
             foreach (var corpAuthor in corpAuthorDict)
             {
@@ -33,7 +34,7 @@ namespace PmcTransformer.Library
                 if (reduced == corpAuthorString) reduced = null;
 
                 counter++;
-                var authorityIdentifier = conn.GetAuthorityIdentifier("corpauthor", corpAuthorString, true);
+                var authorityIdentifier = conn.GetAuthorityIdentifier(corpAuthorDataSource, corpAuthorString, true);
                 if(authorityIdentifier!.Authority.HasText())
                 {
                     Console.WriteLine("Already authorised: " + corpAuthorString);
@@ -49,7 +50,7 @@ namespace PmcTransformer.Library
                 if(knownGroup != null)
                 {
                     Console.WriteLine($"Resolved '{corpAuthorString}' from known Authorities");
-                    conn.UpsertAuthority("corpauthor", corpAuthorString, "Group", knownGroup);
+                    conn.UpsertAuthority(corpAuthorDataSource, corpAuthorString, "Group", knownGroup);
                     conn.UpdateTimestamp(authorityIdentifier);
                     continue;
                 }
@@ -118,6 +119,11 @@ namespace PmcTransformer.Library
                     locResults = LocClient.SuggestName(reduced);
                     firstLoc = locResults.FirstOrDefault();
                 }
+                if (firstLoc == null && corpAuthorString.IndexOf(" and ") > 0)
+                {
+                    locResults = LocClient.SuggestName(corpAuthorString.Replace(" and ", " & "));
+                    firstLoc = locResults.FirstOrDefault();
+                }
                 if (firstLoc != null)
                 {
                     var authority = new Authority { Loc = firstLoc.Identifier, Label = firstLoc.Label };
@@ -146,6 +152,12 @@ namespace PmcTransformer.Library
                         Console.WriteLine(kvp.Value.Lux);
                     }
                     Console.WriteLine("--------------");
+                }
+
+                var bestMatch = DecideBestCandidate(corpAuthor.Value, corpAuthorString, candidateAuthorities);
+                if(bestMatch != null)
+                {
+                    conn.UpsertAuthority(corpAuthorDataSource, corpAuthorString, "Group", bestMatch);
                 }
 
                 conn.UpdateTimestamp(authorityIdentifier);
@@ -207,5 +219,145 @@ namespace PmcTransformer.Library
                 }
             }
         }
+
+        private static Authority? DecideBestCandidate(List<string> workIds, string term, Dictionary<string, Authority> candidateAuthorities)
+        {
+            if(candidateAuthorities.Count == 0)
+            {
+                return null;
+            }
+
+            Authority bestCandidate = new();
+
+            var luxMatches = ExtractAuthoritiesBySource("lux", candidateAuthorities);
+            var ulanMatches = ExtractAuthoritiesBySource("ulan", candidateAuthorities);
+            var viafMatches = ExtractAuthoritiesBySource("viaf", candidateAuthorities);
+
+            var nonLuxMatches = new List<Authority>(viafMatches);
+            nonLuxMatches.AddRange(ulanMatches);
+
+            Authority? locMatch = null;
+            if(candidateAuthorities.TryGetValue("loc", out Authority? value))
+            {
+                locMatch = value;
+                nonLuxMatches.Add(locMatch);
+            }
+
+            // Need to work out when to NOT trust the LUX match.
+            // And also whether to trust it, but not assert equivalence to other records, because we don't want to pollute LUX
+            // National Museums and Galleries on Merseyside
+            // This string yields 4 distinct LUX entries. eg first is Walker Art Gallery - which is _part_ of the above;
+            // But.. LUX says the work was published by Walker Art Gallery, PMC says work was published by National Museums and Galleries on Merseyside
+            // I can't safely pick Walker here, because I'm changing what PMC is saying... leave that to LUX.
+            // lux1   30  500251553   n80119554     Q1536471  124089443           https://lux.collections.yale.edu/data/group/9c0ee296-e226-49da-9306-ad24dedeb82c
+            // lux2   13  500290756   nr88004919              122054769           https://lux.collections.yale.edu/data/group/0437cb33-0dd9-4bad-8337-9fe7547a930e
+            // lux3   30  500311436   n50078080     Q1586957  121738032           https://lux.collections.yale.edu/data/group/ef8716b1-e13b-43a0-b65e-8e1d464c3599
+            // lux4   35  500301595   n88049144     Q1967497  145220201           https://lux.collections.yale.edu/data/group/b87c9ae6-4117-4319-9112-fa5c8901ce2c
+            if (luxMatches.Count > 1)
+            {
+                // Could pick the closest to the original string (the last of the above)
+                var closestLabel = FuzzySharp.Process.ExtractOne(term, luxMatches.Select(a => a.Label));
+                luxMatches = [luxMatches.First(a => a.Label == closestLabel.Value)];
+
+                // Or the one with the highest score (matches most works)
+
+                // Or that best matches the other results - see Scottish Arts Council
+            }
+
+            if(luxMatches.Count == 1 && HasAtLeastOneEquivalent(luxMatches[0]))
+            {
+                // Best case, only one LUX match to consider (not zero, not multiple)
+                var luxMatch = luxMatches[0];
+                bestCandidate.Score++;
+                bestCandidate.Label = luxMatch.Label;
+
+                if (luxMatch.Ulan != null && ulanMatches.Exists(a => a.Ulan == luxMatch.Ulan))
+                {
+                    // We matched a ULAN that LUX matches
+                    bestCandidate.Score++;
+                    bestCandidate.Ulan = luxMatch.Ulan;
+                }
+                if (luxMatch.Loc != null && locMatch != null && locMatch.Loc == luxMatch.Loc)
+                {
+                    // LUX loc is the same as oour LOC match
+                    bestCandidate.Score++;
+                    bestCandidate.Loc = locMatch.Loc;
+                    bestCandidate.Label = locMatch.Label;
+                }
+
+                if (luxMatch.Viaf != null && viafMatches.Exists(a => a.Viaf == luxMatch.Viaf))
+                {
+                    // We matched a VIAF that LUX matches
+                    bestCandidate.Score++;
+                    bestCandidate.Viaf = luxMatch.Viaf;
+                }
+
+                if(luxMatch.Loc != null && viafMatches.Exists(a => a.Loc == luxMatch.Loc))
+                {
+                    // LUX's loc also appears in VIAF LOC
+                    if(bestCandidate.Loc != null)
+                    {
+                        // we have already matched our LOC
+                        bestCandidate.Score++;
+                    } 
+                    else if(locMatch != null)
+                    {
+                        // There is a locMatch but it is NOT the same as LUX's LOC
+                        // ? decrease score?
+                    }
+                }
+                if(luxMatch.Wikidata != null && nonLuxMatches.Exists(a => a.Wikidata == luxMatch.Wikidata))
+                {
+                    bestCandidate.Score++;
+                    bestCandidate.Wikidata = luxMatch.Wikidata;
+                }
+
+                if(bestCandidate.Score >= 4)
+                {
+                    bestCandidate.Lux = luxMatch.Lux;
+                    return bestCandidate;
+                }
+            }
+            else
+            {
+                if (locMatch != null)
+                {
+                    var viafMatch = viafMatches.FirstOrDefault(a => a.Loc == locMatch.Loc && a.Score > 50);
+                    if (viafMatch != null)
+                    {
+                        bestCandidate.Label = locMatch.Label;
+                        bestCandidate.Loc = locMatch.Loc;
+                        bestCandidate.Viaf = viafMatch.Viaf;
+                        bestCandidate.Score = 2;
+                        if (ulanMatches.Count == 1)
+                        {
+                            bestCandidate.Ulan = ulanMatches[0].Ulan;
+                        }
+                        return bestCandidate;
+                    }
+                }
+            }
+
+
+            return null;
+        }
+
+        private static bool HasAtLeastOneEquivalent(Authority authority)
+        {
+            // if the LUX record has nothing to cross-check, is it any use to us?
+            // Maybe only if there is no other information
+            return authority.Ulan.HasText() || authority.Loc.HasText() || authority.Viaf.HasText();
+        }
+
+        private static List<Authority> ExtractAuthoritiesBySource(string source, Dictionary<string, Authority> candidateAuthorities)
+        {
+            var matches = candidateAuthorities
+                .Where(kvp => kvp.Key.StartsWith(source))
+                .OrderByDescending(kvp => Convert.ToInt32(kvp.Key.Replace(source, "")))
+                .Select(kvp => kvp.Value)
+                .ToList();
+            return matches;
+        }
+
     }
 }

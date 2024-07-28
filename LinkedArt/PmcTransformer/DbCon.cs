@@ -13,10 +13,10 @@ namespace PmcTransformer
                 connectionString: $"Server=localhost;Port=5432;User Id=postgres;Password={dbpwd};Database=pmc-linked-art;");
         }
 
-        public static SourceStringAndAuthority? GetAuthorityIdentifier(this NpgsqlConnection conn,
+        public static AuthorityStringWithSource? GetAuthorityIdentifier(this NpgsqlConnection conn,
             string source, string s, bool createEntryForSource = false)
         {
-            var ssa = conn.QueryFirstOrDefault<SourceStringAndAuthority>(
+            var ssa = conn.QueryFirstOrDefault<AuthorityStringWithSource>(
                 "select source, string, authority, processed from source_string_map " +
                 "where source=@source and string=@s", new { source, s });
             if(ssa == null && createEntryForSource)
@@ -24,7 +24,7 @@ namespace PmcTransformer
                 conn.Execute($"insert into source_string_map (source, string, authority) " +
                               "values (@source, @s, null)", new { source, s });
             }
-            return ssa ?? new SourceStringAndAuthority { Source=source, String=s };
+            return ssa ?? new AuthorityStringWithSource { Source=source, String=s };
         }
 
 
@@ -189,7 +189,7 @@ namespace PmcTransformer
                         new { selectedAuthority!.Identifier, dataSource, sourceString });
         }
 
-        public static void UpdateTimestamp(this NpgsqlConnection conn, SourceStringAndAuthority ssa)
+        public static void UpdateTimestamp(this NpgsqlConnection conn, AuthorityStringWithSource ssa)
         {
             conn.Execute("update source_string_map set processed=@UtcNow " +
                          "where source=@Source and string=@String",

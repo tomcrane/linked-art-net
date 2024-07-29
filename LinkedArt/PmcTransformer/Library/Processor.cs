@@ -122,6 +122,10 @@ namespace PmcTransformer.Library
                     hmo.Carries = [
                         new LinguisticObject().WithId(work.Id)
                     ];
+                    // say it is part of the library set
+                    hmo.MemberOf = [
+                        Locations.PMCLibrarySet
+                    ];
                 }
 
 

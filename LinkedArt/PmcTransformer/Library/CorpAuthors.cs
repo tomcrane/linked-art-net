@@ -255,13 +255,44 @@ namespace PmcTransformer.Library
             // lux4   35  500301595   n88049144     Q1967497  145220201           https://lux.collections.yale.edu/data/group/b87c9ae6-4117-4319-9112-fa5c8901ce2c
             if (luxMatches.Count > 1)
             {
+                var scores = luxMatches.ToDictionary(a => a.Lux!, a => 0);
+
                 // Could pick the closest to the original string (the last of the above)
                 var closestLabel = FuzzySharp.Process.ExtractOne(term, luxMatches.Select(a => a.Label));
-                luxMatches = [luxMatches.First(a => a.Label == closestLabel.Value)];
+                var closestLabelAuthority = luxMatches.First(a => a.Label == closestLabel.Value);
+                scores[closestLabelAuthority.Lux!] = 100;
 
                 // Or the one with the highest score (matches most works)
+                var mostWorks = luxMatches.OrderByDescending(a => a.Score).First();
+                scores[mostWorks.Lux] = Convert.ToInt32(100 + 100 * (mostWorks.Score / 100.0)); // a little extra weight for more matches
+
 
                 // Or that best matches the other results - see Scottish Arts Council
+                foreach(var lm in luxMatches)
+                {
+                    int score = 0;
+                    if(lm.Ulan.HasText() && ulanMatches.Exists(um => um.Ulan == lm.Ulan))
+                    {
+                        score += 100;
+                    }
+                    if(lm.Loc.HasText() && locMatch != null && locMatch.Loc == lm.Loc)
+                    {
+                        score += 150;
+                    }
+                    if(lm.Viaf.HasText())
+                    {
+                        var viafs = viafMatches.Where(vm => vm.Viaf == lm.Viaf);
+                        if (viafs.Any())
+                        {
+                            score += 20;
+                            score += viafs.OrderByDescending(vm => vm.Score).First().Score;
+                        }
+                    }
+                    scores[lm.Lux!] = score;
+                }
+
+                var luxMatchKey = scores.OrderByDescending(kvp => kvp.Value).First().Key;
+                luxMatches = [luxMatches.Single(lm => lm.Lux == luxMatchKey)];
             }
 
             if(luxMatches.Count == 1 && HasAtLeastOneEquivalent(luxMatches[0]))

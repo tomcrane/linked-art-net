@@ -13,6 +13,7 @@ namespace PmcTransformer.Reconciliation
 
         public static IdentifierAndLabel? GetName(string identifier)
         {
+            Thread.Sleep(2000);
             var url = $"https://www.wikidata.org/wiki/Special:EntityData/{identifier}?flavor=dump";
             var resp = httpClient.Send(new HttpRequestMessage(HttpMethod.Get, url));
             resp.EnsureSuccessStatusCode();

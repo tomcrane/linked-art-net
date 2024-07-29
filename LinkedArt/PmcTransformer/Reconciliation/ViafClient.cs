@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using PmcTransformer.Helpers;
+using System.Text.Json;
 using System.Web;
 
 namespace PmcTransformer.Reconciliation
@@ -26,11 +27,17 @@ namespace PmcTransformer.Reconciliation
                     // just take the first?
                     if (headingsData.Count != 0)
                     {
-                        return new IdentifierAndLabel
+                        var label = headingsData
+                            .Select(h => h.GetProperty("text").GetString())
+                            .FirstOrDefault(h => h.HasText());
+                        if(label != null)
                         {
-                            Identifier = identifier,
-                            Label = headingsData[0].GetProperty("text").GetString()!
-                        };
+                            return new IdentifierAndLabel
+                            {
+                                Identifier = identifier,
+                                Label = label
+                            };
+                        }
                     }
                 }
             }

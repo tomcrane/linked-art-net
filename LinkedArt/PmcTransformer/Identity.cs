@@ -1,10 +1,11 @@
 ﻿using Dapper;
+using LinkedArtNet;
 using Npgsql;
 using System.Text;
 
 namespace PmcTransformer
 {
-    public class Identity
+    public static class Identity
     {
         public const string BaseUrl = "https://data.paul-mellon-centre.ac.uk/";
 
@@ -17,9 +18,16 @@ namespace PmcTransformer
         public const string ArchiveAuthority = $"{BaseUrl}archive-authority/"; // for interim reconciliation
 
         public const string GroupBase = $"{BaseUrl}group/";
+        public const string SetBase = $"{BaseUrl}set/";
         public const string PeopleBase = $"{BaseUrl}person/";
         public const string PlaceBase = $"{BaseUrl}place/";
         public const string ConceptBase = $"{BaseUrl}concept/";
+
+        public static string GetFilePath(this LinkedArtObject laObj, string basePath)
+        {
+            var path = laObj.Id!.Replace(BaseUrl, "");
+            return Path.Combine(basePath, path);
+        }
     }
 
     public class IdMinter

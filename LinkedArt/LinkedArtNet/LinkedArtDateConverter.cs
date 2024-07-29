@@ -15,7 +15,9 @@ public class LinkedArtDateConverter : JsonConverter<LinkedArtDate>
         if (date.StartsWith('-')) year = 0 - year;
         if(year < 0)
         {
-            return new LinkedArtDate(year, int.Parse(parts[1]), int.Parse(parts[2]));
+            // example "-9999-01-01T00:00:00" need to ignore the time component
+            var dayPartOnly = parts[2].Split(['T', ' '])[0];
+            return new LinkedArtDate(year, int.Parse(parts[1]), int.Parse(dayPartOnly));
         }
 
         //var dt = DateTime.ParseExact(date, LinkedArtDate.Format, CultureInfo.InvariantCulture);

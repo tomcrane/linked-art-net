@@ -1,4 +1,5 @@
 ﻿using LinkedArtNet;
+using PmcTransformer.Helpers;
 
 namespace PmcTransformer.Reconciliation
 {
@@ -47,7 +48,10 @@ namespace PmcTransformer.Reconciliation
                 else if (viafs.Count > 1)
                 {
                     Console.WriteLine($"{viafs.Count} Multiple VIAF equivalents");
-                    var idsAndLabels = viafs.Select(l => ViafClient.GetName(l.Id.Replace(viafPrefix, ""))).ToList();
+                    var idsAndLabels = viafs
+                        .Select(l => ViafClient.GetName(l.Id.Replace(viafPrefix, "")))
+                        .Where(x => x != null && x.Label.HasText())
+                        .ToList();
                     var bestMatch = FuzzySharp.Process.ExtractOne(disambiguator, idsAndLabels.Select(i => i.Label));
                     Console.WriteLine("VIAF Candidates:");
                     idsAndLabels.ForEach(Console.WriteLine);

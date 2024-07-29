@@ -130,5 +130,36 @@ namespace PmcTransformer
             return laObj;
         }
 
+        public override string ToString()
+        {
+            if (Label.HasText())
+            {
+                return Label;
+            }
+
+            if(Lux.HasText())
+            {
+                return Lux.Split('/')[^1];
+            }
+
+            if (Loc.HasText())
+            {
+                return Loc;
+            }
+
+            if (Viaf.HasText())
+            {
+                return "v" + Viaf;
+            }
+
+            if (Ulan.HasText())
+            {
+                return "u" + Ulan;
+            }
+
+            return base.ToString();
+
+        }
+
     }
 }

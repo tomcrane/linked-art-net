@@ -5,14 +5,29 @@ namespace PmcTransformer.Helpers
 {
     public class Locations
     {
-        public static Group PMCGroup;
-        public static Place PMCPlace;
-        public static Group PMCGroupRef;
-        public static Place PMCPlaceRef;
+        public static readonly Group PMCGroup;
+        public static readonly string PMCName = "Paul Mellon Centre for Studies in British Art";
+        public static readonly Place PMCPlace;
+        public static readonly Group PMCGroupRef;
+        public static readonly Place PMCPlaceRef;
 
-        public static Group PhotoArchiveGroup;
-        public static Group PhotoArchiveGroupRef;
-        public static readonly string PhotoArchiveName = "Paul Mellon Centre for Studies in British Art photographic archive";
+        public static readonly Group PMCLibraryGroup;
+        public static readonly Group PMCLibraryGroupRef;
+        public static readonly string PMCLibraryName = $"{PMCName} Library";
+        public static readonly LinkedArtObject PMCLibrarySet;
+        public static readonly LinkedArtObject PMCLibrarySetRef;
+
+        public static readonly Group PMCArchiveGroup;
+        public static readonly Group PMCArchiveGroupRef;
+        public static readonly string PMCArchiveName = $"{PMCName} Archive";
+        public static readonly LinkedArtObject PMCArchiveSet;
+        public static readonly LinkedArtObject PMCArchiveSetRef;
+
+        public static readonly Group PhotoArchiveGroup;
+        public static readonly Group PhotoArchiveGroupRef;
+        public static readonly string PhotoArchiveName = $"{PMCName} photographic archive";
+        public static readonly LinkedArtObject PhotoArchiveSet;
+        public static readonly LinkedArtObject PhotoArchiveSetRef;
 
         public static Place? FromRecordValue(string value, bool ignoreNonMatch = false)
         {
@@ -80,6 +95,95 @@ namespace PmcTransformer.Helpers
                 .WithId(Identity.GroupBase + "pmc")
                 .WithLabel("Paul Mellon Centre");
 
+
+            // Library
+            var pmcLibrarySlug = "pmc-library";
+            PMCLibraryGroup = new Group()
+                .WithContext()
+                .WithId(Identity.GroupBase + pmcLibrarySlug)
+                .WithLabel(PMCLibraryName);
+            PMCLibraryGroup.PartOf = [PMCGroupRef];
+            PMCLibraryGroupRef = new Group()
+                .WithId(Identity.GroupBase + pmcLibrarySlug)
+                .WithLabel(PMCLibraryName);
+            PMCLibrarySet = new LinkedArtObject(Types.Set)
+                .WithContext()
+                .WithId(Identity.SetBase + pmcLibrarySlug)
+                .WithLabel(Identity.SetBase + pmcLibrarySlug)
+                .WithClassifiedAs(Getty.Collection);
+            PMCLibrarySet.IdentifiedBy = [
+                new Name(PMCLibraryName).AsPrimaryName()
+            ];
+            var libCurating = new Activity()
+                .WithLabel("Curation")
+                .WithClassifiedAs(Getty.Curating);
+            libCurating.CarriedOutBy = [PMCLibraryGroupRef];
+            PMCLibrarySet.UsedFor = [libCurating];
+
+            PMCLibrarySetRef = new LinkedArtObject(Types.Set)
+                .WithId(Identity.SetBase + pmcLibrarySlug)
+                .WithLabel(Identity.SetBase + pmcLibrarySlug);
+
+
+            // Archive
+            var pmcArchiveSlug = "pmc-archive";
+            PMCArchiveGroup = new Group()
+                .WithContext()
+                .WithId(Identity.GroupBase + pmcArchiveSlug)
+                .WithLabel(PMCArchiveName);
+            PMCArchiveGroup.PartOf = [PMCGroupRef];
+            PMCArchiveGroupRef = new Group()
+                .WithId(Identity.GroupBase + pmcArchiveSlug)
+                .WithLabel(PMCArchiveName);
+            PMCArchiveSet = new LinkedArtObject(Types.Set)
+                .WithContext()
+                .WithId(Identity.SetBase + pmcArchiveSlug)
+                .WithLabel(Identity.SetBase + pmcArchiveSlug)
+                .WithClassifiedAs(Getty.Collection);
+            PMCArchiveSet.IdentifiedBy = [
+                new Name(PMCArchiveName).AsPrimaryName()
+            ];
+            var archiveCurating = new Activity()
+                .WithLabel("Curation")
+                .WithClassifiedAs(Getty.Curating);
+            archiveCurating.CarriedOutBy = [PMCArchiveGroupRef];
+            PMCArchiveSet.UsedFor = [archiveCurating];
+
+            PMCArchiveSetRef = new LinkedArtObject(Types.Set)
+                .WithId(Identity.SetBase + pmcArchiveSlug)
+                .WithLabel(Identity.SetBase + pmcArchiveSlug);
+
+
+
+            // Photo Archive
+            var pmcPhotoArchiveSlug = "pmc-photo-archive";
+            PhotoArchiveGroup = new Group()
+                .WithContext()
+                .WithId(Identity.GroupBase + pmcPhotoArchiveSlug)
+                .WithLabel(PhotoArchiveName);
+            PhotoArchiveGroup.PartOf = [PMCGroupRef];
+            PhotoArchiveGroupRef = new Group()
+                .WithId(Identity.GroupBase + pmcPhotoArchiveSlug)
+                .WithLabel(PhotoArchiveName);
+            PhotoArchiveSet = new LinkedArtObject(Types.Set)
+                .WithContext()
+                .WithId(Identity.SetBase + pmcPhotoArchiveSlug)
+                .WithLabel(Identity.SetBase + pmcPhotoArchiveSlug)
+                .WithClassifiedAs(Getty.Collection);
+            PhotoArchiveSet.IdentifiedBy = [
+                new Name(PhotoArchiveName).AsPrimaryName()
+            ];
+            var photoArchiveCurating = new Activity()
+                .WithLabel("Curation")
+                .WithClassifiedAs(Getty.Curating);
+            photoArchiveCurating.CarriedOutBy = [PhotoArchiveGroupRef];
+            PhotoArchiveSet.UsedFor = [photoArchiveCurating];
+
+            PhotoArchiveSetRef = new LinkedArtObject(Types.Set)
+                .WithId(Identity.SetBase + pmcPhotoArchiveSlug)
+                .WithLabel(Identity.SetBase + pmcPhotoArchiveSlug);
+
+            // Places
             PMCPlace = new Place()
                 .WithContext()
                 .WithId(Identity.PlaceBase + "pmc")
@@ -141,23 +245,32 @@ namespace PmcTransformer.Helpers
             PlaceDict["Photo Archive"] = PhotoArchive;
 
 
-            PhotoArchiveGroup = new Group()
-                .WithId(Identity.GroupBase + "pmc-photo-archive")
-                .WithLabel(PhotoArchiveName);
-            PhotoArchiveGroup.PartOf = [PMCGroupRef];
-            PhotoArchiveGroupRef = new Group()
-                .WithId(Identity.GroupBase + "pmc-photo-archive")
-                .WithLabel(PhotoArchiveName);
-            // TODO relations with PMC Group and PMC Place; serialise these all to disk.
-
 
         }
 
         public static void SerialisePlaces()
         {
-            // Only call after writing books to disk;
-            // embellish Places with context and partOf
+            Writer.WriteToDisk(PMCGroup);
+            Writer.WriteToDisk(PMCPlace);
 
+            Writer.WriteToDisk(PMCLibraryGroup);
+            Writer.WriteToDisk(PMCLibrarySet);
+
+            Writer.WriteToDisk(PMCArchiveGroup);
+            Writer.WriteToDisk(PMCArchiveSet);
+
+            Writer.WriteToDisk(PhotoArchiveGroup);
+            Writer.WriteToDisk(PhotoArchiveSet);
+
+            foreach(var place in PlaceDict.Values.DistinctBy(x => x.Id))
+            {
+                var diskPlace = new Place()
+                    .WithContext()
+                    .WithId(place.Id)
+                    .WithLabel(place.Label);
+                diskPlace.PartOf = [PMCPlace];
+                Writer.WriteToDisk (diskPlace);
+            }
         }
 
         private static readonly Dictionary<string, Place> PlaceDict = [];

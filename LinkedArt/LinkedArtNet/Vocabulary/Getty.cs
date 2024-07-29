@@ -104,7 +104,7 @@ public class Getty
     public static LinkedArtObject Exhibition => AatType("Exhibition", "300417531");
     public static LinkedArtObject Museum => AatType("Museum", "300312281");
     public static LinkedArtObject Collection => AatType("Collection", "300025976");
-
+    public static LinkedArtObject Curating => AatType("Curating", "300054277");
 
     public static LinkedArtObject Publishing => AatType("Publishing", "300054686");
 

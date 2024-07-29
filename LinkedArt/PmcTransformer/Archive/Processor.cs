@@ -53,6 +53,8 @@ namespace PmcTransformer.Archive
                 archiveByGuid[id] = laObj;
                 archiveByRefNo[refNo] = laObj;
 
+                // All archival things are members of this set
+                laObj.MemberOf = [ PmcTransformer.Helpers.Locations.PMCArchiveSet ];
                 (string sortRefNo, string? parentRefNo) = Helpers.GetRefNoVariants(refNo); 
                 if(parentRefNo != null)
                 {
@@ -64,7 +66,7 @@ namespace PmcTransformer.Archive
                         parentRef = new LinkedArtObject(Types.Set)
                             .WithId(parent.Id)
                             .WithLabel(parent.Label);
-                        laObj.MemberOf = [parentRef];
+                        laObj.MemberOf.Add(parentRef);
                     }
                 }
 

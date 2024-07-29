@@ -28,7 +28,7 @@ namespace PmcTransformer.Library
             // reconciliation pass
             foreach (var corpAuthor in corpAuthorDict)
             {
-                var corpAuthorString = corpAuthor.Key.Trim().TrimEnd('.').Trim().TrimEnd(',').Trim();
+                var corpAuthorString = corpAuthor.Key.NormaliseForGroup();
                 Console.WriteLine("### " + corpAuthorString);
                 string? reduced = corpAuthorString.ReduceGroup();
                 if (reduced == corpAuthorString) reduced = null;
@@ -172,7 +172,7 @@ namespace PmcTransformer.Library
             // assignment pass
             foreach (var corpAuthor in corpAuthorDict)
             {
-                var corpAuthorString = corpAuthor.Key.Trim().TrimEnd('.');
+                var corpAuthorString = corpAuthor.Key.NormaliseForGroup();
                 Group? groupRef = null;
                 if(corpAuthorString.StartsWith(Locations.PhotoArchiveName))
                 {
@@ -191,12 +191,6 @@ namespace PmcTransformer.Library
                             groupRef = authority.GetReference() as Group;
                         }
                     }
-                    // map the strings into a local "DB" (dict)
-                    // build the dict by reconciling against local postgres of against LUX if no match
-
-                    // save, so that reruns don't re-query
-
-
                     // need the full group if we mint/reconcile here
                     if (groupRef == null)
                     {

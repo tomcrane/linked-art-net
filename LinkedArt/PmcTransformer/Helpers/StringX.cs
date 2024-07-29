@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using PmcTransformer.Library;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PmcTransformer.Helpers
 {
@@ -37,6 +38,12 @@ namespace PmcTransformer.Helpers
                 .RemoveEnd(" (Author)")
                 .RemoveEnd(" Temporary");
             return reduced;
+        }
+
+        public static string NormaliseForGroup(this string s)
+        {
+            var groupString = s.Trim().TrimEnd('.').Trim().TrimEnd(',').Trim();
+            return groupString;
         }
     }
 }

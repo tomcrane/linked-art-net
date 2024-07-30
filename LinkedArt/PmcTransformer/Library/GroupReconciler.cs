@@ -6,7 +6,7 @@ using PmcTransformer.Reconciliation;
 
 namespace PmcTransformer.Library
 {
-    public static class CorpAuthors
+    public static class GroupReconciler
     {
         /// <summary>
         /// The list values in corpAuthorDict are keys in allWorks
@@ -29,18 +29,19 @@ namespace PmcTransformer.Library
             foreach (var corpAuthor in corpAuthorDict)
             {
                 var corpAuthorString = corpAuthor.Key.NormaliseForGroup();
+                Console.WriteLine();
                 Console.WriteLine("### " + corpAuthorString);
                 string? reduced = corpAuthorString.ReduceGroup();
                 if (reduced == corpAuthorString) reduced = null;
 
                 counter++;
                 var authorityIdentifier = conn.GetAuthorityIdentifier(corpAuthorDataSource, corpAuthorString, true);
-                if(authorityIdentifier!.Authority.HasText())
-                {
-                    Console.WriteLine("Already authorised: " + corpAuthorString);
-                    continue;
-                }
-                if (authorityIdentifier.Processed != null) // can have specific dates later
+                //if(authorityIdentifier!.Authority.HasText())
+                //{
+                //    Console.WriteLine("Already authorised: " + corpAuthorString);
+                //    continue;
+                //}
+                if (authorityIdentifier!.Processed != null) // can have specific dates later
                 {
                     Console.WriteLine("Already attempted: " + corpAuthorString);
                     continue;
@@ -92,15 +93,27 @@ namespace PmcTransformer.Library
 
                 // ulans
                 // try a simple match first
-                var ulans = UlanClient.GetIdentifiersAndLabels(corpAuthorString, "Group");
-                if(ulans.Count == 0 && reduced != null)
+                const int requiredPercentageMatch = 94; // This is a percentage of chars in the word
+                var ulansLev = UlanClient
+                    .GetIdentifiersAndLabelsLevenshtein(corpAuthorString, "Group", 5)
+                    .Where(x => x.Score >= requiredPercentageMatch) 
+                    .ToList();  
+                if(ulansLev.Count == 0 && reduced != null)
                 {
-                    ulans = UlanClient.GetIdentifiersAndLabels(reduced, "Group");
+                    ulansLev = UlanClient
+                        .GetIdentifiersAndLabelsLevenshtein(reduced, "Group", 5)
+                            .Where(x => x.Score >= requiredPercentageMatch)
+                            .ToList();
                 }
                 int ulanCounter = 1;
-                foreach (var ulanMatch  in ulans)
+                foreach (var ulanMatch  in ulansLev)
                 {
-                    var authority = new Authority { Ulan = ulanMatch.Identifier, Label = ulanMatch.Label };
+                    var authority = new Authority 
+                    { 
+                        Ulan = ulanMatch.Identifier, 
+                        Label = ulanMatch.Label, 
+                        Score = ulanMatch.Score 
+                    };
                     candidateAuthorities[$"ulan{ulanCounter++}"] = authority;
                 }
 
@@ -133,7 +146,7 @@ namespace PmcTransformer.Library
                 // Now we have multiple authorities. Lets see if they agree with each other.
                 if(candidateAuthorities.Keys.Count > 0)
                 {
-                    Console.WriteLine("--------------");
+                    Console.WriteLine($"----- Group: {corpAuthorString} ---------");
                     Console.Write("{0,-7}", "key");
                     Console.Write("{0,-4}", "sc");
                     Console.Write("{0,-12}", "Ulan");
@@ -151,12 +164,20 @@ namespace PmcTransformer.Library
                         Console.Write("{0,-20}", kvp.Value.Viaf);
                         Console.WriteLine(kvp.Value.Lux);
                     }
-                    Console.WriteLine("--------------");
+                    Console.WriteLine($"----- END Group: {corpAuthorString} ---------");
                 }
 
                 var bestMatch = DecideBestCandidate(corpAuthor.Value, corpAuthorString, candidateAuthorities);
                 if(bestMatch != null)
                 {
+                    Console.WriteLine($"----- MATCH DECIDED ---------");
+                    Console.Write("{0,-7}", "");
+                    Console.Write("{0,-4}", bestMatch.Score);
+                    Console.Write("{0,-12}", bestMatch.Ulan);
+                    Console.Write("{0,-14}", bestMatch.Loc);
+                    Console.Write("{0,-10}", bestMatch.Wikidata);
+                    Console.Write("{0,-20}", bestMatch.Viaf);
+                    Console.WriteLine(bestMatch.Lux);
                     conn.UpsertAuthority(corpAuthorDataSource, corpAuthorString, "Group", bestMatch);
                 }
 
@@ -168,7 +189,7 @@ namespace PmcTransformer.Library
             // after only groups: 499 :(
             Console.WriteLine($"Matched {matches} of {counter}");
 
-
+            throw new NotImplementedException("later");
             // assignment pass
             foreach (var corpAuthor in corpAuthorDict)
             {
@@ -267,7 +288,7 @@ namespace PmcTransformer.Library
                     int score = 0;
                     if(lm.Ulan.HasText() && ulanMatches.Exists(um => um.Ulan == lm.Ulan))
                     {
-                        score += 100;
+                        score += 100 + lm.Score;
                     }
                     if(lm.Loc.HasText() && locMatch != null && locMatch.Loc == lm.Loc)
                     {
@@ -337,7 +358,7 @@ namespace PmcTransformer.Library
                     bestCandidate.Wikidata = luxMatch.Wikidata;
                 }
 
-                if(bestCandidate.Score >= 4)
+                if(bestCandidate.Score >= 3)
                 {
                     bestCandidate.Lux = luxMatch.Lux;
                     return bestCandidate;

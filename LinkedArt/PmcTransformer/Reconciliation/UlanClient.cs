@@ -19,6 +19,21 @@ namespace PmcTransformer.Reconciliation
                 .ToList();
             return ulans;
         }
+        public static List<IdentifierAndLabel> GetIdentifiersAndLabelsLevenshtein(string label, string type, int limit)
+        {
+            var matches = conn.Query<IdentifierAndLabel>(
+                "select identifier, label, levenshtein(label, @label) as score " +
+                "from ulan_labels where type=@type " +
+                "order by levenshtein(label, @label) asc limit @limit",
+                new { label, type, limit })
+                .ToList();
+            // convert levenshtein distances to percent (factors in length of string)
+            foreach (var match in matches)
+            {
+                match.Score = 100 - Convert.ToInt32(100 * (match.Score / (decimal)label.Length));
+            }
+            return matches;
+        }
 
         public static Actor? GetFromIdentifier(string identifier)
         {

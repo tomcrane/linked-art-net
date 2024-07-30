@@ -1,9 +1,10 @@
 ﻿using PmcTransformer.Library;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace PmcTransformer.Helpers
 {
-    public static class StringX
+    public static partial class StringX
     {
         public static bool HasText([NotNullWhen(true)] this string? str) => !string.IsNullOrWhiteSpace(str);
 
@@ -31,12 +32,36 @@ namespace PmcTransformer.Helpers
             return str;
         }
 
+        /// <summary> 
+        /// Removes separator from the start of str if it's there, otherwise leave it alone.
+        /// 
+        /// "something", "thing" => "something"
+        /// "something", "some" => "thing"
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="start"></param>
+        /// <returns></returns>
+        public static string? RemoveStart(this string? str, string start)
+        {
+            if (str == null) return null;
+            if (str == string.Empty) return string.Empty;
+
+            if (str.StartsWith(start) && str.Length > start.Length)
+            {
+                return str.Substring(start.Length);
+            }
+
+            return str;
+        }
+
         public static string? ReduceGroup(this string str)
         {
             var reduced = str.Trim()
                 .RemoveEnd(" Ltd").RemoveEnd(" ltd").RemoveEnd(" Limited").RemoveEnd(" limited")
                 .RemoveEnd(" (Author)")
-                .RemoveEnd(" Temporary");
+                .RemoveEnd(" Temporary")
+                .RemoveStart("The ");
             return reduced;
         }
 
@@ -44,6 +69,18 @@ namespace PmcTransformer.Helpers
         {
             var groupString = s.Trim().TrimEnd('.').Trim().TrimEnd(',').Trim();
             return groupString;
+        }
+
+
+        [GeneratedRegex(@"(.*) \((.*)\)")]
+        private static partial Regex ThingsInParens();
+
+        public static string RemoveThingsInParens(this string s)
+        {
+            var sansParens = ThingsInParens().Match(s)?.Groups.Values.Skip(1).FirstOrDefault();
+            if(sansParens == null) return s;
+
+            return sansParens.Value;
         }
     }
 }

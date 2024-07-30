@@ -408,7 +408,7 @@ namespace PmcTransformer.Library
 
 
             
-            CorpAuthors.ReconcileCorpAuthors(allWorks, corpAuthorDict);
+            GroupReconciler.ReconcileCorpAuthors(allWorks, corpAuthorDict);
 
 
 

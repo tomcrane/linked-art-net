@@ -9,7 +9,7 @@ namespace PmcTransformer
 
         public override string ToString()
         {
-            return $"{Identifier} ({Label})";
+            return $"{Identifier} ({Label}) [{Score}]";
         }
     }
 

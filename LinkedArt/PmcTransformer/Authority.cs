@@ -97,11 +97,11 @@ namespace PmcTransformer
                 laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://vocab.getty.edu/aat/" + Aat));
             }
 
-            if (Lux.HasText())
-            {
-                laObj.Equivalent ??= [];
-                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(Lux));
-            }
+            //if (Lux.HasText())
+            //{
+            //    laObj.Equivalent ??= [];
+            //    laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(Lux));
+            //}
 
             if (Loc.HasText())
             {

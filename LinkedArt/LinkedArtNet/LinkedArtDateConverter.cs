@@ -71,8 +71,9 @@ public class LinkedArtDateConverter : JsonConverter<LinkedArtDate>
 
     public static DateTimeOffset ParseIso8601(string iso8601String)
     {
+        var dateFix = iso8601String.Replace("T24:00:00", "T23:59:59");
         return DateTimeOffset.ParseExact(
-            iso8601String,
+            dateFix,
             parseFormats,
             CultureInfo.InvariantCulture,
             DateTimeStyles.None);

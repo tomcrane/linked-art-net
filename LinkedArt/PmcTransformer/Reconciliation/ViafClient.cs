@@ -50,7 +50,9 @@ namespace PmcTransformer.Reconciliation
 
         public static List<Authority> SearchBestMatch(string prefix, string term)
         {
-            var sanitised = HttpUtility.UrlEncode(term.Replace("[", "(").Replace("]", ")"));
+            var sanitised = HttpUtility.UrlEncode(term
+                .Replace("[", "(").Replace("]", ")")
+                .Replace("\"", "'"));
             string uri = $"https://viaf.org/viaf/search?query={prefix}%22{sanitised}%22&recordSchema=BriefVIAF";
             var req = new HttpRequestMessage(HttpMethod.Get, uri);
             var resp = httpClient.Send(req);

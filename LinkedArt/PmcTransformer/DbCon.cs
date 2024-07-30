@@ -127,10 +127,20 @@ namespace PmcTransformer
                 selectedAuthority = conn.QuerySingleOrDefault<Authority>(
                     $"select * from authorities where identifier=@localIdentifier", new { localIdentifier });
             }
-            else if(authorities.Count == 1)
+            else
             {
+                bool updateLabel = true;
+                if (authorities.Count > 1)
+                {
+                    Console.WriteLine("Multiple matching authorities we could merge with");
+                    var closestLabel = FuzzySharp.Process.ExtractOne(sourceString.RemoveThingsInParens(), authorities.Select(a => a.Label.RemoveThingsInParens()));
+                    Console.WriteLine($"Picking {closestLabel.Value} [Score: {closestLabel.Score}]");
+                    authorities = [authorities.First(a => a.Label == closestLabel.Value)];
+                    updateLabel = false;
+                }
+
                 selectedAuthority = authorities[0];
-                if(candidateAuthority.Label.HasText())
+                if(candidateAuthority.Label.HasText() && updateLabel)
                 {
                     selectedAuthority.Label = candidateAuthority.Label;
                 }
@@ -178,10 +188,7 @@ namespace PmcTransformer
                         selectedAuthority.Pmc,
                         selectedAuthority.Identifier,
                     });
-            }
-            else
-            {
-                throw new Exception("TODO MERGE");
+
             }
             // selectedAuthority is not null here
             conn.Execute("update source_string_map set authority=@Identifier " +    

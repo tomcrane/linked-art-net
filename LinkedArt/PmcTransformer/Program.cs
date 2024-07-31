@@ -28,12 +28,16 @@ namespace PmcTransformer
             }
             else if (args[0] == "archive")
             {
+                Locations.SerialisePlaces();
+
+
                 var settings = GetSettings();
                 XmlReader reader1 = XmlReader.Create(archive + "\\2024-03-11_archive-descriptions.xml", settings);
                 XDocument xArchive = XDocument.Load(reader1);
                 XmlReader reader2 = XmlReader.Create(archive + "\\2024-03-11_archive-authorities.xml", settings);
                 XDocument xAuthorities = XDocument.Load(reader2);
                 Archive.Processor.ProcessArchives(xArchive, xAuthorities);
+
             }
             else if (args[0] == "photo-archive")
             {

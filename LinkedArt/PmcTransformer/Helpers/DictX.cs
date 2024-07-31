@@ -29,6 +29,21 @@ namespace PmcTransformer
         }
 
 
+        public static void AddToListForKey(this Dictionary<string, ParsedAgent> dict, 
+            string? key, string value, ParsedAgent? parsedAgent = null)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return;
+            }
+            if (!dict.ContainsKey(key))
+            {
+                dict[key] = parsedAgent ?? new ParsedAgent(key);
+            }
+            dict[key].Identifiers.Add(value);
+        }
+
+
         public static void Display(this Dictionary<int, int> dict, string message)
         {
             Console.WriteLine(message);

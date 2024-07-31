@@ -109,7 +109,7 @@ namespace PmcTransformer.Helpers
             PMCLibrarySet = new LinkedArtObject(Types.Set)
                 .WithContext()
                 .WithId(Identity.SetBase + pmcLibrarySlug)
-                .WithLabel(Identity.SetBase + pmcLibrarySlug)
+                .WithLabel(PMCLibraryName)
                 .WithClassifiedAs(Getty.Collection);
             PMCLibrarySet.IdentifiedBy = [
                 new Name(PMCLibraryName).AsPrimaryName()
@@ -122,7 +122,7 @@ namespace PmcTransformer.Helpers
 
             PMCLibrarySetRef = new LinkedArtObject(Types.Set)
                 .WithId(Identity.SetBase + pmcLibrarySlug)
-                .WithLabel(Identity.SetBase + pmcLibrarySlug);
+                .WithLabel(PMCLibraryName);
 
 
             // Archive
@@ -138,7 +138,7 @@ namespace PmcTransformer.Helpers
             PMCArchiveSet = new LinkedArtObject(Types.Set)
                 .WithContext()
                 .WithId(Identity.SetBase + pmcArchiveSlug)
-                .WithLabel(Identity.SetBase + pmcArchiveSlug)
+                .WithLabel(PMCArchiveName)
                 .WithClassifiedAs(Getty.Collection);
             PMCArchiveSet.IdentifiedBy = [
                 new Name(PMCArchiveName).AsPrimaryName()
@@ -151,7 +151,7 @@ namespace PmcTransformer.Helpers
 
             PMCArchiveSetRef = new LinkedArtObject(Types.Set)
                 .WithId(Identity.SetBase + pmcArchiveSlug)
-                .WithLabel(Identity.SetBase + pmcArchiveSlug);
+                .WithLabel(PMCArchiveName);
 
 
 

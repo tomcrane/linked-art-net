@@ -2,11 +2,10 @@
 using LinkedArtNet.Vocabulary;
 using LinkedArtNet;
 using PmcTransformer.Helpers;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Text.Json;
 using Group = LinkedArtNet.Group;
+using System.Data;
 
 namespace PmcTransformer.Library
 {
@@ -23,11 +22,11 @@ namespace PmcTransformer.Library
             var allHMOs = new Dictionary<string, List<HumanMadeObject>>();
 
             // For reconciliation
-            var persAuthorFullDict = new Dictionary<string, List<string>>();
-            var corpAuthorDict = new Dictionary<string, List<string>>();
-            var publisherDict = new Dictionary<string, List<string>>();
-            var keywordDict = new Dictionary<string, List<string>>();
-            var placeDict = new Dictionary<string, List<string>>();
+            var persAuthorFullDict = new Dictionary<string, ParsedAgent>();
+            var corpAuthorDict     = new Dictionary<string, ParsedAgent>();
+            var publisherDict      = new Dictionary<string, ParsedAgent>(); ;
+            var keywordDict        = new Dictionary<string, List<string>>();
+            var placeDict          = new Dictionary<string, List<string>>();
 
             int nullMediumCounter = 0;
             var classCounter = new Dictionary<int, int>();
@@ -251,6 +250,89 @@ namespace PmcTransformer.Library
                 }
 
 
+
+
+
+
+                // =====================
+                // Entities to be reconciled - but may become assigned to different categories
+                // =====================
+
+                // Not all actors become linked Persons, because:
+
+                //  former owner, donor, types just to Provenance Statement
+                //  publisher starting "Printed for" should be a Publication Statement instead of a group
+                //  if printed for and sold by in publisher, then make it a provenance statement
+                //  persauthorfull / corpauthor with a role of Publisher is better than < publisher > as less extraneous text
+                //  addressee becomes a subject not an author
+                //  former owner, donor on HMO
+                //  binder and printer are Production on HMO
+
+                var publishersInOtherFields = new List<ParsedAgent>();
+                // %% need to pull out special handling
+
+                // Repeatable. Personal name of a creator/contributor to the Work, plus the role they played. See notes on People below.
+                // /created_by/part/carried_out_by/id (for person)
+                // /created_by/part/classified_as/id (for role)
+                var persAuthors = record.LibStrings("persauthorfull");
+                foreach (var authorString in persAuthors)
+                {
+                    // NOW LOOK AT ROLES
+                    var author = new ParsedAgent(authorString);
+                    var role = author.Role?.ToLowerInvariant();
+                    if (role == "former owner" || role == "donor")
+                    {
+                        foreach (var hmo in allHMOs[id])
+                        {
+                            hmo.ReferredToBy ??= [];
+                            hmo.ReferredToBy.Add(
+                                new LinguisticObject()
+                                    .WithClassifiedAs(Getty.ProvenanceActivity, Getty.BriefText)
+                                    .WithContent(authorString));
+                        }
+                    }
+                    else if (role == "addressee")
+                    {
+                        keywordDict.AddToListForKey(authorString.TrimOuterBrackets(), id);
+                    }
+                    else if(role == "publisher")
+                    {
+                        publishersInOtherFields.Add(author);
+                    }
+                    else
+                    {
+                        persAuthorFullDict.AddToListForKey(authorString, id, author);
+                    }
+                }
+
+                // corpauthor - Repeatable. Organization/Corporate name of a creator/contributor to the Work.
+                // No role provided, assume role=author.
+                // See notes on Groups below.
+                // /created_by/part/carried_out_by/id
+                var corpAuthors = record.LibStrings("corpauthor");
+                foreach (var authorString in corpAuthors)
+                {
+                    var author = new ParsedAgent(authorString);
+                    var role = author.Role?.ToLowerInvariant();
+                    if (role == "publisher")
+                    {
+                        publishersInOtherFields.Add(author);
+                    }
+                    else
+                    {
+                        corpAuthorDict.AddToListForKey(authorString, id, author);
+                    }
+                }
+
+                // See example output E2865, D8326
+                // /about/id
+                var keywords = record.LibStrings("keywords");
+                foreach (var keyword in keywords)
+                {
+                    keywordDict.AddToListForKey(keyword.TrimOuterBrackets(), id);
+                }
+
+
                 // place
                 bool hasPlace = hierarchicalPlaces.Count > 0;
                 // /used_for[classified_as=PUBLISHING]/took_place_at/id
@@ -272,14 +354,57 @@ namespace PmcTransformer.Library
                     }
                 }
 
-                bool hasPublisher = false;
+
                 // publisher
                 // /used_for[classified_as=PUBLISHING]/carried_out_by/id
-                var publishers = record.LibStrings("publisher");
-                foreach (var publisher in publishers)
+                bool hasPublisher = false;
+                if(publishersInOtherFields.Count > 0)
                 {
+                    // persauthorfull / corpauthor with a role of Publisher is better than <publisher> as less extraneous text
                     hasPublisher = true;
-                    publisherDict.AddToListForKey(publisher.TrimOuterBrackets(), id);
+                    foreach(var publisher in publishersInOtherFields)
+                    {
+                        publisherDict.AddToListForKey(publisher.Original, id, publisher);
+                    }
+                }
+                else
+                {
+                    var publishers = record.LibStrings("publisher");
+                    foreach (var publisher in publishers)
+                    {
+                        var pubLower = publisher.ToLowerInvariant();
+                        var pubTrimmed = publisher.TrimOuterBrackets();
+                        if (string.IsNullOrWhiteSpace(pubTrimmed))
+                        {
+                            continue;
+                        }
+                        if(pubLower.IndexOf("published") != -1 && pubLower.IndexOf("sold by") != -1)
+                        {
+                            work.ReferredToBy ??= [];
+                            work.ReferredToBy.Add(
+                                new LinguisticObject()
+                                    .WithClassifiedAs(Getty.PublicationStatement, Getty.BriefText)
+                                    .WithContent(pubTrimmed));
+
+                        }
+                        else if (pubLower.IndexOf("printed for") != -1 || pubLower.IndexOf("sold by") != -1)
+                        {
+                            foreach (var hmo in allHMOs[id])
+                            {
+                                hmo.ReferredToBy ??= [];
+                                hmo.ReferredToBy.Add(
+                                    new LinguisticObject()
+                                        .WithClassifiedAs(Getty.ProvenanceActivity, Getty.BriefText)
+                                        .WithContent(pubTrimmed));
+                            }
+                        }
+                        else
+                        {
+                            hasPublisher = true;
+                            publisherDict.AddToListForKey(publisher, id);
+                        }
+                    }
+
                 }
 
                 var year = record.LibStrings("year").SingleOrDefault();
@@ -323,35 +448,7 @@ namespace PmcTransformer.Library
                 Helpers.AddAccessStatement(record, work);
 
 
-                // =====================
-                // Entities to be reconciled
-                // =====================
 
-                // Repeatable. Personal name of a creator/contributor to the Work, plus the role they played. See notes on People below.
-                // /created_by/part/carried_out_by/id (for person)
-                // /created_by/part/classified_as/id (for role)
-                var persAuthors = record.LibStrings("persauthorfull");
-                foreach (var author in persAuthors)
-                {
-                    persAuthorFullDict.AddToListForKey(author.TrimOuterBrackets(), id);
-                }
-
-                // corpauthor - Repeatable. Organization/Corporate name of a creator/contributor to the Work. No role provided, assume role=author.
-                // See notes on Groups below.
-                // /created_by/part/carried_out_by/id
-                var corpAuthors = record.LibStrings("corpauthor");
-                foreach (var author in corpAuthors)
-                {
-                    corpAuthorDict.AddToListForKey(author.TrimOuterBrackets(), id);
-                }
-
-                // See example output E2865, D8326
-                // /about/id
-                var keywords = record.LibStrings("keywords");
-                foreach (var keyword in keywords)
-                {
-                    keywordDict.AddToListForKey(keyword.TrimOuterBrackets(), id);
-                }
             }
 
             // #######################################################################################
@@ -406,9 +503,16 @@ namespace PmcTransformer.Library
             }
 
 
+            GroupReconciler.ReconcileGroups(allWorks, corpAuthorDict, "corpauthor");
+            GroupReconciler.ReconcileGroups(allWorks, publisherDict, "publisher");
 
-            
-            GroupReconciler.ReconcileCorpAuthors(allWorks, corpAuthorDict);
+            // To be done later
+            // GroupReconciler.AssignCorpAuthors(allWorks, corpAuthorDict);
+
+            // publisher assignment to be rewritten from below.
+
+
+
 
 
 
@@ -417,8 +521,6 @@ namespace PmcTransformer.Library
             // We might have the same person but with different "roles"
             // Or the same person with and without dates (probe for this)
             // name, parts [dates] (role)
-            string rolePattern = @"^(.*)\((.*)\)$";
-            string datePattern = @"^(.*)\[(.*)\]$";
             const string noRole = "%%NO_ROLE%%";
             const string noDates = "%%NO_DATES%%";
 
@@ -428,60 +530,38 @@ namespace PmcTransformer.Library
             var peopleWithoutRoles = new List<string>();
             var peopleWithoutDates = new List<string>();
 
-            foreach (var person in persAuthorFullDict)
+            foreach (var pKey in persAuthorFullDict)
             {
-                string personDatePart;
-                string personPart;
-                string rolePart = noRole;
-                string datePart = noDates;
-                var roleMatch = Regex.Match(person.Key, rolePattern);
-                if (roleMatch.Success)
+                var person = pKey.Value;
+                if(person.Role == null)
                 {
-                    personDatePart = roleMatch.Groups[1].Value.Trim();
-                    rolePart = roleMatch.Groups[2].Value.Trim();
+                    peopleWithoutRoles.Add(pKey.Key);
                 }
-                else
+                if(person.DateString == null)
                 {
-                    peopleWithoutRoles.Add(person.Key);
-                    personDatePart = person.Key;
-                }
+                    peopleWithoutDates.Add(pKey.Key);
+                }                
 
-                var dateMatch = Regex.Match(personDatePart, datePattern);
-                if (dateMatch.Success)
-                {
-                    personPart = dateMatch.Groups[1].Value.Trim();
-                    datePart = dateMatch.Groups[2].Value.Trim();
-                    var tidyDate = TidyPersonDate(datePart);
-                    if (tidyDate != datePart)
-                    {
-                        Console.WriteLine($"Tidied \"{datePart}\" to \"{tidyDate}\" for {person.Key}");
-                        datePart = tidyDate;
-                    }
-                }
-                else
-                {
-                    peopleWithoutDates.Add(personDatePart);
-                    personPart = personDatePart;
-                }
-
-                var libraryPerson = libraryPeople.SingleOrDefault(p => p.Name == personPart);
+                var libraryPerson = libraryPeople.SingleOrDefault(p => p.Name == person.Name);
                 if (libraryPerson == null)
                 {
-                    libraryPerson = new LibraryPersonName() { Name = personPart };
+                    libraryPerson = new LibraryPersonName() { Name = person.Name };
                     libraryPeople.Add(libraryPerson);
                 }
 
-                if (!libraryPerson.DateBuckets.ContainsKey(datePart))
+                string datesKey = person.DateString ?? noDates;
+                if (!libraryPerson.DateBuckets.ContainsKey(datesKey))
                 {
-                    libraryPerson.DateBuckets[datePart] = [];
+                    libraryPerson.DateBuckets[datesKey] = [];
                 }
-                var booksByRole = libraryPerson.DateBuckets[datePart];
+                var booksByRole = libraryPerson.DateBuckets[datesKey];
 
-                if (!booksByRole.ContainsKey(rolePart))
+                string roleKey = person.Role ?? noRole;
+                if (!booksByRole.ContainsKey(roleKey))
                 {
-                    booksByRole[rolePart] = [];
+                    booksByRole[roleKey] = [];
                 }
-                booksByRole[rolePart].AddRange(person.Value);
+                booksByRole[roleKey].AddRange(pKey.Value.Identifiers);
             }
 
             Console.WriteLine("peopleWithoutRoles.Count: " + peopleWithoutRoles.Count);
@@ -537,14 +617,31 @@ namespace PmcTransformer.Library
 
                     foreach (var id in roleBooks.Value)
                     {
-                        var book = allWorks[id];
-                        book.CreatedBy ??= new Activity(Types.Creation);
-                        book.CreatedBy.Part ??= [];
-                        book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
+                        if(roleBooks.Key == "binder" || roleBooks.Key == "printer")
                         {
-                            CarriedOutBy = [person],
-                            ClassifiedAs = activity.Part[0].ClassifiedAs
-                        });
+                            foreach (var hmo in allHMOs[id])
+                            {
+                                var book = allWorks[id];
+                                book.CreatedBy ??= new Activity(Types.Production);
+                                book.CreatedBy.Part ??= [];
+                                book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
+                                {
+                                    CarriedOutBy = [person],
+                                    ClassifiedAs = activity.Part[0].ClassifiedAs
+                                });
+                            }
+                        }
+                        else
+                        {
+                            var book = allWorks[id];
+                            book.CreatedBy ??= new Activity(Types.Creation);
+                            book.CreatedBy.Part ??= [];
+                            book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
+                            {
+                                CarriedOutBy = [person],
+                                ClassifiedAs = activity.Part[0].ClassifiedAs
+                            });
+                        }
                     }
                 }
             }
@@ -554,6 +651,20 @@ namespace PmcTransformer.Library
             {
                 Console.WriteLine($"{role.Key}: {role.Value}");
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             // Now we can create Place records and assert in book record.
             // Unlike people and groups I think we should reconcile these immediately - no local identity at all
@@ -587,7 +698,7 @@ namespace PmcTransformer.Library
 
                 // /used_for[classified_as=PUBLISHING]/carried_out_by/id
                 // This .UsedFor must exist, created in first pass
-                foreach (var id in kvp.Value)
+                foreach (var id in kvp.Value.Identifiers)
                 {
                     var book = allWorks[id];
                     book.UsedFor![0].CarriedOutBy = [group];
@@ -622,18 +733,6 @@ namespace PmcTransformer.Library
 
         }
 
-        private static string TidyPersonDate(string datePart)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (char c in datePart)
-            {
-                if (c == '-' || char.IsDigit(c))
-                {
-                    sb.Append(c);
-                }
-            }
-            return sb.ToString();
-        }
 
         private static void LogNameDateCounts(string noDates, List<LibraryPersonName> libraryPeople)
         {

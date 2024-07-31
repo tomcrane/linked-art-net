@@ -81,6 +81,7 @@ namespace PmcTransformer.Archive
                 LookForEquivalents(actor, textEquiv);
                 LookForEquivalents(actor, setEquiv);
 
+                Writer.WriteToDisk(actor);
 
             }
 

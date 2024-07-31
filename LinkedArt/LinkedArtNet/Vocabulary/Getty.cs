@@ -65,6 +65,7 @@ public class Getty
     public static LinkedArtObject PaginationStatement => AatType("Pagination Statement", "300435440");
     public static LinkedArtObject BibliographyStatement => AatType("Bibliography Statement", "300026497");
     public static LinkedArtObject EditionStatement => AatType("Edition Statement", "300435435");
+    public static LinkedArtObject PublicationStatement => AatType("Publication Statement", "300202362");
     public static LinkedArtObject GeneralNote => AatType("General Note", "300027200");
 
     // Identifiers

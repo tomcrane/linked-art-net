@@ -18,7 +18,9 @@ namespace PmcTransformer
         public static void WriteToDisk(LinkedArtObject laObj)
         {
             var json = JsonSerializer.Serialize(laObj, options);
-            var path = laObj.GetFilePath(BasePath);
+            var path = laObj.GetFilePath(BasePath) + ".json";  // temporary file ext for demo
+            var fi = new FileInfo(path);
+            Directory.CreateDirectory(fi.DirectoryName);
             File.WriteAllText(path, json);
         }
 

@@ -54,7 +54,7 @@ namespace PmcTransformer.Archive
                 archiveByRefNo[refNo] = laObj;
 
                 // All archival things are members of this set
-                laObj.MemberOf = [ PmcTransformer.Helpers.Locations.PMCArchiveSet ];
+                laObj.MemberOf = [ PmcTransformer.Helpers.Locations.PMCArchiveSetRef ];
                 (string sortRefNo, string? parentRefNo) = Helpers.GetRefNoVariants(refNo); 
                 if(parentRefNo != null)
                 {
@@ -126,6 +126,11 @@ namespace PmcTransformer.Archive
                 {
                     Console.WriteLine("SHOULD NOT HAVE relatedXXX: " + refNo);
                 }
+
+
+
+
+                Writer.WriteToDisk(laObj);
             }
 
             // Then /created_by/carried_out_by
@@ -135,7 +140,7 @@ namespace PmcTransformer.Archive
                 Console.WriteLine(kvp.Key + ": " + kvp.Value);
             }
 
-            Sample(archiveByRefNo, 1000, true);
+            // Sample(archiveByRefNo, 1000, true);
         }
 
         private static Actor? TryMatchCreator(string creatorName, Dictionary<string, Actor> creatorDict)

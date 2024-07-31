@@ -26,7 +26,7 @@ namespace PmcTransformer
         public static string GetFilePath(this LinkedArtObject laObj, string basePath)
         {
             var path = laObj.Id!.Replace(BaseUrl, "");
-            return Path.Combine(basePath, path);
+            return Path.Combine(basePath, path.Replace('/', Path.DirectorySeparatorChar));
         }
     }
 

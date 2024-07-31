@@ -12,30 +12,28 @@ namespace PmcTransformer.Library
         /// The list values in corpAuthorDict are keys in allWorks
         /// </summary>
         /// <param name="allWorks">Works by identifier</param>
-        /// <param name="corpAuthorDict">The original strings from records, to identifier</param>
-        public static void ReconcileCorpAuthors(Dictionary<string, LinguisticObject> allWorks, Dictionary<string, List<string>> corpAuthorDict)
+        /// <param name="agents">The original strings from records, to identifier</param>
+        public static void ReconcileGroups(
+            Dictionary<string, LinguisticObject> allWorks, 
+            Dictionary<string, ParsedAgent> agents,
+            string dataSource)
         {
-            // Create Groups for corpauthor and assert in book record.
-            // TODO - this needs to be consistent between runs so once we are sure about our corporation,
-            // mint a permanent id for it and store in DB
-            int corpIdMinter = 1;
             var conn = DbCon.Get();
 
             int matches = 0;
             int counter = 0;
 
-            const string corpAuthorDataSource = "corpauthor";
             // reconciliation pass
-            foreach (var corpAuthor in corpAuthorDict)
+            foreach (var agent in agents)
             {
-                var corpAuthorString = corpAuthor.Key.NormaliseForGroup();
+                var agentString = agent.Key.NormaliseForGroup();
                 Console.WriteLine();
-                Console.WriteLine("### " + corpAuthorString);
-                string? reduced = corpAuthorString.ReduceGroup();
-                if (reduced == corpAuthorString) reduced = null;
+                Console.WriteLine("### " + agentString);
+                string? reduced = agentString.ReduceGroup();
+                if (reduced == agentString) reduced = null;
 
                 counter++;
-                var authorityIdentifier = conn.GetAuthorityIdentifier(corpAuthorDataSource, corpAuthorString, true);
+                var authorityIdentifier = conn.GetAuthorityIdentifier(dataSource, agentString, true);
                 //if(authorityIdentifier!.Authority.HasText())
                 //{
                 //    Console.WriteLine("Already authorised: " + corpAuthorString);
@@ -43,15 +41,15 @@ namespace PmcTransformer.Library
                 //}
                 if (authorityIdentifier!.Processed != null) // can have specific dates later
                 {
-                    Console.WriteLine("Already attempted: " + corpAuthorString);
+                    Console.WriteLine("Already attempted: " + agentString);
                     continue;
                 }
 
-                var knownGroup = KnownAuthorities.GetGroup(corpAuthorString);
+                var knownGroup = KnownAuthorities.GetGroup(agentString);
                 if(knownGroup != null)
                 {
-                    Console.WriteLine($"Resolved '{corpAuthorString}' from known Authorities");
-                    conn.UpsertAuthority(corpAuthorDataSource, corpAuthorString, "Group", knownGroup);
+                    Console.WriteLine($"Resolved '{agentString}' from known Authorities");
+                    conn.UpsertAuthority(dataSource, agentString, "Group", knownGroup);
                     conn.UpdateTimestamp(authorityIdentifier);
                     continue;
                 }
@@ -61,8 +59,8 @@ namespace PmcTransformer.Library
                 // need to find out what this thing is...
                 // We can ask LUX for a GROUP that CREATED the work(s)
                 var allActors = new List<Actor>();
-                Console.WriteLine($"{corpAuthor.Value.Count} works(s) for {corpAuthorString}");
-                var workIds = corpAuthor.Value;
+                var workIds = agent.Value.Identifiers;
+                Console.WriteLine($"{workIds.Count} works(s) for {agentString}");
                 if(workIds.Count > 50)
                 {
                     var shuffled = workIds.Select(w => w).ToList();
@@ -72,8 +70,8 @@ namespace PmcTransformer.Library
                 foreach (var workId in workIds)
                 {
                     var work = allWorks[workId];
-                    Console.WriteLine($"LUX: actors like '{corpAuthorString}' who created work '{work.Label}'");
-                    var actors = LuxClient.ActorsWhoCreatedWorks(corpAuthorString, work.Label!);
+                    Console.WriteLine($"LUX: actors like '{agentString}' who created work '{work.Label}'");
+                    var actors = LuxClient.ActorsWhoCreatedWorks(agentString, work.Label!);
                     Console.WriteLine($"{actors.Count} found");
                     allActors.AddRange(actors);
                 }
@@ -84,7 +82,7 @@ namespace PmcTransformer.Library
                 int luxCounter = 1;
                 foreach(var actor in distinctActors)
                 {
-                    var authority = actor.AuthorityFromEquivalents(corpAuthorString);
+                    var authority = actor.AuthorityFromEquivalents(agentString);
                     // This is misleading as it only really makes sense when there are lots of works for the same string
                     // It is NOT a stting distance score
                     authority.Score = Convert.ToInt32(counts[authority.Lux!] / (decimal)workIds.Count * 100);
@@ -95,7 +93,7 @@ namespace PmcTransformer.Library
                 // try a simple match first
                 const int requiredPercentageMatch = 94; // This is a percentage of chars in the word
                 var ulansLev = UlanClient
-                    .GetIdentifiersAndLabelsLevenshtein(corpAuthorString, "Group", 5)
+                    .GetIdentifiersAndLabelsLevenshtein(agentString, "Group", 5)
                     .Where(x => x.Score >= requiredPercentageMatch) 
                     .ToList();  
                 if(ulansLev.Count == 0 && reduced != null)
@@ -118,23 +116,23 @@ namespace PmcTransformer.Library
                 }
 
 
-                var viafAuthorities = ViafClient.SearchBestMatch("local.corporateNames all ", corpAuthorString);
+                var viafAuthorities = ViafClient.SearchBestMatch("local.corporateNames all ", agentString);
                 int viafCounter = 1;
                 foreach (var viafAuthority in viafAuthorities)
                 {
                     candidateAuthorities[$"viaf{viafCounter++}"] = viafAuthority;
                 }
 
-                var locResults = LocClient.SuggestName(corpAuthorString);
+                var locResults = LocClient.SuggestName(agentString);
                 var firstLoc = locResults.FirstOrDefault();
                 if (firstLoc == null && reduced != null)
                 {
                     locResults = LocClient.SuggestName(reduced);
                     firstLoc = locResults.FirstOrDefault();
                 }
-                if (firstLoc == null && corpAuthorString.IndexOf(" and ") > 0)
+                if (firstLoc == null && agentString.IndexOf(" and ") > 0)
                 {
-                    locResults = LocClient.SuggestName(corpAuthorString.Replace(" and ", " & "));
+                    locResults = LocClient.SuggestName(agentString.Replace(" and ", " & "));
                     firstLoc = locResults.FirstOrDefault();
                 }
                 if (firstLoc != null)
@@ -146,7 +144,7 @@ namespace PmcTransformer.Library
                 // Now we have multiple authorities. Lets see if they agree with each other.
                 if(candidateAuthorities.Keys.Count > 0)
                 {
-                    Console.WriteLine($"----- Group: {corpAuthorString} ---------");
+                    Console.WriteLine($"----- Group: {agentString} ---------");
                     Console.Write("{0,-7}", "key");
                     Console.Write("{0,-4}", "sc");
                     Console.Write("{0,-12}", "Ulan");
@@ -164,12 +162,13 @@ namespace PmcTransformer.Library
                         Console.Write("{0,-20}", kvp.Value.Viaf);
                         Console.WriteLine(kvp.Value.Lux);
                     }
-                    Console.WriteLine($"----- END Group: {corpAuthorString} ---------");
+                    Console.WriteLine($"----- END Group: {agentString} ---------");
                 }
 
-                var bestMatch = DecideBestCandidate(corpAuthor.Value, corpAuthorString, candidateAuthorities);
+                var bestMatch = DecideBestCandidate(agent.Value.Identifiers, agentString, candidateAuthorities);
                 if(bestMatch != null)
                 {
+                    matches++;
                     Console.WriteLine($"----- MATCH DECIDED ---------");
                     Console.Write("{0,-7}", "");
                     Console.Write("{0,-4}", bestMatch.Score);
@@ -178,7 +177,7 @@ namespace PmcTransformer.Library
                     Console.Write("{0,-10}", bestMatch.Wikidata);
                     Console.Write("{0,-20}", bestMatch.Viaf);
                     Console.WriteLine(bestMatch.Lux);
-                    conn.UpsertAuthority(corpAuthorDataSource, corpAuthorString, "Group", bestMatch);
+                    conn.UpsertAuthority(dataSource, agentString, "Group", bestMatch);
                 }
 
                 conn.UpdateTimestamp(authorityIdentifier);
@@ -189,13 +188,24 @@ namespace PmcTransformer.Library
             // after only groups: 499 :(
             Console.WriteLine($"Matched {matches} of {counter}");
 
-            throw new NotImplementedException("later");
             // assignment pass
+
+        }
+
+
+        public static void AssignCorpAuthors(Dictionary<string, LinguisticObject> allWorks, Dictionary<string, ParsedAgent> corpAuthorDict)
+        {
+            // Create Groups for corpauthor and assert in book record.
+            // TODO - this needs to be consistent between runs so once we are sure about our corporation,
+            // mint a permanent id for it and store in DB
+            int corpIdMinter = 1;
+            var conn = DbCon.Get();
+
             foreach (var corpAuthor in corpAuthorDict)
             {
                 var corpAuthorString = corpAuthor.Key.NormaliseForGroup();
                 Group? groupRef = null;
-                if(corpAuthorString.StartsWith(Locations.PhotoArchiveName))
+                if (corpAuthorString.StartsWith(Locations.PhotoArchiveName))
                 {
                     groupRef = Locations.PhotoArchiveGroupRef;
                 }
@@ -207,7 +217,7 @@ namespace PmcTransformer.Library
                         var authority = conn.QueryFirstOrDefault<Authority>(
                             "select * from authorities where identifier=@Identifier",
                             new { Identifier = authorityIdentifier.Authority });
-                        if(authority != null)
+                        if (authority != null)
                         {
                             groupRef = authority.GetReference() as Group;
                         }
@@ -222,7 +232,7 @@ namespace PmcTransformer.Library
                     }
                 }
 
-                foreach (var id in corpAuthor.Value)
+                foreach (var id in corpAuthor.Value.Identifiers)
                 {
                     var work = allWorks[id];
                     work.CreatedBy ??= new Activity(Types.Creation);
@@ -234,6 +244,8 @@ namespace PmcTransformer.Library
                 }
             }
         }
+
+
 
         private static Authority? DecideBestCandidate(List<string> workIds, string term, Dictionary<string, Authority> candidateAuthorities)
         {

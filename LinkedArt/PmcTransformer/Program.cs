@@ -43,6 +43,10 @@ namespace PmcTransformer
             {
 
             }
+            else if (args[0] == "leeds")
+            {
+                Leeds.Processor.ProcessExamples();
+            }
             else
             {
                 Console.WriteLine("Don't know what to process.");

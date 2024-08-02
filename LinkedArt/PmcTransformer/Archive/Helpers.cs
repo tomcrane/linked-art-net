@@ -162,9 +162,8 @@ namespace PmcTransformer.Archive
             return (sortRefNo, parentRefNo);
         }
 
-        public static void ProcessDate(XElement record, LinkedArtObject laObj)
+        public static void ProcessDate(string? dateField, LinkedArtObject laObj)
         {
-            var dateField = record.ArcStrings("Date").SingleOrDefault();
             // 1050 records have no Date
             if (dateField != null)
             {
@@ -189,6 +188,12 @@ namespace PmcTransformer.Archive
         public static void SimpleStatement(XElement record, LinkedArtObject laObj, string field, LinkedArtObject classifiedAs)
         {
             var statement = record.ArcStrings(field).SingleOrDefault();
+            SimpleStatement(statement, laObj, classifiedAs);
+        }
+
+
+        public static void SimpleStatement(string? statement, LinkedArtObject laObj, LinkedArtObject classifiedAs)
+        {
             if (statement != null)
             {
                 laObj.ReferredToBy ??= [];
@@ -198,7 +203,6 @@ namespace PmcTransformer.Archive
                         .WithContent(statement)
                 );
             }
-
         }
 
         public static void ProcessDescription(XElement record, LinkedArtObject laObj)

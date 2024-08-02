@@ -80,7 +80,8 @@ namespace PmcTransformer.Archive
 
                 Helpers.SetClassifiedAs(level, laSet, laItem);
                 Helpers.ProcessAltRefNo(record, laObj);
-                Helpers.ProcessDate(record, laObj);
+                var dateField = record.ArcStrings("Date").SingleOrDefault();
+                Helpers.ProcessDate(dateField, laObj);
 
                 foreach (var creatorName in record.ArcStrings("CreatorName"))
                 {

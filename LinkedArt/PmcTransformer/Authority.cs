@@ -57,6 +57,8 @@ namespace PmcTransformer
         [JsonIgnore]
         public int Score { get; set; }
 
+        public bool Unreconciled { get; set; }
+
         public LinkedArtObject? GetReference()
         {
             LinkedArtObject? laRef = null;

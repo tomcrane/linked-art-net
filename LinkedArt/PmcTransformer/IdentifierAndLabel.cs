@@ -20,5 +20,6 @@ namespace PmcTransformer
         public required string String { get; set; }
         public string? Authority { get; set; }
         public DateTime? Processed { get; set; }
+        public string? UnreconciledAuthority { get; set; }
     }
 }

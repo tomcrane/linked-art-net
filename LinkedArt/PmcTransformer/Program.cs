@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
 using PmcTransformer.Reconciliation;
-using PmcTransformer.Library;
 using Microsoft.Extensions.Configuration;
 
 namespace PmcTransformer
@@ -24,8 +23,7 @@ namespace PmcTransformer
             builder.Services.AddHttpClient<ViafClient>(HttpDefaults);
             builder.Services.AddHttpClient<WikidataClient>(HttpDefaults);
             builder.Services.AddSingleton<AuthorityService>();
-            builder.Services.AddSingleton<GroupReconciler>();
-            builder.Services.AddSingleton<PersonReconciler>();
+            builder.Services.AddSingleton<Reconciler>();
             builder.Services.AddSingleton<Library.Processor>();
             using IHost host = builder.Build();
 

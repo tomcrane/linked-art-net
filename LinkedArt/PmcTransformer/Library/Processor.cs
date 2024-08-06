@@ -12,20 +12,17 @@ namespace PmcTransformer.Library
 {
     public class Processor
     {
-        private readonly GroupReconciler groupReconciler;
-        private readonly PersonReconciler personReconciler;
+        private readonly Reconciler reconciler;
         private static readonly char[] separator = [',', ' '];
 
         public Processor(
-            GroupReconciler groupReconciler,
-            PersonReconciler personReconciler
+            Reconciler reconciler
         )
         {
-            this.groupReconciler = groupReconciler;
-            this.personReconciler = personReconciler;
+            this.reconciler = reconciler;
         }
 
-        public async Task ProcessLibrary(XDocument xLibrary)
+        public async Task ProcessLibrary(XDocument xLibrary, bool assignAndWrite = false)
         {
             var timespanParser = new TimespanParser();
 
@@ -35,10 +32,10 @@ namespace PmcTransformer.Library
 
             // For reconciliation
             var persAuthorFullDict = new Dictionary<string, ParsedAgent>();
-            var corpAuthorDict     = new Dictionary<string, ParsedAgent>();
-            var publisherDict      = new Dictionary<string, ParsedAgent>(); ;
-            var keywordDict        = new Dictionary<string, List<string>>();
-            var placeDict          = new Dictionary<string, List<string>>();
+            var corpAuthorDict = new Dictionary<string, ParsedAgent>();
+            var publisherDict = new Dictionary<string, ParsedAgent>(); ;
+            var keywordDict = new Dictionary<string, List<string>>();
+            var placeDict = new Dictionary<string, List<string>>();
 
             int nullMediumCounter = 0;
             var classCounter = new Dictionary<int, int>();
@@ -307,7 +304,7 @@ namespace PmcTransformer.Library
                     {
                         keywordDict.AddToListForKey(authorString.TrimOuterBrackets(), id);
                     }
-                    else if(role == "publisher")
+                    else if (role == "publisher")
                     {
                         publishersInOtherFields.Add(author);
                     }
@@ -370,11 +367,11 @@ namespace PmcTransformer.Library
                 // publisher
                 // /used_for[classified_as=PUBLISHING]/carried_out_by/id
                 bool hasPublisher = false;
-                if(publishersInOtherFields.Count > 0)
+                if (publishersInOtherFields.Count > 0)
                 {
                     // persauthorfull / corpauthor with a role of Publisher is better than <publisher> as less extraneous text
                     hasPublisher = true;
-                    foreach(var publisher in publishersInOtherFields)
+                    foreach (var publisher in publishersInOtherFields)
                     {
                         publisherDict.AddToListForKey(publisher.Original, id, publisher);
                     }
@@ -390,7 +387,7 @@ namespace PmcTransformer.Library
                         {
                             continue;
                         }
-                        if(
+                        if (
                             (pubLower.IndexOf("published") != -1 && pubLower.IndexOf("sold by") != -1)
                             ||
                             pubLower.StartsWith("printed by")
@@ -519,20 +516,173 @@ namespace PmcTransformer.Library
             }
 
 
-            await groupReconciler.ReconcileGroups(allWorks, corpAuthorDict, "corpauthor");
-            await groupReconciler.ReconcileGroups(allWorks, publisherDict, "publisher");
+            // agents
+            await reconciler.Reconcile(allWorks, corpAuthorDict, "corpauthor", "Group", true);
+            await reconciler.Reconcile(allWorks, publisherDict, "publisher", "Group", true);
+            await reconciler.Reconcile(allWorks, persAuthorFullDict, "persauthorfull", "Person", true);
 
-            await personReconciler.ReconcilePeople(allWorks, persAuthorFullDict, "persauthorfull");
-            // To be done later
-            // GroupReconciler.AssignCorpAuthors(allWorks, corpAuthorDict);
-
-            // publisher assignment to be rewritten from below.
-
-
+            // other authorities
+            await reconciler.Reconcile(allWorks, keywordDict, "keywords", "Concept", false);
+            await reconciler.Reconcile(allWorks, placeDict, "place", "Place", false);
 
 
+            // To be done later and rewritten!
+
+            if (assignAndWrite)
+            {
+                AssignCorpAuthors(allWorks, corpAuthorDict);
+                AssignPersAuthors(allWorks, allHMOs, persAuthorFullDict);
+                AssignPlaces(allWorks, placeDict);
+                AssignPublishers(allWorks, publisherDict);
+                AssignSubjects(allWorks, keywordDict);
+
+                foreach (var work in allWorks)
+                {
+                    Writer.WriteToDisk(work.Value);
+                    foreach (var hmo in allHMOs[work.Key])
+                    {
+                        Writer.WriteToDisk(hmo);
+                    }
+                }
+            }
+        }
+
+        private static void AssignSubjects(Dictionary<string, LinguisticObject> allWorks, Dictionary<string, List<string>> keywordDict)
+        {
+            var conn = DbCon.Get();
+
+            foreach (var keyword in keywordDict)
+            {
+                var keywordString = keyword.Key;
+                LinkedArtObject? subjectRef = null;
+                LinkedArtObject? full = null;
+
+                var authority = conn.GetAuthorityFromSourceString("keywords", keywordString, true);
+                if (authority == null)
+                {
+                    throw new InvalidOperationException("Must have an Authority at this point");
+                }
+                if (authority.Unreconciled)
+                {
+                    authority.Type = "Concept";
+                    authority.Label = keywordString;
+                }
+                subjectRef = authority.GetReference();
+                full = authority.GetFull();
+
+                if (subjectRef == null || full == null)
+                {
+                    throw new InvalidOperationException("Must have a LinkedArtObject at this point");
+                }
+                Writer.WriteToDisk(full);
 
 
+                // /used_for[classified_as=PUBLISHING]/carried_out_by/id
+                // This .UsedFor must exist, created in first pass
+                foreach (var id in keyword.Value)
+                {
+                    var book = allWorks[id];
+                    book.About ??= [];
+                    book.About.Add(subjectRef);
+                }
+            }
+
+        }
+
+        private static void AssignPublishers(Dictionary<string, LinguisticObject> allWorks, Dictionary<string, ParsedAgent> publisherDict)
+        {
+            const string yalePmc = "Published for The Paul Mellon Centre for Studies in British Art by Yale University Press";
+
+            var conn = DbCon.Get();
+            var yaleUP = conn.GetAuthorityFromSourceString("publisher", "Yale University Press", false);
+            var yaleUPRef = yaleUP!.GetReference() as Group;
+
+            foreach (var publisher in publisherDict)
+            {
+                var publisherString = publisher.Value.NormalisedOriginal;
+                Group? groupRef = null;
+                Group? full = null;
+                if (publisherString.StartsWith(yalePmc))
+                {
+                    groupRef = yaleUPRef;
+                }
+                else
+                {
+                    var authority = conn.GetAuthorityFromSourceString("publisher", publisherString, true);
+                    if (authority == null)
+                    {
+                        throw new InvalidOperationException("Must have an Authority at this point");
+                    }
+                    if (authority.Unreconciled)
+                    {
+                        authority.Type = "Group";
+                        authority.Label = publisherString;
+                    }
+                    groupRef = authority.GetReference() as Group;
+                    full = authority.GetFull() as Group;
+
+                    if (groupRef == null || full == null)
+                    {
+                        throw new InvalidOperationException("Must have a Group at this point");
+                    }
+                    Writer.WriteToDisk(full);
+                }
+
+                // /used_for[classified_as=PUBLISHING]/carried_out_by/id
+                // This .UsedFor must exist, created in first pass
+                foreach (var id in publisher.Value.Identifiers)
+                {
+                    var book = allWorks[id];
+                    book.UsedFor![0].CarriedOutBy = [groupRef];
+                }
+            }
+        }
+
+        private static void AssignPlaces(Dictionary<string, LinguisticObject> allWorks, Dictionary<string, List<string>> placeDict)
+        {
+            var conn = DbCon.Get();
+
+            foreach (var place in placeDict)
+            {
+                var placeString = place.Key;
+                Place? placeRef = null;
+                Place? full = null;
+
+                var authority = conn.GetAuthorityFromSourceString("place", placeString, true);
+                if (authority == null)
+                {
+                    throw new InvalidOperationException("Must have an Authority at this point");
+                }
+                if (authority.Unreconciled)
+                {
+                    authority.Type = "Place";
+                    authority.Label = placeString;
+                }
+                placeRef = authority.GetReference() as Place;
+                full = authority.GetFull() as Place;
+
+                if (placeRef == null || full == null)
+                {
+                    throw new InvalidOperationException("Must have a Place at this point");
+                }
+                Writer.WriteToDisk(full);
+
+
+                // /used_for[classified_as=PUBLISHING]/took_place_at/id
+                // This .UsedFor must exist, created in first pass
+                foreach (var id in place.Value)
+                {
+                    var book = allWorks[id];
+                    book.UsedFor![0].TookPlaceAt = [placeRef];
+                }
+            }
+        }
+
+        private static void AssignPersAuthors(
+            Dictionary<string, LinguisticObject> allWorks, 
+            Dictionary<string, List<HumanMadeObject>> allHMOs, 
+            Dictionary<string, ParsedAgent> persAuthorFullDict)
+        {
             // Now split people into roles and dates and do similar as above.
             // And work out how to reconcile with Getty and LoC.
             // We might have the same person but with different "roles"
@@ -550,14 +700,14 @@ namespace PmcTransformer.Library
             foreach (var pKey in persAuthorFullDict)
             {
                 var person = pKey.Value;
-                if(person.Role == null)
+                if (person.Role == null)
                 {
                     peopleWithoutRoles.Add(pKey.Key);
                 }
-                if(person.DateString == null)
+                if (person.DateString == null)
                 {
                     peopleWithoutDates.Add(pKey.Key);
-                }                
+                }
 
                 var libraryPerson = libraryPeople.SingleOrDefault(p => p.Name == person.Name);
                 if (libraryPerson == null)
@@ -634,7 +784,7 @@ namespace PmcTransformer.Library
 
                     foreach (var id in roleBooks.Value)
                     {
-                        if(roleBooks.Key == "binder" || roleBooks.Key == "printer")
+                        if (roleBooks.Key == "binder" || roleBooks.Key == "printer")
                         {
                             foreach (var hmo in allHMOs[id])
                             {
@@ -663,91 +813,119 @@ namespace PmcTransformer.Library
                 }
             }
 
-            Console.WriteLine("ROLES===============");
-            foreach (var role in MappedRole.Roles)
+
+
+
+
+            var conn = DbCon.Get();
+
+            foreach (var person in persAuthorFullDict)
             {
-                Console.WriteLine($"{role.Key}: {role.Value}");
-            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            // Now we can create Place records and assert in book record.
-            // Unlike people and groups I think we should reconcile these immediately - no local identity at all
-            // ... as we don't expect non-reconcilable or PMC-only places (or do we?)
-            // But still key recorded place in DB.
-            int placeIdMinter = 1;
-            foreach (var kvp in placeDict)
-            {
-                var place = new Place()
-                    .WithId(Identity.PlaceBase + "temp-" + placeIdMinter++)
-                    .WithLabel(kvp.Key);
-
-                // /used_for[classified_as=PUBLISHING]/took_place_at/id
-                // This .UsedFor must exist, created in first pass
-                foreach (var id in kvp.Value)
+                var personString = person.Value.NormalisedOriginal;
+                Person? personRef = null;
+                Person? full = null;
+ 
+                var authority = conn.GetAuthorityFromSourceString("persauthorfull", personString, true);
+                if (authority == null)
                 {
-                    var book = allWorks[id];
-                    book.UsedFor![0].TookPlaceAt = [place];
+                    throw new InvalidOperationException("Must have an Authority at this point");
+                }
+                if (authority.Unreconciled)
+                {
+                    authority.Type = "Person";
+                    authority.Label = personString;
+                }
+                personRef = authority.GetReference() as Person;
+                full = authority.GetFull() as Person;
+
+                if (personRef == null || full == null)
+                {
+                    throw new InvalidOperationException("Must have a Person at this point");
+                }
+                Writer.WriteToDisk(full);
+
+                var role = person.Value.Role ?? "author";
+                var activity = MappedRole.GetActivityWithPart(role);
+
+                foreach (var id in person.Value.Identifiers)
+                {
+                    if (person.Value.Role == "binder" || person.Value.Role == "printer")
+                    {
+                        foreach (var hmo in allHMOs[id])
+                        {
+                            var book = allWorks[id];
+                            book.CreatedBy ??= new Activity(Types.Production);
+                            book.CreatedBy.Part ??= [];
+                            book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
+                            {
+                                CarriedOutBy = [personRef],
+                                ClassifiedAs = activity.Part[0].ClassifiedAs
+                            });
+                        }
+                    }
+                    else
+                    {
+                        var book = allWorks[id];
+                        book.CreatedBy ??= new Activity(Types.Creation);
+                        book.CreatedBy.Part ??= [];
+                        book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
+                        {
+                            CarriedOutBy = [personRef],
+                            ClassifiedAs = activity.Part[0].ClassifiedAs
+                        });
+                    }
                 }
             }
+        }
 
+        public static void AssignCorpAuthors(
+            Dictionary<string, LinguisticObject> allWorks, 
+            Dictionary<string, ParsedAgent> corpAuthorDict)
+        {
+            var conn = DbCon.Get();
 
-            // .. temporarily same for publishers...
-            int publisherIdMinter = 1;
-            const string yalePmc = "Published for The Paul Mellon Centre for Studies in British Art by Yale University Press";
-            foreach (var kvp in publisherDict)
+            foreach (var corpAuthor in corpAuthorDict)
             {
-                var group = new Group()
-                    .WithId(Identity.GroupBase + "temp-" + publisherIdMinter++)
-                    .WithLabel(kvp.Key);
-
-                // /used_for[classified_as=PUBLISHING]/carried_out_by/id
-                // This .UsedFor must exist, created in first pass
-                foreach (var id in kvp.Value.Identifiers)
+                var corpAuthorString = corpAuthor.Value.NormalisedOriginal;
+                Group? groupRef = null;
+                Group? full = null;
+                if (corpAuthorString.StartsWith(Locations.PhotoArchiveName))
                 {
-                    var book = allWorks[id];
-                    book.UsedFor![0].CarriedOutBy = [group];
+                    groupRef = Locations.PhotoArchiveGroupRef;
+                }
+                else
+                {
+                    var authority = conn.GetAuthorityFromSourceString("corpauthor", corpAuthorString, true);
+                    if (authority == null)
+                    {
+                        throw new InvalidOperationException("Must have an Authority at this point");
+                    }
+                    if(authority.Unreconciled)
+                    {
+                        authority.Type = "Group";
+                        authority.Label = corpAuthorString;
+                    }
+                    groupRef = authority.GetReference() as Group;
+                    full = authority.GetFull() as Group;
+
+                    if(groupRef == null || full == null)
+                    {
+                        throw new InvalidOperationException("Must have a Group at this point");
+                    }
+                    Writer.WriteToDisk(full);
+                }
+
+                foreach (var id in corpAuthor.Value.Identifiers)
+                {
+                    var work = allWorks[id];
+                    work.CreatedBy ??= new Activity(Types.Creation);
+                    work.CreatedBy.Part ??= [];
+                    work.CreatedBy.Part.Add(new Activity(Types.Creation)
+                    {
+                        CarriedOutBy = [groupRef]
+                    });
                 }
             }
-
-
-
-            // .. temporarily same for keywords...
-            int keywordIdMinter = 1;
-            foreach (var kvp in keywordDict)
-            {
-                // These need to be reconciled to any kind of entity - people, places, concepts
-                var thing = new LinkedArtObject(Types.Type)
-                    .WithId(Identity.ConceptBase + "temp-" + keywordIdMinter++)
-                    .WithLabel(kvp.Key);
-
-                // /used_for[classified_as=PUBLISHING]/carried_out_by/id
-                // This .UsedFor must exist, created in first pass
-                foreach (var id in kvp.Value)
-                {
-                    var book = allWorks[id];
-                    book.About ??= [];
-                    book.About.Add(thing);
-                }
-            }
-
-            // once serialised in short form, add context and add reconciled equivalents and serialise as groups/people  
-            // add in person dates
-            // make use of active string in date field (currently being stripped)
-            // Sample(allWorks, allHMOs, 1000, true);
-
         }
 
 

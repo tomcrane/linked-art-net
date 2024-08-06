@@ -65,12 +65,6 @@ namespace PmcTransformer.Helpers
             return reduced;
         }
 
-        public static string NormaliseForGroup(this string s)
-        {
-            var groupString = s.Trim().TrimEnd('.').Trim().TrimEnd(',').Trim();
-            return groupString;
-        }
-
 
         [GeneratedRegex(@"(.*) \((.*)\)")]
         private static partial Regex ThingsInParens();

@@ -14,17 +14,55 @@ namespace PmcTransformer
         }
 
         public static AuthorityStringWithSource? GetAuthorityIdentifier(this NpgsqlConnection conn,
-            string source, string s, bool createEntryForSource = false)
+            string source, string s, bool createEntryForSource = false, bool createUnreconciledIdentifier = false)
         {
             var ssa = conn.QueryFirstOrDefault<AuthorityStringWithSource>(
-                "select source, string, authority, processed from source_string_map " +
+                "select source, string, authority, processed, unreconciled_authority from source_string_map " +
                 "where source=@source and string=@s", new { source, s });
             if(ssa == null && createEntryForSource)
             {
                 conn.Execute($"insert into source_string_map (source, string, authority) " +
                               "values (@source, @s, null)", new { source, s });
             }
+            if(ssa?.UnreconciledAuthority == null && createUnreconciledIdentifier)
+            {
+                var unrec = "unrec_" + IdMinter.Generate();
+
+                conn.Execute($"update source_string_map set unreconciled_authority=@unrec " +
+                             $"where source=@source and string=@s and unreconciled_authority is null ", 
+                             new { unrec }); 
+                ssa = conn.QueryFirstOrDefault<AuthorityStringWithSource>(
+                "select source, string, authority, processed, unreconciled_authority from source_string_map " +
+                "where source=@source and string=@s", new { source, s });
+            }
             return ssa ?? new AuthorityStringWithSource { Source=source, String=s };
+        }
+
+        public static Authority? GetAuthorityFromSourceString(
+            this NpgsqlConnection conn, string source, string s, bool createUnreconciled)
+        {
+            var authorityIdentifier = conn.GetAuthorityIdentifier(source, s, false, createUnreconciled);
+
+            if (authorityIdentifier?.Authority != null)
+            {
+                var authority = conn.QueryFirstOrDefault<Authority>(
+                    "select * from authorities where identifier=@Identifier",
+                    new { Identifier = authorityIdentifier.Authority });
+                return authority;
+            }
+            if(createUnreconciled)
+            {
+                if (authorityIdentifier?.UnreconciledAuthority == null)
+                {
+                    throw new Exception("Must have either a real authority or an unreconciled authority");
+                }
+                return new Authority
+                {
+                    Identifier = authorityIdentifier.UnreconciledAuthority,
+                    Unreconciled = true
+                };
+            }
+            return null;
         }
 
 
@@ -39,7 +77,7 @@ namespace PmcTransformer
                 $"select * from authorities where {provider}=@Identifier", new { identifierAndLabel.Identifier });
             if (authority == null)
             {
-                var localIdentifier = IdMinter.Generate();
+                var localIdentifier = IdMinter.Generate(conn);
                 conn.Execute($"insert into authorities (identifier, type, {provider}, label) " +
                              "values (@LocalIdentifier, @type, @Identifier, @Label)",
                              new { 
@@ -108,7 +146,7 @@ namespace PmcTransformer
             Authority? selectedAuthority;
             if (authorities.Count == 0)
             {
-                var localIdentifier = IdMinter.Generate();
+                var localIdentifier = IdMinter.Generate(conn);
                 conn.Execute($"insert into authorities (identifier, type, label, ulan, aat, lux, loc, viaf, wikidata, pmc) " +
                              "values (@localIdentifier, @type, @Label, @Ulan, @Aat, @Lux, @Loc, @Viaf, @Wikidata, @Pmc)",
                              new

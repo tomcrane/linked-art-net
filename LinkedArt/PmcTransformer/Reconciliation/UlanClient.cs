@@ -8,36 +8,43 @@ namespace PmcTransformer.Reconciliation
 {
     public class UlanClient
     {
-        // uses local DB
-        private static NpgsqlConnection conn = DbCon.Get();
+        private readonly NpgsqlConnection conn = DbCon.Get();
 
-        public static List<IdentifierAndLabel> GetIdentifiersAndLabels(string label, string type)
-        {
-            var ulans = conn.Query<IdentifierAndLabel>(
-                "select identifier, label from ulan_labels where label=@label and type=@type",
-                new { label, type })
-                .ToList();
-            return ulans;
+        public UlanClient() 
+        { 
         }
-        public static List<IdentifierAndLabel> GetIdentifiersAndLabelsLevenshtein(string label, string type, int limit)
+
+        public async Task<List<IdentifierAndLabel>> GetIdentifiersAndLabels(string label, string type)
         {
-            var matches = conn.Query<IdentifierAndLabel>(
+            var ulans = await conn.QueryAsync<IdentifierAndLabel>(
+                "select identifier, label from ulan_labels where label=@label and type=@type",
+                new { label, type });
+            return ulans.ToList();
+        }
+        public async Task<List<IdentifierAndLabel>> GetIdentifiersAndLabelsLevenshtein(string label, string type, int limit)
+        {
+            if(label.Length > 255)
+            {
+                Console.WriteLine("Cannot match on strings > 255 characters (postgres levenshtein limit)");
+                return [];
+            }
+            var matchesQ = await conn.QueryAsync<IdentifierAndLabel>(
                 "select identifier, label, levenshtein(label, @label) as score " +
                 "from ulan_labels where type=@type " +
                 "order by levenshtein(label, @label) asc limit @limit",
-                new { label, type, limit })
-                .ToList();
-            // convert levenshtein distances to percent (factors in length of string)
+                new { label, type, limit });
+            var matches = matchesQ.ToList();
             foreach (var match in matches)
             {
+                // convert levenshtein distances to percent (factors in length of string)
                 match.Score = 100 - Convert.ToInt32(100 * (match.Score / (decimal)label.Length));
             }
             return matches;
         }
 
-        public static Actor? GetFromIdentifier(string identifier)
+        public async Task<Actor?> GetFromIdentifier(string identifier)
         {
-            var actorStr = conn.QuerySingleOrDefault<string>(
+            var actorStr = await conn.QuerySingleOrDefaultAsync<string>(
                 "select data from ulan_data_cache where identifier=@identifier",
                 new { identifier });
             if(actorStr.HasText())

@@ -6,14 +6,26 @@ using System.Xml.Linq;
 using System.Text.Json;
 using Group = LinkedArtNet.Group;
 using System.Data;
+using PmcTransformer.Reconciliation;
 
 namespace PmcTransformer.Library
 {
     public class Processor
     {
+        private readonly GroupReconciler groupReconciler;
+        private readonly PersonReconciler personReconciler;
         private static readonly char[] separator = [',', ' '];
 
-        public static void ProcessLibrary(XDocument xLibrary)
+        public Processor(
+            GroupReconciler groupReconciler,
+            PersonReconciler personReconciler
+        )
+        {
+            this.groupReconciler = groupReconciler;
+            this.personReconciler = personReconciler;
+        }
+
+        public async Task ProcessLibrary(XDocument xLibrary)
         {
             var timespanParser = new TimespanParser();
 
@@ -378,7 +390,11 @@ namespace PmcTransformer.Library
                         {
                             continue;
                         }
-                        if(pubLower.IndexOf("published") != -1 && pubLower.IndexOf("sold by") != -1)
+                        if(
+                            (pubLower.IndexOf("published") != -1 && pubLower.IndexOf("sold by") != -1)
+                            ||
+                            pubLower.StartsWith("printed by")
+                        )
                         {
                             work.ReferredToBy ??= [];
                             work.ReferredToBy.Add(
@@ -503,9 +519,10 @@ namespace PmcTransformer.Library
             }
 
 
-            GroupReconciler.ReconcileGroups(allWorks, corpAuthorDict, "corpauthor");
-            GroupReconciler.ReconcileGroups(allWorks, publisherDict, "publisher");
+            await groupReconciler.ReconcileGroups(allWorks, corpAuthorDict, "corpauthor");
+            await groupReconciler.ReconcileGroups(allWorks, publisherDict, "publisher");
 
+            await personReconciler.ReconcilePeople(allWorks, persAuthorFullDict, "persauthorfull");
             // To be done later
             // GroupReconciler.AssignCorpAuthors(allWorks, corpAuthorDict);
 

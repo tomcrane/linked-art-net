@@ -4,20 +4,20 @@ namespace PmcTransformer.Reconciliation
 {
     public class WikidataClient
     {
-        private static HttpClient httpClient;
+        private readonly HttpClient httpClient;
 
-        static WikidataClient()
+        private static DateTime LastCalled = DateTime.Now;
+
+        public WikidataClient(HttpClient httpClient)
         {
-            httpClient = HttpClients.GetStandardClient();
+            this.httpClient = httpClient;
         }
 
-        public static IdentifierAndLabel? GetName(string identifier)
+        public async Task<IdentifierAndLabel?> GetName(string identifier)
         {
-            Thread.Sleep(2000);
+            await RateLimit();
             var url = $"https://www.wikidata.org/wiki/Special:EntityData/{identifier}?flavor=dump";
-            var resp = httpClient.Send(new HttpRequestMessage(HttpMethod.Get, url));
-            resp.EnsureSuccessStatusCode();
-            var stream = resp.Content.ReadAsStream();
+            var stream = await httpClient.GetStreamAsync(url) ;
             using (JsonDocument jDoc = JsonDocument.Parse(stream))
             {
                 var entities = jDoc.RootElement.GetProperty("entities");
@@ -36,6 +36,21 @@ namespace PmcTransformer.Reconciliation
                     Identifier = identifier, 
                     Label = labels.EnumerateObject().First().Value.GetProperty("value").GetString()! 
                 };
+            }
+        }
+
+
+
+        private static async Task RateLimit()
+        {
+            const int crawlDelay = 2000;
+            var msSinceLastCall = (DateTime.Now - LastCalled).TotalMilliseconds;
+            LastCalled = DateTime.Now;
+            if (msSinceLastCall < crawlDelay)
+            {
+                var timeToWait = crawlDelay - (int)msSinceLastCall;
+                Console.WriteLine($"Delaying Wikidata Client for {timeToWait} ms");
+                await Task.Delay(timeToWait);
             }
         }
     }

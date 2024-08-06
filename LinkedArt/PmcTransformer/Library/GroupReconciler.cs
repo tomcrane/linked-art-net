@@ -6,14 +6,21 @@ using PmcTransformer.Reconciliation;
 
 namespace PmcTransformer.Library
 {
-    public static class GroupReconciler
+    public class GroupReconciler
     {
+        private readonly AuthorityService authorityService;
+
+        public GroupReconciler(AuthorityService authorityService)
+        {
+            this.authorityService = authorityService;
+        }
+
         /// <summary>
         /// The list values in corpAuthorDict are keys in allWorks
         /// </summary>
         /// <param name="allWorks">Works by identifier</param>
         /// <param name="agents">The original strings from records, to identifier</param>
-        public static void ReconcileGroups(
+        public async Task ReconcileGroups(
             Dictionary<string, LinguisticObject> allWorks, 
             Dictionary<string, ParsedAgent> agents,
             string dataSource)
@@ -24,16 +31,16 @@ namespace PmcTransformer.Library
             int counter = 0;
 
             // reconciliation pass
-            foreach (var agent in agents)
+            foreach (var agentKvp in agents)
             {
-                var agentString = agent.Key.NormaliseForGroup();
+                var agent = agentKvp.Value;
                 Console.WriteLine();
-                Console.WriteLine("### " + agentString);
-                string? reduced = agentString.ReduceGroup();
-                if (reduced == agentString) reduced = null;
+                Console.WriteLine("### " + agent.NormalisedOriginal);
+                string? reduced = agent.NormalisedOriginal.ReduceGroup();
+                if (reduced == agent.NormalisedOriginal) reduced = null;
 
                 counter++;
-                var authorityIdentifier = conn.GetAuthorityIdentifier(dataSource, agentString, true);
+                var authorityIdentifier = conn.GetAuthorityIdentifier(dataSource, agent.NormalisedOriginal, true);
                 //if(authorityIdentifier!.Authority.HasText())
                 //{
                 //    Console.WriteLine("Already authorised: " + corpAuthorString);
@@ -41,143 +48,44 @@ namespace PmcTransformer.Library
                 //}
                 if (authorityIdentifier!.Processed != null) // can have specific dates later
                 {
-                    Console.WriteLine("Already attempted: " + agentString);
+                    Console.WriteLine("Already attempted: " + agent.NormalisedOriginal);
                     continue;
                 }
 
-                var knownGroup = KnownAuthorities.GetGroup(agentString);
-                if(knownGroup != null)
+                var knownGroup = KnownAuthorities.GetGroup(agent.NormalisedOriginal);
+                if (knownGroup != null)
                 {
-                    Console.WriteLine($"Resolved '{agentString}' from known Authorities");
-                    conn.UpsertAuthority(dataSource, agentString, "Group", knownGroup);
+                    Console.WriteLine($"Resolved '{agent.NormalisedOriginal}' from known Authorities");
+                    conn.UpsertAuthority(dataSource, agent.NormalisedOriginal, "Group", knownGroup);
                     conn.UpdateTimestamp(authorityIdentifier);
                     continue;
                 }
 
-                var candidateAuthorities = new Dictionary<string, Authority>();
+                List<Task<Dictionary<string, Authority>>> authTasks = [
+                    authorityService.AddCandidatesFromLux(allWorks, agent),
+                    authorityService.AddCandidatesFromUlan(agent.NormalisedOriginal, reduced),
+                    authorityService.AddCandidatesFromViaf("local.corporateNames all ", agent.NormalisedOriginal),
+                    authorityService.AddCandidatesFromLoc(agent.NormalisedOriginal, reduced)
+                ];
 
-                // need to find out what this thing is...
-                // We can ask LUX for a GROUP that CREATED the work(s)
-                var allActors = new List<Actor>();
-                var workIds = agent.Value.Identifiers;
-                Console.WriteLine($"{workIds.Count} works(s) for {agentString}");
-                if(workIds.Count > 50)
-                {
-                    var shuffled = workIds.Select(w => w).ToList();
-                    shuffled.Shuffle();
-                    workIds = shuffled.Take(50).ToList();
-                }
-                foreach (var workId in workIds)
-                {
-                    var work = allWorks[workId];
-                    Console.WriteLine($"LUX: actors like '{agentString}' who created work '{work.Label}'");
-                    var actors = LuxClient.ActorsWhoCreatedWorks(agentString, work.Label!);
-                    Console.WriteLine($"{actors.Count} found");
-                    allActors.AddRange(actors);
-                }
-                var distinctActors = allActors.DistinctBy(a => a.Id).ToList();
-                var counts = distinctActors.ToDictionary(a => a.Id!, a => allActors.Count(aa => aa.Id == a.Id));
-                Console.WriteLine($"*** {distinctActors.Count} DISTINCT actors returned from LUX");
-                // Now we have a bunch of Groups (hopefully just 1).
-                int luxCounter = 1;
-                foreach(var actor in distinctActors)
-                {
-                    var authority = actor.AuthorityFromEquivalents(agentString);
-                    // This is misleading as it only really makes sense when there are lots of works for the same string
-                    // It is NOT a stting distance score
-                    authority.Score = Convert.ToInt32(counts[authority.Lux!] / (decimal)workIds.Count * 100);
-                    candidateAuthorities[$"lux{luxCounter++}"] = authority;
-                }
+                await Task.WhenAll(authTasks);
 
-                // ulans
-                // try a simple match first
-                const int requiredPercentageMatch = 94; // This is a percentage of chars in the word
-                var ulansLev = UlanClient
-                    .GetIdentifiersAndLabelsLevenshtein(agentString, "Group", 5)
-                    .Where(x => x.Score >= requiredPercentageMatch) 
-                    .ToList();  
-                if(ulansLev.Count == 0 && reduced != null)
-                {
-                    ulansLev = UlanClient
-                        .GetIdentifiersAndLabelsLevenshtein(reduced, "Group", 5)
-                            .Where(x => x.Score >= requiredPercentageMatch)
-                            .ToList();
-                }
-                int ulanCounter = 1;
-                foreach (var ulanMatch  in ulansLev)
-                {
-                    var authority = new Authority 
-                    { 
-                        Ulan = ulanMatch.Identifier, 
-                        Label = ulanMatch.Label, 
-                        Score = ulanMatch.Score 
-                    };
-                    candidateAuthorities[$"ulan{ulanCounter++}"] = authority;
-                }
+                List<Dictionary<string, Authority>> allSources = [
+                    authTasks[0].Result,
+                    authTasks[1].Result,
+                    authTasks[2].Result,
+                    authTasks[3].Result
+                ];
 
+                var candidateAuthorities = allSources.SelectMany(dict => dict).ToDictionary();
 
-                var viafAuthorities = ViafClient.SearchBestMatch("local.corporateNames all ", agentString);
-                int viafCounter = 1;
-                foreach (var viafAuthority in viafAuthorities)
-                {
-                    candidateAuthorities[$"viaf{viafCounter++}"] = viafAuthority;
-                }
-
-                var locResults = LocClient.SuggestName(agentString);
-                var firstLoc = locResults.FirstOrDefault();
-                if (firstLoc == null && reduced != null)
-                {
-                    locResults = LocClient.SuggestName(reduced);
-                    firstLoc = locResults.FirstOrDefault();
-                }
-                if (firstLoc == null && agentString.IndexOf(" and ") > 0)
-                {
-                    locResults = LocClient.SuggestName(agentString.Replace(" and ", " & "));
-                    firstLoc = locResults.FirstOrDefault();
-                }
-                if (firstLoc != null)
-                {
-                    var authority = new Authority { Loc = firstLoc.Identifier, Label = firstLoc.Label };
-                    candidateAuthorities["loc"] = authority;
-                }
-
-                // Now we have multiple authorities. Lets see if they agree with each other.
-                if(candidateAuthorities.Keys.Count > 0)
-                {
-                    Console.WriteLine($"----- Group: {agentString} ---------");
-                    Console.Write("{0,-7}", "key");
-                    Console.Write("{0,-4}", "sc");
-                    Console.Write("{0,-12}", "Ulan");
-                    Console.Write("{0,-14}", "Loc");
-                    Console.Write("{0,-10}", "Wiki");
-                    Console.Write("{0,-20}", "Viaf");
-                    Console.WriteLine("Lux");
-                    foreach (var kvp in candidateAuthorities)
-                    {
-                        Console.Write("{0,-7}", kvp.Key);
-                        Console.Write("{0,-4}", kvp.Value.Score);
-                        Console.Write("{0,-12}", kvp.Value.Ulan);
-                        Console.Write("{0,-14}", kvp.Value.Loc);
-                        Console.Write("{0,-10}", kvp.Value.Wikidata);
-                        Console.Write("{0,-20}", kvp.Value.Viaf);
-                        Console.WriteLine(kvp.Value.Lux);
-                    }
-                    Console.WriteLine($"----- END Group: {agentString} ---------");
-                }
-
-                var bestMatch = DecideBestCandidate(agent.Value.Identifiers, agentString, candidateAuthorities);
-                if(bestMatch != null)
+                ConsoleUtils.WriteCandidateAuthorities(agent, candidateAuthorities);
+                var bestMatch = authorityService.DecideBestCandidate(agentKvp.Value.Identifiers, agent.NormalisedOriginal, candidateAuthorities);
+                if (bestMatch != null)
                 {
                     matches++;
-                    Console.WriteLine($"----- MATCH DECIDED ---------");
-                    Console.Write("{0,-7}", "");
-                    Console.Write("{0,-4}", bestMatch.Score);
-                    Console.Write("{0,-12}", bestMatch.Ulan);
-                    Console.Write("{0,-14}", bestMatch.Loc);
-                    Console.Write("{0,-10}", bestMatch.Wikidata);
-                    Console.Write("{0,-20}", bestMatch.Viaf);
-                    Console.WriteLine(bestMatch.Lux);
-                    conn.UpsertAuthority(dataSource, agentString, "Group", bestMatch);
+                    ConsoleUtils.WriteAuthority(bestMatch);
+                    conn.UpsertAuthority(dataSource, agent.NormalisedOriginal, "Group", bestMatch);
                 }
 
                 conn.UpdateTimestamp(authorityIdentifier);
@@ -191,6 +99,7 @@ namespace PmcTransformer.Library
             // assignment pass
 
         }
+
 
 
         public static void AssignCorpAuthors(Dictionary<string, LinguisticObject> allWorks, Dictionary<string, ParsedAgent> corpAuthorDict)
@@ -246,176 +155,6 @@ namespace PmcTransformer.Library
         }
 
 
-
-        private static Authority? DecideBestCandidate(List<string> workIds, string term, Dictionary<string, Authority> candidateAuthorities)
-        {
-            if(candidateAuthorities.Count == 0)
-            {
-                return null;
-            }
-
-            Authority bestCandidate = new();
-
-            var luxMatches = ExtractAuthoritiesBySource("lux", candidateAuthorities);
-            var ulanMatches = ExtractAuthoritiesBySource("ulan", candidateAuthorities);
-            var viafMatches = ExtractAuthoritiesBySource("viaf", candidateAuthorities);
-
-            var nonLuxMatches = new List<Authority>(viafMatches);
-            nonLuxMatches.AddRange(ulanMatches);
-
-            Authority? locMatch = null;
-            if(candidateAuthorities.TryGetValue("loc", out Authority? value))
-            {
-                locMatch = value;
-                nonLuxMatches.Add(locMatch);
-            }
-
-            // Need to work out when to NOT trust the LUX match.
-            // And also whether to trust it, but not assert equivalence to other records, because we don't want to pollute LUX
-            // National Museums and Galleries on Merseyside
-            // This string yields 4 distinct LUX entries. eg first is Walker Art Gallery - which is _part_ of the above;
-            // But.. LUX says the work was published by Walker Art Gallery, PMC says work was published by National Museums and Galleries on Merseyside
-            // I can't safely pick Walker here, because I'm changing what PMC is saying... leave that to LUX.
-            // lux1   30  500251553   n80119554     Q1536471  124089443           https://lux.collections.yale.edu/data/group/9c0ee296-e226-49da-9306-ad24dedeb82c
-            // lux2   13  500290756   nr88004919              122054769           https://lux.collections.yale.edu/data/group/0437cb33-0dd9-4bad-8337-9fe7547a930e
-            // lux3   30  500311436   n50078080     Q1586957  121738032           https://lux.collections.yale.edu/data/group/ef8716b1-e13b-43a0-b65e-8e1d464c3599
-            // lux4   35  500301595   n88049144     Q1967497  145220201           https://lux.collections.yale.edu/data/group/b87c9ae6-4117-4319-9112-fa5c8901ce2c
-            if (luxMatches.Count > 1)
-            {
-                var scores = luxMatches.ToDictionary(a => a.Lux!, a => 0);
-
-                // Could pick the closest to the original string (the last of the above)
-                var closestLabel = FuzzySharp.Process.ExtractOne(term, luxMatches.Select(a => a.Label));
-                var closestLabelAuthority = luxMatches.First(a => a.Label == closestLabel.Value);
-                scores[closestLabelAuthority.Lux!] = 100;
-
-                // Or the one with the highest score (matches most works)
-                var mostWorks = luxMatches.OrderByDescending(a => a.Score).First();
-                scores[mostWorks.Lux] = Convert.ToInt32(100 + 100 * (mostWorks.Score / 100.0)); // a little extra weight for more matches
-
-
-                // Or that best matches the other results - see Scottish Arts Council
-                foreach(var lm in luxMatches)
-                {
-                    int score = 0;
-                    if(lm.Ulan.HasText() && ulanMatches.Exists(um => um.Ulan == lm.Ulan))
-                    {
-                        score += 100 + lm.Score;
-                    }
-                    if(lm.Loc.HasText() && locMatch != null && locMatch.Loc == lm.Loc)
-                    {
-                        score += 150;
-                    }
-                    if(lm.Viaf.HasText())
-                    {
-                        var viafs = viafMatches.Where(vm => vm.Viaf == lm.Viaf);
-                        if (viafs.Any())
-                        {
-                            score += 20;
-                            score += viafs.OrderByDescending(vm => vm.Score).First().Score;
-                        }
-                    }
-                    scores[lm.Lux!] = score;
-                }
-
-                var luxMatchKey = scores.OrderByDescending(kvp => kvp.Value).First().Key;
-                luxMatches = [luxMatches.Single(lm => lm.Lux == luxMatchKey)];
-            }
-
-            if(luxMatches.Count == 1 && HasAtLeastOneEquivalent(luxMatches[0]))
-            {
-                // Best case, only one LUX match to consider (not zero, not multiple)
-                var luxMatch = luxMatches[0];
-                bestCandidate.Score++;
-                bestCandidate.Label = luxMatch.Label;
-
-                if (luxMatch.Ulan != null && ulanMatches.Exists(a => a.Ulan == luxMatch.Ulan))
-                {
-                    // We matched a ULAN that LUX matches
-                    bestCandidate.Score++;
-                    bestCandidate.Ulan = luxMatch.Ulan;
-                }
-                if (luxMatch.Loc != null && locMatch != null && locMatch.Loc == luxMatch.Loc)
-                {
-                    // LUX loc is the same as oour LOC match
-                    bestCandidate.Score++;
-                    bestCandidate.Loc = locMatch.Loc;
-                    bestCandidate.Label = locMatch.Label;
-                }
-
-                if (luxMatch.Viaf != null && viafMatches.Exists(a => a.Viaf == luxMatch.Viaf))
-                {
-                    // We matched a VIAF that LUX matches
-                    bestCandidate.Score++;
-                    bestCandidate.Viaf = luxMatch.Viaf;
-                }
-
-                if(luxMatch.Loc != null && viafMatches.Exists(a => a.Loc == luxMatch.Loc))
-                {
-                    // LUX's loc also appears in VIAF LOC
-                    if(bestCandidate.Loc != null)
-                    {
-                        // we have already matched our LOC
-                        bestCandidate.Score++;
-                    } 
-                    else if(locMatch != null)
-                    {
-                        // There is a locMatch but it is NOT the same as LUX's LOC
-                        // ? decrease score?
-                    }
-                }
-                if(luxMatch.Wikidata != null && nonLuxMatches.Exists(a => a.Wikidata == luxMatch.Wikidata))
-                {
-                    bestCandidate.Score++;
-                    bestCandidate.Wikidata = luxMatch.Wikidata;
-                }
-
-                if(bestCandidate.Score >= 3)
-                {
-                    bestCandidate.Lux = luxMatch.Lux;
-                    return bestCandidate;
-                }
-            }
-            else
-            {
-                if (locMatch != null)
-                {
-                    var viafMatch = viafMatches.FirstOrDefault(a => a.Loc == locMatch.Loc && a.Score > 50);
-                    if (viafMatch != null)
-                    {
-                        bestCandidate.Label = locMatch.Label;
-                        bestCandidate.Loc = locMatch.Loc;
-                        bestCandidate.Viaf = viafMatch.Viaf;
-                        bestCandidate.Score = 2;
-                        if (ulanMatches.Count == 1)
-                        {
-                            bestCandidate.Ulan = ulanMatches[0].Ulan;
-                        }
-                        return bestCandidate;
-                    }
-                }
-            }
-
-
-            return null;
-        }
-
-        private static bool HasAtLeastOneEquivalent(Authority authority)
-        {
-            // if the LUX record has nothing to cross-check, is it any use to us?
-            // Maybe only if there is no other information
-            return authority.Ulan.HasText() || authority.Loc.HasText() || authority.Viaf.HasText();
-        }
-
-        private static List<Authority> ExtractAuthoritiesBySource(string source, Dictionary<string, Authority> candidateAuthorities)
-        {
-            var matches = candidateAuthorities
-                .Where(kvp => kvp.Key.StartsWith(source))
-                .OrderByDescending(kvp => Convert.ToInt32(kvp.Key.Replace(source, "")))
-                .Select(kvp => kvp.Value)
-                .ToList();
-            return matches;
-        }
 
     }
 }

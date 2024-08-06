@@ -133,9 +133,11 @@ namespace PmcTransformer
                 if (authorities.Count > 1)
                 {
                     Console.WriteLine("Multiple matching authorities we could merge with");
-                    var closestLabel = FuzzySharp.Process.ExtractOne(sourceString.RemoveThingsInParens(), authorities.Select(a => a.Label.RemoveThingsInParens()));
+                    var closestLabel = FuzzySharp.Process.ExtractOne(
+                        sourceString.RemoveThingsInParens(), 
+                        authorities.Select(a => a.Label.RemoveThingsInParens()));
                     Console.WriteLine($"Picking {closestLabel.Value} [Score: {closestLabel.Score}]");
-                    authorities = [authorities.First(a => a.Label == closestLabel.Value)];
+                    authorities = [authorities.First(a => a.Label == closestLabel.Value || a.Label.RemoveThingsInParens() == closestLabel.Value)];
                     updateLabel = false;
                 }
 

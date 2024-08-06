@@ -6,21 +6,21 @@ namespace PmcTransformer.Reconciliation
 {
     public class ViafClient
     {
-        private static HttpClient httpClient;
+        private readonly HttpClient httpClient;
 
-        static ViafClient()
+        public ViafClient(HttpClient httpClient)
         {
-            httpClient = HttpClients.GetStandardClient();
+            this.httpClient = httpClient;
         }
 
-        public static IdentifierAndLabel? GetName(string identifier)
+        private static DateTime LastCalled = DateTime.Now;
+
+        public async Task<IdentifierAndLabel?> GetName(string identifier)
         {
+            await RateLimit();
             try
             {
-                var url = $"https://viaf.org/viaf/{identifier}/";
-                var resp = httpClient.Send(new HttpRequestMessage(HttpMethod.Get, url));
-                resp.EnsureSuccessStatusCode();
-                var stream = resp.Content.ReadAsStream();
+                var stream = await httpClient.GetStreamAsync($"https://viaf.org/viaf/{identifier}/");
                 using (JsonDocument jDoc = JsonDocument.Parse(stream))
                 {
                     var headingsData = GetMainHeadingsData(jDoc.RootElement);
@@ -48,17 +48,25 @@ namespace PmcTransformer.Reconciliation
             return null;
         }
 
-        public static List<Authority> SearchBestMatch(string prefix, string term)
+        public async Task<List<Authority>> SearchBestMatch(string prefix, string term)
         {
+            await RateLimit();
             var sanitised = HttpUtility.UrlEncode(term
                 .Replace("[", "(").Replace("]", ")")
                 .Replace("\"", "'"));
             string uri = $"https://viaf.org/viaf/search?query={prefix}%22{sanitised}%22&recordSchema=BriefVIAF";
-            var req = new HttpRequestMessage(HttpMethod.Get, uri);
-            var resp = httpClient.Send(req);
-            resp.EnsureSuccessStatusCode();
-            var stream = resp.Content.ReadAsStream();
-            using (JsonDocument jDoc = JsonDocument.Parse(stream))
+            Stream? stream = null;
+            try
+            {
+                stream = await httpClient.GetStreamAsync(uri);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error communicating with VIAF for uri " + uri);
+                Console.WriteLine(ex.Message);
+                return [];
+            }
+            using (JsonDocument jDoc = JsonDocument.Parse(stream!))
             {
                 var mainHeadings = new Dictionary<string, JsonElement>();
                 var viafIDs = new Dictionary<string, string>();
@@ -128,7 +136,7 @@ namespace PmcTransformer.Reconciliation
                     return authorities;
                 }
             }
-            return new List<Authority>();
+            return [];
         }
 
         private static List<JsonElement> GetMainHeadingsData(JsonElement recordData)
@@ -178,6 +186,20 @@ namespace PmcTransformer.Reconciliation
             {
                 mainHeadings[text] = heading;
                 viafIDs[text] = viafId!;
+            }
+        }
+
+
+        private static async Task RateLimit()
+        {
+            const int crawlDelay = 300;
+            var msSinceLastCall = (DateTime.Now - LastCalled).TotalMilliseconds;
+            LastCalled = DateTime.Now;
+            if (msSinceLastCall < crawlDelay)
+            {
+                var timeToWait = crawlDelay - (int)msSinceLastCall;
+                Console.WriteLine($"Delaying Viaf Client for {timeToWait} ms");
+                await Task.Delay(timeToWait);
             }
         }
     }

@@ -8,7 +8,9 @@ namespace PmcTransformer
 {
     public partial class ParsedAgent
     {
-        public required string Original {  get; set; }
+        public required string Original { get; set; }
+
+        public required string NormalisedOriginal { get; set; }
 
         public string? Name { get; set; }
 
@@ -20,9 +22,19 @@ namespace PmcTransformer
 
         public string? Honorific { get; set; }
 
+        // e.g., Crane, Thomas
+        // Not yet dealing with surname, firstnames reordering - honorifics make this hard
         public string? NormalisedName { get; private set; }
 
+        // e.g., Crane, Thomas [1971-]
+        public string? NormalisedNameWithDates { get; private set; }
+
+        // e.g., Crane, Thomas [1971-] (developer)
         public string? NormalisedFullForm { get; private set; }
+
+
+        // e.g., Crane, Thomas, 1971-
+        public string? NormalisedLocForm { get; private set; }
 
         public bool IsActive { get; set; }
         public bool IsApproximate { get; set; }
@@ -50,8 +62,9 @@ namespace PmcTransformer
         public ParsedAgent(string original)
         {
             Original = original;
+            NormalisedOriginal = original.Trim().TrimEnd('.').Trim().TrimEnd(',').Trim().TrimOuterBrackets()!;
 
-            string working = Original.TrimOuterBrackets()!;
+            string working = NormalisedOriginal!;
 
             string personDatePart;
 
@@ -199,11 +212,16 @@ namespace PmcTransformer
                             
 
             var normSB = new StringBuilder();
+            var normLoc = new StringBuilder();
             normSB.Append(Name);
+            normLoc.Append(Name);
+            NormalisedName = Name;
+            // TODO - work in Honorifics
             if (DateString.HasText())
             {
                 normSB.Append(" [");
-                if(IsActive)
+                normLoc.Append(", ");
+                if (IsActive)
                 {
                     normSB.Append("active ");
                 }
@@ -214,13 +232,19 @@ namespace PmcTransformer
                 if(NumericDateString.HasText())
                 {
                     normSB.Append(NumericDateString);
+                    normLoc.Append(NumericDateString);
                 }
                 else
                 {
                     normSB.Append(DateString);
+                    normLoc.Append(DateString);
                 }
-                normSB.Append("]");
+                normSB.Append(']');
             }
+            
+            NormalisedNameWithDates = normSB.ToString();
+            NormalisedLocForm = normLoc.ToString();
+
             if(Role.HasText())
             {
                 normSB.Append($" ({Role.TrimOuterParentheses()})");

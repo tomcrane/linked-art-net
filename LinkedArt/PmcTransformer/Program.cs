@@ -1,36 +1,51 @@
-﻿using PmcTransformer.Helpers;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using PmcTransformer.Helpers;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
+using PmcTransformer.Reconciliation;
+using PmcTransformer.Library;
+using Microsoft.Extensions.Configuration;
 
 namespace PmcTransformer
 {
     internal class Program
     {
-        static JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true, };
-
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+            builder.Configuration.AddJsonFile("appsettings.json");
+            builder.Services.AddSingleton<UlanClient>();
+            builder.Services.AddHttpClient<LocClient>(HttpDefaults);
+            builder.Services.AddHttpClient<LuxClient>(HttpDefaults);
+            builder.Services.AddHttpClient<ViafClient>(HttpDefaults);
+            builder.Services.AddHttpClient<WikidataClient>(HttpDefaults);
+            builder.Services.AddSingleton<AuthorityService>();
+            builder.Services.AddSingleton<GroupReconciler>();
+            builder.Services.AddSingleton<PersonReconciler>();
+            builder.Services.AddSingleton<Library.Processor>();
+            using IHost host = builder.Build();
+
+
             var root = "C:\\Users\\TomCrane\\Dropbox\\digirati\\PMC\\linked.art\\2024-03-18";
-            var archive = root + "\\2024-03-11_archive";
-            var library = root + "\\2024-03-11_library";
-            var photo_archive = root + "\\2024-03-14_photo-archive";
 
             // Entities need to be reconciled AFTER we do all three sources.
             // This is where the DB will come in to play.
             if(args.Length == 0 || args[0] == "library")
             {
-                StreamReader reader = new StreamReader(library + "\\2024-03-11_library.xml", Encoding.UTF8);
+                var library = root + "\\2024-03-11_library";
+                StreamReader reader = new(library + "\\2024-03-11_library.xml", Encoding.UTF8);
                 var xLibrary = XDocument.Load(reader);
-                Library.Processor.ProcessLibrary(xLibrary);
+                var libraryProcessor = host.Services.GetService<Library.Processor>();
+                await libraryProcessor.ProcessLibrary(xLibrary);
             }
             else if (args[0] == "archive")
             {
+                var archive = root + "\\2024-03-11_archive";
                 Locations.SerialisePlaces();
-
-
                 var settings = GetSettings();
                 XmlReader reader1 = XmlReader.Create(archive + "\\2024-03-11_archive-descriptions.xml", settings);
                 XDocument xArchive = XDocument.Load(reader1);
@@ -41,7 +56,7 @@ namespace PmcTransformer
             }
             else if (args[0] == "photo-archive")
             {
-
+                var photo_archive = root + "\\2024-03-14_photo-archive";
             }
             else if (args[0] == "leeds")
             {
@@ -63,6 +78,12 @@ namespace PmcTransformer
             };
         }
 
+
+        static void HttpDefaults(HttpClient client)
+        {
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.DefaultRequestHeaders.Add("User-Agent", "Paul Mellon Centre Linked Art Client");
+        }
 
 
     }

@@ -75,8 +75,7 @@ namespace PmcTransformer.Reconciliation
                 if (variant == tryFirst) variant = null;
 
                 List<Task<Dictionary<string, Authority>>> authTasks = [
-                    authorityService.AddCandidatesFromLux(authorityType, tryFirst),
-                    authorityService.AddCandidatesFromUlan(tryFirst, variant),
+                    authorityService.AddLookupCandidatesFromLux(authorityType, tryFirst),
                     authorityService.AddCandidatesFromViaf(viafQualifier, tryFirst),
                     authorityService.AddCandidatesFromLoc(tryFirst, variant)
                 ];
@@ -86,19 +85,18 @@ namespace PmcTransformer.Reconciliation
                 List<Dictionary<string, Authority>> allSources = [
                     authTasks[0].Result,
                     authTasks[1].Result,
-                    authTasks[2].Result,
-                    authTasks[3].Result
+                    authTasks[2].Result
                 ];
 
                 var candidateAuthorities = allSources.SelectMany(dict => dict).ToDictionary();
 
-                ConsoleUtils.WriteCandidateAuthorities(agent, candidateAuthorities);
-                var bestMatch = authorityService.DecideBestCandidate(agentKvp.Value.Identifiers, agent.NormalisedOriginal, candidateAuthorities);
+                ConsoleUtils.WriteCandidateAuthorities(nameKvp.Key, candidateAuthorities);
+                var bestMatch = authorityService.DecideBestCandidate(nameKvp.Value, nameKvp.Key, candidateAuthorities);
                 if (bestMatch != null)
                 {
                     matches++;
                     ConsoleUtils.WriteAuthority(bestMatch);
-                    conn.UpsertAuthority(dataSource, agent.NormalisedOriginal, authorityType, bestMatch);
+                    conn.UpsertAuthority(dataSource, nameKvp.Key, authorityType, bestMatch);
                 }
 
                 conn.UpdateTimestamp(authorityIdentifier);
@@ -169,10 +167,10 @@ namespace PmcTransformer.Reconciliation
                 if (variant == tryFirst) variant = null;
 
                 List<Task<Dictionary<string, Authority>>> authTasks = [
-                    authorityService.AddCandidatesFromLux(allWorks, agent),
+                    authorityService.AddWorkByCandidatesFromLux(allWorks, agent),
                     authorityService.AddCandidatesFromUlan(tryFirst, variant),
                     authorityService.AddCandidatesFromViaf(viafQualifier, tryFirst),
-                    authorityService.AddCandidatesFromLoc(tryFirst, variant)
+                    authorityService.AddCandidatesFromLoc(authorityType, tryFirst, variant)
                 ];
 
                 await Task.WhenAll(authTasks);
@@ -186,7 +184,7 @@ namespace PmcTransformer.Reconciliation
 
                 var candidateAuthorities = allSources.SelectMany(dict => dict).ToDictionary();
 
-                ConsoleUtils.WriteCandidateAuthorities(agent, candidateAuthorities);
+                ConsoleUtils.WriteCandidateAuthorities(agent.NormalisedOriginal, candidateAuthorities);
                 var bestMatch = authorityService.DecideBestCandidate(agentKvp.Value.Identifiers, agent.NormalisedOriginal, candidateAuthorities);
                 if (bestMatch != null)
                 {

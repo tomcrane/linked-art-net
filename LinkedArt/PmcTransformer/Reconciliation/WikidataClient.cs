@@ -21,7 +21,20 @@ namespace PmcTransformer.Reconciliation
             using (JsonDocument jDoc = JsonDocument.Parse(stream))
             {
                 var entities = jDoc.RootElement.GetProperty("entities");
-                var entity = entities.GetProperty(identifier);
+                JsonElement entity;
+                if(entities.TryGetProperty(identifier, out entity))
+                {
+                    // do nothing
+                }
+                else
+                {
+                    Console.WriteLine("The Wikipedia response does not include the requested identifier as a key");
+                    // example: http://www.wikidata.org/entity/Q98766899 - is a redirect
+                    // take the first (and likely only):
+                    var prop = entities.EnumerateObject().FirstOrDefault();
+                    identifier = prop.Name;
+                    entity = prop.Value;
+                }
                 var labels = entity.GetProperty("labels");
                 if(entity.TryGetProperty("en", out JsonElement enLabel))
                 {

@@ -3,11 +3,11 @@ namespace PmcTransformer.Reconciliation
 {
     internal class ConsoleUtils
     {
-        public static void WriteCandidateAuthorities(ParsedAgent agent, Dictionary<string, Authority> candidateAuthorities)
+        public static void WriteCandidateAuthorities(string label, Dictionary<string, Authority> candidateAuthorities)
         {
             if (candidateAuthorities.Keys.Count > 0)
             {
-                Console.WriteLine($"----- Group: {agent.NormalisedOriginal} ---------");
+                Console.WriteLine($"----- Group: {label} ---------");
                 Console.Write("{0,-7}", "key");
                 Console.Write("{0,-4}", "sc");
                 Console.Write("{0,-12}", "Ulan");
@@ -25,7 +25,7 @@ namespace PmcTransformer.Reconciliation
                     Console.Write("{0,-20}", kvp.Value.Viaf);
                     Console.WriteLine(kvp.Value.Lux);
                 }
-                Console.WriteLine($"----- END Group: {agent.NormalisedOriginal} ---------");
+                Console.WriteLine($"----- END Group: {label} ---------");
             }
         }
 

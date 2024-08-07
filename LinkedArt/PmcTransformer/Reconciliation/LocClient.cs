@@ -8,8 +8,8 @@ namespace PmcTransformer.Reconciliation
         private readonly HttpClient httpClient;
         private readonly JsonSerializerOptions prettyJson = new JsonSerializerOptions { WriteIndented = true };
 
-        private const string locName = "http://id.loc.gov/authorities/names/";
-        private const string locNameS = "https://id.loc.gov/authorities/names/";
+        private const string locName = "http://id.loc.gov/authorities/";
+        private const string locNameS = "https://id.loc.gov/authorities/";
 
         private static DateTime LastCalled = DateTime.Now;
 
@@ -18,10 +18,10 @@ namespace PmcTransformer.Reconciliation
             this.httpClient = httpClient;
         }
 
-        public async Task<IdentifierAndLabel?> GetName(string identifier)
+        public async Task<IdentifierAndLabel?> GetName(string category, string identifier)
         {
             await RateLimit();
-            var url = $"{locNameS}{identifier}.skos.json";
+            var url = $"{locNameS}{category}/{identifier}.skos.json";
             var stream = await httpClient.GetStreamAsync(url);
             using (JsonDocument jDoc = JsonDocument.Parse(stream))
             {
@@ -52,9 +52,30 @@ namespace PmcTransformer.Reconciliation
         }
 
         public async Task<List<IdentifierAndLabel>> SuggestName(string name)
+        {
+            var suggestions = await Suggest("names", name);
+            return suggestions;
+        }
+
+        public async Task<List<IdentifierAndLabel>> SuggestHeading(string name)
+        {
+            var suggestions = await Suggest("subjects", name);
+            return suggestions;
+        }
+
+        public async Task<List<IdentifierAndLabel>> SuggestPlace(string name)
+        {
+            // Need to see if this is good enough or whether we need to splelunk the results to 
+            // narrow down to a place.
+            var suggestions = await Suggest("names", name);
+            return suggestions;
+        }
+
+
+        public async Task<List<IdentifierAndLabel>> Suggest(string category, string name)
         {            
             await RateLimit();
-            const string url = "https://id.loc.gov/authorities/names/suggest/?q=";
+            string url = $"{locNameS}{category}/suggest/?q=";
             var results = new List<IdentifierAndLabel>();
             var reqUrl = url + HttpUtility.UrlEncode(name);
             try
@@ -70,7 +91,7 @@ namespace PmcTransformer.Reconciliation
                         {
                             results.Add(new IdentifierAndLabel()
                             {
-                                Identifier = jDoc.RootElement[3][0].GetString()!.Replace(locName, ""),
+                                Identifier = jDoc.RootElement[3][0].GetString()!.Split('/')[^1],
                                 Label = jDoc.RootElement[1][0].GetString()!
                             });
                         }

@@ -41,11 +41,11 @@ namespace PmcTransformer.Reconciliation
                 // for each of our authority providers (loc, viaf etc), if there's only one equivalent then use that one.
                 // if there is more than one, we need to find their source labels and attempt to match on disambiguator
 
-                const string locPrefix = "http://id.loc.gov/authorities/names/";
+                const string locPrefix = "http://id.loc.gov/";
                 var locs = laObj.Equivalent.Where(e => e.Id.StartsWith(locPrefix)).ToList();
                 if (locs.Count == 1)
                 {
-                    authority.Loc = locs[0].Id.Replace(locPrefix, "");
+                    authority.Loc = locs[0].Id.Split('/')[^1];
                 }
                 else if (locs.Count > 1)
                 {
@@ -53,7 +53,8 @@ namespace PmcTransformer.Reconciliation
                     var idsAndLabels = new List<IdentifierAndLabel>();
                     foreach(var l in locs)
                     {
-                        var idAndLabel = await locClient.GetName(l.Id.Replace(locPrefix, ""));
+                        var idParts = l.Id.Split('/');  
+                        var idAndLabel = await locClient.GetName(idParts[^2], idParts[^1]);
                         idsAndLabels.Add(idAndLabel);
                     }
                     var bestMatch = FuzzySharp.Process.ExtractOne(disambiguator, idsAndLabels.Select(i => i.Label));
@@ -144,23 +145,42 @@ namespace PmcTransformer.Reconciliation
         }
 
 
-        public async Task<Dictionary<string, Authority>> AddCandidatesFromLoc(string? agentString, string? variant = null)
+
+        public async Task<Dictionary<string, Authority>> AddCandidatesFromLoc(string authorityType, string? agentString, string? variant = null)
         {
+            Func<string, Task<List<IdentifierAndLabel>>> locSuggester;
+            bool isName = false;
+            switch(authorityType)
+            {
+                case "Person":
+                case "Group":
+                    locSuggester = locClient.SuggestName;
+                    isName = true;
+                    break;
+                case "Place":
+                    locSuggester = locClient.SuggestPlace;
+                    break;
+                case "Concept":
+                    locSuggester = locClient.SuggestHeading;
+                    break;
+                    default: 
+                    throw new ArgumentException("Unsupported authority type", nameof(authorityType));
+            }
             var candidateAuthorities = new Dictionary<string, Authority>();
             if(string.IsNullOrWhiteSpace(agentString))
             {
                 return candidateAuthorities;
             }
-            var locResults = await locClient.SuggestName(agentString);
+            var locResults = await locSuggester(agentString);
             var firstLoc = locResults.FirstOrDefault();
             if (firstLoc == null && variant != null)
             {
-                locResults = await locClient.SuggestName(variant);
+                locResults = await locSuggester(variant);
                 firstLoc = locResults.FirstOrDefault();
             }
-            if (firstLoc == null && agentString.IndexOf(" and ") > 0)
+            if (firstLoc == null && isName && agentString.IndexOf(" and ") > 0)
             {
-                locResults = await locClient.SuggestName(agentString.Replace(" and ", " & "));
+                locResults = await locSuggester(agentString.Replace(" and ", " & "));
                 firstLoc = locResults.FirstOrDefault();
             }
             if (firstLoc != null)
@@ -222,7 +242,39 @@ namespace PmcTransformer.Reconciliation
             return candidateAuthorities;
         }
 
-        public async Task<Dictionary<string, Authority>> AddCandidatesFromLux(
+
+        public async Task<Dictionary<string, Authority>> AddLookupCandidatesFromLux(string authorityType, string name)
+        {
+            var candidateAuthorities = new Dictionary<string, Authority>();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return candidateAuthorities;
+            }
+            int luxCounter = 1;
+            List<LinkedArtObject> linkedArtObjects;
+            if (authorityType == "Place")
+            {
+                var places = await luxClient.PlaceSearch(name);
+                linkedArtObjects = places.Cast<LinkedArtObject>().ToList();
+            }
+            else if(authorityType == "Concept")
+            {
+                linkedArtObjects = await luxClient.ConceptSearch(name);
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported Authority Type", nameof(authorityType));
+            }
+            foreach (var laObj in linkedArtObjects)
+            {
+                var authority = await GetFromEquivalents(laObj, name);
+                authority.Score = 100; // how to tell...
+                candidateAuthorities[$"lux{luxCounter++}"] = authority;
+            }
+            return candidateAuthorities;
+        }
+
+        public async Task<Dictionary<string, Authority>> AddWorkByCandidatesFromLux(
             Dictionary<string, LinguisticObject> allWorks, 
             ParsedAgent agent)
         {

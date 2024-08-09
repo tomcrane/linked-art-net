@@ -77,7 +77,7 @@ namespace PmcTransformer.Reconciliation
                 List<Task<Dictionary<string, Authority>>> authTasks = [
                     authorityService.AddLookupCandidatesFromLux(authorityType, tryFirst),
                     authorityService.AddCandidatesFromViaf(viafQualifier, tryFirst),
-                    authorityService.AddCandidatesFromLoc(tryFirst, variant)
+                    authorityService.AddCandidatesFromLoc(authorityType, tryFirst, variant)
                 ];
 
                 await Task.WhenAll(authTasks);

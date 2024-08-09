@@ -31,8 +31,7 @@ namespace PmcTransformer.Reconciliation
             {
                 Label = laObj.GetPrimaryName(true)
             };
-            const string lux = "https://lux.collections.yale.edu/";
-            if (laObj.Id!.StartsWith(lux))
+            if (laObj.Id!.StartsWith(Authority.LuxPrefix))
             {
                 authority.Lux = laObj.Id;
             }
@@ -41,8 +40,7 @@ namespace PmcTransformer.Reconciliation
                 // for each of our authority providers (loc, viaf etc), if there's only one equivalent then use that one.
                 // if there is more than one, we need to find their source labels and attempt to match on disambiguator
 
-                const string locPrefix = "http://id.loc.gov/";
-                var locs = laObj.Equivalent.Where(e => e.Id.StartsWith(locPrefix)).ToList();
+                var locs = laObj.Equivalent.Where(e => e.Id.StartsWith(Authority.LocPrefix)).ToList();
                 if (locs.Count == 1)
                 {
                     authority.Loc = locs[0].Id.Split('/')[^1];
@@ -55,7 +53,10 @@ namespace PmcTransformer.Reconciliation
                     {
                         var idParts = l.Id.Split('/');  
                         var idAndLabel = await locClient.GetName(idParts[^2], idParts[^1]);
-                        idsAndLabels.Add(idAndLabel);
+                        if (idAndLabel != null)
+                        {
+                            idsAndLabels.Add(idAndLabel);
+                        }
                     }
                     var bestMatch = FuzzySharp.Process.ExtractOne(disambiguator, idsAndLabels.Select(i => i.Label));
                     Console.WriteLine("LOC Candidates:");
@@ -65,11 +66,10 @@ namespace PmcTransformer.Reconciliation
                     authority.Loc = bestIdAndLabel.Identifier;
                 }
 
-                const string viafPrefix = "http://viaf.org/viaf/";
-                var viafs = laObj.Equivalent.Where(e => e.Id.StartsWith(viafPrefix)).ToList();
+                var viafs = laObj.Equivalent.Where(e => e.Id.StartsWith(Authority.ViafPrefix)).ToList();
                 if (viafs.Count == 1)
                 {
-                    authority.Viaf = viafs[0].Id.Replace(viafPrefix, "");
+                    authority.Viaf = viafs[0].Id.Replace(Authority.ViafPrefix, "");
                 }
                 else if (viafs.Count > 1)
                 {
@@ -77,7 +77,7 @@ namespace PmcTransformer.Reconciliation
                     var idsAndLabelsAll = new List<IdentifierAndLabel>();
                     foreach(var v in viafs)
                     {
-                        var idAndLabel = await viafClient.GetName(v.Id.Replace(viafPrefix, ""));
+                        var idAndLabel = await viafClient.GetName(v.Id.Replace(Authority.ViafPrefix, ""));
                         idsAndLabelsAll.Add(idAndLabel);
                     }
                     var idsAndLabels = idsAndLabelsAll
@@ -91,11 +91,10 @@ namespace PmcTransformer.Reconciliation
                     authority.Viaf = bestIdAndLabel.Identifier;
                 }
 
-                const string ulanPrefix = "http://vocab.getty.edu/ulan/";
-                var ulans = laObj.Equivalent.Where(e => e.Id.StartsWith(ulanPrefix)).ToList();
+                var ulans = laObj.Equivalent.Where(e => e.Id.StartsWith(Authority.UlanPrefix)).ToList();
                 if (ulans.Count == 1)
                 {
-                    authority.Ulan = ulans[0].Id.Replace(ulanPrefix, "");
+                    authority.Ulan = ulans[0].Id.Replace(Authority.UlanPrefix, "");
                 }
                 else if (ulans.Count > 1)
                 {
@@ -103,7 +102,7 @@ namespace PmcTransformer.Reconciliation
                     var actors = new List<Actor>();
                     foreach(var u in ulans)
                     {
-                        var actor = await ulanClient.GetFromIdentifier(u.Id.Replace(ulanPrefix, ""));
+                        var actor = await ulanClient.GetFromIdentifier(u.Id.Replace(Authority.UlanPrefix, ""));
                         actors.Add(actor);
                     }
                     var bestMatch = FuzzySharp.Process.ExtractOne(disambiguator, actors.Select(a => a.Label));
@@ -111,14 +110,13 @@ namespace PmcTransformer.Reconciliation
                     actors.ForEach(a => Console.WriteLine(a.Label));
                     Console.WriteLine($"Best: {bestMatch.Value}; Score: {bestMatch.Score}");
                     var bestActor = actors[bestMatch.Index];
-                    authority.Ulan = bestActor.Id.Replace(ulanPrefix, "");
+                    authority.Ulan = bestActor.Id.Replace(Authority.UlanPrefix, "");
                 }
 
-                const string wikiPrefix = "http://www.wikidata.org/entity/";
-                var wkds = laObj.Equivalent.Where(e => e.Id.StartsWith(wikiPrefix)).ToList();
+                var wkds = laObj.Equivalent.Where(e => e.Id.StartsWith(Authority.WikidataPrefix)).ToList();
                 if (wkds.Count == 1)
                 {
-                    authority.Wikidata = wkds[0].Id.Replace(wikiPrefix, "");
+                    authority.Wikidata = wkds[0].Id.Replace(Authority.WikidataPrefix, "");
                 }
                 else if (wkds.Count > 1)
                 {
@@ -126,7 +124,7 @@ namespace PmcTransformer.Reconciliation
                     var idsAndLabels = new List<IdentifierAndLabel>();
                     foreach (var w in wkds)
                     {
-                        var idAndLabel = await wikidataClient.GetName(w.Id.Replace(wikiPrefix, ""));
+                        var idAndLabel = await wikidataClient.GetName(w.Id.Replace(Authority.WikidataPrefix, ""));
                         idsAndLabels.Add(idAndLabel);
                     }
                     var bestMatch = FuzzySharp.Process.ExtractOne(disambiguator, idsAndLabels.Select(i => i.Label));
@@ -146,9 +144,10 @@ namespace PmcTransformer.Reconciliation
 
 
 
-        public async Task<Dictionary<string, Authority>> AddCandidatesFromLoc(string authorityType, string? agentString, string? variant = null)
+        public async Task<Dictionary<string, Authority>> AddCandidatesFromLoc(string authorityType, string? term, string? variant = null)
         {
             Func<string, Task<List<IdentifierAndLabel>>> locSuggester;
+            Func<string, Task<List<IdentifierAndLabel>>>? alternateSuggester = null;
             bool isName = false;
             switch(authorityType)
             {
@@ -162,31 +161,42 @@ namespace PmcTransformer.Reconciliation
                     break;
                 case "Concept":
                     locSuggester = locClient.SuggestHeading;
+                    alternateSuggester = locClient.SuggestName;
                     break;
                     default: 
                     throw new ArgumentException("Unsupported authority type", nameof(authorityType));
             }
             var candidateAuthorities = new Dictionary<string, Authority>();
-            if(string.IsNullOrWhiteSpace(agentString))
+            if(string.IsNullOrWhiteSpace(term))
             {
                 return candidateAuthorities;
             }
-            var locResults = await locSuggester(agentString);
+            var locResults = await locSuggester(term);
             var firstLoc = locResults.FirstOrDefault();
             if (firstLoc == null && variant != null)
             {
                 locResults = await locSuggester(variant);
                 firstLoc = locResults.FirstOrDefault();
             }
-            if (firstLoc == null && isName && agentString.IndexOf(" and ") > 0)
+            if (firstLoc == null && isName && term.IndexOf(" and ") > 0)
             {
-                locResults = await locSuggester(agentString.Replace(" and ", " & "));
+                locResults = await locSuggester(term.Replace(" and ", " & "));
                 firstLoc = locResults.FirstOrDefault();
             }
             if (firstLoc != null)
             {
                 var authority = new Authority { Loc = firstLoc.Identifier, Label = firstLoc.Label };
                 candidateAuthorities["loc"] = authority;
+            }
+            if (alternateSuggester != null)
+            {
+                var altLocResults = await alternateSuggester(term);
+                var firstAltLoc = altLocResults.FirstOrDefault();
+                if (firstAltLoc != null)
+                {
+                    var authority = new Authority { Loc = firstAltLoc.Identifier, Label = firstAltLoc.Label };
+                    candidateAuthorities["loca"] = authority;
+                }
             }
             return candidateAuthorities;
         }
@@ -245,6 +255,7 @@ namespace PmcTransformer.Reconciliation
 
         public async Task<Dictionary<string, Authority>> AddLookupCandidatesFromLux(string authorityType, string name)
         {
+            // OK here need to do different types of search and merge luxes together
             var candidateAuthorities = new Dictionary<string, Authority>();
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -333,15 +344,22 @@ namespace PmcTransformer.Reconciliation
             var luxMatches = ExtractAuthoritiesBySource("lux", candidateAuthorities);
             var ulanMatches = ExtractAuthoritiesBySource("ulan", candidateAuthorities);
             var viafMatches = ExtractAuthoritiesBySource("viaf", candidateAuthorities);
+            var locMatches = ExtractAuthoritiesBySource("loc", candidateAuthorities);
 
             var nonLuxMatches = new List<Authority>(viafMatches);
             nonLuxMatches.AddRange(ulanMatches);
+            nonLuxMatches.AddRange(locMatches);
 
+            // we only want one locMatch
             Authority? locMatch = null;
-            if (candidateAuthorities.TryGetValue("loc", out Authority? value))
+            if(locMatches.Count == 1)
             {
-                locMatch = value;
-                nonLuxMatches.Add(locMatch);
+                locMatch = locMatches[0];
+            }
+            else if(locMatches.Count > 1)
+            {
+                var closestLabel = FuzzySharp.Process.ExtractOne(term, locMatches.Select(a => a.Label));
+                locMatch = locMatches.First(a => a.Label == closestLabel.Value);
             }
 
             // Need to work out when to NOT trust the LUX match.

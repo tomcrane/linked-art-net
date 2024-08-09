@@ -13,41 +13,12 @@ namespace PmcTransformer.Reconciliation
             this.httpClient = httpClient;
         }
 
-        public async Task<List<Place>> PlaceSearch(string term)
+        private async Task<List<LinkedArtObject>> Search(string category, string term)
         {
-            const string template = "https://lux.collections.yale.edu/api/search/place?q=%7B%22AND%22%3A%5B%7B%22name%22%3A%22{term}%22%2C%22_options%22%3A%5B%22unstemmed%22%5D%2C%22_complete%22%3Atrue%7D%5D%7D";
-            var uri = template.Replace("{term}", Uri.EscapeDataString(term));
-            var results = new List<Place>();
-            try
-            {
-                var stream = await httpClient.GetStreamAsync(uri);
-                using (JsonDocument jDoc = JsonDocument.Parse(stream))
-                {
-                    var orderedItems = jDoc.RootElement.GetProperty("orderedItems");
-                    foreach (var item in orderedItems.EnumerateArray())
-                    {
-                        var itemStream = await httpClient.GetStreamAsync(item.GetProperty("id").GetString());
-                        var place = JsonSerializer.Deserialize<Place>(itemStream); 
-                        if (place != null) 
-                        { 
-                            results.Add(place); 
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"LUX error for place '{term}'");
-                Console.WriteLine(ex.ToString());
-            }
-
-            return results;
-        }
-
-        public async Task<List<LinkedArtObject>> ConceptSearch(string term)
-        {
-            const string template = "https://lux.collections.yale.edu/api/search/concept?q=%7B%22AND%22%3A%5B%7B%22name%22%3A%22{term}%22%2C%22_options%22%3A%5B%22unstemmed%22%5D%2C%22_complete%22%3Atrue%7D%5D%7D";
-            var uri = template.Replace("{term}", Uri.EscapeDataString(term));
+            const string template = "https://lux.collections.yale.edu/api/search/{category}?q=%7B%22AND%22%3A%5B%7B%22name%22%3A%22{term}%22%2C%22_options%22%3A%5B%22unstemmed%22%5D%2C%22_complete%22%3Atrue%7D%5D%7D";
+            var uri = template
+                .Replace("{category}", category)
+                .Replace("{term}", Uri.EscapeDataString(term));
             var results = new List<LinkedArtObject>();
             try
             {
@@ -57,22 +28,59 @@ namespace PmcTransformer.Reconciliation
                     var orderedItems = jDoc.RootElement.GetProperty("orderedItems");
                     foreach (var item in orderedItems.EnumerateArray())
                     {
+                        var type = item.GetProperty("type").GetString();
                         var itemStream = await httpClient.GetStreamAsync(item.GetProperty("id").GetString());
-                        var concept = JsonSerializer.Deserialize<LinkedArtObject>(itemStream);
-                        if (concept != null)
+                        LinkedArtObject? laObj = null;
+                        switch (type)
                         {
-                            results.Add(concept);
+                            case "Person":
+                                laObj = JsonSerializer.Deserialize<Person>(itemStream);
+                                break;
+                            case "Group":
+                                laObj = JsonSerializer.Deserialize<Group>(itemStream);
+                                break;
+                            case "Place":
+                                laObj = JsonSerializer.Deserialize<Place>(itemStream);
+                                break;
+                            case "Type":
+                            default:
+                                laObj = JsonSerializer.Deserialize<LinkedArtObject>(itemStream);
+                                break;
+                        }
+                        if (laObj != null)
+                        {
+                            results.Add(laObj);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"LUX error for concept '{term}'");
+                Console.WriteLine($"LUX error for {category} '{term}'");
                 Console.WriteLine(ex.ToString());
             }
 
             return results;
+
+        }
+
+        public async Task<List<Place>> PlaceSearch(string term)
+        {
+            var places = await Search("place", term);
+            return places.Cast<Place>().ToList();
+        }
+
+
+        public async Task<List<Actor>> AgentSearch(string term)
+        {
+            var actors = await Search("agent", term);
+            return actors.Cast<Actor>().ToList();
+        }
+
+        public async Task<List<LinkedArtObject>> ConceptSearch(string term)
+        {
+            var concepts = await Search("concept", term);
+            return concepts; // callers need to expect different types
         }
 
         public async Task<List<Actor>> ActorsWhoCreatedWorks(string actorName, string workName)

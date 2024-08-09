@@ -198,9 +198,9 @@ namespace LinkedArtNet.Parsers
             }
             else
             {
-                return $"{year}-{year + 100}"; // we will subtract 1s for our LinkedArtDateTime
+                return $"{year}-{year + 99}"; // we will subtract 1s for our LinkedArtDateTime
             }
-            return $"{year}-{year + 10}"; // we will subtract 1s for our LinkedArtDateTime
+            return $"{year}-{year + 9}"; // we will subtract 1s for our LinkedArtDateTime
         }
 
         public static bool IsStartOfYear(this DateTimeOffset? dt)

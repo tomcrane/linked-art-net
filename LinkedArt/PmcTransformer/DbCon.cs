@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using LinkedArtNet;
 using Npgsql;
 using PmcTransformer.Helpers;
 
@@ -11,6 +12,35 @@ namespace PmcTransformer
             var dbpwd = Environment.GetEnvironmentVariable("pmc-db-pwd");
             return new NpgsqlConnection(
                 connectionString: $"Server=localhost;Port=5432;User Id=postgres;Password={dbpwd};Database=pmc-linked-art;");
+        }
+
+        public static List<Authority> FindByEquivalence(this NpgsqlConnection conn, LinkedArtObject laObj)
+        {
+            var testAuthority = new Authority
+            {
+                Ulan = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.UlanPrefix))?.Id?.LastPathElement(),
+                Viaf = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.ViafPrefix))?.Id?.LastPathElement(),
+                Loc = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.LocPrefix))?.Id?.LastPathElement(),
+                Wikidata = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.WikidataPrefix))?.Id?.LastPathElement(),
+                Aat = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.AatPrefix))?.Id?.LastPathElement(),
+                Lux = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.LuxPrefix))?.Id
+            };
+
+            var matching = conn.SelectFromEquivalents(testAuthority);
+            if(matching.Count > 1)
+            {
+                Console.WriteLine("More than one match for " + laObj.Label);
+            }
+            if(matching.Count > 0)
+            {
+                return matching;
+            }
+
+            // didn't find a direct match, but can we match on name?
+            // TODO
+            return new List<Authority>();
+
+
         }
 
         public static AuthorityStringWithSource? GetAuthorityIdentifier(this NpgsqlConnection conn,
@@ -101,47 +131,7 @@ namespace PmcTransformer
             string type,
             Authority candidateAuthority)
         {
-            string sql = "select * from authorities where ";
-            if (candidateAuthority.Ulan.HasText())
-            {
-                sql += " ulan=@Ulan or ";
-            }
-            if (candidateAuthority.Aat.HasText())
-            {
-                sql += " aat=@Aat or ";
-            }
-            if (candidateAuthority.Lux.HasText())
-            {
-                sql += " lux=@Lux or ";
-            }
-            if (candidateAuthority.Loc.HasText())
-            {
-                sql += " loc=@Loc or ";
-            }
-            if (candidateAuthority.Viaf.HasText())
-            {
-                sql += " viaf=@Viaf or ";
-            }
-            if (candidateAuthority.Wikidata.HasText())
-            {
-                sql += " wikidata=@Wikidata or ";
-            }
-            if (candidateAuthority.Pmc.HasText())
-            {
-                sql += " pmc=@Pmc or ";
-            }
-            sql = sql.RemoveEnd(" or ")!;
-
-            var authorities = conn.Query<Authority>(sql, new
-            {
-                candidateAuthority.Ulan,
-                candidateAuthority.Aat,
-                candidateAuthority.Lux,
-                candidateAuthority.Loc,
-                candidateAuthority.Viaf,
-                candidateAuthority.Wikidata,
-                candidateAuthority.Pmc
-            }).ToList();
+            List<Authority> authorities = conn.SelectFromEquivalents(candidateAuthority);
 
             Authority? selectedAuthority;
             if (authorities.Count == 0)
@@ -172,7 +162,7 @@ namespace PmcTransformer
                 {
                     Console.WriteLine("Multiple matching authorities we could merge with");
                     var closestLabel = FuzzySharp.Process.ExtractOne(
-                        sourceString.RemoveThingsInParens(), 
+                        sourceString.RemoveThingsInParens(),
                         authorities.Select(a => a.Label.RemoveThingsInParens()));
                     Console.WriteLine($"Picking {closestLabel.Value} [Score: {closestLabel.Score}]");
                     authorities = [authorities.First(a => a.Label == closestLabel.Value || a.Label.RemoveThingsInParens() == closestLabel.Value)];
@@ -180,7 +170,7 @@ namespace PmcTransformer
                 }
 
                 selectedAuthority = authorities[0];
-                if(candidateAuthority.Label.HasText() && updateLabel)
+                if (candidateAuthority.Label.HasText() && updateLabel)
                 {
                     selectedAuthority.Label = candidateAuthority.Label;
                 }
@@ -231,9 +221,55 @@ namespace PmcTransformer
 
             }
             // selectedAuthority is not null here
-            conn.Execute("update source_string_map set authority=@Identifier " +    
+            conn.Execute("update source_string_map set authority=@Identifier " +
                          "where source=@dataSource and string=@sourceString",
                         new { selectedAuthority!.Identifier, dataSource, sourceString });
+        }
+
+        private static List<Authority> SelectFromEquivalents(this NpgsqlConnection conn, Authority testAuthority)
+        {
+            string sql = "select * from authorities where ";
+            if (testAuthority.Ulan.HasText())
+            {
+                sql += " ulan=@Ulan or ";
+            }
+            if (testAuthority.Aat.HasText())
+            {
+                sql += " aat=@Aat or ";
+            }
+            if (testAuthority.Lux.HasText())
+            {
+                sql += " lux=@Lux or ";
+            }
+            if (testAuthority.Loc.HasText())
+            {
+                sql += " loc=@Loc or ";
+            }
+            if (testAuthority.Viaf.HasText())
+            {
+                sql += " viaf=@Viaf or ";
+            }
+            if (testAuthority.Wikidata.HasText())
+            {
+                sql += " wikidata=@Wikidata or ";
+            }
+            if (testAuthority.Pmc.HasText())
+            {
+                sql += " pmc=@Pmc or ";
+            }
+            sql = sql.RemoveEnd(" or ")!;
+
+            var authorities = conn.Query<Authority>(sql, new
+            {
+                testAuthority.Ulan,
+                testAuthority.Aat,
+                testAuthority.Lux,
+                testAuthority.Loc,
+                testAuthority.Viaf,
+                testAuthority.Wikidata,
+                testAuthority.Pmc
+            }).ToList();
+            return authorities;
         }
 
         public static void UpdateTimestamp(this NpgsqlConnection conn, AuthorityStringWithSource ssa)
@@ -243,5 +279,6 @@ namespace PmcTransformer
                         new { ssa.Source, ssa.String, DateTimeOffset.UtcNow });
 
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace LinkedArtNet.Parsers
@@ -17,8 +18,12 @@ namespace LinkedArtNet.Parsers
         [GeneratedRegex(@"[\d]{4}")]
         private static partial Regex FourDigitYear();
 
+        [GeneratedRegex(@"([\d]{4}) or ([\d]{4})")]
+        private static partial Regex YearOrYear();
+
         public Tuple<LinkedArtTimeSpan?, LinkedArtTimeSpan?, TimespanParserHints>? ParseSimpleYearDateRange(string? s)
         {
+            // From Archive Authority <Dates> field
             if (string.IsNullOrEmpty(s))
             {
                 return null;
@@ -58,10 +63,12 @@ namespace LinkedArtNet.Parsers
             var s2 = s.CollapseWhiteSpace()
                       .TrimOuterBrackets()
                       .RemoveCirca()
-                      .ExpandUncertainYears();
+                      .ExpandUncertainYears()?
+                      .Trim();
 
             DateTimeOffset? start = null;
             DateTimeOffset? end = null;
+            bool wasParsedByLib = false;
 
             if (string.IsNullOrWhiteSpace(s2))
             {
@@ -78,6 +85,7 @@ namespace LinkedArtNet.Parsers
             else
             {
                 var result1 = dateTimeModel.Parse(s2);
+                wasParsedByLib = true;
                 if (result1 != null)
                 {
                     // TODO: We may get multiple results, multiple date ranges.
@@ -89,7 +97,7 @@ namespace LinkedArtNet.Parsers
                     var range = result1.FirstOrDefault(r => r.TypeName == "datetimeV2.daterange");
                     if (range != null)
                     {
-                        var values = ((List<Dictionary<string, string>>)range.Resolution["values"])[0];
+                        var values = ((List<Dictionary<string, string>>)range.Resolution["values"])[0];                        
                         try
                         {
                             start = DateTimeOffset.Parse(values.Single(kvp => kvp.Key == "start").Value);
@@ -101,6 +109,27 @@ namespace LinkedArtNet.Parsers
                         try
                         {
                             end = DateTimeOffset.Parse(values.Single(kvp => kvp.Key == "end").Value);
+                            bool isSingleYear = false;
+                            if(values.TryGetValue("timex", out string? timex))
+                            {
+                                if(timex != null && timex.Length == 4 && timex.All(char.IsDigit))
+                                {
+                                    isSingleYear = true;
+                                }
+                            }
+                            // The way the library parses dates it will give
+                            // "1971" =>      1/1/1971-1/1/1972, 
+                            // "1971-1972" => 1/1/1971-1/1/1972, 
+                            // But we can tell what happened by looking at the timex value
+                            if (
+                                !isSingleYear && 
+                                start != null && 
+                                start.Value.Year < end.Value.Year && 
+                                end.IsStartOfYear()
+                            )
+                            {
+                                end = new DateTimeOffset(end.Value.Year + 1, 1, 1, 0, 0, 0, TimeSpan.Zero);
+                            }
                         }
                         catch
                         {
@@ -126,6 +155,10 @@ namespace LinkedArtNet.Parsers
                 EndOfTheEnd = GetEnd(start, end)
             };
 
+            //if(wasParsedByLib)
+            //{
+                Console.WriteLine($"*** date {s} => {s2} => {ts.BeginOfTheBegin?.DtOffset} - {ts.EndOfTheEnd?.DtOffset}");
+            //}
             return ts;
         }
 
@@ -165,6 +198,120 @@ namespace LinkedArtNet.Parsers
             }
 
             return null;
+        }
+
+
+        public static TimespanParserHints ParseLibraryAgentDate(string dateString)
+        {
+            var tsHints = new TimespanParserHints { DateString = dateString };
+
+            var lowerDate = tsHints.DateString.ToLower();
+            if (
+                    lowerDate.StartsWith("active ")
+                || lowerDate.StartsWith("fl")
+                || lowerDate.StartsWith("florit"))
+            {
+                tsHints.IsDatesActive = true;
+            }
+            if (
+                    lowerDate.StartsWith("approx")
+                || lowerDate.StartsWith("c.")
+                || lowerDate.StartsWith("circa"))
+            {
+                tsHints.IsCirca = true;
+            }
+
+            string yearsNormalised = tsHints.DateString;
+            foreach (Match m in YearOrYear().Matches(tsHints.DateString))
+            {
+                yearsNormalised = yearsNormalised.Replace(m.Value, m.Groups[1].Value);
+                tsHints.IsCirca= true;
+            }
+
+            StringBuilder sb = new();
+            foreach (char c in yearsNormalised)
+            {
+                if (c == '-' || char.IsDigit(c))
+                {
+                    sb.Append(c);
+                }
+                if (c == '?')
+                {
+                    tsHints.IsCirca = true;
+                }
+            }
+            string numericDate = sb.ToString();
+            if (numericDate.Length == 8 && numericDate.All(char.IsDigit))
+            {
+                // There was likely a non '-' year separator, so put one back in
+                numericDate = $"{numericDate[..4]}-{numericDate[4..]}";
+            }
+
+            // For any month/day dates captured, reduce to a year (this is v rough)
+            var parts = numericDate.Split('-');
+            numericDate = string.Join("-", parts.Select(p => new string(p.Take(4).ToArray())));
+            if (tsHints.DateString.IndexOf("century", StringComparison.InvariantCultureIgnoreCase) != -1)
+            {
+                parts = numericDate.Split('-');
+                var psb = new StringBuilder();
+                for (int pi = 0; pi < parts.Length; pi++)
+                {
+                    if (parts[pi].Length == 2)
+                    {
+                        if (pi == 0)
+                        {
+                            parts[pi] = ((Convert.ToInt32(parts[pi]) - 1) * 100).ToString();
+                        }
+                        else
+                        {
+                            parts[pi] = (Convert.ToInt32(parts[pi]) * 100 - 1).ToString();
+                        }
+                    }
+                }
+                numericDate = string.Join("-", parts);
+                if (numericDate.Length == 4 && numericDate.EndsWith("00"))
+                {
+                    numericDate = $"{numericDate}-{Convert.ToInt32(numericDate) + 99}";
+                }
+            }
+
+            var twoParts = numericDate.Split("-");
+            for (int pi = 0; pi < twoParts.Length; pi++)
+            {
+                if (twoParts[pi].Length == 4)
+                {
+                    if (pi == 0)
+                    {
+                        tsHints.StartYear = Convert.ToInt32(twoParts[pi]);
+                    }
+                    else
+                    {
+                        tsHints.EndYear = Convert.ToInt32(twoParts[pi]);
+                    }
+                }
+            }
+
+
+            if (numericDate != tsHints.DateString)
+            {
+                if (!string.IsNullOrWhiteSpace(numericDate))
+                {
+                    tsHints.NumericDateString = numericDate;
+                }
+                else
+                {
+                    // There is text in DateString, but it's not a numerical date
+                    // Callers may with to see if it contains a role
+                    //if(string.IsNullOrEmpty(Role))
+                    //{
+                    //    // Only set if we don't already have a role
+                    //    Role = DateString.TrimOuterParentheses();
+                    //}
+                }
+            }
+
+            return tsHints;
+
         }
 
     }

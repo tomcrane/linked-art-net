@@ -90,13 +90,13 @@ namespace PmcTransformer
             if(Ulan.HasText())
             {
                 laObj.Equivalent ??= [];
-                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://vocab.getty.edu/ulan/" + Ulan));
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(UlanPrefix + Ulan));
             }
 
             if (Aat.HasText())
             {
                 laObj.Equivalent ??= [];
-                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://vocab.getty.edu/aat/" + Aat));
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(AatPrefix + Aat));
             }
 
             //if (Lux.HasText())
@@ -108,19 +108,20 @@ namespace PmcTransformer
             if (Loc.HasText())
             {
                 laObj.Equivalent ??= [];
-                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://id.loc.gov/authorities/names/" + Loc));
+                var lcCategory = Type == "Concept" ? "subjects" : "names";
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId($"{LocPrefix}{lcCategory}/{Loc}"));
             }
 
             if (Viaf.HasText())
             {
                 laObj.Equivalent ??= [];
-                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://viaf.org/viaf/" + Viaf));
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(ViafPrefix + Viaf));
             }
 
             if (Wikidata.HasText())
             {
                 laObj.Equivalent ??= [];
-                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId("http://www.wikidata.org/entity/" + Wikidata));
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(WikidataPrefix + Wikidata));
             }
 
             if (Pmc.HasText())
@@ -162,6 +163,13 @@ namespace PmcTransformer
             return base.ToString();
 
         }
+
+        public const string LocPrefix = "http://id.loc.gov/authorities/";
+        public const string ViafPrefix = "http://viaf.org/viaf/";
+        public const string UlanPrefix = "http://vocab.getty.edu/ulan/";
+        public const string AatPrefix = "http://vocab.getty.edu/aat/";
+        public const string WikidataPrefix = "http://www.wikidata.org/entity/";
+        public const string LuxPrefix = "https://lux.collections.yale.edu/";
 
     }
 }

@@ -8,8 +8,7 @@ namespace PmcTransformer.Reconciliation
         private readonly HttpClient httpClient;
         private readonly JsonSerializerOptions prettyJson = new JsonSerializerOptions { WriteIndented = true };
 
-        private const string locName = "http://id.loc.gov/authorities/";
-        private const string locNameS = "https://id.loc.gov/authorities/";
+        private readonly string locNameS = Authority.LocPrefix.Replace("http://", "https://");
 
         private static DateTime LastCalled = DateTime.Now;
 
@@ -22,17 +21,34 @@ namespace PmcTransformer.Reconciliation
         {
             await RateLimit();
             var url = $"{locNameS}{category}/{identifier}.skos.json";
-            var stream = await httpClient.GetStreamAsync(url);
-            using (JsonDocument jDoc = JsonDocument.Parse(stream))
+            int attempt = 0;
+            while (attempt <= 4)
             {
-                foreach (var item in jDoc.RootElement.EnumerateArray())
+                try
                 {
-                    if (item.TryGetProperty("http://www.w3.org/2004/02/skos/core#prefLabel", out JsonElement prefLabelElement))
+                    var stream = await httpClient.GetStreamAsync(url);
+                    using (JsonDocument jDoc = JsonDocument.Parse(stream))
                     {
-                        var label = prefLabelElement.EnumerateArray().First().GetProperty("@value").GetString();
-                        return new IdentifierAndLabel { Identifier = identifier, Label = label! };
+                        foreach (var item in jDoc.RootElement.EnumerateArray())
+                        {
+                            if (item.TryGetProperty("http://www.w3.org/2004/02/skos/core#prefLabel", out JsonElement prefLabelElement))
+                            {
+                                var label = prefLabelElement.EnumerateArray().First().GetProperty("@value").GetString();
+                                return new IdentifierAndLabel { Identifier = identifier, Label = label! };
+                            }
+                        }
                     }
                 }
+                catch(Exception ex)
+                {
+                    attempt++;
+                    Console.WriteLine($"!!! Failed to retrieve {url}, attempt {attempt}, {ex.Message}");
+                    await RateLimit();
+                }
+            }
+            if(attempt > 4)
+            {
+                Console.WriteLine($"!!! GIVING UP attempt on {url}");
             }
             return null;
         }
@@ -76,34 +92,44 @@ namespace PmcTransformer.Reconciliation
         {            
             await RateLimit();
             string url = $"{locNameS}{category}/suggest/?q=";
-            var results = new List<IdentifierAndLabel>();
             var reqUrl = url + HttpUtility.UrlEncode(name);
-            try
+            int attempt = 0;
+            while (attempt <= 4)
             {
-                var stream = await httpClient.GetStreamAsync(reqUrl);
-                using (JsonDocument jDoc = JsonDocument.Parse(stream))
+                try
                 {
-                    Console.WriteLine(JsonSerializer.Serialize(jDoc, prettyJson));
-                    if (jDoc.RootElement.ValueKind == JsonValueKind.Array)
+                    var stream = await httpClient.GetStreamAsync(reqUrl);
+                    using (JsonDocument jDoc = JsonDocument.Parse(stream))
                     {
-                        // This assumes 1 result per match
-                        for (int i = 0; i < jDoc.RootElement[3].GetArrayLength(); i++)
+                        Console.WriteLine(JsonSerializer.Serialize(jDoc, prettyJson));
+                        if (jDoc.RootElement.ValueKind == JsonValueKind.Array)
                         {
-                            results.Add(new IdentifierAndLabel()
+                            var results = new List<IdentifierAndLabel>();
+                            // This assumes 1 result per match
+                            for (int i = 0; i < jDoc.RootElement[3].GetArrayLength(); i++)
                             {
-                                Identifier = jDoc.RootElement[3][0].GetString()!.Split('/')[^1],
-                                Label = jDoc.RootElement[1][0].GetString()!
-                            });
+                                results.Add(new IdentifierAndLabel()
+                                {
+                                    Identifier = jDoc.RootElement[3][0].GetString()!.Split('/')[^1],
+                                    Label = jDoc.RootElement[1][0].GetString()!
+                                });
+                            }
+                            return results;
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    attempt++;
+                    Console.WriteLine($"!!! Failed to retrieve {url}, attempt {attempt}, {ex.Message}");
+                    await RateLimit();
+                }
             }
-            catch (Exception ex)
+            if (attempt > 4)
             {
-                Console.WriteLine($"ERROR talking to LOC: " + ex.Message + " " + reqUrl);
-                return results;
+                Console.WriteLine($"!!! GIVING UP attempt on {url}");
             }
-            return results;
+            return new List<IdentifierAndLabel>();
         }
     }
 }

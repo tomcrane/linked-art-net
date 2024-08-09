@@ -1,6 +1,7 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
+using PmcTransformer.Helpers;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
@@ -41,15 +42,25 @@ namespace PmcTransformer.Archive
                     name
                 ];
                 dict[code] = actor;  // use the code rather than recordId, as code is used in descriptions
-                
+
+                string label = "";
                 var surname = record.ArcStrings("Surname").SingleOrDefault();
                 var forenames = record.ArcStrings("Forenames").SingleOrDefault();
                 if (surname != null)
                 {
+                    label = surname;
                     name.Part = [new Name(surname).WithClassifiedAs(Getty.FamilyName)];
                 }
                 if (forenames != null)
                 {
+                    if (label == null)
+                    {
+                        label = forenames;
+                    }
+                    else
+                    {
+                        label += ", " + forenames;
+                    }
                     name.Part ??= [];
                     name.Part.Add(new Name(forenames).WithClassifiedAs(Getty.GivenName));
                 }
@@ -57,7 +68,16 @@ namespace PmcTransformer.Archive
                 var dates = record.ArcStrings("Dates").SingleOrDefault();
                 if (dates != null)
                 {
+                    if (label != null)
+                    {
+                        label += ", " + dates;
+                    }
                     AssignDates(actor, dates);
+                }
+
+                if(label.HasText())
+                {
+                    actor.WithLabel(label);
                 }
 
                 foreach(var parallelEntry in record.ArcStrings("ParallelEntry"))
@@ -81,7 +101,8 @@ namespace PmcTransformer.Archive
                 LookForEquivalents(actor, textEquiv);
                 LookForEquivalents(actor, setEquiv);
 
-                Writer.WriteToDisk(actor);
+                // Don't do this yet! wait until after attempting to reconcile with our existing authorities
+                // Writer.WriteToDisk(actor);
 
             }
 
@@ -107,7 +128,7 @@ namespace PmcTransformer.Archive
             {
                 actor.Equivalent = [
                     actor.GetReferenceObject(false)
-                        .WithId("http://viaf.org/viaf/" + viaf)
+                        .WithId(Authority.ViafPrefix + viaf)
                 ];
                 return;
             } 
@@ -117,7 +138,7 @@ namespace PmcTransformer.Archive
             {
                 actor.Equivalent = [
                     actor.GetReferenceObject(false)
-                        .WithId("http://vocab.getty.edu/ulan/" + ulan)
+                        .WithId(Authority.UlanPrefix + ulan)
                 ];
             }
         }

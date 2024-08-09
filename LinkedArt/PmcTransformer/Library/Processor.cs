@@ -595,6 +595,7 @@ namespace PmcTransformer.Library
 
             var conn = DbCon.Get();
             var yaleUP = conn.GetAuthorityFromSourceString("publisher", "Yale University Press", false);
+            Writer.WriteToDisk(yaleUP!.GetFull()!);
             var yaleUPRef = yaleUP!.GetReference() as Group;
 
             foreach (var publisher in publisherDict)
@@ -682,6 +683,70 @@ namespace PmcTransformer.Library
             Dictionary<string, LinguisticObject> allWorks, 
             Dictionary<string, List<HumanMadeObject>> allHMOs, 
             Dictionary<string, ParsedAgent> persAuthorFullDict)
+        {
+            var conn = DbCon.Get();
+
+            foreach (var person in persAuthorFullDict)
+            {
+                var personString = person.Value.NormalisedOriginal;
+                Person? personRef = null;
+                Person? full = null;
+
+                var authority = conn.GetAuthorityFromSourceString("persauthorfull", personString, true);
+                if (authority == null)
+                {
+                    throw new InvalidOperationException("Must have an Authority at this point");
+                }
+                if (authority.Unreconciled)
+                {
+                    authority.Type = "Person";
+                    authority.Label = personString;
+                }
+                personRef = authority.GetReference() as Person;
+                full = authority.GetFull() as Person;
+
+                if (personRef == null || full == null)
+                {
+                    throw new InvalidOperationException("Must have a Person at this point");
+                }
+                Writer.WriteToDisk(full);
+
+                var role = person.Value.Role ?? "author";
+                var activity = MappedRole.GetActivityWithPart(role);
+
+                foreach (var id in person.Value.Identifiers)
+                {
+                    if (person.Value.Role == "binder" || person.Value.Role == "printer")
+                    {
+                        foreach (var hmo in allHMOs[id])
+                        {
+                            var book = allWorks[id];
+                            book.CreatedBy ??= new Activity(Types.Production);
+                            book.CreatedBy.Part ??= [];
+                            book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
+                            {
+                                CarriedOutBy = [personRef],
+                                ClassifiedAs = activity.Part[0].ClassifiedAs
+                            });
+                        }
+                    }
+                    else
+                    {
+                        var book = allWorks[id];
+                        book.CreatedBy ??= new Activity(Types.Creation);
+                        book.CreatedBy.Part ??= [];
+                        book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
+                        {
+                            CarriedOutBy = [personRef],
+                            ClassifiedAs = activity.Part[0].ClassifiedAs
+                        });
+                    }
+                }
+            }
+        }
+
+        [Obsolete]
+        private static void OldPersonReconciliationObsolete(Dictionary<string, LinguisticObject> allWorks, Dictionary<string, List<HumanMadeObject>> allHMOs, Dictionary<string, ParsedAgent> persAuthorFullDict)
         {
             // Now split people into roles and dates and do similar as above.
             // And work out how to reconcile with Getty and LoC.
@@ -812,71 +877,9 @@ namespace PmcTransformer.Library
                     }
                 }
             }
-
-
-
-
-
-            var conn = DbCon.Get();
-
-            foreach (var person in persAuthorFullDict)
-            {
-                var personString = person.Value.NormalisedOriginal;
-                Person? personRef = null;
-                Person? full = null;
- 
-                var authority = conn.GetAuthorityFromSourceString("persauthorfull", personString, true);
-                if (authority == null)
-                {
-                    throw new InvalidOperationException("Must have an Authority at this point");
-                }
-                if (authority.Unreconciled)
-                {
-                    authority.Type = "Person";
-                    authority.Label = personString;
-                }
-                personRef = authority.GetReference() as Person;
-                full = authority.GetFull() as Person;
-
-                if (personRef == null || full == null)
-                {
-                    throw new InvalidOperationException("Must have a Person at this point");
-                }
-                Writer.WriteToDisk(full);
-
-                var role = person.Value.Role ?? "author";
-                var activity = MappedRole.GetActivityWithPart(role);
-
-                foreach (var id in person.Value.Identifiers)
-                {
-                    if (person.Value.Role == "binder" || person.Value.Role == "printer")
-                    {
-                        foreach (var hmo in allHMOs[id])
-                        {
-                            var book = allWorks[id];
-                            book.CreatedBy ??= new Activity(Types.Production);
-                            book.CreatedBy.Part ??= [];
-                            book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
-                            {
-                                CarriedOutBy = [personRef],
-                                ClassifiedAs = activity.Part[0].ClassifiedAs
-                            });
-                        }
-                    }
-                    else
-                    {
-                        var book = allWorks[id];
-                        book.CreatedBy ??= new Activity(Types.Creation);
-                        book.CreatedBy.Part ??= [];
-                        book.CreatedBy.Part.Add(new Activity(activity.Part![0].Type!)
-                        {
-                            CarriedOutBy = [personRef],
-                            ClassifiedAs = activity.Part[0].ClassifiedAs
-                        });
-                    }
-                }
-            }
         }
+
+
 
         public static void AssignCorpAuthors(
             Dictionary<string, LinguisticObject> allWorks, 

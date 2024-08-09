@@ -54,9 +54,6 @@ namespace PmcTransformer
         [GeneratedRegex(@"^(.*)\[(.*)\]$")]
         private static partial Regex DatePattern();
 
-        [GeneratedRegex(@"([\d]{4}) or ([\d]{4})")]
-        private static partial Regex YearOrYear();
-
 
         [SetsRequiredMembers]
         public ParsedAgent(string original)
@@ -94,110 +91,12 @@ namespace PmcTransformer
                         DateString = string.Join(",", commaParts[1..]).Trim();
                     }
 
-                    var lowerDate = DateString.ToLower();
-                    if (
-                            lowerDate.StartsWith("active ")
-                        || lowerDate.StartsWith("fl")
-                        || lowerDate.StartsWith("florit"))
-                    {
-                        IsActive = true;
-                    }
-                    if (
-                            lowerDate.StartsWith("approx")
-                        || lowerDate.StartsWith("c.")
-                        || lowerDate.StartsWith("circa"))
-                    {
-                        IsApproximate = true;
-                    }
-
-                    string yearsNormalised = DateString;
-                    foreach (Match m in YearOrYear().Matches(DateString))
-                    {
-                        yearsNormalised = yearsNormalised.Replace(m.Value, m.Groups[1].Value);
-                        IsApproximate = true;
-                    }
-
-                    StringBuilder sb = new();
-                    foreach (char c in yearsNormalised)
-                    {
-                        if (c == '-' || char.IsDigit(c))
-                        {
-                            sb.Append(c);
-                        }
-                        if(c == '?')
-                        {
-                            IsApproximate = true;
-                        }
-                    }
-                    string numericDate = sb.ToString();
-                    if (numericDate.Length == 8 && numericDate.All(char.IsDigit))
-                    {
-                        // There was likely a non '-' year separator, so put one back in
-                        numericDate = $"{numericDate[..4]}-{numericDate[4..]}";
-                    }
-
-                    // For any month/day dates captured, reduce to a year (this is v rough)
-                    var parts = numericDate.Split('-');
-                    numericDate = string.Join("-", parts.Select(p => new string(p.Take(4).ToArray())));
-                    if(DateString.IndexOf("century", StringComparison.InvariantCultureIgnoreCase) != -1)
-                    {
-                        parts = numericDate.Split('-');
-                        var psb = new StringBuilder();
-                        for(int pi = 0; pi < parts.Length; pi++)
-                        {
-                            if (parts[pi].Length == 2)
-                            {
-                                if(pi == 0)
-                                {
-                                    parts[pi] = ((Convert.ToInt32(parts[pi]) - 1) * 100).ToString();
-                                }
-                                else
-                                {
-                                    parts[pi] = (Convert.ToInt32(parts[pi]) * 100 - 1).ToString();
-                                }
-                            }
-                        }
-                        numericDate = string.Join("-", parts);
-                        if(numericDate.Length == 4 && numericDate.EndsWith("00"))
-                        {
-                            numericDate = $"{numericDate}-{Convert.ToInt32(numericDate) + 99}";
-                        }
-                    }
-
-                    var twoParts = numericDate.Split("-");
-                    for(int pi = 0; pi<twoParts.Length; pi++)
-                    {
-                        if (twoParts[pi].Length == 4)
-                        {
-                            if(pi == 0)
-                            {
-                                StartYear = Convert.ToInt32(twoParts[pi]);
-                            }
-                            else
-                            {
-                                EndYear = Convert.ToInt32(twoParts[pi]);
-                            }
-                        }
-                    }
-
-
-                    if (numericDate != DateString)
-                    {
-                        if (numericDate.HasText())
-                        {
-                            NumericDateString = numericDate;
-                        }
-                        else
-                        {
-                            // There is text in DateString, but it's not a numerical date
-                            // Callers may with to see if it contains a role
-                            //if(string.IsNullOrEmpty(Role))
-                            //{
-                            //    // Only set if we don't already have a role
-                            //    Role = DateString.TrimOuterParentheses();
-                            //}
-                        }
-                    }
+                    var tsHints = TimespanParser.ParseLibraryAgentDate(DateString);
+                    IsActive = tsHints.IsDatesActive;
+                    IsApproximate = tsHints.IsCirca;
+                    NumericDateString = tsHints.NumericDateString;
+                    StartYear = tsHints.StartYear;
+                    EndYear = tsHints.EndYear;
                 }
                 else
                 {

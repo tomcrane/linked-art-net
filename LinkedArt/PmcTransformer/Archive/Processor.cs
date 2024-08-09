@@ -1,6 +1,7 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
+using PmcTransformer.Reconciliation;
 using System.Text.Json;
 using System.Xml.Linq;
 
@@ -134,14 +135,22 @@ namespace PmcTransformer.Archive
                 Writer.WriteToDisk(laObj);
             }
 
-            // Then /created_by/carried_out_by
+            // Now we want to reconcile the actors in authorityDict
+            // to the authorities we already have from the library reconcilation.
 
-            foreach(var kvp in Helpers.thumbnailTextCounts)
+            var conn = DbCon.Get();
+            foreach(var actor in authorityDict.Values)
             {
-                Console.WriteLine(kvp.Key + ": " + kvp.Value);
+                var simpleMatches = conn.FindByEquivalence(actor);
+                foreach(var simpleMatch in simpleMatches)
+                {
+                    actor.Equivalent ??= [];
+                    actor.Equivalent.Add(simpleMatch.GetReference()!);
+                }
+                Writer.WriteToDisk(actor);
             }
+            // TODO - for now don't assert equivalence - come back and do that later, let's just get them out there
 
-            // Sample(archiveByRefNo, 1000, true);
         }
 
         private static Actor? TryMatchCreator(string creatorName, Dictionary<string, Actor> creatorDict)

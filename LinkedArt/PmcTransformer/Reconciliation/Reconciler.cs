@@ -39,16 +39,58 @@ namespace PmcTransformer.Reconciliation
                     continue;
                 }
 
+
                 Authority? knownAuthority = null;
                 string? tryFirst = null;
-                string? variant = null;
                 string? viafQualifier = null;
+
+                if (authorityType == "Concept")
+                {
+                    // check the PMC spreadsheet
+                    var cleanedSubjects = conn.GetCleanedSubjects(nameKvp.Key);
+                    var reconciled = cleanedSubjects.FirstOrDefault(x => x.IsReconciled());
+
+                    if(reconciled != null)
+                    {
+                        var authority = reconciled.ToAuthority();
+                        if(string.IsNullOrEmpty(authority.Type))
+                        {
+                            if(authorityType == "Concept")
+                            {
+                                var existing = conn.SelectFromEquivalents(authority).FirstOrDefault();
+                                if (existing != null)
+                                {
+                                    authority.Type = existing.Type;
+                                }
+                            }
+                            else
+                            {
+                                authority.Type = authorityType;
+                            }
+                        }
+                        if(authority.Type.HasText())
+                        {
+                            Console.WriteLine($"############## Resolved '{nameKvp.Key}' from PMC CSV");
+                            conn.UpsertAuthority(dataSource, authority.Label!, authority.Type, authority);
+                            conn.UpdateTimestamp(authorityIdentifier);
+                            continue;
+                        }
+                        // We have a reconciled authority, but it's not yet in our authorities table, and we don't know
+                        // its type, so we can't insert it just yet.
+                    }
+
+                    if(cleanedSubjects.Count != 0)
+                    {
+                        tryFirst = cleanedSubjects.First().KeywordsCleaned;
+                    }
+                }
+
 
                 switch (authorityType)
                 {
                     case "Place":
                         viafQualifier = "local.geographicNames all ";
-                        tryFirst = nameKvp.Key;
+                        tryFirst ??= nameKvp.Key;
                         break;
                     case "Concept":
 
@@ -59,7 +101,7 @@ namespace PmcTransformer.Reconciliation
                             KnownAuthorities.GetPerson(nameKvp.Key) ??
                             KnownAuthorities.GetGroup(nameKvp.Key);
                         viafQualifier = "local.names all ";
-                        tryFirst = nameKvp.Key;
+                        tryFirst ??= nameKvp.Key;
                         break;
                     default:
                         throw new NotSupportedException($"Unsupported reconciliation type {authorityType}, expected Place or Concept");
@@ -67,17 +109,15 @@ namespace PmcTransformer.Reconciliation
                 if (knownAuthority != null)
                 {
                     Console.WriteLine($"Resolved '{nameKvp.Key}' from known Authorities");
-                    conn.UpsertAuthority(dataSource, nameKvp.Key, authorityType, knownAuthority);
+                    conn.UpsertAuthority(dataSource, nameKvp.Key, knownAuthority.Type!, knownAuthority);
                     conn.UpdateTimestamp(authorityIdentifier);
                     continue;
                 }
 
-                if (variant == tryFirst) variant = null;
-
                 List<Task<Dictionary<string, Authority>>> authTasks = [
                     authorityService.AddLookupCandidatesFromLux(authorityType, tryFirst),
                     authorityService.AddCandidatesFromViaf(viafQualifier, tryFirst),
-                    authorityService.AddCandidatesFromLoc(authorityType, tryFirst, variant)
+                    authorityService.AddCandidatesFromLoc(authorityType, tryFirst)
                 ];
 
                 await Task.WhenAll(authTasks);
@@ -91,12 +131,20 @@ namespace PmcTransformer.Reconciliation
                 var candidateAuthorities = allSources.SelectMany(dict => dict).ToDictionary();
 
                 ConsoleUtils.WriteCandidateAuthorities(nameKvp.Key, candidateAuthorities);
-                var bestMatch = authorityService.DecideBestCandidate(nameKvp.Value, nameKvp.Key, candidateAuthorities);
+                var bestMatch = authorityService.DecideBestCandidate(
+                    nameKvp.Value, nameKvp.Key, candidateAuthorities, authorityType, 2);
                 if (bestMatch != null)
                 {
                     matches++;
-                    ConsoleUtils.WriteAuthority(bestMatch);
-                    conn.UpsertAuthority(dataSource, nameKvp.Key, authorityType, bestMatch);
+                    if(bestMatch.Type == null)
+                    {
+                        Console.WriteLine("ERROR: Must have assigned a type by this point");
+                    }
+                    else
+                    {
+                        ConsoleUtils.WriteAuthority(bestMatch);
+                        conn.UpsertAuthority(dataSource, nameKvp.Key, bestMatch.Type, bestMatch);
+                    }
                 }
 
                 conn.UpdateTimestamp(authorityIdentifier);
@@ -168,7 +216,7 @@ namespace PmcTransformer.Reconciliation
 
                 List<Task<Dictionary<string, Authority>>> authTasks = [
                     authorityService.AddWorkByCandidatesFromLux(allWorks, agent),
-                    authorityService.AddCandidatesFromUlan(tryFirst, variant),
+                    authorityService.AddCandidatesFromUlan(authorityType, tryFirst, variant),
                     authorityService.AddCandidatesFromViaf(viafQualifier, tryFirst),
                     authorityService.AddCandidatesFromLoc(authorityType, tryFirst, variant)
                 ];
@@ -185,7 +233,8 @@ namespace PmcTransformer.Reconciliation
                 var candidateAuthorities = allSources.SelectMany(dict => dict).ToDictionary();
 
                 ConsoleUtils.WriteCandidateAuthorities(agent.NormalisedOriginal, candidateAuthorities);
-                var bestMatch = authorityService.DecideBestCandidate(agentKvp.Value.Identifiers, agent.NormalisedOriginal, candidateAuthorities);
+                var bestMatch = authorityService.DecideBestCandidate(
+                    agentKvp.Value.Identifiers, agent.NormalisedOriginal, candidateAuthorities, authorityType);
                 if (bestMatch != null)
                 {
                     matches++;

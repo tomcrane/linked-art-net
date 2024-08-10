@@ -7,6 +7,7 @@ using System.Text.Json;
 using Group = LinkedArtNet.Group;
 using System.Data;
 using PmcTransformer.Reconciliation;
+using Microsoft.Extensions.Primitives;
 
 namespace PmcTransformer.Library
 {
@@ -49,6 +50,9 @@ namespace PmcTransformer.Library
             var langCounter = new Dictionary<int, int>();
             int accessionMismatch = 0;
 
+
+            var conn = DbCon.Get();
+            var cleanedKeywordDict = LoadCleanedKeywords();
 
             foreach (var record in xLibrary.Root!.Elements())
             {
@@ -338,7 +342,14 @@ namespace PmcTransformer.Library
                 var keywords = record.LibStrings("keywords");
                 foreach (var keyword in keywords)
                 {
-                    keywordDict.AddToListForKey(keyword.TrimOuterBrackets(), id);
+                    string? tidiedKeyword;
+                    if(!cleanedKeywordDict.TryGetValue(keyword, out tidiedKeyword))
+                    {
+                        Console.WriteLine("Going to DB for " + keyword);
+                        tidiedKeyword = conn.GetCleanedSubject(id, keyword)?.KeywordsCleaned ?? keyword;
+                        cleanedKeywordDict[keyword] = tidiedKeyword;
+                    }
+                    keywordDict.AddToListForKey(tidiedKeyword, id);
                 }
 
 
@@ -472,6 +483,8 @@ namespace PmcTransformer.Library
             Console.WriteLine();
             Console.WriteLine();
 
+            SaveCleanedKeywords(cleanedKeywordDict!);
+
 
             // For reconciliation:
             //    persAuthorFullDict
@@ -517,9 +530,9 @@ namespace PmcTransformer.Library
 
 
             // agents
-            await reconciler.Reconcile(allWorks, corpAuthorDict, "corpauthor", "Group", true);
-            await reconciler.Reconcile(allWorks, publisherDict, "publisher", "Group", true);
-            await reconciler.Reconcile(allWorks, persAuthorFullDict, "persauthorfull", "Person", true);
+            // await reconciler.Reconcile(allWorks, corpAuthorDict, "corpauthor", "Group", true);
+            // await reconciler.Reconcile(allWorks, publisherDict, "publisher", "Group", true);
+            // await reconciler.Reconcile(allWorks, persAuthorFullDict, "persauthorfull", "Person", true);
 
             // other authorities
             await reconciler.Reconcile(allWorks, keywordDict, "keywords", "Concept", false);
@@ -545,6 +558,25 @@ namespace PmcTransformer.Library
                     }
                 }
             }
+        }
+
+        private Dictionary<string, string>? LoadCleanedKeywords()
+        {
+            try
+            {
+                var jsonString = File.ReadAllText("C:\\pmc\\ser\\cleanedKeywords.json");
+                return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
+            }
+            catch
+            {
+                return [];
+            }
+        }
+
+        private void SaveCleanedKeywords(Dictionary<string, string> cleanedKeywords)
+        {
+            string jsonString = JsonSerializer.Serialize(cleanedKeywords);
+            File.WriteAllText("C:\\pmc\\ser\\cleanedKeywords.json", jsonString);
         }
 
         private static void AssignSubjects(Dictionary<string, LinguisticObject> allWorks, Dictionary<string, List<string>> keywordDict)

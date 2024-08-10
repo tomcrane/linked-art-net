@@ -29,7 +29,8 @@ namespace PmcTransformer.Reconciliation
         {
             var authority = new Authority
             {
-                Label = laObj.GetPrimaryName(true)
+                Label = laObj.GetPrimaryName(true),
+                Type = laObj.Type
             };
             if (laObj.Id!.StartsWith(Authority.LuxPrefix))
             {
@@ -183,10 +184,17 @@ namespace PmcTransformer.Reconciliation
                 locResults = await locSuggester(term.Replace(" and ", " & "));
                 firstLoc = locResults.FirstOrDefault();
             }
+
+            string MainPart(string locIdentifier)
+            {
+                // e.g., n82068148-781 in https://id.loc.gov/authorities/names/n82068148-781.html
+                return locIdentifier.Split('-').First();
+            }
+
             if (firstLoc != null)
             {
-                var authority = new Authority { Loc = firstLoc.Identifier, Label = firstLoc.Label };
-                candidateAuthorities["loc"] = authority;
+                var authority = new Authority { Loc = MainPart(firstLoc.Identifier), Label = firstLoc.Label };
+                candidateAuthorities["loc1"] = authority;
             }
             if (alternateSuggester != null)
             {
@@ -194,8 +202,8 @@ namespace PmcTransformer.Reconciliation
                 var firstAltLoc = altLocResults.FirstOrDefault();
                 if (firstAltLoc != null)
                 {
-                    var authority = new Authority { Loc = firstAltLoc.Identifier, Label = firstAltLoc.Label };
-                    candidateAuthorities["loca"] = authority;
+                    var authority = new Authority { Loc = MainPart(firstAltLoc.Identifier), Label = firstAltLoc.Label };
+                    candidateAuthorities["loc2"] = authority;
                 }
             }
             return candidateAuthorities;
@@ -217,7 +225,8 @@ namespace PmcTransformer.Reconciliation
             return candidateAuthorities;
         }
 
-        public async Task<Dictionary<string, Authority>> AddCandidatesFromUlan(string? agentString, string? variant = null)
+        public async Task<Dictionary<string, Authority>> AddCandidatesFromUlan(
+            string authorityType, string? agentString, string? variant = null)
         {
             var candidateAuthorities = new Dictionary<string, Authority>();
             if(string.IsNullOrWhiteSpace(agentString))
@@ -227,13 +236,13 @@ namespace PmcTransformer.Reconciliation
             // ulans
             // try a simple match first
             const int requiredPercentageMatch = 94; // This is a percentage of chars in the word
-            var ulansLevAll = await ulanClient.GetIdentifiersAndLabelsLevenshtein(agentString, "Group", 5);
+            var ulansLevAll = await ulanClient.GetIdentifiersAndLabelsLevenshtein(agentString, authorityType, 5);
             var ulansLevPassing = ulansLevAll
                 .Where(x => x.Score >= requiredPercentageMatch)
                 .ToList();
             if (ulansLevPassing.Count == 0 && variant != null)
             {
-                ulansLevAll = await ulanClient.GetIdentifiersAndLabelsLevenshtein(variant, "Group", 5);
+                ulansLevAll = await ulanClient.GetIdentifiersAndLabelsLevenshtein(variant, authorityType, 5);
                 ulansLevPassing = ulansLevAll
                     .Where(x => x.Score >= requiredPercentageMatch)
                     .ToList();
@@ -245,7 +254,8 @@ namespace PmcTransformer.Reconciliation
                 {
                     Ulan = ulanMatch.Identifier,
                     Label = ulanMatch.Label,
-                    Score = ulanMatch.Score
+                    Score = ulanMatch.Score,
+                    Type = authorityType
                 };
                 candidateAuthorities[$"ulan{ulanCounter++}"] = authority;
             }
@@ -263,18 +273,27 @@ namespace PmcTransformer.Reconciliation
             }
             int luxCounter = 1;
             List<LinkedArtObject> linkedArtObjects;
-            if (authorityType == "Place")
+            switch(authorityType)
             {
-                var places = await luxClient.PlaceSearch(name);
-                linkedArtObjects = places.Cast<LinkedArtObject>().ToList();
-            }
-            else if(authorityType == "Concept")
-            {
-                linkedArtObjects = await luxClient.ConceptSearch(name);
-            }
-            else
-            {
-                throw new ArgumentException("Unsupported Authority Type", nameof(authorityType));
+                case "Person":
+                case "Group":
+                    var agents = await luxClient.AgentSearch(name);
+                    linkedArtObjects = agents.Cast<LinkedArtObject>().ToList();
+                    break;
+                case "Place":
+                    var places = await luxClient.PlaceSearch(name);
+                    linkedArtObjects = places.Cast<LinkedArtObject>().ToList();
+                    break;
+                case "Concept":
+                    var concepts = await luxClient.ConceptSearch(name);
+                    var agents2 = await luxClient.AgentSearch(name);
+                    var places2 = await luxClient.PlaceSearch(name);
+                    linkedArtObjects = concepts.Cast<LinkedArtObject>().ToList();
+                    linkedArtObjects.AddRange(agents2.Cast<LinkedArtObject>());
+                    linkedArtObjects.AddRange(places2.Cast<LinkedArtObject>());
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported authority type", nameof(authorityType));
             }
             foreach (var laObj in linkedArtObjects)
             {
@@ -332,7 +351,11 @@ namespace PmcTransformer.Reconciliation
 
 
 
-        public Authority? DecideBestCandidate(List<string> workIds, string term, Dictionary<string, Authority> candidateAuthorities)
+        public Authority? DecideBestCandidate(
+            List<string> workIds, string term, 
+            Dictionary<string, Authority> candidateAuthorities,
+            string expectedAuthorityType,
+            int minBestMatchScore = 3)
         {
             if (candidateAuthorities.Count == 0)
             {
@@ -462,9 +485,31 @@ namespace PmcTransformer.Reconciliation
                     bestCandidate.Wikidata = luxMatch.Wikidata;
                 }
 
-                if (bestCandidate.Score >= 3)
+                if (bestCandidate.Score >= minBestMatchScore)
                 {
                     bestCandidate.Lux = luxMatch.Lux;
+                    if(string.IsNullOrWhiteSpace(bestCandidate.Type))
+                    {
+                        if(luxMatch != null)
+                        {
+                            bestCandidate.Type = luxMatch.Type;
+                        }
+                        else if(expectedAuthorityType != "Concept")
+                        {
+                            bestCandidate.Type = expectedAuthorityType;
+                        }
+                        else
+                        {
+                            foreach(var match in nonLuxMatches.OrderByDescending(a => a.Score))
+                            {
+                                if(match.Type.HasText())
+                                {
+                                    bestCandidate.Type = match.Type;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     return bestCandidate;
                 }
             }

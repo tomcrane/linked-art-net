@@ -157,7 +157,7 @@ namespace LinkedArtNet.Parsers
 
             //if(wasParsedByLib)
             //{
-                Console.WriteLine($"*** date {s} => {s2} => {ts.BeginOfTheBegin?.DtOffset} - {ts.EndOfTheEnd?.DtOffset}");
+                // Console.WriteLine($"*** date {s} => {s2} => {ts.BeginOfTheBegin?.DtOffset} - {ts.EndOfTheEnd?.DtOffset}");
             //}
             return ts;
         }

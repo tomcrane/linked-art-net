@@ -10,6 +10,7 @@ namespace PmcTransformer.Reconciliation
                 Console.WriteLine($"----- Group: {label} ---------");
                 Console.Write("{0,-7}", "key");
                 Console.Write("{0,-4}", "sc");
+                Console.Write("{0,-8}", "type");
                 Console.Write("{0,-12}", "Ulan");
                 Console.Write("{0,-14}", "Loc");
                 Console.Write("{0,-10}", "Wiki");
@@ -19,6 +20,7 @@ namespace PmcTransformer.Reconciliation
                 {
                     Console.Write("{0,-7}", kvp.Key);
                     Console.Write("{0,-4}", kvp.Value.Score);
+                    Console.Write("{0,-8}", kvp.Value.Type);
                     Console.Write("{0,-12}", kvp.Value.Ulan);
                     Console.Write("{0,-14}", kvp.Value.Loc);
                     Console.Write("{0,-10}", kvp.Value.Wikidata);
@@ -34,6 +36,7 @@ namespace PmcTransformer.Reconciliation
             Console.WriteLine($"----- MATCH DECIDED ---------");
             Console.Write("{0,-7}", "");
             Console.Write("{0,-4}", bestMatch.Score);
+            Console.Write("{0,-8}", bestMatch.Type);
             Console.Write("{0,-12}", bestMatch.Ulan);
             Console.Write("{0,-14}", bestMatch.Loc);
             Console.Write("{0,-10}", bestMatch.Wikidata);

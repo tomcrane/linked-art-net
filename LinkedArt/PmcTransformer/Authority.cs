@@ -39,6 +39,10 @@ namespace PmcTransformer
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Wikidata { get; set; }
 
+        [JsonPropertyName("tgn")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Tgn { get; set; }
+
         [JsonPropertyName("label")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Label { get; set; }
@@ -73,6 +77,7 @@ namespace PmcTransformer
                 case "Place":
                     laRef = new Place().WithId(Identity.PlaceBase + Identifier);
                     break;
+                case "Type": 
                 case "Concept":
                     laRef = new LinkedArtObject(Types.Type).WithId(Identity.ConceptBase + Identifier);
                     break;
@@ -130,6 +135,12 @@ namespace PmcTransformer
                 laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(Pmc));
             }
 
+            if (Tgn.HasText())
+            {
+                laObj.Equivalent ??= [];
+                laObj.Equivalent.Add(new LinkedArtObject(laObj.Type!).WithId(TgnPrefix + Tgn));
+            }
+
             return laObj;
         }
 
@@ -160,6 +171,11 @@ namespace PmcTransformer
                 return "u" + Ulan;
             }
 
+            if (Tgn.HasText())
+            {
+                return "t" + Tgn;
+            }
+
             return base.ToString();
 
         }
@@ -168,6 +184,7 @@ namespace PmcTransformer
         public const string ViafPrefix = "http://viaf.org/viaf/";
         public const string UlanPrefix = "http://vocab.getty.edu/ulan/";
         public const string AatPrefix = "http://vocab.getty.edu/aat/";
+        public const string TgnPrefix = "http://vocab.getty.edu/tgn/";
         public const string WikidataPrefix = "http://www.wikidata.org/entity/";
         public const string LuxPrefix = "https://lux.collections.yale.edu/";
 

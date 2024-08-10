@@ -2,11 +2,17 @@
 using LinkedArtNet;
 using Npgsql;
 using PmcTransformer.Helpers;
+using PmcTransformer.Reconciliation;
 
 namespace PmcTransformer
 {
     public static class DbCon
     {
+        static DbCon()
+        {
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        }
+
         public static NpgsqlConnection Get()
         {
             var dbpwd = Environment.GetEnvironmentVariable("pmc-db-pwd");
@@ -23,7 +29,8 @@ namespace PmcTransformer
                 Loc = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.LocPrefix))?.Id?.LastPathElement(),
                 Wikidata = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.WikidataPrefix))?.Id?.LastPathElement(),
                 Aat = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.AatPrefix))?.Id?.LastPathElement(),
-                Lux = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.LuxPrefix))?.Id
+                Lux = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.LuxPrefix))?.Id,
+                Tgn = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.TgnPrefix))?.Id
             };
 
             var matching = conn.SelectFromEquivalents(testAuthority);
@@ -96,34 +103,34 @@ namespace PmcTransformer
         }
 
 
-        public static void UpsertAuthority(this NpgsqlConnection conn, 
-            string dataSource, 
-            string sourceString, 
-            string provider,
-            string type,
-            IdentifierAndLabel identifierAndLabel)
-        {
-            var authority = conn.QuerySingleOrDefault<Authority>(
-                $"select * from authorities where {provider}=@Identifier", new { identifierAndLabel.Identifier });
-            if (authority == null)
-            {
-                var localIdentifier = IdMinter.Generate(conn);
-                conn.Execute($"insert into authorities (identifier, type, {provider}, label) " +
-                             "values (@LocalIdentifier, @type, @Identifier, @Label)",
-                             new { 
-                                 LocalIdentifier = localIdentifier,
-                                 type,
-                                 identifierAndLabel.Identifier, 
-                                 identifierAndLabel.Label
-                             });
-                authority = conn.QuerySingleOrDefault<Authority>(
-                    $"select * from authorities where {provider}=@Identifier", new { identifierAndLabel.Identifier });
-            }
-            // authority is not null here
-            conn.Execute("update source_string_map set authority=@Identifier " +
-                         "where source=@dataSource and string=@sourceString",
-                        new { authority!.Identifier, dataSource, sourceString });
-        }
+        //public static void UpsertAuthority(this NpgsqlConnection conn, 
+        //    string dataSource, 
+        //    string sourceString, 
+        //    string provider,
+        //    string type,
+        //    IdentifierAndLabel identifierAndLabel)
+        //{
+        //    var authority = conn.QuerySingleOrDefault<Authority>(
+        //        $"select * from authorities where {provider}=@Identifier", new { identifierAndLabel.Identifier });
+        //    if (authority == null)
+        //    {
+        //        var localIdentifier = IdMinter.Generate(conn);
+        //        conn.Execute($"insert into authorities (identifier, type, {provider}, label) " +
+        //                     "values (@LocalIdentifier, @type, @Identifier, @Label)",
+        //                     new { 
+        //                         LocalIdentifier = localIdentifier,
+        //                         type,
+        //                         identifierAndLabel.Identifier, 
+        //                         identifierAndLabel.Label
+        //                     });
+        //        authority = conn.QuerySingleOrDefault<Authority>(
+        //            $"select * from authorities where {provider}=@Identifier", new { identifierAndLabel.Identifier });
+        //    }
+        //    // authority is not null here
+        //    conn.Execute("update source_string_map set authority=@Identifier " +
+        //                 "where source=@dataSource and string=@sourceString",
+        //                new { authority!.Identifier, dataSource, sourceString });
+        //}
 
         public static void UpsertAuthority(this NpgsqlConnection conn,
             string dataSource,
@@ -137,8 +144,8 @@ namespace PmcTransformer
             if (authorities.Count == 0)
             {
                 var localIdentifier = IdMinter.Generate(conn);
-                conn.Execute($"insert into authorities (identifier, type, label, ulan, aat, lux, loc, viaf, wikidata, pmc) " +
-                             "values (@localIdentifier, @type, @Label, @Ulan, @Aat, @Lux, @Loc, @Viaf, @Wikidata, @Pmc)",
+                conn.Execute($"insert into authorities (identifier, type, label, ulan, aat, lux, loc, viaf, wikidata, pmc, tgn) " +
+                             "values (@localIdentifier, @type, @Label, @Ulan, @Aat, @Lux, @Loc, @Viaf, @Wikidata, @Pmc, @Tgn)",
                              new
                              {
                                  localIdentifier,
@@ -150,7 +157,8 @@ namespace PmcTransformer
                                  candidateAuthority.Loc,
                                  candidateAuthority.Viaf,
                                  candidateAuthority.Wikidata,
-                                 candidateAuthority.Pmc
+                                 candidateAuthority.Pmc,
+                                 candidateAuthority.Tgn
                              });
                 selectedAuthority = conn.QuerySingleOrDefault<Authority>(
                     $"select * from authorities where identifier=@localIdentifier", new { localIdentifier });
@@ -202,9 +210,13 @@ namespace PmcTransformer
                 {
                     selectedAuthority.Pmc = candidateAuthority.Pmc;
                 }
+                if (candidateAuthority.Tgn.HasText())
+                {
+                    selectedAuthority.Tgn = candidateAuthority.Tgn;
+                }
 
                 conn.Execute($"update authorities set " +
-                    $"label=@Label, ulan=@Ulan, aat=@Aat, lux=@Lux, loc=@Loc, viaf=@Viaf, wikidata=@Wikidata, pmc=@Pmc " +
+                    $"label=@Label, ulan=@Ulan, aat=@Aat, lux=@Lux, loc=@Loc, viaf=@Viaf, wikidata=@Wikidata, pmc=@Pmc, tgn=@Tgn " +
                     $"where identifier=@Identifier",
                     new
                     {
@@ -216,6 +228,7 @@ namespace PmcTransformer
                         selectedAuthority.Viaf,
                         selectedAuthority.Wikidata,
                         selectedAuthority.Pmc,
+                        selectedAuthority.Tgn,
                         selectedAuthority.Identifier,
                     });
 
@@ -226,7 +239,7 @@ namespace PmcTransformer
                         new { selectedAuthority!.Identifier, dataSource, sourceString });
         }
 
-        private static List<Authority> SelectFromEquivalents(this NpgsqlConnection conn, Authority testAuthority)
+        public static List<Authority> SelectFromEquivalents(this NpgsqlConnection conn, Authority testAuthority)
         {
             string sql = "select * from authorities where ";
             if (testAuthority.Ulan.HasText())
@@ -257,6 +270,10 @@ namespace PmcTransformer
             {
                 sql += " pmc=@Pmc or ";
             }
+            if (testAuthority.Tgn.HasText())
+            {
+                sql += " tgn=@Tgn or ";
+            }
             sql = sql.RemoveEnd(" or ")!;
 
             var authorities = conn.Query<Authority>(sql, new
@@ -267,7 +284,8 @@ namespace PmcTransformer
                 testAuthority.Loc,
                 testAuthority.Viaf,
                 testAuthority.Wikidata,
-                testAuthority.Pmc
+                testAuthority.Pmc,
+                testAuthority.Tgn
             }).ToList();
             return authorities;
         }
@@ -278,6 +296,23 @@ namespace PmcTransformer
                          "where source=@Source and string=@String",
                         new { ssa.Source, ssa.String, DateTimeOffset.UtcNow });
 
+        }
+
+        public static List<CleanedSubject> GetCleanedSubjects(this NpgsqlConnection conn, string keywordsCleaned)
+        {
+            var cleanedSubjects = conn.Query<CleanedSubject>(
+                "select record_id, record_keywords, keywords_cleaned, aat, tgn, ulan " +
+                "from pmc_subjects_csv where keywords_cleaned=@keywordsCleaned", new { keywordsCleaned });
+            return cleanedSubjects.ToList();
+        }
+
+        public static CleanedSubject? GetCleanedSubject(this NpgsqlConnection conn, string recordId, string recordKeywords)
+        {
+            var cleanedSubject = conn.QuerySingleOrDefault<CleanedSubject>(
+                "select record_id, record_keywords, keywords_cleaned, aat, tgn, ulan " +
+                "from pmc_subjects_csv where record_id=@recordId and record_keywords=@recordKeywords",
+                new { recordId, recordKeywords });
+            return cleanedSubject;
         }
 
     }

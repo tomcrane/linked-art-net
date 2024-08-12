@@ -142,7 +142,7 @@ namespace PmcTransformer.Archive
             foreach(var actor in authorityDict.Values)
             {
                 var simpleMatches = conn.FindByEquivalence(actor);
-                foreach(var simpleMatch in simpleMatches)
+                foreach (var simpleMatch in simpleMatches)
                 {
                     actor.Equivalent ??= [];
                     actor.Equivalent.Add(simpleMatch.GetReference()!);

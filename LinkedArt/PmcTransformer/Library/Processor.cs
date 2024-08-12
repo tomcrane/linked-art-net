@@ -94,6 +94,32 @@ namespace PmcTransformer.Library
                     throw new InvalidOperationException("Mismatch accloc/accnofld for " + id);
                 }
 
+                List<string>? hmoIdParts = null;
+
+                if (acclocs.Count > 0)
+                {
+                    // more than one HMO
+                    if(acclocs.Count == accessionNumbers.Count && accessionNumbers.Distinct().Count() == accessionNumbers.Count)
+                    {
+                        // use accession numbers as the HMO part of the ID
+                        hmoIdParts = accessionNumbers.Select(s => "accno_" + s).ToList();
+                    }
+                    else
+                    {
+                        // we can't use accessionNumbers as IDs for HMOs
+                        if (acclocs.Distinct().Count() == acclocs.Count)
+                        {
+                            // ...but we can use acclocs as IDs
+                            hmoIdParts = acclocs.Select(s => "accloc_" + s).ToList();
+                        }
+                    }
+                    if(hmoIdParts == null)
+                    {
+                        int partCounter = 0;
+                        hmoIdParts = acclocs.Select(s => $"{++partCounter}").ToList();
+                    }
+                }
+
                 var alreadyMappedLocations = new HashSet<Place>();
                 allHMOs[id] = [];
                 if (acclocs.Count == 0)
@@ -110,7 +136,7 @@ namespace PmcTransformer.Library
                     {
                         var hmo = new HumanMadeObject()
                             .WithContext()
-                            .WithId($"{Identity.LibraryHmo}{id}-{i + 1}");
+                            .WithId($"{Identity.LibraryHmo}{id}/{hmoIdParts![i]}"); // was -{i + 1}
                         hmo.IdentifiedBy = [
                             new Name(title).AsPrimaryName()
                         ];
@@ -596,7 +622,9 @@ namespace PmcTransformer.Library
                 }
                 if (authority.Unreconciled)
                 {
-                    authority.Type = "Concept";
+                    // Here we don't know what Type this should be
+                    // - it could be a Person, a Material, a Place...
+                    authority.Type = "Type";
                     authority.Label = keywordString;
                 }
                 subjectRef = authority.GetReference();
@@ -732,7 +760,7 @@ namespace PmcTransformer.Library
                 if (authority.Unreconciled)
                 {
                     authority.Type = "Person";
-                    authority.Label = personString;
+                    authority.Label = person.Value.NormalisedLocForm;
                 }
                 personRef = authority.GetReference() as Person;
                 full = authority.GetFull() as Person;

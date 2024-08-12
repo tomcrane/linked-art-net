@@ -30,17 +30,20 @@ namespace PmcTransformer
                 Wikidata = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.WikidataPrefix))?.Id?.LastPathElement(),
                 Aat = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.AatPrefix))?.Id?.LastPathElement(),
                 Lux = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.LuxPrefix))?.Id,
-                Tgn = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.TgnPrefix))?.Id
+                Tgn = laObj.Equivalent?.FirstOrDefault(x => x.Id.StartsWith(Authority.TgnPrefix))?.Id?.LastPathElement()
             };
 
-            var matching = conn.SelectFromEquivalents(testAuthority);
-            if(matching.Count > 1)
+            if(testAuthority.GetMatchCount() > 0)
             {
-                Console.WriteLine("More than one match for " + laObj.Label);
-            }
-            if(matching.Count > 0)
-            {
-                return matching;
+                var matching = conn.SelectFromEquivalents(testAuthority);
+                if (matching.Count > 1)
+                {
+                    Console.WriteLine("More than one match for " + laObj.Label);
+                }
+                if (matching.Count > 0)
+                {
+                    return matching;
+                }
             }
 
             // didn't find a direct match, but can we match on name?
@@ -67,7 +70,7 @@ namespace PmcTransformer
 
                 conn.Execute($"update source_string_map set unreconciled_authority=@unrec " +
                              $"where source=@source and string=@s and unreconciled_authority is null ", 
-                             new { unrec }); 
+                             new { unrec, source, s}); 
                 ssa = conn.QueryFirstOrDefault<AuthorityStringWithSource>(
                 "select source, string, authority, processed, unreconciled_authority from source_string_map " +
                 "where source=@source and string=@s", new { source, s });
@@ -241,6 +244,10 @@ namespace PmcTransformer
 
         public static List<Authority> SelectFromEquivalents(this NpgsqlConnection conn, Authority testAuthority)
         {
+            if(testAuthority.GetMatchCount()  == 0)
+            {
+                return new List<Authority>();
+            }
             string sql = "select * from authorities where ";
             if (testAuthority.Ulan.HasText())
             {

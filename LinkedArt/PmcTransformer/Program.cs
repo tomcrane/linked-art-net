@@ -38,7 +38,7 @@ namespace PmcTransformer
                 StreamReader reader = new(library + "\\2024-03-11_library.xml", Encoding.UTF8);
                 var xLibrary = XDocument.Load(reader);
                 var libraryProcessor = host.Services.GetService<Library.Processor>();
-                await libraryProcessor.ProcessLibrary(xLibrary);
+                await libraryProcessor.ProcessLibrary(xLibrary, true);
             }
             else if (args[0] == "archive")
             {

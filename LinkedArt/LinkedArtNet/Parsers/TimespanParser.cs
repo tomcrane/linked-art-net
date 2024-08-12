@@ -35,7 +35,7 @@ namespace LinkedArtNet.Parsers
             }
             // variants of 1930-2010
             // first pass, just find the first and last whole years; come back for more refinement later
-            var parsedYears = FourDigitYear().Matches(s).Skip(1).Select(m => Convert.ToInt32(m.Value)).ToList();
+            var parsedYears = FourDigitYear().Matches(s).Select(m => Convert.ToInt32(m.Value)).ToList();
             if(parsedYears.Count > 1)
             {
                 return new(

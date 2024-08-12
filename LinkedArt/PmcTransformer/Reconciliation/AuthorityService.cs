@@ -85,11 +85,14 @@ namespace PmcTransformer.Reconciliation
                         .Where(x => x != null && x.Label.HasText())
                         .ToList();
                     var bestMatch = FuzzySharp.Process.ExtractOne(disambiguator, idsAndLabels.Select(i => i.Label));
-                    Console.WriteLine("VIAF Candidates:");
-                    idsAndLabels.ForEach(Console.WriteLine);
-                    Console.WriteLine($"Best: {bestMatch.Value}; Score: {bestMatch.Score}");
-                    var bestIdAndLabel = idsAndLabels[bestMatch.Index];
-                    authority.Viaf = bestIdAndLabel.Identifier;
+                    if(bestMatch != null)
+                    {
+                        Console.WriteLine("VIAF Candidates:");
+                        idsAndLabels.ForEach(Console.WriteLine);
+                        Console.WriteLine($"Best: {bestMatch.Value}; Score: {bestMatch.Score}");
+                        var bestIdAndLabel = idsAndLabels[bestMatch.Index];
+                        authority.Viaf = bestIdAndLabel.Identifier;
+                    }
                 }
 
                 var ulans = laObj.Equivalent.Where(e => e.Id.StartsWith(Authority.UlanPrefix)).ToList();
@@ -437,7 +440,7 @@ namespace PmcTransformer.Reconciliation
                 luxMatches = [luxMatches.Single(lm => lm.Lux == luxMatchKey)];
             }
 
-            if (luxMatches.Count == 1 && HasAtLeastOneEquivalent(luxMatches[0]))
+            if (luxMatches.Count == 1 && HasAtLeastOneEquivalentFromLookups(luxMatches[0]))
             {
                 // Best case, only one LUX match to consider (not zero, not multiple)
                 var luxMatch = luxMatches[0];
@@ -537,7 +540,7 @@ namespace PmcTransformer.Reconciliation
             return null;
         }
 
-        public bool HasAtLeastOneEquivalent(Authority authority)
+        public bool HasAtLeastOneEquivalentFromLookups(Authority authority)
         {
             // if the LUX record has nothing to cross-check, is it any use to us?
             // Maybe only if there is no other information

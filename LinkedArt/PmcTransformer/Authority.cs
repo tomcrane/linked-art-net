@@ -78,19 +78,30 @@ namespace PmcTransformer
                     laRef = new Place().WithId(Identity.PlaceBase + Identifier);
                     break;
                 case "Type": 
-                case "Concept":
                     laRef = new LinkedArtObject(Types.Type).WithId(Identity.ConceptBase + Identifier);
+                    break;
+                case "Material":
+                    laRef = new LinkedArtObject(Types.Material).WithId(Identity.ConceptBase + Identifier);
+                    break;
+                case "Language":
+                    laRef = new LinkedArtObject(Types.Language).WithId(Identity.ConceptBase + Identifier);
                     break;
             }
             laRef?.WithLabel(Label);
             return laRef;
         }
 
-        public LinkedArtObject? GetFull()
+        public LinkedArtObject? GetFull(string? label = null)
         {
             var laObj = GetReference();
             if (laObj == null) return null;
 
+            var labelToUse = label ?? laObj.Label;
+
+            if (labelToUse.HasText())
+            {
+                laObj.IdentifiedBy = [ new Name(labelToUse).AsPrimaryName() ];
+            }
             
             if(Ulan.HasText())
             {
@@ -178,6 +189,37 @@ namespace PmcTransformer
 
             return base.ToString();
 
+        }
+
+        public int GetMatchCount()
+        {
+            // omit lux
+            int matchCount = 0;
+            if (Ulan.HasText())
+            {
+                matchCount++;
+            }
+            if (Aat.HasText())
+            {
+                matchCount++;
+            }
+            if (Loc.HasText())
+            {
+                matchCount++;
+            }
+            if (Viaf.HasText())
+            {
+                matchCount++;
+            }
+            if (Wikidata.HasText())
+            {
+                matchCount++;
+            }
+            if (Tgn.HasText())
+            {
+                matchCount++;
+            }
+            return matchCount;
         }
 
         public const string LocPrefix = "http://id.loc.gov/authorities/";

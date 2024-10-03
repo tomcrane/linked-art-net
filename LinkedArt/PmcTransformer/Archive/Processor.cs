@@ -101,7 +101,6 @@ namespace PmcTransformer.Archive
                 Helpers.SimpleStatement(record, laObj, "AdminHistory", Getty.AdministrativeHistory);
                 Helpers.SimpleStatement(record, laObj, "CustodialHistory", Getty.ProvenanceStatement);
                 Helpers.ProcessDescription(record, laObj); // See Stock Number TODO
-                Helpers.SimpleStatement(record, laObj, "Accruals", Getty.Accruals);
                 Helpers.SimpleStatement(record, laObj, "Arrangement", Getty.ArrangementDescription);
                 Helpers.SimpleStatement(record, laObj, "AccessConditions", Getty.AccessStatement);
                 Helpers.SimpleStatement(record, laObj, "RelatedMaterial", Getty.RelatedMaterial);

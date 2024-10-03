@@ -93,8 +93,6 @@ namespace PmcTransformer.Leeds
                     Archive.Helpers.SimpleStatement(jDesc.GetString(), laObj, Getty.Description);
                 }
 
-                // ?? Archive.Helpers.SimpleStatement(record, laObj, "Accruals", Getty.Accruals);
-
                 if (record.TryGetProperty("EADArrangement", out JsonElement jArr))
                 {
                     Archive.Helpers.SimpleStatement(jArr.GetString(), laObj, Getty.ArrangementDescription);

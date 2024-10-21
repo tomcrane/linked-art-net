@@ -192,16 +192,19 @@ namespace PmcTransformer.Archive
         }
 
 
-        public static void SimpleStatement(string? statement, LinkedArtObject laObj, LinkedArtObject classifiedAs)
+        public static void SimpleStatement(string? statement, LinkedArtObject laObj, LinkedArtObject classifiedAs, LinkedArtObject? identifiedBy = null)
         {
             if (statement != null)
             {
-                laObj.ReferredToBy ??= [];
-                laObj.ReferredToBy.Add(
-                    new LinguisticObject()
+                var refBy = new LinguisticObject()
                         .WithClassifiedAs(classifiedAs, Getty.BriefText)
-                        .WithContent(statement)
-                );
+                        .WithContent(statement);
+                laObj.ReferredToBy ??= [];
+                laObj.ReferredToBy.Add(refBy);  
+                if(identifiedBy != null)
+                {
+                    refBy.IdentifiedBy = [identifiedBy];
+                }
             }
         }
 

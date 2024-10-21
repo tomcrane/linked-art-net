@@ -97,22 +97,28 @@ namespace PmcTransformer.Helpers
 
 
             // Library
+            var libraryGroupName = "Library, Paul Mellon Centre";
+            var librarySetName = "Library Collection, Paul Mellon Centre";
+
             var pmcLibrarySlug = "pmc-library";
             PMCLibraryGroup = new Group()
                 .WithContext()
                 .WithId(Identity.GroupBase + pmcLibrarySlug)
-                .WithLabel(PMCLibraryName);
+                .WithLabel(libraryGroupName);
+            PMCLibraryGroup.IdentifiedBy = [
+                new Name(libraryGroupName).AsPrimaryName(),
+            ];
             PMCLibraryGroup.PartOf = [PMCGroupRef];
             PMCLibraryGroupRef = new Group()
                 .WithId(Identity.GroupBase + pmcLibrarySlug)
-                .WithLabel(PMCLibraryName);
+                .WithLabel(libraryGroupName);
             PMCLibrarySet = new LinkedArtObject(Types.Set)
                 .WithContext()
                 .WithId(Identity.SetBase + pmcLibrarySlug)
-                .WithLabel(PMCLibraryName)
+                .WithLabel(librarySetName)
                 .WithClassifiedAs(Getty.Collection);
             PMCLibrarySet.IdentifiedBy = [
-                new Name(PMCLibraryName).AsPrimaryName()
+                new Name(librarySetName).AsPrimaryName(),
             ];
             var libCurating = new Activity()
                 .WithLabel("Curation")
@@ -126,22 +132,28 @@ namespace PmcTransformer.Helpers
 
 
             // Archive
+
+            var archiveGroupName = "Archives, Paul Mellon Centre";
+            var archiveSetName = "Archive Collections, Paul Mellon Centre";
             var pmcArchiveSlug = "pmc-archive";
             PMCArchiveGroup = new Group()
                 .WithContext()
                 .WithId(Identity.GroupBase + pmcArchiveSlug)
-                .WithLabel(PMCArchiveName);
+                .WithLabel(archiveGroupName);
             PMCArchiveGroup.PartOf = [PMCGroupRef];
+            PMCArchiveGroup.IdentifiedBy = [
+                new Name(archiveGroupName).AsPrimaryName(),
+            ];
             PMCArchiveGroupRef = new Group()
                 .WithId(Identity.GroupBase + pmcArchiveSlug)
-                .WithLabel(PMCArchiveName);
+                .WithLabel(archiveGroupName);
             PMCArchiveSet = new LinkedArtObject(Types.Set)
                 .WithContext()
                 .WithId(Identity.SetBase + pmcArchiveSlug)
-                .WithLabel(PMCArchiveName)
+                .WithLabel(archiveSetName)
                 .WithClassifiedAs(Getty.Collection);
             PMCArchiveSet.IdentifiedBy = [
-                new Name(PMCArchiveName).AsPrimaryName()
+                new Name(archiveSetName).AsPrimaryName()
             ];
             var archiveCurating = new Activity()
                 .WithLabel("Curation")
@@ -151,27 +163,33 @@ namespace PmcTransformer.Helpers
 
             PMCArchiveSetRef = new LinkedArtObject(Types.Set)
                 .WithId(Identity.SetBase + pmcArchiveSlug)
-                .WithLabel(PMCArchiveName);
+                .WithLabel(archiveSetName);
 
 
 
             // Photo Archive
+
+            var photoArchiveGroupName = "Photographic Archive, Paul Mellon Centre";
+            var photoArchiveSetName = "Paul Mellon Centre Photographic Archive, Paul Mellon Centre";
             var pmcPhotoArchiveSlug = "pmc-photo-archive";
             PhotoArchiveGroup = new Group()
                 .WithContext()
                 .WithId(Identity.GroupBase + pmcPhotoArchiveSlug)
-                .WithLabel(PhotoArchiveName);
+                .WithLabel(photoArchiveGroupName);
+            PhotoArchiveGroup.IdentifiedBy = [
+                new Name(photoArchiveGroupName).AsPrimaryName()
+            ];
             PhotoArchiveGroup.PartOf = [PMCGroupRef];
             PhotoArchiveGroupRef = new Group()
                 .WithId(Identity.GroupBase + pmcPhotoArchiveSlug)
-                .WithLabel(PhotoArchiveName);
+                .WithLabel(photoArchiveGroupName);
             PhotoArchiveSet = new LinkedArtObject(Types.Set)
                 .WithContext()
                 .WithId(Identity.SetBase + pmcPhotoArchiveSlug)
-                .WithLabel(Identity.SetBase + pmcPhotoArchiveSlug)
+                .WithLabel(photoArchiveSetName)
                 .WithClassifiedAs(Getty.Collection);
             PhotoArchiveSet.IdentifiedBy = [
-                new Name(PhotoArchiveName).AsPrimaryName()
+                new Name(photoArchiveSetName).AsPrimaryName()
             ];
             var photoArchiveCurating = new Activity()
                 .WithLabel("Curation")

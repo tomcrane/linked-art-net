@@ -247,6 +247,10 @@ namespace PmcTransformer.Library
                     "INFORMATION FILES",
                     "REPORTS"
                 ];
+
+                var identifierClasses = new List<string>();
+                string? normalisedMedium = null;
+
                 foreach (var classVal in classes)
                 {
                     var locationAsClass = Locations.FromRecordValue(classVal, true);
@@ -259,8 +263,13 @@ namespace PmcTransformer.Library
                     }
                     else
                     {
+                        
                         var mediumClass = classVal.ToUpperInvariant().Replace("(", "").Replace(")", "");
-                        var normalisedMedium = normalisedMediums.FirstOrDefault(m => m.StartsWith(mediumClass));
+                        if(normalisedMedium != null)
+                        {
+                            throw new NotSupportedException("no");
+                        }
+                        normalisedMedium = normalisedMediums.FirstOrDefault(m => m.StartsWith(mediumClass));
                         if (normalisedMedium != null)
                         {
                             switch (normalisedMedium)
@@ -282,9 +291,24 @@ namespace PmcTransformer.Library
                         }
                         else
                         {
+                            identifierClasses.Add(classVal);
                             // This class value is an Identifier
-                            work.IdentifiedBy.Add(new Identifier(classVal));
                         }
+                    }
+
+                }
+
+                foreach(var classVal in identifierClasses)
+                {
+                    if(normalisedMedium.HasText())
+                    {
+                        var identifier = classVal + " (" + normalisedMedium + ")";
+                        Console.WriteLine(identifier);
+                        work.IdentifiedBy.Add(new Identifier(identifier));
+                    }
+                    else
+                    {
+                        work.IdentifiedBy.Add(new Identifier(classVal));
                     }
                 }
 
@@ -481,7 +505,6 @@ namespace PmcTransformer.Library
                 }
                 if(firstPublicationStatement.HasText())
                 {
-                    Console.WriteLine(firstPublicationStatement);
                     work.ReferredToBy ??= [];
                     work.ReferredToBy.Add(
                         new LinguisticObject()

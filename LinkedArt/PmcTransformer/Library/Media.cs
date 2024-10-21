@@ -34,18 +34,18 @@ namespace PmcTransformer.Library
             Large = Getty.AatType("Large", "300379501");
             Report = Getty.AatType("Report", "300027267");
 
-            //               to be applied to:   (the LinguisticObject, the HumanMadeObjects)
-            MediaDict[InformationFiles.Label!] = (Text, InformationFiles);
-            MediaDict[Text.Label!] = (Text, Getty.Book) ;
+            //               to be applied to:      (the LinguisticObject, the HumanMadeObjects)
+            MediaDict[InformationFiles.Label!]    = (Text, InformationFiles);
+            MediaDict[Text.Label!]                = (Text, Getty.Book) ;
             MediaDict[ExhibitionCatalogue.Label!] = (ExhibitionCatalogue, Getty.Book);
-            MediaDict[AuctionCatalogue.Label!] = (AuctionCatalogue, Getty.Book);
-            MediaDict[Journal.Label!] = (Journal, null);
-            MediaDict[CDRom.Label!] = (null, CDRom);
-            MediaDict[Website.Label!] = (Website, Website);
-            MediaDict[Manuscript.Label!] = (Text, Manuscript);
-            MediaDict[DVD.Label!] = (null, DVD);
-            MediaDict[Microfilm.Label!] = (null, Microfilm);
-            MediaDict[CD.Label!] = (Getty.Sound, CD);
+            MediaDict[AuctionCatalogue.Label!]    = (AuctionCatalogue, Getty.Book);
+            MediaDict[Journal.Label!]             = (Journal, null);
+            MediaDict[CDRom.Label!]               = (null, CDRom);
+            MediaDict[Website.Label!]             = (Website, Website);
+            MediaDict[Manuscript.Label!]          = (Text, Manuscript);
+            MediaDict[DVD.Label!]                 = (null, DVD);
+            MediaDict[Microfilm.Label!]           = (null, Microfilm);
+            MediaDict[CD.Label!]                  = (Getty.Sound, CD);
 
             MediaDict[Pamphlet.Label!] = (Text, Pamphlet);
             MediaDict[Large.Label!] = (Text, Large);

@@ -34,7 +34,7 @@ namespace PmcTransformer.Archive
                 case "file":  // see BS/4/7/3
                 case " File": // see BS/5/1/852
                 case "File ": // see NWS/1/5
-                    // no specific classification
+                    laItem!.WithClassifiedAs(Getty.ArchivalMaterials);
                     break;
                 case "Sub-Sub Series":
                     // no specific classification

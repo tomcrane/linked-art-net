@@ -33,6 +33,7 @@ namespace PmcTransformer.Archive
                 }                
             }
 
+            int count = 0;
             foreach (var record in xArchive.Root!.Elements())
             {
                 if (Helpers.ShouldSkipRecord(record))
@@ -42,10 +43,10 @@ namespace PmcTransformer.Archive
 
                 var id = record.ArcStrings("RecordID").Single();            // a GUID
                 var refNo = record.ArcStrings("RefNo").Single();            // e.g., PMC/A/2
-                var level = record.ArcStrings("Level").SingleOrDefault();   // Item, Series etc
+                var level = record.ArcStrings("Level").Single();   // Item, Series etc
                 var title = record.ArcStrings("Title").Distinct().Single(); // EKW/1/167 has duplicated title
 
-                bool isItem = level == "Item";
+                bool isItem = (level == "Item" || level.ToLowerInvariant().Trim() == "file");
                 LinkedArtObject? laSet = isItem ? null : new LinkedArtObject(Types.Set);
                 HumanMadeObject? laItem = isItem ? new HumanMadeObject() : null;
                 LinkedArtObject laObj = (laSet ?? laItem)!;
@@ -65,10 +66,22 @@ namespace PmcTransformer.Archive
                     {
                         // LBN/4/3/5 and XAPO/2/2/15 have no parents atm
                         parent = archiveByRefNo[parentRefNo];
-                        parentRef = new LinkedArtObject(Types.Set)
-                            .WithId(parent.Id)
-                            .WithLabel(parent.Label);
-                        laObj.MemberOf.Add(parentRef);
+                        if(parent is HumanMadeObject)
+                        {
+                            count++;
+                            parentRef = new HumanMadeObject()
+                                .WithId(parent.Id)
+                                .WithLabel(parent.Label);
+                            laObj.PartOf ??= [];
+                            laObj.PartOf.Add(parentRef);
+                        } 
+                        else
+                        {
+                            parentRef = new LinkedArtObject(Types.Set)
+                                .WithId(parent.Id)
+                                .WithLabel(parent.Label);
+                            laObj.MemberOf.Add(parentRef);
+                        }
                     }
                 }
 
@@ -136,6 +149,9 @@ namespace PmcTransformer.Archive
 
                 Writer.WriteToDisk(laObj);
             }
+
+            Console.WriteLine(count);
+            Console.WriteLine();
 
             // Now we want to reconcile the actors in authorityDict
             // to the authorities we already have from the library reconcilation.

@@ -1,7 +1,9 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
+using Microsoft.Recognizers.Text.Matcher;
 using PmcTransformer.Helpers;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
@@ -160,6 +162,9 @@ namespace PmcTransformer.Archive
                         EndOfTheEnd = parsed.Item2?.EndOfTheEnd, // might be null
                         Label = dates
                     };
+                    professionalActivities.TimeSpan.IdentifiedBy = [
+                        new Name(dates).WithClassifiedAs(Getty.DisplayTitle)
+                    ];
                     actor.CarriedOut = [professionalActivities];
                 }
                 else

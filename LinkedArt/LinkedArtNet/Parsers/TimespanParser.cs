@@ -1,5 +1,8 @@
-﻿using Microsoft.Recognizers.Text;
+﻿using LinkedArtNet.Vocabulary;
+using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
+using Microsoft.Recognizers.Text.Matcher;
+using System.Reflection.Emit;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -155,9 +158,13 @@ namespace LinkedArtNet.Parsers
                 EndOfTheEnd = GetEnd(start, end)
             };
 
+            ts.IdentifiedBy = [
+                new Name(s).WithClassifiedAs(Getty.DisplayTitle)
+            ];
+
             //if(wasParsedByLib)
             //{
-                // Console.WriteLine($"*** date {s} => {s2} => {ts.BeginOfTheBegin?.DtOffset} - {ts.EndOfTheEnd?.DtOffset}");
+            // Console.WriteLine($"*** date {s} => {s2} => {ts.BeginOfTheBegin?.DtOffset} - {ts.EndOfTheEnd?.DtOffset}");
             //}
             return ts;
         }

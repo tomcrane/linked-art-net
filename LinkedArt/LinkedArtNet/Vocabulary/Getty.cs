@@ -30,6 +30,8 @@ public class Getty
     public static LinkedArtObject Book => AatType("Book", "300028051");
     public static LinkedArtObject Monograph => AatType("Monograph", "300060417");
     public static LinkedArtObject Letter => AatType("Letter", "300026879");
+    public static LinkedArtObject Sound => AatType("Sound", "300056060");
+    
 
     //Archives
     public static LinkedArtObject Archives => AatType("archives (groupings)", "300375748");

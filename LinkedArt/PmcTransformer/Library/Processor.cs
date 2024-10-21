@@ -247,7 +247,7 @@ namespace PmcTransformer.Library
 
                 Helpers.AddEdition(record, work, editionStatementsFromNotes);
 
-                bool missingMedium = Helpers.AddMedium(record, work);
+                bool missingMedium = Helpers.AddMedium(record, work, allHMOs[id]);
                 if (missingMedium) nullMediumCounter++;
 
                 var classes = Helpers.GetClasses(record);
@@ -288,15 +288,15 @@ namespace PmcTransformer.Library
                             switch (normalisedMedium)
                             {
                                 case "PAMPHLET":
-                                    work.WithClassifiedAs(Media.FromRecordValue("Pamphlet")!);
+                                    Helpers.ProcessMedium(work, allHMOs[id], "Pamphlet");
                                     break;
                                 case "LARGE":
                                 case "EXTRA LARGE":
                                 case "EXTRA EXTRA LARGE":
-                                    work.WithClassifiedAs(Media.FromRecordValue("Large")!);
+                                    Helpers.ProcessMedium(work, allHMOs[id], "Large");
                                     break;
                                 case "INFORMATION FILES":
-                                    work.WithClassifiedAs(Media.FromRecordValue("Information files")!);
+                                    Helpers.ProcessMedium(work, allHMOs[id], "Information files");
                                     break;
                                 default:
                                     throw new InvalidOperationException("Unexpected medium");

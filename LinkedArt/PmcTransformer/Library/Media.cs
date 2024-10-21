@@ -5,11 +5,11 @@ namespace PmcTransformer.Library
 {
     public class Media
     {
-        public static LinkedArtObject? FromRecordValue(string value)
+        public static (LinkedArtObject?, LinkedArtObject?) FromRecordValue(string value)
         {
             if (value == "Image files")
             {
-                return null;
+                return (null, null);
             }
             return MediaDict[value];
         }
@@ -34,25 +34,27 @@ namespace PmcTransformer.Library
             Large = Getty.AatType("Large", "300379501");
             Report = Getty.AatType("Report", "300027267");
 
-            MediaDict[InformationFiles.Label!] = InformationFiles;
-            MediaDict[Text.Label!] = Text;
-            MediaDict[ExhibitionCatalogue.Label!] = ExhibitionCatalogue;
-            MediaDict[AuctionCatalogue.Label!] = AuctionCatalogue;
-            MediaDict[Journal.Label!] = Journal;
-            MediaDict[CDRom.Label!] = CDRom;
-            MediaDict[Website.Label!] = Website;
-            MediaDict[Manuscript.Label!] = Manuscript;
-            MediaDict[DVD.Label!] = DVD;
-            MediaDict[Microfilm.Label!] = Microfilm;
-            MediaDict[CD.Label!] = CD;
+            //               to be applied to:   (the LinguisticObject, the HumanMadeObjects)
+            MediaDict[InformationFiles.Label!] = (Text, InformationFiles);
+            MediaDict[Text.Label!] = (Text, Getty.Book) ;
+            MediaDict[ExhibitionCatalogue.Label!] = (ExhibitionCatalogue, Getty.Book);
+            MediaDict[AuctionCatalogue.Label!] = (AuctionCatalogue, Getty.Book);
+            MediaDict[Journal.Label!] = (Journal, null);
+            MediaDict[CDRom.Label!] = (null, CDRom);
+            MediaDict[Website.Label!] = (Website, Website);
+            MediaDict[Manuscript.Label!] = (Text, Manuscript);
+            MediaDict[DVD.Label!] = (null, DVD);
+            MediaDict[Microfilm.Label!] = (null, Microfilm);
+            MediaDict[CD.Label!] = (Getty.Sound, CD);
 
-            MediaDict[Pamphlet.Label!] = Pamphlet;
-            MediaDict[Large.Label!] = Large;
-            MediaDict[Report.Label!] = Report;
+            MediaDict[Pamphlet.Label!] = (Text, Pamphlet);
+            MediaDict[Large.Label!] = (Text, Large);
+            MediaDict[Report.Label!] = (Text, Report);
 
         }
 
-        private static readonly Dictionary<string, LinkedArtObject> MediaDict = [];
+        //                                 for the LinguisticObject, for the HumanMadeObjects
+        private static readonly Dictionary<string, (LinkedArtObject?, LinkedArtObject?)> MediaDict = [];
 
         public static LinkedArtObject InformationFiles;
         public static LinkedArtObject Text;

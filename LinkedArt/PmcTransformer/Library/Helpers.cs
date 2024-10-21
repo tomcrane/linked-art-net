@@ -94,24 +94,40 @@ namespace PmcTransformer.Library
             }
         }
 
-        public static bool AddMedium(XElement record, LinguisticObject work)
+        public static bool AddMedium(XElement record, LinguisticObject work, List<HumanMadeObject> hmos)
         {
             // Observed so far ALL records have exactly one medium.
             // /classified_as/id
-            bool missingMedium = false;
             var medium = record.LibStrings("medium").Single();
+            return ProcessMedium(work, hmos, medium);
+        }
+
+        public static bool ProcessMedium(LinguisticObject work, List<HumanMadeObject> hmos, string medium)
+        {
             var mediumClassifier = Media.FromRecordValue(medium);
-            if (mediumClassifier == null)
+            if (mediumClassifier == (null, null))
             {
                 // Image files
-                missingMedium = true;
+                return true;
             }
             else
             {
-                work.WithClassifiedAs(mediumClassifier);
+                var workMedium = mediumClassifier.Item1;
+                if (workMedium != null)
+                {
+                    work.WithClassifiedAs(workMedium);
+                }
+                var hmoMedium = mediumClassifier.Item2;
+                if (hmoMedium != null)
+                {
+                    foreach (var hmo in hmos)
+                    {
+                        hmo.WithClassifiedAs(hmoMedium);
+                    }
+                }
             }
 
-            return missingMedium;
+            return false;
         }
 
         public static void AddCollation(XElement record, LinguisticObject work)

@@ -23,6 +23,11 @@ namespace PmcTransformer.Library
             // "Missing record created by data verification program"
             if (id == "Q$") return true;
 
+            var title = record.Attribute("title")!.Value;
+            if (title.StartsWith("*"))
+            {
+                return true;
+            }
 
             var medium = record.LibStrings("medium").Single();
             if (medium == "Journal") return true;

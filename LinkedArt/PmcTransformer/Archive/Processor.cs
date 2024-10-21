@@ -1,6 +1,7 @@
 ﻿using LinkedArtNet;
 using LinkedArtNet.Parsers;
 using LinkedArtNet.Vocabulary;
+using PmcTransformer.Helpers;
 using PmcTransformer.Reconciliation;
 using System.Text.Json;
 using System.Xml.Linq;
@@ -96,12 +97,15 @@ namespace PmcTransformer.Archive
                     }
                 }
 
+                // Access Condition
+                Helpers.SimpleStatement(Statements.AccessStatement, laObj, Getty.AccessStatement);
+
                 // statements/descriptions
                 Helpers.SimpleStatement(record, laObj, "Extent", Getty.DimensionStatement);
                 Helpers.SimpleStatement(record, laObj, "AdminHistory", Getty.AdministrativeHistory);
                 Helpers.ProcessDescription(record, laObj); // See Stock Number TODO
                 Helpers.SimpleStatement(record, laObj, "Arrangement", Getty.ArrangementDescription);
-                Helpers.SimpleStatement(record, laObj, "AccessConditions", Getty.AccessStatement);
+                //Helpers.SimpleStatement(record, laObj, "AccessConditions", Getty.AccessStatement);
                 Helpers.SimpleStatement(record, laObj, "RelatedMaterial", Getty.RelatedMaterial);
                 Helpers.SimpleStatement(record, laObj, "PublnNote", Getty.GeneralNote);
                 Helpers.ProcessThumbnailAndDescription(record, laObj);

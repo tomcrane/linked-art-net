@@ -83,6 +83,13 @@ namespace PmcTransformer.Library
                     new Name(title).AsPrimaryName(),
                 ];
 
+                work.ReferredToBy ??= [];
+                work.ReferredToBy.Add(
+                    new LinguisticObject()
+                        .WithClassifiedAs(Getty.AccessStatement, Getty.BriefText)
+                        .WithContent(Statements.AccessStatement)
+                );
+
                 // Now create 1 or more HumanMadeObjects for the Work,
                 // based on the parallel accloc (location) and accnofld (accession number) fields.
                 var acclocs = record.LibStrings("accloc").ToList();
@@ -164,6 +171,12 @@ namespace PmcTransformer.Library
                     hmo.MemberOf = [
                         Locations.PMCLibrarySet
                     ];
+                    hmo.ReferredToBy ??= [];
+                    hmo.ReferredToBy.Add(
+                        new LinguisticObject()
+                            .WithClassifiedAs(Getty.AccessStatement, Getty.BriefText)
+                            .WithContent(Statements.AccessStatement)
+                    );
                 }
 
 

@@ -162,7 +162,7 @@ HumanMadeObject AmphoraWork()
             .WithLabel("Theseus")
     ];
     visualWork.About = [
-        new LinkedArtObject(Types.Concept)
+        new LinkedArtObject()
             .WithId("icc:45A3")
             .WithLabel("Victory ~ Armed Conflict")
     ];
@@ -257,7 +257,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
             .WithLabel("Katherine Stieglitz")
     ];
     visualWork.About = [
-        new LinkedArtObject(Types.Concept)
+        new LinkedArtObject()
             .WithId("icc:Woman")
             .WithLabel("Woman")
     ];
@@ -269,7 +269,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     acquisition.TransferredTitleOf = [photograph];
     acquisition.TransferredTitleTo = [rijksmuseum];
     acquisition.TimeSpan = LinkedArtTimeSpan.FromYear(1994, $"{acquisition.Id}/ts");
-    var provenance = new Activity(Types.Provenance)
+    var provenance = new Activity()
         .WithId($"{photograph.Id}/provenance")
         .WithClassifiedAs("aat:Provenance", "Provenance");
     provenance.Part = [acquisition];

@@ -4,10 +4,8 @@
     {
         Acquisition,
         // **Activity,
-        Actor,
         AttributeAssignment,
         Birth,
-        Concept,
         Creation,
         Currency,
         Death,
@@ -35,7 +33,6 @@
         // **Place,
         Production,
         PropositionalObject,
-        Provenance,
         // **Right,
         Set,
         // **TimeSpan (LinkedArtTimeSpan)

@@ -173,12 +173,12 @@ namespace PmcTransformer.Archive
                     var hmo = laObj as HumanMadeObject;
                     if (hmo != null)
                     {
-                        hmo.ProducedBy = new Activity { TimeSpan = timespan };
+                        hmo.ProducedBy = new Activity(Types.Production) { TimeSpan = timespan };
                     }
                     else
                     {
                         laObj.MembersExemplifiedBy = [
-                            new HumanMadeObject { ProducedBy = new Activity { TimeSpan = timespan } }
+                            new HumanMadeObject { ProducedBy = new Activity(Types.Production) { TimeSpan = timespan } }
                         ];
                     }
                 }

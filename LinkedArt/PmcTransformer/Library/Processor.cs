@@ -379,6 +379,8 @@ namespace PmcTransformer.Library
                 }
 
 
+
+                var places = record.LibStrings("place").Select(p => p.TrimOuterBrackets()).ToList();
                 // place
                 bool hasPlace = hierarchicalPlaces.Count > 0;
                 // /used_for[classified_as=PUBLISHING]/took_place_at/id
@@ -392,17 +394,21 @@ namespace PmcTransformer.Library
                 else
                 {
                     // Only use place field if we didn't find a hierarchical place in notes->(HIE)
-                    var places = record.LibStrings("place");
                     foreach (var place in places)
                     {
                         hasPlace = true;
-                        placeDict.AddToListForKey(place.TrimOuterBrackets(), id);
+                        placeDict.AddToListForKey(place, id);
                     }
                 }
+                // #1 we have multiple places here
 
 
                 // publisher
                 // /used_for[classified_as=PUBLISHING]/carried_out_by/id
+
+                LinkedArtObject? publicationStatement = null;
+
+                var publishers = record.LibStrings("publisher").ToList();
                 bool hasPublisher = false;
                 if (publishersInOtherFields.Count > 0)
                 {
@@ -415,7 +421,6 @@ namespace PmcTransformer.Library
                 }
                 else
                 {
-                    var publishers = record.LibStrings("publisher");
                     foreach (var publisher in publishers)
                     {
                         var pubLower = publisher.ToLowerInvariant();
@@ -430,11 +435,9 @@ namespace PmcTransformer.Library
                             pubLower.StartsWith("printed by")
                         )
                         {
-                            work.ReferredToBy ??= [];
-                            work.ReferredToBy.Add(
-                                new LinguisticObject()
+                            publicationStatement = new LinguisticObject()
                                     .WithClassifiedAs(Getty.PublicationStatement, Getty.BriefText)
-                                    .WithContent(pubTrimmed));
+                                    .WithContent(pubTrimmed);
 
                         }
                         else if (pubLower.IndexOf("printed for") != -1 || pubLower.IndexOf("sold by") != -1)
@@ -459,6 +462,39 @@ namespace PmcTransformer.Library
 
                 var year = record.LibStrings("year").SingleOrDefault();
                 var nobrackets = year.TrimOuterBrackets();
+
+                var firstPublicationStatement = "";
+                if(places.Count > 0)
+                {
+                    firstPublicationStatement += places[0] + ": ";
+                }
+                if(publishers.Count > 0)
+                {
+                    firstPublicationStatement += publishers[0];
+                }
+                if(firstPublicationStatement.HasText())
+                {
+                    if(nobrackets.HasText())
+                    {
+                        firstPublicationStatement += $": [{nobrackets}]";
+                    }
+                }
+                if(firstPublicationStatement.HasText())
+                {
+                    Console.WriteLine(firstPublicationStatement);
+                    work.ReferredToBy ??= [];
+                    work.ReferredToBy.Add(
+                        new LinguisticObject()
+                            .WithClassifiedAs(Getty.PublicationStatement, Getty.BriefText)
+                            .WithContent(firstPublicationStatement));
+                }
+
+                if(publicationStatement != null)
+                {
+                    work.ReferredToBy ??= [];
+                    work.ReferredToBy.Add(publicationStatement);
+                }
+
                 if (nobrackets != null && nobrackets.StartsWith("n.d")) year = null;
                 if (nobrackets == "Date of publication not identified") year = null;
 

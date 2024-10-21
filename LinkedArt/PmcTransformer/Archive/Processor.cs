@@ -94,6 +94,12 @@ namespace PmcTransformer.Archive
 
 
                 Helpers.SetClassifiedAs(level, laSet, laItem);
+                // Pending all the archival levels having Getty AAT vocabulary
+                Helpers.SimpleStatement(level, laObj, Getty.AatType("Archival Description", "300449175"));
+                laObj.ReferredToBy[^1].IdentifiedBy = [
+                    new Name("Archival Level").WithClassifiedAs(Getty.DisplayTitle)
+                ];
+
                 Helpers.ProcessAltRefNo(record, laObj);
                 var dateField = record.ArcStrings("Date").SingleOrDefault();
                 Helpers.ProcessDate(dateField, laObj);

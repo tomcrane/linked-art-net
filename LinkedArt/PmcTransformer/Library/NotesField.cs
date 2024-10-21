@@ -180,6 +180,15 @@ namespace PmcTransformer.Library
                             editionStatementsFromNotes.AddRange(kvp.Value.Where(v => v.HasText()));
                             break;
 
+
+                        case "NUM": // Numbers borne by the item (e.g.auction catalogs)
+                            foreach (var num in kvp.Value)
+                            {   
+                                work.IdentifiedBy!.Add(new Identifier(num).WithClassifiedAs(Getty.CreationNumber));
+                            }
+                            break;
+
+
                         // The following note fields are ignored for now
                         case "CIP": // ignore
                         case "AUD": // ignore
@@ -188,7 +197,6 @@ namespace PmcTransformer.Library
                         case "HOL": // Holdings, ignore
                         case "RUN": // ignore
                         case "SUB": // ignore
-                        case "NUM": // Numbers borne by the item (e.g.auction catalogs) ignore for now
                         case "FRE": // Publication Frequency note for serials. Type: FREQUENCY
                         case "USE": // copyright fee note? Ignore
                         case "BSH": // oversized, no longer used, ignore

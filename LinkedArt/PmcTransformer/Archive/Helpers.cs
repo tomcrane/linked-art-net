@@ -266,63 +266,63 @@ namespace PmcTransformer.Archive
                     AddVisualItem(laObj, texts[i], FormatThumbnailUrl(thumbs[i]));
                 }
             }
-            else if (thumbs.Count == texts.Count * 2)
-            {
-                thumbnailTextCounts.IncrementCounter("doubleCounts");
-                for (var i = 0; i < texts.Count; i++)
-                {
-                    AddVisualItem(laObj, texts[i / 2], FormatThumbnailUrl(thumbs[i]));
-                }
-            }
-            else
-            {
-                if(texts.Count < thumbs.Count)
-                {
-                    thumbnailTextCounts.IncrementCounter("notEnoughTextsForThumbs");
-                }
-                // both of these dicts have the thumb index
-                var matchedTexts = new Dictionary<int, string>();
-                var pairs = new Dictionary<int, Tuple<string, string>>();
-                var singletons = new Dictionary<int, string>();
-                for (var i = 0; i < thumbs.Count; i++)
-                {
-                    if (i > 0 && AreRectoAndVerso(thumbs[i - 1], thumbs[i]))
-                    {
-                        pairs[i - 1] = new(thumbs[i - 1], thumbs[i]);
-                    }
-                }
-                for (var i = 0; i < thumbs.Count; i++)
-                {
-                    // fill in all the blanks
-                    if (!pairs.Values.Any(pair => pair.Item1 == thumbs[i] || pair.Item2 == thumbs[i]))
-                    {
-                        singletons[i] = thumbs[i];
-                    }
-                }
-                var newTotal = pairs.Count * 2 + singletons.Count;
-                if(thumbs.Count == newTotal)
-                {
-                    thumbnailTextCounts.IncrementCounter("matchesAfterPairing");
-                }
-                else
-                {
-                    thumbnailTextCounts.IncrementCounter("stillNoMatchAfterPairing"); // yay 0!
-                }
-                int textCounter = 0;
-                for (var i = 0; i < thumbs.Count; i++)
-                {
-                    if (singletons.ContainsKey(i))
-                    {
-                        AddVisualItem(laObj, GetTextFromListOrLast(texts, textCounter++), FormatThumbnailUrl(thumbs[i]));
-                    }
-                    else
-                    {
-                        // a pair
-                        AddVisualItem(laObj, GetTextFromListOrLast(texts, textCounter), FormatThumbnailUrl(thumbs[i]));
-                        AddVisualItem(laObj, GetTextFromListOrLast(texts, textCounter++), FormatThumbnailUrl(thumbs[++i]));
-                    }
-                }
-            }
+            //else if (thumbs.Count == texts.Count * 2)
+            //{
+            //    thumbnailTextCounts.IncrementCounter("doubleCounts");
+            //    for (var i = 0; i < texts.Count; i++)
+            //    {
+            //        AddVisualItem(laObj, texts[i / 2], FormatThumbnailUrl(thumbs[i]));
+            //    }
+            //}
+            //else
+            //{
+            //    if(texts.Count < thumbs.Count)
+            //    {
+            //        thumbnailTextCounts.IncrementCounter("notEnoughTextsForThumbs");
+            //    }
+            //    // both of these dicts have the thumb index
+            //    var matchedTexts = new Dictionary<int, string>();
+            //    var pairs = new Dictionary<int, Tuple<string, string>>();
+            //    var singletons = new Dictionary<int, string>();
+            //    for (var i = 0; i < thumbs.Count; i++)
+            //    {
+            //        if (i > 0 && AreRectoAndVerso(thumbs[i - 1], thumbs[i]))
+            //        {
+            //            pairs[i - 1] = new(thumbs[i - 1], thumbs[i]);
+            //        }
+            //    }
+            //    for (var i = 0; i < thumbs.Count; i++)
+            //    {
+            //        // fill in all the blanks
+            //        if (!pairs.Values.Any(pair => pair.Item1 == thumbs[i] || pair.Item2 == thumbs[i]))
+            //        {
+            //            singletons[i] = thumbs[i];
+            //        }
+            //    }
+            //    var newTotal = pairs.Count * 2 + singletons.Count;
+            //    if(thumbs.Count == newTotal)
+            //    {
+            //        thumbnailTextCounts.IncrementCounter("matchesAfterPairing");
+            //    }
+            //    else
+            //    {
+            //        thumbnailTextCounts.IncrementCounter("stillNoMatchAfterPairing"); // yay 0!
+            //    }
+            //    int textCounter = 0;
+            //    for (var i = 0; i < thumbs.Count; i++)
+            //    {
+            //        if (singletons.ContainsKey(i))
+            //        {
+            //            AddVisualItem(laObj, GetTextFromListOrLast(texts, textCounter++), FormatThumbnailUrl(thumbs[i]));
+            //        }
+            //        else
+            //        {
+            //            // a pair
+            //            AddVisualItem(laObj, GetTextFromListOrLast(texts, textCounter), FormatThumbnailUrl(thumbs[i]));
+            //            AddVisualItem(laObj, GetTextFromListOrLast(texts, textCounter++), FormatThumbnailUrl(thumbs[++i]));
+            //        }
+            //    }
+            //}
         }
 
         private static string GetTextFromListOrLast(List<string> texts, int index)

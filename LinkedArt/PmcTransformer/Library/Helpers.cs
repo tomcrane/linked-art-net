@@ -60,10 +60,6 @@ namespace PmcTransformer.Library
             {
                 return true;
             }
-            if (allClasses.Contains("IN PROCESS"))
-            {
-                return true;
-            }
             if (allClasses.Any(c => c.StartsWith("JOURNALS")))
             {
                 return true;

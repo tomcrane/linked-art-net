@@ -313,21 +313,14 @@ namespace PmcTransformer.Library
 
                 foreach(var classVal in identifierClasses)
                 {
-                    if(normalisedMedium.HasText())
+                    var identifier = classVal;
+                    if (normalisedMedium.HasText())
                     {
-                        var identifier = classVal + " (" + normalisedMedium + ")";
-                        Console.WriteLine(identifier);
-                        work.IdentifiedBy.Add(new Identifier(identifier));
+                        identifier = classVal + " (" + normalisedMedium + ")";
                     }
-                    else
-                    {
-                        work.IdentifiedBy.Add(new Identifier(classVal));
-                    }
+                    work.IdentifiedBy.Add(new Identifier(classVal)
+                        .WithClassifiedAs(Getty.AatType("Class", "300435444")));
                 }
-
-
-
-
 
 
                 // =====================

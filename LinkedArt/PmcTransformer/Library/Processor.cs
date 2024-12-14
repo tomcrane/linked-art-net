@@ -247,11 +247,12 @@ namespace PmcTransformer.Library
 
                 Helpers.AddEdition(record, work, editionStatementsFromNotes);
 
-                bool missingMedium = Helpers.AddMedium(record, work, allHMOs[id]);
-                if (missingMedium) nullMediumCounter++;
-
                 var classes = Helpers.GetClasses(record);
                 classCounter.IncrementCounter(classes.Count);
+
+                bool missingMedium = Helpers.AddMedium(record, work, allHMOs[id], classes);
+                if (missingMedium) nullMediumCounter++;
+
                 string[] normalisedMediums = [
                     "PAMPHLET",
                     "LARGE",
@@ -259,6 +260,13 @@ namespace PmcTransformer.Library
                     "EXTRA EXTRA LARGE",
                     "INFORMATION FILES",
                     "REPORTS"
+                ];
+
+                // Will need to ignore these as they will have already been used to qualify the medium, e.g., a DVD
+                string[] avClasses = [
+                    "AUDIO VISUAL - VIDEO",
+                    "AUDIO VISUAL - AUDIO",
+                    "AUDIO VISUAL - SOFTWARE"
                 ];
 
                 var identifierClasses = new List<string>();
@@ -275,8 +283,7 @@ namespace PmcTransformer.Library
                         }
                     }
                     else
-                    {
-                        
+                    {                        
                         var mediumClass = classVal.ToUpperInvariant().Replace("(", "").Replace(")", "");
                         if(normalisedMedium != null)
                         {
@@ -288,21 +295,21 @@ namespace PmcTransformer.Library
                             switch (normalisedMedium)
                             {
                                 case "PAMPHLET":
-                                    Helpers.ProcessMedium(work, allHMOs[id], "Pamphlet");
+                                    Helpers.ProcessMedium(work, allHMOs[id], "Pamphlet", classes);
                                     break;
                                 case "LARGE":
                                 case "EXTRA LARGE":
                                 case "EXTRA EXTRA LARGE":
-                                    Helpers.ProcessMedium(work, allHMOs[id], "Large");
+                                    Helpers.ProcessMedium(work, allHMOs[id], "Large", classes);
                                     break;
                                 case "INFORMATION FILES":
-                                    Helpers.ProcessMedium(work, allHMOs[id], "Information files");
+                                    Helpers.ProcessMedium(work, allHMOs[id], "Information files", classes);
                                     break;
                                 default:
                                     throw new InvalidOperationException("Unexpected medium");
                             }
                         }
-                        else
+                        else if(!avClasses.Contains(classVal))
                         {
                             identifierClasses.Add(classVal);
                             // This class value is an Identifier

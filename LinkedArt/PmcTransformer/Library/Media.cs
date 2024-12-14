@@ -5,13 +5,33 @@ namespace PmcTransformer.Library
 {
     public class Media
     {
-        public static (LinkedArtObject?, LinkedArtObject?) FromRecordValue(string value)
+        public static (LinkedArtObject?, LinkedArtObject?) FromRecordValue(string value, List<string> classes)
         {
-            if (value == "Image files")
+            switch (value)
             {
-                return (null, null);
+                case "Image files":
+                    return (null, null);
+
+                //case "CD-ROM":
+                //    // All <class>AUDIO VISUAL - SOFTWARE</class> so leave for now
+                //case "CD":
+                //    // All <class>AUDIO VISUAL - AUDIO</class> so leave for now
+
+                case "DVD":
+                    if(classes.Contains("AUDIO VISUAL - SOFTWARE"))
+                    {
+                        return (null, Software);
+                    }
+                    else
+                    {
+                        return (null, DVD);
+                    }
+
+
+                default:
+                    return MediaDict[value];
+
             }
-            return MediaDict[value];
         }
 
         static Media()
@@ -26,6 +46,7 @@ namespace PmcTransformer.Library
             Website = Getty.AatType("Web site", "300264578");
             Manuscript = Getty.AatType("Manuscript", "300265483");
             DVD = Getty.AatType("DVD", "300264677");
+            Software = Getty.AatType("Software", "300028566");
             Microfilm = Getty.AatType("Microfilm", "300028598");
             CD = Getty.AatType("CD", "300028673");
 
@@ -33,6 +54,8 @@ namespace PmcTransformer.Library
             Pamphlet = Getty.AatType("Pamphlet", "300220572");
             Large = Getty.AatType("Large", "300379501");
             Report = Getty.AatType("Report", "300027267");
+            // AV Medium from class field:
+
 
             //               to be applied to:      (the LinguisticObject, the HumanMadeObjects)
             MediaDict[InformationFiles.Label!]    = (Text, InformationFiles);
@@ -65,13 +88,13 @@ namespace PmcTransformer.Library
         public static LinkedArtObject Website;
         public static LinkedArtObject Manuscript;
         public static LinkedArtObject DVD;
+        public static LinkedArtObject Software;
         public static LinkedArtObject Microfilm;
         public static LinkedArtObject CD;
 
         public static LinkedArtObject Pamphlet;
         public static LinkedArtObject Large;
         public static LinkedArtObject Report;
-
 
     }
 }

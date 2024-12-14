@@ -95,17 +95,17 @@ namespace PmcTransformer.Library
             }
         }
 
-        public static bool AddMedium(XElement record, LinguisticObject work, List<HumanMadeObject> hmos)
+        public static bool AddMedium(XElement record, LinguisticObject work, List<HumanMadeObject> hmos, List<string> classes)
         {
             // Observed so far ALL records have exactly one medium.
             // /classified_as/id
             var medium = record.LibStrings("medium").Single();
-            return ProcessMedium(work, hmos, medium);
+            return ProcessMedium(work, hmos, medium, classes);
         }
 
-        public static bool ProcessMedium(LinguisticObject work, List<HumanMadeObject> hmos, string medium)
+        public static bool ProcessMedium(LinguisticObject work, List<HumanMadeObject> hmos, string medium, List<string> classes)
         {
-            var mediumClassifier = Media.FromRecordValue(medium);
+            var mediumClassifier = Media.FromRecordValue(medium, classes);
             if (mediumClassifier == (null, null))
             {
                 // Image files

@@ -23,6 +23,10 @@ namespace PmcTransformer.Helpers
                 RawStringLookUpsGroups = JsonSerializer.Deserialize<Dictionary<string, string>>(jDoc.RootElement.GetProperty("local_string_map"));
                 var authorities = JsonSerializer.Deserialize<List<Authority>>(jDoc.RootElement.GetProperty("authorities"));
                 Groups = authorities!.ToDictionary(a => a.Identifier!);
+                foreach(var group in Groups)
+                {
+                    group.Value.Pmc = Identity.GroupBase + group.Value.Identifier;
+                }
             }
 
             var resp2 = httpClient.Send(new HttpRequestMessage(HttpMethod.Get, PeopleSource));
@@ -32,7 +36,11 @@ namespace PmcTransformer.Helpers
             {
                 RawStringLookUpsPeople = JsonSerializer.Deserialize<Dictionary<string, string>>(jDoc.RootElement.GetProperty("local_string_map"));
                 var authorities = JsonSerializer.Deserialize<List<Authority>>(jDoc.RootElement.GetProperty("authorities"));
-                People = authorities!.ToDictionary(a => a.Identifier!);
+                People = authorities!.ToDictionary(a => a.Identifier!); 
+                foreach (var person in People)
+                {
+                    person.Value.Pmc = Identity.PeopleBase + person.Value.Identifier;
+                }
             }
 
         }

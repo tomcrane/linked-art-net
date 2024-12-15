@@ -8,10 +8,18 @@ namespace PmcTransformer.Library
 {
     public static class Helpers
     {
-        public static readonly XNamespace LibNS = "x-schema:EF-34074-Export.dtd";
+        public static XNamespace LibNS = "x-schema:EF-34074-Export.dtd";
+
+        private static bool knowsNamespace;
 
         public static IEnumerable<string> LibStrings(this XElement record, string field)
         {
+            if (!knowsNamespace)
+            {
+                string nss = record.Parent.Attribute("xmlns").Value;
+                LibNS = nss;
+                knowsNamespace = true;
+            }
             return record.Elements(LibNS + field)
                 .Select(el => el.Value)
                 .Where(s => s.HasText());
@@ -23,7 +31,7 @@ namespace PmcTransformer.Library
             // "Missing record created by data verification program"
             if (id == "Q$") return true;
 
-            var title = record.Attribute("title")!.Value;
+            var title = record.LibStrings("title").Single();
             if (title.StartsWith("*"))
             {
                 return true;
@@ -53,6 +61,10 @@ namespace PmcTransformer.Library
                 return true;
             }
             if (allClasses.Contains("UNAVAILABLE"))
+            {
+                return true;
+            }
+            if (allClasses.Contains("IN QUARANTINE - UNAVAILABLE"))
             {
                 return true;
             }

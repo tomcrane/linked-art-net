@@ -7,7 +7,6 @@ using System.Text.Json;
 using Group = LinkedArtNet.Group;
 using System.Data;
 using PmcTransformer.Reconciliation;
-using Microsoft.Extensions.Primitives;
 
 namespace PmcTransformer.Library
 {
@@ -408,7 +407,7 @@ namespace PmcTransformer.Library
                     string? tidiedKeyword;
                     if(!cleanedKeywordDict.TryGetValue(keyword, out tidiedKeyword))
                     {
-                        Console.WriteLine("Going to DB for " + keyword);
+                        // Console.WriteLine("Going to DB for " + keyword);
                         tidiedKeyword = conn.GetCleanedSubject(id, keyword)?.KeywordsCleaned ?? keyword;
                         cleanedKeywordDict[keyword] = tidiedKeyword;
                     }
@@ -628,9 +627,9 @@ namespace PmcTransformer.Library
 
 
             // agents
-            // await reconciler.Reconcile(allWorks, corpAuthorDict, "corpauthor", "Group", true);
-            // await reconciler.Reconcile(allWorks, publisherDict, "publisher", "Group", true);
-            // await reconciler.Reconcile(allWorks, persAuthorFullDict, "persauthorfull", "Person", true);
+            await reconciler.Reconcile(allWorks, corpAuthorDict, "corpauthor", "Group", true);
+            await reconciler.Reconcile(allWorks, publisherDict, "publisher", "Group", true);
+            await reconciler.Reconcile(allWorks, persAuthorFullDict, "persauthorfull", "Person", true);
 
             // other authorities
             await reconciler.Reconcile(allWorks, keywordDict, "keywords", "Concept", false);

@@ -1,7 +1,5 @@
 ﻿using LinkedArtNet;
 using PmcTransformer.Helpers;
-using Group = LinkedArtNet.Group;
-using Dapper;
 
 namespace PmcTransformer.Reconciliation
 {

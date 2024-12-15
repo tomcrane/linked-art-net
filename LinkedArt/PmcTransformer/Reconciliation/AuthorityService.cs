@@ -300,6 +300,11 @@ namespace PmcTransformer.Reconciliation
             }
             foreach (var laObj in linkedArtObjects)
             {
+                if(laObj.Equivalent != null && laObj.Equivalent.Any(e => e.Id.StartsWith("https://data.paul-mellon-centre.ac.uk/concept/unrec_")))
+                {
+                    Console.WriteLine("Found pmc unrec in live data - " + laObj.Id);
+                    continue;
+                }
                 var authority = await GetFromEquivalents(laObj, name);
                 authority.Score = 100; // how to tell...
                 candidateAuthorities[$"lux{luxCounter++}"] = authority;
@@ -536,6 +541,16 @@ namespace PmcTransformer.Reconciliation
                 }
             }
 
+            // Special treatment for compound subjects that did match in LUX
+            if (luxMatches.Count == 1 && luxMatches[0].Label!.Contains("--"))
+            {
+                var luxMatch = luxMatches[0];
+                bestCandidate.Score = 3;
+                bestCandidate.Label = luxMatch.Label;
+                bestCandidate.Type = luxMatch.Type;
+                bestCandidate.Lux = luxMatch.Lux;
+                return bestCandidate;
+            }
 
             return null;
         }

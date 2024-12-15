@@ -28,33 +28,36 @@ namespace PmcTransformer
             using IHost host = builder.Build();
 
 
-            var root = "C:\\Users\\TomCrane\\Dropbox\\digirati\\PMC\\linked.art\\2024-03-18";
+            var root = "M:\\Dropbox\\digirati\\PMC\\linked.art\\";
+            var libraryDate = "2024-10-22";
+            var archiveDate = "2024-03-18";
+            var photoDate = "2024-03-18";
 
             // Entities need to be reconciled AFTER we do all three sources.
             // This is where the DB will come in to play.
-            if(args.Length == 0 || args[0] == "library")
+            if (args.Length == 0 || args[0] == "library")
             {
-                var library = root + "\\2024-03-11_library";
-                StreamReader reader = new(library + "\\2024-03-11_library.xml", Encoding.UTF8);
+                var library = $"{root}{libraryDate}\\{libraryDate}_library";
+                StreamReader reader = new($"{library}\\{libraryDate}_library.xml", Encoding.UTF8);
                 var xLibrary = XDocument.Load(reader);
                 var libraryProcessor = host.Services.GetService<Library.Processor>();
                 await libraryProcessor.ProcessLibrary(xLibrary, true);
             }
             else if (args[0] == "archive")
             {
-                var archive = root + "\\2024-03-11_archive";
+                var archive = $"{root}{archiveDate}\\{archiveDate}_archive";
                 Locations.SerialisePlaces();
                 var settings = GetSettings();
-                XmlReader reader1 = XmlReader.Create(archive + "\\2024-03-11_archive-descriptions.xml", settings);
+                XmlReader reader1 = XmlReader.Create($"{archive}\\{archiveDate}_archive-descriptions.xml", settings);
                 XDocument xArchive = XDocument.Load(reader1);
-                XmlReader reader2 = XmlReader.Create(archive + "\\2024-03-11_archive-authorities.xml", settings);
+                XmlReader reader2 = XmlReader.Create($"{archive}\\{archiveDate}_archive-authorities.xml", settings);
                 XDocument xAuthorities = XDocument.Load(reader2);
                 Archive.Processor.ProcessArchives(xArchive, xAuthorities);
 
             }
             else if (args[0] == "photo-archive")
             {
-                var photo_archive = root + "\\2024-03-14_photo-archive";
+                var photo_archive = $"{root}{photoDate}\\{photoDate}_photo-archive";
             }
             else if (args[0] == "leeds")
             {

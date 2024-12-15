@@ -24,17 +24,17 @@ namespace PmcTransformer
 
         // e.g., Crane, Thomas
         // Not yet dealing with surname, firstnames reordering - honorifics make this hard
-        public string? NormalisedName { get; private set; }
+        public string? NormalisedName { get; set; }
 
         // e.g., Crane, Thomas [1971-]
-        public string? NormalisedNameWithDates { get; private set; }
+        public string? NormalisedNameWithDates { get; set; }
 
         // e.g., Crane, Thomas [1971-] (developer)
-        public string? NormalisedFullForm { get; private set; }
+        public string? NormalisedFullForm { get; set; }
 
 
         // e.g., Crane, Thomas, 1971-
-        public string? NormalisedLocForm { get; private set; }
+        public string? NormalisedLocForm { get; set; }
 
         public bool IsActive { get; set; }
         public bool IsApproximate { get; set; }
@@ -54,6 +54,11 @@ namespace PmcTransformer
         [GeneratedRegex(@"^(.*)\[(.*)\]$")]
         private static partial Regex DatePattern();
 
+
+        public ParsedAgent()
+        {
+            // only for unit test
+        }
 
         [SetsRequiredMembers]
         public ParsedAgent(string original)

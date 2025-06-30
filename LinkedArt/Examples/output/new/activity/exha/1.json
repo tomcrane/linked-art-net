@@ -24,6 +24,19 @@
       ]
     }
   ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Manet and Modern Beauty",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
   "timespan": {
     "type": "TimeSpan",
     "begin_of_the_begin": "2019-10-08T00:00:00Z",
@@ -66,19 +79,6 @@
               "_label": "Brief Text"
             }
           ]
-        }
-      ]
-    }
-  ],
-  "identified_by": [
-    {
-      "type": "Name",
-      "content": "Manet and Modern Beauty",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300404670",
-          "type": "Type",
-          "_label": "Primary Name"
         }
       ]
     }

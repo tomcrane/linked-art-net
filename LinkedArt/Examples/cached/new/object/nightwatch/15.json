@@ -3,20 +3,6 @@
   "id": "https://linked.art/example/object/nightwatch/15",
   "type": "HumanMadeObject",
   "_label": "Night Watch by Rembrandt",
-  "classified_as": [
-    {
-      "id": "http://vocab.getty.edu/aat/300033618",
-      "type": "Type",
-      "_label": "Painting",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300435443",
-          "type": "Type",
-          "_label": "Type of Work"
-        }
-      ]
-    }
-  ],
   "referred_to_by": [
     {
       "type": "LinguisticObject",

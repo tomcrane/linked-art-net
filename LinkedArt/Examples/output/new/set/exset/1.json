@@ -10,6 +10,19 @@
       "_label": "Exhibition Collection"
     }
   ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Objects in Manet and Modern Beauty",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
   "referred_to_by": [
     {
       "type": "LinguisticObject",
@@ -26,19 +39,6 @@
               "_label": "Brief Text"
             }
           ]
-        }
-      ]
-    }
-  ],
-  "identified_by": [
-    {
-      "type": "Name",
-      "content": "Objects in Manet and Modern Beauty",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300404670",
-          "type": "Type",
-          "_label": "Primary Name"
         }
       ]
     }

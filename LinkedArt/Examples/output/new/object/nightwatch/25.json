@@ -28,6 +28,12 @@
           "_label": "Rijksmuseum"
         }
       ],
+      "identified_by": [
+        {
+          "type": "Name",
+          "content": "Thorough Condition Assessment"
+        }
+      ],
       "timespan": {
         "type": "TimeSpan",
         "begin_of_the_begin": "2019-05-01T00:00:00Z",
@@ -51,12 +57,6 @@
               ]
             }
           ]
-        }
-      ],
-      "identified_by": [
-        {
-          "type": "Name",
-          "content": "Thorough Condition Assessment"
         }
       ],
       "part_of": [

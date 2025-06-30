@@ -22,6 +22,19 @@
       "_label": "AkzoNobel"
     }
   ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Operation Night Watch",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
   "timespan": {
     "type": "TimeSpan",
     "begin_of_the_begin": "2019-01-01T00:00:00Z",
@@ -43,19 +56,6 @@
               "_label": "Brief Text"
             }
           ]
-        }
-      ]
-    }
-  ],
-  "identified_by": [
-    {
-      "type": "Name",
-      "content": "Operation Night Watch",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300404670",
-          "type": "Type",
-          "_label": "Primary Name"
         }
       ]
     }

@@ -26,25 +26,12 @@
     {
       "id": "http://vocab.getty.edu/aat/300311699",
       "type": "Type",
-      "_label": "Chapter"
-    }
-  ],
-  "referred_to_by": [
-    {
-      "type": "LinguisticObject",
-      "content": "5 - 10",
+      "_label": "Chapter",
       "classified_as": [
         {
-          "id": "http://vocab.getty.edu/aat/300435440",
+          "id": "http://vocab.getty.edu/aat/300435443",
           "type": "Type",
-          "_label": "Pagination Statement",
-          "classified_as": [
-            {
-              "id": "http://vocab.getty.edu/aat/300418049",
-              "type": "Type",
-              "_label": "Brief Text"
-            }
-          ]
+          "_label": "Type of Work"
         }
       ]
     }
@@ -58,6 +45,26 @@
           "id": "http://vocab.getty.edu/aat/300404670",
           "type": "Type",
           "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "5 - 15",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435440",
+          "type": "Type",
+          "_label": "Pagination Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
         }
       ]
     }

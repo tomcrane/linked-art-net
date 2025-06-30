@@ -24,26 +24,6 @@
       ]
     }
   ],
-  "referred_to_by": [
-    {
-      "type": "LinguisticObject",
-      "content": "92 p. with illus.",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300435452",
-          "type": "Type",
-          "_label": "Physical Statement",
-          "classified_as": [
-            {
-              "id": "http://vocab.getty.edu/aat/300418049",
-              "type": "Type",
-              "_label": "Brief Text"
-            }
-          ]
-        }
-      ]
-    }
-  ],
   "identified_by": [
     {
       "type": "Name",
@@ -64,6 +44,26 @@
           "id": "http://vocab.getty.edu/aat/300435704",
           "type": "Type",
           "_label": "System-Assigned Number"
+        }
+      ]
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "92 p. with illus.",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435452",
+          "type": "Type",
+          "_label": "Physical Statement",
+          "classified_as": [
+            {
+              "id": "http://vocab.getty.edu/aat/300418049",
+              "type": "Type",
+              "_label": "Brief Text"
+            }
+          ]
         }
       ]
     }

@@ -24,6 +24,13 @@
         "type": "Place",
         "_label": "France"
       }
+    ],
+    "during": [
+      {
+        "id": "https://linked.art/example/event/19c",
+        "type": "Period",
+        "_label": "19th Century"
+      }
     ]
   }
 }

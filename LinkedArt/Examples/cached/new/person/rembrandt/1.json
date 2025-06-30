@@ -5,9 +5,16 @@
   "_label": "Rembrandt",
   "classified_as": [
     {
-      "id": "http://vocab.getty.edu/aat/300388256",
-      "type": "Language",
-      "_label": "Dutch"
+      "id": "http://vocab.getty.edu/aat/300111175",
+      "type": "Type",
+      "_label": "Dutch",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300379842",
+          "type": "Type",
+          "_label": "Nationality"
+        }
+      ]
     }
   ]
 }

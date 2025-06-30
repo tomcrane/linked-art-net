@@ -28,7 +28,7 @@
       "assigned_by": [
         {
           "type": "AttributeAssignment",
-          "motivated_by": [
+          "influenced_by": [
             {
               "id": "https://linked.art/example/set/archive_sfl",
               "type": "Set",

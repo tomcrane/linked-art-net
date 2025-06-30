@@ -7,7 +7,14 @@
     {
       "id": "http://vocab.getty.edu/aat/300060417",
       "type": "Type",
-      "_label": "Monograph"
+      "_label": "Monograph",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435443",
+          "type": "Type",
+          "_label": "Type of Work"
+        }
+      ]
     }
   ],
   "created_by": {

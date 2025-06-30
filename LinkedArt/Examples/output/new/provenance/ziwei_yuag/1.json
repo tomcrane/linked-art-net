@@ -11,7 +11,8 @@
     },
     {
       "id": "http://vocab.getty.edu/aat/300417637",
-      "type": "Type"
+      "type": "Type",
+      "_label": "Gift"
     }
   ],
   "timespan": {
@@ -27,7 +28,7 @@
         {
           "id": "https://linked.art/example/object/ziwei_landscape",
           "type": "HumanMadeObject",
-          "_label": "Lanscape"
+          "_label": "Landscape"
         }
       ],
       "transferred_title_from": [

@@ -7,9 +7,9 @@
     "type": "Production",
     "carried_out_by": [
       {
-        "id": "https://linked.art/example/group/harwoodstudio",
-        "type": "Group",
-        "_label": "Studio of Francis Harwood"
+        "id": "http://vocab.getty.edu/ulan/500015886",
+        "type": "Person",
+        "_label": "Francis Harwood"
       }
     ],
     "technique": [

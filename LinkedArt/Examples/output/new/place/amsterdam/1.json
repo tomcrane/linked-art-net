@@ -10,6 +10,12 @@
       "_label": "City"
     }
   ],
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Amsterdam"
+    }
+  ],
   "referred_to_by": [
     {
       "type": "LinguisticObject",
@@ -28,12 +34,6 @@
           ]
         }
       ]
-    }
-  ],
-  "identified_by": [
-    {
-      "type": "Name",
-      "content": "Amsterdam"
     }
   ],
   "part_of": [

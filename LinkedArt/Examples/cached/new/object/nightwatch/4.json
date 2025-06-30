@@ -25,7 +25,8 @@
         {
           "id": "http://vocab.getty.edu/aat/300388277",
           "type": "Language",
-          "_label": "English"
+          "_label": "English",
+          "notation": "en"
         }
       ]
     }

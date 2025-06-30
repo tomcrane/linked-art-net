@@ -11,7 +11,8 @@
         {
           "id": "http://vocab.getty.edu/aat/300388277",
           "type": "Language",
-          "_label": "English"
+          "_label": "English",
+          "notation": "en"
         }
       ],
       "classified_as": [
@@ -29,7 +30,8 @@
         {
           "id": "http://vocab.getty.edu/aat/300388256",
           "type": "Language",
-          "_label": "Dutch"
+          "_label": "Dutch",
+          "notation": "nl"
         }
       ],
       "classified_as": [

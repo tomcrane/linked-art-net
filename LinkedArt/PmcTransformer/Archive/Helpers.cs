@@ -387,7 +387,7 @@ namespace PmcTransformer.Archive
 
         private static void AddVisualItem(LinkedArtObject laObj, string? label, string imageUrl)
         {
-            var visual = new Work(Types.VisualItem);
+            var visual = new VisualItem();
             var digitalImage = new DigitalObject()
                 .WithClassifiedAs(Getty.DigitalImage);
             digitalImage.Format = "image/jpeg";

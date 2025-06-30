@@ -10,7 +10,7 @@
       "_label": "Provenance Activity"
     }
   ],
-  "starts_after_the_end_of": [
+  "after": [
     {
       "id": "https://linked.art/example/provenance/manet_proust",
       "type": "Activity",
@@ -23,7 +23,7 @@
       ]
     }
   ],
-  "ends_before_the_start_of": [
+  "before": [
     {
       "type": "Activity",
       "_label": "foure_durand",

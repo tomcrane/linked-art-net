@@ -103,8 +103,8 @@ HumanMadeObject AmphoraWithDimensions()
         .WithId($"{amphora.Id}/id");
     amphora.IdentifiedBy = [name, id];
 
-    amphora.WithHeightDimension($"{amphora.Id}/h1", 38.7, MeasurementUnit.Centimetres);
-    amphora.WithWidthDimension($"{amphora.Id}/w1", 25.7, MeasurementUnit.Centimetres);
+    amphora.WithHeightDimension($"{amphora.Id}/h1", 38.7, MeasurementUnit.Centimeters);
+    amphora.WithWidthDimension($"{amphora.Id}/w1", 25.7, MeasurementUnit.Centimeters);
 
     return amphora;
 }
@@ -155,7 +155,7 @@ HumanMadeObject AmphoraWork()
         .WithClassifiedAs("300148696", "Amphora");
 
     // omit some info for brevity
-    var visualWork = new Work(Types.VisualItem);
+    var visualWork = new VisualItem();
     visualWork.Represents = [
         new Person()
             .WithId("icc:94M")
@@ -238,8 +238,8 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     photograph.ReferredToBy = [desc];
 
     // make this numers npt strings
-    photograph.WithHeightDimension($"{photograph.Id}/h1", 302, MeasurementUnit.Millimetres);
-    photograph.WithWidthDimension($"{photograph.Id}/w1", 210, MeasurementUnit.Millimetres);
+    photograph.WithHeightDimension($"{photograph.Id}/h1", 302, MeasurementUnit.Millimeters);
+    photograph.WithWidthDimension($"{photograph.Id}/w1", 210, MeasurementUnit.Millimeters);
 
     // digression into order, using alternate name:
     var nameAlternate = new Name("Portrait of daughter of Stieglitz")
@@ -250,7 +250,7 @@ HumanMadeObject PortraitOfKatherineStieglitz()
 
 
 
-    var visualWork = new Work(Types.VisualItem); // Is this a work?
+    var visualWork = new VisualItem(); // Is this a work?
     visualWork.Represents = [
         new Person()
             .WithId("icc:61bb2")

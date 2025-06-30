@@ -207,7 +207,7 @@ namespace PmcTransformer.Library
             foreach (var l in language)
             {
                 distinctLang.Add(l);
-                var gettyLang = Language.GetLanguage(l);
+                var gettyLang = PmcTransformer.Helpers.Language.GetLanguage(l);
                 if (gettyLang != null)
                 {
                     work.Language ??= [];

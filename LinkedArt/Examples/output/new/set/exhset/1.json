@@ -3,6 +3,19 @@
   "id": "https://linked.art/example/set/exhset/1",
   "type": "Set",
   "_label": "Exhibition objects",
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Objects in Manet and Modern Beauty",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
   "referred_to_by": [
     {
       "type": "LinguisticObject",
@@ -19,19 +32,6 @@
               "_label": "Brief Text"
             }
           ]
-        }
-      ]
-    }
-  ],
-  "identified_by": [
-    {
-      "type": "Name",
-      "content": "Objects in Manet and Modern Beauty",
-      "classified_as": [
-        {
-          "id": "http://vocab.getty.edu/aat/300404670",
-          "type": "Type",
-          "_label": "Primary Name"
         }
       ]
     }

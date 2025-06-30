@@ -8,18 +8,18 @@ public class MeasurementUnit : LinkedArtObject
     public MeasurementUnit() { Type = nameof(MeasurementUnit); }
 
     // Utility instances
-    public static MeasurementUnit Centimetres => _centimetres;
+    public static MeasurementUnit Centimeters => _centimeters;
 
-    private static MeasurementUnit _centimetres = new MeasurementUnit
+    private static MeasurementUnit _centimeters = new MeasurementUnit
     {
         Id = $"{Getty.Aat}300379098",
         Label = "centimeters"
     };
 
 
-    public static MeasurementUnit Millimetres => _millimetres;
+    public static MeasurementUnit Millimeters => _millimeters;
 
-    private static MeasurementUnit _millimetres = new MeasurementUnit
+    private static MeasurementUnit _millimeters = new MeasurementUnit
     {
         Id = $"{Getty.Aat}300379099", // check
         Label = "millimeters"

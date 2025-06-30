@@ -1,30 +1,29 @@
 ﻿using LinkedArtNet.Vocabulary;
 
-namespace LinkedArtNet
+namespace LinkedArtNet;
+
+public class Identifier : LinkedArtObject
 {
-    public class Identifier : LinkedArtObject
+    public Identifier() { Type = nameof(Identifier); }
+
+    public Identifier(string content)
     {
-        public Identifier() { Type = nameof(Identifier); }
+        Type = nameof(Identifier);
+        Content = content;
+    }
 
-        public Identifier(string content)
+    public static Identifier SortValue(string value, LinkedArtObject? influencedBy = null)
+    {
+        var identifier = new Identifier(value).WithClassifiedAs(Getty.SortValue);
+        if (influencedBy != null)
         {
-            Type = nameof(Identifier);
-            Content = content;
+            identifier.AssignedBy = [
+                new Activity(Types.AttributeAssignment)
+                {
+                    InfluencedBy = [ influencedBy ]
+                }
+            ];
         }
-
-        public static Identifier SortValue(string value, LinkedArtObject? motivatedBy = null)
-        {
-            var identifier = new Identifier(value).WithClassifiedAs(Getty.SortValue);
-            if (motivatedBy != null)
-            {
-                identifier.AssignedBy = [
-                    new Activity(Types.AttributeAssignment)
-                    {
-                        MotivatedBy = [motivatedBy]
-                    }
-                ];
-            }
-            return identifier;
-        }
+        return identifier;
     }
 }

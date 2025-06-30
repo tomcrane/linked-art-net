@@ -1,14 +1,14 @@
 ﻿using LinkedArtNet.Vocabulary;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
 
 namespace LinkedArtNet;
 
 [JsonDerivedType(typeof(HumanMadeObject))]
 [JsonDerivedType(typeof(LinguisticObject))]
+[JsonDerivedType(typeof(PropositionalObject))]
 [JsonDerivedType(typeof(Name))]
 [JsonDerivedType(typeof(Identifier))]
-[JsonDerivedType(typeof(Work))]
+[JsonDerivedType(typeof(VisualItem))]
 [JsonDerivedType(typeof(Place))]
 [JsonDerivedType(typeof(Person))]
 [JsonDerivedType(typeof(Group))]
@@ -16,6 +16,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(DigitalObject))]
 [JsonDerivedType(typeof(IIIFManifest))]
 [JsonDerivedType(typeof(Dimension))]
+[JsonDerivedType(typeof(Language))]
 public class LinkedArtObject
 {
     public LinkedArtObject() { }
@@ -166,7 +167,7 @@ public class LinkedArtObject
     [JsonPropertyName("representation")]
     [JsonPropertyOrder(510)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Work>? Representation { get; set; }
+    public List<VisualItem>? Representation { get; set; }
 
     [JsonPropertyName("subject_of")]
     [JsonPropertyOrder(610)]

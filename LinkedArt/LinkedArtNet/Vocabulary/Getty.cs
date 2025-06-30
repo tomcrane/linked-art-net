@@ -99,7 +99,7 @@ public class Getty
 
 
 
-    public static LinkedArtObject Nationality => AatType("Nationality", "300379842");
+    //public static LinkedArtObject Nationality => AatType("Nationality", "300379842");
     public static LinkedArtObject Ethnicity => AatType("Ethnicity", "300250435");
     public static LinkedArtObject Gender => AatType("Gender", "300055147");
 
@@ -113,9 +113,14 @@ public class Getty
     public static LinkedArtObject Publishing => AatType("Publishing", "300054686");
 
 
-    public static LinkedArtObject Language(string aatCode, string label)
+    public static LinkedArtObject Language(string aatCode, string label, string? notation)
     {
-        return new LinkedArtObject(Types.Language) { Id = $"{Aat}{aatCode}", Label = label };
+        return new Language(label, notation) { Id = $"{Aat}{aatCode}", Label = label };
+    }
+
+    public static LinkedArtObject Nationality(string aatCode, string label)
+    {
+        return AatType(label, aatCode).WithClassifiedAs(AatType("Nationality", "300379842"));
     }
 
     //private static Dictionary<string, LinkedArtObject> _

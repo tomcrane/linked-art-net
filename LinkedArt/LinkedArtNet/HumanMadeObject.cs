@@ -13,11 +13,15 @@ public class HumanMadeObject : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Activity? ProducedBy { get; set; }
 
+    [JsonPropertyName("encountered_by")]
+    [JsonPropertyOrder(24)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Activity>? EncounteredBy { get; set; }
 
     [JsonPropertyName("shows")]
     [JsonPropertyOrder(30)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Work>? Shows { get; set; }
+    public List<VisualItem>? Shows { get; set; }
 
     [JsonPropertyName("carries")]
     [JsonPropertyOrder(30)]

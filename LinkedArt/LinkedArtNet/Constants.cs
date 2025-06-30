@@ -97,10 +97,10 @@ public static class Constants
         return laObj;
     }
 
-    public static T WithLanguage<T>(this T laObj, string aatCode, string label) where T : LinkedArtObject
+    public static T WithLanguage<T>(this T laObj, string aatCode, string label, string? notation = null) where T : LinkedArtObject
     {
         laObj.Language ??= [];
-        laObj.Language.Add(Getty.Language(aatCode, label));
+        laObj.Language.Add(Getty.Language(aatCode, label, notation));
         return laObj;
     }
 

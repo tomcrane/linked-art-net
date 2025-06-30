@@ -2,20 +2,9 @@
 
 namespace LinkedArtNet;
 
-public class Work : LinkedArtObject
+public class VisualItem : LinkedArtObject
 {
-    // There is no Work class in Linked Art...
-    public Work()
-    {
-    }
-
-    public Work(string type) : base(type)
-    {
-    }
-
-    public Work(Types type) : base(type)
-    {
-    }
+    public VisualItem() { Type = nameof(VisualItem); }
 
     [JsonPropertyName("represents")]
     [JsonPropertyOrder(101)]

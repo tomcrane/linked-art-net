@@ -1,7 +1,6 @@
-﻿namespace LinkedArtNet
+﻿namespace LinkedArtNet;
+
+public class Right : LinkedArtObject
 {
-    public class Right : LinkedArtObject
-    {
-        public Right() { Type = nameof(Right); }
-    }
+    public Right() { Type = nameof(Right); }
 }

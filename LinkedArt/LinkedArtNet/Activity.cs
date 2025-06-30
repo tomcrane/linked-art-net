@@ -35,8 +35,15 @@ public class Activity : LinkedArtObject
     public List<Place>? TookPlaceAt { get; set; }
 
 
-    [JsonPropertyName("used_specific_object")]
+    [JsonPropertyName("during")]
     [JsonPropertyOrder(104)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Period>? During { get; set; }
+
+
+
+    [JsonPropertyName("used_specific_object")]
+    [JsonPropertyOrder(105)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<LinkedArtObject>? UsedSpecificObject { get; set; }
     //public List<HumanMadeObject>? UsedSpecificObject { get; set; } // need to allow a Set
@@ -90,15 +97,15 @@ public class Activity : LinkedArtObject
 
     
 
-    [JsonPropertyName("starts_after_the_end_of")]
+    [JsonPropertyName("after")]
     [JsonPropertyOrder(310)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Activity>? StartsAfterTheEndOf { get; set; }
+    public List<Activity>? After { get; set; }
 
-    [JsonPropertyName("ends_before_the_start_of")]
+    [JsonPropertyName("before")]
     [JsonPropertyOrder(320)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Activity>? EndsBeforeTheStartOf { get; set; }
+    public List<Activity>? Before { get; set; }
 
 
     [JsonPropertyName("motivated_by")]

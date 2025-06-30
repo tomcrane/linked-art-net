@@ -37,6 +37,6 @@ namespace LinkedArtNet
         [JsonPropertyName("digitally_shows")]
         [JsonPropertyOrder(405)]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<Work>? DigitallyShows { get; set; }
+        public List<VisualItem>? DigitallyShows { get; set; }
     }
 }

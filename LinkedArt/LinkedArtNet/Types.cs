@@ -14,6 +14,7 @@
         //DigitalService,
         // **Dimension,
         Dissolution,
+        Encounter,
         Event,
         Formation, //?
         // **Group,
@@ -32,7 +33,7 @@
         // **Person,
         // **Place,
         Production,
-        PropositionalObject,
+        // **PropositionalObject,
         // **Right,
         Set,
         // **TimeSpan (LinkedArtTimeSpan)

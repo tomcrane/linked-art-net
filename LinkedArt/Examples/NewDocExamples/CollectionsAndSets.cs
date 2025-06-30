@@ -11,6 +11,7 @@ namespace Examples.NewDocExamples
         {
             Exhibition_Objects();
             Spring_in_Set();
+            Order_of_Members();
             Prototypical_Members();
             Rijksmuseum_Collection();
             Rijksmuseum_Paintings();
@@ -60,6 +61,27 @@ namespace Examples.NewDocExamples
             Documentation.Save (spring);
         }
 
+        private static void Order_of_Members()
+        {
+            // This has been copied from the Archives doc examples
+            var parent = new LinkedArtObject(Types.Set)
+                .WithId($"{Documentation.IdRoot}/set/archive_sfl")
+                .WithLabel("Stieglitz Family Letters");
+
+            var obermeyer = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/letter/2")
+                .WithLabel("Obermeyer 1920");
+
+            obermeyer.IdentifiedBy = [
+                new Name("Obermeyer, Bertha (1920)").AsPrimaryName(),
+                Identifier.SortValue("000001", parent)
+            ];
+
+            obermeyer.MemberOf = [parent];
+
+            Documentation.Save(obermeyer);
+        }
 
         private static void Prototypical_Members()
         {

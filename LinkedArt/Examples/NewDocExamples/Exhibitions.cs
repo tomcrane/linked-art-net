@@ -64,7 +64,7 @@ namespace Examples.NewDocExamples
             ];
 
             activity.MotivatedBy = [
-                new LinkedArtObject(Types.PropositionalObject)
+                new PropositionalObject()
                     .WithId($"{Documentation.IdRoot}/concept/exhidea")
                     .WithLabel("Idea for Manet and Modern Beauty")
             ];
@@ -75,7 +75,7 @@ namespace Examples.NewDocExamples
 
         private static void Exhibition_Concept()
         {
-            var concept = new LinkedArtObject(Types.PropositionalObject)
+            var concept = new PropositionalObject()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/concept/exhidea/1")
                 .WithLabel("Idea for Manet and Modern Beauty")
@@ -108,7 +108,7 @@ namespace Examples.NewDocExamples
 
         private static void Exhibition_Influenced_By()
         {
-            var concept = new LinkedArtObject(Types.PropositionalObject)
+            var concept = new PropositionalObject()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/concept/exhidea/2")
                 .WithLabel("Idea for Manet and Modern Beauty")
@@ -167,7 +167,7 @@ namespace Examples.NewDocExamples
             ];
 
             activity.MotivatedBy = [
-                new LinkedArtObject(Types.PropositionalObject)
+                new PropositionalObject()
                     .WithId($"{Documentation.IdRoot}/concept/exhidea")
                     .WithLabel("Idea for Manet and Modern Beauty")
             ];
@@ -199,7 +199,7 @@ namespace Examples.NewDocExamples
             };
 
             activity.MotivatedBy = [
-                new LinkedArtObject(Types.PropositionalObject)
+                new PropositionalObject()
                     .WithId($"{Documentation.IdRoot}/concept/exhidea")
                     .WithLabel("Idea for Manet and Modern Beauty")
             ];

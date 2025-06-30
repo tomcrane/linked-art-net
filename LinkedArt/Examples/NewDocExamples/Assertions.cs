@@ -13,7 +13,7 @@ namespace Examples.NewDocExamples
             Two_Accession_Numbers();
             Source_of_Knowledge();
             Uncertain_Attribution();
-            Context_Specific_Assignment();
+            // Context_Specific_Assignment(); Needs fixing on site
             Non_Specific_Relationship();
             Bol_Student_of_Rembrandt();
         }

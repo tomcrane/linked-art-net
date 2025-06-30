@@ -12,11 +12,12 @@ namespace Examples.NewDocExamples
         public static void Create()
         {
             HumanMadeObject_Carries_Linguistic();
-            Koot_Textual_Content();
+            // Koot_Textual_Content(); // temporarily commented out
             Authorship_And_Publication();
             Koot_Chapter();
             Page_Count();
             Koot_About();
+            Abstract_Work();
         }
 
 
@@ -56,8 +57,8 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch/1")
                 .WithLabel("Content of Koot's Night Watch")
-                .WithClassifiedAs(Getty.Monograph)
-                .WithLanguage("300388277", "English");
+                .WithClassifiedAs(Getty.Monograph, Getty.TypeOfWork)
+                .WithLanguage("300388277", "English", "en");
 
             koot.IdentifiedBy = [
                 new Name("Rembrandt's Night Watch. A Fascinating Story").AsPrimaryName(),
@@ -74,7 +75,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch/2")
                 .WithLabel("Content of Koot's Night Watch")
-                .WithClassifiedAs(Getty.Monograph);
+                .WithClassifiedAs(Getty.Monograph, Getty.TypeOfWork);
 
             koot.CreatedBy = new Activity(Types.Creation)
             {
@@ -112,7 +113,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch_ch1/1")
                 .WithLabel("Chapter 1 of Koot")
-                .WithClassifiedAs(Getty.AatType("Chapter", "300311699"));
+                .WithClassifiedAs(Getty.AatType("Chapter", "300311699"), Getty.TypeOfWork);
 
             chapter.IdentifiedBy = [new Name("Introduction").AsPrimaryName()];
 
@@ -132,13 +133,13 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch_ch1/2")
                 .WithLabel("Chapter 1 of Koot")
-                .WithClassifiedAs(Getty.AatType("Chapter", "300311699"));
+                .WithClassifiedAs(Getty.AatType("Chapter", "300311699"), Getty.TypeOfWork);
 
             chapter.IdentifiedBy = [new Name("Introduction").AsPrimaryName()];
 
             chapter.ReferredToBy = [
                 new LinguisticObject()
-                    .WithContent("5 - 10")
+                    .WithContent("5 - 15")
                     .WithClassifiedAs(Getty.PaginationStatement, Getty.BriefText)
             ];
 
@@ -154,12 +155,33 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch/3")
                 .WithLabel("Content of Koot's Night Watch")
-                .WithClassifiedAs(Getty.Monograph);
+                .WithClassifiedAs(Getty.Monograph, Getty.TypeOfWork);
 
             koot.About = [
                 new HumanMadeObject()
                     .WithId($"{Documentation.IdRoot}/object/nightwatch")
                     .WithLabel("The Night Watch")
+            ];
+
+            Documentation.Save(koot);
+        }
+
+        private static void Abstract_Work()
+        {
+            var koot = new LinguisticObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/text/koot_nightwatch/1")
+                .WithLabel("Content of Koot's Night Watch");
+
+            koot.IdentifiedBy = [
+                new Name("Rembrant's Night Watch. A Fascinating Story").AsPrimaryName()
+                // Note typo for now
+            ];
+
+            koot.PartOf = [
+                new PropositionalObject()
+                    .WithId($"{Documentation.IdRoot}/concept/koot_idea")
+                    .WithLabel("Koot's Conceptualization")
             ];
 
             Documentation.Save(koot);

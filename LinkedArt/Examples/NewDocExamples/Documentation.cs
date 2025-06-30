@@ -12,19 +12,32 @@ namespace Examples.NewDocExamples
         public static void Create()
         {
             BasicPatterns.Create();
+            
+            // Objects
             ProductionDestruction.Create();
             PhysicalCharacteristics.Create();
             Aboutness.Create();
             Ownership.Create();
             Rights.Create();
+            
             Digital.Create();
-            Places.Create();
-            Actors.Create();
+            CollectionsAndSets.Create();
             Provenance.Create();
+            // Still loads to do in Provenance examples!!!
+
             Exhibitions.Create();
             Conservation.Create();
+
+            Actors.Create();
+            Places.Create();
+
+            // TODO
+            // Concepts
+            // Events
+            // Vocabulary
+
+            
             TextualDocuments.Create();
-            CollectionsAndSets.Create();
             Archives.Create();
             Assertions.Create();
 

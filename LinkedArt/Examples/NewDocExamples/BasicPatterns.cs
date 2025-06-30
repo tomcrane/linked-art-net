@@ -84,9 +84,8 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/person/rembrandt/1")
                 .WithLabel("Rembrandt")
-                .WithClassifiedAs(Getty.Language("300388256", "Dutch"));
-            // QUESTION - is this an OK use of a _Language_ when we mean a ...nationality...?
-            
+                .WithClassifiedAs(Getty.Nationality("300111175", "Dutch"));
+
             Documentation.Save(rembrandt);
         }
 
@@ -100,10 +99,10 @@ namespace Examples.NewDocExamples
 
             var englishName = new Name("The Night Watch")
                 .AsPrimaryName()
-                .WithLanguage("300388277", "English");
+                .WithLanguage("300388277", "English", "en");
             var dutchName = new Name("De Nachtwacht")
                 .AsPrimaryName()
-                .WithLanguage("300388256", "Dutch");
+                .WithLanguage("300388256", "Dutch", "nl");
 
             nightWatch.IdentifiedBy = [englishName, dutchName];
 
@@ -156,7 +155,7 @@ namespace Examples.NewDocExamples
                     Getty.AatType("Material Statement", "300435429"),
                     Getty.AatType("Brief Text", "300418049"))
                 .WithContent("Oil on Canvas")
-                .WithLanguage("300388277", "English");
+                .WithLanguage("300388277", "English", "en");
             
             nightWatch.ReferredToBy = [materials];
 
@@ -186,6 +185,11 @@ namespace Examples.NewDocExamples
                         new Person()
                             .WithId($"{Documentation.IdRoot}/person/manet")
                             .WithLabel("Manet")
+                    ],
+                    During = [
+                        new Period()
+                            .WithId($"{Documentation.IdRoot}/event/19c")
+                            .WithLabel("19th Century")
                     ]
                 };
 

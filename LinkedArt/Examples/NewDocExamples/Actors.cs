@@ -10,10 +10,8 @@ namespace Examples.NewDocExamples
         // https://linked.art/model/actor/
         public static void Create()
         {
-            Rembrandt_Guild();
             Rembrandt_Name();
             Rembrandt_Name_Parts();
-            Rembrandt_Identifier();
             Rembrandt_Equivalent();
             Rembrandt_Address();
             Rembrandt_Museum();
@@ -26,24 +24,12 @@ namespace Examples.NewDocExamples
             Rembrandt_Was_Dutch();
             Wiley_Is_African_American();
             Rembrandt_Was_Male();
+            Rembrandt_Was_An_Artist();
+            Rembrandt_Guild();
+            
+            // Rembrandt_Identifier();
         }
 
-
-        private static void Rembrandt_Guild()
-        {
-            var rembrandt = new Person()
-                .WithContext()
-                .WithId($"{Documentation.IdRoot}/person/rembrandt/2")
-                .WithLabel("Rembrandt");
-
-            rembrandt.MemberOf = [
-                new Group()
-                    .WithId($"{Documentation.IdRoot}/group/stluke")
-                    .WithLabel("Guild of St Luke")
-            ];
-
-            Documentation.Save(rembrandt);
-        }
 
 
         private static void Rembrandt_Name()
@@ -57,7 +43,6 @@ namespace Examples.NewDocExamples
 
             Documentation.Save(rembrandt);
         }
-
 
         private static void Rembrandt_Name_Parts()
         {
@@ -80,22 +65,6 @@ namespace Examples.NewDocExamples
         }
 
 
-        private static void Rembrandt_Identifier()
-        {
-            var rembrandt = new Person()
-                .WithContext()
-                .WithId($"{Documentation.IdRoot}/person/rembrandt/5")
-                .WithLabel("Rembrandt");
-
-            rembrandt.IdentifiedBy = [
-                new Identifier("Q5598")
-                    .WithClassifiedAs(Getty.AatType("Owner-Assigned Number", "300404621"))
-            ];
-
-            Documentation.Save(rembrandt);
-        }
-
-
         private static void Rembrandt_Equivalent()
         {
             var rembrandt = new Person()
@@ -113,6 +82,8 @@ namespace Examples.NewDocExamples
         }
 
 
+
+
         private static void Rembrandt_Address()
         {
             var rembrandt = new Person()
@@ -127,6 +98,10 @@ namespace Examples.NewDocExamples
 
             Documentation.Save(rembrandt);
         }
+
+
+
+
 
         private static void Rembrandt_Museum()
         {
@@ -282,7 +257,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/person/rembrandt/9")
                 .WithLabel("Rembrandt")
-                .WithClassifiedAs(Getty.AatType("Dutch", "300111175"), Getty.Nationality);
+                .WithClassifiedAs(Getty.Nationality("300111175", "Dutch"));
 
             Documentation.Save(rembrandt);
         }
@@ -310,6 +285,54 @@ namespace Examples.NewDocExamples
 
             Documentation.Save(rembrandt, false);
         }
+
+
+        private static void Rembrandt_Guild()
+        {
+            var rembrandt = new Person()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/person/rembrandt/2")
+                .WithLabel("Rembrandt");
+
+            rembrandt.MemberOf = [
+                new Group()
+                    .WithId($"{Documentation.IdRoot}/group/stluke")
+                    .WithLabel("Guild of St Luke")
+            ];
+
+            Documentation.Save(rembrandt);
+        }
+
+        private static void Rembrandt_Was_An_Artist()
+        {
+            var rembrandt = new Person()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/person/rembrandt/31")
+                .WithLabel("Rembrandt")
+                .WithClassifiedAs(
+                    Getty.AatType("Artist", "300025103"), 
+                        Getty.AatType("Occupation", "300263369"));
+
+            Documentation.Save(rembrandt);
+        }
+
+
+
+        //private static void Rembrandt_Identifier()
+        //{
+        //    var rembrandt = new Person()
+        //        .WithContext()
+        //        .WithId($"{Documentation.IdRoot}/person/rembrandt/5")
+        //        .WithLabel("Rembrandt");
+
+        //    rembrandt.IdentifiedBy = [
+        //        new Identifier("Q5598")
+        //            .WithClassifiedAs(Getty.AatType("Owner-Assigned Number", "300404621"))
+        //    ];
+
+        //    Documentation.Save(rembrandt);
+        //}
+
 
     }
 }

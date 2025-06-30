@@ -13,7 +13,7 @@ namespace Examples.NewDocExamples
             Obermeyer_1920();
             In_Sub_Series();
             In_Series();
-            Ordering();
+            // Ordering(); Moved to Collections
             Physical_Hierarchy();
             Letter_In_Box();
         }
@@ -74,26 +74,6 @@ namespace Examples.NewDocExamples
         }
 
 
-        private static void Ordering()
-        {
-            var parent = new LinkedArtObject(Types.Set)
-                .WithId($"{Documentation.IdRoot}/set/archive_sfl")
-                .WithLabel("Stieglitz Family Letters");
-
-            var obermeyer = new HumanMadeObject()
-                .WithContext()
-                .WithId($"{Documentation.IdRoot}/object/letter/2")
-                .WithLabel("Obermeyer 1920");
-
-            obermeyer.IdentifiedBy = [
-                new Name("Obermeyer, Bertha (1920)").AsPrimaryName(),
-                Identifier.SortValue("000001", parent)
-            ];
-
-            obermeyer.MemberOf = [ parent ];
-
-            Documentation.Save(obermeyer);
-        }
 
 
         private static void Physical_Hierarchy()

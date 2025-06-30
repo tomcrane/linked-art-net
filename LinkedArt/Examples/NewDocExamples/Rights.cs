@@ -20,8 +20,7 @@ namespace Examples.NewDocExamples
             var nightWatch = new HumanMadeObject()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/15")
-                .WithLabel("Night Watch by Rembrandt")  
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithLabel("Night Watch by Rembrandt");
 
 
             nightWatch.ReferredToBy = [
@@ -36,7 +35,7 @@ namespace Examples.NewDocExamples
 
         private static void Nightwatch_Rights_Statement()
         {
-            var nightwatchVisual = new Work(Types.VisualItem)
+            var nightwatchVisual = new VisualItem()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/nightwatch/1")
                 .WithLabel("Visual Content of Night Watch");
@@ -54,7 +53,7 @@ namespace Examples.NewDocExamples
 
         private static void Nightwatch_Rights_PublicDomain()
         {
-            var nightwatchVisual = new Work(Types.VisualItem)
+            var nightwatchVisual = new VisualItem()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/nightwatch/2")
                 .WithLabel("Visual Content of Night Watch");
@@ -63,7 +62,6 @@ namespace Examples.NewDocExamples
                 .WithLabel("Night Watch's Public Domain status")
                 .WithClassifiedAs(RightsStatements.CreativeCommonsPublicDomain);
 
-            // move this into Right?
             publicDomain.IdentifiedBy = [
                 new Name("Public Domain")
             ];

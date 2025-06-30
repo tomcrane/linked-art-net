@@ -89,7 +89,7 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/provenance/ziwei_yuag/1")
                 .WithLabel("Gift of Landscape to YUAG")
                 .WithClassifiedAs(Getty.ProvenanceActivity)
-                .WithClassifiedAs($"{Getty.Aat}300417637", null); // no label in example
+                .WithClassifiedAs($"{Getty.Aat}300417637", "Gift"); 
 
             activity.TimeSpan = new LinkedArtTimeSpan()
             {
@@ -103,7 +103,7 @@ namespace Examples.NewDocExamples
                 TransferredTitleOf = [
                     new HumanMadeObject()
                         .WithId($"{Documentation.IdRoot}/object/ziwei_landscape")
-                        .WithLabel("Lanscape")
+                        .WithLabel("Landscape")
                 ],
                 TransferredTitleFrom = [
                     new Person()
@@ -131,12 +131,12 @@ namespace Examples.NewDocExamples
                 .WithLabel("Unknown Acquisition of Spring by Faure")
                 .WithClassifiedAs(Getty.ProvenanceActivity);
 
-            activity.StartsAfterTheEndOf = [
+            activity.After = [
                 new Activity()
                     .WithId($"{Documentation.IdRoot}/provenance/manet_proust")
                     .WithClassifiedAs(Getty.ProvenanceActivity)
             ];
-            activity.EndsBeforeTheStartOf = [
+            activity.Before = [
                 new Activity()
                     .WithLabel("foure_durand")
                     .WithClassifiedAs(Getty.ProvenanceActivity)

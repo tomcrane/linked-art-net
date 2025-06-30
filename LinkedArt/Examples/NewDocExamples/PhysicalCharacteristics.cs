@@ -31,8 +31,8 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/6")
                 .WithLabel("Night Watch by Rembrandt")
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
-                .WithWidthDimension(453.5, MeasurementUnit.Centimetres)
-                .WithHeightDimension(379.5, MeasurementUnit.Centimetres);
+                .WithWidthDimension(453.5, MeasurementUnit.Centimeters)
+                .WithHeightDimension(379.5, MeasurementUnit.Centimeters);
 
             Documentation.Save(nightWatch);
         }
@@ -63,8 +63,8 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/8")
                 .WithLabel("Night Watch by Rembrandt")
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
-                .WithWidthDimension(453.5, MeasurementUnit.Centimetres, "453.5 cm wide")
-                .WithHeightDimension(379.5, MeasurementUnit.Centimetres, "379.5 cm high");
+                .WithWidthDimension(453.5, MeasurementUnit.Centimeters, "453.5 cm wide")
+                .WithHeightDimension(379.5, MeasurementUnit.Centimeters, "379.5 cm high");
 
             Documentation.Save(nightWatch);
         }
@@ -77,7 +77,7 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/9")
                 .WithLabel("Night Watch by Rembrandt")
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
-                .WithHeightDimension(379.5, MeasurementUnit.Centimetres);
+                .WithHeightDimension(379.5, MeasurementUnit.Centimeters);
 
             var attrAssignment = new Activity(Types.AttributeAssignment)
                 .WithLabel("Measurement of the Night Watch");
@@ -105,8 +105,8 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/spring/29")
                 .WithLabel("Spring")
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
-                .WithHeightDimension(74, MeasurementUnit.Centimetres)
-                .WithWidthDimension(51.5, MeasurementUnit.Centimetres);
+                .WithHeightDimension(74, MeasurementUnit.Centimeters)
+                .WithWidthDimension(51.5, MeasurementUnit.Centimeters);
 
             var attrAssignment = new Activity(Types.AttributeAssignment)
                 .WithLabel("Unframed Measuring")

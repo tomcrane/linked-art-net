@@ -17,10 +17,12 @@ namespace Examples.NewDocExamples
             OKeeffe_Yuag_1();
             Canterbury_1();
             Canterbury_Plate_1();
+            Nuveen_1();
             Coppa_1_Unknown();
             Washday_1_Influenced();
             HarwoodStudio_1_Group();
             GradualPage_1_PartRemoval();
+            Torosaurus_Gladius();
             LePeintre_1_Destruction();
             LePeintre_2_Destruction_CausedBy();
         }
@@ -63,9 +65,9 @@ namespace Examples.NewDocExamples
                 {
                     Technique = [Getty.AatType("Sculpting", "300264383")],
                     CarriedOutBy = [
-                        new Group()
-                            .WithId($"{Documentation.IdRoot}/group/harwoodstudio")
-                            .WithLabel("Studio of Francis Harwood")]
+                        new Person()
+                            .WithId("http://vocab.getty.edu/ulan/500015886")
+                            .WithLabel("Francis Harwood")]
                 };
         
             Documentation.Save(bust);
@@ -146,7 +148,7 @@ namespace Examples.NewDocExamples
             gok.IdentifiedBy = [ new Identifier("2014.3.78").AsAccessionNumber() ];
 
             gok.Shows = [
-                new Work(Types.VisualItem)
+                new VisualItem()
                     .WithId($"{Documentation.IdRoot}/visual/okeeffe")
                     .WithLabel("Visual Content of GOK 1918")
             ];
@@ -172,7 +174,7 @@ namespace Examples.NewDocExamples
             gok.IdentifiedBy = [ new Identifier("2016.101.242").AsAccessionNumber() ];
 
             gok.Shows = [
-                new Work(Types.VisualItem)
+                new VisualItem()
                     .WithId($"{Documentation.IdRoot}/visual/okeeffe")
                     .WithLabel("Visual Content of GOK 1918")
             ];
@@ -216,6 +218,36 @@ namespace Examples.NewDocExamples
                 .WithMadeOf("copper", "300011020");
 
             Documentation.Save(plate);
+        }
+
+
+        private static void Nuveen_1()
+        {
+            var nuveenPainting = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/nuveen/1")
+                .WithLabel("Nuveen Painting");
+
+            nuveenPainting.IdentifiedBy = [
+                new Name("The Nuveen Painting").AsPrimaryName()
+            ];
+
+            nuveenPainting.ProducedBy = new Activity(Types.Production)
+            {
+                CarriedOutBy = [
+                    new Person()
+                        .WithId($"{Documentation.IdRoot}/person/dine")
+                        .WithLabel("Jim Dine")
+                ],
+                CausedBy = [
+                    new Activity()
+                        .WithId($"{Documentation.IdRoot}/event/nuveen_commission")
+                        .WithLabel("Commission")
+                ]
+            };
+
+            Documentation.Save(nuveenPainting);
+
         }
 
 
@@ -309,6 +341,32 @@ namespace Examples.NewDocExamples
         }
 
 
+        private static void Torosaurus_Gladius()
+        {
+            var torosaurus = new HumanMadeObject()
+                .WithContext()
+                .WithId($"{Documentation.IdRoot}/object/torosaurus/1")
+                .WithLabel("Torosaurus Gladius");
+
+            torosaurus.EncounteredBy = [
+                new Activity(Types.Encounter)
+                {
+                    TimeSpan = LinkedArtTimeSpan.FromYear(1891),
+                    CarriedOutBy = [
+                        new Person()
+                            .WithId($"{Documentation.IdRoot}/person/hatcher")
+                            .WithLabel("John Bell Hatcher")
+                    ]
+                }
+            ];
+
+            // The docs example doesn't have a label "1891" on the timespan:
+            torosaurus.EncounteredBy[0].TimeSpan!.Label = null;
+
+            Documentation.Save(torosaurus);
+        }
+
+
         private static void LePeintre_1_Destruction()
         {
             var lepeintre = new HumanMadeObject()
@@ -326,9 +384,6 @@ namespace Examples.NewDocExamples
             };
             lepeintre.DestroyedBy = destruction;
 
-            // https://linked.art/example/object/lepeintre/1.json
-            // This has end_of_the_end "1998-09-02T022:40:00Z"
-            //                                     ^  (typo?)
             Documentation.Save(lepeintre, false);
         }
 

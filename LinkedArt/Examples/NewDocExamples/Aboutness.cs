@@ -38,7 +38,7 @@ namespace Examples.NewDocExamples
             ];
 
             spring.Shows = [
-                new Work(Types.VisualItem)
+                new VisualItem()
                     .WithId($"{Documentation.IdRoot}/visual/spring")
                     .WithLabel("Visual Content of Spring")
             ];
@@ -49,7 +49,7 @@ namespace Examples.NewDocExamples
 
         private static void Spring_Visual_Content()
         {
-            var springVis = new Work(Types.VisualItem)
+            var springVis = new VisualItem()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/1")
                 .WithLabel("Visual Content of Spring");
@@ -66,7 +66,7 @@ namespace Examples.NewDocExamples
 
         private static void Spring_Respresents_Instance_of_Type()
         {
-            var springVis = new Work(Types.VisualItem)
+            var springVis = new VisualItem()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/5")
                 .WithLabel("Visual Content of Spring");
@@ -81,7 +81,7 @@ namespace Examples.NewDocExamples
 
         private static void Spring_About()
         {
-            var springVis = new Work(Types.VisualItem)
+            var springVis = new VisualItem()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/2")
                 .WithLabel("Visual Content of Spring");
@@ -95,7 +95,7 @@ namespace Examples.NewDocExamples
 
         private static void Spring_Style()
         {
-            var springVis = new Work(Types.VisualItem)
+            var springVis = new VisualItem()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/3")
                 .WithLabel("Visual Content of Spring")
@@ -107,7 +107,7 @@ namespace Examples.NewDocExamples
 
         private static void Spring_Portrait()
         {
-            var springVis = new Work(Types.VisualItem)
+            var springVis = new VisualItem()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/4")
                 .WithLabel("Visual Content of Spring")
@@ -142,10 +142,10 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.AatType("Exhibition Catalog", "300026096"), Getty.TypeOfWork);
 
             catalog.Shows = [
-                new Work(Types.VisualItem)
+                new VisualItem()
                     .WithId($"{Documentation.IdRoot}/visual/spring")
                     .WithLabel("Visual Content of Spring"),
-                new Work(Types.VisualItem)
+                new VisualItem()
                     .WithId($"{Documentation.IdRoot}/visual/houses")
                     .WithLabel("Visual Content of Houses in Provence")
             ];
@@ -169,7 +169,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Print, Getty.TypeOfWork);
 
             harpers.Shows = [
-                new Work(Types.VisualItem)
+                new VisualItem()
                     .WithId($"{Documentation.IdRoot}/visual/harpers")
                     .WithLabel("Visual Content of Harpers"),
             ];
@@ -179,7 +179,7 @@ namespace Examples.NewDocExamples
 
         private static void Harpers_Visual_Content()
         {
-            var harpersVis = new Work(Types.VisualItem)
+            var harpersVis = new VisualItem()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/harpers/1")
                 .WithLabel("Visual Content of Harpers");
@@ -204,7 +204,7 @@ namespace Examples.NewDocExamples
                 .WithContent("Harper's. January contains Roden's corner. A Novel by Henry Seton Merriman [...]");
 
             harpersText.PartOf = [
-                new Work(Types.VisualItem)
+                new VisualItem()
                     .WithId($"{Documentation.IdRoot}/visual/harpers")
                     .WithLabel("Visual Content of Harpers")
             ];

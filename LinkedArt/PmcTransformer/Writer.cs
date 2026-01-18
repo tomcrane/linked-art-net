@@ -10,7 +10,7 @@ namespace PmcTransformer
 {
     public static class Writer
     {
-        private const string BasePath = @"C:\pmc\full_output";
+        private const string BasePath = @"C:\pmc\full_output_temp";
 
         private static readonly JsonSerializerOptions options = new() { WriteIndented = true, };
 

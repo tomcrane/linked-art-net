@@ -1,8 +1,6 @@
 ﻿using LinkedArtNet.Vocabulary;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
-using Microsoft.Recognizers.Text.Matcher;
-using System.Reflection.Emit;
 using System.Text;
 using System.Text.RegularExpressions;
 

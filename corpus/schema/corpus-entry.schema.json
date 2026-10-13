@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tomcrane/linked-art-net/corpus/schema/corpus-entry.schema.json",
+  "title": "Linked Art date corpus file",
+  "description": "A file of ground-truth date strings with the Linked Art TimeSpan(s) they should produce. See docs/06-corpus-and-testing.md.",
+  "type": "object",
+  "required": ["source", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "source": {
+      "type": "object",
+      "required": ["name", "licence"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "licence": { "type": "string", "description": "SPDX id or short name, e.g. CC0-1.0, MIT, ODC-By-1.0, 'repo'." },
+        "attribution": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "defaults": {
+      "description": "Values applied to every entry unless the entry overrides them.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "intent": { "$ref": "#/$defs/intent" },
+        "profile": { "type": "string" },
+        "status": { "$ref": "#/$defs/status" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "intent": { "enum": ["auto", "single", "pair"] },
+    "status": {
+      "enum": ["verified", "proposed", "disputed"],
+      "description": "verified: a human has confirmed the expectation and CI enforces it. proposed: imported or trainer-submitted, awaiting review. disputed: reviewers disagree; reported but not enforced."
+    },
+    "kind": { "enum": ["single", "birthDeath", "formationDissolution", "floruit", "none"] },
+    "parseStatus": { "enum": ["parsed", "partial", "undated", "unparsed"] },
+    "dateTime": {
+      "type": "string",
+      "description": "xsd:dateTime as Linked Art writes it: yyyy-MM-ddTHH:mm:ssZ, leading '-' for BCE (astronomical numbering), more digits for large years.",
+      "pattern": "^-?[0-9]{4,}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "timespan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "begin_of_the_begin": { "$ref": "#/$defs/dateTime" },
+        "end_of_the_begin": { "$ref": "#/$defs/dateTime" },
+        "begin_of_the_end": { "$ref": "#/$defs/dateTime" },
+        "end_of_the_end": { "$ref": "#/$defs/dateTime" }
+      }
+    },
+    "years": {
+      "description": "Coarse expectation for imported corpora that only know start and end years.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": { "type": "integer" },
+        "end": { "type": "integer" }
+      }
+    },
+    "expect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": { "$ref": "#/$defs/parseStatus" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "canonical": { "type": "string", "description": "The canonical expression (EDTF superset) the parser should produce." },
+        "edtf": { "type": "string", "description": "Strict EDTF approximation of the realised bounds." },
+        "timespan": { "$ref": "#/$defs/timespan" },
+        "begin": { "$ref": "#/$defs/timespan" },
+        "end": { "$ref": "#/$defs/timespan" },
+        "years": { "$ref": "#/$defs/years" },
+        "flags": { "type": "array", "items": { "type": "string" }, "description": "Flags that must be present." },
+        "notFlags": { "type": "array", "items": { "type": "string" }, "description": "Flags that must be absent." },
+        "minConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maxConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "toleranceYears": { "type": "integer", "minimum": 0, "description": "Allowed slack on bounds when comparing years; default 0." }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "required": ["id", "input", "expect"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "input": { "type": "string" },
+        "intent": { "$ref": "#/$defs/intent" },
+        "profile": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "expect": { "$ref": "#/$defs/expect" },
+        "status": { "$ref": "#/$defs/status" },
+        "notes": { "type": "string" },
+        "sourceExpectation": {
+          "type": "string",
+          "description": "What the original source said, when it differs from our expectation (kept for traceability)."
+        }
+      }
+    }
+  }
+}

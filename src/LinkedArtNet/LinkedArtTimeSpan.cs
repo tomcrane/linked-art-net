@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace LinkedArtNet;
@@ -32,67 +32,28 @@ public class LinkedArtTimeSpan : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Dimension? Duration { get; set; }
 
-    public static LinkedArtTimeSpan FromYear(int year)
-    {
-        return FromYear(year, null, true);
-    }
-    public static LinkedArtTimeSpan FromYear(int year, bool serializeWithTimespan)
-    {
-        return FromYear(year, null, serializeWithTimespan);
-    }
-
-    public static LinkedArtTimeSpan FromYear(int year, string? id = null, bool serializeWithTimespan = true)
+    /// <summary>A span covering a whole year, labelled with the year.</summary>
+    public static LinkedArtTimeSpan FromYear(long year, string? id = null)
     {
         var ts = new LinkedArtTimeSpan()
             .WithId(id)
-            .WithLabel($"{year}");
-        ts.BeginOfTheBegin = new LinkedArtDate(year, 1, 1, serializeWithTimespan);
-        if (ts.BeginOfTheBegin.DtOffset.HasValue)
-        {
-            ts.EndOfTheEnd = new LinkedArtDate(
-                ts.BeginOfTheBegin.DtOffset.Value.AddYears(1).AddSeconds(-1), serializeWithTimespan);
-        }
-        else
-        {
-            ts.EndOfTheEnd = new LinkedArtDate(year, 12, 31, serializeWithTimespan);
-        }
+            .WithLabel(year.ToString(CultureInfo.InvariantCulture));
+        ts.BeginOfTheBegin = LinkedArtDate.StartOfYear(year);
+        ts.EndOfTheEnd = LinkedArtDate.EndOfYear(year);
         return ts;
     }
 
-    public static LinkedArtTimeSpan FromDay(int year, int month, int day)
+    /// <summary>A span covering a whole day.</summary>
+    public static LinkedArtTimeSpan FromDay(long year, int month, int day, string? id = null)
     {
-        return FromDay(year, month, day, null, true);
-    }
-
-    public static LinkedArtTimeSpan FromDay(int year, int month, int day, bool serializeWithTimespan = true)
-    {
-        return FromDay(year, month, day, null, serializeWithTimespan);
-    }
-
-    public static LinkedArtTimeSpan FromDay(int year, int month, int day, string? id = null, bool serializeWithTimespan = true)
-    {
-        var ts = new LinkedArtTimeSpan().WithId(id);
-        ts.BeginOfTheBegin = new LinkedArtDate(year, month, day);
-        if (ts.BeginOfTheBegin.DtOffset.HasValue)
-        {
-            ts.EndOfTheEnd = new LinkedArtDate(
-                ts.BeginOfTheBegin.DtOffset.Value.AddDays(1).AddSeconds(-1), serializeWithTimespan);
-        }
-        else
-        {
-            // This is actually impossible without a more complex calendar implementation, so we're going to cheat
-            var pseudoEnd = new DateTime(2000, month, day).AddDays(1);
-            int newYear = pseudoEnd.Year == 2000 ? year : year + 1;
-            ts.EndOfTheEnd = new LinkedArtDate(newYear, pseudoEnd.Month, pseudoEnd.Day, serializeWithTimespan);
-        }
-        ts.WithLabel(LinkedArtDateConverter.DayFormat(year, month, day));
+        var begin = new LinkedArtDate(year, month, day);
+        // TODO (plan: Phase 1 step 6): factories should not set labels by default; this keeps the
+        // legacy label form until the examples are migrated.
+        var ts = new LinkedArtTimeSpan()
+            .WithId(id)
+            .WithLabel(string.Create(CultureInfo.InvariantCulture, $"{begin.Year:D4}-{begin.Month:D2}-{begin.Day:D2}T00:00:00"));
+        ts.BeginOfTheBegin = begin;
+        ts.EndOfTheEnd = begin.LastSecondOfDay();
         return ts;
     }
-
-    public static void AsBornAndDied(LinkedArtTimeSpan tsRange, Person person)
-    {
-        // given a time span derived from a date range, 
-
-    }
-
 }

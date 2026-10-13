@@ -135,8 +135,8 @@ HumanMadeObject AmphoraProduction()
     var when = new LinkedArtTimeSpan()
         .WithId($"{amphora.Id}/prod/ts")
         .WithLabel("about 530 BC");
-    when.BeginOfTheBegin = new LinkedArtDate(-540, 1, 1);
-    when.EndOfTheEnd = new LinkedArtDate(-520, 1, 1);
+    when.BeginOfTheBegin = LinkedArtDate.FromBce(540, 1, 1);
+    when.EndOfTheEnd = LinkedArtDate.FromBce(520, 1, 1);
     // For AD dates:
     //when.BeginOfTheBegin = new LinkedArtDate(DateTime.Now);
     //when.EndOfTheEnd = new LinkedArtDate(DateTime.Now.AddDays(20));

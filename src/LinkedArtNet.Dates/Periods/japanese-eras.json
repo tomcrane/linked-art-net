@@ -1,7 +1,7 @@
 {
   "name": "Japanese historical periods and modern eras",
   "licence": "CC0-1.0",
-  "notes": "Historical periods use the conventional year bounds; the modern eras (Meiji onwards) are dated to the day and count regnal years, so 'Meiji 27' is 1894 (Meiji 1 = 1868). Dates are Gregorian.",
+  "notes": "Historical periods use the conventional year bounds; the modern eras (Meiji onwards) are dated to the day and count regnal years, so 'Meiji 27' is 1894 (Meiji 1 = 1868). Dates are Gregorian. Provenance: written by the assistant from general knowledge of the standard chronology, not copied from any source, and re-checked by it; not yet verified by a human against a reference. Check against: Wikipedia, List of Japanese era names and Japanese historical periods; Getty AAT period concepts (e.g. Edo (Japanese period)); PeriodO (perio.do). Period bounds that scholars dispute (Asuka start, Kamakura start 1185 vs 1192) take the common museum convention.",
   "periods": [
     { "key": "asuka", "label": "Asuka period", "names": ["asuka", "asuka jidai", "飛鳥時代"], "start": "0538", "end": "0710" },
     { "key": "nara", "label": "Nara period", "names": ["nara", "nara jidai", "奈良時代"], "start": "0710", "end": "0794" },

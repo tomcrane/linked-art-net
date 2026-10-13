@@ -305,6 +305,10 @@ and `CompositePeriodSource`. Names are matched whole after lower-casing and stri
 punctuation, so "Shōwa", "Showa era" and "昭和" all resolve; regnal years ("Meiji 27", "Kangxi 12",
 "Qianlong 60th year") count from the era's first year and get the key `meiji-27`. The grammar reads a
 period wherever a date could stand, so "early Edo period", "c. Georgian" and "Ming - Qing dynasty" work.
+Provenance: the built-in tables were written by the assistant from general knowledge (standard chronologies
+as found in Wikipedia and museum practice), not copied from any source, and each table's `notes` says what to
+check it against. They carry no authority URIs: the PeriodO source below is the intended credited, sourced
+replacement, and the tables are the interim.
 
 `INamedPeriodSource.TryResolve(string text, CultureInfo, out NamedPeriod)`. Built-in JSON: Japanese
 eras (incl. regnal years, `Meiji 27` -> 1894), Chinese dynasties, British regnal periods, broad

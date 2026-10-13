@@ -1,7 +1,7 @@
 {
   "name": "Chinese dynasties and reign periods",
   "licence": "CC0-1.0",
-  "notes": "Dynasty bounds follow the conventional dates used in museum cataloguing. Ming and Qing reign periods (nianhao) count regnal years from their first full year, so 'Kangxi 12' is 1673. Gregorian years; the traditional Chinese year starts a few weeks into the Western one.",
+  "notes": "Dynasty bounds follow the conventional dates used in museum cataloguing. Ming and Qing reign periods (nianhao) count regnal years from their first full year, so 'Kangxi 12' is 1673. Gregorian years; the traditional Chinese year starts a few weeks into the Western one. Provenance: written by the assistant from general knowledge of the standard chronology, not copied from any source, and re-checked by it; not yet verified by a human against a reference. Check against: Wikipedia, Dynasties of China and List of Chinese era names; Getty AAT period concepts; PeriodO (perio.do). Wade-Giles spellings are given as alternative names.",
   "periods": [
     { "key": "shang", "label": "Shang dynasty", "names": ["shang", "shang dynasty", "商"], "start": "-1599", "end": "-1045", "notes": "Traditional c. 1600-1046 BCE; the start is approximate." },
     { "key": "zhou", "label": "Zhou dynasty", "names": ["zhou", "zhou dynasty", "chou", "chou dynasty", "周"], "start": "-1045", "end": "-0255" },

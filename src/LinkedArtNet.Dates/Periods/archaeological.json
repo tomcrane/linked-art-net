@@ -1,7 +1,7 @@
 {
   "name": "Broad historical and archaeological periods with conventional bounds",
   "licence": "CC0-1.0",
-  "notes": "Only periods whose bounds are conventional in Western cataloguing. Regional prehistoric phases (Neolithic, Bronze Age, Iron Age) are given for Britain and marked as such; elsewhere they differ by centuries and a profile should supply its own table. Art-historical styles are not periods and are not here.",
+  "notes": "Only periods whose bounds are conventional in Western cataloguing. Regional prehistoric phases (Neolithic, Bronze Age, Iron Age) are given for Britain and marked as such; elsewhere they differ by centuries and a profile should supply its own table. Art-historical styles are not periods and are not here. Provenance: written by the assistant from general knowledge, not copied from any source, and re-checked by it; not yet verified by a human against a reference. Check against: Wikipedia for the Roman, Byzantine and medieval bounds; Historic England's period list for the British prehistoric phases; PeriodO (perio.do), whose entries carry their own citations and are the intended long-term source for this library.",
   "periods": [
     { "key": "roman-republic", "label": "Roman Republic", "names": ["roman republic", "republican rome", "republican period (rome)"], "start": "-0508", "end": "-0026" },
     { "key": "roman-empire", "label": "Roman Empire", "names": ["roman empire", "imperial rome", "imperial period (rome)", "roman imperial"], "start": "-0026", "end": "0476" },

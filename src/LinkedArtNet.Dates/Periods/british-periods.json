@@ -1,7 +1,7 @@
 {
   "name": "British historical periods and reigns",
   "licence": "CC0-1.0",
-  "notes": "Periods named after dynasties and monarchs as used in collection cataloguing (Tudor, Georgian, Victorian) and the reigns themselves, dated to the day of accession and death or abdication. Regnal-year counting is not applied: 'Victoria 10' is not a common catalogue form.",
+  "notes": "Periods named after dynasties and monarchs as used in collection cataloguing (Tudor, Georgian, Victorian) and the reigns themselves, dated to the day of accession and death or abdication. Regnal-year counting is not applied: 'Victoria 10' is not a common catalogue form. Provenance: written by the assistant from general knowledge, not copied from any source, and re-checked by it; not yet verified by a human against a reference. Check against: Wikipedia, List of English monarchs and List of British monarchs; the Regnal Years tables in Cheney and Jones, A Handbook of Dates (for legal regnal years, which this table does not implement). Charles II is dated from the Restoration (29 May 1660), not de jure from 1649.",
   "periods": [
     { "key": "anglo-saxon", "label": "Anglo-Saxon period", "names": ["anglo-saxon", "anglo saxon", "anglo-saxon period", "saxon", "saxon period"], "start": "0410", "end": "1066" },
     { "key": "norman", "label": "Norman period", "names": ["norman", "norman period", "anglo-norman"], "start": "1066", "end": "1154" },

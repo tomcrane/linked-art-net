@@ -298,6 +298,11 @@ public sealed class TimeSpanRealiser
             Season.Autumn => south ? (3, 5) : (9, 11),
             _ => south ? (6, 8) : (12, 2),
         };
+        if (s.Season == Season.Winter && !south && _profile.Winter == WinterPolicy.StartOfYear)
+        {
+            notes.Add($"Winter {CanonicalWriter.Year(s.Year)} = January to March of that year (profile policy).");
+            return new(LinkedArtDate.StartOfMonth(s.Year, 1), LinkedArtDate.EndOfMonth(s.Year, 3));
+        }
         var endYear = endMonth < startMonth ? s.Year + 1 : s.Year;
         notes.Add($"{s.Season} {CanonicalWriter.Year(s.Year)} = months {startMonth} to {endMonth} ({_profile.Hemisphere}ern hemisphere).");
         return new(LinkedArtDate.StartOfMonth(s.Year, startMonth), LinkedArtDate.EndOfMonth(endYear, endMonth));

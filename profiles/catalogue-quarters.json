@@ -1,0 +1,21 @@
+{
+  "inherits": "default",
+  "name": "catalogue-quarters",
+  "description": "Museum catalogues that read 'early' and 'late' as the first and last quarter of a century (early 20th century = 1900-1924, late = 1975-1999) and 'early 1790s' as 1790-1792; the conventions of jeresig/node-yearrange.",
+  "centuryBands": {
+    "length": 100,
+    "early": { "start": 0, "end": 24 },
+    "mid": { "start": 25, "end": 74 },
+    "late": { "start": 75, "end": 99 },
+    "beginningOf": { "start": 0, "end": 9 },
+    "endOf": { "start": 90, "end": 99 }
+  },
+  "decadeBands": {
+    "length": 10,
+    "early": { "start": 0, "end": 2 },
+    "mid": { "start": 3, "end": 6 },
+    "late": { "start": 7, "end": 9 },
+    "beginningOf": { "start": 0, "end": 0 },
+    "endOf": { "start": 9, "end": 9 }
+  }
+}

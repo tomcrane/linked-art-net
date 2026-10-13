@@ -30,6 +30,7 @@ public static partial class Normaliser
         text = Dashes().Replace(text, "-");
         text = text.Replace('‘', '\'').Replace('’', '\'').Replace('“', '"').Replace('”', '"');
         text = Spaces().Replace(text, " ").Trim();
+        text = JesusChrist().Replace(text, "$1.$2.");   // "av. J.-C." -> "av. J.C.", so the era phrase survives tokenizing
 
         // "[1847-1852]" and "(1989?)": the wrapper says something about the whole and is not part of the date.
         var stripped = true;
@@ -80,4 +81,7 @@ public static partial class Normaliser
 
     [GeneratedRegex(@"^[,;:.]+")]
     private static partial Regex LeadingPunctuation();
+
+    [GeneratedRegex(@"\b([Jj])\.-([Cc])\.")]
+    private static partial Regex JesusChrist();
 }

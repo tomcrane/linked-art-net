@@ -24,7 +24,12 @@ internal static partial class Importers
             _ => throw new ArgumentException($"Unknown import source '{source}'. Known: yearrange, timetwister, getty."),
         };
         var outPath = Path.Combine(outDir, source + ".json");
-        var json = JsonSerializer.Serialize(file, CorpusFile.JsonOptions);
+        var node = JsonSerializer.SerializeToNode(file, CorpusFile.JsonOptions)!.AsObject();
+        // Imported entries inherit intent, profile and status from the file's defaults; writing them per entry would pin them.
+        foreach (var entry in node["entries"]!.AsArray().Select(e => e!.AsObject()))
+            foreach (var key in new[] { "intent", "profile", "status" })
+                entry.Remove(key);
+        var json = node.ToJsonString(CorpusFile.JsonOptions);
         File.WriteAllText(outPath, json + "\n", new UTF8Encoding(false));
         Console.WriteLine($"{file.Entries.Count} entries -> {Path.GetRelativePath(corpusRoot, outPath)}");
         return 0;
@@ -63,7 +68,7 @@ internal static partial class Importers
                 "years and a circa flag, so expectations are coarse (years) and reflect yearrange's own conventions, e.g. " +
                 "'late' = the last quarter of a century and 'circa' does not widen. Where they differ from our default profile " +
                 "the entry fails and should be reviewed, not copied."),
-            Defaults = new CorpusDefaults("single", "default", EntryStatus.Proposed, ["yearrange", "imported"]),
+            Defaults = new CorpusDefaults("single", "catalogue-quarters", EntryStatus.Proposed, ["yearrange", "imported"]),
             Entries = entries,
         };
     }
@@ -135,7 +140,7 @@ internal static partial class Importers
                 "'and' lists. Expectations are timetwister's full start and end dates. timetwister treats an inverted range as " +
                 "already ordered and 'ca.' as not widening, like our default profile; where its other conventions differ the " +
                 "entry fails and should be reviewed."),
-            Defaults = new CorpusDefaults("single", "default", EntryStatus.Proposed, ["timetwister", "archival", "imported"]),
+            Defaults = new CorpusDefaults("single", "archive-us", EntryStatus.Proposed, ["timetwister", "archival", "imported"]),
             Entries = entries,
         };
     }

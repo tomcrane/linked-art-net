@@ -86,29 +86,42 @@ public sealed record Lexicon
         return lexicon with { MaxPhraseWords = lexicon.AllKeys().Max(k => k.Count(c => c == ' ') + 1) };
     }
 
-    /// <summary>One lexicon answering for several languages; earlier lexicons win on conflicts.</summary>
+    /// <summary>
+    /// One lexicon answering for several languages; earlier lexicons win on conflicts. A word any table of an earlier
+    /// language knows is left out of every table of a later language, so French "en" (noise) is not Dutch "en" (and).
+    /// </summary>
     public static Lexicon Merge(IEnumerable<Lexicon> lexicons)
     {
         var list = lexicons.ToList();
         if (list.Count == 1) return list[0];
-        static Dictionary<string, T> MergeMaps<T>(IEnumerable<IReadOnlyDictionary<string, T>> maps)
+        var claimedBy = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (var i = 0; i < list.Count; i++)
+            foreach (var key in list[i].AllKeys()) claimedBy.TryAdd(key, i);
+        bool Owns(int i, string key) => claimedBy[key] == i;
+
+        Dictionary<string, T> MergeMaps<T>(Func<Lexicon, IReadOnlyDictionary<string, T>> select)
         {
             var result = new Dictionary<string, T>(StringComparer.Ordinal);
-            foreach (var map in maps) foreach (var (k, v) in map) result.TryAdd(k, v);
+            for (var i = 0; i < list.Count; i++) foreach (var (k, v) in select(list[i])) if (Owns(i, k)) result.TryAdd(k, v);
             return result;
         }
-        static HashSet<string> MergeSets(IEnumerable<IReadOnlySet<string>> sets) => sets.SelectMany(s => s).ToHashSet(StringComparer.Ordinal);
+        HashSet<string> MergeSets(Func<Lexicon, IReadOnlySet<string>> select)
+        {
+            var result = new HashSet<string>(StringComparer.Ordinal);
+            for (var i = 0; i < list.Count; i++) foreach (var k in select(list[i])) if (Owns(i, k)) result.Add(k);
+            return result;
+        }
         var merged = new Lexicon
         {
             Language = string.Join("+", list.Select(l => l.Language)),
-            Months = MergeMaps(list.Select(l => l.Months)), Seasons = MergeMaps(list.Select(l => l.Seasons)),
-            CenturyWords = MergeSets(list.Select(l => l.CenturyWords)), MillenniumWords = MergeSets(list.Select(l => l.MillenniumWords)),
-            Bands = MergeMaps(list.Select(l => l.Bands)), Hedges = MergeMaps(list.Select(l => l.Hedges)), Eras = MergeMaps(list.Select(l => l.Eras)),
-            Relations = MergeMaps(list.Select(l => l.Relations)), OpenEnd = MergeSets(list.Select(l => l.OpenEnd)), RangeWords = MergeSets(list.Select(l => l.RangeWords)),
-            Between = MergeSets(list.Select(l => l.Between)), Or = MergeSets(list.Select(l => l.Or)), Floruit = MergeSets(list.Select(l => l.Floruit)),
-            Lifecycle = MergeMaps(list.Select(l => l.Lifecycle)), Undated = MergeSets(list.Select(l => l.Undated)), Magnitudes = MergeMaps(list.Select(l => l.Magnitudes)),
-            Ago = MergeSets(list.Select(l => l.Ago)), Bp = MergeSets(list.Select(l => l.Bp)), Corrections = MergeSets(list.Select(l => l.Corrections)),
-            Noise = MergeSets(list.Select(l => l.Noise)), OrdinalWords = MergeMaps(list.Select(l => l.OrdinalWords)),
+            Months = MergeMaps(l => l.Months), Seasons = MergeMaps(l => l.Seasons),
+            CenturyWords = MergeSets(l => l.CenturyWords), MillenniumWords = MergeSets(l => l.MillenniumWords),
+            Bands = MergeMaps(l => l.Bands), Hedges = MergeMaps(l => l.Hedges), Eras = MergeMaps(l => l.Eras),
+            Relations = MergeMaps(l => l.Relations), OpenEnd = MergeSets(l => l.OpenEnd), RangeWords = MergeSets(l => l.RangeWords),
+            Between = MergeSets(l => l.Between), Or = MergeSets(l => l.Or), Floruit = MergeSets(l => l.Floruit),
+            Lifecycle = MergeMaps(l => l.Lifecycle), Undated = MergeSets(l => l.Undated), Magnitudes = MergeMaps(l => l.Magnitudes),
+            Ago = MergeSets(l => l.Ago), Bp = MergeSets(l => l.Bp), Corrections = MergeSets(l => l.Corrections),
+            Noise = MergeSets(l => l.Noise), OrdinalWords = MergeMaps(l => l.OrdinalWords),
         };
         return merged with { MaxPhraseWords = list.Max(l => l.MaxPhraseWords) };
     }

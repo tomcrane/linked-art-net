@@ -29,6 +29,9 @@ public sealed record OpenEndPolicy(OpenEndMode Mode = OpenEndMode.OmitBound, lon
 
 public enum Hemisphere { North, South }
 
+/// <summary>Which year "Winter 1776" belongs to: December 1776 to February 1777 (the meteorological season), or January to March 1776 as US archival practice has it.</summary>
+public enum WinterPolicy { CrossesYearEnd, StartOfYear }
+
 public enum DayMonthOrder { DayFirst, MonthFirst }
 
 /// <summary>How the input string is recorded on the TimeSpan.</summary>
@@ -84,6 +87,8 @@ public sealed record ParseProfile
     public bool EmitInnerBounds { get; init; }
 
     public Hemisphere Hemisphere { get; init; } = Hemisphere.North;
+
+    public WinterPolicy Winter { get; init; } = WinterPolicy.CrossesYearEnd;
 
     /// <summary>Era assumed for bare years when the text gives none.</summary>
     public Era DefaultEra { get; init; } = Era.Ce;

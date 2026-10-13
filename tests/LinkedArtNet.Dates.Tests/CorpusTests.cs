@@ -12,6 +12,7 @@ public class CorpusTests(ITestOutputHelper output)
     private static readonly string CorpusRoot = Path.Combine(TestPaths.RepoRoot, "corpus");
     private static readonly string SchemaPath = Path.Combine(CorpusRoot, "schema", "corpus-entry.schema.json");
     private static readonly Lazy<IReadOnlyList<CorpusFile>> Files = new(() => CorpusFile.LoadAll(CorpusRoot));
+    private static readonly Lazy<Realisation.ProfileCatalog> Profiles = new(() => Realisation.ProfileCatalog.Load(TestPaths.Profiles));
 
     public static TheoryData<string> FilePaths() => new(Files.Value.Select(f => f.Path));
 
@@ -38,6 +39,7 @@ public class CorpusTests(ITestOutputHelper output)
         var problems = new List<string>();
         foreach (var e in file.Entries)
         {
+            if (!Profiles.Value.TryGet(e.Profile, out _)) problems.Add($"{e.Id}: unknown profile '{e.Profile}'");
             if (e.Expect.Canonical is { } c && !DateExpression.TryParse(c, out _)) problems.Add($"{e.Id}: canonical '{c}' does not parse");
             foreach (var flag in (e.Expect.Flags ?? []).Concat(e.Expect.NotFlags ?? []))
                 if (!Enum.TryParse<DateFlag>(flag, true, out _)) problems.Add($"{e.Id}: unknown flag '{flag}'");
@@ -59,7 +61,7 @@ public class CorpusTests(ITestOutputHelper output)
     public void Verified_entry_passes(string file, string id)
     {
         var entry = Files.Value.Single(f => f.Path == file).Entries.Single(e => e.Id == id);
-        var result = new CorpusEvaluator().Evaluate(entry);
+        var result = new CorpusEvaluator(Profiles.Value.Get).Evaluate(entry);
         output.WriteLine($"\"{entry.Input}\" -> {result.Result.Canonical ?? result.Result.Status.ToString()} (confidence {result.Result.Confidence:0.00})");
         foreach (var note in result.Result.Notes) output.WriteLine("  " + note);
         Assert.True(result.Passed, $"{file} {id} \"{entry.Input}\":\n  " + string.Join("\n  ", result.Failures));

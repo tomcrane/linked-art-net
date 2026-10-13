@@ -1,0 +1,42 @@
+{
+  "language": "fr",
+  "_provenance": "Written by the assistant from general knowledge of French cataloguing usage, not copied from any source; not yet checked by a native cataloguer. Check against: BnF cataloguing rules (dates in notices), Joconde documentation.",
+  "months": {
+    "janvier": 1, "janv": 1, "février": 2, "fevrier": 2, "févr": 2, "fevr": 2, "mars": 3, "avril": 4, "avr": 4, "mai": 5,
+    "juin": 6, "juillet": 7, "juil": 7, "août": 8, "aout": 8, "septembre": 9, "sept": 9, "octobre": 10, "oct": 10,
+    "novembre": 11, "nov": 11, "décembre": 12, "decembre": 12, "déc": 12
+  },
+  "seasons": { "printemps": "Spring", "été": "Summer", "ete": "Summer", "automne": "Autumn", "hiver": "Winter" },
+  "centuryWords": ["siècle", "siecle", "s"],
+  "millenniumWords": ["millénaire", "millenaire"],
+  "bands": {
+    "début": "BeginningOf", "debut": "BeginningOf", "début du": "BeginningOf", "debut du": "BeginningOf", "au début du": "BeginningOf",
+    "fin": "EndOf", "fin du": "EndOf", "à la fin du": "EndOf", "a la fin du": "EndOf",
+    "première moitié du": "FirstHalf", "premiere moitie du": "FirstHalf", "1ère moitié du": "FirstHalf", "1re moitié du": "FirstHalf",
+    "seconde moitié du": "SecondHalf", "deuxième moitié du": "SecondHalf", "2e moitié du": "SecondHalf", "2nde moitié du": "SecondHalf",
+    "premier quart du": "FirstQuarter", "1er quart du": "FirstQuarter", "deuxième quart du": "SecondQuarter", "2e quart du": "SecondQuarter",
+    "troisième quart du": "ThirdQuarter", "3e quart du": "ThirdQuarter", "dernier quart du": "FourthQuarter", "4e quart du": "FourthQuarter",
+    "premier tiers du": "FirstThird", "dernier tiers du": "LastThird",
+    "milieu du": "Mid", "au milieu du": "Mid", "vers le milieu du": "Mid"
+  },
+  "hedges": { "vers": "Approximate", "v": "Approximate", "environ": "Approximate", "env": "Approximate", "circa": "Approximate", "ca": "Approximate", "probablement": "Uncertain", "peut-être": "Uncertain", "peut être": "Uncertain", "sans doute": "Uncertain" },
+  "eras": { "av jc": "Bce", "av j-c": "Bce", "av j c": "Bce", "avant jc": "Bce", "avant j-c": "Bce", "avant notre ère": "Bce", "avant notre ere": "Bce", "ap jc": "Ce", "ap j-c": "Ce", "après jc": "Ce", "apres jc": "Ce", "de notre ère": "Ce", "de notre ere": "Ce" },
+  "relations": { "avant": "Before", "après": "After", "apres": "After", "jusqu'en": "Until", "jusqu'à": "Until", "jusqu'au": "Until", "depuis": "NotBefore", "à partir de": "NotBefore", "a partir de": "NotBefore", "au plus tard": "NotAfter", "au plus tôt": "NotBefore", "pas avant": "NotBefore", "pas après": "NotAfter" },
+  "openEnd": ["aujourd'hui", "à nos jours", "a nos jours", "présent", "present"],
+  "rangeWords": ["à", "a", "et", "au"],
+  "between": ["entre"],
+  "or": ["ou"],
+  "floruit": ["actif", "active", "actifs", "en activité", "fl"],
+  "lifecycle": { "né": "Born", "nee": "Born", "née": "Born", "ne": "Born", "n": "Born", "mort": "Died", "morte": "Died", "décédé": "Died", "décédée": "Died", "m": "Died", "baptisé": "Baptised", "baptisée": "Baptised", "bapt": "Baptised", "inhumé": "Buried", "enterré": "Buried" },
+  "undated": ["sd", "s d", "sans date", "non daté", "non datée", "date inconnue"],
+  "magnitudes": { "mille": "Thousand", "millions": "Million", "million": "Million", "milliards": "Billion", "milliard": "Billion" },
+  "ago": ["il y a", "ans"],
+  "bp": ["bp"],
+  "corrections": ["ie", "c'est-à-dire", "c-à-d", "cad"],
+  "noise": ["le", "la", "les", "du", "de", "des", "en", "au", "aux", "l", "d", "ans", "année", "années", "an", "daté", "datée", "imprimé", "publié", "vers"],
+  "ordinalWords": {
+    "premier": 1, "première": 1, "deuxième": 2, "second": 2, "troisième": 3, "quatrième": 4, "cinquième": 5, "sixième": 6, "septième": 7,
+    "huitième": 8, "neuvième": 9, "dixième": 10, "onzième": 11, "douzième": 12, "treizième": 13, "quatorzième": 14, "quinzième": 15,
+    "seizième": 16, "dix-septième": 17, "dix-huitième": 18, "dix-neuvième": 19, "vingtième": 20, "vingt-et-unième": 21
+  }
+}

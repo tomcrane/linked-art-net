@@ -16,7 +16,7 @@ public sealed class CorpusEvaluator
     private readonly Func<string, ParseProfile> _profiles;
     private readonly Func<ParseProfile, TimeSpanParser> _parsers;
 
-    /// <param name="profiles">Resolves a profile name; the default resolves only "default".</param>
+    /// <param name="profiles">Resolves a profile name; the default resolves only "default". Pass <c>ProfileCatalog.Load(dir).Get</c> for the repository's profiles.</param>
     /// <param name="parserFactory">Builds a parser for a profile; the default is the standard chain.</param>
     public CorpusEvaluator(Func<string, ParseProfile>? profiles = null, Func<ParseProfile, TimeSpanParser>? parserFactory = null)
     {

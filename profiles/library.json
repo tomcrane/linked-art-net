@@ -1,0 +1,7 @@
+{
+  "inherits": "default",
+  "name": "library",
+  "description": "Library catalogue records (MARC 260/264): bracketed inferred dates, '[17_]' patterns, copyright and 'cop.' noise, and two-digit years read within 1900-1999 ('08 = 1908 unless it would be in the future).",
+  "twoDigitYearWindow": 1900,
+  "labelPolicy": "label"
+}

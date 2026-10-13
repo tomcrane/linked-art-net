@@ -1,0 +1,40 @@
+{
+  "language": "it",
+  "_provenance": "Written by the assistant from general knowledge of Italian cataloguing usage, not copied from any source; not yet checked by a native cataloguer. Check against: ICCD scheda OA dating rules (DTZG/DTSI fields).",
+  "months": {
+    "gennaio": 1, "gen": 1, "febbraio": 2, "feb": 2, "marzo": 3, "mar": 3, "aprile": 4, "apr": 4, "maggio": 5, "mag": 5,
+    "giugno": 6, "giu": 6, "luglio": 7, "lug": 7, "agosto": 8, "ago": 8, "settembre": 9, "set": 9, "sett": 9, "ottobre": 10, "ott": 10,
+    "novembre": 11, "nov": 11, "dicembre": 12, "dic": 12
+  },
+  "seasons": { "primavera": "Spring", "estate": "Summer", "autunno": "Autumn", "inverno": "Winter" },
+  "centuryWords": ["secolo", "sec", "secc", "secoli"],
+  "millenniumWords": ["millennio"],
+  "bands": {
+    "inizio": "BeginningOf", "inizio del": "BeginningOf", "inizi del": "BeginningOf", "primi anni del": "BeginningOf", "primo": "Early",
+    "fine": "EndOf", "fine del": "EndOf", "ultimi anni del": "EndOf", "tardo": "Late", "tarda": "Late",
+    "metà": "Mid", "meta": "Mid", "metà del": "Mid", "meta del": "Mid", "verso la metà del": "Mid", "medio": "Mid",
+    "prima metà del": "FirstHalf", "prima meta del": "FirstHalf", "seconda metà del": "SecondHalf", "seconda meta del": "SecondHalf",
+    "primo quarto del": "FirstQuarter", "secondo quarto del": "SecondQuarter", "terzo quarto del": "ThirdQuarter", "ultimo quarto del": "FourthQuarter",
+    "primo terzo del": "FirstThird", "ultimo terzo del": "LastThird"
+  },
+  "hedges": { "circa": "Approximate", "ca": "Approximate", "intorno al": "Approximate", "verso il": "Approximate", "attorno al": "Approximate", "probabilmente": "Uncertain", "forse": "Uncertain" },
+  "eras": { "ac": "Bce", "a c": "Bce", "avanti cristo": "Bce", "dc": "Ce", "d c": "Ce", "dopo cristo": "Ce" },
+  "relations": { "prima del": "Before", "ante": "Before", "dopo il": "After", "post": "After", "fino al": "Until", "entro il": "By", "dal": "NotBefore", "non prima del": "NotBefore", "non dopo il": "NotAfter" },
+  "openEnd": ["oggi", "a oggi", "ad oggi", "presente"],
+  "rangeWords": ["al", "e", "a"],
+  "between": ["tra", "fra"],
+  "or": ["o", "oppure"],
+  "floruit": ["attivo", "attiva", "attività", "documentato", "documentata", "op", "fl"],
+  "lifecycle": { "nato": "Born", "nata": "Born", "n": "Born", "morto": "Died", "morta": "Died", "m": "Died", "battezzato": "Baptised", "battezzata": "Baptised", "batt": "Baptised", "sepolto": "Buried", "sepolta": "Buried" },
+  "undated": ["sd", "s d", "senza data", "non datato", "non datata", "data sconosciuta"],
+  "magnitudes": { "mila": "Thousand", "milioni": "Million", "milione": "Million", "miliardi": "Billion", "miliardo": "Billion" },
+  "ago": ["fa", "anni fa"],
+  "bp": ["bp"],
+  "corrections": ["cioè", "cioe", "ovvero", "recte"],
+  "noise": ["il", "lo", "la", "i", "gli", "le", "del", "della", "dei", "degli", "delle", "nel", "nella", "di", "anno", "anni", "datato", "stampato"],
+  "ordinalWords": {
+    "primo": 1, "secondo": 2, "terzo": 3, "quarto": 4, "quinto": 5, "sesto": 6, "settimo": 7, "ottavo": 8, "nono": 9, "decimo": 10,
+    "undicesimo": 11, "dodicesimo": 12, "tredicesimo": 13, "quattordicesimo": 14, "quindicesimo": 15, "sedicesimo": 16,
+    "diciassettesimo": 17, "diciottesimo": 18, "diciannovesimo": 19, "ventesimo": 20, "ventunesimo": 21
+  }
+}

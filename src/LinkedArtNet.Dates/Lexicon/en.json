@@ -50,7 +50,7 @@
   "ago": ["ago", "years ago", "yrs ago", "year ago", "before present", "before the present"],
   "bp": ["bp", "b p", "ybp", "cal bp"],
   "corrections": ["ie", "i e", "that is", "recte", "rectius", "really", "actually", "corrected to", "sic for"],
-  "noise": ["the", "of", "in", "on", "at", "a", "an", "circa", "©", "cop", "copyright", "sic", "printed", "published", "dated", "made", "issued", "year", "years", "yr", "yrs", "c", "ca", "cir", "i", "e", "ie", "dates", "date", "approximate", "approx", "probable", "est", "estimated"],
+  "noise": ["the", "of", "in", "on", "at", "a", "an", "circa", "©", "cop", "copyright", "sic", "printed", "published", "dated", "made", "issued", "year", "years", "yr", "yrs", "c", "ca", "cir", "ie", "dates", "date", "approximate", "approx", "probable", "est", "estimated"],
   "ordinalWords": {
     "first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10,
     "eleventh": 11, "twelfth": 12, "thirteenth": 13, "fourteenth": 14, "fifteenth": 15, "sixteenth": 16, "seventeenth": 17,

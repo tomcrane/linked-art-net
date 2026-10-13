@@ -291,6 +291,7 @@ internal sealed class DateParser
             var save = _p;
             _p++;
             var a = ParseSingle();
+            SkipNoise();
             if (a is not null && _p < _t.Count && _t[_p].Kind == TokenKind.RangeWord)
             {
                 _p++;
@@ -492,6 +493,8 @@ internal sealed class DateParser
         {
             var t = _t[_p];
             if (t.Kind == TokenKind.Question) { piece = piece with { Hedge = Merge(piece.Hedge, Qualification.Uncertain) }; _p++; continue; }
+            // postfix band words: "saec. XIV ex.", "s. xiv med."
+            if (t.Kind == TokenKind.Band && piece.Band is null && piece.Core is Century or Decade or Millennium) { piece = piece with { Band = (Band)t.Value! }; _p++; continue; }
             if (t.Kind == TokenKind.Hedge && (!IsCenturyLetter(t) || _p + 1 >= _t.Count)) { piece = piece with { Hedge = Merge(piece.Hedge, (Qualification)t.Value!) }; _p++; continue; }
             break;
         }
@@ -720,6 +723,14 @@ internal sealed class DateParser
             _p += 2;
             var era = eraFirst ?? TakeEra() ?? Era.Ce;
             result = piece with { Core = new Century((int)r.Number, era), Era = era };
+            return true;
+        }
+        // XVI secolo | XIX siècle (roman numeral before the century word)
+        if (t.Kind == TokenKind.Roman && t.Number is >= 1 and <= 30 && Peek(1) is { Kind: TokenKind.CenturyWord })
+        {
+            _p += 2;
+            var era = eraFirst ?? TakeEra() ?? Era.Ce;
+            result = piece with { Core = new Century((int)t.Number, era), Era = era };
             return true;
         }
         return false;

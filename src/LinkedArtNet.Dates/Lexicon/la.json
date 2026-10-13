@@ -1,0 +1,41 @@
+{
+  "language": "la",
+  "_provenance": "Written by the assistant from general knowledge of Latin dating formulae in manuscript and early-printed-book cataloguing, not copied from any source; not yet checked by a specialist. Check against: manuscript catalogue conventions (saec., med., ineunte, exeunte), ISTC/USTC imprint dating.",
+  "months": {
+    "ianuarii": 1, "ianuarius": 1, "januarii": 1, "ian": 1, "februarii": 2, "februarius": 2, "feb": 2, "martii": 3, "martius": 3, "mart": 3,
+    "aprilis": 4, "apr": 4, "maii": 5, "maius": 5, "iunii": 6, "iunius": 6, "junii": 6, "iun": 6, "iulii": 7, "iulius": 7, "julii": 7, "iul": 7,
+    "augusti": 8, "augustus": 8, "aug": 8, "septembris": 9, "september": 9, "sept": 9, "octobris": 10, "october": 10, "oct": 10,
+    "novembris": 11, "november": 11, "nov": 11, "decembris": 12, "december": 12, "dec": 12
+  },
+  "seasons": { "ver": "Spring", "aestas": "Summer", "autumnus": "Autumn", "hiems": "Winter" },
+  "centuryWords": ["saeculum", "saeculo", "saeculi", "saec", "sæc", "s"],
+  "millenniumWords": ["millennium"],
+  "bands": {
+    "ineunte": "BeginningOf", "ineuntis": "BeginningOf", "in": "Early", "init": "BeginningOf",
+    "exeunte": "EndOf", "exeuntis": "EndOf", "ex": "EndOf", "fin": "EndOf",
+    "medio": "Mid", "med": "Mid", "mediante": "Mid", "circa medium": "Mid",
+    "prima pars": "FirstHalf", "prior pars": "FirstHalf", "altera pars": "SecondHalf", "posterior pars": "SecondHalf",
+    "primum quartum": "FirstQuarter", "ultimum quartum": "FourthQuarter"
+  },
+  "hedges": { "circa": "Approximate", "ca": "Approximate", "c": "Approximate", "fere": "Approximate", "circiter": "Approximate", "fortasse": "Uncertain", "forsan": "Uncertain", "ut videtur": "Uncertain", "vel": "Uncertain" },
+  "eras": { "a c n": "Bce", "ante christum": "Bce", "ante christum natum": "Bce", "a chr": "Bce", "p c n": "Ce", "post christum": "Ce", "post christum natum": "Ce", "anno domini": "Ce", "ad": "Ce", "a d": "Ce" },
+  "relations": { "ante": "Before", "post": "After", "usque ad": "Until", "ab": "NotBefore", "ex anno": "NotBefore", "non ante": "NotBefore", "non post": "NotAfter" },
+  "openEnd": ["hodie", "usque hodie"],
+  "rangeWords": ["ad", "et", "usque"],
+  "between": ["inter"],
+  "or": ["vel", "aut", "sive"],
+  "floruit": ["floruit", "fl", "flor", "floruerunt"],
+  "lifecycle": { "natus": "Born", "nata": "Born", "n": "Born", "obiit": "Died", "ob": "Died", "mortuus": "Died", "mortua": "Died", "defunctus": "Died", "baptizatus": "Baptised", "bapt": "Baptised", "sepultus": "Buried", "sep": "Buried" },
+  "undated": ["s a", "sa", "sine anno", "s d", "sine data", "s l et a", "sine loco et anno"],
+  "magnitudes": {},
+  "ago": ["abhinc"],
+  "bp": ["bp"],
+  "corrections": ["id est", "ie", "i e", "recte", "rectius", "scilicet", "scil"],
+  "noise": ["anno", "annis", "a", "mense", "die", "in", "de", "et", "domini", "incarnationis"],
+  "ordinalWords": {
+    "primum": 1, "primo": 1, "secundum": 2, "secundo": 2, "tertium": 3, "tertio": 3, "quartum": 4, "quarto": 4, "quintum": 5, "quinto": 5,
+    "sextum": 6, "sexto": 6, "septimum": 7, "octavum": 8, "nonum": 9, "decimum": 10, "undecimum": 11, "duodecimum": 12,
+    "tertium decimum": 13, "quartum decimum": 14, "quintum decimum": 15, "sextum decimum": 16, "septimum decimum": 17,
+    "duodevicesimum": 18, "undevicesimum": 19, "vicesimum": 20
+  }
+}

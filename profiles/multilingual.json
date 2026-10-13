@@ -1,0 +1,6 @@
+{
+  "inherits": "default",
+  "name": "multilingual",
+  "description": "English with French, German, Italian, Spanish, Dutch and Latin lexicons active at once, for mixed European collections. Where two languages use one word differently the earlier language in the list wins.",
+  "languages": ["en", "fr", "de", "it", "es", "nl", "la"]
+}

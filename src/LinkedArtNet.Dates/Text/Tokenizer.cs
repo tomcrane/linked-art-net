@@ -40,7 +40,15 @@ public sealed partial class Tokenizer(Lexicon lexicon)
     public IReadOnlyList<Token> Tokenize(string text)
     {
         var raw = Scan(text);
-        return Classify(raw);
+        var tokens = Classify(raw);
+        // "12 de marzo de 1850", "le 12 mars 1850": a filler word between the parts of a date carries nothing.
+        for (var i = tokens.Count - 2; i >= 1; i--)
+        {
+            if (tokens[i].Kind == TokenKind.Noise && tokens[i - 1].Kind is TokenKind.Number or TokenKind.Month && tokens[i + 1].Kind is TokenKind.Number or TokenKind.Month
+                && (tokens[i - 1].Kind == TokenKind.Month || tokens[i + 1].Kind == TokenKind.Month))
+                tokens.RemoveAt(i);
+        }
+        return tokens;
     }
 
     // ---- pass 1: lexical shapes -------------------------------------------------------------------------------
@@ -116,6 +124,12 @@ public sealed partial class Tokenizer(Lexicon lexicon)
                 continue;
             }
 
+            // "12. März", "19. Jahrhundert", "2. Hälfte": the ordinal dot after a number adds nothing once the word follows.
+            if (t.Kind == TokenKind.Number && i + 2 < raw.Count && raw[i + 1] is { Kind: TokenKind.Other, Text: "." } && raw[i + 2].Kind == TokenKind.Word)
+            {
+                raw.RemoveAt(i + 1);
+            }
+
             // "c.late", "n.d.1850": a dotted word the lexicon does not know is several words.
             if (t.Kind == TokenKind.Word && t.Text.TrimEnd('.').Contains('.') && Lookup(Lexicon.Normalise(t.Text), t.Start, t.Text, t) is null)
             {
@@ -138,7 +152,6 @@ public sealed partial class Tokenizer(Lexicon lexicon)
             for (var len = Math.Min(Lexicon.MaxPhraseWords, raw.Count - i); len >= 1; len--)
             {
                 if (raw.Skip(i).Take(len).Any(x => x.Kind is TokenKind.Dash or TokenKind.Slash or TokenKind.Comma or TokenKind.OpenParen or TokenKind.CloseParen or TokenKind.OpenBracket or TokenKind.CloseBracket or TokenKind.Question or TokenKind.DecadeSuffix or TokenKind.Unspecified)) continue;
-                if (len > 1 && raw.Skip(i).Take(len).Any(x => x.Kind is TokenKind.Number)) continue;
                 var phrase = string.Join(" ", raw.Skip(i).Take(len).Select(x => Lexicon.Normalise(x.Text)));
                 if (phrase.Length == 0) continue;
                 var classified = Lookup(phrase, raw[i].Start, string.Join(" ", raw.Skip(i).Take(len).Select(x => x.Text)), len == 1 ? raw[i] : null);

@@ -249,6 +249,19 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     pass rate 49.5% -> 60%; the rest are mostly the sources' own conventions (yearrange: late = last quarter;
     timetwister: US month-first, winter at the start of the year; ULAN: padded estimates), prose and typos.
 
-Next: Phase 2 step 6 (fluent bridge, profiles incl. a US/archival one, profile advisor, other languages). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+17. ~~Phase 2 step 6: fluent bridge, profiles, advisor, languages.~~ Done 2026-10-14. `TimeSpanBridge`: `WithTimeSpan("c. 1642")`,
+    `WithLifespan("1606-1669")` (floruit becomes a professional activity), `WithExistence(...)`, unparseable text kept
+    as a label-only TimeSpan, `LastResult` for the details. `ProfileCatalog` loads `profiles/*.json` with `inherits`;
+    profiles `library`, `archive-us` (month-first, winter at the start of the year, decade thirds), `catalogue-quarters`
+    (yearrange's early/late quarters), `medieval-manuscripts` (Latin, strict centuries, hedges widened), `multilingual`;
+    new `winter` policy. `ProfileAdvisor` scans a dataset's strings and recommends settings (`tools/Corpus advise`).
+    Lexicons for fr, de, it, es, nl, la (written from general knowledge; provenance stated in each file), merged with
+    earlier languages owning conflicting words; grammar reads roman numerals before century words, postfix Latin
+    bands ("saec. XIV ex."), German ordinal dots, filler words inside dates ("12 de marzo de 1850").
+    Corpus `authored/multilingual.json` (44, verified). The imported timetwister and yearrange files evaluate under
+    `archive-us` and `catalogue-quarters`: proposed pass rate 60.0% -> 62.3%. `tools/Corpus tokens` for debugging.
+
+Next: Phase 3 (the Kestrel service) or Phase 4 (examples site), owner's choice; the PeriodO-backed period source and
+the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

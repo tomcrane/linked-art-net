@@ -1,0 +1,40 @@
+{
+  "language": "de",
+  "_provenance": "Written by the assistant from general knowledge of German cataloguing usage, not copied from any source; not yet checked by a native cataloguer. Check against: RDA-DACH / RAK dating conventions, Deutsche Digitale Bibliothek documentation.",
+  "months": {
+    "januar": 1, "jänner": 1, "jan": 1, "februar": 2, "feb": 2, "märz": 3, "maerz": 3, "mrz": 3, "april": 4, "apr": 4, "mai": 5,
+    "juni": 6, "juli": 7, "august": 8, "aug": 8, "september": 9, "sept": 9, "sep": 9, "oktober": 10, "okt": 10,
+    "november": 11, "nov": 11, "dezember": 12, "dez": 12
+  },
+  "seasons": { "frühling": "Spring", "fruehling": "Spring", "frühjahr": "Spring", "sommer": "Summer", "herbst": "Autumn", "winter": "Winter" },
+  "centuryWords": ["jahrhundert", "jahrhunderts", "jh", "jhdt", "jhd"],
+  "millenniumWords": ["jahrtausend", "jahrtausends", "jt"],
+  "bands": {
+    "anfang": "BeginningOf", "anfang des": "BeginningOf", "beginn des": "BeginningOf", "frühes": "Early", "frühe": "Early", "früh": "Early",
+    "ende": "EndOf", "ende des": "EndOf", "spätes": "Late", "späte": "Late", "spät": "Late",
+    "mitte": "Mid", "mitte des": "Mid", "um die mitte des": "Mid", "mittleres": "Mid",
+    "erste hälfte": "FirstHalf", "erste hälfte des": "FirstHalf", "1. hälfte": "FirstHalf", "1 hälfte": "FirstHalf", "erstes drittel des": "FirstThird",
+    "zweite hälfte": "SecondHalf", "zweite hälfte des": "SecondHalf", "2. hälfte": "SecondHalf", "2 hälfte": "SecondHalf", "letztes drittel des": "LastThird",
+    "erstes viertel des": "FirstQuarter", "zweites viertel des": "SecondQuarter", "drittes viertel des": "ThirdQuarter", "letztes viertel des": "FourthQuarter", "viertes viertel des": "FourthQuarter"
+  },
+  "hedges": { "um": "Approximate", "ca": "Approximate", "circa": "Approximate", "etwa": "Approximate", "ungefähr": "Approximate", "gegen": "Approximate", "wohl": "Uncertain", "vermutlich": "Uncertain", "wahrscheinlich": "Uncertain", "vielleicht": "Uncertain" },
+  "eras": { "v chr": "Bce", "v. chr": "Bce", "vor christus": "Bce", "vor chr": "Bce", "v u z": "Bce", "n chr": "Ce", "nach christus": "Ce", "nach chr": "Ce", "u z": "Ce" },
+  "relations": { "vor": "Before", "nach": "After", "bis": "Until", "seit": "NotBefore", "ab": "NotBefore", "spätestens": "NotAfter", "frühestens": "NotBefore", "nicht vor": "NotBefore", "nicht nach": "NotAfter" },
+  "openEnd": ["heute", "bis heute", "gegenwart", "jetzt"],
+  "rangeWords": ["bis", "und"],
+  "between": ["zwischen", "von"],
+  "or": ["oder"],
+  "floruit": ["tätig", "taetig", "nachweisbar", "erwähnt", "wirkte", "fl"],
+  "lifecycle": { "geb": "Born", "geboren": "Born", "gest": "Died", "gestorben": "Died", "verstorben": "Died", "getauft": "Baptised", "get": "Baptised", "begraben": "Buried", "begr": "Buried" },
+  "undated": ["o j", "oj", "ohne jahr", "ohne datum", "undatiert", "s a", "sa"],
+  "magnitudes": { "tausend": "Thousand", "millionen": "Million", "million": "Million", "milliarden": "Billion", "milliarde": "Billion" },
+  "ago": ["vor", "jahren"],
+  "bp": ["bp"],
+  "corrections": ["dh", "d h", "das heißt", "richtig", "recte"],
+  "noise": ["der", "die", "das", "des", "dem", "den", "im", "in", "am", "aus", "jahr", "jahre", "jahren", "datiert", "gedruckt", "erschienen", "um"],
+  "ordinalWords": {
+    "erstes": 1, "erste": 1, "zweites": 2, "zweite": 2, "drittes": 3, "dritte": 3, "viertes": 4, "fünftes": 5, "sechstes": 6, "siebtes": 7, "achtes": 8,
+    "neuntes": 9, "zehntes": 10, "elftes": 11, "zwölftes": 12, "dreizehntes": 13, "vierzehntes": 14, "fünfzehntes": 15, "sechzehntes": 16,
+    "siebzehntes": 17, "achtzehntes": 18, "neunzehntes": 19, "zwanzigstes": 20, "einundzwanzigstes": 21
+  }
+}

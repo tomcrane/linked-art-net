@@ -199,6 +199,7 @@ inherited and overridden):
 | `LabelPolicy` | `Label` | `_label` = input; `LabelAndName` also adds `identified_by` Name; `Name` only |
 | `AcceptThreshold` | 0.75 | below this, continue down the strategy chain |
 | `LeadingDashIsOpenStart` | true | free text "-1850" is an open start (the EDTF reading, 1851 BCE, becomes an alternative); zero-padded "-0499" is always EDTF |
+| `Winter` | `CrossesYearEnd` | "Winter 1776" = Dec 1776-Feb 1777; `StartOfYear` = Jan-Mar 1776 (US archival) |
 
 Intent and kind:
 
@@ -249,6 +250,11 @@ public sealed record TimeSpanParseResult(
 ```
 
 ## 3. Public API
+
+Implemented: `TimeSpanParser`, `ParseOptions`, `ProfileCatalog.Load("profiles")`, the fluent bridge in `TimeSpanBridge`
+(`WithTimeSpan`, `WithLifespan`, `WithExistence`) and `ProfileAdvisor.Analyse`. `TimeSpanParserBuilder` and `ParseAsync`
+with an `IDateInterpreter` are still to come.
+
 
 ```csharp
 // simplest

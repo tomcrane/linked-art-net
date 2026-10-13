@@ -19,6 +19,8 @@ var repoRoot = FindRepoRoot();
 var corpusRoot = Path.Combine(repoRoot, "corpus");
 var schemaPath = Path.Combine(corpusRoot, "schema", "corpus-entry.schema.json");
 
+if (command == "tokens") return Tokens(args.Length > 2 ? args[1] : "default", args.Length > 2 ? args[2] : args.Length > 1 ? args[1] : "");
+if (command == "advise") return Advise(args.Length > 1 ? args[1] : throw new ArgumentException("advise needs a file of strings, one per line"));
 if (command == "import") return await Importers.Run(args.Length > 1 ? args[1] : "", args.Length > 2 ? args[2] : null, corpusRoot);
 
 return command switch
@@ -79,7 +81,8 @@ int Validate()
 int Run(EntryStatus? status, bool write)
 {
     var entries = CorpusFile.LoadAll(corpusRoot).SelectMany(f => f.Entries).Where(e => status is null || e.Status == status).ToList();
-    var results = new CorpusEvaluator().Evaluate(entries);
+    var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
+    var results = new CorpusEvaluator(catalog.Get).Evaluate(entries);
     var reportJsonPath = Path.Combine(corpusRoot, "report.json");
     var previous = File.Exists(reportJsonPath)
         ? JsonSerializer.Deserialize<Dictionary<string, bool>>(File.ReadAllText(reportJsonPath))
@@ -98,6 +101,27 @@ int Run(EntryStatus? status, bool write)
         Console.WriteLine("-> corpus/report.md, corpus/report.json");
     }
     return results.Any(r => !r.Passed && r.Entry.Status == EntryStatus.Verified) ? 1 : 0;
+}
+
+int Tokens(string profileName, string text)
+{
+    var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
+    var profile = catalog[profileName];
+    var lexicon = LinkedArtNet.Dates.Text.Lexicon.Merge(profile.Languages.Select(LinkedArtNet.Dates.Text.Lexicon.Load));
+    var normalised = LinkedArtNet.Dates.Text.Normaliser.Normalise(text);
+    Console.WriteLine($"normalised: \"{normalised.Text}\" flags: {string.Join(",", normalised.Flags)}");
+    foreach (var tok in new LinkedArtNet.Dates.Text.Tokenizer(lexicon).Tokenize(normalised.Text)) Console.WriteLine($"  {tok.Kind,-12} \"{tok.Text}\" {tok.Value}");
+    var result = new LinkedArtNet.Dates.TimeSpanParser(profile).Parse(text);
+    Console.WriteLine($"-> {result.Status} {result.Canonical} ({result.Strategy}, {result.Confidence:0.00})");
+    foreach (var n in result.Notes) Console.WriteLine("  " + n);
+    return 0;
+}
+
+int Advise(string path)
+{
+    var report = LinkedArtNet.Dates.Realisation.ProfileAdvisor.Analyse(File.ReadLines(path));
+    Console.WriteLine(report.ToMarkdown());
+    return 0;
 }
 
 int Stats()

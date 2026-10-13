@@ -1,0 +1,39 @@
+{
+  "language": "nl",
+  "_provenance": "Written by the assistant from general knowledge of Dutch cataloguing usage, not copied from any source; not yet checked by a native cataloguer. Check against: RKD and Rijksmuseum dating conventions, Adlib/Axiell Dutch date fields.",
+  "months": {
+    "januari": 1, "jan": 1, "februari": 2, "feb": 2, "maart": 3, "mrt": 3, "april": 4, "apr": 4, "mei": 5,
+    "juni": 6, "jun": 6, "juli": 7, "jul": 7, "augustus": 8, "aug": 8, "september": 9, "sep": 9, "sept": 9, "oktober": 10, "okt": 10,
+    "november": 11, "nov": 11, "december": 12, "dec": 12
+  },
+  "seasons": { "voorjaar": "Spring", "lente": "Spring", "zomer": "Summer", "najaar": "Autumn", "herfst": "Autumn", "winter": "Winter" },
+  "centuryWords": ["eeuw", "eeuws", "e"],
+  "millenniumWords": ["millennium"],
+  "bands": {
+    "begin": "BeginningOf", "begin van de": "BeginningOf", "begin der": "BeginningOf", "vroege": "Early", "vroeg": "Early",
+    "eind": "EndOf", "einde": "EndOf", "eind van de": "EndOf", "einde van de": "EndOf", "late": "Late", "laat": "Late",
+    "midden": "Mid", "midden van de": "Mid", "omstreeks het midden van de": "Mid",
+    "eerste helft": "FirstHalf", "eerste helft van de": "FirstHalf", "1e helft": "FirstHalf", "tweede helft": "SecondHalf", "tweede helft van de": "SecondHalf", "2e helft": "SecondHalf",
+    "eerste kwart": "FirstQuarter", "eerste kwart van de": "FirstQuarter", "tweede kwart": "SecondQuarter", "derde kwart": "ThirdQuarter", "laatste kwart": "FourthQuarter", "laatste kwart van de": "FourthQuarter", "vierde kwart": "FourthQuarter"
+  },
+  "hedges": { "ca": "Approximate", "circa": "Approximate", "omstreeks": "Approximate", "rond": "Approximate", "ongeveer": "Approximate", "ongev": "Approximate", "waarschijnlijk": "Uncertain", "vermoedelijk": "Uncertain", "mogelijk": "Uncertain", "wellicht": "Uncertain" },
+  "eras": { "v chr": "Bce", "v. chr": "Bce", "voor christus": "Bce", "vc": "Bce", "n chr": "Ce", "na christus": "Ce", "nc": "Ce" },
+  "relations": { "voor": "Before", "vóór": "Before", "na": "After", "tot": "Until", "tot en met": "Until", "vanaf": "NotBefore", "sinds": "NotBefore", "uiterlijk": "NotAfter", "niet voor": "NotBefore", "niet na": "NotAfter" },
+  "openEnd": ["heden", "nu", "tot heden"],
+  "rangeWords": ["tot", "en"],
+  "between": ["tussen", "van"],
+  "or": ["of"],
+  "floruit": ["werkzaam", "actief", "actieve", "vermeld", "fl"],
+  "lifecycle": { "geb": "Born", "geboren": "Born", "gest": "Died", "gestorven": "Died", "overleden": "Died", "overl": "Died", "gedoopt": "Baptised", "ged": "Baptised", "begraven": "Buried", "begr": "Buried" },
+  "undated": ["zj", "z j", "zonder jaar", "ongedateerd", "zd", "z d", "zonder datum"],
+  "magnitudes": { "duizend": "Thousand", "miljoen": "Million", "miljard": "Billion" },
+  "ago": ["geleden", "jaar geleden"],
+  "bp": ["bp"],
+  "corrections": ["dwz", "d w z", "dat wil zeggen", "recte"],
+  "noise": ["de", "het", "der", "van", "in", "jaar", "jaren", "gedateerd", "gedrukt", "uitgegeven"],
+  "ordinalWords": {
+    "eerste": 1, "tweede": 2, "derde": 3, "vierde": 4, "vijfde": 5, "zesde": 6, "zevende": 7, "achtste": 8, "negende": 9, "tiende": 10,
+    "elfde": 11, "twaalfde": 12, "dertiende": 13, "veertiende": 14, "vijftiende": 15, "zestiende": 16, "zeventiende": 17,
+    "achttiende": 18, "negentiende": 19, "twintigste": 20, "eenentwintigste": 21
+  }
+}

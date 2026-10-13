@@ -31,7 +31,9 @@ band        := 'early' | 'mid' | 'late' | 'h1' | 'h2' | 'q1' | 'q2' | 'q3' | 'q4
 Rules:
 
 - Qualifiers (`~ ? %`) attach to a single date. To hedge an interval, hedge its bounds: `1850~/1900~`.
-- A lifecycle keyword may precede an interval: `fl 1480/1510`, `born 1606`.
+- A lifecycle keyword may precede an interval: `fl 1480/1510`, `born 1606`. When *both* bounds of an
+  interval carry a marker (`born 1850/died 1920`) the interval is an explicit pair; one marked bound is
+  not allowed.
 - Relations and bands apply to single dates (`before 1850`, `late 195X`, `early century 14`, `q2 century 14`).
 - `195X` with a single trailing `X` is a `Decade`; any other `X` pattern is `UnspecifiedDigits`.
 - A `Corrected` expression ("1962 (i.e. 1967)") is written as its correction; the original survives only in

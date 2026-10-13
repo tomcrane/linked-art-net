@@ -210,6 +210,13 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     conventions, bands, padding, open ends, seasons, deep time, intents, label policy), `TimeSpanParseResult`,
     `TimeSpanParser` facade with the canonical strategy. 229 tests.
 
-Next: Phase 2 step 2 (corpus tooling) and step 3 (normaliser, tokenizer, grammar). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+13. ~~Phase 2 step 2: corpus scaffolding.~~ Done 2026-10-13. `LinkedArtNet.Dates.Corpus` (loader with defaults, schema
+    validation, evaluator checking only the fields an expectation sets, metrics incl. calibration error, report),
+    `tools/Corpus` (validate / run / stats, `corpus/report.md` + `report.json` for regressions), `CorpusTests`
+    (every file schema-valid and well-formed, ids unique, every `verified` entry passes). Four authored sets
+    (BCE and deep time, centuries and bands, open ends and relations, lifecycles and floruit: 110 entries) plus
+    `canonical-forms.json` (18 verified). Free-text files are held at `proposed` until step 3; 256 entries in all.
+
+Next: Phase 2 step 3 (normaliser, tokenizer, grammar), then flip the seed and authored files to verified. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

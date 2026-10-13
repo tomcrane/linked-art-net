@@ -18,6 +18,7 @@ public enum DateFlag
 {
     Approximate, Uncertain, OpenStart, OpenEnd, Disjunction, Bracketed, Salvaged, Interpreted, Corrected,
     Floruit, Lifecycle, Bce, DeepTime, NamedPeriod, Season, Band, AmbiguousDayMonth, Unconsumed, Inverted, Padded,
+    TwoDigitYear, SecondaryDate, Parenthesised, RomanNumeral,
 }
 
 /// <summary>Another reading of the input, or a member of a disjunction, with its own realisation.</summary>

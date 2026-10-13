@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>LinkedArtNet.Dates.Corpus</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Description>Reads, validates and evaluates the ground-truth date corpus (corpus/**/*.json) against the parser; shared by tools/Corpus, the tests and the trainer.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JsonSchema.Net" Version="9.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
+  </ItemGroup>
+
+</Project>

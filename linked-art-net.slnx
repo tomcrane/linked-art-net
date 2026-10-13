@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/LinkedArtNet.Examples/LinkedArtNet.Examples.csproj" />
     <Project Path="src/LinkedArtNet.Dates/LinkedArtNet.Dates.csproj" />
+    <Project Path="src/LinkedArtNet.Dates.Corpus/LinkedArtNet.Dates.Corpus.csproj" />
     <Project Path="src/LinkedArtNet/LinkedArtNet.csproj" />
   </Folder>
   <Folder Name="/tests/">
@@ -10,6 +11,7 @@
     <Project Path="tests/LinkedArtNet.Tests/LinkedArtNet.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
+    <Project Path="tools/Corpus/Corpus.csproj" />
     <Project Path="tools/ExampleManifest/ExampleManifest.csproj" />
     <Project Path="tools/FluentGen/FluentGen.csproj" />
     <Project Path="tools/SchemaInspector/SchemaInspector.csproj" />

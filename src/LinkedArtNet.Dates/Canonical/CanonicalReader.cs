@@ -40,8 +40,10 @@ public static partial class CanonicalReader
     private static DateExpression ParseExpression(string text)
     {
         if (text == "undated") return Undated.Instance;
+        // A leading lifecycle keyword marks the whole expression ("fl 1480/1510"), unless both bounds of an
+        // interval are marked ("born 1850/died 1920"), which is a pair with explicit halves.
         var space = text.IndexOf(' ');
-        if (space > 0 && Keywords.Lifecycle.TryGetValue(text[..space], out var marker))
+        if (space > 0 && Keywords.Lifecycle.TryGetValue(text[..space], out var marker) && !HasMarkedBounds(text))
             return new Lifecycle(marker, ParseExpression(text[(space + 1)..].TrimStart()));
         if (text.StartsWith('[') && text.EndsWith(']'))
             return new OneOf(SplitTopLevel(text[1..^1], ',').Select(ParseExpression));
@@ -56,10 +58,23 @@ public static partial class CanonicalReader
         return ParsePrefixed(text);
     }
 
+    private static bool HasMarkedBounds(string text)
+    {
+        var slash = IndexOfTopLevel(text, '/');
+        if (slash < 0) return false;
+        var right = text[(slash + 1)..].TrimStart();
+        var space = right.IndexOf(' ');
+        return space > 0 && Keywords.Lifecycle.ContainsKey(right[..space]);
+    }
+
+    // bound := [lifecycle] prefixed       ("born 1850/died 1920" is an explicit pair)
     private static DateExpression ParseBound(string text)
     {
+        var space = text.IndexOf(' ');
+        if (space > 0 && Keywords.Lifecycle.TryGetValue(text[..space], out var marker))
+            return new Lifecycle(marker, ParseBound(text[(space + 1)..].TrimStart()));
         var bound = ParsePrefixed(text);
-        return bound is Interval or OneOf or Undated or Lifecycle or Relative ? throw new FormatException($"'{text}' cannot be an interval bound.") : bound;
+        return bound is Interval or OneOf or Undated or Relative ? throw new FormatException($"'{text}' cannot be an interval bound.") : bound;
     }
 
     // prefixed := (lifecycle | relation | band)* single

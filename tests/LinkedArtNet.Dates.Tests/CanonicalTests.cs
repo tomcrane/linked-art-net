@@ -47,6 +47,9 @@ public class CanonicalTests
         { "not-after 1850~", new Relative(Relation.NotAfter, new Qualified(new YearPoint(1850), Qualification.Approximate)) },
         { "born 1606", new Lifecycle(LifecycleMarker.Born, new YearPoint(1606)) },
         { "fl 1480/1510", new Lifecycle(LifecycleMarker.Floruit, new Interval(new YearPoint(1480), new YearPoint(1510))) },
+        { "born 1850/died 1920", new Interval(new Lifecycle(LifecycleMarker.Born, new YearPoint(1850)), new Lifecycle(LifecycleMarker.Died, new YearPoint(1920))) },
+        { "born 1850/1860", new Lifecycle(LifecycleMarker.Born, new Interval(new YearPoint(1850), new YearPoint(1860))) },
+        { "baptised 1606~/buried 1669", new Interval(new Lifecycle(LifecycleMarker.Baptised, new Qualified(new YearPoint(1606), Qualification.Approximate)), new Lifecycle(LifecycleMarker.Buried, new YearPoint(1669))) },
         { "1870/1890", new Interval(new YearPoint(1870), new YearPoint(1890)) },
         { "../1850", new Interval(null, new YearPoint(1850)) },
         { "1971/..", new Interval(new YearPoint(1971), null) },
@@ -82,7 +85,6 @@ public class CanonicalTests
     [InlineData("late")]
     [InlineData("[1904]")]
     [InlineData("undated/1900")]
-    [InlineData("born 1606/died 1669")]
     [InlineData("../after 2015")]
     [InlineData("late 1850s")]
     [InlineData("19th century")]
@@ -104,11 +106,11 @@ public class CanonicalTests
     public void Edtf_is_the_canonical_for_pure_edtf_and_the_realised_years_otherwise()
     {
         var realiser = new Realisation.TimeSpanRealiser();
-        Assert.Equal("1850~", EdtfWriter.Write(new Qualified(new YearPoint(1850), Qualification.Approximate), realiser.RealiseSpan(new YearPoint(1850))));
+        Assert.Equal("1850~", EdtfWriter.Write(new Qualified(new YearPoint(1850), Qualification.Approximate), realiser.RealiseSpan));
         var century = new Century(19);
-        Assert.Equal("1800/1899", EdtfWriter.Write(century, realiser.RealiseSpan(century)));
+        Assert.Equal("1800/1899", EdtfWriter.Write(century, realiser.RealiseSpan));
         var before = new Relative(Relation.Before, new YearPoint(1850));
-        Assert.Equal("../1849", EdtfWriter.Write(before, realiser.RealiseSpan(before)));
+        Assert.Equal("../1849", EdtfWriter.Write(before, realiser.RealiseSpan));
     }
 
     // ---- property: Read(Write(e)) == e for every expression the generator can build --------------------------
@@ -191,11 +193,14 @@ public static class ExpressionArbitrary
             (1, Single.Select(b => (DateExpression)new Interval(null, b))));
         var lifecycle = Gen.Elements(Enum.GetValues<LifecycleMarker>()).SelectMany(m =>
             Gen.OneOf(Prefixed, interval).Select(inner => (DateExpression)new Lifecycle(m, inner)));
+        var markedPair = Gen.Elements(Enum.GetValues<LifecycleMarker>()).SelectMany(m1 => Gen.Elements(Enum.GetValues<LifecycleMarker>()).SelectMany(m2 =>
+            Single.SelectMany(a => Single.Select(b => (DateExpression)new Interval(new Lifecycle(m1, a), new Lifecycle(m2, b))))));
         var set = Gen.Choose(2, 4).SelectMany(n => Gen.ArrayOf(Gen.OneOf(Prefixed, interval), n)).Select(ms => (DateExpression)new OneOf(ms));
         return Gen.Frequency(
             (5, Prefixed),
             (3, interval),
             (1, lifecycle),
+            (1, markedPair),
             (1, set),
             (1, Gen.Constant((DateExpression)Undated.Instance)));
     }

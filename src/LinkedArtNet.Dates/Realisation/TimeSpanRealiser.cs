@@ -109,7 +109,7 @@ public sealed class TimeSpanRealiser
             Input = input, Status = status, Kind = kind, Confidence = confidence,
             TimeSpan = timeSpan, Begin = begin, End = end,
             Expression = expression, Canonical = expression.Canonical,
-            Edtf = EdtfWriter.Write(core, whole),
+            Edtf = EdtfWriter.Write(core, e => Realise(e, [], [], [])),
             Flags = flags, Alternatives = alternatives, Notes = notes,
             Strategy = strategy, Profile = _profile.Name,
         };

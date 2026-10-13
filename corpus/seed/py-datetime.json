@@ -3,9 +3,9 @@
   "source": {
     "name": "py_datetime prototype tests",
     "licence": "repo",
-    "notes": "The 35 test strings (plus two 'still to do' cases) from py_datetime/tests.py, library-catalogue style. Expectations re-derived under the default profile: Popular century convention (13th century = 1200-1299), century bands early 00-33 / mid 34-66 / late 67-99, decade bands early 0-3 / mid 3-6 / late 7-9, circa does not widen. Where the prototype's expectation differs the entry is 'proposed' and the original is kept in sourceExpectation."
+    "notes": "The 35 test strings (plus two 'still to do' cases) from py_datetime/tests.py, library-catalogue style. Expectations re-derived under the default profile: Popular century convention (13th century = 1200-1299), century bands early 00-33 / mid 34-66 / late 67-99, decade bands early 0-3 / mid 3-6 / late 7-9, circa does not widen. Where the prototype's expectation differs the entry is 'proposed' and the original is kept in sourceExpectation. Entries were verified by hand but are held at proposed until the grammar strategy (Phase 2 step 3) can parse free text; then the file flips to verified."
   },
-  "defaults": { "intent": "single", "profile": "default", "status": "verified", "tags": ["library-catalogue"] },
+  "defaults": { "intent": "single", "profile": "default", "status": "proposed", "tags": ["library-catalogue"] },
   "entries": [
     {
       "id": "pyd-001", "input": "c.1928 - 32", "tags": ["circa", "range", "abbreviated-end"],
@@ -60,14 +60,14 @@
     },
     {
       "id": "pyd-010", "input": "late 13th century - early 14th century", "tags": ["century", "band", "range"], "status": "proposed",
-      "expect": { "status": "parsed", "canonical": "late 12XX/early 13XX", "edtf": "1267/1333",
+      "expect": { "status": "parsed", "canonical": "late century 13/early century 14", "edtf": "1267/1333",
         "timespan": { "begin_of_the_begin": "1267-01-01T00:00:00Z", "end_of_the_end": "1333-12-31T23:59:59Z" },
         "flags": ["Band"] },
       "sourceExpectation": "1250-01-01 .. 1349-12-31 (late = 50-99, early = 00-49)"
     },
     {
       "id": "pyd-011", "input": "early 15th century", "tags": ["century", "band"], "status": "proposed",
-      "expect": { "status": "parsed", "canonical": "early 14XX", "edtf": "1400/1433",
+      "expect": { "status": "parsed", "canonical": "early century 15", "edtf": "1400/1433",
         "timespan": { "begin_of_the_begin": "1400-01-01T00:00:00Z", "end_of_the_end": "1433-12-31T23:59:59Z" },
         "flags": ["Band"] },
       "sourceExpectation": "1400-01-01 .. 1449-12-31"
@@ -86,14 +86,14 @@
     },
     {
       "id": "pyd-014", "input": "[late 12th century]", "tags": ["century", "band", "bracketed"], "status": "proposed",
-      "expect": { "status": "parsed", "canonical": "late 11XX", "edtf": "1167/1199",
+      "expect": { "status": "parsed", "canonical": "late century 12", "edtf": "1167/1199",
         "timespan": { "begin_of_the_begin": "1167-01-01T00:00:00Z", "end_of_the_end": "1199-12-31T23:59:59Z" },
         "flags": ["Band", "Bracketed"] },
       "sourceExpectation": "1150-01-01 .. 1199-12-31"
     },
     {
       "id": "pyd-015", "input": "[late 14th century] - [mid 15th century]", "tags": ["century", "band", "range", "bracketed"], "status": "proposed",
-      "expect": { "status": "parsed", "canonical": "late 13XX/mid 14XX", "edtf": "1367/1466",
+      "expect": { "status": "parsed", "canonical": "late century 14/mid century 15", "edtf": "1367/1466",
         "timespan": { "begin_of_the_begin": "1367-01-01T00:00:00Z", "end_of_the_end": "1466-12-31T23:59:59Z" },
         "flags": ["Band"] },
       "sourceExpectation": "1350-01-01 .. 1474-12-31"
@@ -105,14 +105,14 @@
     },
     {
       "id": "pyd-017", "input": "early - mid 13th century", "tags": ["century", "band", "range", "shared-suffix"], "status": "proposed",
-      "expect": { "status": "parsed", "canonical": "early 12XX/mid 12XX", "edtf": "1200/1266",
+      "expect": { "status": "parsed", "canonical": "early century 13/mid century 13", "edtf": "1200/1266",
         "timespan": { "begin_of_the_begin": "1200-01-01T00:00:00Z", "end_of_the_end": "1266-12-31T23:59:59Z" },
         "flags": ["Band"] },
       "sourceExpectation": "1200-01-01 .. 1274-12-31"
     },
     {
       "id": "pyd-018", "input": "mid - late 13th century", "tags": ["century", "band", "range", "shared-suffix"], "status": "proposed",
-      "expect": { "status": "parsed", "canonical": "mid 12XX/late 12XX", "edtf": "1234/1299",
+      "expect": { "status": "parsed", "canonical": "mid century 13/late century 13", "edtf": "1234/1299",
         "timespan": { "begin_of_the_begin": "1234-01-01T00:00:00Z", "end_of_the_end": "1299-12-31T23:59:59Z" },
         "flags": ["Band"] },
       "sourceExpectation": "1225-01-01 .. 1299-12-31"

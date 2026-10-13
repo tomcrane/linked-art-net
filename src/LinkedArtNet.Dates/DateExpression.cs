@@ -159,21 +159,35 @@ public sealed record Relative(Relation Relation, DateExpression Inner) : DateExp
         ? throw new ArgumentException("A relation applies to a single date.", nameof(Inner)) : Inner;
 }
 
+/// <summary>A lifecycle marker over a date or an unmarked interval (<c>born 1850</c>, <c>fl 1480/1510</c>).</summary>
 public sealed record Lifecycle(LifecycleMarker Marker, DateExpression Inner) : DateExpression
 {
-    public DateExpression Inner { get; } = Inner is Undated or Lifecycle
-        ? throw new ArgumentException("A lifecycle marker applies to a date or interval.", nameof(Inner)) : Inner;
+    public DateExpression Inner { get; } = Inner is Undated or Lifecycle or Interval { HasMarkedBounds: true }
+        ? throw new ArgumentException("A lifecycle marker applies to a date or an unmarked interval.", nameof(Inner)) : Inner;
 }
 
-/// <summary>A span between two bounds, either of which may be open (<c>../1850</c>, <c>1971/..</c>).</summary>
+/// <summary>
+/// A span between two bounds, either of which may be open (<c>../1850</c>, <c>1971/..</c>). A bound may carry a
+/// lifecycle marker (<c>born 1850/died 1920</c>), which makes the interval an explicit pair.
+/// </summary>
 public sealed record Interval(DateExpression? Start, DateExpression? End) : DateExpression
 {
     public DateExpression? Start { get; } = Check(Start);
     public DateExpression? End { get; } = Check(End);
 
-    private static DateExpression? Check(DateExpression? bound) => bound is Interval or OneOf or Undated or Lifecycle or Relative
-        ? throw new ArgumentException("An interval bound is a single date; relations apply to the whole expression.", nameof(bound))
-        : bound;
+    /// <summary>True when both bounds carry lifecycle markers (<c>born 1850/died 1920</c>).</summary>
+    public bool HasMarkedBounds { get; } = Start is Lifecycle && End is Lifecycle
+        ? true
+        : Start is Lifecycle || End is Lifecycle
+            ? throw new ArgumentException("Either both bounds carry a lifecycle marker or neither does.", nameof(Start))
+            : false;
+
+    private static DateExpression? Check(DateExpression? bound) => bound switch
+    {
+        Interval or OneOf or Undated or Relative => throw new ArgumentException("An interval bound is a single date; relations apply to the whole expression.", nameof(bound)),
+        Lifecycle { Inner: Interval } => throw new ArgumentException("A marked interval bound holds a single date.", nameof(bound)),
+        _ => bound,
+    };
 }
 
 /// <summary>"1904 or 1905": one of the members, as EDTF <c>[1904,1905]</c>.</summary>

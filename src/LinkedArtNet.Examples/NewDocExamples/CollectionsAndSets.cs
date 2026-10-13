@@ -22,7 +22,7 @@ namespace Examples.NewDocExamples
         private static void Exhibition_Objects()
         {
             // This is nearly the same as the example in Exhibitions with the same name
-            var set = new LinkedArtObject(Types.Set)
+            var set = new Set()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/exhset/1")
                 .WithLabel("Exhibition objects");
@@ -35,7 +35,7 @@ namespace Examples.NewDocExamples
                     .WithContent("Objects in the exhibition Manet and Modern Beauty at the Art Institute of Chicago and the Getty Museum")
             ];
 
-            set.CreatedBy = new Activity(Types.Creation)
+            set.CreatedBy = new Creation()
             {
                 TimeSpan = LinkedArtTimeSpan.FromDay(2019,5,1)
             };
@@ -54,7 +54,7 @@ namespace Examples.NewDocExamples
             spring.IdentifiedBy = [new Name("Jeanne (Spring)")];
 
             spring.MemberOf = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/exhset")
             ];
 
@@ -64,7 +64,7 @@ namespace Examples.NewDocExamples
         private static void Order_of_Members()
         {
             // This has been copied from the Archives doc examples
-            var parent = new LinkedArtObject(Types.Set)
+            var parent = new Set()
                 .WithId($"{Documentation.IdRoot}/set/archive_sfl")
                 .WithLabel("Stieglitz Family Letters");
 
@@ -85,14 +85,14 @@ namespace Examples.NewDocExamples
 
         private static void Prototypical_Members()
         {
-            var set = new LinkedArtObject(Types.Set)
+            var set = new Set()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/exhset/2")
                 .WithLabel("Exhibition objects");
 
             var paintingByManet = new HumanMadeObject()
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
-            paintingByManet.ProducedBy = new Activity(Types.Production)
+            paintingByManet.ProducedBy = new Production()
             {
                 CarriedOutBy = [
                     new Person()
@@ -108,7 +108,7 @@ namespace Examples.NewDocExamples
 
         private static void Rijksmuseum_Collection()
         {
-            var set = new LinkedArtObject(Types.Set)
+            var set = new Set()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/rijks_objects/1")
                 .WithLabel("Collection of the Rijksmuseum")
@@ -122,7 +122,7 @@ namespace Examples.NewDocExamples
 
         private static void Rijksmuseum_Paintings()
         {
-            var set = new LinkedArtObject(Types.Set)
+            var set = new Set()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/rijks_paintings/1")
                 .WithLabel("Paintings of the Rijksmuseum")
@@ -130,7 +130,7 @@ namespace Examples.NewDocExamples
 
             set.IdentifiedBy = [new Name("Paintings of the Rijksmuseum").AsPrimaryName()];
             set.MemberOf = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/rijks_objects")
                     .WithLabel("Collection of the Rijksmuseum")
             ];
@@ -161,7 +161,7 @@ namespace Examples.NewDocExamples
             nightwatch.IdentifiedBy = [new Name("The Night Watch").AsPrimaryName()];
 
             nightwatch.MemberOf = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/rijks_paintings")
                     .WithLabel("Paintings of the Rijksmuseum")
             ];

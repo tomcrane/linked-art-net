@@ -58,12 +58,13 @@ namespace Examples.NewDocExamples
             ];
 
             activity.UsedSpecificObject = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/exhset")
                     .WithLabel("Exhibition objects") 
             ];
 
-            activity.MotivatedBy = [
+            // 1.0 has no motivated_by; these pre-1.0 exhibition examples are not validated against the site. TODO: check the 1.0 exhibition model.
+            activity.InfluencedBy = [
                 new PropositionalObject()
                     .WithId($"{Documentation.IdRoot}/concept/exhidea")
                     .WithLabel("Idea for Manet and Modern Beauty")
@@ -88,7 +89,7 @@ namespace Examples.NewDocExamples
                 new Person().WithId("http://vocab.getty.edu/ulan/500010363").WithLabel("Manet")
             ];
 
-            concept.CreatedBy = new Activity(Types.Creation)
+            concept.CreatedBy = new Creation()
             {
                 CarriedOutBy = [
                     new Person()
@@ -117,7 +118,7 @@ namespace Examples.NewDocExamples
             concept.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
 
-            concept.CreatedBy = new Activity(Types.Creation)
+            concept.CreatedBy = new Creation()
             {
                 InfluencedBy = [
                     new Person()
@@ -161,12 +162,13 @@ namespace Examples.NewDocExamples
             ];
 
             activity.UsedSpecificObject = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/exhset")
                     .WithLabel("Exhibition objects")
             ];
 
-            activity.MotivatedBy = [
+            // 1.0 has no motivated_by; these pre-1.0 exhibition examples are not validated against the site. TODO: check the 1.0 exhibition model.
+            activity.InfluencedBy = [
                 new PropositionalObject()
                     .WithId($"{Documentation.IdRoot}/concept/exhidea")
                     .WithLabel("Idea for Manet and Modern Beauty")
@@ -198,7 +200,8 @@ namespace Examples.NewDocExamples
                 EndOfTheEnd = new LinkedArtDate(2020, 1, 12)
             };
 
-            activity.MotivatedBy = [
+            // 1.0 has no motivated_by; these pre-1.0 exhibition examples are not validated against the site. TODO: check the 1.0 exhibition model.
+            activity.InfluencedBy = [
                 new PropositionalObject()
                     .WithId($"{Documentation.IdRoot}/concept/exhidea")
                     .WithLabel("Idea for Manet and Modern Beauty")
@@ -210,7 +213,7 @@ namespace Examples.NewDocExamples
 
         private static void Exhibition_Objects()
         {
-            var set = new LinkedArtObject(Types.Set)
+            var set = new Set()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/exset/1")
                 .WithLabel("Exhibition objects")
@@ -224,7 +227,7 @@ namespace Examples.NewDocExamples
                     .WithContent("Objects in the exhibition Manet and Modern Beauty at the Art Institute of Chicago and the Getty Museum")
             ];
 
-            set.CreatedBy = new Activity(Types.Creation)
+            set.CreatedBy = new Creation()
             {
                 TimeSpan = new LinkedArtTimeSpan
                 {
@@ -248,7 +251,7 @@ namespace Examples.NewDocExamples
             spring.IdentifiedBy = [new Name("Jeanne (Spring)")];
 
             spring.MemberOf = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/exhset")
             ];
 

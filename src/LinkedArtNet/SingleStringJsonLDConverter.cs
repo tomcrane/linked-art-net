@@ -5,7 +5,7 @@ namespace LinkedArtNet
 {
     internal class SingleStringJsonLDConverter : JsonConverter<string[]?>
     {
-        public override string[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override string[]? Read(ref Utf8JsonReader reader, System.Type typeToConvert, JsonSerializerOptions options)
         {
             var s = reader.GetString();
             if(s != null && s.Contains("["))

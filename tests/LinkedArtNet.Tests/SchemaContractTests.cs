@@ -88,44 +88,31 @@ public class SchemaContractTests(ITestOutputHelper output)
         var gaps = new GapSet();
         foreach (var (className, cls) in manifest.Classes.Where(c => !c.Value.Reference).OrderBy(c => c.Key))
         {
-            var csType = MapToCSharpType(className, cls, modelTypes);
+            var csType = MapToCSharpType(className, modelTypes);
             if (csType is null)
             {
                 gaps.UnmappedClasses.Add(className);
                 continue;
             }
 
-            var schemaProps = cls.Properties.Keys.Where(p => p != "@context").ToHashSet();
-            var modelProps = JsonPropertyNames(csType).Where(p => p != "@context").ToHashSet();
+            // @context is a serialisation concern and id is permitted on any JSON-LD node, so neither is compared.
+            var schemaProps = cls.Properties.Keys.Where(p => p is not ("@context" or "id")).ToHashSet();
+            var modelProps = JsonPropertyNames(csType).Where(p => p is not ("@context" or "id")).ToHashSet();
 
             foreach (var missing in schemaProps.Except(modelProps).Order())
-                gaps.Missing.Add($"{className}.{missing}  [{csType.Name}]");
+                gaps.Missing.Add($"{className}.{missing}");
             foreach (var extra in modelProps.Except(schemaProps).Order())
-                gaps.Extra.Add($"{className}.{extra}  [{csType.Name}]");
+                gaps.Extra.Add($"{className}.{extra}");
         }
         return gaps;
     }
 
-    /// <summary>
-    /// Finds the C# type that serialises a given Linked Art class today. Prefers a class of the same name
-    /// (or LinkedArt+name); otherwise, while the model still uses generic classes, falls back to
-    /// <see cref="Activity"/> for event-like classes and <see cref="LinkedArtObject"/> for concept-like ones
-    /// that the <see cref="Types"/> enum can name.
-    /// </summary>
-    private static Type? MapToCSharpType(string className, ManifestClass cls, List<Type> modelTypes)
-    {
-        var direct = modelTypes.FirstOrDefault(t => t.Name == className)
-                     ?? modelTypes.FirstOrDefault(t => t.Name == "LinkedArt" + className);
-        if (direct is not null) return direct;
+    /// <summary>Finds the C# class that serialises a given Linked Art class: same name, or LinkedArt+name (TimeSpan).</summary>
+    private static System.Type? MapToCSharpType(string className, List<System.Type> modelTypes) =>
+        modelTypes.FirstOrDefault(t => t.Name == className)
+        ?? modelTypes.FirstOrDefault(t => t.Name == "LinkedArt" + className);
 
-        if (Enum.TryParse<Types>(className, out _))
-        {
-            return cls.Properties.ContainsKey("timespan") ? typeof(Activity) : typeof(LinkedArtObject);
-        }
-        return null;
-    }
-
-    private static IEnumerable<string> JsonPropertyNames(Type type) =>
+    private static IEnumerable<string> JsonPropertyNames(System.Type type) =>
         type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.GetCustomAttribute<JsonIgnoreAttribute>()?.Condition != JsonIgnoreCondition.Always)
             .Select(p => p.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? p.Name)
@@ -210,7 +197,7 @@ public class SchemaContractTests(ITestOutputHelper output)
             sb.AppendLine();
             foreach (var c in UnmappedClasses) sb.AppendLine($"- {c}");
             sb.AppendLine();
-            sb.AppendLine("## Schema properties missing from the model (class.property [C# type checked])");
+            sb.AppendLine("## Schema properties missing from the model");
             sb.AppendLine();
             foreach (var m in Missing) sb.AppendLine($"- {m}");
             sb.AppendLine();

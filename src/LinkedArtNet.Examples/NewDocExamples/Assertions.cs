@@ -28,12 +28,12 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             spring.AttributedBy = [
-                new Activity(Types.AttributeAssignment)
+                new AttributeAssignment()
                 {
                     TimeSpan = LinkedArtTimeSpan.FromYear(2015),
                     AssignedProperty = "made_of",
                     Assigned = [
-                        new LinkedArtObject(Types.Material) { Id = $"{Getty.Aat}300014078" }
+                        new Material() { Id = $"{Getty.Aat}300014078" }
                     ]
                 }
             ];
@@ -55,7 +55,7 @@ namespace Examples.NewDocExamples
 
             var yuagId = new Identifier("2021.25.1").AsAccessionNumber();
             yuagId.AssignedBy = [
-                new Activity(Types.AttributeAssignment)
+                new AttributeAssignment()
                 {
                     CarriedOutBy = [
                         new Group()
@@ -68,7 +68,7 @@ namespace Examples.NewDocExamples
 
             var ycbaId = new Identifier("B2021.5").AsAccessionNumber();
             ycbaId.AssignedBy = [
-                new Activity(Types.AttributeAssignment)
+                new AttributeAssignment()
                 {
                     CarriedOutBy = [
                         new Group()
@@ -95,7 +95,7 @@ namespace Examples.NewDocExamples
                 new Name("Rembrandt van Rijn")
                 {
                     AssignedBy = [
-                        new Activity(Types.AttributeAssignment)
+                        new AttributeAssignment()
                         {
                             UsedSpecificObject = [
                                 new LinguisticObject()
@@ -121,14 +121,14 @@ namespace Examples.NewDocExamples
 
             forum.IdentifiedBy = [new Name("Forum Romanum").AsPrimaryName()];
 
-            forum.ProducedBy = new Activity(Types.Production)
+            forum.ProducedBy = new Production()
             {
                 AttributedBy = [
-                    new Activity(Types.AttributeAssignment)
+                    new AttributeAssignment()
                     {
                         ClassifiedAs = [ Getty.AatType("Possibly By", "300404272") ],
                         Assigned = [
-                            new Activity(Types.Production)
+                            new Production()
                             {
                                 CarriedOutBy = [
                                     new Person()
@@ -158,7 +158,7 @@ namespace Examples.NewDocExamples
             spring.IdentifiedBy = [new Name("Jeanne (Spring)").AsPrimaryName()];
 
             spring.AttributedBy = [
-                new Activity(Types.AttributeAssignment)
+                new AttributeAssignment()
                 {
                     CarriedOutBy = [
                         new Group()
@@ -193,7 +193,7 @@ namespace Examples.NewDocExamples
             nightwatch.IdentifiedBy = [new Name("The Night Watch").AsPrimaryName()];
 
             nightwatch.AttributedBy = [
-                new Activity(Types.AttributeAssignment)
+                new AttributeAssignment()
                 {
                     IdentifiedBy = [
                         new Name("Related Object")
@@ -222,7 +222,7 @@ namespace Examples.NewDocExamples
             bol.IdentifiedBy = [new Name("Ferdinand Bol").AsPrimaryName()];
 
             bol.AttributedBy = [
-                new Activity(Types.AttributeAssignment)
+                new AttributeAssignment()
                 {
                     IdentifiedBy = [new Name("Student Of").WithClassifiedAs(Getty.DisplayTitle)],
                     Assigned = [ 

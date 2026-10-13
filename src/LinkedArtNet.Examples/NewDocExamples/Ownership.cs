@@ -133,7 +133,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Jeanne (Spring) by Manet");
 
 
-            var proustAcquisition = new Activity(Types.Acquisition)
+            var proustAcquisition = new Acquisition()
                 .WithLabel("Ownership of Spring to Proust");
             proustAcquisition.TimeSpan = new LinkedArtTimeSpan
             {
@@ -156,7 +156,7 @@ namespace Examples.NewDocExamples
                     .WithLabel("Full Provenance Activity")
             ];
 
-            var payneAcquisition = new Activity(Types.Acquisition)
+            var payneAcquisition = new Acquisition()
                 .WithLabel("Ownership of Spring to Payne");
             payneAcquisition.TimeSpan = new LinkedArtTimeSpan
             {

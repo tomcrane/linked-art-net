@@ -119,7 +119,7 @@ HumanMadeObject AmphoraProduction()
 
     // omit some info for brevity
 
-    var production = new Activity(Types.Production)
+    var production = new Production()
         .WithId($"{amphora.Id}/prod");
     
     var affecter = new Person()
@@ -162,7 +162,7 @@ HumanMadeObject AmphoraWork()
             .WithLabel("Theseus")
     ];
     visualWork.About = [
-        new LinkedArtObject()
+        new LinkedArtNet.Type()
             .WithId("icc:45A3")
             .WithLabel("Victory ~ Armed Conflict")
     ];
@@ -203,14 +203,14 @@ HumanMadeObject PortraitOfKatherineStieglitz()
     var rijksmuseum = new Group()
         .WithId("https://www.rijksmuseum.nl/")
         .WithLabel("Rijksmuseum");
-    var assignment = new Activity(Types.AttributeAssignment) // tbc
+    var assignment = new AttributeAssignment() // tbc
         .WithId($"{photograph.Id}/id/attribAssign");
     assignment.CarriedOutBy = [rijksmuseum];
     identifier.AssignedBy = [assignment];
     photograph.IdentifiedBy.Add(identifier);
 
 
-    var production = new Activity(Types.Production)
+    var production = new Production()
         .WithId($"{photograph.Id}/prod")
         .WithClassifiedAs("aat:Printing", "Negative printing");        
     var stieglitz = new Person()
@@ -257,14 +257,14 @@ HumanMadeObject PortraitOfKatherineStieglitz()
             .WithLabel("Katherine Stieglitz")
     ];
     visualWork.About = [
-        new LinkedArtObject()
+        new LinkedArtNet.Type()
             .WithId("icc:Woman")
             .WithLabel("Woman")
     ];
     photograph.Shows = [visualWork];
 
     // As the relationship is from provenance to object, we won't see this bit in the serialisation
-    var acquisition = new Activity(Types.Acquisition)
+    var acquisition = new Acquisition()
         .WithId($"{photograph.Id}/acquisition");
     acquisition.TransferredTitleOf = [photograph];
     acquisition.TransferredTitleTo = [rijksmuseum];

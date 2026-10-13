@@ -147,11 +147,11 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/person/rembrandt/13")
                 .WithLabel("Rembrandt");
 
-            rembrandt.Born = new Activity(Types.Birth)
+            rembrandt.Born = new Birth()
             {
                 TimeSpan = LinkedArtTimeSpan.FromDay(1606, 7, 15)
             };
-            rembrandt.Died = new Activity(Types.Death)
+            rembrandt.Died = new Death()
             {
                 TimeSpan = LinkedArtTimeSpan.FromDay(1669, 10, 4),
                 TookPlaceAt = [
@@ -176,7 +176,7 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/group/rembrandthuis/2")
                 .WithLabel("Rembrandt House Museum");
 
-            museum.FormedBy = new Activity(Types.Formation)
+            museum.FormedBy = new Formation()
             {
                 TimeSpan = LinkedArtTimeSpan.FromDay(1911, 6, 10)
             };

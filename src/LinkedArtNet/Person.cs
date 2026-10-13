@@ -1,20 +1,21 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace LinkedArtNet;
 
+/// <summary>crm:E21 Person.</summary>
 public class Person : Actor
 {
-    public Person() { Type = nameof(Person); }
-
+    public Person() : base(nameof(Person))
+    {
+    }
 
     [JsonPropertyName("born")]
-    [JsonPropertyOrder(120)]
+    [JsonPropertyOrder(122)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Activity? Born { get; set; }
-
+    public Birth? Born { get; set; }
 
     [JsonPropertyName("died")]
-    [JsonPropertyOrder(121)]
+    [JsonPropertyOrder(123)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Activity? Died { get; set; }
+    public Death? Died { get; set; }
 }

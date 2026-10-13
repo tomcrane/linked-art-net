@@ -35,7 +35,7 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/5")
                 .WithLabel("Night Watch by Rembrandt");
 
-            nightWatch.ProducedBy = new Activity(Types.Production)
+            nightWatch.ProducedBy = new Production()
                 {
                     TimeSpan = LinkedArtTimeSpan.FromYear(1642),
                     TookPlaceAt = [
@@ -61,7 +61,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Bust of a Man")
                 .WithClassifiedAs(Getty.Sculpture, Getty.TypeOfWork);
 
-            bust.ProducedBy = new Activity(Types.Production)
+            bust.ProducedBy = new Production()
                 {
                     Technique = [Getty.AatType("Sculpting", "300264383")],
                     CarriedOutBy = [
@@ -82,10 +82,10 @@ namespace Examples.NewDocExamples
                 .WithLabel("RUN")
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
-            run.ProducedBy = new Activity(Types.Production)
+            run.ProducedBy = new Production()
             {
                 Part = [
-                    new Activity(Types.Production)
+                    new Production()
                     {
                         Technique = [Getty.AatType("Painting", "300054216")],
                         CarriedOutBy = [
@@ -94,7 +94,7 @@ namespace Examples.NewDocExamples
                                 .WithLabel("Mark Barrow")
                         ]
                     },
-                    new Activity(Types.Production)
+                    new Production()
                     {
                         Technique = [Getty.AatType("hand weaving", "300053643")],
                         CarriedOutBy = [
@@ -119,7 +119,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             dana.ProducedBy =
-                new Activity(Types.Production)
+                new Production()
                 {
                     CarriedOutBy = [
                         new Person()
@@ -153,7 +153,7 @@ namespace Examples.NewDocExamples
                     .WithLabel("Visual Content of GOK 1918")
             ];
 
-            gok.ProducedBy = new Activity(Types.Production).WithLabel("Printing of Photograph");
+            gok.ProducedBy = new Production().WithLabel("Printing of Photograph");
             gok.ProducedBy.UsedSpecificObject = [
                 new HumanMadeObject()
                     .WithId($"{Documentation.IdRoot}/object/okeeffe-negative")
@@ -179,7 +179,7 @@ namespace Examples.NewDocExamples
                     .WithLabel("Visual Content of GOK 1918")
             ];
 
-            gok.ProducedBy = new Activity(Types.Production).WithLabel("Printing of Photograph");
+            gok.ProducedBy = new Production().WithLabel("Printing of Photograph");
             gok.ProducedBy.UsedSpecificObject = [
                 new HumanMadeObject()
                     .WithId($"{Documentation.IdRoot}/object/okeeffe-negative")
@@ -198,7 +198,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Chaucer's Canterbury Pilgrims")
                 .WithClassifiedAs(Getty.Print, Getty.TypeOfWork);
 
-            ccp.ProducedBy = new Activity(Types.Production).WithLabel("Printing from Plate");
+            ccp.ProducedBy = new Production().WithLabel("Printing from Plate");
             ccp.ProducedBy.UsedSpecificObject = [
                 new HumanMadeObject()
                     .WithId($"{Documentation.IdRoot}/object/ccp-plate")
@@ -232,7 +232,7 @@ namespace Examples.NewDocExamples
                 new Name("The Nuveen Painting").AsPrimaryName()
             ];
 
-            nuveenPainting.ProducedBy = new Activity(Types.Production)
+            nuveenPainting.ProducedBy = new Production()
             {
                 CarriedOutBy = [
                     new Person()
@@ -262,7 +262,7 @@ namespace Examples.NewDocExamples
                 new Name("Coppa Amatoria").AsPrimaryName()
             ];
 
-            coppa.ProducedBy = new Activity(Types.Production)
+            coppa.ProducedBy = new Production()
             {
                 CarriedOutBy = [
                     new Group()
@@ -287,7 +287,7 @@ namespace Examples.NewDocExamples
                 new Name("Wash Day").AsPrimaryName()
             ];
 
-            washday.ProducedBy = new Activity(Types.Production)
+            washday.ProducedBy = new Production()
             {
                 InfluencedBy = [
                     new Person()
@@ -307,7 +307,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Studio of Francis Harwood")
                 .WithClassifiedAs(Getty.AatType("Studio", "300404275"));
 
-            grp.FormedBy = new Activity(Types.Formation)
+            grp.FormedBy = new Formation()
             {
                 InfluencedBy = [
                     new Person()
@@ -329,7 +329,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.AatType("Page", "300194222"), Getty.TypeOfWork);
 
             gradualPage.RemovedBy = [
-                new Activity(Types.PartRemoval)
+                new PartRemoval()
                 {
                     Diminished = new HumanMadeObject()
                         .WithId($"{Documentation.IdRoot}/object/gradual")
@@ -349,7 +349,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Torosaurus Gladius");
 
             torosaurus.EncounteredBy = [
-                new Activity(Types.Encounter)
+                new Encounter()
                 {
                     TimeSpan = LinkedArtTimeSpan.FromYear(1891),
                     CarriedOutBy = [
@@ -375,7 +375,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Le Peintre by Picasso")
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
-            var destruction = new Activity(Types.Destruction)
+            var destruction = new Destruction()
                 .WithLabel("Destruction of Le Peintre");
             destruction.TimeSpan = new LinkedArtTimeSpan
             {
@@ -395,7 +395,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Le Peintre by Picasso")
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
-            var destruction = new Activity(Types.Destruction)
+            var destruction = new Destruction()
                 .WithLabel("Destruction of Le Peintre");
             destruction.TimeSpan = new LinkedArtTimeSpan
             {
@@ -403,7 +403,7 @@ namespace Examples.NewDocExamples
                 EndOfTheEnd = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 40, 0, TimeSpan.Zero))
             };
             destruction.CausedBy = [
-                new LinkedArtObject(Types.Event)
+                new Event()
                     .WithId($"{Documentation.IdRoot}/event/sr111crash")
                     .WithLabel("Crash of Swiss Air 111")
             ];

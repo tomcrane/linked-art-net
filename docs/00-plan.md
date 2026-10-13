@@ -106,6 +106,8 @@ authority store (QLever or Postgres) and the alignment cache, then a PMC-style p
 | D12 | Service and site are stateless containers; LLM and capture are opt-in. | Simple hosting; deterministic caching; privacy. |
 | D13 | Corpus is CC0 for authored entries, imports carry their MIT/ODC-By attribution. | Publishable artefact. |
 | D14 | Target net10.0 only. | LTS; owner's toolchain; no known consumers on net8. |
+| D15 | Property *names* per class follow the 1.0 JSON schemas; *cardinality* and a handful of extra properties follow the site's validated examples where the two disagree. Each such case is documented in the model and reported upstream. | The schemas are the contract we can test against; the site is what consumers compare with. Six extras, listed in doc 02 §2. |
+| D16 | `Set`, `Type`, `Material`, `Language`, `Currency`, `MeasurementUnit` are full classes; embedded activities (`Production` etc.) derive from `EmbeddedActivity`/`ActivityBase`, not from `Activity`. | Owner's choice (2026-10-13); the schema gives embedded activities a smaller property set than `Activity`. |
 
 ## 4. Target repository layout
 
@@ -167,5 +169,8 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
 5. ~~`tools/SchemaInspector` + contract test.~~ Done 2026-10-13. Gap at baseline: 28 missing properties,
    913 extra properties, 3 unmapped classes (see `docs/model-gap-report.md`).
 
-Next: Phase 1 step 3 (class hierarchy; move properties off `LinkedArtObject`), which drives the
-913 extras to zero and will touch every example file.
+6. ~~Phase 1 step 3: class hierarchy.~~ Done 2026-10-13. 41 classes, zero missing properties, six
+   documented site-compatibility extras (D15), 118 site examples still validate.
+
+Next: Phase 1 step 4 (central serialisation: ordering table, empty-collection omission, polymorphic
+read by `type`, round-trip of all cached site JSON).

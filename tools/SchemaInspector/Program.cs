@@ -8,6 +8,12 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using SchemaInspector;
 
+if (args.Length > 0 && args[0] == "--analyze")
+{
+    Analysis.Run(args.Length > 1 ? args[1] : "schemas/linked-art/1.0");
+    return;
+}
+
 var schemaDir = args.Length > 0 ? args[0] : "schemas/linked-art/1.0";
 var outPath = args.Length > 1 ? args[1] : Path.Combine(schemaDir, "manifest.json");
 
@@ -30,6 +36,40 @@ foreach (var cls in manifest.Classes.OrderBy(c => c.Key))
 
 namespace SchemaInspector
 {
+    /// <summary>Prints the property sets of the full (non-reference) classes and their subset relationships.</summary>
+    public static class Analysis
+    {
+        public static void Run(string schemaDir)
+        {
+            var manifest = new Inspector(schemaDir).Build();
+            var classes = manifest.Classes.Where(c => !c.Value.Reference)
+                .ToDictionary(c => c.Key, c => c.Value.Properties.Keys.Where(p => p != "@context").ToHashSet());
+
+            var common = classes.Values.Aggregate((a, b) => a.Intersect(b).ToHashSet());
+            Console.WriteLine("COMMON TO ALL: " + string.Join(" ", common.Order()));
+            Console.WriteLine();
+
+            foreach (var (name, props) in classes.OrderBy(c => c.Key))
+            {
+                var own = props.Except(common).Order();
+                Console.WriteLine($"{name} ({props.Count}): {string.Join(" ", own)}");
+                var ranges = manifest.Classes[name].Properties
+                    .Where(p => p.Value.Range.Count > 0 && !common.Contains(p.Key))
+                    .Select(p => $"{p.Key}->{string.Join("|", p.Value.Range)}{(p.Value.Array ? "[]" : "")}");
+                Console.WriteLine("    " + string.Join(" ", ranges));
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("SUBSET RELATIONS (A <= B means every property of A is allowed on B):");
+            foreach (var (a, pa) in classes.OrderBy(c => c.Key))
+            {
+                var supers = classes.Where(b => b.Key != a && pa.IsSubsetOf(b.Value)).Select(b => b.Key).Order();
+                var line = string.Join(", ", supers);
+                if (line.Length > 0) Console.WriteLine($"  {a} <= {line}");
+            }
+        }
+    }
+
     public sealed record Manifest(string Version, string Source, SortedDictionary<string, ClassInfo> Classes);
 
     public sealed class ClassInfo

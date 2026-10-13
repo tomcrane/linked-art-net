@@ -15,58 +15,89 @@ Out of scope for the library: date-string parsing (separate library, see
 [03-timespan-parser.md](03-timespan-parser.md)), reconciliation, HTTP, storage, RDF graph APIs (we
 are a JSON-LD-shaped object model, like `crom`, not an RDF toolkit).
 
-## 2. Class hierarchy
+## 2. Class hierarchy (implemented 2026-10-13, Phase 1 step 3)
 
-Follow CIDOC-CRM / Linked Art, and let the type system carry the constraints the base class currently
-does not. Every Linked Art class gets a C# class; `type` is derived from the class and read-only
-except on the generic `Type` concept family where the site uses `Type`/`Material`/`Language`/
-`Currency`/`MeasurementUnit` as sibling classes.
+Every one of the 41 classes in the 1.0 schemas is a C# class, `type` is fixed by the class, and each
+class has exactly the properties its schema definition allows (plus six site-compatibility extras
+listed below). The hierarchy was derived from the schema property sets themselves, using
+`SchemaInspector --analyze` to find which sets nest inside which, so that no class inherits a
+property the schema forbids on it:
 
 ```
-LinkedArtObject (abstract)            id, type, _label, identified_by, classified_as, referred_to_by,
- |                                    equivalent, representation, subject_of, attributed_by, member_of, part_of*
- |-- HumanMadeObject                  produced_by, destroyed_by, removed_by, encountered_by, shows, carries,
- |                                    made_of, part (HMO), current_owner, current_custodian,
- |                                    current_permanent_custodian, current_location,
- |                                    current_permanent_location, changed_ownership_through, dimension,
- |                                    holds_or_supports, held_or_supported_by, used_for
- |-- DigitalObject                    access_point, conforms_to, format, digitally_carries, digitally_shows,
- |    |-- DigitalService              digitally_available_via, created_by, dimension, used_for
- |-- VisualItem                       represents, represents_instance_of_type, about, digitally_shown_by,
- |                                    shown_by, created_by, part, language, content? (no)
- |-- LinguisticObject                 content, language, about, carried_by, digitally_carried_by, created_by,
- |                                    part, used_for, refers_to
- |-- PropositionalObject              (abstract-ish; used for exhibition concepts) about, created_by, ...
- |-- Set                              member, members_exemplified_by, members_contained_by, created_by,
- |                                    used_for, about, dimension
- |-- Actor (abstract)                 contact_point, residence, carried_out, participated_in
- |    |-- Person                      born, died
- |    |-- Group                       formed_by, dissolved_by
- |-- Place                            defined_by (WKT), part
- |-- Type (concept)                   broader, created_by (for vocab terms)
- |    |-- Material, Language (notation), Currency, MeasurementUnit
- |-- Name, Identifier                 content, language (Name), assigned_by (Identifier)
- |-- Dimension                        value, unit, upper_value_limit, lower_value_limit, assigned_by
- |-- MonetaryAmount                   value, currency, upper_value_limit, lower_value_limit
- |-- Right                            possessed_by
- |-- LinkedArtTimeSpan                begin_of_the_begin, end_of_the_begin, begin_of_the_end, end_of_the_end, duration
- |-- Period                           timespan, took_place_at, part (Period), during?
- |    |-- Event                       caused_by, participant, used_specific_object?, during
- |         |-- Activity               carried_out_by, technique, used_specific_object, used_object_of_type,
- |              |                     influenced_by, motivated_by, part (Activity), after, before, during,
- |              |                     assigned_by?
- |              |-- Production, Creation, Destruction, Encounter, Birth, Death, Formation, Dissolution,
- |              |   Modification, PartRemoval (diminished),
- |              |   Acquisition (transferred_title_of/from/to), Payment (paid_amount/from/to),
- |              |   TransferOfCustody (transferred_custody_of/from/to), Move (moved, moved_from, moved_to),
- |              |   RightAcquisition (establishes, invalidates),
- |              |   AttributeAssignment (assigned, assigned_property, assigned_to)
+LinkedArtObject (abstract)        @context, id, type, _label, identified_by, classified_as
+ |-- LinkedArtEntity (abstract)   referred_to_by, equivalent, representation, subject_of, attributed_by
+ |    |                           (member_of is declared per class: Set for most, Group for actors)
+ |    |-- HumanMadeObject         produced_by, encountered_by, dimension, shows, carries, made_of, part, part_of,
+ |    |                           member_of, current_owner, current_permanent_custodian, current_custodian, used_for,
+ |    |                           current_permanent_location, current_location, destroyed_by, removed_by,
+ |    |                           changed_ownership_through, modified_by, held_or_supported_by
+ |    |-- DigitalObject           dimension, part_of, member_of, created_by, used_for, access_point, conforms_to,
+ |    |                           format, digitally_carries, digitally_shows, digitally_available_via
+ |    |-- PropositionalObject     dimension, conceptually_part_of, member_of, created_by, subject_to, about
+ |    |    |-- LinguisticObject   content, language, part_of, used_for, format, digitally_carried_by
+ |    |    |    |-- IIIFManifest  (helper; type stays LinguisticObject)
+ |    |    |-- VisualItem         represents, represents_instance_of_type, part_of, digitally_shown_by, used_for
+ |    |-- Set                     dimension, member_of, members_contained_by, created_by, used_for, about,
+ |    |                           members_exemplified_by
+ |    |-- Actor (abstract)        contact_point, residence, carried_out, participated_in, member_of (Group)
+ |    |    |-- Person             born (Birth), died (Death)
+ |    |    |-- Group              formed_by (Formation), dissolved_by (Dissolution)
+ |    |-- Place                   part_of, member_of, defined_by
+ |    |-- Type                    broader, member_of, created_by
+ |         |-- Material, Language (+notation), Currency, MeasurementUnit
+ |-- TemporalEntity (abstract)    timespan, took_place_at, during, referred_to_by, caused_by, after, before
+ |    |-- Birth, Death
+ |    |-- Destruction             part_of
+ |    |-- Dissolution             part_of, influenced_by
+ |    |-- ActivityBase (abstract) carried_out_by, used_specific_object, technique, influenced_by
+ |         |-- Move               moved, moved_from, moved_to
+ |         |-- Payment            paid_amount, paid_from, paid_to
+ |         |-- RightAcquisition   establishes, invalidates
+ |         |-- TransferOfCustody  transferred_custody_of/from/to
+ |         |-- EmbeddedActivity (abstract)   part_of
+ |         |    |-- Creation      part (site), Formation
+ |         |    |-- Production    part, attributed_by (site)
+ |         |    |-- Modification  part
+ |         |    |-- Acquisition   transferred_title_of/from/to, part
+ |         |    |-- Encounter     encountered
+ |         |    |-- PartRemoval   diminished
+ |         |    |-- AttributeAssignment   assigned_property, assigned
+ |         |-- Period             participant, part_of, member_of, equivalent, representation, subject_of, attributed_by
+ |              |-- Event
+ |                   |-- Activity part (ActivityBase)
+ |-- Name                         content, language, referred_to_by, assigned_by (site), part (Name)
+ |-- Identifier                   content, referred_to_by, assigned_by, part (Identifier)
+ |-- Dimension                    value, unit, lower_value_limit, upper_value_limit, assigned_by
+ |-- MonetaryAmount               value, currency, lower_value_limit, upper_value_limit
+ |-- Right                        referred_to_by, created_by, possessed_by
+ |-- LinkedArtTimeSpan            begin_of_the_begin, end_of_the_begin, begin_of_the_end, end_of_the_end, duration
+ |-- DigitalService               referred_to_by, access_point, conforms_to, format (site)
+ |    |-- IIIFImageService        (helper; type stays DigitalService)
+ |-- InformationObject            (reference only, for conforms_to)
 ```
 
-The 1.0 schemas define exactly these 41 classes (verified by `SchemaContractTests.Manifest_covers_the_expected_linked_art_classes`).
-CRM classes such as Addition, Removal, PartAddition, Promise and Transformation are **not** in the
-1.0 schemas and are not modelled. `InformationObject` exists only as a reference shape (for
-`conforms_to`).
+Points worth knowing:
+
+- **Embedded activities are not `Activity`.** The schema gives `Production`, `Acquisition` and friends
+  a smaller property set than the referenceable `Activity` (no `id`-level properties such as
+  `equivalent`, `member_of`, `participant`). They derive from `EmbeddedActivity` / `ActivityBase`, and
+  `Activity.Part` is `List<ActivityBase>` so a provenance activity can hold acquisitions, payments and
+  moves. `Birth`, `Death`, `Destruction` and `Dissolution` have no `carried_out_by` and sit directly
+  under `TemporalEntity`.
+- **`Period`, `Event`, `Activity`** share one schema definition (event.json), so `Event : Period` and
+  `Activity : Event` add nothing but `part`.
+- **`Type` shadows `System.Type`** inside the `LinkedArtNet` namespace; write `System.Type` there.
+- **Site vs schema.** The contract test keys on property names; six properties the site's own
+  validated examples use are kept although the 1.0 schema omits them, and are the only entries in
+  the gap baseline: `Creation.part`, `Production.attributed_by`, `Name.assigned_by`,
+  `Language.notation`, `DigitalService.format`, and `VisualItem.representation` (inherited from
+  `LinkedArtEntity`; harmless). Cardinality follows the site where it disagrees with the schema:
+  `current_permanent_custodian` is a single actor, `held_or_supported_by` and `part_of` on objects are
+  arrays. `object.json` also declares `used_for` twice. All of these are to be reported upstream.
+- The 1.0 schemas define exactly these 41 classes (verified by
+  `SchemaContractTests.Manifest_covers_the_expected_linked_art_classes`). CRM classes such as
+  Addition, Removal, PartAddition, Promise and Transformation are **not** in the 1.0 schemas and are
+  not modelled.
 
 The exact property-to-class assignment is **generated from the schemas, not hand-maintained**: a tool
 (`tools/SchemaInspector`) reads `core.json` and the per-class schemas and emits a manifest of

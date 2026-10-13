@@ -1,242 +1,119 @@
-﻿using LinkedArtNet.Vocabulary;
 using System.Text.Json.Serialization;
+using LinkedArtNet.Vocabulary;
 
 namespace LinkedArtNet;
 
+/// <summary>
+/// Base of every Linked Art node. Carries only what the 1.0 schemas allow on <em>every</em> class:
+/// <c>id</c>, <c>type</c>, <c>_label</c>, <c>identified_by</c> and <c>classified_as</c> (plus <c>@context</c>
+/// for top-level documents). Everything else lives on the class the schema puts it on.
+/// </summary>
+/// <remarks>
+/// The hierarchy follows the 1.0 JSON schemas, verified by <c>SchemaContractTests</c>:
+/// <list type="bullet">
+/// <item><see cref="LinkedArtEntity"/>: things with their own URI (objects, works, actors, places, concepts, sets).</item>
+/// <item><see cref="TemporalEntity"/>: events; <see cref="ActivityBase"/> adds agency; <see cref="EmbeddedActivity"/>
+/// adds <c>part_of</c>; <see cref="Period"/>, <see cref="Event"/> and <see cref="Activity"/> are the referenceable forms.</item>
+/// <item>Structures with no URI of their own: <see cref="Name"/>, <see cref="Identifier"/>, <see cref="Dimension"/>,
+/// <see cref="MonetaryAmount"/>, <see cref="LinkedArtTimeSpan"/>, <see cref="Right"/>, <see cref="DigitalService"/>.</item>
+/// </list>
+/// </remarks>
 [JsonDerivedType(typeof(HumanMadeObject))]
-[JsonDerivedType(typeof(LinguisticObject))]
+[JsonDerivedType(typeof(DigitalObject))]
+[JsonDerivedType(typeof(DigitalService))]
+[JsonDerivedType(typeof(IIIFImageService))]
+[JsonDerivedType(typeof(InformationObject))]
 [JsonDerivedType(typeof(PropositionalObject))]
-[JsonDerivedType(typeof(Name))]
-[JsonDerivedType(typeof(Identifier))]
+[JsonDerivedType(typeof(LinguisticObject))]
+[JsonDerivedType(typeof(IIIFManifest))]
 [JsonDerivedType(typeof(VisualItem))]
-[JsonDerivedType(typeof(Place))]
+[JsonDerivedType(typeof(Set))]
 [JsonDerivedType(typeof(Person))]
 [JsonDerivedType(typeof(Group))]
-[JsonDerivedType(typeof(Activity))]
-[JsonDerivedType(typeof(DigitalObject))]
-[JsonDerivedType(typeof(IIIFManifest))]
-[JsonDerivedType(typeof(Dimension))]
+[JsonDerivedType(typeof(Place))]
+[JsonDerivedType(typeof(Type))]
+[JsonDerivedType(typeof(Material))]
 [JsonDerivedType(typeof(Language))]
-public class LinkedArtObject
+[JsonDerivedType(typeof(Currency))]
+[JsonDerivedType(typeof(MeasurementUnit))]
+[JsonDerivedType(typeof(Name))]
+[JsonDerivedType(typeof(Identifier))]
+[JsonDerivedType(typeof(Dimension))]
+[JsonDerivedType(typeof(MonetaryAmount))]
+[JsonDerivedType(typeof(Right))]
+[JsonDerivedType(typeof(LinkedArtTimeSpan))]
+[JsonDerivedType(typeof(Period))]
+[JsonDerivedType(typeof(Event))]
+[JsonDerivedType(typeof(Activity))]
+[JsonDerivedType(typeof(Birth))]
+[JsonDerivedType(typeof(Death))]
+[JsonDerivedType(typeof(Destruction))]
+[JsonDerivedType(typeof(Dissolution))]
+[JsonDerivedType(typeof(Move))]
+[JsonDerivedType(typeof(Payment))]
+[JsonDerivedType(typeof(RightAcquisition))]
+[JsonDerivedType(typeof(TransferOfCustody))]
+[JsonDerivedType(typeof(Creation))]
+[JsonDerivedType(typeof(Formation))]
+[JsonDerivedType(typeof(Production))]
+[JsonDerivedType(typeof(Modification))]
+[JsonDerivedType(typeof(Acquisition))]
+[JsonDerivedType(typeof(Encounter))]
+[JsonDerivedType(typeof(PartRemoval))]
+[JsonDerivedType(typeof(AttributeAssignment))]
+public abstract class LinkedArtObject
 {
-    public LinkedArtObject() { }
-    public LinkedArtObject(string type) 
+    protected LinkedArtObject(string type)
     {
         Type = type;
     }
-    public LinkedArtObject(Types type) 
-    {
-        Type = type.ToString();
-    }
-
 
     [JsonPropertyName("@context")]
     [JsonPropertyOrder(1)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonConverter(typeof(SingleStringJsonLDConverter))]
-    public virtual string[]? Context { get; set; }
-
+    public string[]? Context { get; set; }
 
     [JsonPropertyName("id")]
     [JsonPropertyOrder(2)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string? Id { get; set; }
+    public string? Id { get; set; }
 
-
+    /// <summary>The Linked Art class name, fixed by the C# class.</summary>
     [JsonPropertyName("type")]
     [JsonPropertyOrder(3)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string? Type { get; set; }
+    public string Type { get; protected set; }
 
     [JsonPropertyName("_label")]
     [JsonPropertyOrder(10)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string? Label { get; set; }
+    public string? Label { get; set; }
 
-    [JsonPropertyName("content")]
-    [JsonPropertyOrder(10)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string? Content { get; set; }
-
-
-    [JsonPropertyName("dimension")]
-    [JsonPropertyOrder(24)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Dimension>? Dimension { get; set; }
-
-    [JsonPropertyName("language")]
-    [JsonPropertyOrder(80)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<LinkedArtObject>? Language { get; set; }
-
-    // P2 has type - https://www.cidoc-crm.org/Property/p2-has-type/version-6.2
+    /// <summary>P2 has type.</summary>
     [JsonPropertyName("classified_as")]
     [JsonPropertyOrder(100)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<LinkedArtObject>? ClassifiedAs { get; set; }
+    public List<Type>? ClassifiedAs { get; set; }
 
+    /// <summary>P1 is identified by: <see cref="Name"/>s and <see cref="Identifier"/>s.</summary>
     [JsonPropertyName("identified_by")]
     [JsonPropertyOrder(101)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<LinkedArtObject>? IdentifiedBy { get; set; }
 
-    [JsonPropertyName("referred_to_by")]
-    [JsonPropertyOrder(105)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<LinkedArtObject>? ReferredToBy { get; set; }
-
-    [JsonPropertyName("assigned_by")]
-    [JsonPropertyOrder(110)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<Activity>? AssignedBy { get; set; }
-
-
-
-    [JsonPropertyName("part")]
-    [JsonPropertyOrder(130)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<LinkedArtObject>? Part { get; set; }
-
-
-    [JsonPropertyName("part_of")]
-    [JsonPropertyOrder(130)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<LinkedArtObject>? PartOf { get; set; }
-
-
-    [JsonPropertyName("member")]
-    [JsonPropertyOrder(140)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<LinkedArtObject>? Member { get; set; }
-
-
-    [JsonPropertyName("member_of")]
-    [JsonPropertyOrder(140)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<LinkedArtObject>? MemberOf { get; set; }
-
-
-    [JsonPropertyName("members_contained_by")]
-    [JsonPropertyOrder(144)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<HumanMadeObject>? MembersContainedBy { get; set; }
-
-
-    [JsonPropertyName("equivalent")]
-    [JsonPropertyOrder(150)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<LinkedArtObject>? Equivalent { get; set; }
-
-
-    [JsonPropertyName("created_by")]
-    [JsonPropertyOrder(210)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Activity? CreatedBy { get; set; }
-
-
-    [JsonPropertyName("used_for")]
-    [JsonPropertyOrder(220)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Activity>? UsedFor { get; set; }
-
-
-    [JsonPropertyName("destroyed_by")]
-    [JsonPropertyOrder(225)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Activity? DestroyedBy { get; set; }
-
-
-    [JsonPropertyName("removed_by")]
-    [JsonPropertyOrder(230)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Activity>? RemovedBy { get; set; }
-
-
-    [JsonPropertyName("subject_to")]
-    [JsonPropertyOrder(310)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Right>? SubjectTo { get; set; }
-
-
-    [JsonPropertyName("about")]
-    [JsonPropertyOrder(505)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<LinkedArtObject>? About { get; set; }
-
-
-    [JsonPropertyName("representation")]
-    [JsonPropertyOrder(510)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<VisualItem>? Representation { get; set; }
-
-    [JsonPropertyName("subject_of")]
-    [JsonPropertyOrder(610)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<LinkedArtObject>? SubjectOf { get; set; }
-
-
-    [JsonPropertyName("digitally_carried_by")]
-    [JsonPropertyOrder(710)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<DigitalObject>? DigitallyCarriedBy { get; set; }
-
-
-    [JsonPropertyName("digitally_available_via")]
-    [JsonPropertyOrder(720)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<DigitalService>? DigitallyAvailableVia { get; set; }
-
-
-    [JsonPropertyName("attributed_by")]
-    [JsonPropertyOrder(810)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<Activity>? AttributedBy { get; set; }
-
-
-    [JsonPropertyName("modified_by")]
-    [JsonPropertyOrder(820)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<Activity>? ModifiedBy { get; set; }
-
-
-    [JsonPropertyName("members_exemplified_by")]
-    [JsonPropertyOrder(920)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<LinkedArtObject>? MembersExemplifiedBy { get; set; }
-
-
-    // (laObj)?
-    [JsonPropertyName("holds_or_supports")]
-    [JsonPropertyOrder(1020)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<HumanMadeObject>? HoldsOrSupports { get; set; }
-
-    [JsonPropertyName("held_or_supported_by")]
-    [JsonPropertyOrder(1021)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<HumanMadeObject>? HeldOrSupportedBy { get; set; }
-
-
+    /// <summary>
+    /// The content of the <see cref="Name"/> classified as AAT Primary Name (directly or via <c>equivalent</c>),
+    /// or null; optionally the <c>_label</c> when there is none.
+    /// </summary>
     public string? GetPrimaryName(bool fallbackToLabel = false)
     {
-        if(IdentifiedBy == null || IdentifiedBy.Count == 0)
-        {
-            return fallbackToLabel ? Label : null;
-        }
-        const string aatPrimary = "http://vocab.getty.edu/aat/300404670";
+        var primary = IdentifiedBy?.OfType<Name>().FirstOrDefault(n =>
+            n.ClassifiedAs is { } cas && cas.Exists(ca =>
+                ca.Id == Getty.PrimaryNameId ||
+                (ca.Equivalent is { } eq && eq.Exists(e => e.Id == Getty.PrimaryNameId))));
 
-        var names = IdentifiedBy.Where(id => id.Type == "Name");
-        var primary = names.FirstOrDefault(n =>
-            n.ClassifiedAs != null && n.ClassifiedAs.Exists(
-                ca => ca.Id == aatPrimary ||
-                    ca.Equivalent != null && ca.Equivalent.Exists(
-                        cae => cae.Id == aatPrimary)));
-
-        if(primary != null && primary.Content != null)
-        {
-            return primary.Content;
-        }
-
-        return fallbackToLabel ? Label : null;
+        return primary?.Content ?? (fallbackToLabel ? Label : null);
     }
+
+    public override string ToString() => $"{Type}{(Id is null ? "" : " " + Id)}{(Label is null ? "" : " \"" + Label + "\"")}";
 }

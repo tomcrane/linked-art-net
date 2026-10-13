@@ -34,10 +34,10 @@ public class Digital
         ];
         nightwatchPublication.Format = "text/html";
         nightwatchPublication.ConformsTo = [
-            new LinkedArtObject(Types.InformationObject).WithId("http://w3.org/TR/html")
+            new InformationObject().WithId("http://w3.org/TR/html")
         ];
 
-        var creation = new Activity(Types.Creation)
+        var creation = new Creation()
         {
             TimeSpan = new LinkedArtTimeSpan
             {

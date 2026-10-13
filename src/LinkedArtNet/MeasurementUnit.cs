@@ -1,37 +1,23 @@
-﻿using LinkedArtNet.Vocabulary;
+using LinkedArtNet.Vocabulary;
 
 namespace LinkedArtNet;
 
-public class MeasurementUnit : LinkedArtObject
+/// <summary>crm:E58 Measurement Unit.</summary>
+public class MeasurementUnit : Type
 {
-
-    public MeasurementUnit() { Type = nameof(MeasurementUnit); }
-
-    // Utility instances
-    public static MeasurementUnit Centimeters => _centimeters;
-
-    private static MeasurementUnit _centimeters = new MeasurementUnit
+    public MeasurementUnit() : base(nameof(MeasurementUnit))
     {
-        Id = $"{Getty.Aat}300379098",
-        Label = "centimeters"
-    };
+    }
 
-
-    public static MeasurementUnit Millimeters => _millimeters;
-
-    private static MeasurementUnit _millimeters = new MeasurementUnit
+    public MeasurementUnit(string id, string? label) : this()
     {
-        Id = $"{Getty.Aat}300379099", // check
-        Label = "millimeters"
-    };
+        Id = id;
+        Label = label;
+    }
 
-
-    public static MeasurementUnit Kilobytes => _kilobytes;
-
-    private static MeasurementUnit _kilobytes = new MeasurementUnit
-    {
-        Id = $"{Getty.Aat}300265870",
-        Label = "kilobytes"
-    };
-
+    // Common units. Each access returns a new instance so callers cannot mutate a shared object.
+    public static MeasurementUnit Centimeters => new($"{Getty.Aat}300379098", "centimeters");
+    public static MeasurementUnit Millimeters => new($"{Getty.Aat}300379099", "millimeters");
+    public static MeasurementUnit Kilobytes => new($"{Getty.Aat}300265870", "kilobytes");
+    public static MeasurementUnit Days => new($"{Getty.Aat}300379242", "days");
 }

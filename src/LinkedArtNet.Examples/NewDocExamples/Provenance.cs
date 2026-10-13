@@ -31,7 +31,7 @@ namespace Examples.NewDocExamples
                 EndOfTheEnd = new LinkedArtDate(1883, 12, 31).LastSecondOfDay()
             };
 
-            var acquisition = new Activity(Types.Acquisition)
+            var acquisition = new Acquisition()
             {
                 Label = "Ownership of Spring to Proust",
                 TransferredTitleOf = [
@@ -57,7 +57,7 @@ namespace Examples.NewDocExamples
                 PaidAmount = new MonetaryAmount
                 {
                     Value = 3000,
-                    Currency = new LinkedArtObject(Types.Currency)
+                    Currency = new Currency()
                         .WithId($"{Getty.Aat}300412016")
                         .WithLabel("French Francs")
                 },
@@ -97,7 +97,7 @@ namespace Examples.NewDocExamples
                 EndOfTheEnd = new LinkedArtDate(1999, 12, 31).LastSecondOfDay()
             };
 
-            var acquisition = new Activity(Types.Acquisition)
+            var acquisition = new Acquisition()
             {
                 Label = "Acquisition of Painting 1",
                 TransferredTitleOf = [

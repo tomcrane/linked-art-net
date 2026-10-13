@@ -79,7 +79,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
                 .WithHeightDimension(379.5, MeasurementUnit.Centimeters);
 
-            var attrAssignment = new Activity(Types.AttributeAssignment)
+            var attrAssignment = new AttributeAssignment()
                 .WithLabel("Measurement of the Night Watch");
             attrAssignment.CarriedOutBy = [
                 new Group()
@@ -108,7 +108,7 @@ namespace Examples.NewDocExamples
                 .WithHeightDimension(74, MeasurementUnit.Centimeters)
                 .WithWidthDimension(51.5, MeasurementUnit.Centimeters);
 
-            var attrAssignment = new Activity(Types.AttributeAssignment)
+            var attrAssignment = new AttributeAssignment()
                 .WithLabel("Unframed Measuring")
                 .WithTechnique($"{Documentation.IdRoot}/concept/measuring_unframed", "Unframed Measuring");
 

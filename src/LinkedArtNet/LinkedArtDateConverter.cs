@@ -10,7 +10,7 @@ namespace LinkedArtNet;
 /// </summary>
 public sealed class LinkedArtDateConverter : JsonConverter<LinkedArtDate>
 {
-    public override LinkedArtDate Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override LinkedArtDate Read(ref Utf8JsonReader reader, System.Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.String)
             throw new JsonException($"Expected a string for a Linked Art dateTime but found {reader.TokenType}.");

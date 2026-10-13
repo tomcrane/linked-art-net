@@ -172,7 +172,7 @@ namespace Examples.NewDocExamples
 
 
             spring.ProducedBy =
-                new Activity(Types.Production)
+                new Production()
                 {
                     // https://linked.art/example/object/spring/4.json has no Z timespan
                     TimeSpan = LinkedArtTimeSpan.FromYear(1881),
@@ -272,15 +272,15 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/text/rembrandtjaccuse/1")
                 .WithLabel("Rembrandt's J'accuse");
 
-            jaccuse.CreatedBy = new Activity(Types.Creation);
+            jaccuse.CreatedBy = new Creation();
             jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008);
 
-            var directorActivity = new Activity(Types.Creation)
+            var directorActivity = new Creation()
                 .WithClassifiedAs(Getty.AatType("Director", "300025654"));
             directorActivity.CarriedOutBy = [
                 new Person().WithId($"{Documentation.IdRoot}/person/greenaway").WithLabel("Peter Greenaway")
             ];
-            var producerActivity = new Activity(Types.Creation)
+            var producerActivity = new Creation()
                 .WithClassifiedAs(Getty.AatType("Producer", "300197742"));
             producerActivity.CarriedOutBy = [
                 new Person().WithId($"{Documentation.IdRoot}/person/wolting").WithLabel("Femke Wolting")

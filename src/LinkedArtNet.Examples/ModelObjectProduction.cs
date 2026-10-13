@@ -36,7 +36,7 @@ public class ModelObjectProduction : ExamplePage
         ];
 
         painting.ProducedBy =
-            new Activity(Types.Production)
+            new Production()
             {
                 TimeSpan = LinkedArtTimeSpan.FromDay(1780, 3, 5),
                 TookPlaceAt = [new Place().WithLabel("Artist's Studio")],
@@ -60,7 +60,7 @@ public class ModelObjectProduction : ExamplePage
         ];
 
         glassSculpture.ProducedBy =
-            new Activity(Types.Production)
+            new Production()
             {
                 CarriedOutBy = [new Person().WithLabel("Glassblowing Artist")],
                 Technique = [Getty.AatType("Glassblowing", "300053932")]
@@ -79,7 +79,7 @@ public class ModelObjectProduction : ExamplePage
             .WithClassifiedAs(Getty.Artwork);
 
         graffiti.ProducedBy =
-            new Activity(Types.Production)
+            new Production()
                 .WithLabel("Production of Graffiti")
                 .WithClassifiedAs(Getty.AatType("Vandalism", "300055299"))
                 .WithTechnique(Getty.AatType("Spraypainting", "300053816"));
@@ -102,15 +102,15 @@ public class ModelObjectProduction : ExamplePage
             Getty.Artwork
         ];
 
-        var production = new Activity(Types.Production)
+        var production = new Production()
         {
             Part = [
-                new Activity(Types.Production)
+                new Production()
                 {
                     Technique = [Getty.AatType("Sculpting", "300264383")],
                     CarriedOutBy = [new Person().WithLabel("Sculptor")]
                 },
-                new Activity(Types.Production)
+                new Production()
                 {
                     Technique = [Getty.AatType("Painting", "300054216")],
                     CarriedOutBy = [new Person().WithLabel("Painter")]
@@ -134,7 +134,7 @@ public class ModelObjectProduction : ExamplePage
             .WithClassifiedAs(Getty.Artwork);
 
         fishCopy.ProducedBy =
-            new Activity(Types.Production)
+            new Production()
             {
                 CarriedOutBy = [new Person().WithLabel("Copyist")],
                 InfluencedBy = [

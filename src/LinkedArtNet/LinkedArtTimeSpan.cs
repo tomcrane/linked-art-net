@@ -3,9 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace LinkedArtNet;
 
+/// <summary>crm:E52 Time-Span. See <see cref="LinkedArtDate"/> for the date conventions.</summary>
 public class LinkedArtTimeSpan : LinkedArtObject
 {
-    public LinkedArtTimeSpan() { Type = "TimeSpan"; }
+    public LinkedArtTimeSpan() : base("TimeSpan")
+    {
+    }
 
     [JsonPropertyName("begin_of_the_begin")]
     [JsonPropertyOrder(121)]

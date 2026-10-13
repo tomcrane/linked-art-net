@@ -24,7 +24,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             nightWatch.AttributedBy = [
-                new Activity(Types.AttributeAssignment)
+                new AttributeAssignment()
                 {
                     Label = "Condition Assessment of Night Watch",
                     IdentifiedBy = [new Name("Thorough Condition Assessment")],
@@ -66,7 +66,7 @@ namespace Examples.NewDocExamples
                 .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
 
             nightWatch.ModifiedBy = [
-                new Activity(Types.Modification)
+                new Modification()
                 {
                     Label = "Conservation of Night Watch",
                     ReferredToBy = [

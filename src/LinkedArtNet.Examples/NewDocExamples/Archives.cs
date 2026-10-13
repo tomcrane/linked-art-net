@@ -30,7 +30,7 @@ namespace Examples.NewDocExamples
             obermeyer.IdentifiedBy = [new Name("Obermeyer, Bertha (1920)").AsPrimaryName()];
 
             obermeyer.MemberOf = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/archive_sfl")
                     .WithLabel("Stieglitz Family Letters")
             ];
@@ -42,7 +42,7 @@ namespace Examples.NewDocExamples
 
         private static void In_Sub_Series()
         {
-            var set = new LinkedArtObject(Types.Set)
+            var set = new Set()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/archive_sfl/1")
                 .WithLabel("Stieglitz Family Letters")
@@ -51,7 +51,7 @@ namespace Examples.NewDocExamples
             set.IdentifiedBy = [new Name("Stieglitz Family Letters").AsPrimaryName()];
 
             set.MemberOf = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/archive_asc")
                     .WithLabel("Alfred Stiegliz Correspondence")
             ];
@@ -62,7 +62,7 @@ namespace Examples.NewDocExamples
 
         private static void In_Series()
         {
-            var set = new LinkedArtObject(Types.Set)
+            var set = new Set()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/archive_asc/1")
                 .WithLabel("Alfred Stiegliz Correspondence")
@@ -78,7 +78,7 @@ namespace Examples.NewDocExamples
 
         private static void Physical_Hierarchy()
         {
-            var set = new LinkedArtObject(Types.Set)
+            var set = new Set()
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/archive_sfl/2")
                 .WithLabel("Stieglitz Family Letters")
@@ -105,7 +105,7 @@ namespace Examples.NewDocExamples
             obermeyer.IdentifiedBy = [new Name("Obermeyer, Bertha (1920)").AsPrimaryName()];
 
             obermeyer.MemberOf = [
-                new LinkedArtObject(Types.Set)
+                new Set()
                     .WithId($"{Documentation.IdRoot}/set/archive_sfl")
                     .WithLabel("Stieglitz Family Letters")
             ];

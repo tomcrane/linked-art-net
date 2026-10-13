@@ -1,15 +1,10 @@
-﻿
-namespace LinkedArtNet.Vocabulary
+namespace LinkedArtNet.Vocabulary;
+
+public static class RightsStatements
 {
-    public class RightsStatements
-    {
-        public static readonly string CreativeCommons = "https://creativecommons.org/";
+    public static readonly string CreativeCommons = "https://creativecommons.org/";
 
-        public static LinkedArtObject CreativeCommonsType(string label, string idPart)
-        {
-            return new LinkedArtObject(Types.Type).WithLabel(label).WithId($"{CreativeCommons}{idPart}");
-        }
+    public static Type CreativeCommonsType(string label, string idPart) => new($"{CreativeCommons}{idPart}", label);
 
-        public static LinkedArtObject CreativeCommonsPublicDomain => CreativeCommonsType("Public Domain", "publicdomain/zero/1.0/");
-    }
+    public static Type CreativeCommonsPublicDomain => CreativeCommonsType("Public Domain", "publicdomain/zero/1.0/");
 }

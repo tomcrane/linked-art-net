@@ -77,7 +77,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Content of Koot's Night Watch")
                 .WithClassifiedAs(Getty.Monograph, Getty.TypeOfWork);
 
-            koot.CreatedBy = new Activity(Types.Creation)
+            koot.CreatedBy = new Creation()
             {
                 Label = "Koot's writing of the work",
                 CarriedOutBy = [

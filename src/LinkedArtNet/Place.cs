@@ -1,14 +1,27 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace LinkedArtNet;
 
-public class Place : LinkedArtObject
+/// <summary>crm:E53 Place.</summary>
+public class Place : LinkedArtEntity
 {
-    public Place() { Type = nameof(Place); }
+    public Place() : base(nameof(Place))
+    {
+    }
 
-    // Place only
+    [JsonPropertyName("part_of")]
+    [JsonPropertyOrder(130)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Place>? PartOf { get; set; }
+
+    [JsonPropertyName("member_of")]
+    [JsonPropertyOrder(140)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Set>? MemberOf { get; set; }
+
+    /// <summary>P168 is defined by: a WKT geometry string.</summary>
     [JsonPropertyName("defined_by")]
     [JsonPropertyOrder(800)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string? DefinedBy { get; set; }
+    public string? DefinedBy { get; set; }
 }

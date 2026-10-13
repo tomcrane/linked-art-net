@@ -96,7 +96,7 @@ public static class DimensionExtensions
     {
         var rgbInt = Convert.ToInt32(rgbColor.Replace("#", ""), 16);
         hmObj.WithRgbColor(rgbInt, aatColor, label);
-        hmObj.Dimension.Last().IdentifiedBy = [ new Identifier(rgbColor) ];
+        hmObj.Dimension!.Last().IdentifiedBy = [ new Identifier(rgbColor) ];
         return hmObj;
     }
 

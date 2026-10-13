@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>LinkedArtNet</PackageId>
+    <Description>Linked Art 1.0 model classes for .NET: JSON-LD serialisation, fluent authoring API and Getty vocabulary helpers.</Description>
+  </PropertyGroup>
+
+</Project>

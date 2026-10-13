@@ -110,7 +110,7 @@ authority store (QLever or Postgres) and the alignment cache, then a PMC-style p
 ## 4. Target repository layout
 
 ```
-linked-art-net.sln
+linked-art-net.slnx
 Directory.Build.props, global.json, .editorconfig
 src/LinkedArtNet/                 model, serialisation, vocabulary, LinkedArtDate
 src/LinkedArtNet.Dates/           parser (AST, canonical, realiser, strategies, profiles, lexicons)

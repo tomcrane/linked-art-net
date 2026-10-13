@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 exclude/
 
+
+# JetBrains Rider / IntelliJ
+.idea/

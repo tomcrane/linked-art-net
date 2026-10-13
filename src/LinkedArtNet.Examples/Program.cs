@@ -32,7 +32,7 @@ if (args.Length == 1 && dict.ContainsKey(args[0].ToLowerInvariant()))
 else if(args.Length == 2 && args[0] == "examples")
 {
     var options = new JsonSerializerOptions { WriteIndented = true };
-    var type = Type.GetType($"Examples.{args[1]}, Examples");
+    var type = typeof(ExamplePage).Assembly.GetType($"Examples.{args[1]}");
     var examplePage = Activator.CreateInstance(type!) as ExamplePage;
     if(examplePage != null)
     {

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LinkedArtNet.Examples/LinkedArtNet.Examples.csproj" />
+    <Project Path="src/LinkedArtNet/LinkedArtNet.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LinkedArtNet.Tests/LinkedArtNet.Tests.csproj" />
+  </Folder>
+</Solution>

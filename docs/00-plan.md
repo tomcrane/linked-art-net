@@ -203,5 +203,6 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     class per provenance sub-page. Four registry labels now follow what the site emits (Sorting Name, Promise,
     rectangular, Lot Number). `CoverageTests.Every_site_example_is_implemented` keeps it at 100%.
 
-Next: owner files the upstream issues (docs/upstream-issues.md) and cuts `LinkedArtNet 1.0.0-preview`; then
-Phase 2 (the TimeSpan parser).
+Next: Phase 2 (the TimeSpan parser). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
+so the "NuGet ... preview" acceptance items are not gates between phases.

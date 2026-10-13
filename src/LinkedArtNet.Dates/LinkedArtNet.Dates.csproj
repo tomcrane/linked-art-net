@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>LinkedArtNet.Dates</PackageId>
+    <Description>Turns free-text date strings ("late 1950s", "c. 1642", "fl. 1480-1510", "500 BC") into Linked Art TimeSpans, with a canonical EDTF-style expression, confidence and explanation.</Description>
+    <RootNamespace>LinkedArtNet.Dates</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkedArtNet\LinkedArtNet.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="LinkedArtNet.Dates.Tests" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,90 @@
+{
+  "name": "default",
+  "centuryConvention": "popular",
+  "centuryBands": {
+    "length": 100,
+    "early": {
+      "start": 0,
+      "end": 33
+    },
+    "mid": {
+      "start": 34,
+      "end": 66
+    },
+    "late": {
+      "start": 67,
+      "end": 99
+    },
+    "beginningOf": {
+      "start": 0,
+      "end": 9
+    },
+    "endOf": {
+      "start": 90,
+      "end": 99
+    }
+  },
+  "decadeBands": {
+    "length": 10,
+    "early": {
+      "start": 0,
+      "end": 3
+    },
+    "mid": {
+      "start": 3,
+      "end": 6
+    },
+    "late": {
+      "start": 7,
+      "end": 9
+    },
+    "beginningOf": {
+      "start": 0,
+      "end": 0
+    },
+    "endOf": {
+      "start": 9,
+      "end": 9
+    }
+  },
+  "yearBands": {
+    "length": 12,
+    "early": {
+      "start": 0,
+      "end": 3
+    },
+    "mid": {
+      "start": 4,
+      "end": 7
+    },
+    "late": {
+      "start": 8,
+      "end": 11
+    },
+    "beginningOf": {
+      "start": 0,
+      "end": 0
+    },
+    "endOf": {
+      "start": 11,
+      "end": 11
+    }
+  },
+  "circaPaddingYears": 0,
+  "uncertainPaddingYears": 0,
+  "openEnd": {
+    "mode": "omitBound"
+  },
+  "emitInnerBounds": false,
+  "hemisphere": "north",
+  "defaultEra": "ce",
+  "minYearDigits": 3,
+  "dayMonthOrder": "dayFirst",
+  "plausibleYearMin": -10000,
+  "plausibleYearMax": 2200,
+  "labelPolicy": "label",
+  "acceptThreshold": 0.75,
+  "languages": [
+    "en"
+  ]
+}

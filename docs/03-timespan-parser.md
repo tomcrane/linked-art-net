@@ -149,9 +149,9 @@ few prefix keywords for what EDTF cannot. Examples:
 | `1850?` | `1850?` |
 | `1950s` | `195X` |
 | `late 1950s` | `late 195X` |
-| `19th century` | `18XX` |
-| `early 14th century` | `early 13XX` |
-| `second quarter of the 14th century` | `q2 13XX` |
+| `19th century` | `century 19` (policy-free: the profile decides 1800-1899 or 1801-1900) |
+| `early 14th century` | `early century 14` |
+| `second quarter of the 14th century` | `q2 century 14` |
 | `500 BC` | `-0499` |
 | `c. 2500 BCE` | `-2499~` |
 | `before 1850` | `before 1850` (EDTF `../1850` is emitted alongside) |
@@ -163,11 +163,11 @@ few prefix keywords for what EDTF cannot. Examples:
 | `1850-1920` (pair intent) | `1850/1920` (kind decided at realisation) |
 | `Winter 1945` | `1945-24` |
 | `Edo period` | `period:edo` (realises to `1603/1868`) |
-| `4.5 billion years ago` | `Y-4499997975~` (and `DeepTime` flag) |
+| `4.5 billion years ago` | `4.5 Ga ago` (keeps the written precision; `Edtf` gives the realised years) |
 | `n.d.` | `undated` |
 | `1962 (i.e. 1967)` | `1967` (`Corrected` flag, original kept) |
 
-The grammar of the canonical form is documented in `docs/canonical-expression.md` (to be written
+The grammar of the canonical form is documented in `docs/canonical-expression.md` (written
 with the implementation) and is itself parsed by strategy 1, so canonical strings round-trip:
 `Parse(Canonical(e)) == e`. This is what the LLM interpreter is asked to produce, and what the
 trainer UI lets a human type to correct a parse.

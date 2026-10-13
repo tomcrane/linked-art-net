@@ -6,6 +6,7 @@ museums, libraries and archives to describe art and cultural heritage.
 | Project | What |
 |---|---|
 | `src/LinkedArtNet` | The model library: classes for Linked Art 1.0, JSON-LD serialisation, fluent authoring API, Getty vocabulary helpers. |
+| `src/LinkedArtNet.Dates` | Free-text date strings to Linked Art TimeSpans: canonical EDTF-style expressions, profiles, realiser (parser grammar in progress). |
 | `src/LinkedArtNet.Examples` | One C# method per example published on linked.art; the tests compare each method's JSON with the site's. Coverage: [examples/coverage.md](examples/coverage.md). |
 | `tools/` | Code generators and the site crawler (`ExampleManifest`). |
 | `tests/` | Test projects. |

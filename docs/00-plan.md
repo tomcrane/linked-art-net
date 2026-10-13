@@ -203,6 +203,13 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     class per provenance sub-page. Four registry labels now follow what the site emits (Sorting Name, Promise,
     rectangular, Lot Number). `CoverageTests.Every_site_example_is_implemented` keeps it at 100%.
 
-Next: Phase 2 (the TimeSpan parser). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+12. ~~Phase 2 step 1: `LinkedArtNet.Dates` core.~~ Done 2026-10-13. `DateExpression` AST (points, decade, century,
+    millennium, unspecified digits, named period, deep time, undated; qualified, banded, relative, lifecycle,
+    interval, set, corrected), canonical reader/writer (`docs/canonical-expression.md`; property-tested
+    round trip), `EdtfWriter`, `ParseProfile` (+ `profiles/default.json`), `TimeSpanRealiser` (every node rule,
+    conventions, bands, padding, open ends, seasons, deep time, intents, label policy), `TimeSpanParseResult`,
+    `TimeSpanParser` facade with the canonical strategy. 229 tests.
+
+Next: Phase 2 step 2 (corpus tooling) and step 3 (normaliser, tokenizer, grammar). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

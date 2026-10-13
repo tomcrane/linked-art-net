@@ -1,10 +1,12 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/LinkedArtNet.Examples/LinkedArtNet.Examples.csproj" />
+    <Project Path="src/LinkedArtNet.Dates/LinkedArtNet.Dates.csproj" />
     <Project Path="src/LinkedArtNet/LinkedArtNet.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/LinkedArtNet.Examples.Tests/LinkedArtNet.Examples.Tests.csproj" />
+    <Project Path="tests/LinkedArtNet.Dates.Tests/LinkedArtNet.Dates.Tests.csproj" />
     <Project Path="tests/LinkedArtNet.Tests/LinkedArtNet.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">

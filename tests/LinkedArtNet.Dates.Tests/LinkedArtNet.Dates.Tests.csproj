@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="FsCheck.Xunit" Version="3.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
+  </ItemGroup>
+
+</Project>

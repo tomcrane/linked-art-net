@@ -53,11 +53,11 @@ namespace Examples.NewDocExamples
 
             var name = new Name("Rembrandt Harmenzoon van Rijn").AsPrimaryName();
             name.Part = [
-                new Name("Rembrandt").WithClassifiedAs(Getty.GivenName),
+                new Name("Rembrandt").WithClassifiedAs(Aat.GivenName),
                 new Name()
                     .WithId($"{Documentation.IdRoot}/Name/Harmenzoon")
-                    .WithClassifiedAs(Getty.MiddleName),
-                new Name("van Rijn").WithClassifiedAs(Getty.FamilyName)
+                    .WithClassifiedAs(Aat.MiddleName),
+                new Name("van Rijn").WithClassifiedAs(Aat.FamilyName)
             ];
             rembrandt.IdentifiedBy = [name];
 
@@ -73,9 +73,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             rembrandt.Equivalent = [
-                new Person()
-                    .WithId("http://vocab.getty.edu/ulan/500011051")
-                    .WithLabel("Rembrandt")
+                Ulan.Rembrandt
             ];
 
             Documentation.Save(rembrandt);
@@ -93,7 +91,7 @@ namespace Examples.NewDocExamples
 
             rembrandt.ContactPoint = [
                 new Identifier("Jodenbreestraat 4, 1011 NK Amsterdam")
-                    .WithClassifiedAs(Getty.StreetAddress)
+                    .WithClassifiedAs(Aat.StreetAddress)
             ];
 
             Documentation.Save(rembrandt);
@@ -112,11 +110,11 @@ namespace Examples.NewDocExamples
 
             museum.ContactPoint = [
                 new Identifier("Jodenbreestraat 4, 1011 NK Amsterdam")
-                    .WithClassifiedAs(Getty.StreetAddress),
+                    .WithClassifiedAs(Aat.StreetAddress),
                 new Identifier("+31-20-520-0400")
-                    .WithClassifiedAs(Getty.TelephoneNumber),
+                    .WithClassifiedAs(Aat.TelephoneNumber),
                 new Identifier("museum@rembrandthuis.nl")
-                    .WithClassifiedAs(Getty.EmailAddress)
+                    .WithClassifiedAs(Aat.EmailAddress)
             ];
 
             Documentation.Save(museum);
@@ -155,9 +153,7 @@ namespace Examples.NewDocExamples
             {
                 TimeSpan = LinkedArtTimeSpan.FromDay(1669, 10, 4),
                 TookPlaceAt = [
-                    new Place()
-                        .WithId("http://vocab.getty.edu/tgn/7006952")
-                        .WithLabel("Amsterdam")
+                    Tgn.Amsterdam
                 ]
             };
 
@@ -195,8 +191,8 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             var activity = new Activity()
-                .WithClassifiedAs(Getty.AatType("Professional Activities", "300393177"))
-                .WithClassifiedAs(Getty.AatType("Painter", "300025136"));
+                .WithClassifiedAs(Aat.ProfessionalActivities)
+                .WithClassifiedAs(Aat.Painter);
             activity.TimeSpan = new LinkedArtTimeSpan
             {
                 BeginOfTheBegin = new LinkedArtDate(1631, 1, 1),
@@ -216,7 +212,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             var activity = new Activity()
-                .WithClassifiedAs(Getty.AatType("Burial", "300263485"));
+                .WithClassifiedAs(Aat.Burial);
             activity.TimeSpan = new LinkedArtTimeSpan
             {
                 BeginOfTheBegin = new LinkedArtDate(1669, 10, 4),
@@ -242,7 +238,7 @@ namespace Examples.NewDocExamples
 
             rembrandt.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.BiographyStatement, Getty.BriefText)
+                    .WithClassifiedAs(Aat.BiographyStatement, Aat.BriefText)
                     .WithContent("Rembrandt's work is characterized by the Baroque interest in dramatic scenes and strong contrasts of light on a dark stage")
             ];
 
@@ -269,7 +265,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/person/wiley/1")
                 .WithLabel("Kehinde Wiley")
-                .WithClassifiedAs("http://www.wikidata.org/entity/Q3007177", "African-American", Getty.Ethnicity);
+                .WithClassifiedAs("http://www.wikidata.org/entity/Q3007177", "African-American", Aat.Ethnicity);
 
             Documentation.Save(wiley);
         }
@@ -281,7 +277,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/person/rembrandt/10")
                 .WithLabel("Rembrandt")
-                .WithClassifiedAs(Getty.AatType("Male", "300189559"), Getty.Gender);
+                .WithClassifiedAs(Aat.Male, Aat.Gender);
 
             Documentation.Save(rembrandt, false);
         }
@@ -310,8 +306,8 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/person/rembrandt/31")
                 .WithLabel("Rembrandt")
                 .WithClassifiedAs(
-                    Getty.AatType("Artist", "300025103"), 
-                        Getty.AatType("Occupation", "300263369"));
+                    Aat.Artist, 
+                        Aat.Occupation);
 
             Documentation.Save(rembrandt);
         }
@@ -327,7 +323,7 @@ namespace Examples.NewDocExamples
 
         //    rembrandt.IdentifiedBy = [
         //        new Identifier("Q5598")
-        //            .WithClassifiedAs(Getty.AatType("Owner-Assigned Number", "300404621"))
+        //            .WithClassifiedAs(Aat.OwnerAssignedNumber)
         //    ];
 
         //    Documentation.Save(rembrandt);

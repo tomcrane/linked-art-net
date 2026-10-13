@@ -31,7 +31,7 @@ namespace Examples.NewDocExamples
 
             set.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
                     .WithContent("Objects in the exhibition Manet and Modern Beauty at the Art Institute of Chicago and the Getty Museum")
             ];
 
@@ -49,7 +49,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/13")
                 .WithLabel("Jeanne (Spring) by Manet")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             spring.IdentifiedBy = [new Name("Jeanne (Spring)")];
 
@@ -91,13 +91,11 @@ namespace Examples.NewDocExamples
                 .WithLabel("Exhibition objects");
 
             var paintingByManet = new HumanMadeObject()
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
             paintingByManet.ProducedBy = new Production()
             {
                 CarriedOutBy = [
-                    new Person()
-                        .WithId("http://vocab.getty.edu/ulan/500010363")
-                        .WithLabel("Manet")
+                    Ulan.Manet
                 ]
             };
             set.MembersExemplifiedBy = [paintingByManet];
@@ -112,7 +110,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/rijks_objects/1")
                 .WithLabel("Collection of the Rijksmuseum")
-                .WithClassifiedAs(Getty.Collection);
+                .WithClassifiedAs(Aat.Collection);
 
             set.IdentifiedBy = [new Name("Collection of the Rijksmuseum").AsPrimaryName()];
 
@@ -126,7 +124,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/rijks_paintings/1")
                 .WithLabel("Paintings of the Rijksmuseum")
-                .WithClassifiedAs(Getty.Collection);
+                .WithClassifiedAs(Aat.Collection);
 
             set.IdentifiedBy = [new Name("Paintings of the Rijksmuseum").AsPrimaryName()];
             set.MemberOf = [
@@ -137,7 +135,7 @@ namespace Examples.NewDocExamples
             set.UsedFor = [
                 new Activity()
                 {
-                    ClassifiedAs = [Getty.AatType("Curating", "300054277")],
+                    ClassifiedAs = [Aat.Curating],
                     CarriedOutBy = [
                         new Group()
                             .WithId($"{Documentation.IdRoot}/group/rijks_paintings_dept")
@@ -156,7 +154,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/16")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             nightwatch.IdentifiedBy = [new Name("The Night Watch").AsPrimaryName()];
 

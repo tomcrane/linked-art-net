@@ -25,7 +25,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/21")
                 .WithLabel("Spring")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             spring.AttributedBy = [
                 new AttributeAssignment()
@@ -33,7 +33,7 @@ namespace Examples.NewDocExamples
                     TimeSpan = LinkedArtTimeSpan.FromYear(2015),
                     AssignedProperty = "made_of",
                     Assigned = [
-                        new Material() { Id = $"{Getty.Aat}300014078" }
+                        new Material { Id = Aat.Uri("300014078") }
                     ]
                 }
             ];
@@ -51,7 +51,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/yiadom-boakye/1")
                 .WithLabel("Portrait of Lynette Yiadom-Boakye")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             var yuagId = new Identifier("2021.25.1").AsAccessionNumber();
             yuagId.AssignedBy = [
@@ -61,7 +61,7 @@ namespace Examples.NewDocExamples
                         new Group()
                             .WithId($"{Documentation.IdRoot}/group/yuag")
                             .WithLabel("Yale University Art Gallery")
-                            .WithClassifiedAs(Getty.Museum)
+                            .WithClassifiedAs(Aat.Museum)
                     ]
                 }
             ];
@@ -74,7 +74,7 @@ namespace Examples.NewDocExamples
                         new Group()
                             .WithId($"{Documentation.IdRoot}/group/ycba")
                             .WithLabel("Yale Center for British Art")
-                            .WithClassifiedAs(Getty.Museum)
+                            .WithClassifiedAs(Aat.Museum)
                     ]
                 }
             ];
@@ -117,7 +117,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/forum/1")
                 .WithLabel("Forum Romanum")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             forum.IdentifiedBy = [new Name("Forum Romanum").AsPrimaryName()];
 
@@ -126,7 +126,7 @@ namespace Examples.NewDocExamples
                 AttributedBy = [
                     new AttributeAssignment()
                     {
-                        ClassifiedAs = [ Getty.AatType("Possibly By", "300404272") ],
+                        ClassifiedAs = [ Aat.PossiblyBy ],
                         Assigned = [
                             new Production()
                             {
@@ -153,7 +153,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/31")
                 .WithLabel("Spring")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             spring.IdentifiedBy = [new Name("Jeanne (Spring)").AsPrimaryName()];
 
@@ -167,7 +167,7 @@ namespace Examples.NewDocExamples
                     ],
                     Assigned = [
                         new Identifier("2497-12")
-                            .WithClassifiedAs(Getty.AatType("Entry Numbers", "300445023"))
+                            .WithClassifiedAs(Aat.EntryNumbers)
                     ],
                     AssignedProperty = "identified_by",
                     CausedBy = [
@@ -188,7 +188,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/17")
                 .WithLabel("The Night Watch")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             nightwatch.IdentifiedBy = [new Name("The Night Watch").AsPrimaryName()];
 
@@ -197,7 +197,7 @@ namespace Examples.NewDocExamples
                 {
                     IdentifiedBy = [
                         new Name("Related Object")
-                            .WithClassifiedAs(Getty.AatType("Display Title", "300404669"))
+                            .WithClassifiedAs(Aat.DisplayTitle)
                     ],
                     Assigned = [
                         new HumanMadeObject()
@@ -224,7 +224,7 @@ namespace Examples.NewDocExamples
             bol.AttributedBy = [
                 new AttributeAssignment()
                 {
-                    IdentifiedBy = [new Name("Student Of").WithClassifiedAs(Getty.DisplayTitle)],
+                    IdentifiedBy = [new Name("Student Of").WithClassifiedAs(Aat.DisplayTitle)],
                     Assigned = [ 
                         new Person()
                             .WithId($"{Documentation.IdRoot}/person/rembrandt")

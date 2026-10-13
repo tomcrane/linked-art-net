@@ -59,15 +59,13 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/bust/1")
                 .WithLabel("Bust of a Man")
-                .WithClassifiedAs(Getty.Sculpture, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Sculpture, Aat.TypeOfWork);
 
             bust.ProducedBy = new Production()
                 {
-                    Technique = [Getty.AatType("Sculpting", "300264383")],
+                    Technique = [Aat.Sculpting],
                     CarriedOutBy = [
-                        new Person()
-                            .WithId("http://vocab.getty.edu/ulan/500015886")
-                            .WithLabel("Francis Harwood")]
+                        Ulan.FrancisHarwood]
                 };
         
             Documentation.Save(bust);
@@ -80,14 +78,14 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/run/1")
                 .WithLabel("RUN")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             run.ProducedBy = new Production()
             {
                 Part = [
                     new Production()
                     {
-                        Technique = [Getty.AatType("Painting", "300054216")],
+                        Technique = [Aat.PaintingTechnique],
                         CarriedOutBy = [
                             new Person()
                                 .WithId($"{Documentation.IdRoot}/person/barrow")
@@ -96,7 +94,7 @@ namespace Examples.NewDocExamples
                     },
                     new Production()
                     {
-                        Technique = [Getty.AatType("hand weaving", "300053643")],
+                        Technique = [Aat.HandWeaving],
                         CarriedOutBy = [
                             new Person()
                                 .WithId($"{Documentation.IdRoot}/person/parke")
@@ -116,7 +114,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/kellerdana/1")
                 .WithLabel("Copy of Huntington Portrait")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             dana.ProducedBy =
                 new Production()
@@ -143,7 +141,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/okeeffe-gok/1")
                 .WithLabel("GOK 1918, GOKM")
-                .WithClassifiedAs(Getty.Photograph, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Photograph, Aat.TypeOfWork);
 
             gok.IdentifiedBy = [ new Identifier("2014.3.78").AsAccessionNumber() ];
 
@@ -169,7 +167,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/okeeffe-yuag/1")
                 .WithLabel("GOK 1918, YUAG")
-                .WithClassifiedAs(Getty.Photograph, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Photograph, Aat.TypeOfWork);
 
             gok.IdentifiedBy = [ new Identifier("2016.101.242").AsAccessionNumber() ];
 
@@ -196,7 +194,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/ccp/1")
                 .WithLabel("Chaucer's Canterbury Pilgrims")
-                .WithClassifiedAs(Getty.Print, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Print, Aat.TypeOfWork);
 
             ccp.ProducedBy = new Production().WithLabel("Printing from Plate");
             ccp.ProducedBy.UsedSpecificObject = [
@@ -281,7 +279,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/washday/1")
                 .WithLabel("Wash Day")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             washday.IdentifiedBy = [
                 new Name("Wash Day").AsPrimaryName()
@@ -305,14 +303,12 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/group/harwoodstudio/1")
                 .WithLabel("Studio of Francis Harwood")
-                .WithClassifiedAs(Getty.AatType("Studio", "300404275"));
+                .WithClassifiedAs(Aat.Studio);
 
             grp.FormedBy = new Formation()
             {
                 InfluencedBy = [
-                    new Person()
-                        .WithId("http://vocab.getty.edu/ulan/500015886")
-                        .WithLabel("Francis Harwood")
+                    Ulan.FrancisHarwood
                 ]
             };
 
@@ -326,7 +322,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/gradualpage/1")
                 .WithLabel("Page from a Gradual")
-                .WithClassifiedAs(Getty.AatType("Page", "300194222"), Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Page, Aat.TypeOfWork);
 
             gradualPage.RemovedBy = [
                 new PartRemoval()
@@ -373,7 +369,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/lepeintre/1")
                 .WithLabel("Le Peintre by Picasso")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             var destruction = new Destruction()
                 .WithLabel("Destruction of Le Peintre");
@@ -393,7 +389,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/lepeintre/2")
                 .WithLabel("Le Peintre by Picasso")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             var destruction = new Destruction()
                 .WithLabel("Destruction of Le Peintre");

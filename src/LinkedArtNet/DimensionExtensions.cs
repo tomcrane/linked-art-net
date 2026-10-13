@@ -19,7 +19,7 @@ public static class DimensionExtensions
         var dimension = new Dimension { Value = value, Unit = unit }.WithId(id).WithClassifiedAs(dimensionType);
         if (!string.IsNullOrWhiteSpace(displayTitle))
         {
-            dimension.IdentifiedBy = [new Name(displayTitle).WithClassifiedAs(Getty.DisplayTitle)];
+            dimension.IdentifiedBy = [new Name(displayTitle).WithClassifiedAs(Aat.DisplayTitle)];
         }
         return laObj.WithDimension(dimension);
     }
@@ -29,7 +29,7 @@ public static class DimensionExtensions
 
     public static T WithFileSize<T>(this T laObj, string? id, double value, MeasurementUnit unit, string? label = null) where T : LinkedArtObject, IHasDimensions
     {
-        var fileSize = new Dimension { Value = value, Unit = unit }.WithId(id).WithClassifiedAs(Getty.FileSize);
+        var fileSize = new Dimension { Value = value, Unit = unit }.WithId(id).WithClassifiedAs(Aat.FileSize);
         if (!string.IsNullOrWhiteSpace(label))
         {
             fileSize.Label = label;
@@ -38,16 +38,16 @@ public static class DimensionExtensions
     }
 
     public static HumanMadeObject WithHeightDimension(this HumanMadeObject hmObj, double value, MeasurementUnit unit, string? displayTitle = null)
-        => hmObj.WithDimension(Getty.Height, value, unit, displayTitle);
+        => hmObj.WithDimension(Aat.Height, value, unit, displayTitle);
 
     public static HumanMadeObject WithHeightDimension(this HumanMadeObject hmObj, string? id, double value, MeasurementUnit unit, string? displayTitle = null)
-        => hmObj.WithDimension(Getty.Height, value, unit, displayTitle, id);
+        => hmObj.WithDimension(Aat.Height, value, unit, displayTitle, id);
 
     public static HumanMadeObject WithWidthDimension(this HumanMadeObject hmObj, double value, MeasurementUnit unit, string? displayTitle = null)
-        => hmObj.WithDimension(Getty.Width, value, unit, displayTitle);
+        => hmObj.WithDimension(Aat.Width, value, unit, displayTitle);
 
     public static HumanMadeObject WithWidthDimension(this HumanMadeObject hmObj, string? id, double value, MeasurementUnit unit, string? displayTitle = null)
-        => hmObj.WithDimension(Getty.Width, value, unit, displayTitle, id);
+        => hmObj.WithDimension(Aat.Width, value, unit, displayTitle, id);
 
     public static LinkedArtTimeSpan WithDaysDimension(this LinkedArtTimeSpan ts, double value, string? id = null)
     {
@@ -69,26 +69,26 @@ public static class DimensionExtensions
         var color = new Dimension
         {
             Label = label ?? aatColor.Label,
-            ClassifiedAs = [Getty.Color, aatColor],
+            ClassifiedAs = [Aat.Color, aatColor],
             Value = rgbColor,
-            Unit = Getty.AatUnit("rgb", "300266239"),
+            Unit = Aat.Rgb,
         };
         return hmObj.WithDimension(color);
     }
 
-    public static HumanMadeObject WithShape(this HumanMadeObject hmObj, Type aatShape) => hmObj.WithClassifiedAs(aatShape, Getty.Shape);
+    public static HumanMadeObject WithShape(this HumanMadeObject hmObj, Type aatShape) => hmObj.WithClassifiedAs(aatShape, Aat.Shape);
 
     public static HumanMadeObject WithComponentCount(this HumanMadeObject hmObj, int value)
     {
-        var count = new Dimension { Value = value, Unit = Getty.AatUnit("Components", "300241583") }.WithClassifiedAs(Getty.Count);
+        var count = new Dimension { Value = value, Unit = Aat.Components }.WithClassifiedAs(Aat.Count);
         return hmObj.WithDimension(count);
     }
 
     public static T WithPageCount<T>(this T laObj, int value, string? label = null) where T : LinkedArtObject, IHasDimensions
     {
-        var count = new Dimension { Value = value, Unit = Getty.AatUnit("Pages", "300194222") }
+        var count = new Dimension { Value = value, Unit = Aat.Pages }
             .WithLabel(string.IsNullOrWhiteSpace(label) ? value.ToString() : label)
-            .WithClassifiedAs(Getty.AatType("Count Of", "300404433"));
+            .WithClassifiedAs(Aat.CountOf);
         return laObj.WithDimension(count);
     }
 }

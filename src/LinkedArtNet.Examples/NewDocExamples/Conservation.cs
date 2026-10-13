@@ -21,7 +21,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/25")
                 .WithLabel("The Night Watch")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             nightWatch.AttributedBy = [
                 new AttributeAssignment()
@@ -30,7 +30,7 @@ namespace Examples.NewDocExamples
                     IdentifiedBy = [new Name("Thorough Condition Assessment")],
                     ReferredToBy = [
                         new LinguisticObject()
-                            .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                            .WithClassifiedAs(Aat.Description, Aat.BriefText)
                             .WithContent("Very fine cracks throughout the painted surface")
                     ],
                     TimeSpan = new LinkedArtTimeSpan
@@ -44,7 +44,7 @@ namespace Examples.NewDocExamples
                             .WithLabel("Rijksmuseum")
                     ],
                     AssignedProperty = "classified_as",
-                    Assigned = [ Getty.AatType("Microcracks", "300387447") ],
+                    Assigned = [ Aat.Microcracks ],
                     PartOf = [
                         new Activity()
                             .WithId($"{Documentation.IdRoot}/event/operation_nightwatch")
@@ -63,7 +63,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/26")
                 .WithLabel("The Night Watch")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             nightWatch.ModifiedBy = [
                 new Modification()
@@ -71,10 +71,10 @@ namespace Examples.NewDocExamples
                     Label = "Conservation of Night Watch",
                     ReferredToBy = [
                         new LinguisticObject()
-                            .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                            .WithClassifiedAs(Aat.Description, Aat.BriefText)
                             .WithContent("Minor conservation work in response to earlier survey")
                     ],
-                    Technique = [Getty.AatType("Cleaning", "300053027")],
+                    Technique = [Aat.Cleaning],
                     TimeSpan = new LinkedArtTimeSpan
                     {
                         BeginOfTheBegin = new LinkedArtDate(2020, 1, 1),
@@ -103,12 +103,12 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/event/operation_nightwatch/1")
                 .WithLabel("Conservation Project")
-                .WithClassifiedAs(Getty.AatType("Conservation Activity", "300404519"));
+                .WithClassifiedAs(Aat.ConservationActivity);
 
             operationNW.IdentifiedBy = [new Name("Operation Night Watch").AsPrimaryName()];
             operationNW.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
                     .WithContent("Operation Night Watch is the biggest and most wide-ranging ever study of Rembrandt’s most famous painting.")
             ];
             operationNW.TimeSpan = new LinkedArtTimeSpan

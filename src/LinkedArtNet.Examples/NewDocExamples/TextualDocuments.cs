@@ -27,7 +27,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/yul_10801219/1")
                 .WithLabel("Yale's copy of Koot's Night Watch")
-                .WithClassifiedAs(Getty.Book, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Book, Aat.TypeOfWork);
 
             kootCopy.IdentifiedBy = [ 
                 new Name("Rembrandt's Night Watch. A Fascinating Story").AsPrimaryName(),
@@ -37,7 +37,7 @@ namespace Examples.NewDocExamples
             kootCopy.ReferredToBy = [
                 new LinguisticObject()
                     .WithContent("92 p. with illus.")
-                    .WithClassifiedAs(Getty.PhysicalStatement, Getty.BriefText)
+                    .WithClassifiedAs(Aat.PhysicalStatement, Aat.BriefText)
             ];
 
             kootCopy.Carries = [
@@ -57,7 +57,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch/1")
                 .WithLabel("Content of Koot's Night Watch")
-                .WithClassifiedAs(Getty.Monograph, Getty.TypeOfWork)
+                .WithClassifiedAs(Aat.Monograph, Aat.TypeOfWork)
                 .WithLanguage("300388277", "English", "en");
 
             koot.IdentifiedBy = [
@@ -75,7 +75,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch/2")
                 .WithLabel("Content of Koot's Night Watch")
-                .WithClassifiedAs(Getty.Monograph, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Monograph, Aat.TypeOfWork);
 
             koot.CreatedBy = new Creation()
             {
@@ -91,7 +91,7 @@ namespace Examples.NewDocExamples
                 new Activity()
                 {
                     Label = "MI's Publishing",
-                    ClassifiedAs = [ Getty.Publishing ],
+                    ClassifiedAs = [ Aat.Publishing ],
                     TimeSpan = LinkedArtTimeSpan.FromYear(1969),
                     CarriedOutBy = [ 
                         new Group()
@@ -113,7 +113,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch_ch1/1")
                 .WithLabel("Chapter 1 of Koot")
-                .WithClassifiedAs(Getty.AatType("Chapter", "300311699"), Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Chapter, Aat.TypeOfWork);
 
             chapter.IdentifiedBy = [new Name("Introduction").AsPrimaryName()];
 
@@ -133,14 +133,14 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch_ch1/2")
                 .WithLabel("Chapter 1 of Koot")
-                .WithClassifiedAs(Getty.AatType("Chapter", "300311699"), Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Chapter, Aat.TypeOfWork);
 
             chapter.IdentifiedBy = [new Name("Introduction").AsPrimaryName()];
 
             chapter.ReferredToBy = [
                 new LinguisticObject()
                     .WithContent("5 - 15")
-                    .WithClassifiedAs(Getty.PaginationStatement, Getty.BriefText)
+                    .WithClassifiedAs(Aat.PaginationStatement, Aat.BriefText)
             ];
 
             chapter.WithPageCount(10, "10 pages");
@@ -155,7 +155,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/text/koot_nightwatch/3")
                 .WithLabel("Content of Koot's Night Watch")
-                .WithClassifiedAs(Getty.Monograph, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Monograph, Aat.TypeOfWork);
 
             koot.About = [
                 new HumanMadeObject()

@@ -127,7 +127,7 @@ public class SerializationTests
             .WithContext()
             .WithId("https://example.org/spring")
             .WithLabel("Spring")
-            .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+            .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
             .WithHeightDimension(74, MeasurementUnit.Centimeters, "74 cm high")
             .WithMadeOf("oil", "300015050");
         spring.IdentifiedBy = [new Name("Spring").AsPrimaryName().WithLanguage("300388277", "English", "en")];
@@ -138,7 +138,7 @@ public class SerializationTests
             TookPlaceAt = [Getty.TgnPlace("Paris", "7008038")],
         };
         spring.CurrentOwner = [Getty.UlanGroup("Getty Museum", "500115988")];
-        spring.ReferredToBy = [new LinguisticObject().WithContent("A painting of a woman.").WithClassifiedAs(Getty.Description, Getty.BriefText)];
+        spring.ReferredToBy = [new LinguisticObject().WithContent("A painting of a woman.").WithClassifiedAs(Aat.Description, Aat.BriefText)];
 
         var json = LinkedArtJson.Serialize(spring);
         var back = LinkedArtJson.Deserialize<HumanMadeObject>(json);

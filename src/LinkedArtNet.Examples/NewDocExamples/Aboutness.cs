@@ -33,7 +33,7 @@ namespace Examples.NewDocExamples
 
             spring.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
                     .WithContent("A chic young woman in a day dress with floral accents holds a parasol against a background of exuberant foliage.")
             ];
 
@@ -72,7 +72,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Visual Content of Spring");
 
             springVis.RepresentsInstanceOfType = [
-                Getty.AatType("Parasol", "300046218")
+                Aat.Parasol
             ];
 
             Documentation.Save(springVis);
@@ -87,7 +87,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Visual Content of Spring");
 
             springVis.About = [
-                Getty.AatType("Spring (season)", "300133097")
+                Aat.Spring
             ];
 
             Documentation.Save(springVis);
@@ -99,7 +99,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/3")
                 .WithLabel("Visual Content of Spring")
-                .WithClassifiedAs(Getty.AatType("Impressionism", "300021503"), Getty.Style);
+                .WithClassifiedAs(Aat.Impressionism, Aat.Style);
 
             Documentation.Save(springVis);
         }
@@ -111,7 +111,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/4")
                 .WithLabel("Visual Content of Spring")
-                .WithClassifiedAs(Getty.AatType("Portrait", "300015637"));
+                .WithClassifiedAs(Aat.Portrait);
 
             Documentation.Save(springVis);
         }
@@ -125,7 +125,7 @@ namespace Examples.NewDocExamples
 
             nightWatch.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.AatType("Signature", "300028705"), Getty.BriefText)
+                    .WithClassifiedAs(Aat.Signature, Aat.BriefText)
                     .WithContent("signature and date: ‘Rembrandt f 1642’")
             ];
 
@@ -139,7 +139,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/catalog/1")
                 .WithLabel("Copy of Exhibition Catalog")
-                .WithClassifiedAs(Getty.AatType("Exhibition Catalog", "300026096"), Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.ExhibitionCatalog, Aat.TypeOfWork);
 
             catalog.Shows = [
                 new VisualItem()
@@ -166,7 +166,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/harpers/1")
                 .WithLabel("Poster Item")
-                .WithClassifiedAs(Getty.Print, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Print, Aat.TypeOfWork);
 
             harpers.Shows = [
                 new VisualItem()
@@ -186,11 +186,11 @@ namespace Examples.NewDocExamples
 
             harpersVis.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
                     .WithContent("The text and image are primarily red and black")
             ];
 
-            harpersVis.Represents = [Getty.AatType("Woman", "300025943")];
+            harpersVis.Represents = [Aat.Woman];
 
             Documentation.Save(harpersVis);
         }

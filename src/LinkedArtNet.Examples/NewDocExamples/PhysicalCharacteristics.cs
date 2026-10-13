@@ -30,7 +30,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/6")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
                 .WithWidthDimension(453.5, MeasurementUnit.Centimeters)
                 .WithHeightDimension(379.5, MeasurementUnit.Centimeters);
 
@@ -44,11 +44,11 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/7")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             nightWatch.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.DimensionStatement, Getty.BriefText)
+                    .WithClassifiedAs(Aat.DimensionStatement, Aat.BriefText)
                     .WithContent("height 379.5 cm × width 453.5 cm × weight 337 kg")
             ];
 
@@ -62,7 +62,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/8")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
                 .WithWidthDimension(453.5, MeasurementUnit.Centimeters, "453.5 cm wide")
                 .WithHeightDimension(379.5, MeasurementUnit.Centimeters, "379.5 cm high");
 
@@ -76,7 +76,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/9")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
                 .WithHeightDimension(379.5, MeasurementUnit.Centimeters);
 
             var attrAssignment = new AttributeAssignment()
@@ -104,7 +104,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/29")
                 .WithLabel("Spring")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
                 .WithHeightDimension(74, MeasurementUnit.Centimeters)
                 .WithWidthDimension(51.5, MeasurementUnit.Centimeters);
 
@@ -125,8 +125,8 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/10")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
-                .WithRgbColor("#B35A1F", Getty.AatType("Brown", "300127490"), "brown");
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
+                .WithRgbColor("#B35A1F", Aat.Brown, "brown");
 
             Documentation.Save(nightWatch);
         }
@@ -138,8 +138,8 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/11")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
-                .WithShape(Getty.AatType("Oblong", "300311843"));
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
+                .WithShape(Aat.Oblong);
 
             Documentation.Save(nightWatch);
         }
@@ -151,7 +151,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/12")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
                 .WithMadeOf("oil", "300015050")
                 .WithMadeOf("canvas", "300014078");
 
@@ -166,11 +166,11 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/13")
                 .WithLabel("Night Watch by Rembrandt")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             nightWatch.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.MaterialStatement, Getty.BriefText)
+                    .WithClassifiedAs(Aat.MaterialStatement, Aat.BriefText)
                     .WithContent("Oil on Canvas")
             ];
 
@@ -184,7 +184,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/support")
                 .WithLabel("Support of Night Watch")
-                .WithClassifiedAs(Getty.Support, Getty.PartType)
+                .WithClassifiedAs(Aat.Support, Aat.PartType)
                 .WithMadeOf("canvas", "300014078");
 
             support.PartOf = [
@@ -203,11 +203,11 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/back")
                 .WithLabel("Back of Spring by Manet")
-                .WithClassifiedAs(Getty.BackPart, Getty.PartType);
+                .WithClassifiedAs(Aat.BackPart, Aat.PartType);
 
             springBack.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.Inscription, Getty.BriefText)
+                    .WithClassifiedAs(Aat.Inscription, Aat.BriefText)
                     .WithContent("11505F")
             ];
 

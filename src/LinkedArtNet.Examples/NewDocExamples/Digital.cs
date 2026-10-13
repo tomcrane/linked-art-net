@@ -25,7 +25,7 @@ public class Digital
             .WithContext()
             .WithId($"{Documentation.IdRoot}/digital/operation_nw/1")
             .WithLabel("Operation Night Watch Publication")
-            .WithClassifiedAs(Getty.WebPage);
+            .WithClassifiedAs(Aat.WebPage);
 
         nightwatchPublication.IdentifiedBy = [new Name("Operation Night Watch")];
         nightwatchPublication.WithFileSize(220, MeasurementUnit.Kilobytes, "220 kb");
@@ -110,7 +110,7 @@ public class Digital
         var visual = new VisualItem();
         var digitalImage = new DigitalObject()
             .WithLabel("Image of Rembrandt")
-            .WithClassifiedAs(Getty.DigitalImage);
+            .WithClassifiedAs(Aat.DigitalImage);
         digitalImage.Format = "image/jpeg";
         digitalImage.AccessPoint = [
             new DigitalObject().WithId("https://upload.wikimedia.org/wikipedia/commons/b/bd/Rembrandt_van_Rijn_-_Self-Portrait_-_Google_Art_Project.jpg")
@@ -128,13 +128,13 @@ public class Digital
             .WithContext()
             .WithId($"{Documentation.IdRoot}/object/spring/9")
             .WithLabel("Jeanne (Spring) by Manet")
-            .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+            .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
         spring.IdentifiedBy = [new Name("Jeanne (Spring)")];
 
         var springWebLinguistic = new LinguisticObject();
         var springWebDigital = new DigitalObject()
-            .WithClassifiedAs(Getty.WebPage);
+            .WithClassifiedAs(Aat.WebPage);
         springWebDigital.Format = "text/html";
         springWebDigital.AccessPoint = [new DigitalObject().WithId("https://www.getty.edu/art/collection/object/103QTZ")];
         springWebLinguistic.DigitallyCarriedBy = [springWebDigital];
@@ -150,7 +150,7 @@ public class Digital
             .WithContext()
             .WithId($"{Documentation.IdRoot}/object/spring/10")
             .WithLabel("Jeanne (Spring) by Manet")
-            .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+            .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
         spring.IdentifiedBy = [new Name("Jeanne (Spring)")];
         spring.SubjectOf = [
@@ -169,13 +169,13 @@ public class Digital
             .WithContext()
             .WithId($"{Documentation.IdRoot}/object/spring/11")
             .WithLabel("Jeanne (Spring) by Manet")
-            .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+            .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
         spring.IdentifiedBy = [new Name("Jeanne (Spring)")];
 
         var visual = new VisualItem();
         var digitalImage = new DigitalObject()
-            .WithClassifiedAs(Getty.DigitalImage);
+            .WithClassifiedAs(Aat.DigitalImage);
         digitalImage.AccessPoint = [
             new DigitalObject().WithId("https://media.getty.edu/iiif/image/8094f61e-e458-42bd-90cf-a0ed0dcc90b9/full/full/0/default.jpg")
         ];

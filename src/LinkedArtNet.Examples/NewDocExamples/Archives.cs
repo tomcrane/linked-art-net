@@ -25,7 +25,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/letter/1")
                 .WithLabel("Obermeyer 1920")
-                .WithClassifiedAs(Getty.Letter);
+                .WithClassifiedAs(Aat.Letter);
 
             obermeyer.IdentifiedBy = [new Name("Obermeyer, Bertha (1920)").AsPrimaryName()];
 
@@ -46,7 +46,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/archive_sfl/1")
                 .WithLabel("Stieglitz Family Letters")
-                .WithClassifiedAs(Getty.ArchivalSubGrouping);
+                .WithClassifiedAs(Aat.ArchivalSubGrouping);
 
             set.IdentifiedBy = [new Name("Stieglitz Family Letters").AsPrimaryName()];
 
@@ -66,7 +66,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/archive_asc/1")
                 .WithLabel("Alfred Stiegliz Correspondence")
-                .WithClassifiedAs(Getty.ArchivalGrouping);
+                .WithClassifiedAs(Aat.ArchivalGrouping);
 
             set.IdentifiedBy = [new Name("Alfred Stiegliz Correspondence").AsPrimaryName()];
 
@@ -82,7 +82,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/archive_sfl/2")
                 .WithLabel("Stieglitz Family Letters")
-                .WithClassifiedAs (Getty.ArchivalSubGrouping);
+                .WithClassifiedAs (Aat.ArchivalSubGrouping);
 
             set.IdentifiedBy = [ new Name("Stieglitz Family Letters").AsPrimaryName() ];
 

@@ -25,9 +25,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Jeanne (Spring) by Manet");
 
             spring.CurrentOwner = [
-                new Group()
-                    .WithId("http://vocab.getty.edu/ulan/500115988")
-                    .WithLabel("Getty Museum")
+                Ulan.GettyMuseum
             ];
 
             Documentation.Save(spring);
@@ -40,8 +38,8 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/14")
                 .WithLabel("Painting")  // assume a mistake in the docs?
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
-                .WithClassifiedAs(Getty.Artwork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
+                .WithClassifiedAs(Aat.Artwork);
 
 
             nightWatch.CurrentOwner = [
@@ -52,9 +50,7 @@ namespace Examples.NewDocExamples
 
 
             nightWatch.CurrentCustodian = [
-                new Group()
-                    .WithId("http://vocab.getty.edu/ulan/500246547")
-                    .WithLabel("Rijksmuseum")
+                Ulan.Rijksmuseum
             ];
 
             Documentation.Save(nightWatch);
@@ -66,8 +62,8 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/17")
                 .WithLabel("Painting")  // assume a mistake in the docs?
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork)
-                .WithClassifiedAs(Getty.Artwork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
+                .WithClassifiedAs(Aat.Artwork);
 
 
             nightWatch.CurrentOwner = [
@@ -76,14 +72,10 @@ namespace Examples.NewDocExamples
                     .WithLabel("City of Amsterdam Governing Body")
             ];
 
-            nightWatch.CurrentPermanentCustodian = new Group()
-                .WithId("http://vocab.getty.edu/ulan/500246547")
-                .WithLabel("Rijksmuseum");
+            nightWatch.CurrentPermanentCustodian = Ulan.Rijksmuseum;
 
             nightWatch.CurrentCustodian = [
-                new Group()
-                    .WithId("http://vocab.getty.edu/ulan/500115988")
-                    .WithLabel("Getty Museum")
+                Ulan.GettyMuseum
             ];
 
             Documentation.Save(nightWatch);

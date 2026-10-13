@@ -31,8 +31,8 @@ public class ModelObjectProduction : ExamplePage
 
         painting.ClassifiedAs =
         [
-            Getty.Painting.WithClassifiedAs(Getty.TypeOfWork),
-            Getty.Artwork
+            Aat.Painting.WithClassifiedAs(Aat.TypeOfWork),
+            Aat.Artwork
         ];
 
         painting.ProducedBy =
@@ -55,15 +55,15 @@ public class ModelObjectProduction : ExamplePage
         
         glassSculpture.ClassifiedAs =
         [
-            Getty.Sculpture.WithClassifiedAs(Getty.TypeOfWork),
-            Getty.Artwork
+            Aat.Sculpture.WithClassifiedAs(Aat.TypeOfWork),
+            Aat.Artwork
         ];
 
         glassSculpture.ProducedBy =
             new Production()
             {
                 CarriedOutBy = [new Person().WithLabel("Glassblowing Artist")],
-                Technique = [Getty.AatType("Glassblowing", "300053932")]
+                Technique = [Aat.Glassblowing]
             };
 
         return glassSculpture;
@@ -76,13 +76,13 @@ public class ModelObjectProduction : ExamplePage
             .WithContext()
             .WithId($"{ExamplePage.Base}{nameof(ModelObjectProduction)}/62.json")
             .WithLabel("Graffiti")
-            .WithClassifiedAs(Getty.Artwork);
+            .WithClassifiedAs(Aat.Artwork);
 
         graffiti.ProducedBy =
             new Production()
                 .WithLabel("Production of Graffiti")
-                .WithClassifiedAs(Getty.AatType("Vandalism", "300055299"))
-                .WithTechnique(Getty.AatType("Spraypainting", "300053816"));
+                .WithClassifiedAs(Aat.Vandalism)
+                .WithTechnique(Aat.Spraypainting);
 
         return graffiti;
     }
@@ -98,8 +98,8 @@ public class ModelObjectProduction : ExamplePage
 
         paintedSculpture.ClassifiedAs =
         [
-            Getty.Sculpture.WithClassifiedAs(Getty.TypeOfWork),
-            Getty.Artwork
+            Aat.Sculpture.WithClassifiedAs(Aat.TypeOfWork),
+            Aat.Artwork
         ];
 
         var production = new Production()
@@ -107,12 +107,12 @@ public class ModelObjectProduction : ExamplePage
             Part = [
                 new Production()
                 {
-                    Technique = [Getty.AatType("Sculpting", "300264383")],
+                    Technique = [Aat.Sculpting],
                     CarriedOutBy = [new Person().WithLabel("Sculptor")]
                 },
                 new Production()
                 {
-                    Technique = [Getty.AatType("Painting", "300054216")],
+                    Technique = [Aat.PaintingTechnique],
                     CarriedOutBy = [new Person().WithLabel("Painter")]
                 }
             ]
@@ -130,8 +130,8 @@ public class ModelObjectProduction : ExamplePage
             .WithContext()
             .WithId($"{ExamplePage.Base}{nameof(ModelObjectProduction)}/64.json")
             .WithLabel("Copy of Painting of a Fish")
-            .WithClassifiedAs(Getty.Painting.WithClassifiedAs(Getty.TypeOfWork))
-            .WithClassifiedAs(Getty.Artwork);
+            .WithClassifiedAs(Aat.Painting.WithClassifiedAs(Aat.TypeOfWork))
+            .WithClassifiedAs(Aat.Artwork);
 
         fishCopy.ProducedBy =
             new Production()
@@ -140,8 +140,8 @@ public class ModelObjectProduction : ExamplePage
                 InfluencedBy = [
                     new HumanMadeObject()
                         .WithLabel("Painting of a Fish")
-                        .WithClassifiedAs(Getty.Painting)
-                        .WithClassifiedAs(Getty.Artwork)
+                        .WithClassifiedAs(Aat.Painting)
+                        .WithClassifiedAs(Aat.Artwork)
                 ]
             };
 

@@ -67,11 +67,11 @@ public static class LinkedArtExtensions
     public static T WithTechnique<T>(this T activity, string typeId, string? typeLabel) where T : ActivityBase
         => activity.WithTechnique(new Type(typeId, typeLabel));
 
-    public static T AsPrimaryName<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Getty.PrimaryName);
+    public static T AsPrimaryName<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Aat.PrimaryName);
 
-    public static T AsSystemAssignedNumber<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Getty.SystemAssignedNumber);
+    public static T AsSystemAssignedNumber<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Aat.SystemAssignedNumber);
 
-    public static T AsAccessionNumber<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Getty.AccessionNumber);
+    public static T AsAccessionNumber<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Aat.AccessionNumber);
 
     public static T WithContent<T>(this T laObj, string content) where T : LinkedArtObject, IHasContent
     {
@@ -111,7 +111,7 @@ public static class LinkedArtExtensions
     public static T WithStatement<T>(this T laObj, Type statementType, string content, Action<LinguisticObject>? configure = null)
         where T : LinkedArtObject, IHasStatements
     {
-        var statement = new LinguisticObject().WithContent(content).WithClassifiedAs(statementType, Getty.BriefText);
+        var statement = new LinguisticObject().WithContent(content).WithClassifiedAs(statementType, Aat.BriefText);
         configure?.Invoke(statement);
         laObj.ReferredToBy ??= [];
         laObj.ReferredToBy.Add(statement);

@@ -39,7 +39,7 @@ public class Identifier : LinkedArtObject, IHasContent, IHasStatements
     /// <summary>A sort value identifier, optionally recording what influenced the ordering.</summary>
     public static Identifier SortValue(string value, LinkedArtObject? influencedBy = null)
     {
-        var identifier = new Identifier(value).WithClassifiedAs(Getty.SortValue);
+        var identifier = new Identifier(value).WithClassifiedAs(Aat.SortValue);
         if (influencedBy != null)
         {
             identifier.AssignedBy = [new AttributeAssignment { InfluencedBy = [influencedBy] }];

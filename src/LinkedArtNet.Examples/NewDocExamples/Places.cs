@@ -24,13 +24,13 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/place/amsterdam/1")
                 .WithLabel("Amsterdam")
-                .WithClassifiedAs(Getty.City);
+                .WithClassifiedAs(Aat.City);
 
             amsterdam.IdentifiedBy = [new Name("Amsterdam")];
 
             amsterdam.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
                     .WithContent("Amsterdam is a city in the Netherlands")
             ];
 
@@ -38,7 +38,7 @@ namespace Examples.NewDocExamples
                 new Place()
                     .WithId($"{Documentation.IdRoot}/place/netherlands")
                     .WithLabel("Netherlands")
-                    .WithClassifiedAs(Getty.Nation)
+                    .WithClassifiedAs(Aat.Nation)
             ];
 
             Documentation.Save(amsterdam);
@@ -51,7 +51,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/place/new_zealand/1")
                 .WithLabel("New Zealand")
-                .WithClassifiedAs(Getty.Nation);
+                .WithClassifiedAs(Aat.Nation);
 
             nz.DefinedBy = "POLYGON((165.74 -33.55, -179.96 -33.55, -179.96 -47.8, 165.74 -47.8, 165.74 -33.55))";
 
@@ -84,7 +84,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/flw_house/1")
                 .WithLabel("Frank Lloyd Wright House")
-                .WithClassifiedAs(Getty.Building);
+                .WithClassifiedAs(Aat.Building);
 
             house.IdentifiedBy = [new Name("Frank Lloyd Wright House")];
 

@@ -27,13 +27,13 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/activity/exha/1")
                 .WithLabel("Manet and Modern Beauty (Getty)")
-                .WithClassifiedAs(Getty.Exhibiting);
+                .WithClassifiedAs(Aat.Exhibiting);
 
             activity.IdentifiedBy = [ new Name("Manet and Modern Beauty").AsPrimaryName() ];
 
             activity.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
                     .WithContent("The great painter of modern Paris Edouard Manet famously shocked contemporary audiences with his provocative pictures. The first exhibition ever to explore the last years of his short life, Manet and Modern Beauty highlights a less familiar and more intimate side of this celebrated artist's work.")
             ];
 
@@ -44,17 +44,13 @@ namespace Examples.NewDocExamples
             };
 
             activity.TookPlaceAt = [
-                new Place()
-                    .WithId("http://vocab.getty.edu/tgn/7023900")
-                    .WithLabel("Los Angeles")
-                    .WithClassifiedAs(Getty.City)
+                Tgn.LosAngeles
+                    .WithClassifiedAs(Aat.City)
             ];
 
             activity.CarriedOutBy = [
-                new Group()
-                    .WithId("http://vocab.getty.edu/ulan/500115988")
-                    .WithLabel("Getty Museum")
-                    .WithClassifiedAs(Getty.Museum)
+                Ulan.GettyMuseum
+                    .WithClassifiedAs(Aat.Museum)
             ];
 
             activity.UsedSpecificObject = [
@@ -80,13 +76,13 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/concept/exhidea/1")
                 .WithLabel("Idea for Manet and Modern Beauty")
-                .WithClassifiedAs(Getty.Exhibition);
+                .WithClassifiedAs(Aat.Exhibition);
 
             concept.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
             concept.About = [
-                Getty.AatType("Beauty", "300055821"),
-                new Person().WithId("http://vocab.getty.edu/ulan/500010363").WithLabel("Manet")
+                Aat.Beauty,
+                Ulan.Manet
             ];
 
             concept.CreatedBy = new Creation()
@@ -113,7 +109,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/concept/exhidea/2")
                 .WithLabel("Idea for Manet and Modern Beauty")
-                .WithClassifiedAs(Getty.Exhibition);
+                .WithClassifiedAs(Aat.Exhibition);
 
             concept.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
@@ -121,9 +117,7 @@ namespace Examples.NewDocExamples
             concept.CreatedBy = new Creation()
             {
                 InfluencedBy = [
-                    new Person()
-                        .WithId("http://vocab.getty.edu/ulan/500010363")
-                        .WithLabel("Manet")
+                    Ulan.Manet
                 ]
             };
 
@@ -137,7 +131,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/activity/exhb/1")
                 .WithLabel("Manet and Modern Beauty (AIC)")
-                .WithClassifiedAs(Getty.Exhibiting);
+                .WithClassifiedAs(Aat.Exhibiting);
 
             activity.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
@@ -148,17 +142,13 @@ namespace Examples.NewDocExamples
             };
 
             activity.TookPlaceAt = [
-                new Place()
-                    .WithId("http://vocab.getty.edu/tgn/7013596")
-                    .WithLabel("Chicago")
-                    .WithClassifiedAs(Getty.City)
+                Tgn.Chicago
+                    .WithClassifiedAs(Aat.City)
             ];
 
             activity.CarriedOutBy = [
-                new Group()
-                    .WithId("http://vocab.getty.edu/ulan/500304669")
-                    .WithLabel("Art Institute")
-                    .WithClassifiedAs(Getty.Museum)
+                Ulan.ArtInstitute
+                    .WithClassifiedAs(Aat.Museum)
             ];
 
             activity.UsedSpecificObject = [
@@ -190,7 +180,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/activity/exhab/1")
                 .WithLabel("Manet and Modern Beauty")
-                .WithClassifiedAs(Getty.AatType("Exhibiting in multiple locations", "300054773"));
+                .WithClassifiedAs(Aat.ExhibitingInMultipleLocations);
 
             activity.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
@@ -217,13 +207,13 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/exset/1")
                 .WithLabel("Exhibition objects")
-                .WithClassifiedAs(Getty.AatType("Exhibition Collection", "300378926"));
+                .WithClassifiedAs(Aat.ExhibitionCollection);
 
             set.IdentifiedBy = [new Name("Objects in Manet and Modern Beauty").AsPrimaryName()];
 
             set.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Getty.Description, Getty.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
                     .WithContent("Objects in the exhibition Manet and Modern Beauty at the Art Institute of Chicago and the Getty Museum")
             ];
 
@@ -246,7 +236,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/12")
                 .WithLabel("Jeanne (Spring) by Manet")
-                .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+                .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
             spring.IdentifiedBy = [new Name("Jeanne (Spring)")];
 

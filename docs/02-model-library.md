@@ -200,6 +200,13 @@ the parser. Rules:
 
 ## 6. Vocabulary
 
+*Status 2026-10-13:* implemented as a JSON registry per vocabulary (`vocabulary/aat.json`, `tgn.json`,
+`ulan.json`) and a small tool (`tools/VocabGen`) that writes `Aat.g.cs`, `Tgn.g.cs`, `Ulan.g.cs`; a
+committed generated file plus a sync test was chosen over a Roslyn source generator because the output is
+then browsable and diffable. Terms are typed by `kind` (Type, Material, Language, Currency,
+MeasurementUnit, Place, Person, Group). An `aliasOf` entry gives a second label for an id the site
+labels inconsistently (e.g. `Count` / `CountOf`), so ids stay unique among canonical terms.
+
 Formalise the hard-coded Getty identifiers into a **data-driven registry**:
 
 - `vocabulary/aat.json`, `tgn.json`, `ulan.json`: entries `{ "id": "300033618", "name": "Painting",

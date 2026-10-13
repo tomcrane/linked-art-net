@@ -177,5 +177,10 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
    `type`), `LinkedArtTypes` registry. All 118 cached site examples read strictly and round-trip.
    Property order stays attribute-based (a central table added nothing the attributes don't).
 
-Next: Phase 1 step 5 (vocabulary registry: `vocabulary/*.json` + generated `Aat`/`Tgn`/`Ulan` constants,
-replace inline `Getty.AatType` calls, fix duplicate ids).
+8. ~~Phase 1 step 5: vocabulary registry.~~ Done 2026-10-13. `vocabulary/{aat,tgn,ulan}.json` (127 + 4 + 6
+   terms) -> `tools/VocabGen` -> `Aat.g.cs`, `Tgn.g.cs`, `Ulan.g.cs`; typed terms (`Aat.Oil` is a Material,
+   `Aat.English` a Language); aliases for the site's inconsistent labels; no inline AAT ids remain in
+   the examples; tests keep JSON and generated code in sync.
+
+Next: Phase 1 step 6 (fluent API v2: generated list helpers, lambda relationship builders, factories
+that do not set labels; migrate examples and remove post-hoc patches).

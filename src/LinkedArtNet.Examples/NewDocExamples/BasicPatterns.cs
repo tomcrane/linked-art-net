@@ -43,8 +43,8 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/2")
                 .WithLabel("Jeanne (Spring) by Manet")
-                .WithClassifiedAs(Getty.Artwork)
-                .WithClassifiedAs(Getty.Painting);
+                .WithClassifiedAs(Aat.Artwork)
+                .WithClassifiedAs(Aat.Painting);
 
             Documentation.Save(spring);
         }
@@ -56,7 +56,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/place/paris/1")
                 .WithLabel("Paris")
-                .WithClassifiedAs(Getty.AatType("City", "300008389"));
+                .WithClassifiedAs(Aat.City);
 
             Documentation.Save(paris);
         }
@@ -70,8 +70,8 @@ namespace Examples.NewDocExamples
 
             spring.ClassifiedAs =
             [
-                Getty.Painting.WithClassifiedAs(Getty.TypeOfWork),
-                Getty.Artwork
+                Aat.Painting.WithClassifiedAs(Aat.TypeOfWork),
+                Aat.Artwork
             ];
 
             Documentation.Save(spring);
@@ -152,8 +152,8 @@ namespace Examples.NewDocExamples
 
             var materials = new LinguisticObject()
                 .WithClassifiedAs(
-                    Getty.AatType("Material Statement", "300435429"),
-                    Getty.AatType("Brief Text", "300418049"))
+                    Aat.MaterialStatement,
+                    Aat.BriefText)
                 .WithContent("Oil on Canvas")
                 .WithLanguage("300388277", "English", "en");
             
@@ -202,7 +202,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/event/stowe/1")
                 .WithLabel("Auction of Stowe House")
-                .WithClassifiedAs(Getty.AatType("Auction Event", "300054751"));
+                .WithClassifiedAs(Aat.AuctionEvent);
 
             var timespan = new LinkedArtTimeSpan().WithDaysDimension(3);
             timespan.BeginOfTheBegin = new LinkedArtDate(1848, 8, 1);
@@ -225,14 +225,14 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/spring/support")
                 .WithLabel("Support of Spring")
                 .WithClassifiedAs(
-                    Getty.AatType("Support", "300014844"),
-                    Getty.PartType);
+                    Aat.Support,
+                    Aat.PartType);
 
 
             var materials = new LinguisticObject()
                 .WithClassifiedAs(
-                    Getty.AatType("Material Statement", "300435429"),
-                    Getty.AatType("Brief Text", "300418049"))
+                    Aat.MaterialStatement,
+                    Aat.BriefText)
                 .WithContent("Canvas");
 
             spring.ReferredToBy = [materials];
@@ -276,12 +276,12 @@ namespace Examples.NewDocExamples
             jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008);
 
             var directorActivity = new Creation()
-                .WithClassifiedAs(Getty.AatType("Director", "300025654"));
+                .WithClassifiedAs(Aat.Director);
             directorActivity.CarriedOutBy = [
                 new Person().WithId($"{Documentation.IdRoot}/person/greenaway").WithLabel("Peter Greenaway")
             ];
             var producerActivity = new Creation()
-                .WithClassifiedAs(Getty.AatType("Producer", "300197742"));
+                .WithClassifiedAs(Aat.Producer);
             producerActivity.CarriedOutBy = [
                 new Person().WithId($"{Documentation.IdRoot}/person/wolting").WithLabel("Femke Wolting")
             ];

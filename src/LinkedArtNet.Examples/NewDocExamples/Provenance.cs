@@ -22,7 +22,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/provenance/manet_proust/1")
                 .WithLabel("Purchase of Spring by Proust")
-                .WithClassifiedAs(Getty.ProvenanceActivity);
+                .WithClassifiedAs(Aat.ProvenanceActivity);
 
             activity.IdentifiedBy = [new Name("Purchase of Spring by Proust from Manet").AsPrimaryName()];
             activity.TimeSpan = new LinkedArtTimeSpan()
@@ -57,9 +57,7 @@ namespace Examples.NewDocExamples
                 PaidAmount = new MonetaryAmount
                 {
                     Value = 3000,
-                    Currency = new Currency()
-                        .WithId($"{Getty.Aat}300412016")
-                        .WithLabel("French Francs")
+                    Currency = Aat.FrenchFrancs
                 },
                 PaidFrom = [
                     new Person()
@@ -88,8 +86,8 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/provenance/ziwei_yuag/1")
                 .WithLabel("Gift of Landscape to YUAG")
-                .WithClassifiedAs(Getty.ProvenanceActivity)
-                .WithClassifiedAs($"{Getty.Aat}300417637", "Gift"); 
+                .WithClassifiedAs(Aat.ProvenanceActivity)
+                .WithClassifiedAs(Aat.Gift); 
 
             activity.TimeSpan = new LinkedArtTimeSpan()
             {
@@ -129,17 +127,17 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/provenance/unknown_faure/1")
                 .WithLabel("Unknown Acquisition of Spring by Faure")
-                .WithClassifiedAs(Getty.ProvenanceActivity);
+                .WithClassifiedAs(Aat.ProvenanceActivity);
 
             activity.After = [
                 new Activity()
                     .WithId($"{Documentation.IdRoot}/provenance/manet_proust")
-                    .WithClassifiedAs(Getty.ProvenanceActivity)
+                    .WithClassifiedAs(Aat.ProvenanceActivity)
             ];
             activity.Before = [
                 new Activity()
                     .WithLabel("foure_durand")
-                    .WithClassifiedAs(Getty.ProvenanceActivity)
+                    .WithClassifiedAs(Aat.ProvenanceActivity)
             ];
 
             Documentation.Save(activity);

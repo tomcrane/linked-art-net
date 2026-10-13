@@ -16,8 +16,8 @@ public class MeasurementUnit : Type
     }
 
     // Common units. Each access returns a new instance so callers cannot mutate a shared object.
-    public static MeasurementUnit Centimeters => new($"{Getty.Aat}300379098", "centimeters");
-    public static MeasurementUnit Millimeters => new($"{Getty.Aat}300379099", "millimeters");
-    public static MeasurementUnit Kilobytes => new($"{Getty.Aat}300265870", "kilobytes");
-    public static MeasurementUnit Days => new($"{Getty.Aat}300379242", "days");
+    public static MeasurementUnit Centimeters => Aat.Centimeters;
+    public static MeasurementUnit Millimeters => Aat.Millimeters;
+    public static MeasurementUnit Kilobytes => Aat.Kilobytes;
+    public static MeasurementUnit Days => Aat.Days;
 }

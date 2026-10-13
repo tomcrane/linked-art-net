@@ -7,6 +7,7 @@ museums, libraries and archives to describe art and cultural heritage.
 |---|---|
 | `src/LinkedArtNet` | The model library: classes for Linked Art 1.0, JSON-LD serialisation, fluent authoring API, Getty vocabulary helpers. |
 | `src/LinkedArtNet.Dates` | Free-text date strings to Linked Art TimeSpans: canonical EDTF-style expressions, profiles, realiser, grammar in seven languages, named periods, fluent bridge (`WithTimeSpan("c. 1642")`). |
+| `src/LinkedArtNet.Dates.Service` | Kestrel service over the parser: `GET /v1/timespan?s=late%201950s`, batch POST, profiles, OpenAPI at `/docs`; Dockerfile. |
 | `src/LinkedArtNet.Examples` | One C# method per example published on linked.art; the tests compare each method's JSON with the site's. Coverage: [examples/coverage.md](examples/coverage.md). |
 | `tools/` | Code generators and the site crawler (`ExampleManifest`). |
 | `tests/` | Test projects. |
@@ -44,6 +45,7 @@ Requires the .NET 10 SDK (`global.json`).
 dotnet build linked-art-net.slnx
 dotnet test  linked-art-net.slnx
 dotnet run --project tools/ExampleManifest -- coverage   # compares the examples with linked.art, writes examples/coverage.md
+dotnet run --project src/LinkedArtNet.Dates.Service             # the date parsing service on http://localhost:5000/docs
 ```
 
 ## Status

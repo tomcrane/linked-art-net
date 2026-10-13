@@ -261,7 +261,16 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     Corpus `authored/multilingual.json` (44, verified). The imported timetwister and yearrange files evaluate under
     `archive-us` and `catalogue-quarters`: proposed pass rate 60.0% -> 62.3%. `tools/Corpus tokens` for debugging.
 
-Next: Phase 3 (the Kestrel service) or Phase 4 (examples site), owner's choice; the PeriodO-backed period source and
-the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+18. ~~Phase 3 step 1: `LinkedArtNet.Dates.Service`.~~ Done 2026-10-14. Minimal API on Kestrel: GET/POST `/v1/timespan`
+    (intent, profile, shape, labelPolicy, emitInnerBounds; per-item overrides and `ref` echo in POST), `/v1/profiles`,
+    `/v1/profiles/{name}`, `/v1/canonical`, `/healthz`, `/version`, OpenAPI at `/openapi/v1.json` and Scalar at
+    `/docs`. Deterministic responses with `ETag` and `Cache-Control`, in-memory memo, per-IP fixed-window rate
+    limit, CORS for any origin, 500-char / 500-input / 256 KB limits, opt-in JSONL capture of weak results,
+    `llm=true` accepted and noted until an interpreter exists. `schemas/timespan-result.schema.json` is checked by
+    the integration tests (21, WebApplicationFactory). Multi-stage Dockerfile on the chiseled ASP.NET image with a
+    built-in `--healthcheck`; `.github/workflows/docker.yml` pushes to GHCR on `v*` tags.
+
+Next: Phase 3 step 2 (examples site) and step 3 (trainer, capture review, PR submissions); hosting and domains are
+the owner's. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

@@ -1,5 +1,11 @@
 # Design: TimeSpan parsing service (`LinkedArtNet.Dates.Service`)
 
+Status (2026-10-14): implemented as designed in `src/LinkedArtNet.Dates.Service`, with these differences: `strategy`
+values are `canonical`, `grammar`, `named-period`, `salvage`; `llm=true` is accepted and answered with a note until an
+`IDateInterpreter` is configured; capture writes JSONL only; `/healthz` checks the profile catalog and a parse of "1984"
+(the corpus is not loaded by the service). Run locally with `dotnet run --project src/LinkedArtNet.Dates.Service` and open
+`/docs`. Build the image from the repository root with `docker build -f src/LinkedArtNet.Dates.Service/Dockerfile .`.
+
 A small ASP.NET Core (Kestrel, Minimal API, .NET 10) service that wraps the parser library
 ([03-timespan-parser.md](03-timespan-parser.md)) for deployment. Stateless; no database; optional
 LLM escalation; optional capture of unparsed inputs to feed the corpus.

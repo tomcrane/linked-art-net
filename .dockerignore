@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+.git/
+exclude/
+py_datetime/
+LinkedArt/
+examples/
+corpus/
+tests/
+tools/
+docs/

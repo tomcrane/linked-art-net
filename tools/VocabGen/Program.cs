@@ -11,9 +11,7 @@ var outDir = Path.Combine(repoRoot, "src", "LinkedArtNet", "Vocabulary");
 
 var registries = new (string File, string Class, string Summary)[]
 {
-    ("aat.json", "Aat", "Getty Art &amp; Architecture Thesaurus terms used across Linked Art."),
-    ("tgn.json", "Tgn", "Getty Thesaurus of Geographic Names places used in the examples."),
-    ("ulan.json", "Ulan", "Getty Union List of Artist Names actors used in the examples."),
+    ("aat.json", "Aat", "Getty Art &amp; Architecture Thesaurus terms: every term on linked.art's vocabulary pages plus documented structural terms. See vocabulary/aat.json."),
 };
 
 foreach (var (file, className, summary) in registries)

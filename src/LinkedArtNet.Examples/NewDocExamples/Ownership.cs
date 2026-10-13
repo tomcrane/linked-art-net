@@ -25,7 +25,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Jeanne (Spring) by Manet");
 
             spring.CurrentOwner = [
-                Ulan.GettyMuseum
+                Ulan.GroupOf("500115988", "Getty Museum")
             ];
 
             Documentation.Save(spring);
@@ -50,7 +50,7 @@ namespace Examples.NewDocExamples
 
 
             nightWatch.CurrentCustodian = [
-                Ulan.Rijksmuseum
+                Ulan.GroupOf("500246547", "Rijksmuseum")
             ];
 
             Documentation.Save(nightWatch);
@@ -72,10 +72,10 @@ namespace Examples.NewDocExamples
                     .WithLabel("City of Amsterdam Governing Body")
             ];
 
-            nightWatch.CurrentPermanentCustodian = Ulan.Rijksmuseum;
+            nightWatch.CurrentPermanentCustodian = Ulan.GroupOf("500246547", "Rijksmuseum");
 
             nightWatch.CurrentCustodian = [
-                Ulan.GettyMuseum
+                Ulan.GroupOf("500115988", "Getty Museum")
             ];
 
             Documentation.Save(nightWatch);

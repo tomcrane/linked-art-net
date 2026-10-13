@@ -19,7 +19,7 @@ public static class DimensionExtensions
         var dimension = new Dimension { Value = value, Unit = unit }.WithId(id).WithClassifiedAs(dimensionType);
         if (!string.IsNullOrWhiteSpace(displayTitle))
         {
-            dimension.IdentifiedBy = [new Name(displayTitle).WithClassifiedAs(Aat.DisplayTitle)];
+            dimension.IdentifiedBy = [new Name(displayTitle).WithClassifiedAs(Aat.DisplayName)];
         }
         return laObj.WithDimension(dimension);
     }
@@ -88,7 +88,7 @@ public static class DimensionExtensions
     {
         var count = new Dimension { Value = value, Unit = Aat.Pages }
             .WithLabel(string.IsNullOrWhiteSpace(label) ? value.ToString() : label)
-            .WithClassifiedAs(Aat.CountOf);
+            .WithClassifiedAs(Aat.Of("300404433", "Count Of"));
         return laObj.WithDimension(count);
     }
 }

@@ -30,7 +30,7 @@ namespace Examples.NewDocExamples
                     IdentifiedBy = [new Name("Thorough Condition Assessment")],
                     ReferredToBy = [
                         new LinguisticObject()
-                            .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                            .WithClassifiedAs(Aat.Description, Aat.Statement)
                             .WithContent("Very fine cracks throughout the painted surface")
                     ],
                     TimeSpan = new LinkedArtTimeSpan
@@ -44,7 +44,7 @@ namespace Examples.NewDocExamples
                             .WithLabel("Rijksmuseum")
                     ],
                     AssignedProperty = "classified_as",
-                    Assigned = [ Aat.Microcracks ],
+                    Assigned = [ Aat.Of("300387447", "Microcracks") ],
                     PartOf = [
                         new Activity()
                             .WithId($"{Documentation.IdRoot}/event/operation_nightwatch")
@@ -71,10 +71,10 @@ namespace Examples.NewDocExamples
                     Label = "Conservation of Night Watch",
                     ReferredToBy = [
                         new LinguisticObject()
-                            .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                            .WithClassifiedAs(Aat.Description, Aat.Statement)
                             .WithContent("Minor conservation work in response to earlier survey")
                     ],
-                    Technique = [Aat.Cleaning],
+                    Technique = [Aat.Of("300053027", "Cleaning")],
                     TimeSpan = new LinkedArtTimeSpan
                     {
                         BeginOfTheBegin = new LinkedArtDate(2020, 1, 1),
@@ -108,7 +108,7 @@ namespace Examples.NewDocExamples
             operationNW.IdentifiedBy = [new Name("Operation Night Watch").AsPrimaryName()];
             operationNW.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.Statement)
                     .WithContent("Operation Night Watch is the biggest and most wide-ranging ever study of Rembrandt’s most famous painting.")
             ];
             operationNW.TimeSpan = new LinkedArtTimeSpan

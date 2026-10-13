@@ -25,7 +25,7 @@ namespace Examples.NewDocExamples
 
             nightWatch.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.CreditStatement, Aat.BriefText)
+                    .WithClassifiedAs(Aat.CreditLine, Aat.Statement)
                     .WithContent("On loan from the City of Amsterdam")
             ];
 
@@ -42,7 +42,7 @@ namespace Examples.NewDocExamples
             
             nightwatchVisual.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.CopyrightLicenseStatement, Aat.BriefText)
+                    .WithClassifiedAs(Aat.RightsStatement, Aat.Statement)
                     .WithContent("Public Domain")
             ];
 

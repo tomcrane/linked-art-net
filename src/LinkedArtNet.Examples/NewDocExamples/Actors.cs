@@ -73,7 +73,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             rembrandt.Equivalent = [
-                Ulan.Rembrandt
+                Ulan.PersonOf("500011051", "Rembrandt")
             ];
 
             Documentation.Save(rembrandt);
@@ -153,7 +153,7 @@ namespace Examples.NewDocExamples
             {
                 TimeSpan = LinkedArtTimeSpan.FromDay(1669, 10, 4),
                 TookPlaceAt = [
-                    Tgn.Amsterdam
+                    Tgn.Of("7006952", "Amsterdam")
                 ]
             };
 
@@ -187,8 +187,8 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             var activity = new Activity()
-                .WithClassifiedAs(Aat.ProfessionalActivities)
-                .WithClassifiedAs(Aat.Painter);
+                .WithClassifiedAs(Aat.ProfessionalActivity)
+                .WithClassifiedAs(Aat.Of("300025136", "Painter"));
             activity.TimeSpan = new LinkedArtTimeSpan
             {
                 BeginOfTheBegin = new LinkedArtDate(1631, 1, 1),
@@ -208,7 +208,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt");
 
             var activity = new Activity()
-                .WithClassifiedAs(Aat.Burial);
+                .WithClassifiedAs(Aat.Of("300263485", "Burial"));
             activity.TimeSpan = new LinkedArtTimeSpan
             {
                 BeginOfTheBegin = new LinkedArtDate(1669, 10, 4),
@@ -234,7 +234,7 @@ namespace Examples.NewDocExamples
 
             rembrandt.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.BiographyStatement, Aat.BriefText)
+                    .WithClassifiedAs(Aat.BiographyStatement, Aat.Statement)
                     .WithContent("Rembrandt's work is characterized by the Baroque interest in dramatic scenes and strong contrasts of light on a dark stage")
             ];
 
@@ -273,7 +273,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/person/rembrandt/10")
                 .WithLabel("Rembrandt")
-                .WithClassifiedAs(Aat.Male, Aat.Gender);
+                .WithClassifiedAs(Aat.Of("300189559", "Male"), Aat.Gender);
 
             Documentation.Save(rembrandt, false);
         }
@@ -319,7 +319,7 @@ namespace Examples.NewDocExamples
 
         //    rembrandt.IdentifiedBy = [
         //        new Identifier("Q5598")
-        //            .WithClassifiedAs(Aat.OwnerAssignedNumber)
+        //            .WithClassifiedAs(Aat.Of("300404621", "Owner-Assigned Number"))
         //    ];
 
         //    Documentation.Save(rembrandt);

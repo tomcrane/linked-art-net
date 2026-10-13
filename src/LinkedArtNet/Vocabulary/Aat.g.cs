@@ -4,519 +4,1263 @@
 
 namespace LinkedArtNet.Vocabulary;
 
-/// <summary>Getty Art &amp; Architecture Thesaurus terms used across Linked Art.</summary>
+/// <summary>Getty Art &amp; Architecture Thesaurus terms: every term on linked.art's vocabulary pages plus documented structural terms. See vocabulary/aat.json.</summary>
 public static partial class Aat
 {
-    /// <summary>Primary Name (300404670)</summary>
+    /// <summary>Summary: The primary name of the entity (300404670)</summary>
     public static Type PrimaryName => MakeType("300404670", "Primary Name");
 
-    /// <summary>Given Name (300404651)</summary>
-    public static Type GivenName => MakeType("300404651", "Given Name");
+    /// <summary>Summary: The name to use for displaying the node (vocabulary page label: Display Name) (300404669)</summary>
+    public static Type DisplayName => MakeType("300404669", "Display Title");
 
-    /// <summary>Middle Name (300404654)</summary>
-    public static Type MiddleName => MakeType("300404654", "Middle Name");
+    /// <summary>Summary: The name to use when sorting this entity with others (300451544)</summary>
+    public static Type SortName => MakeType("300451544", "Sort Name");
 
-    /// <summary>Family Name (300404652)</summary>
-    public static Type FamilyName => MakeType("300404652", "Family Name");
+    /// <summary>Summary: The identifier to use when sorting this entity with others (300456575)</summary>
+    public static Type SortValue => MakeType("300456575", "Sort Value");
 
-    /// <summary>Display Title (300404669)</summary>
-    public static Type DisplayTitle => MakeType("300404669", "Display Title");
+    /// <summary>Summary: A type of statement (vocabulary page label: Statement) (300418049)</summary>
+    public static Type Statement => MakeType("300418049", "Brief Text");
 
-    /// <summary>Alternate Title (300404671)</summary>
-    public static Type AlternateTitle => MakeType("300404671", "Alternate Title");
-
-    /// <summary>Family (300055474)</summary>
-    public static Type Family => MakeType("300055474", "Family");
-
-    /// <summary>Organization (300025948)</summary>
-    public static Type Organization => MakeType("300025948", "Organization");
-
-    /// <summary>Museum (300312281)</summary>
-    public static Type Museum => MakeType("300312281", "Museum");
-
-    /// <summary>Studio (300404275)</summary>
-    public static Type Studio => MakeType("300404275", "Studio");
-
-    /// <summary>Meta-type: marks a classification as the object's type of work (300435443)</summary>
+    /// <summary>Summary: A type of works (300435443)</summary>
     public static Type TypeOfWork => MakeType("300435443", "Type of Work");
 
-    /// <summary>Painting (300033618)</summary>
-    public static Type Painting => MakeType("300033618", "Painting");
+    /// <summary>Summary: A style (300015646)</summary>
+    public static Type Style => MakeType("300015646", "Style");
 
-    /// <summary>Photograph (300046300)</summary>
-    public static Type Photograph => MakeType("300046300", "Photograph");
+    /// <summary>Summary: A shape (300056273)</summary>
+    public static Type Shape => MakeType("300056273", "Shape");
 
-    /// <summary>Print (300041273)</summary>
-    public static Type Print => MakeType("300041273", "Print");
+    /// <summary>Summary: An occupation (300263369)</summary>
+    public static Type Occupation => MakeType("300263369", "Occupation");
 
-    /// <summary>Sculpture (300047090)</summary>
-    public static Type Sculpture => MakeType("300047090", "Sculpture");
+    /// <summary>Summary: A nationality (300379842)</summary>
+    public static Type Nationality => MakeType("300379842", "Nationality");
 
-    /// <summary>Artwork (300133025)</summary>
+    /// <summary>Summary: A color (300080438)</summary>
+    public static Type Color => MakeType("300080438", "Color");
+
+    /// <summary>Summary: An exhibition (300054766)</summary>
+    public static Type ExhibitionActivity => MakeType("300054766", "Exhibition Activity");
+
+    /// <summary>Summary: A provenance activity (300055863)</summary>
+    public static Type ProvenanceActivity => MakeType("300055863", "Provenance Activity");
+
+    /// <summary>Summary: A professional activity (vocabulary page label: Professional Activity) (300393177)</summary>
+    public static Type ProfessionalActivity => MakeType("300393177", "Professional Activities");
+
+    /// <summary>Summary: A publishing activity (vocabulary page label: Publication Activity) (300054686)</summary>
+    public static Type PublicationActivity => MakeType("300054686", "Publishing");
+
+    /// <summary>Summary: A promise (300435599)</summary>
+    public static Type PromiseActivity => MakeType("300435599", "Promise Activity");
+
+    /// <summary>Summary: The entity is part of a cultural heritage collection (300404024)</summary>
+    public static Type CollectionItem => MakeType("300404024", "Collection Item");
+
+    /// <summary>Summary: The entity is an artwork (300133025)</summary>
     public static Type Artwork => MakeType("300133025", "Artwork");
 
-    /// <summary>Book (300028051)</summary>
-    public static Type Book => MakeType("300028051", "Book");
+    /// <summary>Name Types: An alternate name, as opposed to the primary name, of an entity (300264273)</summary>
+    public static Type AlternateName => MakeType("300264273", "Alternate Name");
 
-    /// <summary>Monograph (300060417)</summary>
-    public static Type Monograph => MakeType("300060417", "Monograph");
+    /// <summary>Name Types: The given or first name of a Person (300404651)</summary>
+    public static Type GivenName => MakeType("300404651", "Given Name");
 
-    /// <summary>Chapter (300311699)</summary>
-    public static Type Chapter => MakeType("300311699", "Chapter");
+    /// <summary>Name Types: The middle name of a Person (300404654)</summary>
+    public static Type MiddleName => MakeType("300404654", "Middle Name");
 
-    /// <summary>Letter (300026879)</summary>
-    public static Type Letter => MakeType("300026879", "Letter");
+    /// <summary>Name Types: The family or sirname of a Person (300404652)</summary>
+    public static Type FamilyName => MakeType("300404652", "Family Name");
 
-    /// <summary>Sound (300056060)</summary>
-    public static Type Sound => MakeType("300056060", "Sound");
+    /// <summary>Name Types: A former name, for any reason, of a Person (300435719)</summary>
+    public static Type FormerName => MakeType("300435719", "Former Name");
 
-    /// <summary>Parasol (300046218)</summary>
-    public static Type Parasol => MakeType("300046218", "Parasol");
+    /// <summary>Identifier Types: An accession number for the object (300312355)</summary>
+    public static Type AccessionNumber => MakeType("300312355", "Accession Number");
 
-    /// <summary>Portrait (300015637)</summary>
-    public static Type Portrait => MakeType("300015637", "Portrait");
+    /// <summary>Identifier Types: An identifier assigned by the institution but not an accession or system number (300404621)</summary>
+    public static Type LocalNumber => MakeType("300404621", "Local Number");
 
-    /// <summary>Signature (300028705)</summary>
-    public static Type Signature => MakeType("300028705", "Signature");
+    /// <summary>Identifier Types: An identifier assigned by an automated system, such as a collection management system (vocabulary page label: System Number) (300435704)</summary>
+    public static Type SystemNumber => MakeType("300435704", "System-Assigned Number");
 
-    /// <summary>Exhibition Catalog (300026096)</summary>
-    public static Type ExhibitionCatalog => MakeType("300026096", "Exhibition Catalog");
+    /// <summary>Identifier Types: An identifier for where the object is physically in the repository, typically used in libraries (300311706)</summary>
+    public static Type CallNumber => MakeType("300311706", "Call Number");
 
-    /// <summary>Web Page (300264578)</summary>
-    public static Type WebPage => MakeType("300264578", "Web Page");
+    /// <summary>Statement Types: A general note about the entity (300027200)</summary>
+    public static Type Note => MakeType("300027200", "Note");
 
-    /// <summary>Digital Image (300215302)</summary>
-    public static Type DigitalImage => MakeType("300215302", "Digital Image");
+    /// <summary>Statement Types: A description of the entity (300435416)</summary>
+    public static Type Description => MakeType("300435416", "Description");
 
-    /// <summary>archives (groupings) (300375748)</summary>
-    public static Type Archives => MakeType("300375748", "archives (groupings)");
-
-    /// <summary>Archival Grouping (300404022)</summary>
-    public static Type ArchivalGrouping => MakeType("300404022", "Archival Grouping");
-
-    /// <summary>Archival SubGrouping (300404023)</summary>
-    public static Type ArchivalSubGrouping => MakeType("300404023", "Archival SubGrouping");
-
-    /// <summary>Archival Materials (300379505)</summary>
-    public static Type ArchivalMaterials => MakeType("300379505", "Archival Materials");
-
-    /// <summary>Accruals (300055458)</summary>
-    public static Type Accruals => MakeType("300055458", "Accruals");
-
-    /// <summary>Access Statement (300133046)</summary>
+    /// <summary>Statement Types: A statement about how to get access to the entity (300133046)</summary>
     public static Type AccessStatement => MakeType("300133046", "Access Statement");
 
-    /// <summary>Administrative History (300077565)</summary>
-    public static Type AdministrativeHistory => MakeType("300077565", "Administrative History");
+    /// <summary>Statement Types: A list of citations of the entity, typically in a consistent format (300026497)</summary>
+    public static Type BibliographyStatement => MakeType("300026497", "Bibliography Statement");
 
-    /// <summary>Related Material (300444119)</summary>
-    public static Type RelatedMaterial => MakeType("300444119", "Related Material");
+    /// <summary>Statement Types: A description of the physical condition of the object (300435425)</summary>
+    public static Type ConditionStatement => MakeType("300435425", "Condition Statement");
 
-    /// <summary>Arrangement Description (300444118)</summary>
-    public static Type ArrangementDescription => MakeType("300444118", "Arrangement Description");
+    /// <summary>Statement Types: A short statement of who should be acknowledged for the object (vocabulary page label: Credit Line) (300026687)</summary>
+    public static Type CreditLine => MakeType("300026687", "Credit Statement");
 
-    /// <summary>Collection (300025976)</summary>
+    /// <summary>Statement Types: A description of the dimensions of the object (vocabulary page label: Dimensions Statement) (300435430)</summary>
+    public static Type DimensionsStatement => MakeType("300435430", "Dimension Statement");
+
+    /// <summary>Statement Types: A statement or citation list about exhibitions that the object has been in (300435424)</summary>
+    public static Type ExhibitionStatement => MakeType("300435424", "Exhibition Statement");
+
+    /// <summary>Statement Types: A description of inscriptions on the object (vocabulary page label: Inscription Statement) (300435414)</summary>
+    public static Type InscriptionStatement => MakeType("300435414", "Inscription");
+
+    /// <summary>Statement Types: A description of non-inscription markings on the object (300435420)</summary>
+    public static Type MarkingsStatement => MakeType("300435420", "Markings Statement");
+
+    /// <summary>Statement Types: A description or list of the materials the object is made of (vocabulary page label: Materials Statement) (300435429)</summary>
+    public static Type MaterialsStatement => MakeType("300435429", "Material Statement");
+
+    /// <summary>Statement Types: A description of the production or creation of the object (300435436)</summary>
+    public static Type ProductionStatement => MakeType("300435436", "Production Statement");
+
+    /// <summary>Statement Types: A description or semi-structured value describing the ownership history of the object (300435438)</summary>
+    public static Type ProvenanceStatement => MakeType("300435438", "Provenance Statement");
+
+    /// <summary>Statement Types: A description of copyright or other licenses pertaining to the object (vocabulary page label: Rights Statement) (300435434)</summary>
+    public static Type RightsStatement => MakeType("300435434", "Copyright/License Statement");
+
+    /// <summary>Statement Types: A description of the artist's signature which is on the object, often part of the artwork (vocabulary page label: Signature Statement) (300028705)</summary>
+    public static Type SignatureStatement => MakeType("300028705", "Signature");
+
+    /// <summary>Statement Types: A summary of the intellectual content of the object, as opposed to a Description of the object as a whole (300026032)</summary>
+    public static Type Summary => MakeType("300026032", "Summary");
+
+    /// <summary>Object Types: Structure or part of a structure which is the result of conscious construction (300263552)</summary>
+    public static Type Architecture => MakeType("300263552", "Architecture");
+
+    /// <summary>Object Types: Clothing designed to protect the body in combat (300036745)</summary>
+    public static Type Armor => MakeType("300036745", "Armor");
+
+    /// <summary>Object Types: Object comprised of a sequence of leaves of paper or other material, typically carrying language or image, and bound together into a codex (300028051)</summary>
+    public static Type Book => MakeType("300028051", "Book");
+
+    /// <summary>Object Types: Object made for the purpose of covering the body, excluding jewelry and accessories (300266639)</summary>
+    public static Type Clothing => MakeType("300266639", "Clothing");
+
+    /// <summary>Object Types: Object typically made of metal, used as currency (300037222)</summary>
+    public static Type Coin => MakeType("300037222", "Coin");
+
+    /// <summary>Object Types: Objects that are primarily utilitarian in form or function but have aesthetic value, including ceramics, furniture, textiles, glass, clocks and so on (300411641)</summary>
+    public static Type DecorativeArts => MakeType("300411641", "Decorative Arts");
+
+    /// <summary>Object Types: Object created by application of lines on a surface (300033973)</summary>
+    public static Type Drawing => MakeType("300033973", "Drawing");
+
+    /// <summary>Object Types: Part of an object which surrounds a generally two dimensional artwork such as a painting (300404391)</summary>
+    public static Type Frame => MakeType("300404391", "Frame");
+
+    /// <summary>Object Types: Objects used for sitting, reclining, or storage, such as a chair or cabinet (300037680)</summary>
+    public static Type Furniture => MakeType("300037680", "Furniture");
+
+    /// <summary>Object Types: Objects worn on the body for adornment rather than function typically of precious materials (300209286)</summary>
+    public static Type Jewelry => MakeType("300209286", "Jewelry");
+
+    /// <summary>Object Types: Prints created using the process of lithography (300041379)</summary>
+    public static Type Lithograph => MakeType("300041379", "Lithograph");
+
+    /// <summary>Object Types: Handwritten books, typically decorated and illustrated (300265483)</summary>
+    public static Type Manuscript => MakeType("300265483", "Manuscript");
+
+    /// <summary>Object Types: Flat object which depicts a representation of the Earth's surface, including physical and/or political features (300028094)</summary>
+    public static Type Map => MakeType("300028094", "Map");
+
+    /// <summary>Object Types: A painting on a very small scale, often excised from an illuminated Manuscript (300033936)</summary>
+    public static Type Miniature => MakeType("300033936", "Miniature");
+
+    /// <summary>Object Types: Objects created by arrangement of small pieces of durable material, such as stone or colored glass (300015342)</summary>
+    public static Type Mosaic => MakeType("300015342", "Mosaic");
+
+    /// <summary>Object Types: Object whose primary function is to enable the user to create music (300041620)</summary>
+    public static Type MusicalInstrument => MakeType("300041620", "Musical Instrument");
+
+    /// <summary>Object Types: Object created by application of colored liquid onto a surface (300033618)</summary>
+    public static Type Painting => MakeType("300033618", "Painting");
+
+    /// <summary>Object Types: Object produced by chemical action of light on a sensitive film (300046300)</summary>
+    public static Type Photograph => MakeType("300046300", "Photograph");
+
+    /// <summary>Object Types: Objects created by transferring an image using a printing process (300041273)</summary>
+    public static Type Print => MakeType("300041273", "Print");
+
+    /// <summary>Object Types: Object created by carving or engraving a hard material or molding a malleable material (300047090)</summary>
+    public static Type Sculpture => MakeType("300047090", "Sculpture");
+
+    /// <summary>Object Types: Objects made of colored glass, often in the form of a window, meant to be observed through refracted light (300263722)</summary>
+    public static Type StainedGlass => MakeType("300263722", "Stained Glass");
+
+    /// <summary>Object Types: A woven textile object, typically hung on a wall (300205002)</summary>
+    public static Type Tapestry => MakeType("300205002", "Tapestry");
+
+    /// <summary>Place Types: The Place is a continent (Europe, Asia, North America, etc) (300128176)</summary>
+    public static Type Continent => MakeType("300128176", "Continent");
+
+    /// <summary>Place Types: The Place is a country or Nation (France, Japan, USA, etc) (vocabulary page label: Country) (300128207)</summary>
+    public static Type Country => MakeType("300128207", "Nation");
+
+    /// <summary>Place Types: The Place is a state (New York, California, etc) (300000776)</summary>
+    public static Type State => MakeType("300000776", "State");
+
+    /// <summary>Place Types: The Place is a province or similar region (Ontario, Yorkshire, etc) (300000774)</summary>
+    public static Type Province => MakeType("300000774", "Province");
+
+    /// <summary>Place Types: The Place is a county (New Haven county, etc) (300000771)</summary>
+    public static Type County => MakeType("300000771", "County");
+
+    /// <summary>Place Types: The Place is a city (Paris, Chicago, Tokyo, etc) (300008389)</summary>
+    public static Type City => MakeType("300008389", "City");
+
+    /// <summary>Place Types: The Place is a museum location (300005768)</summary>
+    public static Type MuseumPlace => MakeType("300005768", "Museum (as Place)");
+
+    /// <summary>Place Types: The Place is a (museum) gallery room in which art is displayed (300240057)</summary>
+    public static Type Gallery => MakeType("300240057", "Gallery");
+
+    /// <summary>Group Types: The Group is a commercial company or business (300160084)</summary>
+    public static Type Company => MakeType("300160084", "Company");
+
+    /// <summary>Group Types: The Group is a department of another organization (300263534)</summary>
+    public static Type Department => MakeType("300263534", "Department");
+
+    /// <summary>Group Types: The Group is an (extended) family related by blood and/or marriage (300055474)</summary>
+    public static Type Family => MakeType("300055474", "Family");
+
+    /// <summary>Group Types: The Group is a museum (300312281)</summary>
+    public static Type Museum => MakeType("300312281", "Museum");
+
+    /// <summary>Group Types: The Group is an organization or society of some sort (300025948)</summary>
+    public static Type Organization => MakeType("300025948", "Organization");
+
+    /// <summary>Digital Types: The Digital Object is an image (300215302)</summary>
+    public static Type DigitalImage => MakeType("300215302", "Digital Image");
+
+    /// <summary>Digital Types: The Digital Object is a web page (300264578)</summary>
+    public static Type WebPage => MakeType("300264578", "Web Page");
+
+    /// <summary>Set Types: The Set is a top level Archive (300375748)</summary>
+    public static Type Archive => MakeType("300375748", "Archive");
+
+    /// <summary>Set Types: The Set is some grouping within an archive (300404022)</summary>
+    public static Type ArchivalGrouping => MakeType("300404022", "Archival Grouping");
+
+    /// <summary>Set Types: The Set is some grouping within an archival grouping (vocabulary page label: Archival Sub-Grouping) (300404023)</summary>
+    public static Type ArchivalSubGrouping => MakeType("300404023", "Archival SubGrouping");
+
+    /// <summary>Set Types: The Set is a collection of things, typically physical objects and managed by an organization (300025976)</summary>
     public static Type Collection => MakeType("300025976", "Collection");
 
-    /// <summary>Exhibition Collection (300378926)</summary>
-    public static Type ExhibitionCollection => MakeType("300378926", "Exhibition Collection");
+    /// <summary>Dimension Types: The Dimension measures the depth of the entity, from the front to the back (300072633)</summary>
+    public static Type Depth => MakeType("300072633", "Depth");
+
+    /// <summary>Dimension Types: The Dimension measures the height of the entity, from the top to the bottom (300055644)</summary>
+    public static Type Height => MakeType("300055644", "Height");
+
+    /// <summary>Dimension Types: The Dimension measures some unknown physical dimension of the entity (300055642)</summary>
+    public static Type UnknownPhysicalDimension => MakeType("300055642", "Unknown Physical Dimension");
+
+    /// <summary>Dimension Types: The Dimension measures the weight of the entity (300056240)</summary>
+    public static Type Weight => MakeType("300056240", "Weight");
+
+    /// <summary>Dimension Types: The Dimension measures the width of the object, from left to right (300055647)</summary>
+    public static Type Width => MakeType("300055647", "Width");
+
+    /// <summary>Languages: Ancient Greek (300387827)</summary>
+    public static Language AncientGreek => MakeLanguage("300387827", "Ancient Greek", "grc");
+
+    /// <summary>Languages: Arabic (300387843)</summary>
+    public static Language Arabic => MakeLanguage("300387843", "Arabic", "ar");
+
+    /// <summary>Languages: Chinese (300388113)</summary>
+    public static Language Chinese => MakeLanguage("300388113", "Chinese", "zh");
+
+    /// <summary>Languages: Danish (300388204)</summary>
+    public static Language Danish => MakeLanguage("300388204", "Danish", "da");
+
+    /// <summary>Languages: Dutch (300388256)</summary>
+    public static Language Dutch => MakeLanguage("300388256", "Dutch", "nl");
+
+    /// <summary>Languages: English (300388277)</summary>
+    public static Language English => MakeLanguage("300388277", "English", "en");
+
+    /// <summary>Languages: Farsi (300388296)</summary>
+    public static Language Farsi => MakeLanguage("300388296", "Farsi", "fa");
+
+    /// <summary>Languages: Finnish (300388299)</summary>
+    public static Language Finnish => MakeLanguage("300388299", "Finnish", "fi");
+
+    /// <summary>Languages: French (300388306)</summary>
+    public static Language French => MakeLanguage("300388306", "French", "fr");
+
+    /// <summary>Languages: German (300388344)</summary>
+    public static Language German => MakeLanguage("300388344", "German", "de");
+
+    /// <summary>Languages: Greek (300388361)</summary>
+    public static Language Greek => MakeLanguage("300388361", "Greek", "el");
+
+    /// <summary>Languages: Hebrew (300388401)</summary>
+    public static Language Hebrew => MakeLanguage("300388401", "Hebrew", "he");
+
+    /// <summary>Languages: Hindi (300388412)</summary>
+    public static Language Hindi => MakeLanguage("300388412", "Hindi", "hi");
+
+    /// <summary>Languages: Icelandic (300388449)</summary>
+    public static Language Icelandic => MakeLanguage("300388449", "Icelandic", "is");
+
+    /// <summary>Languages: Irish (300388467)</summary>
+    public static Language Irish => MakeLanguage("300388467", "Irish", "ga");
+
+    /// <summary>Languages: Italian (300388474)</summary>
+    public static Language Italian => MakeLanguage("300388474", "Italian", "it");
+
+    /// <summary>Languages: Japanese (300388486)</summary>
+    public static Language Japanese => MakeLanguage("300388486", "Japanese", "ja");
+
+    /// <summary>Languages: Korean (300388633)</summary>
+    public static Language Korean => MakeLanguage("300388633", "Korean", "ko");
+
+    /// <summary>Languages: Latin (300388693)</summary>
+    public static Language Latin => MakeLanguage("300388693", "Latin", "la");
+
+    /// <summary>Languages: Norwegian (300388992)</summary>
+    public static Language Norwegian => MakeLanguage("300388992", "Norwegian", "no");
+
+    /// <summary>Languages: Polish (300389109)</summary>
+    public static Language Polish => MakeLanguage("300389109", "Polish", "pl");
+
+    /// <summary>Languages: Portuguese (300389115)</summary>
+    public static Language Portuguese => MakeLanguage("300389115", "Portuguese", "pt");
+
+    /// <summary>Languages: Romanian (300389157)</summary>
+    public static Language Romanian => MakeLanguage("300389157", "Romanian", "ro");
+
+    /// <summary>Languages: Russian (300389168)</summary>
+    public static Language Russian => MakeLanguage("300389168", "Russian", "ru");
+
+    /// <summary>Languages: Spanish (300389311)</summary>
+    public static Language Spanish => MakeLanguage("300389311", "Spanish", "es");
+
+    /// <summary>Languages: Swedish (300389336)</summary>
+    public static Language Swedish => MakeLanguage("300389336", "Swedish", "sv");
+
+    /// <summary>Languages: Tamil (300389365)</summary>
+    public static Language Tamil => MakeLanguage("300389365", "Tamil", "ta");
+
+    /// <summary>Languages: Thai (300389405)</summary>
+    public static Language Thai => MakeLanguage("300389405", "Thai", "th");
+
+    /// <summary>Languages: Turkish (300389470)</summary>
+    public static Language Turkish => MakeLanguage("300389470", "Turkish", "tr");
+
+    /// <summary>Languages: Urdu (300389502)</summary>
+    public static Language Urdu => MakeLanguage("300389502", "Urdu", "ur");
+
+    /// <summary>Languages: Welsh (300389555)</summary>
+    public static Language Welsh => MakeLanguage("300389555", "Welsh", "cy");
+
+    /// <summary>Measurement Units: bytes (300265869)</summary>
+    public static MeasurementUnit Bytes => MakeUnit("300265869", "bytes");
+
+    /// <summary>Measurement Units: centimeters (300379098)</summary>
+    public static MeasurementUnit Centimeters => MakeUnit("300379098", "centimeters");
+
+    /// <summary>Measurement Units: days (300379242)</summary>
+    public static MeasurementUnit Days => MakeUnit("300379242", "days");
+
+    /// <summary>Measurement Units: feet (300379101)</summary>
+    public static MeasurementUnit Feet => MakeUnit("300379101", "feet");
+
+    /// <summary>Measurement Units: gigabytes (300265874)</summary>
+    public static MeasurementUnit Gigabytes => MakeUnit("300265874", "gigabytes");
+
+    /// <summary>Measurement Units: grams (300379225)</summary>
+    public static MeasurementUnit Grams => MakeUnit("300379225", "grams");
+
+    /// <summary>Measurement Units: hours (300379241)</summary>
+    public static MeasurementUnit Hours => MakeUnit("300379241", "hours");
+
+    /// <summary>Measurement Units: inches (300379100)</summary>
+    public static MeasurementUnit Inches => MakeUnit("300379100", "inches");
+
+    /// <summary>Measurement Units: kilobytes (300265870)</summary>
+    public static MeasurementUnit Kilobytes => MakeUnit("300265870", "kilobytes");
+
+    /// <summary>Measurement Units: kilograms (300379226)</summary>
+    public static MeasurementUnit Kilograms => MakeUnit("300379226", "kilograms");
+
+    /// <summary>Measurement Units: megabytes (300265873)</summary>
+    public static MeasurementUnit Megabytes => MakeUnit("300265873", "megabytes");
+
+    /// <summary>Measurement Units: meters (300379099)</summary>
+    public static MeasurementUnit Meters => MakeUnit("300379099", "meters");
+
+    /// <summary>Measurement Units: minutes (300379240)</summary>
+    public static MeasurementUnit Minutes => MakeUnit("300379240", "minutes");
+
+    /// <summary>Measurement Units: millimeters (300379097)</summary>
+    public static MeasurementUnit Millimeters => MakeUnit("300379097", "millimeters");
+
+    /// <summary>Measurement Units: months (300379245)</summary>
+    public static MeasurementUnit Months => MakeUnit("300379245", "months");
+
+    /// <summary>Measurement Units: parts (300404159)</summary>
+    public static MeasurementUnit Parts => MakeUnit("300404159", "parts");
+
+    /// <summary>Measurement Units: percent (300417377)</summary>
+    public static MeasurementUnit Percent => MakeUnit("300417377", "percent");
+
+    /// <summary>Measurement Units: pounds (300379254)</summary>
+    public static MeasurementUnit Pounds => MakeUnit("300379254", "pounds");
+
+    /// <summary>Measurement Units: seconds (300379239)</summary>
+    public static MeasurementUnit Seconds => MakeUnit("300379239", "seconds");
+
+    /// <summary>Measurement Units: years (300379244)</summary>
+    public static MeasurementUnit Years => MakeUnit("300379244", "years");
+
+    /// <summary>Materials: bone (300011798)</summary>
+    public static Material Bone => MakeMaterial("300011798", "bone");
+
+    /// <summary>Materials: bronze (300010957)</summary>
+    public static Material Bronze => MakeMaterial("300010957", "bronze");
+
+    /// <summary>Materials: canvas (300014078)</summary>
+    public static Material Canvas => MakeMaterial("300014078", "canvas");
+
+    /// <summary>Materials: chalk (300011727)</summary>
+    public static Material Chalk => MakeMaterial("300011727", "chalk");
+
+    /// <summary>Materials: clay (300010439)</summary>
+    public static Material Clay => MakeMaterial("300010439", "clay");
+
+    /// <summary>Materials: copper (300011020)</summary>
+    public static Material Copper => MakeMaterial("300011020", "copper");
+
+    /// <summary>Materials: glass (300010797)</summary>
+    public static Material Glass => MakeMaterial("300010797", "glass");
+
+    /// <summary>Materials: gold leaf (300264831)</summary>
+    public static Material GoldLeaf => MakeMaterial("300264831", "gold leaf");
+
+    /// <summary>Materials: graphite (300011098)</summary>
+    public static Material Graphite => MakeMaterial("300011098", "graphite");
+
+    /// <summary>Materials: ink (300015012)</summary>
+    public static Material Ink => MakeMaterial("300015012", "ink");
+
+    /// <summary>Materials: marble (300011443)</summary>
+    public static Material Marble => MakeMaterial("300011443", "marble");
+
+    /// <summary>Materials: metal (300010900)</summary>
+    public static Material Metal => MakeMaterial("300010900", "metal");
+
+    /// <summary>Materials: oak (300012264)</summary>
+    public static Material Oak => MakeMaterial("300012264", "oak");
+
+    /// <summary>Materials: oil (300015050)</summary>
+    public static Material Oil => MakeMaterial("300015050", "oil");
+
+    /// <summary>Materials: paper (300014109)</summary>
+    public static Material Paper => MakeMaterial("300014109", "paper");
+
+    /// <summary>Materials: plaster (300014922)</summary>
+    public static Material Plaster => MakeMaterial("300014922", "plaster");
+
+    /// <summary>Materials: silver (300011029)</summary>
+    public static Material Silver => MakeMaterial("300011029", "silver");
+
+    /// <summary>Materials: stone (300011176)</summary>
+    public static Material Stone => MakeMaterial("300011176", "stone");
+
+    /// <summary>Materials: tempera (300015062)</summary>
+    public static Material Tempera => MakeMaterial("300015062", "tempera");
+
+    /// <summary>Materials: terracotta (300010669)</summary>
+    public static Material Terracotta => MakeMaterial("300010669", "terracotta");
+
+    /// <summary>Materials: watercolors (300015045)</summary>
+    public static Material Watercolors => MakeMaterial("300015045", "watercolors");
+
+    /// <summary>Materials: wood (300011914)</summary>
+    public static Material Wood => MakeMaterial("300011914", "wood");
+
+    /// <summary>Currencies: British Pounds (300411998)</summary>
+    public static Currency BritishPounds => MakeCurrency("300411998", "British Pounds");
+
+    /// <summary>Currencies: Canadian Dollars (300412000)</summary>
+    public static Currency CanadianDollars => MakeCurrency("300412000", "Canadian Dollars");
+
+    /// <summary>Currencies: Euros (300411996)</summary>
+    public static Currency Euros => MakeCurrency("300411996", "Euros");
+
+    /// <summary>Currencies: Japanese Yen (300411997)</summary>
+    public static Currency JapaneseYen => MakeCurrency("300411997", "Japanese Yen");
+
+    /// <summary>Currencies: Swiss Francs (300412001)</summary>
+    public static Currency SwissFrancs => MakeCurrency("300412001", "Swiss Francs");
+
+    /// <summary>Currencies: US Dollars (300411994)</summary>
+    public static Currency UsDollars => MakeCurrency("300411994", "US Dollars");
+
+    /// <summary>Nationalities: American (300107956)</summary>
+    public static Type AmericanNationality => MakeType("300107956", "American");
+
+    /// <summary>Nationalities: Austrian (300111153)</summary>
+    public static Type AustrianNationality => MakeType("300111153", "Austrian");
+
+    /// <summary>Nationalities: Australian (300021861)</summary>
+    public static Type AustralianNationality => MakeType("300021861", "Australian");
+
+    /// <summary>Nationalities: Belgian (300111156)</summary>
+    public static Type BelgianNationality => MakeType("300111156", "Belgian");
+
+    /// <summary>Nationalities: British (300111159)</summary>
+    public static Type BritishNationality => MakeType("300111159", "British");
+
+    /// <summary>Nationalities: Canadian (300107962)</summary>
+    public static Type CanadianNationality => MakeType("300107962", "Canadian");
+
+    /// <summary>Nationalities: Chinese (300018322)</summary>
+    public static Type ChineseNationality => MakeType("300018322", "Chinese");
+
+    /// <summary>Nationalities: Czech (300111166)</summary>
+    public static Type CzechNationality => MakeType("300111166", "Czech");
+
+    /// <summary>Nationalities: Danish (300111172)</summary>
+    public static Type DanishNationality => MakeType("300111172", "Danish");
+
+    /// <summary>Nationalities: Dutch (300111175)</summary>
+    public static Type DutchNationality => MakeType("300111175", "Dutch");
+
+    /// <summary>Nationalities: Egyptian (300020251)</summary>
+    public static Type EgyptianNationality => MakeType("300020251", "Egyptian");
+
+    /// <summary>Nationalities: Flemish (300111184)</summary>
+    public static Type FlemishNationality => MakeType("300111184", "Flemish");
+
+    /// <summary>Nationalities: French (300111188)</summary>
+    public static Type FrenchNationality => MakeType("300111188", "French");
+
+    /// <summary>Nationalities: German (300111192)</summary>
+    public static Type GermanNationality => MakeType("300111192", "German");
+
+    /// <summary>Nationalities: Greek (300264816)</summary>
+    public static Type GreekNationality => MakeType("300264816", "Greek");
+
+    /// <summary>Nationalities: Hungarian (300111195)</summary>
+    public static Type HungarianNationality => MakeType("300111195", "Hungarian");
+
+    /// <summary>Nationalities: Indian (300018863)</summary>
+    public static Type IndianNationality => MakeType("300018863", "Indian");
+
+    /// <summary>Nationalities: Irish (300111259)</summary>
+    public static Type IrishNationality => MakeType("300111259", "Irish");
+
+    /// <summary>Nationalities: Italian (300111198)</summary>
+    public static Type ItalianNationality => MakeType("300111198", "Italian");
+
+    /// <summary>Nationalities: Japanese (300018519)</summary>
+    public static Type JapaneseNationality => MakeType("300018519", "Japanese");
+
+    /// <summary>Nationalities: Mexican (300107963)</summary>
+    public static Type MexicanNationality => MakeType("300107963", "Mexican");
+
+    /// <summary>Nationalities: New Zealander (300021959)</summary>
+    public static Type NewZealanderNationality => MakeType("300021959", "New Zealander");
+
+    /// <summary>Nationalities: Norwegian (300111201)</summary>
+    public static Type NorwegianNationality => MakeType("300111201", "Norwegian");
+
+    /// <summary>Nationalities: Polish (300111204)</summary>
+    public static Type PolishNationality => MakeType("300111204", "Polish");
+
+    /// <summary>Nationalities: Portuguese (300111207)</summary>
+    public static Type PortugueseNationality => MakeType("300111207", "Portuguese");
+
+    /// <summary>Nationalities: Russian (300111276)</summary>
+    public static Type RussianNationality => MakeType("300111276", "Russian");
+
+    /// <summary>Nationalities: Spanish (300111215)</summary>
+    public static Type SpanishNationality => MakeType("300111215", "Spanish");
+
+    /// <summary>Nationalities: Swedish (300111218)</summary>
+    public static Type SwedishNationality => MakeType("300111218", "Swedish");
+
+    /// <summary>Nationalities: Swiss (300111221)</summary>
+    public static Type SwissNationality => MakeType("300111221", "Swiss");
+
+    /// <summary>Occupations: Artist (300025103)</summary>
+    public static Type Artist => MakeType("300025103", "Artist");
+
+    /// <summary>Occupations: Art Collector (300025234)</summary>
+    public static Type ArtCollector => MakeType("300025234", "Art Collector");
+
+    /// <summary>Occupations: Art Dealer (300025236)</summary>
+    public static Type ArtDealer => MakeType("300025236", "Art Dealer");
+
+    /// <summary>Occupations: Architect (300024987)</summary>
+    public static Type Architect => MakeType("300024987", "Architect");
+
+    /// <summary>Occupations: Author (300025492)</summary>
+    public static Type Author => MakeType("300025492", "Author");
+
+    /// <summary>Occupations: (Music) Composer (300025671)</summary>
+    public static Type MusicComposer => MakeType("300025671", "(Music) Composer");
+
+    /// <summary>Occupations: Printer (300025732)</summary>
+    public static Type Printer => MakeType("300025732", "Printer");
+
+    /// <summary>Occupations: Publisher (300025574)</summary>
+    public static Type Publisher => MakeType("300025574", "Publisher");
+
+    /// <summary>Shapes: Arched (300126995)</summary>
+    public static Type Arched => MakeType("300126995", "Arched");
+
+    /// <summary>Shapes: Circle (300263827)</summary>
+    public static Type Circle => MakeType("300263827", "Circle");
+
+    /// <summary>Shapes: Oblong (300311843)</summary>
+    public static Type Oblong => MakeType("300311843", "Oblong");
+
+    /// <summary>Shapes: Octagonal (300263824)</summary>
+    public static Type Octagonal => MakeType("300263824", "Octagonal");
+
+    /// <summary>Shapes: Oval (300263817)</summary>
+    public static Type Oval => MakeType("300263817", "Oval");
+
+    /// <summary>Shapes: Rectangular (300263831)</summary>
+    public static Type Rectangular => MakeType("300263831", "Rectangular");
+
+    /// <summary>Shapes: Square (300263832)</summary>
+    public static Type Square => MakeType("300263832", "Square");
+
+    /// <summary>Shapes: Upright (300343370)</summary>
+    public static Type Upright => MakeType("300343370", "Upright");
+
+    /// <summary>Name Types: The Name is a translation of another name (300417194)</summary>
+    public static Type TranslatedTitle => MakeType("300417194", "Translated Title");
+
+    /// <summary>Name Types: The Name is part of a larger title, and is the sub-title (300312006)</summary>
+    public static Type SubTitle => MakeType("300312006", "Sub-title");
+
+    /// <summary>Name Types: The Name is an alias or nickname, likely for a person (300404664)</summary>
+    public static Type Alias => MakeType("300404664", "Alias");
+
+    /// <summary>Name Types: The Name is a pseudonym, pen-name or other adopted name (300404657)</summary>
+    public static Type Pseudonym => MakeType("300404657", "Pseudonym");
+
+    /// <summary>Identifier Types: The identifier, typically a number, for an auction lot. The same identifier might be repeated across different auctions (300404628)</summary>
+    public static Type AuctionLotNumber => MakeType("300404628", "Auction Lot Number");
+
+    /// <summary>Identifier Types: An International Standard Book Number (300417443)</summary>
+    public static Type Isbn => MakeType("300417443", "ISBN");
+
+    /// <summary>Identifier Types: An International Standard Serial Number (for journals) (300417430)</summary>
+    public static Type Issn => MakeType("300417430", "ISSN");
+
+    /// <summary>Identifier Types: A Digital Object Identifier (300417432)</summary>
+    public static Type Doi => MakeType("300417432", "DOI");
+
+    /// <summary>Identifier Types: An identifier based on the stock managed by a commercial organization (300412177)</summary>
+    public static Type StockNumber => MakeType("300412177", "Stock Number");
+
+    /// <summary>Contact Identifier Types: An email address, as a string rather than a mailto: URI (300435686)</summary>
+    public static Type EmailAddress => MakeType("300435686", "Email Address");
+
+    /// <summary>Contact Identifier Types: A street address (300386983)</summary>
+    public static Type StreetAddress => MakeType("300386983", "Street Address");
+
+    /// <summary>Contact Identifier Types: A telephone number (300435688)</summary>
+    public static Type TelephoneNumber => MakeType("300435688", "Telephone Number");
+
+    /// <summary>Contact Identifier Types: A fax number (300435689)</summary>
+    public static Type FaxNumber => MakeType("300435689", "Fax Number");
+
+    /// <summary>Statement Types: A description of the life of a person (vocabulary page label: Biography (Statement)) (300435422)</summary>
+    public static Type BiographyStatement => MakeType("300435422", "Biography Statement");
+
+    /// <summary>Statement Types: Context of any sort relevant to the resource it is associated with (300435428)</summary>
+    public static Type ContextStatement => MakeType("300435428", "Context Statement");
+
+    /// <summary>Statement Types: The culture from which the object or work is drawn, or that the person or group is part of (300435431)</summary>
+    public static Type CultureStatement => MakeType("300435431", "Culture Statement");
+
+    /// <summary>Statement Types: The edition or number of a work or object (300435435)</summary>
+    public static Type EditionStatement => MakeType("300435435", "Edition Statement");
+
+    /// <summary>Statement Types: The foliation statement of an object with folios, such as "i-ix, f1r-f256v" (300435441)</summary>
+    public static Type FoliationStatement => MakeType("300435441", "Foliation Statement");
+
+    /// <summary>Statement Types: A statement declaring the language or languages of a text (300435433)</summary>
+    public static Type LanguageStatement => MakeType("300435433", "Language Statement");
+
+    /// <summary>Statement Types: Similar to a foliation statement, a description of the page count for the object (300435440)</summary>
+    public static Type PaginationStatement => MakeType("300435440", "Pagination Statement");
+
+    /// <summary>Statement Types: A statement about the period of time from which the object, work or other entity originates (300435432)</summary>
+    public static Type PeriodStatement => MakeType("300435432", "Period Statement");
+
+    /// <summary>Statement Types: A statement as to the significance of the object or work (300435427)</summary>
+    public static Type SignificanceStatement => MakeType("300435427", "Significance Statement");
+
+    /// <summary>Statement Types: A statement as to the value of the object or work (300435426)</summary>
+    public static Type ValuationStatement => MakeType("300435426", "Valuation Statement");
+
+    /// <summary>Document Types: A note or comment added to text, diagrams, or data, which can vary in length and format. (300026100)</summary>
+    public static Type Annotation => MakeType("300026100", "Annotation");
+
+    /// <summary>Document Types: A nonfictional prose forming an independent part of a publication. (300048715)</summary>
+    public static Type Article => MakeType("300048715", "Article");
+
+    /// <summary>Document Types: A catalog listing items to be sold at an auction, often including descriptions and estimates. (300026068)</summary>
+    public static Type AuctionCatalog => MakeType("300026068", "Auction Catalog");
+
+    /// <summary>Document Types: A comprehensive, annotated listing of all the known artworks by an artist. (300026061)</summary>
+    public static Type CatalogueRaisonn => MakeType("300026061", "Catalogue raisonné");
+
+    /// <summary>Document Types: A main division of a book, typically with a number or title. (300311699)</summary>
+    public static Type Chapter => MakeType("300311699", "Chapter");
+
+    /// <summary>Document Types: Factual information used as a basis for reasoning, discussion, or calculation. (300438434)</summary>
+    public static Type Data => MakeType("300438434", "Data");
+
+    /// <summary>Document Types: A publication accompanying an exhibition, detailing the works displayed. (300026096)</summary>
+    public static Type ExhibitionCatalog => MakeType("300026096", "Exhibition Catalog");
+
+    /// <summary>Document Types: A single edition of a periodical released at a particular time. (300312349)</summary>
+    public static Type Issue => MakeType("300312349", "Issue");
+
+    /// <summary>Document Types: A periodical publication containing scholarly articles on a specific subject. (300215390)</summary>
+    public static Type Journal => MakeType("300215390", "Journal");
+
+    /// <summary>Document Types: A detailed written study on a single specialized subject or aspect of it. (300060417)</summary>
+    public static Type Monograph => MakeType("300060417", "Monograph");
+
+    /// <summary>Document Types: An official document granting exclusive rights to an invention or process. (300027832)</summary>
+    public static Type Patent => MakeType("300027832", "Patent");
+
+    /// <summary>Document Types: A published record of a conference, including papers and discussions. (300027316)</summary>
+    public static Type Proceedings => MakeType("300027316", "Proceedings");
+
+    /// <summary>Document Types: The written or printed words found on a single page. (vocabulary page label: Text of a Page) (300194222)</summary>
+    public static Type TextOfAPage => MakeType("300194222", "Page");
+
+    /// <summary>Document Types: A dissertation presenting original research, submitted for an academic degree. (300028028)</summary>
+    public static Type Thesis => MakeType("300028028", "Thesis");
+
+    /// <summary>Document Types: A book forming part of a work or series, often numbered. (300265632)</summary>
+    public static Type Volume => MakeType("300265632", "Volume");
+
+    /// <summary>Place Types: A rectangular area in a city enclosed by streets, containing buildings. (300008077)</summary>
+    public static Type CityBlock => MakeType("300008077", "City Block");
+
+    /// <summary>Place Types: A subdivision of a county with some self-government. (300000792)</summary>
+    public static Type Township => MakeType("300000792", "Township");
+
+    /// <summary>Place Types: A location designated for storing objects or materials. (300150151)</summary>
+    public static Type StoragePlace => MakeType("300150151", "Storage place");
+
+    /// <summary>Place Types: A vast body of salt water covering a major part of the Earth's surface. (300008687)</summary>
+    public static Type Ocean => MakeType("300008687", "Ocean");
+
+    /// <summary>Place Types: A large body of salt water, smaller than an ocean, partially enclosed by land. (300008694)</summary>
+    public static Type Sea => MakeType("300008694", "Sea");
+
+    /// <summary>Place Types: A broad inlet of the sea where the land curves inward. (300132316)</summary>
+    public static Type Bay => MakeType("300132316", "Bay");
+
+    /// <summary>Group Types: A workshop or studio of an artist, including assistants and apprentices. (300404277)</summary>
+    public static Type AtelierOf => MakeType("300404277", "Atelier (of)");
+
+    /// <summary>Group Types: A group of artists influenced by a particular master, often without direct contact. (300404283)</summary>
+    public static Type CircleOf => MakeType("300404283", "Circle (of)");
+
+    /// <summary>Group Types: Artists who adopt the style of a master or movement. (300404282)</summary>
+    public static Type FollowersOf => MakeType("300404282", "Followers (of)");
+
+    /// <summary>Group Types: Students under the guidance of a specific teacher or master. (300404279)</summary>
+    public static Type PupilsOf => MakeType("300404279", "Pupils (of)");
+
+    /// <summary>Group Types: Artists sharing common styles or philosophies, often linked to a location or period. (300404284)</summary>
+    public static Type SchoolOf => MakeType("300404284", "School (of)");
+
+    /// <summary>Group Types: The workplace of an artist or professional, sometimes including collaborators. (vocabulary page label: Studio (of)) (300404275)</summary>
+    public static Type StudioOf => MakeType("300404275", "Studio");
+
+    /// <summary>Group Types: A place where an artist or craftsperson and their team produce works collectively. (300404274)</summary>
+    public static Type WorkshopOf => MakeType("300404274", "Workshop (of)");
+
+    /// <summary>Object Types: A container with a flat base and sides, typically square or rectangular. (300045643)</summary>
+    public static Type Box => MakeType("300045643", "Box");
+
+    /// <summary>Object Types: A structure with walls and a roof, such as a house or factory. (300004792)</summary>
+    public static Type Building => MakeType("300004792", "Building");
+
+    /// <summary>Object Types: Decorative needlework stitched on fabric. (300264024)</summary>
+    public static Type Embroidery => MakeType("300264024", "Embroidery");
+
+    /// <summary>Object Types: A glossy coating fused onto metal, glass, or ceramics for protection or decoration. (300178264)</summary>
+    public static Type Enamel => MakeType("300178264", "Enamel");
+
+    /// <summary>Object Types: A flat paper container with a sealable flap, used for enclosing documents. (300197601)</summary>
+    public static Type Envelope => MakeType("300197601", "Envelope");
+
+    /// <summary>Object Types: A cover or holder for storing loose papers. (300197602)</summary>
+    public static Type Folder => MakeType("300197602", "Folder");
+
+    /// <summary>Object Types: A tool or instrument used in performing an action or task. (300024841)</summary>
+    public static Type Implement => MakeType("300024841", "Implement");
+
+    /// <summary>Object Types: A book with blank pages for mounting and displaying photographs. (300026695)</summary>
+    public static Type PhotoAlbum => MakeType("300026695", "Photo Album");
+
+    /// <summary>Object Types: A book composed primarily of photographs, often centered around a theme or artist. (300265728)</summary>
+    public static Type PhotoBook => MakeType("300265728", "Photo Book");
+
+    /// <summary>Object Types: An image with inverted colors and tones, used to produce positive photographs. (300127173)</summary>
+    public static Type PhotographicNegative => MakeType("300127173", "Photographic Negative");
+
+    /// <summary>Object Types: A small part or quantity intended to show what the whole is like. (300028875)</summary>
+    public static Type Sample => MakeType("300028875", "Sample");
+
+    /// <summary>Object Types: A hollow container, especially for holding liquids. (300193015)</summary>
+    public static Type Vessel => MakeType("300193015", "Vessel");
+
+    /// <summary>Parts of Objects Types: The rear part or side of an object, opposite the front. (vocabulary page label: Back) (300190692)</summary>
+    public static Type Back => MakeType("300190692", "Back Part");
+
+    /// <summary>Parts of Objects Types: The bottom support of an object; foundation. (300001656)</summary>
+    public static Type BasePart => MakeType("300001656", "Base");
+
+    /// <summary>Parts of Objects Types: The lowest part or point of something. (300190695)</summary>
+    public static Type Bottom => MakeType("300190695", "Bottom");
+
+    /// <summary>Parts of Objects Types: The foremost part or side of an object. (300190703)</summary>
+    public static Type Front => MakeType("300190703", "Front");
+
+    /// <summary>Parts of Objects Types: A backing or support on which something is mounted for display or study. (300131087)</summary>
+    public static Type Mount => MakeType("300131087", "Mount");
+
+    /// <summary>Parts of Objects Types: A flat or curved component, often rectangular, forming part of a surface. (300014657)</summary>
+    public static Type Panel => MakeType("300014657", "Panel");
+
+    /// <summary>Parts of Objects Types: A position to the left or right of an object or central point. (300190706)</summary>
+    public static Type Side => MakeType("300190706", "Side");
+
+    /// <summary>Parts of Objects Types: The material or structure upon which a work of art is executed. (300014844)</summary>
+    public static Type Support => MakeType("300014844", "Support");
+
+    /// <summary>Parts of Objects Types: The highest or uppermost part of something. (300190710)</summary>
+    public static Type Top => MakeType("300190710", "Top");
+
+    /// <summary>Dimension Types: A straight line passing through the center of a circle or sphere. (300055624)</summary>
+    public static Type Diameter => MakeType("300055624", "Diameter");
+
+    /// <summary>Dimension Types: The measurement of something from end to end. (300055645)</summary>
+    public static Type Length => MakeType("300055645", "Length");
+
+    /// <summary>Dimension Types: The distance between the two opposite surfaces of an object; depth. (300055646)</summary>
+    public static Type Thickness => MakeType("300055646", "Thickness");
+
+    /// <summary>Dimension type used in the digital model pages (300265863)</summary>
+    public static Type FileSize => MakeType("300265863", "File Size");
+
+    /// <summary>Dimension type for counts (pages, components) (300404433)</summary>
+    public static Type Count => MakeType("300404433", "Count");
+
+    /// <summary>Unit for RGB colour values (300266239)</summary>
+    public static MeasurementUnit Rgb => MakeUnit("300266239", "rgb");
 
     /// <summary>Meta-type for part classifications (300241583)</summary>
     public static Type PartType => MakeType("300241583", "Part Type");
 
-    /// <summary>The site uses the same id as a count unit (same id as PartType, with this label) (300241583)</summary>
+    /// <summary>Unit for component counts; the site uses the same id as Part Type (same id as PartType, with this label) (300241583)</summary>
     public static MeasurementUnit Components => MakeUnit("300241583", "Components");
 
-    /// <summary>Back Part (300190692)</summary>
-    public static Type BackPart => MakeType("300190692", "Back Part");
-
-    /// <summary>Support (300014844)</summary>
-    public static Type Support => MakeType("300014844", "Support");
-
-    /// <summary>Meta-type for shape classifications (300056273)</summary>
-    public static Type Shape => MakeType("300056273", "Shape");
-
-    /// <summary>Oblong (300311843)</summary>
-    public static Type Oblong => MakeType("300311843", "Oblong");
-
-    /// <summary>Meta-type for style classifications (300015646)</summary>
-    public static Type Style => MakeType("300015646", "Style");
-
-    /// <summary>Impressionism (300021503)</summary>
-    public static Type Impressionism => MakeType("300021503", "Impressionism");
-
-    /// <summary>Height (300055644)</summary>
-    public static Type Height => MakeType("300055644", "Height");
-
-    /// <summary>Width (300055647)</summary>
-    public static Type Width => MakeType("300055647", "Width");
-
-    /// <summary>Color (300080438)</summary>
-    public static Type Color => MakeType("300080438", "Color");
-
-    /// <summary>Brown (300127490)</summary>
-    public static Type Brown => MakeType("300127490", "Brown");
-
-    /// <summary>Count (300404433)</summary>
-    public static Type Count => MakeType("300404433", "Count");
-
-    /// <summary>Count Of (same id as Count, with this label) (300404433)</summary>
-    public static Type CountOf => MakeType("300404433", "Count Of");
-
-    /// <summary>File Size (300265863)</summary>
-    public static Type FileSize => MakeType("300265863", "File Size");
-
-    /// <summary>centimeters (300379098)</summary>
-    public static MeasurementUnit Centimeters => MakeUnit("300379098", "centimeters");
-
-    /// <summary>millimeters (300379099)</summary>
-    public static MeasurementUnit Millimeters => MakeUnit("300379099", "millimeters");
-
-    /// <summary>kilobytes (300265870)</summary>
-    public static MeasurementUnit Kilobytes => MakeUnit("300265870", "kilobytes");
-
-    /// <summary>days (300379242)</summary>
-    public static MeasurementUnit Days => MakeUnit("300379242", "days");
-
-    /// <summary>rgb (300266239)</summary>
-    public static MeasurementUnit Rgb => MakeUnit("300266239", "rgb");
-
-    /// <summary>Page (300194222)</summary>
-    public static Type Page => MakeType("300194222", "Page");
-
-    /// <summary>Pages (same id as Page, with this label) (300194222)</summary>
+    /// <summary>Unit for page counts; the site uses the same id as Text of a Page (same id as TextOfAPage, with this label) (300194222)</summary>
     public static MeasurementUnit Pages => MakeUnit("300194222", "Pages");
 
-    /// <summary>oil (300015050)</summary>
-    public static Material Oil => MakeMaterial("300015050", "oil");
-
-    /// <summary>canvas (300014078)</summary>
-    public static Material Canvas => MakeMaterial("300014078", "canvas");
-
-    /// <summary>copper (300011020)</summary>
-    public static Material Copper => MakeMaterial("300011020", "copper");
-
-    /// <summary>English (300388277)</summary>
-    public static Language English => MakeLanguage("300388277", "English", "en");
-
-    /// <summary>Dutch (300388256)</summary>
-    public static Language Dutch => MakeLanguage("300388256", "Dutch", "nl");
-
-    /// <summary>French Francs (300412016)</summary>
-    public static Currency FrenchFrancs => MakeCurrency("300412016", "French Francs");
-
-    /// <summary>Meta-type on every statement classification (300418049)</summary>
-    public static Type BriefText => MakeType("300418049", "Brief Text");
-
-    /// <summary>Description (300435416)</summary>
-    public static Type Description => MakeType("300435416", "Description");
-
-    /// <summary>Inscription (300435414)</summary>
-    public static Type Inscription => MakeType("300435414", "Inscription");
-
-    /// <summary>Dimension Statement (300435430)</summary>
-    public static Type DimensionStatement => MakeType("300435430", "Dimension Statement");
-
-    /// <summary>Material Statement (300435429)</summary>
-    public static Type MaterialStatement => MakeType("300435429", "Material Statement");
-
-    /// <summary>Biography Statement (300435422)</summary>
-    public static Type BiographyStatement => MakeType("300435422", "Biography Statement");
-
-    /// <summary>Credit Statement (300026687)</summary>
-    public static Type CreditStatement => MakeType("300026687", "Credit Statement");
-
-    /// <summary>Copyright/License Statement (300435434)</summary>
-    public static Type CopyrightLicenseStatement => MakeType("300435434", "Copyright/License Statement");
-
-    /// <summary>Physical Statement (300435452)</summary>
+    /// <summary>Statement type used in the physical model page (300435452)</summary>
     public static Type PhysicalStatement => MakeType("300435452", "Physical Statement");
 
-    /// <summary>Pagination Statement (300435440)</summary>
-    public static Type PaginationStatement => MakeType("300435440", "Pagination Statement");
-
-    /// <summary>Bibliography Statement (300026497)</summary>
-    public static Type BibliographyStatement => MakeType("300026497", "Bibliography Statement");
-
-    /// <summary>Edition Statement (300435435)</summary>
-    public static Type EditionStatement => MakeType("300435435", "Edition Statement");
-
-    /// <summary>Publication Statement (300202362)</summary>
+    /// <summary>Statement type used in the document model page (300202362)</summary>
     public static Type PublicationStatement => MakeType("300202362", "Publication Statement");
 
-    /// <summary>Provenance Statement (300435438)</summary>
-    public static Type ProvenanceStatement => MakeType("300435438", "Provenance Statement");
+    /// <summary>Archival statement type (archives model page) (300055458)</summary>
+    public static Type AccrualsStatement => MakeType("300055458", "Accruals");
 
-    /// <summary>General Note (300027200)</summary>
-    public static Type GeneralNote => MakeType("300027200", "General Note");
+    /// <summary>Archival statement type (archives model page) (300077565)</summary>
+    public static Type AdministrativeHistoryStatement => MakeType("300077565", "Administrative History");
 
-    /// <summary>System-Assigned Number (300435704)</summary>
-    public static Type SystemAssignedNumber => MakeType("300435704", "System-Assigned Number");
+    /// <summary>Archival statement type (archives model page) (300444118)</summary>
+    public static Type ArrangementDescriptionStatement => MakeType("300444118", "Arrangement Description");
 
-    /// <summary>Record Identifiers (same id as SystemAssignedNumber, with this label) (300435704)</summary>
-    public static Type RecordIdentifiers => MakeType("300435704", "Record Identifiers");
+    /// <summary>Archival statement type (archives model page) (300444119)</summary>
+    public static Type RelatedMaterialStatement => MakeType("300444119", "Related Material");
 
-    /// <summary>Accession Number (300312355)</summary>
-    public static Type AccessionNumber => MakeType("300312355", "Accession Number");
+    /// <summary>Classification of archival material (archives model page) (300379505)</summary>
+    public static Type ArchivalMaterials => MakeType("300379505", "Archival Materials");
 
-    /// <summary>Owner-Assigned Number (300404621)</summary>
-    public static Type OwnerAssignedNumber => MakeType("300404621", "Owner-Assigned Number");
+    /// <summary>Name type used in the examples alongside Alternate Name (300404671)</summary>
+    public static Type AlternateTitle => MakeType("300404671", "Alternate Title");
 
-    /// <summary>Entry Numbers (300445023)</summary>
-    public static Type EntryNumbers => MakeType("300445023", "Entry Numbers");
-
-    /// <summary>Sort Value (300456575)</summary>
-    public static Type SortValue => MakeType("300456575", "Sort Value");
-
-    /// <summary>ISBN (300417443)</summary>
-    public static Type ISBN => MakeType("300417443", "ISBN");
-
-    /// <summary>Creation Number (300404622)</summary>
+    /// <summary>Identifier type used in the examples (300404622)</summary>
     public static Type CreationNumber => MakeType("300404622", "Creation Number");
 
-    /// <summary>Email Address (300435686)</summary>
-    public static Type EmailAddress => MakeType("300435686", "Email Address");
+    /// <summary>Identifier type used in the archives model page (300445023)</summary>
+    public static Type EntryNumbers => MakeType("300445023", "Entry Numbers");
 
-    /// <summary>Telephone Number (300435688)</summary>
-    public static Type TelephoneNumber => MakeType("300435688", "Telephone Number");
-
-    /// <summary>Street Address (300386983)</summary>
-    public static Type StreetAddress => MakeType("300386983", "Street Address");
-
-    /// <summary>Provenance Activity (300055863)</summary>
-    public static Type ProvenanceActivity => MakeType("300055863", "Provenance Activity");
-
-    /// <summary>Gift (300417637)</summary>
-    public static Type Gift => MakeType("300417637", "Gift");
-
-    /// <summary>Auction Event (300054751)</summary>
-    public static Type AuctionEvent => MakeType("300054751", "Auction Event");
-
-    /// <summary>Exhibiting (300054766)</summary>
-    public static Type Exhibiting => MakeType("300054766", "Exhibiting");
-
-    /// <summary>Exhibiting in multiple locations (300054773)</summary>
-    public static Type ExhibitingInMultipleLocations => MakeType("300054773", "Exhibiting in multiple locations");
-
-    /// <summary>Exhibition (300417531)</summary>
+    /// <summary>Classification of the exhibition concept (PropositionalObject) (300417531)</summary>
     public static Type Exhibition => MakeType("300417531", "Exhibition");
 
-    /// <summary>Curating (300054277)</summary>
+    /// <summary>Provenance activity classification (300417637)</summary>
+    public static Type Gift => MakeType("300417637", "Gift");
+
+    /// <summary>Provenance activity classification (300054751)</summary>
+    public static Type AuctionEvent => MakeType("300054751", "Auction Event");
+
+    /// <summary>Activity classification used in the exhibition model page (300054277)</summary>
     public static Type Curating => MakeType("300054277", "Curating");
 
-    /// <summary>Publishing (300054686)</summary>
-    public static Type Publishing => MakeType("300054686", "Publishing");
-
-    /// <summary>Conservation Activity (300404519)</summary>
+    /// <summary>Activity classification used in the conservation examples (300404519)</summary>
     public static Type ConservationActivity => MakeType("300404519", "Conservation Activity");
 
-    /// <summary>Cleaning (300053027)</summary>
-    public static Type Cleaning => MakeType("300053027", "Cleaning");
+    /// <summary>Activity classification used in the exhibition model page (300054773)</summary>
+    public static Type ExhibitingInMultipleLocations => MakeType("300054773", "Exhibiting in multiple locations");
 
-    /// <summary>Professional Activities (300393177)</summary>
-    public static Type ProfessionalActivities => MakeType("300393177", "Professional Activities");
-
-    /// <summary>Burial (300263485)</summary>
-    public static Type Burial => MakeType("300263485", "Burial");
-
-    /// <summary>Vandalism (300055299)</summary>
-    public static Type Vandalism => MakeType("300055299", "Vandalism");
-
-    /// <summary>Microcracks (300387447)</summary>
-    public static Type Microcracks => MakeType("300387447", "Microcracks");
-
-    /// <summary>Possibly By (300404272)</summary>
+    /// <summary>Attribution qualifier used in the assertion model page (300404272)</summary>
     public static Type PossiblyBy => MakeType("300404272", "Possibly By");
 
-    /// <summary>The technique, as distinct from the Painting work type (300054216)</summary>
-    public static Type PaintingTechnique => MakeType("300054216", "Painting");
-
-    /// <summary>Sculpting (300264383)</summary>
-    public static Type Sculpting => MakeType("300264383", "Sculpting");
-
-    /// <summary>Spraypainting (300053816)</summary>
-    public static Type Spraypainting => MakeType("300053816", "Spraypainting");
-
-    /// <summary>Glassblowing (300053932)</summary>
-    public static Type Glassblowing => MakeType("300053932", "Glassblowing");
-
-    /// <summary>hand weaving (300053643)</summary>
-    public static Type HandWeaving => MakeType("300053643", "hand weaving");
-
-    /// <summary>Artist (300025103)</summary>
-    public static Type Artist => MakeType("300025103", "Artist");
-
-    /// <summary>Painter (300025136)</summary>
-    public static Type Painter => MakeType("300025136", "Painter");
-
-    /// <summary>Director (300025654)</summary>
-    public static Type Director => MakeType("300025654", "Director");
-
-    /// <summary>Producer (300197742)</summary>
-    public static Type Producer => MakeType("300197742", "Producer");
-
-    /// <summary>Meta-type for occupation classifications (300263369)</summary>
-    public static Type Occupation => MakeType("300263369", "Occupation");
-
-    /// <summary>Meta-type for nationality classifications (300379842)</summary>
-    public static Type Nationality => MakeType("300379842", "Nationality");
-
-    /// <summary>Ethnicity (300250435)</summary>
-    public static Type Ethnicity => MakeType("300250435", "Ethnicity");
-
-    /// <summary>Gender (300055147)</summary>
+    /// <summary>Meta-type for gender classifications (300055147)</summary>
     public static Type Gender => MakeType("300055147", "Gender");
 
-    /// <summary>Male (300189559)</summary>
-    public static Type Male => MakeType("300189559", "Male");
-
-    /// <summary>Woman (300025943)</summary>
-    public static Type Woman => MakeType("300025943", "Woman");
-
-    /// <summary>Beauty (300055821)</summary>
-    public static Type Beauty => MakeType("300055821", "Beauty");
-
-    /// <summary>Spring (season) (300133097)</summary>
-    public static Type Spring => MakeType("300133097", "Spring (season)");
-
-    /// <summary>Building (300004792)</summary>
-    public static Type Building => MakeType("300004792", "Building");
-
-    /// <summary>City (300008389)</summary>
-    public static Type City => MakeType("300008389", "City");
-
-    /// <summary>Nation (300128207)</summary>
-    public static Type Nation => MakeType("300128207", "Nation");
+    /// <summary>Meta-type for ethnicity classifications (300250435)</summary>
+    public static Type Ethnicity => MakeType("300250435", "Ethnicity");
 
     /// <summary>Every term in the registry, in file order.</summary>
     public static IReadOnlyList<VocabularyTerm> Terms { get; } =
     [
         new("PrimaryName", "300404670", "Primary Name", VocabularyKind.Type, null, null),
+        new("DisplayName", "300404669", "Display Title", VocabularyKind.Type, null, null),
+        new("SortName", "300451544", "Sort Name", VocabularyKind.Type, null, null),
+        new("SortValue", "300456575", "Sort Value", VocabularyKind.Type, null, null),
+        new("Statement", "300418049", "Brief Text", VocabularyKind.Type, null, null),
+        new("TypeOfWork", "300435443", "Type of Work", VocabularyKind.Type, null, null),
+        new("Style", "300015646", "Style", VocabularyKind.Type, null, null),
+        new("Shape", "300056273", "Shape", VocabularyKind.Type, null, null),
+        new("Occupation", "300263369", "Occupation", VocabularyKind.Type, null, null),
+        new("Nationality", "300379842", "Nationality", VocabularyKind.Type, null, null),
+        new("Color", "300080438", "Color", VocabularyKind.Type, null, null),
+        new("ExhibitionActivity", "300054766", "Exhibition Activity", VocabularyKind.Type, null, null),
+        new("ProvenanceActivity", "300055863", "Provenance Activity", VocabularyKind.Type, null, null),
+        new("ProfessionalActivity", "300393177", "Professional Activities", VocabularyKind.Type, null, null),
+        new("PublicationActivity", "300054686", "Publishing", VocabularyKind.Type, null, null),
+        new("PromiseActivity", "300435599", "Promise Activity", VocabularyKind.Type, null, null),
+        new("CollectionItem", "300404024", "Collection Item", VocabularyKind.Type, null, null),
+        new("Artwork", "300133025", "Artwork", VocabularyKind.Type, null, null),
+        new("AlternateName", "300264273", "Alternate Name", VocabularyKind.Type, null, null),
         new("GivenName", "300404651", "Given Name", VocabularyKind.Type, null, null),
         new("MiddleName", "300404654", "Middle Name", VocabularyKind.Type, null, null),
         new("FamilyName", "300404652", "Family Name", VocabularyKind.Type, null, null),
-        new("DisplayTitle", "300404669", "Display Title", VocabularyKind.Type, null, null),
-        new("AlternateTitle", "300404671", "Alternate Title", VocabularyKind.Type, null, null),
-        new("Family", "300055474", "Family", VocabularyKind.Type, null, null),
-        new("Organization", "300025948", "Organization", VocabularyKind.Type, null, null),
-        new("Museum", "300312281", "Museum", VocabularyKind.Type, null, null),
-        new("Studio", "300404275", "Studio", VocabularyKind.Type, null, null),
-        new("TypeOfWork", "300435443", "Type of Work", VocabularyKind.Type, null, null),
+        new("FormerName", "300435719", "Former Name", VocabularyKind.Type, null, null),
+        new("AccessionNumber", "300312355", "Accession Number", VocabularyKind.Type, null, null),
+        new("LocalNumber", "300404621", "Local Number", VocabularyKind.Type, null, null),
+        new("SystemNumber", "300435704", "System-Assigned Number", VocabularyKind.Type, null, null),
+        new("CallNumber", "300311706", "Call Number", VocabularyKind.Type, null, null),
+        new("Note", "300027200", "Note", VocabularyKind.Type, null, null),
+        new("Description", "300435416", "Description", VocabularyKind.Type, null, null),
+        new("AccessStatement", "300133046", "Access Statement", VocabularyKind.Type, null, null),
+        new("BibliographyStatement", "300026497", "Bibliography Statement", VocabularyKind.Type, null, null),
+        new("ConditionStatement", "300435425", "Condition Statement", VocabularyKind.Type, null, null),
+        new("CreditLine", "300026687", "Credit Statement", VocabularyKind.Type, null, null),
+        new("DimensionsStatement", "300435430", "Dimension Statement", VocabularyKind.Type, null, null),
+        new("ExhibitionStatement", "300435424", "Exhibition Statement", VocabularyKind.Type, null, null),
+        new("InscriptionStatement", "300435414", "Inscription", VocabularyKind.Type, null, null),
+        new("MarkingsStatement", "300435420", "Markings Statement", VocabularyKind.Type, null, null),
+        new("MaterialsStatement", "300435429", "Material Statement", VocabularyKind.Type, null, null),
+        new("ProductionStatement", "300435436", "Production Statement", VocabularyKind.Type, null, null),
+        new("ProvenanceStatement", "300435438", "Provenance Statement", VocabularyKind.Type, null, null),
+        new("RightsStatement", "300435434", "Copyright/License Statement", VocabularyKind.Type, null, null),
+        new("SignatureStatement", "300028705", "Signature", VocabularyKind.Type, null, null),
+        new("Summary", "300026032", "Summary", VocabularyKind.Type, null, null),
+        new("Architecture", "300263552", "Architecture", VocabularyKind.Type, null, null),
+        new("Armor", "300036745", "Armor", VocabularyKind.Type, null, null),
+        new("Book", "300028051", "Book", VocabularyKind.Type, null, null),
+        new("Clothing", "300266639", "Clothing", VocabularyKind.Type, null, null),
+        new("Coin", "300037222", "Coin", VocabularyKind.Type, null, null),
+        new("DecorativeArts", "300411641", "Decorative Arts", VocabularyKind.Type, null, null),
+        new("Drawing", "300033973", "Drawing", VocabularyKind.Type, null, null),
+        new("Frame", "300404391", "Frame", VocabularyKind.Type, null, null),
+        new("Furniture", "300037680", "Furniture", VocabularyKind.Type, null, null),
+        new("Jewelry", "300209286", "Jewelry", VocabularyKind.Type, null, null),
+        new("Lithograph", "300041379", "Lithograph", VocabularyKind.Type, null, null),
+        new("Manuscript", "300265483", "Manuscript", VocabularyKind.Type, null, null),
+        new("Map", "300028094", "Map", VocabularyKind.Type, null, null),
+        new("Miniature", "300033936", "Miniature", VocabularyKind.Type, null, null),
+        new("Mosaic", "300015342", "Mosaic", VocabularyKind.Type, null, null),
+        new("MusicalInstrument", "300041620", "Musical Instrument", VocabularyKind.Type, null, null),
         new("Painting", "300033618", "Painting", VocabularyKind.Type, null, null),
         new("Photograph", "300046300", "Photograph", VocabularyKind.Type, null, null),
         new("Print", "300041273", "Print", VocabularyKind.Type, null, null),
         new("Sculpture", "300047090", "Sculpture", VocabularyKind.Type, null, null),
-        new("Artwork", "300133025", "Artwork", VocabularyKind.Type, null, null),
-        new("Book", "300028051", "Book", VocabularyKind.Type, null, null),
-        new("Monograph", "300060417", "Monograph", VocabularyKind.Type, null, null),
-        new("Chapter", "300311699", "Chapter", VocabularyKind.Type, null, null),
-        new("Letter", "300026879", "Letter", VocabularyKind.Type, null, null),
-        new("Sound", "300056060", "Sound", VocabularyKind.Type, null, null),
-        new("Parasol", "300046218", "Parasol", VocabularyKind.Type, null, null),
-        new("Portrait", "300015637", "Portrait", VocabularyKind.Type, null, null),
-        new("Signature", "300028705", "Signature", VocabularyKind.Type, null, null),
-        new("ExhibitionCatalog", "300026096", "Exhibition Catalog", VocabularyKind.Type, null, null),
-        new("WebPage", "300264578", "Web Page", VocabularyKind.Type, null, null),
+        new("StainedGlass", "300263722", "Stained Glass", VocabularyKind.Type, null, null),
+        new("Tapestry", "300205002", "Tapestry", VocabularyKind.Type, null, null),
+        new("Continent", "300128176", "Continent", VocabularyKind.Type, null, null),
+        new("Country", "300128207", "Nation", VocabularyKind.Type, null, null),
+        new("State", "300000776", "State", VocabularyKind.Type, null, null),
+        new("Province", "300000774", "Province", VocabularyKind.Type, null, null),
+        new("County", "300000771", "County", VocabularyKind.Type, null, null),
+        new("City", "300008389", "City", VocabularyKind.Type, null, null),
+        new("MuseumPlace", "300005768", "Museum (as Place)", VocabularyKind.Type, null, null),
+        new("Gallery", "300240057", "Gallery", VocabularyKind.Type, null, null),
+        new("Company", "300160084", "Company", VocabularyKind.Type, null, null),
+        new("Department", "300263534", "Department", VocabularyKind.Type, null, null),
+        new("Family", "300055474", "Family", VocabularyKind.Type, null, null),
+        new("Museum", "300312281", "Museum", VocabularyKind.Type, null, null),
+        new("Organization", "300025948", "Organization", VocabularyKind.Type, null, null),
         new("DigitalImage", "300215302", "Digital Image", VocabularyKind.Type, null, null),
-        new("Archives", "300375748", "archives (groupings)", VocabularyKind.Type, null, null),
+        new("WebPage", "300264578", "Web Page", VocabularyKind.Type, null, null),
+        new("Archive", "300375748", "Archive", VocabularyKind.Type, null, null),
         new("ArchivalGrouping", "300404022", "Archival Grouping", VocabularyKind.Type, null, null),
         new("ArchivalSubGrouping", "300404023", "Archival SubGrouping", VocabularyKind.Type, null, null),
-        new("ArchivalMaterials", "300379505", "Archival Materials", VocabularyKind.Type, null, null),
-        new("Accruals", "300055458", "Accruals", VocabularyKind.Type, null, null),
-        new("AccessStatement", "300133046", "Access Statement", VocabularyKind.Type, null, null),
-        new("AdministrativeHistory", "300077565", "Administrative History", VocabularyKind.Type, null, null),
-        new("RelatedMaterial", "300444119", "Related Material", VocabularyKind.Type, null, null),
-        new("ArrangementDescription", "300444118", "Arrangement Description", VocabularyKind.Type, null, null),
         new("Collection", "300025976", "Collection", VocabularyKind.Type, null, null),
-        new("ExhibitionCollection", "300378926", "Exhibition Collection", VocabularyKind.Type, null, null),
+        new("Depth", "300072633", "Depth", VocabularyKind.Type, null, null),
+        new("Height", "300055644", "Height", VocabularyKind.Type, null, null),
+        new("UnknownPhysicalDimension", "300055642", "Unknown Physical Dimension", VocabularyKind.Type, null, null),
+        new("Weight", "300056240", "Weight", VocabularyKind.Type, null, null),
+        new("Width", "300055647", "Width", VocabularyKind.Type, null, null),
+        new("AncientGreek", "300387827", "Ancient Greek", VocabularyKind.Language, "grc", null),
+        new("Arabic", "300387843", "Arabic", VocabularyKind.Language, "ar", null),
+        new("Chinese", "300388113", "Chinese", VocabularyKind.Language, "zh", null),
+        new("Danish", "300388204", "Danish", VocabularyKind.Language, "da", null),
+        new("Dutch", "300388256", "Dutch", VocabularyKind.Language, "nl", null),
+        new("English", "300388277", "English", VocabularyKind.Language, "en", null),
+        new("Farsi", "300388296", "Farsi", VocabularyKind.Language, "fa", null),
+        new("Finnish", "300388299", "Finnish", VocabularyKind.Language, "fi", null),
+        new("French", "300388306", "French", VocabularyKind.Language, "fr", null),
+        new("German", "300388344", "German", VocabularyKind.Language, "de", null),
+        new("Greek", "300388361", "Greek", VocabularyKind.Language, "el", null),
+        new("Hebrew", "300388401", "Hebrew", VocabularyKind.Language, "he", null),
+        new("Hindi", "300388412", "Hindi", VocabularyKind.Language, "hi", null),
+        new("Icelandic", "300388449", "Icelandic", VocabularyKind.Language, "is", null),
+        new("Irish", "300388467", "Irish", VocabularyKind.Language, "ga", null),
+        new("Italian", "300388474", "Italian", VocabularyKind.Language, "it", null),
+        new("Japanese", "300388486", "Japanese", VocabularyKind.Language, "ja", null),
+        new("Korean", "300388633", "Korean", VocabularyKind.Language, "ko", null),
+        new("Latin", "300388693", "Latin", VocabularyKind.Language, "la", null),
+        new("Norwegian", "300388992", "Norwegian", VocabularyKind.Language, "no", null),
+        new("Polish", "300389109", "Polish", VocabularyKind.Language, "pl", null),
+        new("Portuguese", "300389115", "Portuguese", VocabularyKind.Language, "pt", null),
+        new("Romanian", "300389157", "Romanian", VocabularyKind.Language, "ro", null),
+        new("Russian", "300389168", "Russian", VocabularyKind.Language, "ru", null),
+        new("Spanish", "300389311", "Spanish", VocabularyKind.Language, "es", null),
+        new("Swedish", "300389336", "Swedish", VocabularyKind.Language, "sv", null),
+        new("Tamil", "300389365", "Tamil", VocabularyKind.Language, "ta", null),
+        new("Thai", "300389405", "Thai", VocabularyKind.Language, "th", null),
+        new("Turkish", "300389470", "Turkish", VocabularyKind.Language, "tr", null),
+        new("Urdu", "300389502", "Urdu", VocabularyKind.Language, "ur", null),
+        new("Welsh", "300389555", "Welsh", VocabularyKind.Language, "cy", null),
+        new("Bytes", "300265869", "bytes", VocabularyKind.MeasurementUnit, null, null),
+        new("Centimeters", "300379098", "centimeters", VocabularyKind.MeasurementUnit, null, null),
+        new("Days", "300379242", "days", VocabularyKind.MeasurementUnit, null, null),
+        new("Feet", "300379101", "feet", VocabularyKind.MeasurementUnit, null, null),
+        new("Gigabytes", "300265874", "gigabytes", VocabularyKind.MeasurementUnit, null, null),
+        new("Grams", "300379225", "grams", VocabularyKind.MeasurementUnit, null, null),
+        new("Hours", "300379241", "hours", VocabularyKind.MeasurementUnit, null, null),
+        new("Inches", "300379100", "inches", VocabularyKind.MeasurementUnit, null, null),
+        new("Kilobytes", "300265870", "kilobytes", VocabularyKind.MeasurementUnit, null, null),
+        new("Kilograms", "300379226", "kilograms", VocabularyKind.MeasurementUnit, null, null),
+        new("Megabytes", "300265873", "megabytes", VocabularyKind.MeasurementUnit, null, null),
+        new("Meters", "300379099", "meters", VocabularyKind.MeasurementUnit, null, null),
+        new("Minutes", "300379240", "minutes", VocabularyKind.MeasurementUnit, null, null),
+        new("Millimeters", "300379097", "millimeters", VocabularyKind.MeasurementUnit, null, null),
+        new("Months", "300379245", "months", VocabularyKind.MeasurementUnit, null, null),
+        new("Parts", "300404159", "parts", VocabularyKind.MeasurementUnit, null, null),
+        new("Percent", "300417377", "percent", VocabularyKind.MeasurementUnit, null, null),
+        new("Pounds", "300379254", "pounds", VocabularyKind.MeasurementUnit, null, null),
+        new("Seconds", "300379239", "seconds", VocabularyKind.MeasurementUnit, null, null),
+        new("Years", "300379244", "years", VocabularyKind.MeasurementUnit, null, null),
+        new("Bone", "300011798", "bone", VocabularyKind.Material, null, null),
+        new("Bronze", "300010957", "bronze", VocabularyKind.Material, null, null),
+        new("Canvas", "300014078", "canvas", VocabularyKind.Material, null, null),
+        new("Chalk", "300011727", "chalk", VocabularyKind.Material, null, null),
+        new("Clay", "300010439", "clay", VocabularyKind.Material, null, null),
+        new("Copper", "300011020", "copper", VocabularyKind.Material, null, null),
+        new("Glass", "300010797", "glass", VocabularyKind.Material, null, null),
+        new("GoldLeaf", "300264831", "gold leaf", VocabularyKind.Material, null, null),
+        new("Graphite", "300011098", "graphite", VocabularyKind.Material, null, null),
+        new("Ink", "300015012", "ink", VocabularyKind.Material, null, null),
+        new("Marble", "300011443", "marble", VocabularyKind.Material, null, null),
+        new("Metal", "300010900", "metal", VocabularyKind.Material, null, null),
+        new("Oak", "300012264", "oak", VocabularyKind.Material, null, null),
+        new("Oil", "300015050", "oil", VocabularyKind.Material, null, null),
+        new("Paper", "300014109", "paper", VocabularyKind.Material, null, null),
+        new("Plaster", "300014922", "plaster", VocabularyKind.Material, null, null),
+        new("Silver", "300011029", "silver", VocabularyKind.Material, null, null),
+        new("Stone", "300011176", "stone", VocabularyKind.Material, null, null),
+        new("Tempera", "300015062", "tempera", VocabularyKind.Material, null, null),
+        new("Terracotta", "300010669", "terracotta", VocabularyKind.Material, null, null),
+        new("Watercolors", "300015045", "watercolors", VocabularyKind.Material, null, null),
+        new("Wood", "300011914", "wood", VocabularyKind.Material, null, null),
+        new("BritishPounds", "300411998", "British Pounds", VocabularyKind.Currency, null, null),
+        new("CanadianDollars", "300412000", "Canadian Dollars", VocabularyKind.Currency, null, null),
+        new("Euros", "300411996", "Euros", VocabularyKind.Currency, null, null),
+        new("JapaneseYen", "300411997", "Japanese Yen", VocabularyKind.Currency, null, null),
+        new("SwissFrancs", "300412001", "Swiss Francs", VocabularyKind.Currency, null, null),
+        new("UsDollars", "300411994", "US Dollars", VocabularyKind.Currency, null, null),
+        new("AmericanNationality", "300107956", "American", VocabularyKind.Type, null, null),
+        new("AustrianNationality", "300111153", "Austrian", VocabularyKind.Type, null, null),
+        new("AustralianNationality", "300021861", "Australian", VocabularyKind.Type, null, null),
+        new("BelgianNationality", "300111156", "Belgian", VocabularyKind.Type, null, null),
+        new("BritishNationality", "300111159", "British", VocabularyKind.Type, null, null),
+        new("CanadianNationality", "300107962", "Canadian", VocabularyKind.Type, null, null),
+        new("ChineseNationality", "300018322", "Chinese", VocabularyKind.Type, null, null),
+        new("CzechNationality", "300111166", "Czech", VocabularyKind.Type, null, null),
+        new("DanishNationality", "300111172", "Danish", VocabularyKind.Type, null, null),
+        new("DutchNationality", "300111175", "Dutch", VocabularyKind.Type, null, null),
+        new("EgyptianNationality", "300020251", "Egyptian", VocabularyKind.Type, null, null),
+        new("FlemishNationality", "300111184", "Flemish", VocabularyKind.Type, null, null),
+        new("FrenchNationality", "300111188", "French", VocabularyKind.Type, null, null),
+        new("GermanNationality", "300111192", "German", VocabularyKind.Type, null, null),
+        new("GreekNationality", "300264816", "Greek", VocabularyKind.Type, null, null),
+        new("HungarianNationality", "300111195", "Hungarian", VocabularyKind.Type, null, null),
+        new("IndianNationality", "300018863", "Indian", VocabularyKind.Type, null, null),
+        new("IrishNationality", "300111259", "Irish", VocabularyKind.Type, null, null),
+        new("ItalianNationality", "300111198", "Italian", VocabularyKind.Type, null, null),
+        new("JapaneseNationality", "300018519", "Japanese", VocabularyKind.Type, null, null),
+        new("MexicanNationality", "300107963", "Mexican", VocabularyKind.Type, null, null),
+        new("NewZealanderNationality", "300021959", "New Zealander", VocabularyKind.Type, null, null),
+        new("NorwegianNationality", "300111201", "Norwegian", VocabularyKind.Type, null, null),
+        new("PolishNationality", "300111204", "Polish", VocabularyKind.Type, null, null),
+        new("PortugueseNationality", "300111207", "Portuguese", VocabularyKind.Type, null, null),
+        new("RussianNationality", "300111276", "Russian", VocabularyKind.Type, null, null),
+        new("SpanishNationality", "300111215", "Spanish", VocabularyKind.Type, null, null),
+        new("SwedishNationality", "300111218", "Swedish", VocabularyKind.Type, null, null),
+        new("SwissNationality", "300111221", "Swiss", VocabularyKind.Type, null, null),
+        new("Artist", "300025103", "Artist", VocabularyKind.Type, null, null),
+        new("ArtCollector", "300025234", "Art Collector", VocabularyKind.Type, null, null),
+        new("ArtDealer", "300025236", "Art Dealer", VocabularyKind.Type, null, null),
+        new("Architect", "300024987", "Architect", VocabularyKind.Type, null, null),
+        new("Author", "300025492", "Author", VocabularyKind.Type, null, null),
+        new("MusicComposer", "300025671", "(Music) Composer", VocabularyKind.Type, null, null),
+        new("Printer", "300025732", "Printer", VocabularyKind.Type, null, null),
+        new("Publisher", "300025574", "Publisher", VocabularyKind.Type, null, null),
+        new("Arched", "300126995", "Arched", VocabularyKind.Type, null, null),
+        new("Circle", "300263827", "Circle", VocabularyKind.Type, null, null),
+        new("Oblong", "300311843", "Oblong", VocabularyKind.Type, null, null),
+        new("Octagonal", "300263824", "Octagonal", VocabularyKind.Type, null, null),
+        new("Oval", "300263817", "Oval", VocabularyKind.Type, null, null),
+        new("Rectangular", "300263831", "Rectangular", VocabularyKind.Type, null, null),
+        new("Square", "300263832", "Square", VocabularyKind.Type, null, null),
+        new("Upright", "300343370", "Upright", VocabularyKind.Type, null, null),
+        new("TranslatedTitle", "300417194", "Translated Title", VocabularyKind.Type, null, null),
+        new("SubTitle", "300312006", "Sub-title", VocabularyKind.Type, null, null),
+        new("Alias", "300404664", "Alias", VocabularyKind.Type, null, null),
+        new("Pseudonym", "300404657", "Pseudonym", VocabularyKind.Type, null, null),
+        new("AuctionLotNumber", "300404628", "Auction Lot Number", VocabularyKind.Type, null, null),
+        new("Isbn", "300417443", "ISBN", VocabularyKind.Type, null, null),
+        new("Issn", "300417430", "ISSN", VocabularyKind.Type, null, null),
+        new("Doi", "300417432", "DOI", VocabularyKind.Type, null, null),
+        new("StockNumber", "300412177", "Stock Number", VocabularyKind.Type, null, null),
+        new("EmailAddress", "300435686", "Email Address", VocabularyKind.Type, null, null),
+        new("StreetAddress", "300386983", "Street Address", VocabularyKind.Type, null, null),
+        new("TelephoneNumber", "300435688", "Telephone Number", VocabularyKind.Type, null, null),
+        new("FaxNumber", "300435689", "Fax Number", VocabularyKind.Type, null, null),
+        new("BiographyStatement", "300435422", "Biography Statement", VocabularyKind.Type, null, null),
+        new("ContextStatement", "300435428", "Context Statement", VocabularyKind.Type, null, null),
+        new("CultureStatement", "300435431", "Culture Statement", VocabularyKind.Type, null, null),
+        new("EditionStatement", "300435435", "Edition Statement", VocabularyKind.Type, null, null),
+        new("FoliationStatement", "300435441", "Foliation Statement", VocabularyKind.Type, null, null),
+        new("LanguageStatement", "300435433", "Language Statement", VocabularyKind.Type, null, null),
+        new("PaginationStatement", "300435440", "Pagination Statement", VocabularyKind.Type, null, null),
+        new("PeriodStatement", "300435432", "Period Statement", VocabularyKind.Type, null, null),
+        new("SignificanceStatement", "300435427", "Significance Statement", VocabularyKind.Type, null, null),
+        new("ValuationStatement", "300435426", "Valuation Statement", VocabularyKind.Type, null, null),
+        new("Annotation", "300026100", "Annotation", VocabularyKind.Type, null, null),
+        new("Article", "300048715", "Article", VocabularyKind.Type, null, null),
+        new("AuctionCatalog", "300026068", "Auction Catalog", VocabularyKind.Type, null, null),
+        new("CatalogueRaisonn", "300026061", "Catalogue raisonné", VocabularyKind.Type, null, null),
+        new("Chapter", "300311699", "Chapter", VocabularyKind.Type, null, null),
+        new("Data", "300438434", "Data", VocabularyKind.Type, null, null),
+        new("ExhibitionCatalog", "300026096", "Exhibition Catalog", VocabularyKind.Type, null, null),
+        new("Issue", "300312349", "Issue", VocabularyKind.Type, null, null),
+        new("Journal", "300215390", "Journal", VocabularyKind.Type, null, null),
+        new("Monograph", "300060417", "Monograph", VocabularyKind.Type, null, null),
+        new("Patent", "300027832", "Patent", VocabularyKind.Type, null, null),
+        new("Proceedings", "300027316", "Proceedings", VocabularyKind.Type, null, null),
+        new("TextOfAPage", "300194222", "Page", VocabularyKind.Type, null, null),
+        new("Thesis", "300028028", "Thesis", VocabularyKind.Type, null, null),
+        new("Volume", "300265632", "Volume", VocabularyKind.Type, null, null),
+        new("CityBlock", "300008077", "City Block", VocabularyKind.Type, null, null),
+        new("Township", "300000792", "Township", VocabularyKind.Type, null, null),
+        new("StoragePlace", "300150151", "Storage place", VocabularyKind.Type, null, null),
+        new("Ocean", "300008687", "Ocean", VocabularyKind.Type, null, null),
+        new("Sea", "300008694", "Sea", VocabularyKind.Type, null, null),
+        new("Bay", "300132316", "Bay", VocabularyKind.Type, null, null),
+        new("AtelierOf", "300404277", "Atelier (of)", VocabularyKind.Type, null, null),
+        new("CircleOf", "300404283", "Circle (of)", VocabularyKind.Type, null, null),
+        new("FollowersOf", "300404282", "Followers (of)", VocabularyKind.Type, null, null),
+        new("PupilsOf", "300404279", "Pupils (of)", VocabularyKind.Type, null, null),
+        new("SchoolOf", "300404284", "School (of)", VocabularyKind.Type, null, null),
+        new("StudioOf", "300404275", "Studio", VocabularyKind.Type, null, null),
+        new("WorkshopOf", "300404274", "Workshop (of)", VocabularyKind.Type, null, null),
+        new("Box", "300045643", "Box", VocabularyKind.Type, null, null),
+        new("Building", "300004792", "Building", VocabularyKind.Type, null, null),
+        new("Embroidery", "300264024", "Embroidery", VocabularyKind.Type, null, null),
+        new("Enamel", "300178264", "Enamel", VocabularyKind.Type, null, null),
+        new("Envelope", "300197601", "Envelope", VocabularyKind.Type, null, null),
+        new("Folder", "300197602", "Folder", VocabularyKind.Type, null, null),
+        new("Implement", "300024841", "Implement", VocabularyKind.Type, null, null),
+        new("PhotoAlbum", "300026695", "Photo Album", VocabularyKind.Type, null, null),
+        new("PhotoBook", "300265728", "Photo Book", VocabularyKind.Type, null, null),
+        new("PhotographicNegative", "300127173", "Photographic Negative", VocabularyKind.Type, null, null),
+        new("Sample", "300028875", "Sample", VocabularyKind.Type, null, null),
+        new("Vessel", "300193015", "Vessel", VocabularyKind.Type, null, null),
+        new("Back", "300190692", "Back Part", VocabularyKind.Type, null, null),
+        new("BasePart", "300001656", "Base", VocabularyKind.Type, null, null),
+        new("Bottom", "300190695", "Bottom", VocabularyKind.Type, null, null),
+        new("Front", "300190703", "Front", VocabularyKind.Type, null, null),
+        new("Mount", "300131087", "Mount", VocabularyKind.Type, null, null),
+        new("Panel", "300014657", "Panel", VocabularyKind.Type, null, null),
+        new("Side", "300190706", "Side", VocabularyKind.Type, null, null),
+        new("Support", "300014844", "Support", VocabularyKind.Type, null, null),
+        new("Top", "300190710", "Top", VocabularyKind.Type, null, null),
+        new("Diameter", "300055624", "Diameter", VocabularyKind.Type, null, null),
+        new("Length", "300055645", "Length", VocabularyKind.Type, null, null),
+        new("Thickness", "300055646", "Thickness", VocabularyKind.Type, null, null),
+        new("FileSize", "300265863", "File Size", VocabularyKind.Type, null, null),
+        new("Count", "300404433", "Count", VocabularyKind.Type, null, null),
+        new("Rgb", "300266239", "rgb", VocabularyKind.MeasurementUnit, null, null),
         new("PartType", "300241583", "Part Type", VocabularyKind.Type, null, null),
         new("Components", "300241583", "Components", VocabularyKind.MeasurementUnit, null, "PartType"),
-        new("BackPart", "300190692", "Back Part", VocabularyKind.Type, null, null),
-        new("Support", "300014844", "Support", VocabularyKind.Type, null, null),
-        new("Shape", "300056273", "Shape", VocabularyKind.Type, null, null),
-        new("Oblong", "300311843", "Oblong", VocabularyKind.Type, null, null),
-        new("Style", "300015646", "Style", VocabularyKind.Type, null, null),
-        new("Impressionism", "300021503", "Impressionism", VocabularyKind.Type, null, null),
-        new("Height", "300055644", "Height", VocabularyKind.Type, null, null),
-        new("Width", "300055647", "Width", VocabularyKind.Type, null, null),
-        new("Color", "300080438", "Color", VocabularyKind.Type, null, null),
-        new("Brown", "300127490", "Brown", VocabularyKind.Type, null, null),
-        new("Count", "300404433", "Count", VocabularyKind.Type, null, null),
-        new("CountOf", "300404433", "Count Of", VocabularyKind.Type, null, "Count"),
-        new("FileSize", "300265863", "File Size", VocabularyKind.Type, null, null),
-        new("Centimeters", "300379098", "centimeters", VocabularyKind.MeasurementUnit, null, null),
-        new("Millimeters", "300379099", "millimeters", VocabularyKind.MeasurementUnit, null, null),
-        new("Kilobytes", "300265870", "kilobytes", VocabularyKind.MeasurementUnit, null, null),
-        new("Days", "300379242", "days", VocabularyKind.MeasurementUnit, null, null),
-        new("Rgb", "300266239", "rgb", VocabularyKind.MeasurementUnit, null, null),
-        new("Page", "300194222", "Page", VocabularyKind.Type, null, null),
-        new("Pages", "300194222", "Pages", VocabularyKind.MeasurementUnit, null, "Page"),
-        new("Oil", "300015050", "oil", VocabularyKind.Material, null, null),
-        new("Canvas", "300014078", "canvas", VocabularyKind.Material, null, null),
-        new("Copper", "300011020", "copper", VocabularyKind.Material, null, null),
-        new("English", "300388277", "English", VocabularyKind.Language, "en", null),
-        new("Dutch", "300388256", "Dutch", VocabularyKind.Language, "nl", null),
-        new("FrenchFrancs", "300412016", "French Francs", VocabularyKind.Currency, null, null),
-        new("BriefText", "300418049", "Brief Text", VocabularyKind.Type, null, null),
-        new("Description", "300435416", "Description", VocabularyKind.Type, null, null),
-        new("Inscription", "300435414", "Inscription", VocabularyKind.Type, null, null),
-        new("DimensionStatement", "300435430", "Dimension Statement", VocabularyKind.Type, null, null),
-        new("MaterialStatement", "300435429", "Material Statement", VocabularyKind.Type, null, null),
-        new("BiographyStatement", "300435422", "Biography Statement", VocabularyKind.Type, null, null),
-        new("CreditStatement", "300026687", "Credit Statement", VocabularyKind.Type, null, null),
-        new("CopyrightLicenseStatement", "300435434", "Copyright/License Statement", VocabularyKind.Type, null, null),
+        new("Pages", "300194222", "Pages", VocabularyKind.MeasurementUnit, null, "TextOfAPage"),
         new("PhysicalStatement", "300435452", "Physical Statement", VocabularyKind.Type, null, null),
-        new("PaginationStatement", "300435440", "Pagination Statement", VocabularyKind.Type, null, null),
-        new("BibliographyStatement", "300026497", "Bibliography Statement", VocabularyKind.Type, null, null),
-        new("EditionStatement", "300435435", "Edition Statement", VocabularyKind.Type, null, null),
         new("PublicationStatement", "300202362", "Publication Statement", VocabularyKind.Type, null, null),
-        new("ProvenanceStatement", "300435438", "Provenance Statement", VocabularyKind.Type, null, null),
-        new("GeneralNote", "300027200", "General Note", VocabularyKind.Type, null, null),
-        new("SystemAssignedNumber", "300435704", "System-Assigned Number", VocabularyKind.Type, null, null),
-        new("RecordIdentifiers", "300435704", "Record Identifiers", VocabularyKind.Type, null, "SystemAssignedNumber"),
-        new("AccessionNumber", "300312355", "Accession Number", VocabularyKind.Type, null, null),
-        new("OwnerAssignedNumber", "300404621", "Owner-Assigned Number", VocabularyKind.Type, null, null),
-        new("EntryNumbers", "300445023", "Entry Numbers", VocabularyKind.Type, null, null),
-        new("SortValue", "300456575", "Sort Value", VocabularyKind.Type, null, null),
-        new("ISBN", "300417443", "ISBN", VocabularyKind.Type, null, null),
+        new("AccrualsStatement", "300055458", "Accruals", VocabularyKind.Type, null, null),
+        new("AdministrativeHistoryStatement", "300077565", "Administrative History", VocabularyKind.Type, null, null),
+        new("ArrangementDescriptionStatement", "300444118", "Arrangement Description", VocabularyKind.Type, null, null),
+        new("RelatedMaterialStatement", "300444119", "Related Material", VocabularyKind.Type, null, null),
+        new("ArchivalMaterials", "300379505", "Archival Materials", VocabularyKind.Type, null, null),
+        new("AlternateTitle", "300404671", "Alternate Title", VocabularyKind.Type, null, null),
         new("CreationNumber", "300404622", "Creation Number", VocabularyKind.Type, null, null),
-        new("EmailAddress", "300435686", "Email Address", VocabularyKind.Type, null, null),
-        new("TelephoneNumber", "300435688", "Telephone Number", VocabularyKind.Type, null, null),
-        new("StreetAddress", "300386983", "Street Address", VocabularyKind.Type, null, null),
-        new("ProvenanceActivity", "300055863", "Provenance Activity", VocabularyKind.Type, null, null),
+        new("EntryNumbers", "300445023", "Entry Numbers", VocabularyKind.Type, null, null),
+        new("Exhibition", "300417531", "Exhibition", VocabularyKind.Type, null, null),
         new("Gift", "300417637", "Gift", VocabularyKind.Type, null, null),
         new("AuctionEvent", "300054751", "Auction Event", VocabularyKind.Type, null, null),
-        new("Exhibiting", "300054766", "Exhibiting", VocabularyKind.Type, null, null),
-        new("ExhibitingInMultipleLocations", "300054773", "Exhibiting in multiple locations", VocabularyKind.Type, null, null),
-        new("Exhibition", "300417531", "Exhibition", VocabularyKind.Type, null, null),
         new("Curating", "300054277", "Curating", VocabularyKind.Type, null, null),
-        new("Publishing", "300054686", "Publishing", VocabularyKind.Type, null, null),
         new("ConservationActivity", "300404519", "Conservation Activity", VocabularyKind.Type, null, null),
-        new("Cleaning", "300053027", "Cleaning", VocabularyKind.Type, null, null),
-        new("ProfessionalActivities", "300393177", "Professional Activities", VocabularyKind.Type, null, null),
-        new("Burial", "300263485", "Burial", VocabularyKind.Type, null, null),
-        new("Vandalism", "300055299", "Vandalism", VocabularyKind.Type, null, null),
-        new("Microcracks", "300387447", "Microcracks", VocabularyKind.Type, null, null),
+        new("ExhibitingInMultipleLocations", "300054773", "Exhibiting in multiple locations", VocabularyKind.Type, null, null),
         new("PossiblyBy", "300404272", "Possibly By", VocabularyKind.Type, null, null),
-        new("PaintingTechnique", "300054216", "Painting", VocabularyKind.Type, null, null),
-        new("Sculpting", "300264383", "Sculpting", VocabularyKind.Type, null, null),
-        new("Spraypainting", "300053816", "Spraypainting", VocabularyKind.Type, null, null),
-        new("Glassblowing", "300053932", "Glassblowing", VocabularyKind.Type, null, null),
-        new("HandWeaving", "300053643", "hand weaving", VocabularyKind.Type, null, null),
-        new("Artist", "300025103", "Artist", VocabularyKind.Type, null, null),
-        new("Painter", "300025136", "Painter", VocabularyKind.Type, null, null),
-        new("Director", "300025654", "Director", VocabularyKind.Type, null, null),
-        new("Producer", "300197742", "Producer", VocabularyKind.Type, null, null),
-        new("Occupation", "300263369", "Occupation", VocabularyKind.Type, null, null),
-        new("Nationality", "300379842", "Nationality", VocabularyKind.Type, null, null),
-        new("Ethnicity", "300250435", "Ethnicity", VocabularyKind.Type, null, null),
         new("Gender", "300055147", "Gender", VocabularyKind.Type, null, null),
-        new("Male", "300189559", "Male", VocabularyKind.Type, null, null),
-        new("Woman", "300025943", "Woman", VocabularyKind.Type, null, null),
-        new("Beauty", "300055821", "Beauty", VocabularyKind.Type, null, null),
-        new("Spring", "300133097", "Spring (season)", VocabularyKind.Type, null, null),
-        new("Building", "300004792", "Building", VocabularyKind.Type, null, null),
-        new("City", "300008389", "City", VocabularyKind.Type, null, null),
-        new("Nation", "300128207", "Nation", VocabularyKind.Type, null, null),
+        new("Ethnicity", "300250435", "Ethnicity", VocabularyKind.Type, null, null),
     ];
 }

@@ -69,7 +69,7 @@ public static partial class LinkedArtExtensions
 
     public static T AsPrimaryName<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Aat.PrimaryName);
 
-    public static T AsSystemAssignedNumber<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Aat.SystemAssignedNumber);
+    public static T AsSystemAssignedNumber<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Aat.SystemNumber);
 
     public static T AsAccessionNumber<T>(this T laObj) where T : LinkedArtObject => laObj.WithClassifiedAs(Aat.AccessionNumber);
 
@@ -111,7 +111,7 @@ public static partial class LinkedArtExtensions
     public static T WithStatement<T>(this T laObj, Type statementType, string content, Action<LinguisticObject>? configure = null)
         where T : LinkedArtObject, IHasReferredToBy
     {
-        var statement = new LinguisticObject().WithContent(content).WithClassifiedAs(statementType, Aat.BriefText);
+        var statement = new LinguisticObject().WithContent(content).WithClassifiedAs(statementType, Aat.Statement);
         configure?.Invoke(statement);
         laObj.ReferredToBy ??= [];
         laObj.ReferredToBy.Add(statement);

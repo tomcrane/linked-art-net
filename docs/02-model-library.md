@@ -211,12 +211,18 @@ the parser. Rules:
 
 ## 6. Vocabulary
 
-*Status 2026-10-13:* implemented as a JSON registry per vocabulary (`vocabulary/aat.json`, `tgn.json`,
-`ulan.json`) and a small tool (`tools/VocabGen`) that writes `Aat.g.cs`, `Tgn.g.cs`, `Ulan.g.cs`; a
-committed generated file plus a sync test was chosen over a Roslyn source generator because the output is
-then browsable and diffable. Terms are typed by `kind` (Type, Material, Language, Currency,
-MeasurementUnit, Place, Person, Group). An `aliasOf` entry gives a second label for an id the site
-labels inconsistently (e.g. `Count` / `CountOf`), so ids stay unique among canonical terms.
+*Status 2026-10-13:* implemented as `vocabulary/aat.json` -> `tools/VocabGen` -> `Aat.g.cs` (a committed
+generated file plus a sync test; browsable and diffable). **What the library blesses** (decision D17): every
+term on linked.art's required, recommended and optional vocabulary pages (https://linked.art/model/vocab/),
+plus a small `documented` tier of structural terms the model pages use that those lists omit (count, file
+size and rgb dimension terms, a few statement, identifier and activity classifications, Gender and Ethnicity
+meta-types). Terms are typed by `kind` (Type, Material, Language with ISO notation, Currency,
+MeasurementUnit) and carry their `tier`. Labels are the ones linked.art's own examples write for the id,
+falling back to the vocabulary page. **What it does not bless:** instances (people, places, organisations)
+and dataset-specific concepts (depicted subjects, individual techniques, colours, styles). Those are built
+the way a practitioner builds them: `Aat.Of("300046218", "Parasol")`, `Tgn.Of("7006952", "Amsterdam")`,
+`Ulan.PersonOf("500011051", "Rembrandt")`, and that is how the examples do it. An `aliasOf` entry gives a
+second label and kind for an id the site uses two ways (e.g. Part Type / Components as a unit).
 
 Formalise the hard-coded Getty identifiers into a **data-driven registry**:
 

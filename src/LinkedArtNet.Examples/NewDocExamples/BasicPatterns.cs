@@ -152,8 +152,8 @@ namespace Examples.NewDocExamples
 
             var materials = new LinguisticObject()
                 .WithClassifiedAs(
-                    Aat.MaterialStatement,
-                    Aat.BriefText)
+                    Aat.MaterialsStatement,
+                    Aat.Statement)
                 .WithContent("Oil on Canvas")
                 .WithLanguage("300388277", "English", "en");
             
@@ -231,8 +231,8 @@ namespace Examples.NewDocExamples
 
             var materials = new LinguisticObject()
                 .WithClassifiedAs(
-                    Aat.MaterialStatement,
-                    Aat.BriefText)
+                    Aat.MaterialsStatement,
+                    Aat.Statement)
                 .WithContent("Canvas");
 
             spring.ReferredToBy = [materials];
@@ -276,12 +276,12 @@ namespace Examples.NewDocExamples
             jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008).WithLabel("2008");
 
             var directorActivity = new Creation()
-                .WithClassifiedAs(Aat.Director);
+                .WithClassifiedAs(Aat.Of("300025654", "Director"));
             directorActivity.CarriedOutBy = [
                 new Person().WithId($"{Documentation.IdRoot}/person/greenaway").WithLabel("Peter Greenaway")
             ];
             var producerActivity = new Creation()
-                .WithClassifiedAs(Aat.Producer);
+                .WithClassifiedAs(Aat.Of("300197742", "Producer"));
             producerActivity.CarriedOutBy = [
                 new Person().WithId($"{Documentation.IdRoot}/person/wolting").WithLabel("Femke Wolting")
             ];

@@ -196,7 +196,7 @@ namespace Examples.NewDocExamples
                 {
                     IdentifiedBy = [
                         new Name("Related Object")
-                            .WithClassifiedAs(Aat.DisplayTitle)
+                            .WithClassifiedAs(Aat.DisplayName)
                     ],
                     Assigned = [
                         new HumanMadeObject()
@@ -223,7 +223,7 @@ namespace Examples.NewDocExamples
             bol.AttributedBy = [
                 new AttributeAssignment()
                 {
-                    IdentifiedBy = [new Name("Student Of").WithClassifiedAs(Aat.DisplayTitle)],
+                    IdentifiedBy = [new Name("Student Of").WithClassifiedAs(Aat.DisplayName)],
                     Assigned = [ 
                         new Person()
                             .WithId($"{Documentation.IdRoot}/person/rembrandt")

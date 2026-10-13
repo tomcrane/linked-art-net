@@ -25,7 +25,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/letter/1")
                 .WithLabel("Obermeyer 1920")
-                .WithClassifiedAs(Aat.Letter);
+                .WithClassifiedAs(Aat.Of("300026879", "Letter"));
 
             obermeyer.IdentifiedBy = [new Name("Obermeyer, Bertha (1920)").AsPrimaryName()];
 

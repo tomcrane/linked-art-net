@@ -63,9 +63,9 @@ namespace Examples.NewDocExamples
 
             bust.ProducedBy = new Production()
                 {
-                    Technique = [Aat.Sculpting],
+                    Technique = [Aat.Of("300264383", "Sculpting")],
                     CarriedOutBy = [
-                        Ulan.FrancisHarwood]
+                        Ulan.PersonOf("500015886", "Francis Harwood")]
                 };
         
             Documentation.Save(bust);
@@ -85,7 +85,7 @@ namespace Examples.NewDocExamples
                 Part = [
                     new Production()
                     {
-                        Technique = [Aat.PaintingTechnique],
+                        Technique = [Aat.Of("300054216", "Painting")],
                         CarriedOutBy = [
                             new Person()
                                 .WithId($"{Documentation.IdRoot}/person/barrow")
@@ -94,7 +94,7 @@ namespace Examples.NewDocExamples
                     },
                     new Production()
                     {
-                        Technique = [Aat.HandWeaving],
+                        Technique = [Aat.Of("300053643", "hand weaving")],
                         CarriedOutBy = [
                             new Person()
                                 .WithId($"{Documentation.IdRoot}/person/parke")
@@ -303,12 +303,12 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/group/harwoodstudio/1")
                 .WithLabel("Studio of Francis Harwood")
-                .WithClassifiedAs(Aat.Studio);
+                .WithClassifiedAs(Aat.StudioOf);
 
             grp.FormedBy = new Formation()
             {
                 InfluencedBy = [
-                    Ulan.FrancisHarwood
+                    Ulan.PersonOf("500015886", "Francis Harwood")
                 ]
             };
 
@@ -322,7 +322,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/gradualpage/1")
                 .WithLabel("Page from a Gradual")
-                .WithClassifiedAs(Aat.Page, Aat.TypeOfWork);
+                .WithClassifiedAs(Aat.TextOfAPage, Aat.TypeOfWork);
 
             gradualPage.RemovedBy = [
                 new PartRemoval()

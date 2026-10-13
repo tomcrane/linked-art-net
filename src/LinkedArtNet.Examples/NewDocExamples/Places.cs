@@ -30,7 +30,7 @@ namespace Examples.NewDocExamples
 
             amsterdam.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.Statement)
                     .WithContent("Amsterdam is a city in the Netherlands")
             ];
 
@@ -38,7 +38,7 @@ namespace Examples.NewDocExamples
                 new Place()
                     .WithId($"{Documentation.IdRoot}/place/netherlands")
                     .WithLabel("Netherlands")
-                    .WithClassifiedAs(Aat.Nation)
+                    .WithClassifiedAs(Aat.Country)
             ];
 
             Documentation.Save(amsterdam);
@@ -51,7 +51,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/place/new_zealand/1")
                 .WithLabel("New Zealand")
-                .WithClassifiedAs(Aat.Nation);
+                .WithClassifiedAs(Aat.Country);
 
             nz.DefinedBy = "POLYGON((165.74 -33.55, -179.96 -33.55, -179.96 -47.8, 165.74 -47.8, 165.74 -33.55))";
 

@@ -17,7 +17,7 @@ public partial class MeasurementUnit : Type
 
     // Common units. Each access returns a new instance so callers cannot mutate a shared object.
     public static MeasurementUnit Centimeters => Aat.Centimeters;
-    public static MeasurementUnit Millimeters => Aat.Millimeters;
+    public static MeasurementUnit Millimeters => Aat.OfUnit("300379099", "millimeters");
     public static MeasurementUnit Kilobytes => Aat.Kilobytes;
     public static MeasurementUnit Days => Aat.Days;
 }

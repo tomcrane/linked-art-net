@@ -27,13 +27,13 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/activity/exha/1")
                 .WithLabel("Manet and Modern Beauty (Getty)")
-                .WithClassifiedAs(Aat.Exhibiting);
+                .WithClassifiedAs(Aat.Of("300054766", "Exhibiting"));
 
             activity.IdentifiedBy = [ new Name("Manet and Modern Beauty").AsPrimaryName() ];
 
             activity.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.Statement)
                     .WithContent("The great painter of modern Paris Edouard Manet famously shocked contemporary audiences with his provocative pictures. The first exhibition ever to explore the last years of his short life, Manet and Modern Beauty highlights a less familiar and more intimate side of this celebrated artist's work.")
             ];
 
@@ -44,12 +44,12 @@ namespace Examples.NewDocExamples
             };
 
             activity.TookPlaceAt = [
-                Tgn.LosAngeles
+                Tgn.Of("7023900", "Los Angeles")
                     .WithClassifiedAs(Aat.City)
             ];
 
             activity.CarriedOutBy = [
-                Ulan.GettyMuseum
+                Ulan.GroupOf("500115988", "Getty Museum")
                     .WithClassifiedAs(Aat.Museum)
             ];
 
@@ -81,8 +81,8 @@ namespace Examples.NewDocExamples
             concept.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
             concept.About = [
-                Aat.Beauty,
-                Ulan.Manet
+                Aat.Of("300055821", "Beauty"),
+                Ulan.PersonOf("500010363", "Manet")
             ];
 
             concept.CreatedBy = new Creation()
@@ -117,7 +117,7 @@ namespace Examples.NewDocExamples
             concept.CreatedBy = new Creation()
             {
                 InfluencedBy = [
-                    Ulan.Manet
+                    Ulan.PersonOf("500010363", "Manet")
                 ]
             };
 
@@ -131,7 +131,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/activity/exhb/1")
                 .WithLabel("Manet and Modern Beauty (AIC)")
-                .WithClassifiedAs(Aat.Exhibiting);
+                .WithClassifiedAs(Aat.Of("300054766", "Exhibiting"));
 
             activity.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
@@ -142,12 +142,12 @@ namespace Examples.NewDocExamples
             };
 
             activity.TookPlaceAt = [
-                Tgn.Chicago
+                Tgn.Of("7013596", "Chicago")
                     .WithClassifiedAs(Aat.City)
             ];
 
             activity.CarriedOutBy = [
-                Ulan.ArtInstitute
+                Ulan.GroupOf("500304669", "Art Institute")
                     .WithClassifiedAs(Aat.Museum)
             ];
 
@@ -207,13 +207,13 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/exset/1")
                 .WithLabel("Exhibition objects")
-                .WithClassifiedAs(Aat.ExhibitionCollection);
+                .WithClassifiedAs(Aat.Of("300378926", "Exhibition Collection"));
 
             set.IdentifiedBy = [new Name("Objects in Manet and Modern Beauty").AsPrimaryName()];
 
             set.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.Statement)
                     .WithContent("Objects in the exhibition Manet and Modern Beauty at the Art Institute of Chicago and the Getty Museum")
             ];
 

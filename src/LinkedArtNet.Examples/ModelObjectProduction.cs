@@ -63,7 +63,7 @@ public class ModelObjectProduction : ExamplePage
             new Production()
             {
                 CarriedOutBy = [new Person().WithLabel("Glassblowing Artist")],
-                Technique = [Aat.Glassblowing]
+                Technique = [Aat.Of("300053932", "Glassblowing")]
             };
 
         return glassSculpture;
@@ -81,8 +81,8 @@ public class ModelObjectProduction : ExamplePage
         graffiti.ProducedBy =
             new Production()
                 .WithLabel("Production of Graffiti")
-                .WithClassifiedAs(Aat.Vandalism)
-                .WithTechnique(Aat.Spraypainting);
+                .WithClassifiedAs(Aat.Of("300055299", "Vandalism"))
+                .WithTechnique(Aat.Of("300053816", "Spraypainting"));
 
         return graffiti;
     }
@@ -107,12 +107,12 @@ public class ModelObjectProduction : ExamplePage
             Part = [
                 new Production()
                 {
-                    Technique = [Aat.Sculpting],
+                    Technique = [Aat.Of("300264383", "Sculpting")],
                     CarriedOutBy = [new Person().WithLabel("Sculptor")]
                 },
                 new Production()
                 {
-                    Technique = [Aat.PaintingTechnique],
+                    Technique = [Aat.Of("300054216", "Painting")],
                     CarriedOutBy = [new Person().WithLabel("Painter")]
                 }
             ]

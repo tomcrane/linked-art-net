@@ -48,7 +48,7 @@ namespace Examples.NewDocExamples
 
             nightWatch.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.DimensionStatement, Aat.BriefText)
+                    .WithClassifiedAs(Aat.DimensionsStatement, Aat.Statement)
                     .WithContent("height 379.5 cm × width 453.5 cm × weight 337 kg")
             ];
 
@@ -126,7 +126,7 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/10")
                 .WithLabel("Night Watch by Rembrandt")
                 .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
-                .WithRgbColor("#B35A1F", Aat.Brown, "brown");
+                .WithRgbColor("#B35A1F", Aat.Of("300127490", "Brown"), "brown");
 
             Documentation.Save(nightWatch);
         }
@@ -170,7 +170,7 @@ namespace Examples.NewDocExamples
 
             nightWatch.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.MaterialStatement, Aat.BriefText)
+                    .WithClassifiedAs(Aat.MaterialsStatement, Aat.Statement)
                     .WithContent("Oil on Canvas")
             ];
 
@@ -203,11 +203,11 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/object/spring/back")
                 .WithLabel("Back of Spring by Manet")
-                .WithClassifiedAs(Aat.BackPart, Aat.PartType);
+                .WithClassifiedAs(Aat.Back, Aat.PartType);
 
             springBack.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Inscription, Aat.BriefText)
+                    .WithClassifiedAs(Aat.InscriptionStatement, Aat.Statement)
                     .WithContent("11505F")
             ];
 

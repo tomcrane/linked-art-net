@@ -138,7 +138,7 @@ public class SerializationTests
             TookPlaceAt = [Getty.TgnPlace("Paris", "7008038")],
         };
         spring.CurrentOwner = [Getty.UlanGroup("Getty Museum", "500115988")];
-        spring.ReferredToBy = [new LinguisticObject().WithContent("A painting of a woman.").WithClassifiedAs(Aat.Description, Aat.BriefText)];
+        spring.ReferredToBy = [new LinguisticObject().WithContent("A painting of a woman.").WithClassifiedAs(Aat.Description, Aat.Statement)];
 
         var json = LinkedArtJson.Serialize(spring);
         var back = LinkedArtJson.Deserialize<HumanMadeObject>(json);

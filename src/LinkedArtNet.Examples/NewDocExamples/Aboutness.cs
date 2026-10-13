@@ -33,7 +33,7 @@ namespace Examples.NewDocExamples
 
             spring.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.Statement)
                     .WithContent("A chic young woman in a day dress with floral accents holds a parasol against a background of exuberant foliage.")
             ];
 
@@ -72,7 +72,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Visual Content of Spring");
 
             springVis.RepresentsInstanceOfType = [
-                Aat.Parasol
+                Aat.Of("300046218", "Parasol")
             ];
 
             Documentation.Save(springVis);
@@ -87,7 +87,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Visual Content of Spring");
 
             springVis.About = [
-                Aat.Spring
+                Aat.Of("300133097", "Spring (season)")
             ];
 
             Documentation.Save(springVis);
@@ -99,7 +99,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/3")
                 .WithLabel("Visual Content of Spring")
-                .WithClassifiedAs(Aat.Impressionism, Aat.Style);
+                .WithClassifiedAs(Aat.Of("300021503", "Impressionism"), Aat.Style);
 
             Documentation.Save(springVis);
         }
@@ -111,7 +111,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/visual/spring/4")
                 .WithLabel("Visual Content of Spring")
-                .WithClassifiedAs(Aat.Portrait);
+                .WithClassifiedAs(Aat.Of("300015637", "Portrait"));
 
             Documentation.Save(springVis);
         }
@@ -125,7 +125,7 @@ namespace Examples.NewDocExamples
 
             nightWatch.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Signature, Aat.BriefText)
+                    .WithClassifiedAs(Aat.SignatureStatement, Aat.Statement)
                     .WithContent("signature and date: ‘Rembrandt f 1642’")
             ];
 
@@ -186,11 +186,11 @@ namespace Examples.NewDocExamples
 
             harpersVis.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.Statement)
                     .WithContent("The text and image are primarily red and black")
             ];
 
-            harpersVis.Represents = [Aat.Woman];
+            harpersVis.Represents = [Aat.Of("300025943", "Woman")];
 
             Documentation.Save(harpersVis);
         }

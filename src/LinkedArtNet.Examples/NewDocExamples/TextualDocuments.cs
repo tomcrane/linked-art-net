@@ -37,7 +37,7 @@ namespace Examples.NewDocExamples
             kootCopy.ReferredToBy = [
                 new LinguisticObject()
                     .WithContent("92 p. with illus.")
-                    .WithClassifiedAs(Aat.PhysicalStatement, Aat.BriefText)
+                    .WithClassifiedAs(Aat.PhysicalStatement, Aat.Statement)
             ];
 
             kootCopy.Carries = [
@@ -91,7 +91,7 @@ namespace Examples.NewDocExamples
                 new Activity()
                 {
                     Label = "MI's Publishing",
-                    ClassifiedAs = [ Aat.Publishing ],
+                    ClassifiedAs = [ Aat.PublicationActivity ],
                     TimeSpan = LinkedArtTimeSpan.FromYear(1969),
                     CarriedOutBy = [ 
                         new Group()
@@ -139,7 +139,7 @@ namespace Examples.NewDocExamples
             chapter.ReferredToBy = [
                 new LinguisticObject()
                     .WithContent("5 - 15")
-                    .WithClassifiedAs(Aat.PaginationStatement, Aat.BriefText)
+                    .WithClassifiedAs(Aat.PaginationStatement, Aat.Statement)
             ];
 
             chapter.WithPageCount(10, "10 pages");

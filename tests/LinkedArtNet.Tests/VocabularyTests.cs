@@ -12,8 +12,6 @@ public class VocabularyTests
     public static IEnumerable<object[]> Registries() =>
     [
         ["aat.json", Aat.Terms],
-        ["tgn.json", Tgn.Terms],
-        ["ulan.json", Ulan.Terms],
     ];
 
     [Theory]
@@ -64,12 +62,12 @@ public class VocabularyTests
 
         Assert.IsType<Material>(Aat.Oil);
         Assert.IsType<MeasurementUnit>(Aat.Centimeters);
-        Assert.IsType<Currency>(Aat.FrenchFrancs);
+        Assert.IsType<Currency>(Aat.OfCurrency("300412016", "French Francs"));
         var english = Assert.IsType<Language>(Aat.English);
         Assert.Equal("en", english.Notation);
-        Assert.IsType<Place>(Tgn.Amsterdam);
-        Assert.IsType<Person>(Ulan.Rembrandt);
-        Assert.IsType<Group>(Ulan.Rijksmuseum);
+        Assert.IsType<Place>(Tgn.Of("7006952", "Amsterdam"));
+        Assert.IsType<Person>(Ulan.PersonOf("500011051", "Rembrandt"));
+        Assert.IsType<Group>(Ulan.GroupOf("500246547", "Rijksmuseum"));
     }
 
     [Fact]
@@ -92,9 +90,9 @@ public class VocabularyTests
     [Fact]
     public void Alias_terms_share_an_id_but_not_a_label()
     {
-        Assert.Equal(Aat.Count.Id, Aat.CountOf.Id);
-        Assert.NotEqual(Aat.Count.Label, Aat.CountOf.Label);
-        Assert.Equal(Aat.SystemAssignedNumber.Id, Aat.RecordIdentifiers.Id);
+        Assert.Equal(Aat.Count.Id, Aat.Of("300404433", "Count Of").Id);
+        Assert.NotEqual(Aat.Count.Label, Aat.Of("300404433", "Count Of").Label);
+        Assert.Equal(Aat.SystemNumber.Id, Aat.Of("300435704", "Record Identifiers").Id);
         Assert.Equal(Aat.PartType.Id, Aat.Components.Id);
         Assert.IsType<MeasurementUnit>(Aat.Components);
     }

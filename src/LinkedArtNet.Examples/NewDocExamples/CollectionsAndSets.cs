@@ -31,7 +31,7 @@ namespace Examples.NewDocExamples
 
             set.ReferredToBy = [
                 new LinguisticObject()
-                    .WithClassifiedAs(Aat.Description, Aat.BriefText)
+                    .WithClassifiedAs(Aat.Description, Aat.Statement)
                     .WithContent("Objects in the exhibition Manet and Modern Beauty at the Art Institute of Chicago and the Getty Museum")
             ];
 
@@ -95,7 +95,7 @@ namespace Examples.NewDocExamples
             paintingByManet.ProducedBy = new Production()
             {
                 CarriedOutBy = [
-                    Ulan.Manet
+                    Ulan.PersonOf("500010363", "Manet")
                 ]
             };
             set.MembersExemplifiedBy = [paintingByManet];

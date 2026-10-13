@@ -24,7 +24,7 @@ public sealed record Expectation
     public string? Kind { get; init; }
     public string? Canonical { get; init; }
     public string? Edtf { get; init; }
-    public ExpectedTimeSpan? TimeSpan { get; init; }
+    [JsonPropertyName("timespan")] public ExpectedTimeSpan? TimeSpan { get; init; }
     public ExpectedTimeSpan? Begin { get; init; }
     public ExpectedTimeSpan? End { get; init; }
     public ExpectedYears? Years { get; init; }

@@ -237,7 +237,18 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     (bands, hedges, ranges, "Meiji 27 (1894)"), `NamedPeriodStrategy`, `CompositePeriodSource` for custom tables;
     styles deliberately absent. Corpus `authored/named-periods.json` (30, verified); 286/286 pass.
 
-Next: Phase 2 step 5 (import corpora: yearrange, timetwister, cultural_dates, EDTF spec, Getty sample) and step 6
-(fluent bridge, profiles, profile advisor, other languages). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+16. ~~Phase 2 step 5: import corpora.~~ Done 2026-10-14. `tools/Corpus import` for jeresig/node-yearrange (1650, MIT),
+    alexduryee/timetwister (91, MIT) and a Getty ULAN biography sample (180, ODC-By, fetched with curl: the endpoint
+    answers .NET's HttpClient with 400); the EDTF specification examples curated by hand (61, public domain);
+    cultural_dates's companion test repository is empty and share-alike sources are excluded (MIT repo).
+    `corpus/imported/THIRD-PARTY-NOTICES.md` carries the licence texts. Review of the first batches drove the
+    grammar: leading prose skipped at a cost ("Italian artist, 15th century"), explicit dates refine a period
+    name, parenthetical and trailing hedges, year-first archival forms ("1776 December", "1776 4 July"), day and
+    month ranges that share a year or month ("4-10 July 1776", "May 4 - July 10 1776"), "after" as an end bound,
+    cardinal and German ordinal centuries ("18c", "19. century"), MARC "187-", season abbreviations. Proposed
+    pass rate 49.5% -> 60%; the rest are mostly the sources' own conventions (yearrange: late = last quarter;
+    timetwister: US month-first, winter at the start of the year; ULAN: padded estimates), prose and typos.
+
+Next: Phase 2 step 6 (fluent bridge, profiles incl. a US/archival one, profile advisor, other languages). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

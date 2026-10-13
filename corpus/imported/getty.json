@@ -1,0 +1,3286 @@
+{
+  "$schema": "../schema/corpus-entry.schema.json",
+  "source": {
+    "name": "Getty ULAN biography descriptions (sample)",
+    "licence": "ODC-By-1.0",
+    "url": "https://vocab.getty.edu/sparql",
+    "attribution": "This file contains information from the Getty Union List of Artist Names (ULAN), made available by the J. Paul Getty Trust under the Open Data Commons Attribution License (ODC-By) 1.0, http://opendatacommons.org/licenses/by/1.0/. See THIRD-PARTY-NOTICES.md.",
+    "notes": "Biography descriptions are prose (\u0027Chinese calligrapher, active ca. 1023-1056\u0027), so the date must be found inside running text: these entries measure the salvage path. The expected years are ULAN\u0027s estStart/estEnd, which are deliberately padded estimates (an active period is widened to plausible lifetime bounds), hence toleranceYears 25. Sixty biographies from each of six bands of estimated start year (before 1400, then by century to 1900 and after)."
+  },
+  "defaults": {
+    "intent": "single",
+    "profile": "default",
+    "status": "proposed",
+    "tags": [
+      "ulan",
+      "prose",
+      "imported"
+    ]
+  },
+  "entries": [
+    {
+      "id": "ulan-001",
+      "input": "Italian artist, 15th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1499
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-002",
+      "input": "Dutch artist, 15th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1499
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-003",
+      "input": "Italian painter, active 1451-1473",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1490
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-004",
+      "input": "German artist, 15th/16th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1599
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-005",
+      "input": "French illuminator, active mid-15th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "band",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1499
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-006",
+      "input": "French illuminator act. mid 15th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "band"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1499
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-007",
+      "input": "Spanish artist, 15th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1499
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-008",
+      "input": "German artist, 15th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1499
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-009",
+      "input": "artist ca. 1400-1467",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1467
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-010",
+      "input": "German sculptor, 1400-1467",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1467
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-011",
+      "input": "German sculptor, born 1400",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1467
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-012",
+      "input": "German painter, 1400-1467",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1467
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-013",
+      "input": "artist, 15th century-1499",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1499
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-014",
+      "input": "Italian painter, 1400-1445",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1445
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-015",
+      "input": "Italian painter, 1400-1447",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1447
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-016",
+      "input": "German painter, ca. 1440-after 1470",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1540
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-017",
+      "input": "German artist, op.1430-m.1462",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1462
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-018",
+      "input": "German painter, active 1430, died 1462",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "floruit",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1462
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-019",
+      "input": "German artist, active 1430, died 1462",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "floruit",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1462
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-020",
+      "input": "artist, 1400-1473",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1473
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-021",
+      "input": "Italian architect, 1400-1473",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1473
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-022",
+      "input": "Italian painter, 16th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1700
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-023",
+      "input": "Italian illuminator, active ca. 1440-1460",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1500
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-024",
+      "input": "Spanish artist, 15th/16th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1599
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-025",
+      "input": "Spanish artist, 15th-16th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1599
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-026",
+      "input": "Italian artist, -1500",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1500
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-027",
+      "input": "Italian painter, died 1500",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1500
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-028",
+      "input": "Italian artist, d. 1500, 15th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1500
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-029",
+      "input": "Spanish painter, ca. 1449-ca. 1487",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1500
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-030",
+      "input": "Italian painter, active 1430-1467",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1497
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-031",
+      "input": "Italian painter, flourished 1450-1474",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1500
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-032",
+      "input": "Italian painter, born before 1426, died before June 1451",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1451
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-033",
+      "input": "French miniaturist, 15th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1600
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-034",
+      "input": "German painter, active 1447-ca. 1470",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1480
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-035",
+      "input": "Venetian sculptor and architect, ca. 1400-ca. 1464",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1467
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-036",
+      "input": "Italian architect, 1400-1464",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1400,
+          "end": 1464
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-037",
+      "input": "Dutch artist, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1699
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-038",
+      "input": "Flemish artist, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1699
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-039",
+      "input": "Dutch artist, d. 1665, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1665
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-040",
+      "input": "Dutch artist, ca.1605-ca.1650",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1655
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-041",
+      "input": "German artist, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1699
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-042",
+      "input": "Italian artist, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1699
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-043",
+      "input": "Dutch painter, active ca. 1642-1686",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1686
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-044",
+      "input": "Dutch printmaker, ca.1610-after 1635",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1635
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-045",
+      "input": "Dutch painter, ca.1610-aft.1635",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1635
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-046",
+      "input": "Dutch artist, c.1610-p.1635",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1635
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-047",
+      "input": "artist, b. ca. 1610",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1720
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-048",
+      "input": "Dutch artist, ca.1610-aft.1635",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1635
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-049",
+      "input": "North Netherlandish print artist, 1600-1668",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1668
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-050",
+      "input": "Dutch artist, d. 1661, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1661
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-051",
+      "input": "Dutch painter, ca. 1610-ca. 1650",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1650
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-052",
+      "input": "Dutch artist, ca.1610-aft.1650",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1650
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-053",
+      "input": "Swiss artist, 17th-18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1799
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-054",
+      "input": "French artist, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1699
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-055",
+      "input": "Italian painter, born 1600 or 1604, died 1687",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1687
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-056",
+      "input": "Italian artist, 1600-1687",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1687
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-057",
+      "input": "Spanish artist, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1699
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-058",
+      "input": "British artist, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1699
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-059",
+      "input": "Spanish artist, ca.1605-1677",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1677
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-060",
+      "input": "British silversmith, died 1828",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 2090
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-061",
+      "input": "Flemish or Dutch painter, born before 1610, died after 1640",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1650
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-062",
+      "input": "South Netherlandish painter, 1600-1640",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1640
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-063",
+      "input": "Dutch artist, d. 1638, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1638
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-064",
+      "input": "North Netherlandish painter, 1600-1688",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1688
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-065",
+      "input": "Dutch painter, 1600-1653",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1653
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-066",
+      "input": "North Netherlandish print artist, 1600-1653",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1653
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-067",
+      "input": "Dutch painter, 1608-1682, active in Denmark",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1682
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-068",
+      "input": "French painter, 1600-1636",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1636
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-069",
+      "input": "Flemish artist, ca.1605-ca.1654/1661",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1661
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-070",
+      "input": "Norwegian artist, active ca. 1640-1660",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1690
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-071",
+      "input": "Italian artist, d. 1626, 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1626
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-072",
+      "input": "Scottish gentleman, born early 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "band"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1700
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-073",
+      "input": "artist, 1600?-1660",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "uncertain"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1660
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-074",
+      "input": "Italian engraver (printmaker), 1600-1660",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "bracketed"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1660
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-075",
+      "input": "Italian, act. ca.1640-1680",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1710
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-076",
+      "input": "North Netherlandish print artist, 1600-1651",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1600,
+          "end": 1651
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-077",
+      "input": "British painter, active 1730-1765",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1786
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-078",
+      "input": "British artist, active 1735-1775",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1850
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-079",
+      "input": "British artist, 18th century?",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "uncertain",
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1799
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-080",
+      "input": "French etcher, 1700-1733",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1733
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-081",
+      "input": "Italian artist, 18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1799
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-082",
+      "input": "Italian architect, painter, and scenographer, active from 1737, died 1762",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "floruit",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1762
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-083",
+      "input": "Italian artist, d. 1762, 18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1762
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-084",
+      "input": "British artist, 18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1799
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-085",
+      "input": "French artist, 18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1799
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-086",
+      "input": "Dutch painter, born 1700, died after 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1776
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-087",
+      "input": "Dutch artist, born 1700, active 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "floruit",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1850
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-088",
+      "input": "North Netherlandish painter, 1700-1777",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1777
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-089",
+      "input": "German artist, 1700-1780",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1780
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-090",
+      "input": "American painter, 1700-1780",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1780
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-091",
+      "input": "Polish painter, 1700-1780",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1780
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-092",
+      "input": "English painter, printmaker, d.1771",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1771
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-093",
+      "input": "British artist, circa 1710-1771",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1771
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-094",
+      "input": "Irish painter and printmaker, died 1771",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1771
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-095",
+      "input": "British artist, d. 1809, 18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1809
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-096",
+      "input": "Italian artist, born 1700",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1820
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-097",
+      "input": "French menuisier, died before 1774",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1774
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-098",
+      "input": "French painter, active 17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1730
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-099",
+      "input": "Dutch artist, 18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1799
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-100",
+      "input": "British artist, op.1730-, d.1772",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1772
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-101",
+      "input": "Irish painter, active 1730, died 1772",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "floruit",
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1772
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-102",
+      "input": "British artist, active 1730, died d1772",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1772
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-103",
+      "input": "Italian sculptor, 1700-1773",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1773
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-104",
+      "input": "Italian sculptor; born Rome (Italy), 1700; died Rome (Italy), 1773",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "bracketed"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1773
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-105",
+      "input": "Italian sculptor and draughtsman, 1700-1773",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1773
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-106",
+      "input": "Italian architect, 1700-1773",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1773
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-107",
+      "input": "German artist, 18th century?",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "uncertain",
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1799
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-108",
+      "input": "English artist, flourished 1750-1774",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1810
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-109",
+      "input": "American, active 1730-1745",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1775
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-110",
+      "input": "British artist, d. ca. 1769, 18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1779
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-111",
+      "input": "French \u00E9b\u00E9niste, act.1730, d.1767",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1767
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-112",
+      "input": "Italian painter, flourished 1750-1774",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1802
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-113",
+      "input": "German draughtsman, 1700-1765",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1765
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-114",
+      "input": "Italian artist, 1700-1765",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1765
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-115",
+      "input": "Italian draftsman, 1700-1765, active in Germany",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1765
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-116",
+      "input": "French artist, 1700-1767",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1767
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-117",
+      "input": "French painter, 1700-1767",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1767
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-118",
+      "input": "German artist, 18th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1799
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-119",
+      "input": "British artist, 18th-19th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1700,
+          "end": 1899
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-120",
+      "input": "artist, active 20th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 2100
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-121",
+      "input": "American artist, 19th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1899
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-122",
+      "input": "American artist, 1800-1887",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1887
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-123",
+      "input": "American painter, 1800-1887",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1887
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-124",
+      "input": "British, 1800-1862",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1862
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-125",
+      "input": "British painter, 1800-1862",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1862
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-126",
+      "input": "British artist, 1800-1862",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1862
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-127",
+      "input": "English painter, 1800-1870",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1870
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-128",
+      "input": "British owner, 1800-1862",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1862
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-129",
+      "input": "English painter, 1800-1862",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1862
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-130",
+      "input": "American artist, active 1830-1840",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1950
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-131",
+      "input": "French artist, 19th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1899
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-132",
+      "input": "Italian draughtsman, early 19th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "band"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1900
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-133",
+      "input": "British artist, 19th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1899
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-134",
+      "input": "British lithographer and painter, ca. 1828-1905",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1905
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-135",
+      "input": "American painter, active 1830-1850",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "floruit"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1800,
+          "end": 1880
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-136",
+      "input": "American landscape architect, 1919-2001",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2001
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-137",
+      "input": "French artist, born 1919",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2039
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-138",
+      "input": "French painter, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2080
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-139",
+      "input": "Yugoslav painter, 1919-2008",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2008
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-140",
+      "input": "British painter, 1919-1970",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1970
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-141",
+      "input": "British artist, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2019
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-142",
+      "input": "British artist, 1919-1970",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1970
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-143",
+      "input": "Scottish painter and draftsman, 1919-1970",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1970
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-144",
+      "input": "English painter, 1919-1970",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1970
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-145",
+      "input": "New Zealand painter, 1919-1995",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1995
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-146",
+      "input": "New Zealand artist, 1919-1995",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1995
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-147",
+      "input": "New Zealand artist, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2080
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-148",
+      "input": "American painter, 1919-2006",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2006
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-149",
+      "input": "artist, 1919-2006",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2006
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-150",
+      "input": "American painter, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2080
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-151",
+      "input": "British artist, b.1919",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2019
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-152",
+      "input": "British artist, born 1919",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2039
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-153",
+      "input": "English painter, 1919-2014",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2014
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-154",
+      "input": "English artist, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2080
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-155",
+      "input": "Belgian painter, 1919-1980",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1980
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-156",
+      "input": "Dutch artist, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2019
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-157",
+      "input": "Dutch artist, 1919-1980",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1980
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-158",
+      "input": "Belgian painter, draftsman, and graphic artist, 1919-1980",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1980
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-159",
+      "input": "artist, 1919-1980",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1980
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-160",
+      "input": "Belgian artist, 1919-1980",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1980
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-161",
+      "input": "American interior designer, 1919-1982",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1982
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-162",
+      "input": "Danish artist, born 1919",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2039
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-163",
+      "input": "Danish painter, 1919-1987",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1987
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-164",
+      "input": "English painter, 1919-2019",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2019
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-165",
+      "input": "English painter, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2080
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-166",
+      "input": "Canadian painter, b.1919",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2013
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-167",
+      "input": "Canadian artist, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2019
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-168",
+      "input": "Canadian painter, 1919-2013",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2013
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-169",
+      "input": "Canadian artist, born 1919",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2039
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-170",
+      "input": "Canadian painter, 1919-",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2080
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-171",
+      "input": "New Zealander painter, 1919-1987",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1987
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-172",
+      "input": "New Zealand painter, 1919-1987",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1987
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-173",
+      "input": "New Zealand artist, 1919-1987",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1987
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-174",
+      "input": "American painter and professor, 1919-1998",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1998
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-175",
+      "input": "American artist, born 1919",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "lifecycle"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 2039
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-176",
+      "input": "artist, 1919-1998",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1998
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-177",
+      "input": "American artist, 1919-1998",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1998
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-178",
+      "input": "British painter, 1919-1945",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1945
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-179",
+      "input": "British artist, 1919-1945",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1945
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "ulan-180",
+      "input": "English painter, 1919-1945",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "years": {
+          "start": 1919,
+          "end": 1945
+        },
+        "toleranceYears": 25
+      },
+      "status": "proposed"
+    }
+  ]
+}

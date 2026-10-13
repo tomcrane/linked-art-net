@@ -3,6 +3,8 @@
 //   dotnet run --project tools/Corpus -- validate            schema, unique ids, parseable canonical strings, ordered bounds, known flags
 //   dotnet run --project tools/Corpus -- run [--all|--status verified|proposed] [--write]   evaluate; --write updates corpus/report.md and report.json
 //   dotnet run --project tools/Corpus -- stats               counts by file, status and tag
+//   dotnet run --project tools/Corpus -- import yearrange <date-tests.json> | import timetwister <dates_spec.rb> | import getty <dir of ulan-*.json>
+//                                                           write corpus/imported/<source>.json (proposed; see THIRD-PARTY-NOTICES.md)
 //
 // Exit code 1 when validation fails or when a verified entry fails; proposed and disputed entries are informative.
 
@@ -17,6 +19,8 @@ var repoRoot = FindRepoRoot();
 var corpusRoot = Path.Combine(repoRoot, "corpus");
 var schemaPath = Path.Combine(corpusRoot, "schema", "corpus-entry.schema.json");
 
+if (command == "import") return await Importers.Run(args.Length > 1 ? args[1] : "", args.Length > 2 ? args[2] : null, corpusRoot);
+
 return command switch
 {
     "validate" => Validate(),
@@ -27,7 +31,7 @@ return command switch
 
 static int Usage()
 {
-    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats");
+    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
     return 2;
 }
 

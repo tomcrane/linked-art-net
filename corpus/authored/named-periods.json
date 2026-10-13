@@ -77,7 +77,7 @@
     { "id": "per-029", "input": "period:edo", "tags": ["canonical"],
       "expect": { "status": "parsed", "canonical": "period:edo", "minConfidence": 1 } },
     { "id": "per-030", "input": "Edo period, 18th century", "tags": ["japanese", "century", "multiple-dates"],
-      "expect": { "status": "parsed", "canonical": "period:edo/century 18", "flags": ["NamedPeriod"], "maxConfidence": 0.9 },
-      "notes": "Two dates with nothing joining them: the span covers both, at reduced confidence. The owner may prefer the narrower reading; policy open." }
+      "expect": { "status": "parsed", "canonical": "century 18", "edtf": "1700/1799", "maxConfidence": 0.9 },
+      "notes": "Explicit dates after a period name refine it: the century is taken and the period noted. The owner may prefer the hull; policy open." }
   ]
 }

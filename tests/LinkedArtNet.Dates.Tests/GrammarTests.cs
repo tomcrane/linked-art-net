@@ -186,9 +186,16 @@ public class GrammarTests
         Assert.Equal("1957-01-01T00:00:00Z", r.TimeSpan!.BeginOfTheBegin?.ToString());
         Assert.Equal("late 1950s", r.TimeSpan.Label);
 
-        var salvaged = TimeSpanParser.Default.Parse("Not dated, but the 1780s and 1792 are mentioned somewhere");
+        var salvageOnly = new TimeSpanParser(strategies: [new SalvageStrategy()]);
+        var salvaged = salvageOnly.Parse("Not dated, but the 1780s and 1792 are mentioned somewhere");
         Assert.Equal("salvage", salvaged.Strategy);
         Assert.Contains(DateFlag.Salvaged, salvaged.Flags);
         Assert.Equal("178X/1792", salvaged.Canonical);
+
+        // The grammar now skips leading prose, so the full chain reads this without salvage.
+        var prose = TimeSpanParser.Default.Parse("Italian painter, active 1451-1473");
+        Assert.Equal("grammar", prose.Strategy);
+        Assert.Equal("fl 1451/1473", prose.Canonical);
+        Assert.True(prose.Confidence < 0.95);
     }
 }

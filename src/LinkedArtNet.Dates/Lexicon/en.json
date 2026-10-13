@@ -5,7 +5,7 @@
     "june": 6, "jun": 6, "july": 7, "jul": 7, "august": 8, "aug": 8, "september": 9, "sep": 9, "sept": 9,
     "october": 10, "oct": 10, "november": 11, "nov": 11, "december": 12, "dec": 12
   },
-  "seasons": { "spring": "Spring", "summer": "Summer", "autumn": "Autumn", "fall": "Autumn", "winter": "Winter" },
+  "seasons": { "spring": "Spring", "spr": "Spring", "summer": "Summer", "sum": "Summer", "autumn": "Autumn", "aut": "Autumn", "fall": "Autumn", "winter": "Winter", "win": "Winter", "wint": "Winter" },
   "centuryWords": ["century", "centuries", "cent", "cents", "siecle", "siècle", "jahrhundert", "jh", "secolo", "siglo"],
   "millenniumWords": ["millennium", "millennia", "millenium"],
   "bands": {
@@ -38,11 +38,11 @@
   "rangeWords": ["to", "through", "thru", "and"],
   "between": ["between", "from"],
   "or": ["or"],
-  "floruit": ["fl", "flourished", "floruit", "active", "flor", "worked", "working"],
+  "floruit": ["fl", "flourished", "floruit", "active", "act", "flor", "op", "worked", "working"],
   "lifecycle": {
     "b": "Born", "born": "Born", "birth": "Born", "n": "Born", "né": "Born", "née": "Born", "*": "Born",
     "bapt": "Baptised", "baptised": "Baptised", "baptized": "Baptised", "bp": "Baptised", "christened": "Baptised",
-    "d": "Died", "died": "Died", "death": "Died", "ob": "Died", "†": "Died", "+": "Died",
+    "d": "Died", "died": "Died", "death": "Died", "ob": "Died", "m": "Died", "†": "Died", "+": "Died",
     "bur": "Buried", "buried": "Buried", "burial": "Buried"
   },
   "undated": ["nd", "n d", "sd", "s d", "sa", "s a", "undated", "no date", "not dated", "date unknown", "unknown date", "unknown", "unspecified", "s n", "without date"],

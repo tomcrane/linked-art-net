@@ -1,0 +1,1742 @@
+{
+  "$schema": "../schema/corpus-entry.schema.json",
+  "source": {
+    "name": "alexduryee/timetwister spec",
+    "licence": "MIT",
+    "url": "https://github.com/alexduryee/timetwister/blob/master/spec/dates_spec.rb",
+    "attribution": "Copyright (c) 2015 Alex Duryee (written at the New York Public Library). Licensed under the MIT License; see THIRD-PARTY-NOTICES.md.",
+    "notes": "Archival (DACS/EAD) date forms: \u0027ca.\u0027, \u0027circa\u0027, brackets, \u0027between\u0027, \u0027undated\u0027, seasons, open ranges, \u0027and\u0027 lists. Expectations are timetwister\u0027s full start and end dates. timetwister treats an inverted range as already ordered and \u0027ca.\u0027 as not widening, like our default profile; where its other conventions differ the entry fails and should be reviewed."
+  },
+  "defaults": {
+    "intent": "single",
+    "profile": "default",
+    "status": "proposed",
+    "tags": [
+      "timetwister",
+      "archival",
+      "imported"
+    ]
+  },
+  "entries": [
+    {
+      "id": "tt-001",
+      "input": "1776-07-04/1789-03-01",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-002",
+      "input": "1789-03-01/1776-07-04",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-003",
+      "input": "1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-004",
+      "input": "ca. 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-005",
+      "input": "[1776]",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "bracketed",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-006",
+      "input": "July 4 1776 - March 1 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-007",
+      "input": "4 July 1776 - 1 March 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-008",
+      "input": "1776 July 4 - 1789 March 1",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-009",
+      "input": "1776 4 July - 1789 1 March",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-010",
+      "input": "1776 4 July to 1789 1 March",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-011",
+      "input": "July 1776 - March 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1789-03-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-012",
+      "input": "1776 July - 1789 March",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1789-03-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-013",
+      "input": "1776 - 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1789-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-014",
+      "input": "1770\u0027s - 1780s",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "decade",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1770-01-01T00:00:00Z",
+          "end_of_the_end": "1789-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-015",
+      "input": "1770\u0027s - 1787",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "decade",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1770-01-01T00:00:00Z",
+          "end_of_the_end": "1787-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-016",
+      "input": "1776 - 1780\u0027s",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "decade"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1789-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-017",
+      "input": "1771 - 76",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1771-01-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-018",
+      "input": "1776 - ",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-019",
+      "input": " - 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-020",
+      "input": "1770\u0027s",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "decade",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1770-01-01T00:00:00Z",
+          "end_of_the_end": "1779-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-021",
+      "input": "July 4 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-022",
+      "input": "4 July 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-023",
+      "input": "1776 July 4",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-024",
+      "input": "1776 4 July",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-025",
+      "input": "December 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-12-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-026",
+      "input": "1776 December",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-12-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-027",
+      "input": "Dec 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-12-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-028",
+      "input": "1776 Dec",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-12-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-029",
+      "input": "July-September 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1776-09-30T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-030",
+      "input": "1776 July-September",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1776-09-30T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-031",
+      "input": "1776 Jul.-Sept.",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1776-09-30T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-032",
+      "input": "4-10 July 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-10T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-033",
+      "input": "1776 July 4-10",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-10T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-034",
+      "input": "July 4-10, 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-10T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-035",
+      "input": "1776 4-10 July",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-10T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-036",
+      "input": "early 1770\u0027s",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "decade",
+        "band",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1770-01-01T00:00:00Z",
+          "end_of_the_end": "1775-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-037",
+      "input": "mid 1770\u0027s",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "decade",
+        "band",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1773-01-01T00:00:00Z",
+          "end_of_the_end": "1778-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-038",
+      "input": "late 1770\u0027s",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "decade",
+        "band",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1775-01-01T00:00:00Z",
+          "end_of_the_end": "1779-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-039",
+      "input": "17--",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1700-01-01T00:00:00Z",
+          "end_of_the_end": "1799-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-040",
+      "input": "4 May - 10 July 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-05-04T00:00:00Z",
+          "end_of_the_end": "1776-07-10T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-041",
+      "input": "1776 May 4 - July 10",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-05-04T00:00:00Z",
+          "end_of_the_end": "1776-07-10T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-042",
+      "input": "May 4 - July 10 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-05-04T00:00:00Z",
+          "end_of_the_end": "1776-07-10T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-043",
+      "input": "4 May to 10 July 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-05-04T00:00:00Z",
+          "end_of_the_end": "1776-07-10T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-044",
+      "input": "4 July 1776 - March 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-045",
+      "input": "1776 July 4 - 1789 March",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-046",
+      "input": "1776 July 4 to 1789 March",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1789-03-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-047",
+      "input": "July 1776 - March 1, 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-048",
+      "input": "1776 July - 1789 March 1",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1789-03-01T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-049",
+      "input": "1776 - March 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1789-03-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-050",
+      "input": "1776 - 1789 March",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1789-03-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-051",
+      "input": "1776 to 1789 March",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1789-03-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-052",
+      "input": "1776 July - 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1789-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-053",
+      "input": "July 1776 - 1789",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1789-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-054",
+      "input": "7/4/1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-055",
+      "input": "07/4/1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-056",
+      "input": "7/04/1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-057",
+      "input": "07/04/1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-058",
+      "input": "Winter 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "season",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1776-03-20T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-059",
+      "input": "win. 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1776-03-20T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-060",
+      "input": "1776 Spring",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "season",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-03-20T00:00:00Z",
+          "end_of_the_end": "1776-06-21T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-061",
+      "input": "1776 Spr",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-03-20T00:00:00Z",
+          "end_of_the_end": "1776-06-21T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-062",
+      "input": "1776 Summer",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "season",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-06-21T00:00:00Z",
+          "end_of_the_end": "1776-09-23T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-063",
+      "input": "1776 Summ",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-06-21T00:00:00Z",
+          "end_of_the_end": "1776-09-23T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-064",
+      "input": "Fall 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "season",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-09-23T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-065",
+      "input": "Autumn 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "season",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-09-23T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-066",
+      "input": "Aut. 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-09-23T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-067",
+      "input": "Winter 1776 - Spring 1777",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "season",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1777-06-21T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-068",
+      "input": "1777 Spring - 1778 Summer",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "season",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1777-03-20T00:00:00Z",
+          "end_of_the_end": "1778-09-23T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-069",
+      "input": "July 4 1776?",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "uncertain",
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-070",
+      "input": "Approximately July 4, 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-071",
+      "input": "[July 4, 1776]",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "bracketed",
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-072",
+      "input": "July 4?, 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "uncertain",
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-073",
+      "input": "1771 - 76?",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "uncertain",
+        "range"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1771-01-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-074",
+      "input": "1776, 1789, 1812",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-01-01T00:00:00Z",
+          "end_of_the_end": "1776-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-075",
+      "input": "1777 April 30, 1777 June 4",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1777-04-30T00:00:00Z",
+          "end_of_the_end": "1777-04-30T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-076",
+      "input": "July 1776 - August 1789, 1812 - 1820, 1900",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1789-08-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-077",
+      "input": "July 1776 - August 1789; 1812 - 1820, 1900 and June 10-11, 1910",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "range",
+        "month"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1789-08-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-078",
+      "input": "July twenty-first 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-21T00:00:00Z",
+          "end_of_the_end": "1776-07-21T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-079",
+      "input": "July twenty-first, 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-21T00:00:00Z",
+          "end_of_the_end": "1776-07-21T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-080",
+      "input": "July 21st, 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-21T00:00:00Z",
+          "end_of_the_end": "1776-07-21T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-081",
+      "input": "July 21st 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-21T00:00:00Z",
+          "end_of_the_end": "1776-07-21T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-082",
+      "input": "august 4 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-08-04T00:00:00Z",
+          "end_of_the_end": "1776-08-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-083",
+      "input": "ao\u00FBt 4 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-08-04T00:00:00Z",
+          "end_of_the_end": "1776-08-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-084",
+      "input": "agosto 4 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-08-04T00:00:00Z",
+          "end_of_the_end": "1776-08-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-085",
+      "input": "july 4 and 5 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-086",
+      "input": "4 \u0026 5 july 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-087",
+      "input": "1776 july 4 and 5",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-04T00:00:00Z",
+          "end_of_the_end": "1776-07-04T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-088",
+      "input": "july and august 1776",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1776-07-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-089",
+      "input": "1776 july and august",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "month",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1776-07-01T00:00:00Z",
+          "end_of_the_end": "1776-07-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-090",
+      "input": "ca. mid 19th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "circa",
+        "century",
+        "band",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1830-01-01T00:00:00Z",
+          "end_of_the_end": "1880-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    },
+    {
+      "id": "tt-091",
+      "input": "17th century",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [
+        "century",
+        "single"
+      ],
+      "expect": {
+        "status": "parsed",
+        "timespan": {
+          "begin_of_the_begin": "1600-01-01T00:00:00Z",
+          "end_of_the_end": "1699-12-31T23:59:59Z"
+        },
+        "toleranceYears": 0
+      },
+      "status": "proposed"
+    }
+  ]
+}

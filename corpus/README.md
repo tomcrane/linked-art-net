@@ -9,7 +9,7 @@ produce. Design: [docs/06-corpus-and-testing.md](../docs/06-corpus-and-testing.m
 |---|---|---|
 | `seed/` | Strings from the py_datetime prototype and the PMC pipeline, expectations re-derived by hand | repo (MIT) |
 | `authored/` | Sets written to cover a theme: canonical forms, BCE and deep time, centuries and bands, open ends and relations, lifecycles and floruit, named periods | CC0-1.0 |
-| `imported/` | Other projects' test data, as `proposed` until reviewed | each file states its licence |
+| `imported/` | Other projects' test data, as `proposed` until reviewed: `yearrange.json` (1650, MIT), `timetwister.json` (91, MIT), `getty.json` (180 ULAN biographies, ODC-By), `edtf-spec.json` (61, public domain); licences and attributions in `imported/THIRD-PARTY-NOTICES.md` | each file states its licence |
 | `proposed/` | Entries submitted from the trainer, awaiting review | CC0-1.0 |
 
 Status: `verified` entries gate CI (`CorpusTests.Verified_entry_passes`); `proposed` and `disputed` are reported.
@@ -21,6 +21,7 @@ Tooling:
 dotnet run --project tools/Corpus -- validate          schema, ids, canonical strings, bound order, flags
 dotnet run --project tools/Corpus -- run --all --write  evaluate everything; write report.md / report.json
 dotnet run --project tools/Corpus -- stats
+dotnet run --project tools/Corpus -- import yearrange <date-tests.json> | import timetwister <dates_spec.rb> | import getty <dir of ulan-*.json>
 ```
 
 Expectations are evaluated under the profile each entry names (default: `profiles/default.json`), so a policy

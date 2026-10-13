@@ -217,7 +217,8 @@ public sealed partial class Tokenizer(Lexicon lexicon)
     }
 
     // 10,000 | 4.5 | 1950 | 14th | 1950s / 1950's | 17_ / 18-- / 19XX / 19?? (unspecified digits)
-    [GeneratedRegex(@"(?<num>\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)(?:(?<ord>st|nd|rd|th|e|º|°)(?![A-Za-z])|(?<decade>'?s)(?![A-Za-z])|(?<unspec>_{1,3}|--|xx|XX|\?\?))?", RegexOptions.CultureInvariant)]
+    // "19thC" keeps its ordinal before a century letter; "187-" at the end of a MARC field is the decade 187X.
+    [GeneratedRegex(@"(?<num>\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)(?:(?<ord>st|nd|rd|th|e|º|°)(?![A-Za-z])|(?<ord>st|nd|rd|th)(?=[Cc](?![A-Za-z]))|(?<decade>'?s)(?![A-Za-z])|(?<unspec>_{1,3}|--|xx|XX|\?\?|(?<=(?<!\d)\d{3})-(?=\s*[\]\)]*\s*$)))?", RegexOptions.CultureInvariant)]
     private static partial Regex NumberPattern();
 
     [GeneratedRegex(@"[\p{L}][\p{L}'’]*(?:\.[\p{L}]+)*\.?|[*†©~+]", RegexOptions.CultureInvariant)]

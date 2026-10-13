@@ -5,7 +5,7 @@
   "referred_to_by": [
     {
       "type": "LinguisticObject",
-      "content": "signature and date: \u2018Rembrandt f 1642\u2019",
+      "content": "signature and date: ‘Rembrandt f 1642’",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300028705",

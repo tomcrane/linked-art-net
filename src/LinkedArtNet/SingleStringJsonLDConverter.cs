@@ -1,42 +1,47 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace LinkedArtNet
-{
-    internal class SingleStringJsonLDConverter : JsonConverter<string[]?>
-    {
-        public override string[]? Read(ref Utf8JsonReader reader, System.Type typeToConvert, JsonSerializerOptions options)
-        {
-            var s = reader.GetString();
-            if(s != null && s.Contains("["))
-            {
-                throw new NotSupportedException("Need to parse the array of strings");
-            }
-            if(s != null)
-            {
-                return [s];
-            }
-            return null;
-        }
+namespace LinkedArtNet;
 
-        public override void Write(Utf8JsonWriter writer, string[]? value, JsonSerializerOptions options)
+/// <summary>Writes a one-element <c>@context</c> as a plain string and longer ones as an array; reads either form.</summary>
+internal sealed class SingleStringJsonLDConverter : JsonConverter<string[]?>
+{
+    public override string[]? Read(ref Utf8JsonReader reader, System.Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
         {
-            if(value != null && value.Length > 0)
-            {
-                if (value.Length == 1)
+            case JsonTokenType.Null:
+                return null;
+            case JsonTokenType.String:
+                return [reader.GetString()!];
+            case JsonTokenType.StartArray:
+                var items = new List<string>();
+                while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                 {
-                    writer.WriteStringValue(value[0]);
-                } 
-                else
-                {
-                    writer.WriteStartArray();
-                    foreach (var s in value)
-                    {
-                        writer.WriteStringValue(s);
-                    }
-                    writer.WriteEndArray();
+                    if (reader.TokenType != JsonTokenType.String)
+                        throw new JsonException("@context array items must be strings.");
+                    items.Add(reader.GetString()!);
                 }
-            }
+                return items.ToArray();
+            default:
+                throw new JsonException($"@context must be a string or an array of strings, not {reader.TokenType}.");
         }
+    }
+
+    public override void Write(Utf8JsonWriter writer, string[]? value, JsonSerializerOptions options)
+    {
+        if (value is null || value.Length == 0)
+        {
+            writer.WriteNullValue();
+            return;
+        }
+        if (value.Length == 1)
+        {
+            writer.WriteStringValue(value[0]);
+            return;
+        }
+        writer.WriteStartArray();
+        foreach (var s in value) writer.WriteStringValue(s);
+        writer.WriteEndArray();
     }
 }

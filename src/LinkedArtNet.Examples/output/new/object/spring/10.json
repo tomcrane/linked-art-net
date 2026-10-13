@@ -41,7 +41,7 @@
               "type": "InformationObject"
             }
           ],
-          "format": "application/ld\u002Bjson;profile=\u0027http://iiif.io/api/presentation/3/context.json\u0027"
+          "format": "application/ld+json;profile='http://iiif.io/api/presentation/3/context.json'"
         }
       ]
     }

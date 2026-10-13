@@ -1,12 +1,12 @@
 ﻿using LateApexEarlySpeed.Xunit.Assertion.Json;
 using LinkedArtNet;
+using LinkedArtNet.Serialization;
 using System.Text.Json;
 
 namespace Examples.NewDocExamples
 {
     public class Documentation
     {
-        static JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true,  };
         static HttpClient httpClient = new HttpClient();
 
         public static void Create()
@@ -47,7 +47,7 @@ namespace Examples.NewDocExamples
         {
             var generatedFile = new FileInfo(laObj!.Id!.Replace(IdRoot, $"../../../output/new/") + ".json");
             var cachedFromLASiteFile = new FileInfo(laObj!.Id!.Replace(IdRoot, $"../../../cached/new/") + ".json");
-            var generatedJson = JsonSerializer.Serialize(laObj, options);
+            var generatedJson = LinkedArtJson.Serialize(laObj!);
             Console.WriteLine(generatedJson);
             Directory.CreateDirectory(generatedFile.DirectoryName!);
             File.WriteAllText(generatedFile.FullName, generatedJson);

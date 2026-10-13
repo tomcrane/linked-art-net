@@ -2,11 +2,11 @@
   "@context": "https://linked.art/ns/v1/linked-art.json",
   "id": "https://linked.art/example/text/koot_nightwatch/1",
   "type": "LinguisticObject",
-  "_label": "Content of Koot\u0027s Night Watch",
+  "_label": "Content of Koot's Night Watch",
   "identified_by": [
     {
       "type": "Name",
-      "content": "Rembrant\u0027s Night Watch. A Fascinating Story",
+      "content": "Rembrant's Night Watch. A Fascinating Story",
       "classified_as": [
         {
           "id": "http://vocab.getty.edu/aat/300404670",
@@ -20,7 +20,7 @@
     {
       "id": "https://linked.art/example/concept/koot_idea",
       "type": "PropositionalObject",
-      "_label": "Koot\u0027s Conceptualization"
+      "_label": "Koot's Conceptualization"
     }
   ]
 }

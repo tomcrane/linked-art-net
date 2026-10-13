@@ -169,8 +169,13 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
 5. ~~`tools/SchemaInspector` + contract test.~~ Done 2026-10-13. Gap at baseline: 28 missing properties,
    913 extra properties, 3 unmapped classes (see `docs/model-gap-report.md`).
 
-6. ~~Phase 1 step 3: class hierarchy.~~ Done 2026-10-13. 41 classes, zero missing properties, six
+6. ~~Phase 1 step 3: class hierarchy.~~ Done 2026-10-13. 40 schema classes plus InformationObject, zero missing properties, six
    documented site-compatibility extras (D15), 118 site examples still validate.
 
-Next: Phase 1 step 4 (central serialisation: ordering table, empty-collection omission, polymorphic
-read by `type`, round-trip of all cached site JSON).
+7. ~~Phase 1 step 4: central serialisation.~~ Done 2026-10-13. `LinkedArtJson` (strict and tolerant
+   options, empty-collection omission, relaxed escaping), `LinkedArtObjectConverterFactory` (reads by
+   `type`), `LinkedArtTypes` registry. All 118 cached site examples read strictly and round-trip.
+   Property order stays attribute-based (a central table added nothing the attributes don't).
+
+Next: Phase 1 step 5 (vocabulary registry: `vocabulary/*.json` + generated `Aat`/`Tgn`/`Ulan` constants,
+replace inline `Getty.AatType` calls, fix duplicate ids).

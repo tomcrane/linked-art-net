@@ -20,7 +20,7 @@ holds exactly the `pmc-2` model library and parsers, minus the pipeline. The sol
 | `Types` enum | | Acquisition, AttributeAssignment, Birth, Creation, Currency, Death, Destruction, Dissolution, Encounter, Event, Formation, InformationObject, Language, Material, Modification, PartRemoval, Payment, Production, Set, Type, VisualItem. |
 
 The 1.0 JSON schemas (vendored in `schemas/linked-art/1.0`, inspected by `tools/SchemaInspector`)
-define exactly 41 classes: HumanMadeObject, DigitalObject, DigitalService, VisualItem,
+define exactly 40 classes: HumanMadeObject, DigitalObject, DigitalService, VisualItem,
 LinguisticObject, PropositionalObject, Set, Person, Group, Place, Type, Material, Language, Currency,
 MeasurementUnit, Name, Identifier, Dimension, MonetaryAmount, Right, TimeSpan, Period, Event,
 Activity, Production, Creation, Destruction, Encounter, Birth, Death, Formation, Dissolution,

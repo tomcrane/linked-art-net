@@ -2,7 +2,7 @@
   "@context": "https://linked.art/ns/v1/linked-art.json",
   "id": "https://linked.art/example/object/ccp/1",
   "type": "HumanMadeObject",
-  "_label": "Chaucer\u0027s Canterbury Pilgrims",
+  "_label": "Chaucer's Canterbury Pilgrims",
   "produced_by": {
     "type": "Production",
     "_label": "Printing from Plate",

@@ -17,7 +17,7 @@ are a JSON-LD-shaped object model, like `crom`, not an RDF toolkit).
 
 ## 2. Class hierarchy (implemented 2026-10-13, Phase 1 step 3)
 
-Every one of the 41 classes in the 1.0 schemas is a C# class, `type` is fixed by the class, and each
+Every one of the 40 classes in the 1.0 schemas is a C# class (plus InformationObject, a reference-only shape), `type` is fixed by the class, and each
 class has exactly the properties its schema definition allows (plus six site-compatibility extras
 listed below). The hierarchy was derived from the schema property sets themselves, using
 `SchemaInspector --analyze` to find which sets nest inside which, so that no class inherits a
@@ -94,7 +94,7 @@ Points worth knowing:
   `LinkedArtEntity`; harmless). Cardinality follows the site where it disagrees with the schema:
   `current_permanent_custodian` is a single actor, `held_or_supported_by` and `part_of` on objects are
   arrays. `object.json` also declares `used_for` twice. All of these are to be reported upstream.
-- The 1.0 schemas define exactly these 41 classes (verified by
+- The 1.0 schemas define exactly these 40 classes (verified by
   `SchemaContractTests.Manifest_covers_the_expected_linked_art_classes`). CRM classes such as
   Addition, Removal, PartAddition, Promise and Transformation are **not** in the 1.0 schemas and are
   not modelled.

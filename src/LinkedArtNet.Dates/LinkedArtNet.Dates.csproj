@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Lexicon\*.json" LogicalName="LinkedArtNet.Dates.Lexicon.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Periods\*.json" LogicalName="LinkedArtNet.Dates.Periods.%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>

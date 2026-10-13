@@ -8,7 +8,7 @@ produce. Design: [docs/06-corpus-and-testing.md](../docs/06-corpus-and-testing.m
 | Folder | What | Licence |
 |---|---|---|
 | `seed/` | Strings from the py_datetime prototype and the PMC pipeline, expectations re-derived by hand | repo (MIT) |
-| `authored/` | Sets written to cover a theme: BCE and deep time, centuries and bands, open ends and relations, lifecycles and floruit | CC0-1.0 |
+| `authored/` | Sets written to cover a theme: canonical forms, BCE and deep time, centuries and bands, open ends and relations, lifecycles and floruit, named periods | CC0-1.0 |
 | `imported/` | Other projects' test data, as `proposed` until reviewed | each file states its licence |
 | `proposed/` | Entries submitted from the trainer, awaiting review | CC0-1.0 |
 

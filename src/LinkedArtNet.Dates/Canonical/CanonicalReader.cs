@@ -10,15 +10,15 @@ namespace LinkedArtNet.Dates.Canonical;
 /// </summary>
 public static partial class CanonicalReader
 {
-    public static DateExpression Parse(string canonical)
+    public static DateExpression Parse(string canonical, Periods.INamedPeriodSource? periods = null)
     {
-        if (!TryParse(canonical, out var expression, out var error)) throw new FormatException(error);
+        if (!TryParse(canonical, out var expression, out var error, periods)) throw new FormatException(error);
         return expression!;
     }
 
     public static bool TryParse(string canonical, out DateExpression? expression) => TryParse(canonical, out expression, out _);
 
-    public static bool TryParse(string canonical, out DateExpression? expression, out string? error)
+    public static bool TryParse(string canonical, out DateExpression? expression, out string? error, Periods.INamedPeriodSource? periods = null)
     {
         expression = null;
         error = null;
@@ -27,6 +27,7 @@ public static partial class CanonicalReader
         {
             var text = canonical.Trim();
             expression = ParseExpression(text);
+            if (periods is not null) expression = Resolve(expression, periods);
             return true;
         }
         catch (Exception ex) when (ex is FormatException or ArgumentException or OverflowException)
@@ -57,6 +58,20 @@ public static partial class CanonicalReader
         }
         return ParsePrefixed(text);
     }
+
+    /// <summary>Fills in <c>period:key</c> nodes from a source, anywhere in the tree; unknown keys stay unresolved.</summary>
+    public static DateExpression Resolve(DateExpression e, Periods.INamedPeriodSource periods) => e switch
+    {
+        NamedPeriod { Resolved: null } p => periods.TryResolveKey(p.Key, out var resolved) ? resolved : p,
+        Qualified q => new Qualified(Resolve(q.Inner, periods), q.Qualification),
+        Banded b => new Banded(Resolve(b.Inner, periods), b.Band),
+        Relative r => new Relative(r.Relation, Resolve(r.Inner, periods)),
+        Lifecycle l => new Lifecycle(l.Marker, Resolve(l.Inner, periods)),
+        Interval i => new Interval(i.Start is null ? null : Resolve(i.Start, periods), i.End is null ? null : Resolve(i.End, periods)),
+        OneOf set => new OneOf(set.Members.Select(m => Resolve(m, periods))),
+        Corrected c => new Corrected(Resolve(c.Original, periods), Resolve(c.Correction, periods)),
+        _ => e,
+    };
 
     private static bool HasMarkedBounds(string text)
     {

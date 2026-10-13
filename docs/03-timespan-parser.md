@@ -299,6 +299,13 @@ same interface serves a `HumanReviewInterpreter` in the trainer (a person types 
 
 ## 5. Named periods
 
+Implemented (Phase 2 step 4): `JsonNamedPeriodSource.BuiltIn` loads the four embedded tables under
+`src/LinkedArtNet.Dates/Periods/`; a profile or caller adds its own with `new JsonNamedPeriodSource().AddFile(...)`
+and `CompositePeriodSource`. Names are matched whole after lower-casing and stripping diacritics and
+punctuation, so "Shōwa", "Showa era" and "昭和" all resolve; regnal years ("Meiji 27", "Kangxi 12",
+"Qianlong 60th year") count from the era's first year and get the key `meiji-27`. The grammar reads a
+period wherever a date could stand, so "early Edo period", "c. Georgian" and "Ming - Qing dynasty" work.
+
 `INamedPeriodSource.TryResolve(string text, CultureInfo, out NamedPeriod)`. Built-in JSON: Japanese
 eras (incl. regnal years, `Meiji 27` -> 1894), Chinese dynasties, British regnal periods, broad
 Western archaeological periods only where bounds are conventional. Art-historical styles ("Baroque")

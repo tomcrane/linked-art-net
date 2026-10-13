@@ -1,0 +1,22 @@
+{
+  "name": "Japanese historical periods and modern eras",
+  "licence": "CC0-1.0",
+  "notes": "Historical periods use the conventional year bounds; the modern eras (Meiji onwards) are dated to the day and count regnal years, so 'Meiji 27' is 1894 (Meiji 1 = 1868). Dates are Gregorian.",
+  "periods": [
+    { "key": "asuka", "label": "Asuka period", "names": ["asuka", "asuka jidai", "飛鳥時代"], "start": "0538", "end": "0710" },
+    { "key": "nara", "label": "Nara period", "names": ["nara", "nara jidai", "奈良時代"], "start": "0710", "end": "0794" },
+    { "key": "heian", "label": "Heian period", "names": ["heian", "heian jidai", "平安時代"], "start": "0794", "end": "1185" },
+    { "key": "kamakura", "label": "Kamakura period", "names": ["kamakura", "kamakura jidai", "鎌倉時代"], "start": "1185", "end": "1333" },
+    { "key": "muromachi", "label": "Muromachi period", "names": ["muromachi", "muromachi jidai", "ashikaga", "ashikaga period", "室町時代"], "start": "1336", "end": "1573" },
+    { "key": "nanboku-cho", "label": "Nanboku-chō period", "names": ["nanboku-cho", "nanbokucho", "northern and southern courts", "南北朝時代"], "start": "1336", "end": "1392" },
+    { "key": "sengoku", "label": "Sengoku period", "names": ["sengoku", "sengoku jidai", "warring states period (japan)", "戦国時代"], "start": "1467", "end": "1615" },
+    { "key": "azuchi-momoyama", "label": "Azuchi-Momoyama period", "names": ["azuchi-momoyama", "azuchi momoyama", "momoyama", "momoyama period", "安土桃山時代"], "start": "1573", "end": "1603" },
+    { "key": "edo", "label": "Edo period", "names": ["edo", "edo jidai", "tokugawa", "tokugawa period", "江戸時代"], "start": "1603", "end": "1868" },
+    { "key": "bakumatsu", "label": "Bakumatsu", "names": ["bakumatsu", "幕末"], "start": "1853", "end": "1868" },
+    { "key": "meiji", "label": "Meiji era", "names": ["meiji", "meiji period", "meiji jidai", "明治"], "start": "1868-10-23", "end": "1912-07-30", "regnal": true },
+    { "key": "taisho", "label": "Taishō era", "names": ["taisho", "taishō", "taisho period", "taisho era", "大正"], "start": "1912-07-30", "end": "1926-12-25", "regnal": true },
+    { "key": "showa", "label": "Shōwa era", "names": ["showa", "shōwa", "showa period", "showa era", "昭和"], "start": "1926-12-25", "end": "1989-01-07", "regnal": true },
+    { "key": "heisei", "label": "Heisei era", "names": ["heisei", "heisei period", "heisei era", "平成"], "start": "1989-01-08", "end": "2019-04-30", "regnal": true },
+    { "key": "reiwa", "label": "Reiwa era", "names": ["reiwa", "reiwa period", "reiwa era", "令和"], "start": "2019-05-01", "end": "..", "regnal": true }
+  ]
+}

@@ -8,9 +8,10 @@ namespace LinkedArtNet.Dates.Grammar;
 /// catalogues, archives and authority files. It produces a <see cref="DateExpression"/>, a confidence, notes, and
 /// whatever text it could not consume. See docs/03-timespan-parser.md §2.2.
 /// </summary>
-public sealed class GrammarStrategy(Tokenizer? tokenizer = null) : IParseStrategy
+public sealed class GrammarStrategy(Tokenizer? tokenizer = null, Periods.INamedPeriodSource? periods = null) : IParseStrategy
 {
     private readonly Tokenizer _tokenizer = tokenizer ?? Tokenizer.English;
+    private readonly Periods.INamedPeriodSource? _periods = periods;
 
     public string Name => "grammar";
 
@@ -18,7 +19,7 @@ public sealed class GrammarStrategy(Tokenizer? tokenizer = null) : IParseStrateg
     {
         var tokens = _tokenizer.Tokenize(text);
         if (tokens.Count == 0) return null;
-        return new DateParser(tokens, text, profile, _tokenizer.Lexicon).Parse();
+        return new DateParser(tokens, text, profile, _tokenizer.Lexicon, _periods).Parse();
     }
 }
 
@@ -29,17 +30,19 @@ internal sealed class DateParser
     private readonly string _text;
     private readonly ParseProfile _profile;
     private readonly Lexicon _lexicon;
+    private readonly Periods.INamedPeriodSource? _periods;
     private readonly List<string> _notes = [];
     private readonly HashSet<DateFlag> _flags = [];
     private double _confidence = 0.95;
     private int _p;
 
-    public DateParser(IReadOnlyList<Token> tokens, string text, ParseProfile profile, Lexicon lexicon)
+    public DateParser(IReadOnlyList<Token> tokens, string text, ParseProfile profile, Lexicon lexicon, Periods.INamedPeriodSource? periods = null)
     {
         _t = tokens.ToList();
         _text = text;
         _profile = profile;
         _lexicon = lexicon;
+        _periods = periods;
     }
 
     // ---- entry -------------------------------------------------------------------------------------------------
@@ -86,7 +89,7 @@ internal sealed class DateParser
         {
             var secondary = ParseGroup(group);
             if (secondary is null) continue;
-            if (secondary == expression) { _notes.Add("The same date is given twice."); continue; }
+            if (secondary == expression || IsRestatement(expression, secondary)) { _notes.Add("The same date is given twice."); continue; }
             _flags.Add(DateFlag.SecondaryDate);
             Penalise(0.1, $"A second date in parentheses, {secondary.Canonical}, widens the span.");
             expression = Hull(expression, secondary);
@@ -104,7 +107,7 @@ internal sealed class DateParser
 
     private DateExpression? ParseGroup(List<Token> group)
     {
-        var inner = new DateParser(group, _text, _profile, _lexicon);
+        var inner = new DateParser(group, _text, _profile, _lexicon, _periods);
         var candidate = inner.Parse();
         if (candidate is null) return null;
         _notes.AddRange(inner._notes);
@@ -170,7 +173,7 @@ internal sealed class DateParser
             if (_p >= _t.Count) break;
             var next = ParseSetOrRange();
             if (next is null) { _p = save; break; }
-            if (next == expression) { _notes.Add("The same date is given twice."); continue; }
+            if (next == expression || IsRestatement(expression, next)) { _notes.Add("The same date is given twice."); continue; }
             Penalise(0.25, $"Two dates with nothing joining them, {expression.Canonical} and {next.Canonical}; the span covers both.");
             expression = Hull(expression, next);
         }
@@ -391,7 +394,7 @@ internal sealed class DateParser
         DateExpression e = core;
         if (piece.Band is { } band)
         {
-            if (core is not (Decade or Century or Millennium or UnspecifiedDigits or YearPoint or MonthPoint)) return null;
+            if (core is not (Decade or Century or Millennium or UnspecifiedDigits or YearPoint or MonthPoint or NamedPeriod)) return null;
             e = new Banded(e, band);
         }
         if (piece.Hedge is { } q) e = new Qualified(e, q);
@@ -545,6 +548,25 @@ internal sealed class DateParser
             return piece with { Core = new PendingOrdinal(t.Number) };
         }
 
+        // a period name, with an optional regnal year: "Edo period", "Meiji 27", "Kangxi"
+        if (_periods is not null && t.Kind is TokenKind.Word or TokenKind.Noise or TokenKind.Relation or TokenKind.Band or TokenKind.Roman or TokenKind.Lifecycle or TokenKind.Month or TokenKind.Season)
+        {
+            for (var len = Math.Min(6, _t.Count - _p); len >= 1; len--)
+            {
+                var run = _t.Skip(_p).Take(len).ToList();
+                if (run.Any(x => x.Kind is TokenKind.Dash or TokenKind.Slash or TokenKind.Comma or TokenKind.Question or TokenKind.Or or TokenKind.RangeWord or TokenKind.Between or TokenKind.OpenEnd)) continue;
+                if (run[^1].Kind == TokenKind.Number && run[^1].Digits > 3) continue;
+                if (run.Count(x => x.Kind == TokenKind.Number) > 1) continue;
+                var phrase = _text[run[0].Start..run[^1].End];
+                if (!_periods.TryResolve(phrase, out var period)) continue;
+                _p += len;
+                _flags.Add(DateFlag.NamedPeriod);
+                _notes.Add($"'{phrase}' is the period {period.Label} ({period.Resolved!.Canonical}).");
+                Penalise(0.1, null);
+                return piece with { Core = period };
+            }
+        }
+
         // a year, with its era before or after
         if (t.Kind == TokenKind.Number && !t.HasDecimal)
         {
@@ -694,6 +716,9 @@ internal sealed class DateParser
         _confidence = Math.Max(0.3, _confidence - amount);
         if (note is not null) _notes.Add(note);
     }
+
+    private static bool IsRestatement(DateExpression main, DateExpression other) =>
+        main is NamedPeriod { Resolved: { } r } && (r == other || (r is Interval { Start: { } s, End: { } e } && other is Interval { Start: { } os, End: { } oe } && s == os && e == oe));
 
     private static DateExpression Hull(DateExpression a, DateExpression b)
     {

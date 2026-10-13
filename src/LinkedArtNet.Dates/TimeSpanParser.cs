@@ -1,5 +1,6 @@
 using LinkedArtNet.Dates.Canonical;
 using LinkedArtNet.Dates.Grammar;
+using LinkedArtNet.Dates.Periods;
 using LinkedArtNet.Dates.Realisation;
 using LinkedArtNet.Dates.Text;
 
@@ -26,15 +27,15 @@ public interface IParseStrategy
     Candidate? TryParse(string text, ParseProfile profile);
 }
 
-/// <summary>Strategy 1: strict ISO 8601 / EDTF and our canonical extensions, confidence 1.</summary>
-public sealed class CanonicalStrategy : IParseStrategy
+/// <summary>Strategy 1: strict ISO 8601 / EDTF and our canonical extensions, confidence 1. <c>period:key</c> resolves through the source.</summary>
+public sealed class CanonicalStrategy(INamedPeriodSource? periods = null) : IParseStrategy
 {
     public string Name => "canonical";
 
     public bool UsesRawText => true;
 
     public Candidate? TryParse(string text, ParseProfile profile) =>
-        CanonicalReader.TryParse(text, out var expression) ? new Candidate(expression!, 1.0, Name) : null;
+        CanonicalReader.TryParse(text, out var expression, out _, periods) ? new Candidate(expression!, 1.0, Name) : null;
 }
 
 /// <summary>
@@ -56,12 +57,15 @@ public sealed partial class TimeSpanParser
 
     private readonly IReadOnlyList<IParseStrategy> _strategies;
     private readonly ParseProfile _profile;
+    private readonly INamedPeriodSource _periods;
     private readonly Func<long>? _currentYear;
 
-    public TimeSpanParser(ParseProfile? profile = null, IEnumerable<IParseStrategy>? strategies = null, Func<long>? currentYear = null)
+    /// <param name="periods">Named-period source; the built-in tables when null. Pass an empty composite to disable.</param>
+    public TimeSpanParser(ParseProfile? profile = null, IEnumerable<IParseStrategy>? strategies = null, Func<long>? currentYear = null, INamedPeriodSource? periods = null)
     {
         _profile = profile ?? ParseProfile.Default;
-        _strategies = strategies?.ToList() ?? DefaultStrategies(_profile);
+        _periods = periods ?? JsonNamedPeriodSource.BuiltIn;
+        _strategies = strategies?.ToList() ?? DefaultStrategies(_profile, _periods);
         _currentYear = currentYear;
     }
 
@@ -69,11 +73,14 @@ public sealed partial class TimeSpanParser
 
     public ParseProfile Profile => _profile;
 
-    /// <summary>Canonical, grammar (with the profile's languages), salvage.</summary>
-    public static IReadOnlyList<IParseStrategy> DefaultStrategies(ParseProfile profile)
+    public INamedPeriodSource Periods => _periods;
+
+    /// <summary>Canonical, grammar (with the profile's languages and the periods), named period, salvage.</summary>
+    public static IReadOnlyList<IParseStrategy> DefaultStrategies(ParseProfile profile, INamedPeriodSource? periods = null)
     {
         var lexicon = Lexicon.Merge(profile.Languages.Select(Lexicon.Load));
-        return [new CanonicalStrategy(), new GrammarStrategy(new Tokenizer(lexicon)), new SalvageStrategy()];
+        periods ??= JsonNamedPeriodSource.BuiltIn;
+        return [new CanonicalStrategy(periods), new GrammarStrategy(new Tokenizer(lexicon), periods), new NamedPeriodStrategy(periods), new SalvageStrategy()];
     }
 
     public TimeSpanParseResult Parse(string input, Intent intent = Intent.Auto) => Parse(input, new ParseOptions { Intent = intent });

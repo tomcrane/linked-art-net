@@ -230,7 +230,14 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     Corpus: 256/256 pass; the seed py_datetime file and the four authored sets are now `verified` (151 verified,
     105 proposed: the PMC strings await the owner's review).
 
-Next: Phase 2 step 4 (named periods), then 5 (import corpora), 6 (fluent bridge, profiles, profile advisor, other
-languages). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+15. ~~Phase 2 step 4: named periods.~~ Done 2026-10-13. `INamedPeriodSource`, `JsonNamedPeriodSource` with four
+    embedded tables (Japanese periods and eras with regnal years, Chinese dynasties and Ming/Qing reign periods with
+    regnal years, British periods and reigns, conventional archaeological periods and the world wars), name
+    normalisation (diacritics, scripts), `period:key` resolution in the canonical reader, periods as a grammar core
+    (bands, hedges, ranges, "Meiji 27 (1894)"), `NamedPeriodStrategy`, `CompositePeriodSource` for custom tables;
+    styles deliberately absent. Corpus `authored/named-periods.json` (30, verified); 286/286 pass.
+
+Next: Phase 2 step 5 (import corpora: yearrange, timetwister, cultural_dates, EDTF spec, Getty sample) and step 6
+(fluent bridge, profiles, profile advisor, other languages). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

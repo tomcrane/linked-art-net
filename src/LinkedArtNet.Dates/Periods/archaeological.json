@@ -1,0 +1,23 @@
+{
+  "name": "Broad historical and archaeological periods with conventional bounds",
+  "licence": "CC0-1.0",
+  "notes": "Only periods whose bounds are conventional in Western cataloguing. Regional prehistoric phases (Neolithic, Bronze Age, Iron Age) are given for Britain and marked as such; elsewhere they differ by centuries and a profile should supply its own table. Art-historical styles are not periods and are not here.",
+  "periods": [
+    { "key": "roman-republic", "label": "Roman Republic", "names": ["roman republic", "republican rome", "republican period (rome)"], "start": "-0508", "end": "-0026" },
+    { "key": "roman-empire", "label": "Roman Empire", "names": ["roman empire", "imperial rome", "imperial period (rome)", "roman imperial"], "start": "-0026", "end": "0476" },
+    { "key": "early-roman-empire", "label": "Early Roman Empire", "names": ["early roman empire", "principate", "early imperial"], "start": "-0026", "end": "0193" },
+    { "key": "late-antiquity", "label": "Late Antiquity", "names": ["late antiquity", "late antique", "late roman"], "start": "0284", "end": "0641" },
+    { "key": "byzantine", "label": "Byzantine period", "names": ["byzantine", "byzantine period", "byzantine empire"], "start": "0330", "end": "1453" },
+    { "key": "roman-britain", "label": "Roman Britain", "names": ["roman britain", "romano-british", "roman period (britain)"], "start": "0043", "end": "0410" },
+    { "key": "early-medieval", "label": "Early medieval period", "names": ["early medieval", "early medieval period", "early middle ages", "dark ages"], "start": "0410", "end": "1066", "notes": "British convention; continental usage runs c. 500-1000." },
+    { "key": "medieval", "label": "Medieval period", "names": ["medieval", "mediaeval", "medieval period", "middle ages", "the middle ages"], "start": "1066", "end": "1485", "notes": "British convention (Conquest to Bosworth); continental usage runs c. 500-1500." },
+    { "key": "high-medieval", "label": "High Middle Ages", "names": ["high middle ages", "high medieval", "central middle ages"], "start": "1000", "end": "1300" },
+    { "key": "late-medieval", "label": "Late Middle Ages", "names": ["late middle ages", "late medieval", "late medieval period"], "start": "1300", "end": "1500" },
+    { "key": "early-modern", "label": "Early modern period", "names": ["early modern", "early modern period"], "start": "1500", "end": "1800" },
+    { "key": "neolithic-britain", "label": "Neolithic (Britain)", "names": ["neolithic (britain)", "british neolithic", "neolithic britain"], "start": "-3999", "end": "-2499" },
+    { "key": "bronze-age-britain", "label": "Bronze Age (Britain)", "names": ["bronze age (britain)", "british bronze age", "bronze age britain"], "start": "-2499", "end": "-0799" },
+    { "key": "iron-age-britain", "label": "Iron Age (Britain)", "names": ["iron age (britain)", "british iron age", "iron age britain"], "start": "-0799", "end": "0043" },
+    { "key": "first-world-war", "label": "First World War", "names": ["first world war", "world war i", "world war one", "ww1", "wwi", "great war", "the great war", "1914-18 war"], "start": "1914-07-28", "end": "1918-11-11" },
+    { "key": "second-world-war", "label": "Second World War", "names": ["second world war", "world war ii", "world war two", "ww2", "wwii", "1939-45 war"], "start": "1939-09-01", "end": "1945-09-02" }
+  ]
+}

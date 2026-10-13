@@ -56,8 +56,7 @@
     { "id": "can-016", "input": "undated", "tags": ["undated"],
       "expect": { "status": "undated", "kind": "none" } },
     { "id": "can-017", "input": "period:edo", "tags": ["named-period"],
-      "expect": { "status": "unparsed" },
-      "notes": "No period source is configured in the default parser; becomes parsed when Phase 2 step 4 lands." },
+      "expect": { "status": "parsed", "canonical": "period:edo", "edtf": "1603/1868", "flags": ["NamedPeriod"], "minConfidence": 1 } },
     { "id": "can-018", "input": "1850", "intent": "pair", "tags": ["partial"],
       "expect": { "status": "partial", "kind": "single", "timespan": { "begin_of_the_begin": "1850-01-01T00:00:00Z", "end_of_the_end": "1850-12-31T23:59:59Z" } } }
   ]

@@ -1,0 +1,78 @@
+@page "/examples/{slug}/{*id}"
+@model LinkedArtNet.ExamplesSite.Pages.Examples.ExampleModel
+@{
+    ViewData["Title"] = Model.Example.Id;
+}
+<nav class="crumbs"><a href="/">Examples</a> › <a href="/examples/@Model.Section.Slug">@Model.Section.Title</a> › <code>@Model.Example.Id</code></nav>
+<h1><code>@Model.Example.Id</code> <span class="status status-@Model.Example.Status.ToString().ToLowerInvariant()">@SectionModel.Label(Model.Example.Status)</span></h1>
+@if (Model.Example.Description is not null)
+{
+    <p class="lede">@Model.Example.Description</p>
+}
+<p class="meta">
+    On linked.art: <a href="@(Model.Section.Url)@Model.Example.Anchor">@Model.Section.Title@(Model.Example.Heading is null ? "" : " › " + Model.Example.Heading)</a>
+    · <a href="@Model.Example.JsonUrl">site JSON</a>
+    · type <code>@Model.Example.TypeName</code>
+    @if (Model.Example.Source is not null)
+    {
+        <text>· <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/@Model.Example.Source.File#L@Model.Example.Source.Line"><code>@Model.Example.Source.Key</code></a></text>
+    }
+</p>
+
+@if (Model.Example.Detail is not null)
+{
+    <aside class="notice">@Model.Example.Detail</aside>
+}
+
+@if (Model.Example.Source is not null)
+{
+    <section>
+        <h2>C# <button type="button" class="copy" data-copy="csharp">Copy</button></h2>
+        <pre><code class="language-csharp" id="csharp">@Model.Example.Source.Source</code></pre>
+    </section>
+}
+else
+{
+    <aside class="notice">No C# yet for this example.</aside>
+}
+
+<section class="json-pair">
+    <div>
+        <h2>JSON from the C# <button type="button" class="copy" data-copy="generated">Copy</button></h2>
+        @if (Model.Example.GeneratedJson is not null) { <pre><code class="language-json" id="generated">@Model.Example.GeneratedJson</code></pre> } else { <p class="muted">Not generated.</p> }
+    </div>
+    <div>
+        <h2>JSON on linked.art</h2>
+        @if (Model.Example.SiteJson is not null) { <pre><code class="language-json">@Model.Example.SiteJson</code></pre> } else { <p class="muted">Not cached.</p> }
+    </div>
+</section>
+
+@if (Model.Example.GeneratedJson is not null && Model.Example.SiteJson is not null)
+{
+    <section>
+        <h2>Comparison</h2>
+        @if (Model.Example.Difference is null)
+        {
+            <p class="ok">The two documents are equivalent (property order ignored, array order significant).</p>
+        }
+        else
+        {
+            <p class="diff">First difference at <code>@Model.Example.Difference</code></p>
+        }
+    </section>
+}
+
+@if (Model.Example.Properties.Count > 0)
+{
+    <section>
+        <h2>Properties used</h2>
+        <p class="tags">@foreach (var p in Model.Example.Properties) { <a class="tag" href="/properties/@p"><code>@p</code></a> }</p>
+    </section>
+}
+@if (Model.Example.Terms.Count > 0)
+{
+    <section>
+        <h2>Vocabulary terms</h2>
+        <p class="tags">@foreach (var t in Model.Example.Terms) { <a class="tag" href="/properties/@ExampleIndex.TermSlug(t)" title="@ExampleIndex.TermId(t)">@ExampleIndex.TermLabel(t)</a> }</p>
+    </section>
+}

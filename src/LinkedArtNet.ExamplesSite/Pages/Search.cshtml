@@ -1,0 +1,27 @@
+@page "/search"
+@model LinkedArtNet.ExamplesSite.Pages.SearchModel
+@{
+    ViewData["Title"] = "Search";
+}
+<h1>Search</h1>
+<form action="/search" method="get" class="inline">
+    <input type="search" name="q" value="@Model.Query" aria-label="Search" placeholder="e.g. transferred_custody_of, Rembrandt, dimension" autofocus />
+    <button type="submit">Search</button>
+</form>
+@if (Model.Query.Length > 0)
+{
+    <p class="muted">@Model.Results.Count example@(Model.Results.Count == 1 ? "" : "s") match <q>@Model.Query</q> in id, description, C# or JSON property names.</p>
+    <table class="examples">
+        <thead><tr><th>Example</th><th>Section</th><th>What it shows</th></tr></thead>
+        <tbody>
+        @foreach (var e in Model.Results)
+        {
+            <tr>
+                <td><a href="/examples/@e.Section/@e.Id"><code>@e.Id</code></a></td>
+                <td>@Model.SectionTitle(e.Section)</td>
+                <td>@e.Description</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

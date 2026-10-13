@@ -1,0 +1,24 @@
+@page "/examples/{slug}"
+@model LinkedArtNet.ExamplesSite.Pages.Examples.SectionModel
+@{
+    ViewData["Title"] = Model.Section.Title;
+}
+<nav class="crumbs"><a href="/">Examples</a> › @Model.Section.Title</nav>
+<h1>@Model.Section.Title</h1>
+<p class="lede">
+    The examples on <a href="@Model.Section.Url">linked.art/model/@Model.Section.Path/</a>, @Model.Section.Implemented of @Model.Section.Examples.Count implemented in C#.
+</p>
+<table class="examples">
+    <thead><tr><th>Example</th><th>Section of the page</th><th>What it shows</th><th>Status</th></tr></thead>
+    <tbody>
+    @foreach (var e in Model.Section.Examples)
+    {
+        <tr>
+            <td><a href="/examples/@Model.Section.Slug/@e.Id"><code>@e.Id</code></a></td>
+            <td>@if (e.Anchor is not null) { <a href="@(Model.Section.Url)@e.Anchor">@e.Heading</a> } else { @e.Heading }</td>
+            <td>@e.Description</td>
+            <td><span class="status status-@e.Status.ToString().ToLowerInvariant()">@SectionModel.Label(e.Status)</span></td>
+        </tr>
+    }
+    </tbody>
+</table>

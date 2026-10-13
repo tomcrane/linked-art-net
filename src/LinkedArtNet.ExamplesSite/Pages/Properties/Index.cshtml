@@ -1,0 +1,21 @@
+@page "/properties"
+@inject ExampleIndex Index
+@{
+    ViewData["Title"] = "Properties and terms";
+}
+<h1>Properties and vocabulary terms</h1>
+<p class="lede">Every JSON property and every Getty vocabulary term the examples use, with the number of examples using each. Follow one to see them all.</p>
+<h2>Properties</h2>
+<p class="tags">
+@foreach (var (name, ids) in Index.ByProperty.OrderByDescending(kv => kv.Value.Count).ThenBy(kv => kv.Key, StringComparer.Ordinal))
+{
+    <a class="tag" href="/properties/@name"><code>@name</code> <span class="count">@ids.Count</span></a>
+}
+</p>
+<h2>Vocabulary terms</h2>
+<p class="tags">
+@foreach (var (term, ids) in Index.ByTerm.OrderByDescending(kv => kv.Value.Count).ThenBy(kv => ExampleIndex.TermLabel(kv.Key), StringComparer.Ordinal))
+{
+    <a class="tag" href="/properties/@ExampleIndex.TermSlug(term)" title="@ExampleIndex.TermId(term)">@ExampleIndex.TermLabel(term) <span class="count">@ids.Count</span></a>
+}
+</p>

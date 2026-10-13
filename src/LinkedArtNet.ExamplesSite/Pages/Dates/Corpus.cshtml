@@ -1,0 +1,40 @@
+@page "/dates/corpus"
+@model LinkedArtNet.ExamplesSite.Pages.Dates.CorpusModel
+@{
+    ViewData["Title"] = "Date corpus";
+}
+<h1>The date corpus</h1>
+<p class="lede">
+    @Model.Total entries of real-world date strings with the TimeSpan each should produce, run against the current parser
+    (@Model.PassedTotal pass). <code>verified</code> entries are checked in CI; <code>proposed</code> entries await human review.
+    Sources and licences are on the <a href="/about#corpus">about page</a>.
+</p>
+<form action="/dates/corpus" method="get" class="filters">
+    <input type="search" name="q" value="@Model.Q" placeholder="input text" aria-label="Input text" />
+    <select name="file" aria-label="File"><option value="">any file</option>@foreach (var f in Model.Files) { <option value="@f" selected="@(Model.FileName == f)">@f</option> }</select>
+    <select name="tag" aria-label="Tag"><option value="">any tag</option>@foreach (var t in Model.Tags) { <option value="@t.Tag" selected="@(Model.Tag == t.Tag)">@t.Tag (@t.Count)</option> }</select>
+    <select name="status" aria-label="Status"><option value="">any status</option>@foreach (var s in new[] { "verified", "proposed", "disputed" }) { <option value="@s" selected="@(Model.Status == s)">@s</option> }</select>
+    <select name="result" aria-label="Result"><option value="">pass or fail</option><option value="pass" selected="@(Model.Result == "pass")">pass</option><option value="fail" selected="@(Model.Result == "fail")">fail</option></select>
+    <button type="submit">Filter</button>
+</form>
+<p class="muted">@Model.Filtered matching; showing @Model.Items.Count from @((Model.PageNumber - 1) * CorpusModel.PageSize + 1).</p>
+<table class="corpus">
+    <thead><tr><th>Input</th><th>Expected</th><th>Parser</th><th>Status</th><th>Tags</th></tr></thead>
+    <tbody>
+    @foreach (var r in Model.Items)
+    {
+        <tr class="@(r.Passed ? "pass" : "fail")">
+            <td><a href="/dates?s=@Uri.EscapeDataString(r.Entry.Input)&amp;intent=@r.Entry.Intent&amp;profile=@r.Entry.Profile">@r.Entry.Input</a><br /><small class="muted">@r.Entry.Id · @r.Entry.Profile</small></td>
+            <td>@if (r.Entry.Expect.Canonical is not null) { <code>@r.Entry.Expect.Canonical</code> } @if (r.Entry.Expect.Edtf is not null) { <br /><small>@r.Entry.Expect.Edtf</small> } @if (r.Entry.Expect.Status is not null) { <small class="muted">@r.Entry.Expect.Status</small> }</td>
+            <td>@if (r.Passed) { <span class="status status-validated">pass</span> } else { <span class="status status-mismatch">fail</span><ul class="failures">@foreach (var f in r.Failures) { <li>@f</li> }</ul> }</td>
+            <td>@r.Entry.Status.ToString().ToLowerInvariant()</td>
+            <td class="tags">@foreach (var t in r.Entry.Tags) { <a class="tag" href="/dates/corpus?tag=@t">@t</a> }</td>
+        </tr>
+    }
+    </tbody>
+</table>
+<nav class="pager">
+    @if (Model.PageNumber > 1) { <a href="@Model.PageLink(Model.PageNumber - 1)">‹ previous</a> }
+    <span>page @Model.PageNumber of @Model.Pages</span>
+    @if (Model.PageNumber < Model.Pages) { <a href="@Model.PageLink(Model.PageNumber + 1)">next ›</a> }
+</nav>

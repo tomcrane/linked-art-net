@@ -55,5 +55,31 @@ public class CoverageTests
         Assert.True(missing.Count == 0, "Site examples without a [LinkedArtExample] method: " + string.Join(", ", missing));
     }
 
+    [Fact]
+    public void Example_source_is_current()
+    {
+        // examples/source.json holds each example method's C# for the examples site; the extractor rewrites it.
+        var path = Path.Combine(TestPaths.RepoRoot, "examples", "source.json");
+        Assert.True(File.Exists(path), "examples/source.json is missing: run `dotnet run --project tools/ExampleSourceExtractor`.");
+        var entries = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path))!.AsArray()
+            .ToDictionary(e => e!["key"]!.GetValue<string>(), e => e!, StringComparer.Ordinal);
+        var catalogKeys = ExampleCatalog.All.Select(e => e.Key).ToHashSet(StringComparer.Ordinal);
+        var stale = catalogKeys.Except(entries.Keys).Concat(entries.Keys.Except(catalogKeys)).Order(StringComparer.Ordinal).ToList();
+        Assert.True(stale.Count == 0, "examples/source.json is stale (run `dotnet run --project tools/ExampleSourceExtractor`): " + string.Join(", ", stale));
+        foreach (var example in ExampleCatalog.All)
+        {
+            var entry = entries[example.Key];
+            Assert.Equal(example.Id, entry["id"]!.GetValue<string>());
+            var source = entry["source"]!.GetValue<string>();
+            Assert.StartsWith("public static ", source);
+            Assert.Contains(example.Name + "(", source);
+            // The recorded line must point at this method in the file the entry names.
+            var file = Path.Combine(TestPaths.RepoRoot, entry["file"]!.GetValue<string>());
+            var lines = File.ReadAllLines(file);
+            var line = entry["line"]!.GetValue<int>();
+            Assert.True(line >= 1 && line <= lines.Length && lines[line - 1].Contains(example.Name + "("), $"{example.Key}: line {line} of {entry["file"]} is not the method.");
+        }
+    }
+
     private static string Normalise(string text) => text.Replace("\r\n", "\n").TrimEnd();
 }

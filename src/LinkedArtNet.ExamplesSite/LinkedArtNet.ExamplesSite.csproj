@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>LinkedArtNet.ExamplesSite</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Description>Razor Pages site: every linked.art example as C#, generated and site JSON side by side, coverage dashboard, date parser playground and corpus browser.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkedArtNet.Examples\LinkedArtNet.Examples.csproj" />
+    <ProjectReference Include="..\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
+    <ProjectReference Include="..\LinkedArtNet.Dates.Corpus\LinkedArtNet.Dates.Corpus.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="LinkedArtNet.ExamplesSite.Tests" />
+  </ItemGroup>
+
+</Project>

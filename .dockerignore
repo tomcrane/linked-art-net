@@ -6,8 +6,8 @@
 exclude/
 py_datetime/
 LinkedArt/
-examples/
-corpus/
 tests/
 tools/
 docs/
+corpus/report.json
+corpus/report.md

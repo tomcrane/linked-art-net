@@ -1,0 +1,1670 @@
+[
+  {
+    "id": "object/catalog/1",
+    "key": "Aboutness.Exhibition_Catalog_1",
+    "topic": "Aboutness",
+    "method": "Exhibition_Catalog_1",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 128,
+    "source": "public static HumanMadeObject Exhibition_Catalog_1()\n{\n    var catalog = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/catalog/1\")\n        .WithLabel(\"Copy of Exhibition Catalog\")\n        .WithClassifiedAs(Aat.ExhibitionCatalog, Aat.TypeOfWork);\n\n    catalog.Shows = [\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/spring\")\n            .WithLabel(\"Visual Content of Spring\"),\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/houses\")\n            .WithLabel(\"Visual Content of Houses in Provence\")\n    ];\n\n    catalog.Carries = [\n        new LinguisticObject()\n            .WithId(\"https://linked.art/example/text/catalogtext\")\n            .WithLabel(\"Exhibition Catalog Text\")\n    ];\n\n    return catalog;\n}"
+  },
+  {
+    "id": "object/harpers/1",
+    "key": "Aboutness.Harpers_Poster",
+    "topic": "Aboutness",
+    "method": "Harpers_Poster",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 156,
+    "source": "public static HumanMadeObject Harpers_Poster()\n{\n    var harpers = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/harpers/1\")\n        .WithLabel(\"Poster Item\")\n        .WithClassifiedAs(Aat.Print, Aat.TypeOfWork);\n\n    harpers.Shows = [\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/harpers\")\n            .WithLabel(\"Visual Content of Harpers\"),\n    ];\n\n    return harpers;\n}"
+  },
+  {
+    "id": "text/harpers/1",
+    "key": "Aboutness.Harpers_Textual_Content",
+    "topic": "Aboutness",
+    "method": "Harpers_Textual_Content",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 193,
+    "source": "public static LinguisticObject Harpers_Textual_Content()\n{\n    var harpersText = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/harpers/1\")\n        .WithLabel(\"Textual component of Harpers\")\n        .WithContent(\"Harper's. January contains Roden's corner. A Novel by Henry Seton Merriman [...]\");\n\n    harpersText.PartOf = [\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/harpers\")\n            .WithLabel(\"Visual Content of Harpers\")\n    ];\n\n    return harpersText;\n}"
+  },
+  {
+    "id": "visual/harpers/1",
+    "key": "Aboutness.Harpers_Visual_Content",
+    "topic": "Aboutness",
+    "method": "Harpers_Visual_Content",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 174,
+    "source": "public static VisualItem Harpers_Visual_Content()\n{\n    var harpersVis = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/harpers/1\")\n        .WithLabel(\"Visual Content of Harpers\");\n\n    harpersVis.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.Description, Aat.Statement)\n            .WithContent(\"The text and image are primarily red and black\")\n    ];\n\n    harpersVis.Represents = [Aat.Term(\"300025943\", \"Woman\")];\n\n    return harpersVis;\n}"
+  },
+  {
+    "id": "object/nightwatch/18",
+    "key": "Aboutness.Nightwatch_Signature",
+    "topic": "Aboutness",
+    "method": "Nightwatch_Signature",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 111,
+    "source": "public static HumanMadeObject Nightwatch_Signature()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/18\");\n\n    nightWatch.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.SignatureStatement, Aat.Statement)\n            .WithContent(\"signature and date: ‘Rembrandt f 1642’\")\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/spring/5",
+    "key": "Aboutness.Spring_5_Description",
+    "topic": "Aboutness",
+    "method": "Spring_5_Description",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 11,
+    "source": "public static HumanMadeObject Spring_5_Description()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/5\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n\n    spring.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.Description, Aat.Statement)\n            .WithContent(\"A chic young woman in a day dress with floral accents holds a parasol against a background of exuberant foliage.\")\n    ];\n\n    spring.Shows = [\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/spring\")\n            .WithLabel(\"Visual Content of Spring\")\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "visual/spring/2",
+    "key": "Aboutness.Spring_About",
+    "topic": "Aboutness",
+    "method": "Spring_About",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 70,
+    "source": "public static VisualItem Spring_About()\n{\n    var springVis = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/spring/2\")\n        .WithLabel(\"Visual Content of Spring\");\n\n    springVis.About = [\n        Aat.Term(\"300133097\", \"Spring (season)\")\n    ];\n\n    return springVis;\n}"
+  },
+  {
+    "id": "visual/spring/4",
+    "key": "Aboutness.Spring_Portrait",
+    "topic": "Aboutness",
+    "method": "Spring_Portrait",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 98,
+    "source": "public static VisualItem Spring_Portrait()\n{\n    var springVis = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/spring/4\")\n        .WithLabel(\"Visual Content of Spring\")\n        .WithClassifiedAs(Aat.Term(\"300015637\", \"Portrait\"));\n\n    return springVis;\n}"
+  },
+  {
+    "id": "visual/spring/5",
+    "key": "Aboutness.Spring_Respresents_Instance_of_Type",
+    "topic": "Aboutness",
+    "method": "Spring_Respresents_Instance_of_Type",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 54,
+    "source": "public static VisualItem Spring_Respresents_Instance_of_Type()\n{\n    var springVis = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/spring/5\")\n        .WithLabel(\"Visual Content of Spring\");\n\n    springVis.RepresentsInstanceOfType = [\n        Aat.Term(\"300046218\", \"Parasol\")\n    ];\n\n    return springVis;\n}"
+  },
+  {
+    "id": "visual/spring/3",
+    "key": "Aboutness.Spring_Style",
+    "topic": "Aboutness",
+    "method": "Spring_Style",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 85,
+    "source": "public static VisualItem Spring_Style()\n{\n    var springVis = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/spring/3\")\n        .WithLabel(\"Visual Content of Spring\")\n        .WithClassifiedAs(Aat.Term(\"300021503\", \"Impressionism\"), Aat.Style);\n\n    return springVis;\n}"
+  },
+  {
+    "id": "visual/spring/1",
+    "key": "Aboutness.Spring_Visual_Content",
+    "topic": "Aboutness",
+    "method": "Spring_Visual_Content",
+    "file": "src/LinkedArtNet.Examples/Aboutness.cs",
+    "line": 36,
+    "source": "public static VisualItem Spring_Visual_Content()\n{\n    var springVis = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/spring/1\")\n        .WithLabel(\"Visual Content of Spring\");\n\n    springVis.Represents = [\n        new Person()\n            .WithId(\"https://linked.art/example/person/jeanne\")\n            .WithLabel(\"Jeanne Demarsy\")\n    ];\n\n    return springVis;\n}"
+  },
+  {
+    "id": "person/rembrandt/12",
+    "key": "Actors.Rembrandt_Address",
+    "topic": "Actors",
+    "method": "Rembrandt_Address",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 66,
+    "source": "public static Person Rembrandt_Address()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/12\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.ContactPoint = [\n        new Identifier(\"Jodenbreestraat 4, 1011 NK Amsterdam\")\n            .WithClassifiedAs(Aat.StreetAddress)\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/8",
+    "key": "Actors.Rembrandt_Biography",
+    "topic": "Actors",
+    "method": "Rembrandt_Biography",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 216,
+    "source": "public static Person Rembrandt_Biography()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/8\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.BiographyStatement, Aat.Statement)\n            .WithContent(\"Rembrandt's work is characterized by the Baroque interest in dramatic scenes and strong contrasts of light on a dark stage\")\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/7",
+    "key": "Actors.Rembrandt_Carried_Out",
+    "topic": "Actors",
+    "method": "Rembrandt_Carried_Out",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 168,
+    "source": "public static Person Rembrandt_Carried_Out()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/7\")\n        .WithLabel(\"Rembrandt\");\n\n    var activity = new Activity()\n        .WithClassifiedAs(Aat.ProfessionalActivity)\n        .WithClassifiedAs(Aat.Term(\"300025136\", \"Painter\"));\n    activity.TimeSpan = new LinkedArtTimeSpan\n    {\n        BeginOfTheBegin = new LinkedArtDate(1631, 1, 1),\n        EndOfTheEnd = new LinkedArtDate(1669, 10, 4).LastSecondOfDay()\n    };\n    rembrandt.CarriedOut = [activity];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/6",
+    "key": "Actors.Rembrandt_Equivalent",
+    "topic": "Actors",
+    "method": "Rembrandt_Equivalent",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 48,
+    "source": "public static Person Rembrandt_Equivalent()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/6\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.Equivalent = [\n        Ulan.Person(\"500011051\", \"Rembrandt\")\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/13",
+    "key": "Actors.Rembrandt_Life",
+    "topic": "Actors",
+    "method": "Rembrandt_Life",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 125,
+    "source": "public static Person Rembrandt_Life()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/13\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.Born = new Birth()\n    {\n        TimeSpan = LinkedArtTimeSpan.FromDay(1606, 7, 15)\n    };\n    rembrandt.Died = new Death()\n    {\n        TimeSpan = LinkedArtTimeSpan.FromDay(1669, 10, 4),\n        TookPlaceAt = [\n            Tgn.Place(\"7006952\", \"Amsterdam\")\n        ]\n    };\n\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "group/rembrandthuis/1",
+    "key": "Actors.Rembrandt_Museum",
+    "topic": "Actors",
+    "method": "Rembrandt_Museum",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 86,
+    "source": "public static Group Rembrandt_Museum()\n{\n    var museum = new Group()\n        .WithContext()\n        .WithId(\"https://linked.art/example/group/rembrandthuis/1\")\n        .WithLabel(\"Rembrandt House Museum\");\n\n    museum.ContactPoint = [\n        new Identifier(\"Jodenbreestraat 4, 1011 NK Amsterdam\")\n            .WithClassifiedAs(Aat.StreetAddress),\n        new Identifier(\"+31-20-520-0400\")\n            .WithClassifiedAs(Aat.TelephoneNumber),\n        new Identifier(\"museum@rembrandthuis.nl\")\n            .WithClassifiedAs(Aat.EmailAddress)\n    ];\n\n    return museum;\n}"
+  },
+  {
+    "id": "group/rembrandthuis/2",
+    "key": "Actors.Rembrandt_Museum_Formed",
+    "topic": "Actors",
+    "method": "Rembrandt_Museum_Formed",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 150,
+    "source": "public static Group Rembrandt_Museum_Formed()\n{\n    var museum = new Group()\n        .WithContext()\n        .WithId(\"https://linked.art/example/group/rembrandthuis/2\")\n        .WithLabel(\"Rembrandt House Museum\");\n\n    museum.FormedBy = new Formation()\n    {\n        TimeSpan = LinkedArtTimeSpan.FromDay(1911, 6, 10)\n    };\n\n\n    return museum;\n}"
+  },
+  {
+    "id": "person/rembrandt/3",
+    "key": "Actors.Rembrandt_Name",
+    "topic": "Actors",
+    "method": "Rembrandt_Name",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 13,
+    "source": "public static Person Rembrandt_Name()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/3\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.IdentifiedBy = [new Name(\"Rembrandt Harmenzoon van Rijn\").AsPrimaryName()];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/4",
+    "key": "Actors.Rembrandt_Name_Parts",
+    "topic": "Actors",
+    "method": "Rembrandt_Name_Parts",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 26,
+    "source": "public static Person Rembrandt_Name_Parts()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/4\")\n        .WithLabel(\"Rembrandt\");\n\n    var name = new Name(\"Rembrandt Harmenzoon van Rijn\").AsPrimaryName();\n    name.Part = [\n        new Name(\"Rembrandt\").WithClassifiedAs(Aat.GivenName),\n        new Name()\n            .WithId(\"https://linked.art/example/Name/Harmenzoon\")\n            .WithClassifiedAs(Aat.MiddleName),\n        new Name(\"van Rijn\").WithClassifiedAs(Aat.FamilyName)\n    ];\n    rembrandt.IdentifiedBy = [name];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/14",
+    "key": "Actors.Rembrandt_Participated_In",
+    "topic": "Actors",
+    "method": "Rembrandt_Participated_In",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 190,
+    "source": "public static Person Rembrandt_Participated_In()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/14\")\n        .WithLabel(\"Rembrandt\");\n\n    var activity = new Activity()\n        .WithClassifiedAs(Aat.Term(\"300263485\", \"Burial\"));\n    activity.TimeSpan = new LinkedArtTimeSpan\n    {\n        BeginOfTheBegin = new LinkedArtDate(1669, 10, 4),\n        EndOfTheEnd = new LinkedArtDate(1669, 11, 1).LastSecondOfDay()\n    };\n    activity.TookPlaceAt = [\n        new Place()\n            .WithId(\"https://linked.art/example/place/westerkerk\")\n            .WithLabel(\"Place of Westerkerk\")\n    ];\n    rembrandt.ParticipatedIn = [activity];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/11",
+    "key": "Actors.Rembrandt_Residence",
+    "topic": "Actors",
+    "method": "Rembrandt_Residence",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 107,
+    "source": "public static Person Rembrandt_Residence()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/11\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.Residence = [\n        new Place()\n            .WithId(\"https://linked.art/example/place/rembrandthuis\")\n            .WithLabel(\"Rembrandt's House Place\")\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/31",
+    "key": "Actors.Rembrandt_Was_An_Artist",
+    "topic": "Actors",
+    "method": "Rembrandt_Was_An_Artist",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 273,
+    "source": "public static Person Rembrandt_Was_An_Artist()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/31\")\n        .WithLabel(\"Rembrandt\")\n        .WithClassifiedAs(\n            Aat.Artist, \n                Aat.Occupation);\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/9",
+    "key": "Actors.Rembrandt_Was_Dutch",
+    "topic": "Actors",
+    "method": "Rembrandt_Was_Dutch",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 235,
+    "source": "public static Person Rembrandt_Was_Dutch()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/9\")\n        .WithLabel(\"Rembrandt\")\n        .WithClassifiedAs(Aat.NationalityTerm(\"300111175\", \"Dutch\"));\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/32",
+    "key": "Actors.Rembrandt_Was_Male",
+    "topic": "Actors",
+    "method": "Rembrandt_Was_Male",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 261,
+    "source": "public static Person Rembrandt_Was_Male()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/32\")\n        .WithLabel(\"Rembrandt\")\n        .WithClassifiedAs(Aat.Term(\"300189559\", \"Male\"), Aat.Gender);\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/wiley/1",
+    "key": "Actors.Wiley_Is_African_American",
+    "topic": "Actors",
+    "method": "Wiley_Is_African_American",
+    "file": "src/LinkedArtNet.Examples/Actors.cs",
+    "line": 248,
+    "source": "public static Person Wiley_Is_African_American()\n{\n    var wiley = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/wiley/1\")\n        .WithLabel(\"Kehinde Wiley\")\n        .WithClassifiedAs(\"http://www.wikidata.org/entity/Q3007177\", \"African-American\", Aat.Ethnicity);\n\n    return wiley;\n}"
+  },
+  {
+    "id": "set/archive_asc/1",
+    "key": "Archives.In_Series",
+    "topic": "Archives",
+    "method": "In_Series",
+    "file": "src/LinkedArtNet.Examples/Archives.cs",
+    "line": 55,
+    "source": "public static Set In_Series()\n{\n    var set = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/archive_asc/1\")\n        .WithLabel(\"Alfred Stiegliz Correspondence\")\n        .WithClassifiedAs(Aat.ArchivalGrouping);\n\n    set.IdentifiedBy = [new Name(\"Alfred Stiegliz Correspondence\").AsPrimaryName()];\n\n    return set;\n}"
+  },
+  {
+    "id": "set/archive_sfl/1",
+    "key": "Archives.In_Sub_Series",
+    "topic": "Archives",
+    "method": "In_Sub_Series",
+    "file": "src/LinkedArtNet.Examples/Archives.cs",
+    "line": 34,
+    "source": "public static Set In_Sub_Series()\n{\n    var set = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/archive_sfl/1\")\n        .WithLabel(\"Stieglitz Family Letters\")\n        .WithClassifiedAs(Aat.ArchivalSubGrouping);\n\n    set.IdentifiedBy = [new Name(\"Stieglitz Family Letters\").AsPrimaryName()];\n\n    set.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/archive_asc\")\n            .WithLabel(\"Alfred Stiegliz Correspondence\")\n    ];\n\n    return set;\n}"
+  },
+  {
+    "id": "object/letter/3",
+    "key": "Archives.Letter_In_Box",
+    "topic": "Archives",
+    "method": "Letter_In_Box",
+    "file": "src/LinkedArtNet.Examples/Archives.cs",
+    "line": 92,
+    "source": "public static HumanMadeObject Letter_In_Box()\n{\n    var obermeyer = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/letter/3\")\n        .WithLabel(\"Obermeyer 1920\");\n\n    obermeyer.IdentifiedBy = [new Name(\"Obermeyer, Bertha (1920)\").AsPrimaryName()];\n\n    obermeyer.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/archive_sfl\")\n            .WithLabel(\"Stieglitz Family Letters\")\n    ];\n\n    obermeyer.HeldOrSupportedBy = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/box55\")\n            .WithLabel(\"Archival Box 55\")\n    ];\n\n    return obermeyer;\n\n}"
+  },
+  {
+    "id": "object/letter/1",
+    "key": "Archives.Obermeyer_1920",
+    "topic": "Archives",
+    "method": "Obermeyer_1920",
+    "file": "src/LinkedArtNet.Examples/Archives.cs",
+    "line": 12,
+    "source": "public static HumanMadeObject Obermeyer_1920()\n{\n    var obermeyer = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/letter/1\")\n        .WithLabel(\"Obermeyer 1920\")\n        .WithClassifiedAs(Aat.Term(\"300026879\", \"Letter\"));\n\n    obermeyer.IdentifiedBy = [new Name(\"Obermeyer, Bertha (1920)\").AsPrimaryName()];\n\n    obermeyer.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/archive_sfl\")\n            .WithLabel(\"Stieglitz Family Letters\")\n    ];\n\n    return obermeyer;\n\n}"
+  },
+  {
+    "id": "set/archive_sfl/2",
+    "key": "Archives.Physical_Hierarchy",
+    "topic": "Archives",
+    "method": "Physical_Hierarchy",
+    "file": "src/LinkedArtNet.Examples/Archives.cs",
+    "line": 72,
+    "source": "public static Set Physical_Hierarchy()\n{\n    var set = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/archive_sfl/2\")\n        .WithLabel(\"Stieglitz Family Letters\")\n        .WithClassifiedAs (Aat.ArchivalSubGrouping);\n\n    set.IdentifiedBy = [ new Name(\"Stieglitz Family Letters\").AsPrimaryName() ];\n\n    set.MembersContainedBy = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/box55\")\n            .WithLabel(\"Archival Box 55\")\n    ];\n\n    return set;\n}"
+  },
+  {
+    "id": "object/spring/21",
+    "key": "Assertions.Assertion_that_Spring_Is_Canvas",
+    "topic": "Assertions",
+    "method": "Assertion_that_Spring_Is_Canvas",
+    "file": "src/LinkedArtNet.Examples/Assertions.cs",
+    "line": 11,
+    "source": "public static HumanMadeObject Assertion_that_Spring_Is_Canvas()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/21\")\n        .WithLabel(\"Spring\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    spring.AttributedBy = [\n        new AttributeAssignment()\n        {\n            TimeSpan = LinkedArtTimeSpan.FromYear(2015),\n            AssignedProperty = \"made_of\",\n            Assigned = [\n                new Material { Id = Aat.Uri(\"300014078\") }\n            ]\n        }\n    ];\n\n    // remove label from year to match docs\n\n    return spring;\n}"
+  },
+  {
+    "id": "person/bol/1",
+    "key": "Assertions.Bol_Student_of_Rembrandt",
+    "topic": "Assertions",
+    "method": "Bol_Student_of_Rembrandt",
+    "file": "src/LinkedArtNet.Examples/Assertions.cs",
+    "line": 209,
+    "source": "public static Person Bol_Student_of_Rembrandt()\n{\n    var bol = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/bol/1\")\n        .WithLabel(\"Ferdinand Bol\");\n\n    bol.IdentifiedBy = [new Name(\"Ferdinand Bol\").AsPrimaryName()];\n\n    bol.AttributedBy = [\n        new AttributeAssignment()\n        {\n            IdentifiedBy = [new Name(\"Student Of\").WithClassifiedAs(Aat.DisplayName)],\n            Assigned = [ \n                new Person()\n                    .WithId(\"https://linked.art/example/person/rembrandt\")\n                    .WithLabel(\"Rembrandt\")\n            ]\n        }\n    ];\n\n    return bol;\n}"
+  },
+  {
+    "id": "object/spring/31",
+    "key": "Assertions.Context_Specific_Assignment",
+    "topic": "Assertions",
+    "method": "Context_Specific_Assignment",
+    "file": "src/LinkedArtNet.Examples/Assertions.cs",
+    "line": 143,
+    "source": "public static HumanMadeObject Context_Specific_Assignment()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/31\")\n        .WithLabel(\"Spring\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\").AsPrimaryName()];\n\n    spring.AttributedBy = [\n        new AttributeAssignment()\n        {\n            CarriedOutBy = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/nga\")\n                    .WithLabel(\"National Gallery of Art\")\n            ],\n            Assigned = [\n                new Identifier(\"2497-12\")\n                    .WithClassifiedAs(Aat.EntryNumbers)\n            ],\n            AssignedProperty = \"identified_by\",\n            CausedBy = [\n                new Activity()\n                    .WithId(\"https://linked.art/example/event/post_impressionism\")\n                    .WithLabel(\"Post-Impressionism Exhibition\")\n            ]\n        }\n    ];\n\n    return spring;\n}",
+    "siteIssue": "The site publishes two examples as object/spring/31; the JSON at that URL is the required-vocabulary page's usage example (no identified_by, local vocab term ids), not this context-specific assignment."
+  },
+  {
+    "id": "object/nightwatch/57",
+    "key": "Assertions.Non_Specific_Relationship",
+    "topic": "Assertions",
+    "method": "Non_Specific_Relationship",
+    "file": "src/LinkedArtNet.Examples/Assertions.cs",
+    "line": 179,
+    "source": "public static HumanMadeObject Non_Specific_Relationship()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/57\")\n        .WithLabel(\"The Night Watch\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    nightwatch.IdentifiedBy = [new Name(\"The Night Watch\").AsPrimaryName()];\n\n    nightwatch.AttributedBy = [\n        new AttributeAssignment()\n        {\n            IdentifiedBy = [\n                new Name(\"Related Object\")\n                    .WithClassifiedAs(Aat.DisplayName)\n            ],\n            Assigned = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/rppob-28-106\")\n                    .WithLabel(\"Nachtwacht\")\n            ],\n        }\n    ];\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "person/rembrandt/10",
+    "key": "Assertions.Source_of_Knowledge",
+    "topic": "Assertions",
+    "method": "Source_of_Knowledge",
+    "file": "src/LinkedArtNet.Examples/Assertions.cs",
+    "line": 77,
+    "source": "public static Person Source_of_Knowledge()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/10\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.IdentifiedBy = [\n        new Name(\"Rembrandt van Rijn\")\n        {\n            AssignedBy = [\n                new AttributeAssignment()\n                {\n                    UsedSpecificObject = [\n                        new LinguisticObject()\n                            .WithId(\"https://linked.art/example/text/gardner-art\")\n                            .WithLabel(\"Art through the Ages\")\n                    ]\n                }\n            ]\n        }\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "object/nightwatch/70",
+    "key": "Assertions.Statement_With_Creation_And_License",
+    "topic": "Assertions",
+    "method": "Statement_With_Creation_And_License",
+    "file": "src/LinkedArtNet.Examples/Assertions.cs",
+    "line": 234,
+    "source": "public static HumanMadeObject Statement_With_Creation_And_License()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/70\")\n        .WithLabel(\"Night Watch\");\n\n    nightwatch.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.Description, Aat.Statement)\n            .WithClassifiedAs(Aat.Term(\"300456841\"))\n            .WithContent(\"Rembrandt's The Night Watch is a dynamic 17th-century group portrait of an Amsterdam militia company ...\")\n            .WithCreatedBy(c => c\n                .WithTechnique(Aat.Term(\"300456842\"))\n                .WithTimeSpan(new LinkedArtTimeSpan\n                {\n                    BeginOfTheBegin = new LinkedArtDate(2024, 11, 7, 20, 50, 0),\n                    EndOfTheEnd = new LinkedArtDate(2024, 11, 7, 20, 50, 0)\n                }))\n            .WithSubjectTo(\n                new Right()\n                    .WithClassifiedAs(\"https://creativecommons.org/licenses/by/4.0/\", \"CC-BY\")\n                    .WithName(\"CC-BY 4.0\"))\n    ];\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/yiadom-boakye/1",
+    "key": "Assertions.Two_Accession_Numbers",
+    "topic": "Assertions",
+    "method": "Two_Accession_Numbers",
+    "file": "src/LinkedArtNet.Examples/Assertions.cs",
+    "line": 37,
+    "source": "public static HumanMadeObject Two_Accession_Numbers()\n{\n    var portrait = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/yiadom-boakye/1\")\n        .WithLabel(\"Portrait of Lynette Yiadom-Boakye\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    var yuagId = new Identifier(\"2021.25.1\").AsAccessionNumber();\n    yuagId.AssignedBy = [\n        new AttributeAssignment()\n        {\n            CarriedOutBy = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/yuag\")\n                    .WithLabel(\"Yale University Art Gallery\")\n                    .WithClassifiedAs(Aat.Museum)\n            ]\n        }\n    ];\n\n    var ycbaId = new Identifier(\"B2021.5\").AsAccessionNumber();\n    ycbaId.AssignedBy = [\n        new AttributeAssignment()\n        {\n            CarriedOutBy = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/ycba\")\n                    .WithLabel(\"Yale Center for British Art\")\n                    .WithClassifiedAs(Aat.Museum)\n            ]\n        }\n    ];\n    portrait.IdentifiedBy = [ yuagId, ycbaId ];\n\n    return portrait;\n}"
+  },
+  {
+    "id": "object/forum/1",
+    "key": "Assertions.Uncertain_Attribution",
+    "topic": "Assertions",
+    "method": "Uncertain_Attribution",
+    "file": "src/LinkedArtNet.Examples/Assertions.cs",
+    "line": 105,
+    "source": "public static HumanMadeObject Uncertain_Attribution()\n{\n    var forum = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/forum/1\")\n        .WithLabel(\"Forum Romanum\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    forum.IdentifiedBy = [new Name(\"Forum Romanum\").AsPrimaryName()];\n\n    forum.ProducedBy = new Production()\n    {\n        AttributedBy = [\n            new AttributeAssignment()\n            {\n                ClassifiedAs = [ Aat.PossiblyBy ],\n                Assigned = [\n                    new Production()\n                    {\n                        CarriedOutBy = [\n                            new Person()\n                                .WithId(\"https://linked.art/example/person/corrodi\")\n                                .WithLabel(\"Salomon Corrodi\")\n\n                        ]\n                    }\n                ],\n                AssignedProperty = \"part\"\n            }\n        ]\n    };\n\n    return forum;\n}"
+  },
+  {
+    "id": "text/catalog_24477/1",
+    "key": "Auctions.Auction_Catalog",
+    "topic": "Auctions",
+    "method": "Auction_Catalog",
+    "file": "src/LinkedArtNet.Examples/Auctions.cs",
+    "line": 175,
+    "source": "public static LinguisticObject Auction_Catalog()\n{\n    var catalog = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/catalog_24477/1\")\n        .WithLabel(\"Auction Catalog\")\n        .WithClassifiedAs(Aat.AuctionCatalog, Aat.TypeOfWork);\n\n    catalog.IdentifiedBy = [new Name(\"Impressionist & Modern Evening Sale Catalog\").AsPrimaryName()];\n\n    catalog.About = [\n        new Activity()\n            .WithId(\"https://linked.art/example/event/christies_24477\")\n            .WithLabel(\"Impressionist Sale\")\n    ];\n\n    return catalog;\n}"
+  },
+  {
+    "id": "event/christies_24477/1",
+    "key": "Auctions.Auction_Event",
+    "topic": "Auctions",
+    "method": "Auction_Event",
+    "file": "src/LinkedArtNet.Examples/Auctions.cs",
+    "line": 9,
+    "source": "public static Activity Auction_Event()\n{\n    var auction = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/christies_24477/1\")\n        .WithLabel(\"Impressionist Sale\")\n        .WithClassifiedAs(Aat.AuctionEvent);\n\n    auction.IdentifiedBy = [new Name(\"Impressionist & Modern Evening Sale\").AsPrimaryName()];\n\n    auction.TimeSpan = new LinkedArtTimeSpan\n    {\n        Label = \"Nov 5, 2014\",\n        BeginOfTheBegin = new LinkedArtDate(2014, 11, 5, 17, 0, 0),\n        EndOfTheEnd = new LinkedArtDate(2014, 11, 5).EndOfDay()\n    };\n\n    auction.TookPlaceAt = [\n        new Place()\n            .WithId(\"https://linked.art/example/place/christies_nyc\")\n            .WithLabel(\"Christie's, New York\")\n            .WithClassifiedAs(Aat.Term(\"300005234\", \"Auction House (place)\"))\n    ];\n\n    auction.CarriedOutBy = [\n        new Group()\n            .WithId(\"https://linked.art/example/group/christies\")\n            .WithLabel(\"Christie's\")\n            .WithClassifiedAs(Aat.Term(\"300417515\", \"Auction House (organization)\"))\n    ];\n\n    return auction;\n}"
+  },
+  {
+    "id": "set/24477_16_objects/1",
+    "key": "Auctions.Auction_Lot",
+    "topic": "Auctions",
+    "method": "Auction_Lot",
+    "file": "src/LinkedArtNet.Examples/Auctions.cs",
+    "line": 45,
+    "source": "public static Set Auction_Lot()\n{\n    var lot = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/24477_16_objects/1\")\n        .WithLabel(\"Set of Objects for Lot 16\")\n        .WithClassifiedAs(Aat.Term(\"300411307\", \"Auction Lot\"));\n\n    lot.IdentifiedBy = [\n        new Name(\"Lot 16: Le Printemps\").AsPrimaryName(),\n        new Identifier(\"16\").WithClassifiedAs(Aat.AuctionLotNumber)\n    ];\n\n    return lot;\n}"
+  },
+  {
+    "id": "event/christies_24477_16/1",
+    "key": "Auctions.Auction_Of_Lot",
+    "topic": "Auctions",
+    "method": "Auction_Of_Lot",
+    "file": "src/LinkedArtNet.Examples/Auctions.cs",
+    "line": 105,
+    "source": "public static Activity Auction_Of_Lot()\n{\n    var auctionOfLot = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/christies_24477_16/1\")\n        .WithLabel(\"Auction of Lot 16\")\n        .WithClassifiedAs(Aat.Term(\"300420001\", \"Auction of Lot\"));\n\n    auctionOfLot.IdentifiedBy = [new Name(\"Auction of Lot 16\").AsPrimaryName()];\n\n    auctionOfLot.UsedSpecificObject = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/24477_16_objects\")\n            .WithLabel(\"Lot 16\")\n    ];\n\n    auctionOfLot.PartOf = [\n        new Activity().WithId(\"https://linked.art/example/event/christies_24477\")\n    ];\n\n    return auctionOfLot;\n}"
+  },
+  {
+    "id": "set/24477_16_objects/2",
+    "key": "Auctions.Lot_Estimated_Price",
+    "topic": "Auctions",
+    "method": "Lot_Estimated_Price",
+    "file": "src/LinkedArtNet.Examples/Auctions.cs",
+    "line": 84,
+    "source": "public static Set Lot_Estimated_Price()\n{\n    var lot = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/24477_16_objects/2\")\n        .WithLabel(\"Set of Objects for Lot 16\")\n        .WithClassifiedAs(Aat.Term(\"300411307\", \"Auction Lot\"));\n\n    lot.Dimension = [\n        new MonetaryAmount\n        {\n            Value = 25000000,\n            Currency = Aat.UsDollars.WithNotation(\"USD\")\n        }.WithClassifiedAs(Aat.Term(\"300417244\", \"Estimated Price\"))\n    ];\n\n    return lot;\n}"
+  },
+  {
+    "id": "provenance/payneheirs_getty/2",
+    "key": "Auctions.Purchase_With_Custody_To_Department",
+    "topic": "Auctions",
+    "method": "Purchase_With_Custody_To_Department",
+    "file": "src/LinkedArtNet.Examples/Auctions.cs",
+    "line": 130,
+    "source": "public static Activity Purchase_With_Custody_To_Department()\n{\n    var purchase = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/payneheirs_getty/2\")\n        .WithLabel(\"Purchase of Spring\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    var spring = new HumanMadeObject()\n        .WithId(\"https://linked.art/example/object/spring\")\n        .WithLabel(\"Spring\");\n    var payneHeirs = new Group()\n        .WithId(\"https://linked.art/example/group/payne_heirs\")\n        .WithLabel(\"Family of Oliver Payne\");\n\n    purchase.Part = [\n        new Acquisition\n        {\n            Label = \"Acquisition of Painting\",\n            TransferredTitleOf = [spring],\n            TransferredTitleFrom = [payneHeirs],\n            TransferredTitleTo = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/getty\")\n                    .WithLabel(\"J. Paul Getty Museum\")\n            ]\n        },\n        new TransferOfCustody\n        {\n            Label = \"Custody by Department\",\n            TransferredCustodyOf = [spring],\n            TransferredCustodyFrom = [payneHeirs],\n            TransferredCustodyTo = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/getty_ptgs\")\n                    .WithLabel(\"Paintings Department\")\n            ]\n        }\n    ];\n\n    return purchase;\n}"
+  },
+  {
+    "id": "object/spring/20",
+    "key": "Auctions.Spring_In_Lot",
+    "topic": "Auctions",
+    "method": "Spring_In_Lot",
+    "file": "src/LinkedArtNet.Examples/Auctions.cs",
+    "line": 63,
+    "source": "public static HumanMadeObject Spring_In_Lot()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/20\")\n        .WithLabel(\"Spring\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\").AsPrimaryName()];\n\n    spring.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/24477_16_objects\")\n            .WithLabel(\"Lot 16: Le Printemps\")\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "text/rembrandtjaccuse/1",
+    "key": "BasicPatterns.Jaccuse_Parts",
+    "topic": "BasicPatterns",
+    "method": "Jaccuse_Parts",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 261,
+    "source": "public static LinguisticObject Jaccuse_Parts()\n{\n    var jaccuse = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/rembrandtjaccuse/1\")\n        .WithLabel(\"Rembrandt's J'accuse\");\n\n    jaccuse.CreatedBy = new Creation();\n    jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008).WithLabel(\"2008\");\n\n    var directorActivity = new Creation()\n        .WithClassifiedAs(Aat.Term(\"300025654\", \"Director\"));\n    directorActivity.CarriedOutBy = [\n        new Person().WithId(\"https://linked.art/example/person/greenaway\").WithLabel(\"Peter Greenaway\")\n    ];\n    var producerActivity = new Creation()\n        .WithClassifiedAs(Aat.Term(\"300197742\", \"Producer\"));\n    producerActivity.CarriedOutBy = [\n        new Person().WithId(\"https://linked.art/example/person/wolting\").WithLabel(\"Femke Wolting\")\n    ];\n    jaccuse.CreatedBy.Part = [\n        directorActivity,\n        producerActivity\n    ];\n\n    return jaccuse;\n}"
+  },
+  {
+    "id": "object/nightwatch/1",
+    "key": "BasicPatterns.NightWatch_1_Names",
+    "topic": "BasicPatterns",
+    "method": "NightWatch_1_Names",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 78,
+    "source": "public static HumanMadeObject NightWatch_1_Names()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/1\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    var englishName = new Name(\"The Night Watch\")\n        .AsPrimaryName()\n        .WithLanguage(\"300388277\", \"English\", \"en\");\n    var dutchName = new Name(\"De Nachtwacht\")\n        .AsPrimaryName()\n        .WithLanguage(\"300388256\", \"Dutch\", \"nl\");\n\n    nightWatch.IdentifiedBy = [englishName, dutchName];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/2",
+    "key": "BasicPatterns.NightWatch_2_Accession",
+    "topic": "BasicPatterns",
+    "method": "NightWatch_2_Accession",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 99,
+    "source": "public static HumanMadeObject NightWatch_2_Accession()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/2\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    var accessionNumber = new Identifier(\"SK-C-5\").AsAccessionNumber();\n    var name = new Name(\"The Night Watch\").AsPrimaryName();\n\n    nightWatch.IdentifiedBy = [accessionNumber, name];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/3",
+    "key": "BasicPatterns.NightWatch_3_Equivalent",
+    "topic": "BasicPatterns",
+    "method": "NightWatch_3_Equivalent",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 116,
+    "source": "public static HumanMadeObject NightWatch_3_Equivalent()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/3\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    nightWatch.Equivalent = [\n        new HumanMadeObject()\n            .WithId(\"https://www.wikidata.org/entity/Q219831\")\n            .WithLabel(\"Night Watch\")\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/4",
+    "key": "BasicPatterns.NightWatch_4_Statements",
+    "topic": "BasicPatterns",
+    "method": "NightWatch_4_Statements",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 134,
+    "source": "public static HumanMadeObject NightWatch_4_Statements()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/4\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    var materials = new LinguisticObject()\n        .WithClassifiedAs(\n            Aat.MaterialsStatement,\n            Aat.Statement)\n        .WithContent(\"Oil on Canvas\")\n        .WithLanguage(\"300388277\", \"English\", \"en\");\n    \n    nightWatch.ReferredToBy = [materials];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "person/rembrandt/1",
+    "key": "BasicPatterns.Person_Rembrandt_1",
+    "topic": "BasicPatterns",
+    "method": "Person_Rembrandt_1",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 65,
+    "source": "public static Person Person_Rembrandt_1()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/1\")\n        .WithLabel(\"Rembrandt\")\n        .WithClassifiedAs(Aat.NationalityTerm(\"300111175\", \"Dutch\"));\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/2",
+    "key": "BasicPatterns.Person_Rembrandt_2_Member_Of",
+    "topic": "BasicPatterns",
+    "method": "Person_Rembrandt_2_Member_Of",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 243,
+    "source": "public static Person Person_Rembrandt_2_Member_Of()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/2\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.MemberOf = [\n        new Group()\n            .WithId(\"https://linked.art/example/group/stluke\")\n            .WithLabel(\"Guild of St Luke\")\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "place/paris/1",
+    "key": "BasicPatterns.Place_Paris_1",
+    "topic": "BasicPatterns",
+    "method": "Place_Paris_1",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 35,
+    "source": "public static Place Place_Paris_1()\n{\n    var paris = new Place()\n        .WithContext()\n        .WithId(\"https://linked.art/example/place/paris/1\")\n        .WithLabel(\"Paris\")\n        .WithClassifiedAs(Aat.City);\n\n    return paris;\n}"
+  },
+  {
+    "id": "object/spring/1",
+    "key": "BasicPatterns.Spring_1_Simplest",
+    "topic": "BasicPatterns",
+    "method": "Spring_1_Simplest",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 9,
+    "source": "public static HumanMadeObject Spring_1_Simplest()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/1\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/2",
+    "key": "BasicPatterns.Spring_2_Classification",
+    "topic": "BasicPatterns",
+    "method": "Spring_2_Classification",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 21,
+    "source": "public static HumanMadeObject Spring_2_Classification()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/2\")\n        .WithLabel(\"Jeanne (Spring) by Manet\")\n        .WithClassifiedAs(Aat.Artwork)\n        .WithClassifiedAs(Aat.Painting);\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/3",
+    "key": "BasicPatterns.Spring_3_Types_of_Types",
+    "topic": "BasicPatterns",
+    "method": "Spring_3_Types_of_Types",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 47,
+    "source": "public static HumanMadeObject Spring_3_Types_of_Types()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/3\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n    spring.ClassifiedAs =\n    [\n        Aat.Painting.WithClassifiedAs(Aat.TypeOfWork),\n        Aat.Artwork\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/4",
+    "key": "BasicPatterns.Spring_4_Production",
+    "topic": "BasicPatterns",
+    "method": "Spring_4_Production",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 155,
+    "source": "public static HumanMadeObject Spring_4_Production()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/4\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n\n    spring.ProducedBy =\n        new Production()\n        {\n            // https://linked.art/example/object/spring/4.json has no Z timespan\n            TimeSpan = LinkedArtTimeSpan.FromYear(1881).WithLabel(\"1881\"),\n            TookPlaceAt = [\n                new Place()\n                    .WithId(\"https://linked.art/example/place/france\")\n                    .WithLabel(\"France\")\n            ],\n            CarriedOutBy = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/manet\")\n                    .WithLabel(\"Manet\")\n            ],\n            During = [\n                new Period()\n                    .WithId(\"https://linked.art/example/event/19c\")\n                    .WithLabel(\"19th Century\")\n            ]\n        };\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/support",
+    "key": "BasicPatterns.Spring_Parts_Support",
+    "topic": "BasicPatterns",
+    "method": "Spring_Parts_Support",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 212,
+    "source": "public static HumanMadeObject Spring_Parts_Support()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/support\")\n        .WithLabel(\"Support of Spring\")\n        .WithClassifiedAs(\n            Aat.Support,\n            Aat.PartType);\n\n\n    var materials = new LinguisticObject()\n        .WithClassifiedAs(\n            Aat.MaterialsStatement,\n            Aat.Statement)\n        .WithContent(\"Canvas\");\n\n    spring.ReferredToBy = [materials];\n\n    spring.PartOf = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/spring\")\n            .WithLabel(\"Jeanne (Spring) by Manet\")\n    ];\n\n    return spring;\n\n}"
+  },
+  {
+    "id": "event/stowe/1",
+    "key": "BasicPatterns.Stowe_Auction_1",
+    "topic": "BasicPatterns",
+    "method": "Stowe_Auction_1",
+    "file": "src/LinkedArtNet.Examples/BasicPatterns.cs",
+    "line": 189,
+    "source": "public static Activity Stowe_Auction_1()\n{\n    var stowe = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/stowe/1\")\n        .WithLabel(\"Auction of Stowe House\")\n        .WithClassifiedAs(Aat.AuctionEvent);\n\n    var timespan = new LinkedArtTimeSpan().WithDaysDimension(3);\n    timespan.BeginOfTheBegin = new LinkedArtDate(1848, 8, 1);\n    timespan.EndOfTheBegin = new LinkedArtDate(1848, 8, 20).LastSecondOfDay();\n    timespan.BeginOfTheEnd = new LinkedArtDate(1848, 9, 9);\n    timespan.EndOfTheEnd = new LinkedArtDate(1848, 9, 30).LastSecondOfDay();\n    timespan.IdentifiedBy = [\n        new Name(\"40 days in August and September, 1848\")\n    ];\n\n    stowe.TimeSpan = timespan;\n\n    return stowe;\n}"
+  },
+  {
+    "id": "set/exhset/1",
+    "key": "CollectionsAndSets.Exhibition_Objects",
+    "topic": "CollectionsAndSets",
+    "method": "Exhibition_Objects",
+    "file": "src/LinkedArtNet.Examples/CollectionsAndSets.cs",
+    "line": 12,
+    "source": "public static Set Exhibition_Objects()\n{\n    // This is nearly the same as the example in Exhibitions with the same name\n    var set = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/exhset/1\")\n        .WithLabel(\"Exhibition objects\");\n\n    set.IdentifiedBy = [new Name(\"Objects in Manet and Modern Beauty\").AsPrimaryName()];\n\n    set.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.Description, Aat.Statement)\n            .WithContent(\"Objects in the exhibition Manet and Modern Beauty at the Art Institute of Chicago and the Getty Museum\")\n    ];\n\n    set.CreatedBy = new Creation()\n    {\n        TimeSpan = LinkedArtTimeSpan.FromDay(2019,5,1)\n    };\n\n    return set;\n}",
+    "siteIssue": "The site publishes two examples as set/exhset/1; the JSON at that URL is the exhibition page's version, which classifies the set as an Exhibition Collection, not this unclassified one."
+  },
+  {
+    "id": "object/nightwatch/16",
+    "key": "CollectionsAndSets.Nightwatch_in_Paintings",
+    "topic": "CollectionsAndSets",
+    "method": "Nightwatch_in_Paintings",
+    "file": "src/LinkedArtNet.Examples/CollectionsAndSets.cs",
+    "line": 147,
+    "source": "public static HumanMadeObject Nightwatch_in_Paintings()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/16\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    nightwatch.IdentifiedBy = [new Name(\"The Night Watch\").AsPrimaryName()];\n\n    nightwatch.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/rijks_paintings\")\n            .WithLabel(\"Paintings of the Rijksmuseum\")\n    ];\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/letter/2",
+    "key": "CollectionsAndSets.Order_of_Members",
+    "topic": "CollectionsAndSets",
+    "method": "Order_of_Members",
+    "file": "src/LinkedArtNet.Examples/CollectionsAndSets.cs",
+    "line": 56,
+    "source": "public static HumanMadeObject Order_of_Members()\n{\n    // This has been copied from the Archives doc examples\n    var parent = new Set()\n        .WithId(\"https://linked.art/example/set/archive_sfl\")\n        .WithLabel(\"Stieglitz Family Letters\");\n\n    var obermeyer = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/letter/2\")\n        .WithLabel(\"Obermeyer 1920\");\n\n    obermeyer.IdentifiedBy = [\n        new Name(\"Obermeyer, Bertha (1920)\").AsPrimaryName(),\n        Identifier.SortValue(\"000001\", parent)\n    ];\n\n    obermeyer.MemberOf = [parent];\n\n    return obermeyer;\n}"
+  },
+  {
+    "id": "set/exhset/2",
+    "key": "CollectionsAndSets.Prototypical_Members",
+    "topic": "CollectionsAndSets",
+    "method": "Prototypical_Members",
+    "file": "src/LinkedArtNet.Examples/CollectionsAndSets.cs",
+    "line": 79,
+    "source": "public static Set Prototypical_Members()\n{\n    var set = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/exhset/2\")\n        .WithLabel(\"Exhibition objects\");\n\n    var paintingByManet = new HumanMadeObject()\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n    paintingByManet.ProducedBy = new Production()\n    {\n        CarriedOutBy = [\n            Ulan.Person(\"500010363\", \"Manet\")\n        ]\n    };\n    set.MembersExemplifiedBy = [paintingByManet];\n\n    return set;\n}"
+  },
+  {
+    "id": "set/rijks_objects/1",
+    "key": "CollectionsAndSets.Rijksmuseum_Collection",
+    "topic": "CollectionsAndSets",
+    "method": "Rijksmuseum_Collection",
+    "file": "src/LinkedArtNet.Examples/CollectionsAndSets.cs",
+    "line": 101,
+    "source": "public static Set Rijksmuseum_Collection()\n{\n    var set = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/rijks_objects/1\")\n        .WithLabel(\"Collection of the Rijksmuseum\")\n        .WithClassifiedAs(Aat.Collection);\n\n    set.IdentifiedBy = [new Name(\"Collection of the Rijksmuseum\").AsPrimaryName()];\n\n    return set;\n}"
+  },
+  {
+    "id": "set/rijks_paintings/1",
+    "key": "CollectionsAndSets.Rijksmuseum_Paintings",
+    "topic": "CollectionsAndSets",
+    "method": "Rijksmuseum_Paintings",
+    "file": "src/LinkedArtNet.Examples/CollectionsAndSets.cs",
+    "line": 116,
+    "source": "public static Set Rijksmuseum_Paintings()\n{\n    var set = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/rijks_paintings/1\")\n        .WithLabel(\"Paintings of the Rijksmuseum\")\n        .WithClassifiedAs(Aat.Collection);\n\n    set.IdentifiedBy = [new Name(\"Paintings of the Rijksmuseum\").AsPrimaryName()];\n    set.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/rijks_objects\")\n            .WithLabel(\"Collection of the Rijksmuseum\")\n    ];\n    set.UsedFor = [\n        new Activity()\n        {\n            ClassifiedAs = [Aat.Curating],\n            CarriedOutBy = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/rijks_paintings_dept\")\n                    .WithLabel(\"Paintings Department\")\n            ]\n        }\n    ];\n\n    return set;\n}"
+  },
+  {
+    "id": "object/spring/13",
+    "key": "CollectionsAndSets.Spring_in_Set",
+    "topic": "CollectionsAndSets",
+    "method": "Spring_in_Set",
+    "file": "src/LinkedArtNet.Examples/CollectionsAndSets.cs",
+    "line": 37,
+    "source": "public static HumanMadeObject Spring_in_Set()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/13\")\n        .WithLabel(\"Jeanne (Spring) by Manet\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\")];\n\n    spring.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/exhset\")\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "group/14thc_italian/1",
+    "key": "CollectionsAndSets.Unidentified_14th_Century_Italian",
+    "topic": "CollectionsAndSets",
+    "method": "Unidentified_14th_Century_Italian",
+    "file": "src/LinkedArtNet.Examples/CollectionsAndSets.cs",
+    "line": 167,
+    "source": "public static Group Unidentified_14th_Century_Italian()\n{\n    var group = new Group()\n        .WithContext()\n        .WithId(\"https://linked.art/example/group/14thc_italian/1\")\n        .WithLabel(\"14th c italians\");\n\n    group.IdentifiedBy = [new Name(\"Unidentified 14th Century Italian\").AsPrimaryName()];\n\n    group.MembersExemplifiedBy = [\n        new Person\n        {\n            Born = new Birth\n            {\n                TimeSpan = new LinkedArtTimeSpan\n                {\n                    BeginOfTheBegin = new LinkedArtDate(1300, 1, 1),\n                    EndOfTheEnd = new LinkedArtDate(1399, 12, 31)\n                },\n                TookPlaceAt = [\n                    new Place()\n                        .WithId(\"https://vocab.getty.edu/tgn/1000080\")\n                        .WithLabel(\"Italy\")\n                ]\n            }\n        }\n    ];\n\n    return group;\n}"
+  },
+  {
+    "id": "concept/historyFrance/1",
+    "key": "Concepts.Concept_Created_From_Others",
+    "topic": "Concepts",
+    "method": "Concept_Created_From_Others",
+    "file": "src/LinkedArtNet.Examples/Concepts.cs",
+    "line": 70,
+    "source": "public static LinkedArtNet.Type Concept_Created_From_Others()\n{\n    var historyOfFrance = new LinkedArtNet.Type()\n        .WithContext()\n        .WithId(\"https://linked.art/example/concept/historyFrance/1\")\n        .WithLabel(\"History of France\");\n\n    historyOfFrance.CreatedBy = new Creation\n    {\n        InfluencedBy = [\n            new LinkedArtNet.Type()\n                .WithId(\"https://linked.art/example/concept/history\")\n                .WithLabel(\"History\"),\n            new Place()\n                .WithId(\"https://linked.art/example/place/france\")\n                .WithLabel(\"France\")\n        ]\n    };\n\n    return historyOfFrance;\n}"
+  },
+  {
+    "id": "concept/painting/2",
+    "key": "Concepts.Local_Concept_Equivalent_To_AAT",
+    "topic": "Concepts",
+    "method": "Local_Concept_Equivalent_To_AAT",
+    "file": "src/LinkedArtNet.Examples/Concepts.cs",
+    "line": 21,
+    "source": "public static LinkedArtNet.Type Local_Concept_Equivalent_To_AAT()\n{\n    var painting = new LinkedArtNet.Type()\n        .WithContext()\n        .WithId(\"https://linked.art/example/concept/painting/2\")\n        .WithLabel(\"Local Copy of Painting\");\n\n    painting.IdentifiedBy = [new Name(\"Painting\").AsPrimaryName()];\n    painting.Equivalent = [Aat.Term(\"300033618\", \"painting (visual works)\")];\n\n    return painting;\n}"
+  },
+  {
+    "id": "concept/painting/4",
+    "key": "Concepts.Local_Concept_In_Scheme",
+    "topic": "Concepts",
+    "method": "Local_Concept_In_Scheme",
+    "file": "src/LinkedArtNet.Examples/Concepts.cs",
+    "line": 52,
+    "source": "public static LinkedArtNet.Type Local_Concept_In_Scheme()\n{\n    var painting = new LinkedArtNet.Type()\n        .WithContext()\n        .WithId(\"https://linked.art/example/concept/painting/4\")\n        .WithLabel(\"Local Copy of Painting\");\n\n    painting.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/conceptScheme\")\n            .WithLabel(\"Local Concept Scheme\")\n    ];\n\n    return painting;\n}"
+  },
+  {
+    "id": "concept/painting/3",
+    "key": "Concepts.Local_Concept_With_Broader",
+    "topic": "Concepts",
+    "method": "Local_Concept_With_Broader",
+    "file": "src/LinkedArtNet.Examples/Concepts.cs",
+    "line": 36,
+    "source": "public static LinkedArtNet.Type Local_Concept_With_Broader()\n{\n    var painting = new LinkedArtNet.Type()\n        .WithContext()\n        .WithId(\"https://linked.art/example/concept/painting/3\")\n        .WithLabel(\"Local Copy of Painting\")\n        .WithClassifiedAs(Aat.Term(\"300435443\", \"type of work\"));\n\n    painting.Equivalent = [Aat.Term(\"300033618\", \"painting (visual works)\")];\n    painting.Broader = [Aat.Term(\"300191086\", \"visual works\")];\n\n    return painting;\n}"
+  },
+  {
+    "id": "object/nightwatch/52",
+    "key": "Concepts.NightWatch_Classified_With_Local_Concept",
+    "topic": "Concepts",
+    "method": "NightWatch_Classified_With_Local_Concept",
+    "file": "src/LinkedArtNet.Examples/Concepts.cs",
+    "line": 94,
+    "source": "public static HumanMadeObject NightWatch_Classified_With_Local_Concept()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/52\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    nightwatch.ClassifiedAs = [\n        new LinkedArtNet.Type()\n            .WithId(\"https://linked.art/example/concept/painting\")\n            .WithLabel(\"Local Copy of Painting\")\n            .WithEquivalent(Aat.Term(\"300033618\", \"painting (visual art)\"))\n    ];\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "concept/painting/1",
+    "key": "Concepts.Painting_Concept",
+    "topic": "Concepts",
+    "method": "Painting_Concept",
+    "file": "src/LinkedArtNet.Examples/Concepts.cs",
+    "line": 9,
+    "source": "public static LinkedArtNet.Type Painting_Concept()\n{\n    var painting = new LinkedArtNet.Type()\n        .WithContext()\n        .WithId(\"https://linked.art/example/concept/painting/1\")\n        .WithLabel(\"Painting\");\n\n    return painting;\n}"
+  },
+  {
+    "id": "object/nightwatch/25",
+    "key": "Conservation.Nightwatch_Condition",
+    "topic": "Conservation",
+    "method": "Nightwatch_Condition",
+    "file": "src/LinkedArtNet.Examples/Conservation.cs",
+    "line": 11,
+    "source": "public static HumanMadeObject Nightwatch_Condition()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/25\")\n        .WithLabel(\"The Night Watch\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    nightWatch.AttributedBy = [\n        new AttributeAssignment()\n        {\n            Label = \"Condition Assessment of Night Watch\",\n            IdentifiedBy = [new Name(\"Thorough Condition Assessment\")],\n            ReferredToBy = [\n                new LinguisticObject()\n                    .WithClassifiedAs(Aat.Description, Aat.Statement)\n                    .WithContent(\"Very fine cracks throughout the painted surface\")\n            ],\n            TimeSpan = new LinkedArtTimeSpan\n            {\n                BeginOfTheBegin = new LinkedArtDate(2019, 5, 1),\n                EndOfTheEnd = new LinkedArtDate(2019, 9, 30).LastSecondOfDay()\n            },\n            CarriedOutBy = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/rijksmuseum\")\n                    .WithLabel(\"Rijksmuseum\")\n            ],\n            AssignedProperty = \"classified_as\",\n            Assigned = [ Aat.Term(\"300387447\", \"Microcracks\") ],\n            PartOf = [\n                new Activity()\n                    .WithId(\"https://linked.art/example/event/operation_nightwatch\")\n                    .WithLabel(\"Operation Night Watch\")\n            ]\n        }\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/26",
+    "key": "Conservation.Nightwatch_Improvements",
+    "topic": "Conservation",
+    "method": "Nightwatch_Improvements",
+    "file": "src/LinkedArtNet.Examples/Conservation.cs",
+    "line": 54,
+    "source": "public static HumanMadeObject Nightwatch_Improvements()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/26\")\n        .WithLabel(\"The Night Watch\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    nightWatch.ModifiedBy = [\n        new Modification()\n        {\n            Label = \"Conservation of Night Watch\",\n            ReferredToBy = [\n                new LinguisticObject()\n                    .WithClassifiedAs(Aat.Description, Aat.Statement)\n                    .WithContent(\"Minor conservation work in response to earlier survey\")\n            ],\n            Technique = [Aat.Term(\"300053027\", \"Cleaning\")],\n            TimeSpan = new LinkedArtTimeSpan\n            {\n                BeginOfTheBegin = new LinkedArtDate(2020, 1, 1),\n                EndOfTheEnd = new LinkedArtDate(2021, 12, 31).LastSecondOfDay()\n            },\n            CarriedOutBy = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/rijksmuseum\")\n                    .WithLabel(\"Rijksmuseum\")\n            ],\n            PartOf = [\n                new Activity()\n                    .WithId(\"https://linked.art/example/event/operation_nightwatch\")\n                    .WithLabel(\"Operation Night Watch\")\n            ]\n        }\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "event/operation_nightwatch/1",
+    "key": "Conservation.Nightwatch_Project",
+    "topic": "Conservation",
+    "method": "Nightwatch_Project",
+    "file": "src/LinkedArtNet.Examples/Conservation.cs",
+    "line": 95,
+    "source": "public static Activity Nightwatch_Project()\n{\n    var operationNW = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/operation_nightwatch/1\")\n        .WithLabel(\"Conservation Project\")\n        .WithClassifiedAs(Aat.ConservationActivity);\n\n    operationNW.IdentifiedBy = [new Name(\"Operation Night Watch\").AsPrimaryName()];\n    operationNW.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.Description, Aat.Statement)\n            .WithContent(\"Operation Night Watch is the biggest and most wide-ranging ever study of Rembrandt’s most famous painting.\")\n    ];\n    operationNW.TimeSpan = new LinkedArtTimeSpan\n    {\n        BeginOfTheBegin = new LinkedArtDate(2019, 1, 1),\n        EndOfTheEnd = new LinkedArtDate(2023, 12, 31).LastSecondOfDay()\n    };\n    operationNW.CarriedOutBy = [\n        new Group()\n            .WithId(\"https://linked.art/example/group/rijksmuseum\")\n            .WithLabel(\"Rijksmuseum\"),\n        new Group()\n            .WithId(\"https://linked.art/example/group/akzonobel\")\n            .WithLabel(\"AkzoNobel\")\n    ];\n\n    return operationNW;\n\n}"
+  },
+  {
+    "id": "digital/operation_nw/1",
+    "key": "Digital.Nightwatch_Digital_Publication",
+    "topic": "Digital",
+    "method": "Nightwatch_Digital_Publication",
+    "file": "src/LinkedArtNet.Examples/Digital.cs",
+    "line": 11,
+    "source": "public static DigitalObject Nightwatch_Digital_Publication()\n{\n    var nightwatchPublication = new DigitalObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/digital/operation_nw/1\")\n        .WithLabel(\"Operation Night Watch Publication\")\n        .WithClassifiedAs(Aat.WebPage);\n\n    nightwatchPublication.IdentifiedBy = [new Name(\"Operation Night Watch\")];\n    nightwatchPublication.WithFileSize(220, MeasurementUnit.Kilobytes, \"220 kb\");\n    nightwatchPublication.AccessPoint = [\n        new DigitalObject().WithId(\"https://www.rijksmuseum.nl/en/stories/operation-night-watch\")\n    ];\n    nightwatchPublication.Format = \"text/html\";\n    nightwatchPublication.ConformsTo = [\n        new InformationObject().WithId(\"http://w3.org/TR/html\")\n    ];\n\n    var creation = new Creation()\n    {\n        TimeSpan = new LinkedArtTimeSpan\n        {\n            BeginOfTheBegin = new LinkedArtDate(2019, 7, 19),\n            EndOfTheEnd = new LinkedArtDate(2019, 7, 21)\n        },\n        CarriedOutBy = [\n            new Group()\n                .WithId(\"https://linked.art/example/group/rijksmuseum\")\n                .WithLabel(\"Rijksmuseum\")\n    ]\n    };\n    nightwatchPublication.CreatedBy = creation;\n\n    nightwatchPublication.DigitallyCarries = [\n        new LinguisticObject()\n            .WithId(\"https://linked.art/example/text/operation_nw_en\")\n            .WithLabel(\"Operation Night Watch in English\")\n    ];\n\n\n    return nightwatchPublication;\n}"
+  },
+  {
+    "id": "person/rembrandt/15",
+    "key": "Digital.Rembrandt_Representation",
+    "topic": "Digital",
+    "method": "Rembrandt_Representation",
+    "file": "src/LinkedArtNet.Examples/Digital.cs",
+    "line": 95,
+    "source": "public static Person Rembrandt_Representation()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/15\")\n        .WithLabel(\"Rembrandt\");\n\n    var visual = new VisualItem();\n    var digitalImage = new DigitalObject()\n        .WithLabel(\"Image of Rembrandt\")\n        .WithClassifiedAs(Aat.DigitalImage);\n    digitalImage.Format = \"image/jpeg\";\n    digitalImage.AccessPoint = [\n        new DigitalObject().WithId(\"https://upload.wikimedia.org/wikipedia/commons/b/bd/Rembrandt_van_Rijn_-_Self-Portrait_-_Google_Art_Project.jpg\")\n    ];\n    visual.DigitallyShownBy = [digitalImage];\n    rembrandt.Representation = [visual];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "digital/spring/1",
+    "key": "Digital.Spring_Digitally_Shows",
+    "topic": "Digital",
+    "method": "Spring_Digitally_Shows",
+    "file": "src/LinkedArtNet.Examples/Digital.cs",
+    "line": 75,
+    "source": "public static DigitalObject Spring_Digitally_Shows()\n{\n    var spring = new DigitalObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/digital/spring/1\")\n        .WithLabel(\"Jeanne (Spring) (Digital)\");\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\")];\n\n    spring.DigitallyShows = [\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/spring\")\n            .WithLabel(\"Visual Content of Spring\")\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/11",
+    "key": "Digital.Spring_IIIF_Image",
+    "topic": "Digital",
+    "method": "Spring_IIIF_Image",
+    "file": "src/LinkedArtNet.Examples/Digital.cs",
+    "line": 161,
+    "source": "public static HumanMadeObject Spring_IIIF_Image()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/11\")\n        .WithLabel(\"Jeanne (Spring) by Manet\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\")];\n\n    var visual = new VisualItem();\n    var digitalImage = new DigitalObject()\n        .WithClassifiedAs(Aat.DigitalImage);\n    digitalImage.AccessPoint = [\n        new DigitalObject().WithId(\"https://media.getty.edu/iiif/image/8094f61e-e458-42bd-90cf-a0ed0dcc90b9/full/full/0/default.jpg\")\n    ];\n\n    digitalImage.DigitallyAvailableVia = [\n        new IIIFImageService(\n            Image.Version3,\n            \"https://media.getty.edu/iiif/image/8094f61e-e458-42bd-90cf-a0ed0dcc90b9\")\n        ];\n\n    visual.DigitallyShownBy = [digitalImage];\n    spring.Representation = [visual];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/10",
+    "key": "Digital.Spring_IIIF_Manifest",
+    "topic": "Digital",
+    "method": "Spring_IIIF_Manifest",
+    "file": "src/LinkedArtNet.Examples/Digital.cs",
+    "line": 141,
+    "source": "public static HumanMadeObject Spring_IIIF_Manifest()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/10\")\n        .WithLabel(\"Jeanne (Spring) by Manet\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\")];\n    spring.SubjectOf = [\n        new IIIFManifest(\n            Presentation.Version3, \n            \"https://media.getty.edu/iiif/manifest/db379bba-801c-4650-bc31-3ff2f712eb21\")\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/8",
+    "key": "Digital.Spring_Physical_Shows",
+    "topic": "Digital",
+    "method": "Spring_Physical_Shows",
+    "file": "src/LinkedArtNet.Examples/Digital.cs",
+    "line": 56,
+    "source": "public static HumanMadeObject Spring_Physical_Shows()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/8\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\")];\n    spring.Shows = [\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/spring\")\n            .WithLabel(\"Visual Content of Spring\")\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/9",
+    "key": "Digital.Spring_Web_Page",
+    "topic": "Digital",
+    "method": "Spring_Web_Page",
+    "file": "src/LinkedArtNet.Examples/Digital.cs",
+    "line": 118,
+    "source": "public static HumanMadeObject Spring_Web_Page()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/9\")\n        .WithLabel(\"Jeanne (Spring) by Manet\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\")];\n\n    var springWebLinguistic = new LinguisticObject();\n    var springWebDigital = new DigitalObject()\n        .WithClassifiedAs(Aat.WebPage);\n    springWebDigital.Format = \"text/html\";\n    springWebDigital.AccessPoint = [new DigitalObject().WithId(\"https://www.getty.edu/art/collection/object/103QTZ\")];\n    springWebLinguistic.DigitallyCarriedBy = [springWebDigital];\n    spring.SubjectOf = [springWebLinguistic];\n\n    return spring;\n}"
+  },
+  {
+    "id": "event/early_roman/1",
+    "key": "Events.Early_Roman_Empire",
+    "topic": "Events",
+    "method": "Early_Roman_Empire",
+    "file": "src/LinkedArtNet.Examples/Events.cs",
+    "line": 24,
+    "source": "public static Period Early_Roman_Empire()\n{\n    var period = new Period()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/early_roman/1\")\n        .WithLabel(\"Early Roman Empire (31 BCE - 193 CE)\");\n\n    period.IdentifiedBy = [new Name(\"Early Roman Empire\").AsPrimaryName()];\n\n    period.PartOf = [\n        new Period()\n            .WithId(\"https://linked.art/example/event/roman\")\n            .WithLabel(\"Roman Empire\")\n    ];\n\n    return period;\n}"
+  },
+  {
+    "id": "event/vesuvius/2",
+    "key": "Events.Eruption_During_Period",
+    "topic": "Events",
+    "method": "Eruption_During_Period",
+    "file": "src/LinkedArtNet.Examples/Events.cs",
+    "line": 70,
+    "source": "public static Event Eruption_During_Period()\n{\n    var eruption = new Event()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/vesuvius/2\")\n        .WithLabel(\"Eruption of Vesuvius\");\n\n    eruption.IdentifiedBy = [new Name(\"Eruption of Vesuvius\").AsPrimaryName()];\n\n    eruption.During = [\n        new Period()\n            .WithId(\"https://linked.art/example/event/early_roman\")\n            .WithLabel(\"Early Roman Empire\")\n    ];\n\n    return eruption;\n}"
+  },
+  {
+    "id": "event/vesuvius/1",
+    "key": "Events.Eruption_Of_Vesuvius",
+    "topic": "Events",
+    "method": "Eruption_Of_Vesuvius",
+    "file": "src/LinkedArtNet.Examples/Events.cs",
+    "line": 44,
+    "source": "public static Event Eruption_Of_Vesuvius()\n{\n    var eruption = new Event()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/vesuvius/1\")\n        .WithLabel(\"Eruption of Vesuvius\");\n\n    eruption.IdentifiedBy = [new Name(\"Eruption of Vesuvius\").AsPrimaryName()];\n\n    eruption.TimeSpan = new LinkedArtTimeSpan\n    {\n        BeginOfTheBegin = new LinkedArtDate(79, 8, 24, 12, 0, 0),\n        EndOfTheEnd = new LinkedArtDate(79, 8, 26).EndOfDay()\n    };\n\n    eruption.TookPlaceAt = [\n        new Place()\n            .WithId(\"https://linked.art/example/place/vesuvius\")\n            .WithLabel(\"Mount Vesuvius\")\n    ];\n\n    return eruption;\n}"
+  },
+  {
+    "id": "event/19c/1",
+    "key": "Events.Nineteenth_Century",
+    "topic": "Events",
+    "method": "Nineteenth_Century",
+    "file": "src/LinkedArtNet.Examples/Events.cs",
+    "line": 9,
+    "source": "public static Period Nineteenth_Century()\n{\n    var period = new Period()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/19c/1\")\n        .WithLabel(\"19th Century\");\n\n    period.IdentifiedBy = [new Name(\"19th Century\").AsPrimaryName()];\n    period.TimeSpan = LinkedArtTimeSpan.FromYears(1800, 1899);\n\n    return period;\n}"
+  },
+  {
+    "id": "object/pompeii-buildings/1",
+    "key": "Events.Pompeii_Destroyed_By_Eruption",
+    "topic": "Events",
+    "method": "Pompeii_Destroyed_By_Eruption",
+    "file": "src/LinkedArtNet.Examples/Events.cs",
+    "line": 90,
+    "source": "public static HumanMadeObject Pompeii_Destroyed_By_Eruption()\n{\n    var pompeii = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/pompeii-buildings/1\")\n        .WithLabel(\"Buildings making up the city of Pompeii\");\n\n    pompeii.IdentifiedBy = [new Name(\"City of Pompeii\").AsPrimaryName()];\n\n    pompeii.DestroyedBy = new Destruction\n    {\n        CausedBy = [\n            new Event().WithId(\"https://linked.art/example/event/vesuvius\")\n        ]\n    };\n\n    return pompeii;\n}"
+  },
+  {
+    "id": "object/pompeii_statue/1",
+    "key": "Events.Statue_Produced_Before_Eruption",
+    "topic": "Events",
+    "method": "Statue_Produced_Before_Eruption",
+    "file": "src/LinkedArtNet.Examples/Events.cs",
+    "line": 111,
+    "source": "public static HumanMadeObject Statue_Produced_Before_Eruption()\n{\n    var statue = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/pompeii_statue/1\")\n        .WithLabel(\"Statue in Pompeii\");\n\n    statue.IdentifiedBy = [new Name(\"Pompeii Statue\").AsPrimaryName()];\n\n    statue.ProducedBy = new Production\n    {\n        Before = [\n            new Event()\n                .WithId(\"https://linked.art/example/event/vesuvius\")\n                .WithLabel(\"Eruption of Vesuvius\")\n        ]\n    };\n\n    return statue;\n}"
+  },
+  {
+    "id": "concept/exhidea/1",
+    "key": "Exhibitions.Exhibition_Concept",
+    "topic": "Exhibitions",
+    "method": "Exhibition_Concept",
+    "file": "src/LinkedArtNet.Examples/Exhibitions.cs",
+    "line": 61,
+    "source": "public static PropositionalObject Exhibition_Concept()\n{\n    var concept = new PropositionalObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/concept/exhidea/1\")\n        .WithLabel(\"Idea for Manet and Modern Beauty\")\n        .WithClassifiedAs(Aat.Exhibition);\n\n    concept.IdentifiedBy = [new Name(\"Manet and Modern Beauty\").AsPrimaryName()];\n\n    concept.About = [\n        Aat.Term(\"300055821\", \"Beauty\"),\n        Ulan.Person(\"500010363\", \"Manet\")\n    ];\n\n    concept.CreatedBy = new Creation()\n    {\n        CarriedOutBy = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/allan\")\n                .WithLabel(\"Scott Allan\"),\n            new Person()\n                .WithId(\"https://linked.art/example/person/beeny\")\n                .WithLabel(\"Emily Beeny\"),\n            new Person()\n                .WithId(\"https://linked.art/example/person/groom\")\n                .WithLabel(\"Gloria Groom\"),\n        ]\n    };\n\n    return concept;\n}"
+  },
+  {
+    "id": "concept/exhidea/2",
+    "key": "Exhibitions.Exhibition_Influenced_By",
+    "topic": "Exhibitions",
+    "method": "Exhibition_Influenced_By",
+    "file": "src/LinkedArtNet.Examples/Exhibitions.cs",
+    "line": 95,
+    "source": "public static PropositionalObject Exhibition_Influenced_By()\n{\n    var concept = new PropositionalObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/concept/exhidea/2\")\n        .WithLabel(\"Idea for Manet and Modern Beauty\")\n        .WithClassifiedAs(Aat.Exhibition);\n\n    concept.IdentifiedBy = [new Name(\"Manet and Modern Beauty\").AsPrimaryName()];\n\n\n    concept.CreatedBy = new Creation()\n    {\n        InfluencedBy = [\n            Ulan.Person(\"500010363\", \"Manet\")\n        ]\n    };\n\n    return concept;\n}"
+  },
+  {
+    "id": "set/exhset/1",
+    "key": "Exhibitions.Exhibition_Objects",
+    "topic": "Exhibitions",
+    "method": "Exhibition_Objects",
+    "file": "src/LinkedArtNet.Examples/Exhibitions.cs",
+    "line": 192,
+    "source": "public static Set Exhibition_Objects()\n{\n    var set = new Set()\n        .WithContext()\n        .WithId(\"https://linked.art/example/set/exhset/1\")\n        .WithLabel(\"Exhibition objects\")\n        .WithClassifiedAs(Aat.Term(\"300378926\", \"Exhibition Collection\"));\n\n    set.IdentifiedBy = [new Name(\"Objects in Manet and Modern Beauty\").AsPrimaryName()];\n\n    set.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.Description, Aat.Statement)\n            .WithContent(\"Objects in the exhibition Manet and Modern Beauty at the Art Institute of Chicago and the Getty Museum\")\n    ];\n\n    set.CreatedBy = new Creation()\n    {\n        TimeSpan = new LinkedArtTimeSpan\n        {\n            BeginOfTheBegin = new LinkedArtDate(2019, 5, 1),\n            EndOfTheEnd = new LinkedArtDate(2019, 5, 1).EndOfDay()\n        }\n    };\n\n    return set;\n}"
+  },
+  {
+    "id": "activity/exha/1",
+    "key": "Exhibitions.Manet_and_Modern_Beauty",
+    "topic": "Exhibitions",
+    "method": "Manet_and_Modern_Beauty",
+    "file": "src/LinkedArtNet.Examples/Exhibitions.cs",
+    "line": 13,
+    "source": "public static Activity Manet_and_Modern_Beauty()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/activity/exha/1\")\n        .WithLabel(\"Manet and Modern Beauty (Getty)\")\n        .WithClassifiedAs(Aat.Term(\"300054766\", \"Exhibiting\"));\n\n    activity.IdentifiedBy = [ new Name(\"Manet and Modern Beauty\").AsPrimaryName() ];\n\n    activity.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.Description, Aat.Statement)\n            .WithContent(\"The great painter of modern Paris Edouard Manet famously shocked contemporary audiences with his provocative pictures. The first exhibition ever to explore the last years of his short life, Manet and Modern Beauty highlights a less familiar and more intimate side of this celebrated artist's work.\")\n    ];\n\n    activity.TimeSpan = new LinkedArtTimeSpan()\n    {\n        BeginOfTheBegin = new LinkedArtDate(2019, 10, 8),\n        EndOfTheEnd = new LinkedArtDate(2020, 1, 12).EndOfDay()\n    };\n\n    activity.TookPlaceAt = [\n        Tgn.Place(\"7023900\", \"Los Angeles\")\n            .WithClassifiedAs(Aat.City)\n    ];\n\n    activity.CarriedOutBy = [\n        Ulan.Group(\"500115988\", \"Getty Museum\")\n            .WithClassifiedAs(Aat.Museum)\n    ];\n\n    activity.UsedSpecificObject = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/exhset\")\n            .WithLabel(\"Exhibition objects\") \n    ];\n    activity.InfluencedBy = [\n        new PropositionalObject()\n            .WithId(\"https://linked.art/example/concept/exhidea\")\n            .WithLabel(\"Idea for Manet and Modern Beauty\")\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "activity/exhb/1",
+    "key": "Exhibitions.Manet_and_Modern_Beauty_AIC",
+    "topic": "Exhibitions",
+    "method": "Manet_and_Modern_Beauty_AIC",
+    "file": "src/LinkedArtNet.Examples/Exhibitions.cs",
+    "line": 118,
+    "source": "public static Activity Manet_and_Modern_Beauty_AIC()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/activity/exhb/1\")\n        .WithLabel(\"Manet and Modern Beauty (AIC)\")\n        .WithClassifiedAs(Aat.Term(\"300054766\", \"Exhibiting\"));\n\n    activity.IdentifiedBy = [new Name(\"Manet and Modern Beauty\").AsPrimaryName()];\n\n    activity.TimeSpan = new LinkedArtTimeSpan()\n    {\n        BeginOfTheBegin = new LinkedArtDate(2019, 5, 26),\n        EndOfTheEnd = new LinkedArtDate(2019, 9, 8).EndOfDay()\n    };\n\n    activity.TookPlaceAt = [\n        Tgn.Place(\"7013596\", \"Chicago\")\n            .WithClassifiedAs(Aat.City)\n    ];\n\n    activity.CarriedOutBy = [\n        Ulan.Group(\"500304669\", \"Art Institute\")\n            .WithClassifiedAs(Aat.Museum)\n    ];\n\n    activity.UsedSpecificObject = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/exhset\")\n            .WithLabel(\"Exhibition objects\")\n    ];\n    activity.InfluencedBy = [\n        new PropositionalObject()\n            .WithId(\"https://linked.art/example/concept/exhidea\")\n            .WithLabel(\"Idea for Manet and Modern Beauty\")\n    ];\n\n    activity.PartOf = [\n        new Activity()\n            .WithId(\"https://linked.art/example/event/exhab\")\n            .WithLabel(\"Manet and Modern Beauty\")\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "event/exhab/1",
+    "key": "Exhibitions.Multiple_Locations",
+    "topic": "Exhibitions",
+    "method": "Multiple_Locations",
+    "file": "src/LinkedArtNet.Examples/Exhibitions.cs",
+    "line": 166,
+    "source": "public static Activity Multiple_Locations()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/event/exhab/1\")\n        .WithLabel(\"Manet and Modern Beauty\")\n        .WithClassifiedAs(Aat.ExhibitingInMultipleLocations);\n\n    activity.IdentifiedBy = [new Name(\"Manet and Modern Beauty\").AsPrimaryName()];\n\n    activity.TimeSpan = new LinkedArtTimeSpan()\n    {\n        BeginOfTheBegin = new LinkedArtDate(2019, 5, 26),\n        EndOfTheEnd = new LinkedArtDate(2020, 1, 12).EndOfDay()\n    };\n    activity.InfluencedBy = [\n        new PropositionalObject()\n            .WithId(\"https://linked.art/example/concept/exhidea\")\n            .WithLabel(\"Idea for Manet and Modern Beauty\")\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "object/spring/12",
+    "key": "Exhibitions.Spring_in_Exhibition",
+    "topic": "Exhibitions",
+    "method": "Spring_in_Exhibition",
+    "file": "src/LinkedArtNet.Examples/Exhibitions.cs",
+    "line": 222,
+    "source": "public static HumanMadeObject Spring_in_Exhibition()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/12\")\n        .WithLabel(\"Jeanne (Spring) by Manet\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    spring.IdentifiedBy = [new Name(\"Jeanne (Spring)\")];\n\n    spring.MemberOf = [\n        new Set()\n            .WithId(\"https://linked.art/example/set/exhset\")\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/nightwatch/14",
+    "key": "Ownership.Nightwatch_OwnedBy_Custody",
+    "topic": "Ownership",
+    "method": "Nightwatch_OwnedBy_Custody",
+    "file": "src/LinkedArtNet.Examples/Ownership.cs",
+    "line": 26,
+    "source": "public static HumanMadeObject Nightwatch_OwnedBy_Custody()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/14\")\n        .WithLabel(\"Painting\")  // assume a mistake in the docs?\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithClassifiedAs(Aat.Artwork);\n\n\n    nightWatch.CurrentOwner = [\n        new Group()\n            .WithId(\"https://linked.art/example/group/amsterdam_govt\")\n            .WithLabel(\"City of Amsterdam Governing Body\")\n    ];\n\n\n    nightWatch.CurrentCustodian = [\n        Ulan.Group(\"500246547\", \"Rijksmuseum\")\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/17",
+    "key": "Ownership.Nightwatch_Permanent_Custody",
+    "topic": "Ownership",
+    "method": "Nightwatch_Permanent_Custody",
+    "file": "src/LinkedArtNet.Examples/Ownership.cs",
+    "line": 51,
+    "source": "public static HumanMadeObject Nightwatch_Permanent_Custody()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/17\")\n        .WithLabel(\"Painting\")  // assume a mistake in the docs?\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithClassifiedAs(Aat.Artwork);\n\n\n    nightWatch.CurrentOwner = [\n        new Group()\n            .WithId(\"https://linked.art/example/group/amsterdam_govt\")\n            .WithLabel(\"City of Amsterdam Governing Body\")\n    ];\n\n    nightWatch.CurrentPermanentCustodian = Ulan.Group(\"500246547\", \"Rijksmuseum\");\n\n    nightWatch.CurrentCustodian = [\n        Ulan.Group(\"500115988\", \"Getty Museum\")\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/spring/7",
+    "key": "Ownership.Spring_Location",
+    "topic": "Ownership",
+    "method": "Spring_Location",
+    "file": "src/LinkedArtNet.Examples/Ownership.cs",
+    "line": 79,
+    "source": "public static HumanMadeObject Spring_Location()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/7\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n    spring.CurrentLocation = new Place()\n        .WithId(\"https://linked.art/example/place/W204\")\n        .WithLabel(\"Gallery W204\");\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/6",
+    "key": "Ownership.Spring_Ownedby_Getty",
+    "topic": "Ownership",
+    "method": "Spring_Ownedby_Getty",
+    "file": "src/LinkedArtNet.Examples/Ownership.cs",
+    "line": 10,
+    "source": "public static HumanMadeObject Spring_Ownedby_Getty()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/6\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n    spring.CurrentOwner = [\n        Ulan.Group(\"500115988\", \"Getty Museum\")\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/14",
+    "key": "Ownership.Spring_Permanent_Location",
+    "topic": "Ownership",
+    "method": "Spring_Permanent_Location",
+    "file": "src/LinkedArtNet.Examples/Ownership.cs",
+    "line": 95,
+    "source": "public static HumanMadeObject Spring_Permanent_Location()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/14\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n    spring.CurrentPermanentLocation = new Place()\n        .WithId(\"https://linked.art/example/place/W204\")\n        .WithLabel(\"Gallery W204\");\n\n    spring.CurrentLocation = new Place()\n        .WithId(\"https://linked.art/example/place/E100\")\n        .WithLabel(\"Exhibition Gallery 100\");\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/15",
+    "key": "Ownership.Spring_Simple_Historical_Ownership",
+    "topic": "Ownership",
+    "method": "Spring_Simple_Historical_Ownership",
+    "file": "src/LinkedArtNet.Examples/Ownership.cs",
+    "line": 115,
+    "source": "public static HumanMadeObject Spring_Simple_Historical_Ownership()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/15\")\n        .WithLabel(\"Jeanne (Spring) by Manet\");\n\n\n    var proustAcquisition = new Acquisition()\n        .WithLabel(\"Ownership of Spring to Proust\");\n    proustAcquisition.TimeSpan = new LinkedArtTimeSpan\n    {\n        BeginOfTheBegin = new LinkedArtDate(1881, 1, 1),\n        EndOfTheEnd = new LinkedArtDate(1883, 12, 31).LastSecondOfDay()\n    };\n    proustAcquisition.TransferredTitleFrom = [\n        new Person()\n            .WithId(\"https://linked.art/example/person/manet\")\n            .WithLabel(\"Manet\")\n    ];\n    proustAcquisition.TransferredTitleTo = [\n        new Person()\n            .WithId(\"https://linked.art/example/person/proust\")\n            .WithLabel(\"Proust\")\n    ];\n    proustAcquisition.PartOf = [\n        new Activity()\n            .WithId(\"https://linked.art/example/event/manet_proust\")\n            .WithLabel(\"Full Provenance Activity\")\n    ];\n\n    var payneAcquisition = new Acquisition()\n        .WithLabel(\"Ownership of Spring to Payne\");\n    payneAcquisition.TimeSpan = new LinkedArtTimeSpan\n    {\n        BeginOfTheBegin = new LinkedArtDate(1909, 1, 1),\n        EndOfTheEnd = new LinkedArtDate(1909, 12, 31).LastSecondOfDay()\n    };\n    payneAcquisition.TransferredTitleFrom = [\n        new Person()\n            .WithId(\"https://linked.art/example/person/durand\")\n            .WithLabel(\"Durand-Ruel Gallery\")\n    ];\n    payneAcquisition.TransferredTitleTo = [\n        new Person()\n            .WithId(\"https://linked.art/example/person/payne\")\n            .WithLabel(\"Oliver Payne\")\n    ];\n    payneAcquisition.PartOf = [\n        new Activity()\n            .WithId(\"https://linked.art/example/event/durand_payne\")\n            .WithLabel(\"Full Provenance Activity\")\n    ];\n\n    spring.ChangedOwnershipThrough = [\n        proustAcquisition,\n        payneAcquisition\n    ];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/chess/1",
+    "key": "PhysicalCharacteristics.Miniature_Chess_Parts",
+    "topic": "PhysicalCharacteristics",
+    "method": "Miniature_Chess_Parts",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 219,
+    "source": "public static HumanMadeObject Miniature_Chess_Parts()\n{\n    var chess = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/chess/1\")\n        .WithLabel(\"Miniature Chess\")\n        .WithComponentCount(36);\n\n    chess.IdentifiedBy = [\n        new Name(\"Vessel with miniature chess set\").AsPrimaryName()\n    ];            \n\n    return chess;\n}"
+  },
+  {
+    "id": "object/nightwatch/10",
+    "key": "PhysicalCharacteristics.Nightwatch_10_Color",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_10_Color",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 111,
+    "source": "public static HumanMadeObject Nightwatch_10_Color()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/10\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithRgbColor(\"#B35A1F\", Aat.Term(\"300127490\", \"Brown\"), \"brown\");\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/11",
+    "key": "PhysicalCharacteristics.Nightwatch_11_Shape",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_11_Shape",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 125,
+    "source": "public static HumanMadeObject Nightwatch_11_Shape()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/11\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithShape(Aat.Oblong);\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/12",
+    "key": "PhysicalCharacteristics.Nightwatch_12_Materials",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_12_Materials",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 139,
+    "source": "public static HumanMadeObject Nightwatch_12_Materials()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/12\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithMadeOf(\"oil\", \"300015050\")\n        .WithMadeOf(\"canvas\", \"300014078\");\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/13",
+    "key": "PhysicalCharacteristics.Nightwatch_13_Materials_Statement",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_13_Materials_Statement",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 155,
+    "source": "public static HumanMadeObject Nightwatch_13_Materials_Statement()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/13\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    nightWatch.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.MaterialsStatement, Aat.Statement)\n            .WithContent(\"Oil on Canvas\")\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/6",
+    "key": "PhysicalCharacteristics.Nightwatch_6_wh",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_6_wh",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 11,
+    "source": "public static HumanMadeObject Nightwatch_6_wh()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/6\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithWidthDimension(453.5, MeasurementUnit.Centimeters)\n        .WithHeightDimension(379.5, MeasurementUnit.Centimeters);\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/7",
+    "key": "PhysicalCharacteristics.Nightwatch_7_Dimension_Statement",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_7_Dimension_Statement",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 26,
+    "source": "public static HumanMadeObject Nightwatch_7_Dimension_Statement()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/7\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    nightWatch.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.DimensionsStatement, Aat.Statement)\n            .WithContent(\"height 379.5 cm × width 453.5 cm × weight 337 kg\")\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/8",
+    "key": "PhysicalCharacteristics.Nightwatch_8_Display_Titles",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_8_Display_Titles",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 45,
+    "source": "public static HumanMadeObject Nightwatch_8_Display_Titles()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/8\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithWidthDimension(453.5, MeasurementUnit.Centimeters, \"453.5 cm wide\")\n        .WithHeightDimension(379.5, MeasurementUnit.Centimeters, \"379.5 cm high\");\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/9",
+    "key": "PhysicalCharacteristics.Nightwatch_9_Measurement_Assigned",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_9_Measurement_Assigned",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 60,
+    "source": "public static HumanMadeObject Nightwatch_9_Measurement_Assigned()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/9\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithHeightDimension(379.5, MeasurementUnit.Centimeters);\n\n    var attrAssignment = new AttributeAssignment()\n        .WithLabel(\"Measurement of the Night Watch\");\n    attrAssignment.CarriedOutBy = [\n        new Group()\n            .WithId(\"https://linked.art/example/group/nightwatchteam\")\n            .WithLabel(\"Operation Night Watch Team\")\n    ];\n    attrAssignment.PartOf = [\n        new Activity()\n            .WithId(\"https://linked.art/example/event/operationnightwatch\")\n            .WithLabel(\"Operation Night Watch\")\n    ];\n\n    nightWatch.Dimension![0].AssignedBy = [attrAssignment];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/support",
+    "key": "PhysicalCharacteristics.Nightwatch_Support",
+    "topic": "PhysicalCharacteristics",
+    "method": "Nightwatch_Support",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 174,
+    "source": "public static HumanMadeObject Nightwatch_Support()\n{\n    var support = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/support\")\n        .WithLabel(\"Support of Night Watch\")\n        .WithClassifiedAs(Aat.Support, Aat.PartType)\n        .WithMadeOf(\"canvas\", \"300014078\");\n\n    support.PartOf = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/nightwatch\")\n            .WithLabel(\"Night Watch by Rembrandt\")\n    ];\n\n    return support;\n}"
+  },
+  {
+    "id": "object/spring/29",
+    "key": "PhysicalCharacteristics.Spring_29_Measurement_of_Features",
+    "topic": "PhysicalCharacteristics",
+    "method": "Spring_29_Measurement_of_Features",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 89,
+    "source": "public static HumanMadeObject Spring_29_Measurement_of_Features()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/29\")\n        .WithLabel(\"Spring\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)\n        .WithHeightDimension(74, MeasurementUnit.Centimeters)\n        .WithWidthDimension(51.5, MeasurementUnit.Centimeters);\n\n    var attrAssignment = new AttributeAssignment()\n        .WithLabel(\"Unframed Measuring\")\n        .WithTechnique(\"https://linked.art/example/concept/measuring_unframed\", \"Unframed Measuring\");\n\n    spring.Dimension![0].AssignedBy = [attrAssignment];\n    spring.Dimension![1].AssignedBy = [attrAssignment];\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/spring/back",
+    "key": "PhysicalCharacteristics.Spring_Back",
+    "topic": "PhysicalCharacteristics",
+    "method": "Spring_Back",
+    "file": "src/LinkedArtNet.Examples/PhysicalCharacteristics.cs",
+    "line": 194,
+    "source": "public static HumanMadeObject Spring_Back()\n{\n    var springBack = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/back\")\n        .WithLabel(\"Back of Spring by Manet\")\n        .WithClassifiedAs(Aat.Back, Aat.PartType);\n\n    springBack.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.InscriptionStatement, Aat.Statement)\n            .WithContent(\"11505F\")\n    ];\n\n    springBack.PartOf = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/spring\")\n            .WithLabel(\"Jeanne (Spring) by Manet\")\n    ];\n\n    return springBack;\n}"
+  },
+  {
+    "id": "place/amsterdam/1",
+    "key": "Places.Amsterdam_In_Netherlands",
+    "topic": "Places",
+    "method": "Amsterdam_In_Netherlands",
+    "file": "src/LinkedArtNet.Examples/Places.cs",
+    "line": 13,
+    "source": "public static Place Amsterdam_In_Netherlands()\n{\n    var amsterdam = new Place()\n        .WithContext()\n        .WithId(\"https://linked.art/example/place/amsterdam/1\")\n        .WithLabel(\"Amsterdam\")\n        .WithClassifiedAs(Aat.City);\n\n    amsterdam.IdentifiedBy = [new Name(\"Amsterdam\")];\n\n    amsterdam.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.Description, Aat.Statement)\n            .WithContent(\"Amsterdam is a city in the Netherlands\")\n    ];\n\n    amsterdam.PartOf = [\n        new Place()\n            .WithId(\"https://linked.art/example/place/netherlands\")\n            .WithLabel(\"Netherlands\")\n            .WithClassifiedAs(Aat.Country)\n    ];\n\n    return amsterdam;\n}"
+  },
+  {
+    "id": "place/amsterdam_auction_house/1",
+    "key": "Places.Christies_Amsterdam",
+    "topic": "Places",
+    "method": "Christies_Amsterdam",
+    "file": "src/LinkedArtNet.Examples/Places.cs",
+    "line": 56,
+    "source": "public static Place Christies_Amsterdam()\n{\n    var christies = new Place()\n        .WithContext()\n        .WithId(\"https://linked.art/example/place/amsterdam_auction_house/1\")\n        .WithLabel(\"Christie's AMS\");\n\n    christies.IdentifiedBy = [new Name(\"Christie's Amsterdam Location\")];\n\n    christies.PartOf = [\n        new Place()\n            .WithId(\"https://linked.art/example/place/amsterdam\")\n            .WithLabel(\"Amsterdam\")\n    ];\n\n    return christies;\n}"
+  },
+  {
+    "id": "object/flw_house/1",
+    "key": "Places.Frank_Lloyd_Wright_House",
+    "topic": "Places",
+    "method": "Frank_Lloyd_Wright_House",
+    "file": "src/LinkedArtNet.Examples/Places.cs",
+    "line": 76,
+    "source": "public static HumanMadeObject Frank_Lloyd_Wright_House()\n{\n    var house = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/flw_house/1\")\n        .WithLabel(\"Frank Lloyd Wright House\")\n        .WithClassifiedAs(Aat.Building);\n\n    house.IdentifiedBy = [new Name(\"Frank Lloyd Wright House\")];\n\n    house.CurrentLocation = new Place()\n        .WithId(\"https://linked.art/example/place/crystal_bridges\")\n        .WithLabel(\"Crystal Bridges\");\n\n    return house;\n}"
+  },
+  {
+    "id": "place/new_zealand/1",
+    "key": "Places.New_Zealand_Polygon",
+    "topic": "Places",
+    "method": "New_Zealand_Polygon",
+    "file": "src/LinkedArtNet.Examples/Places.cs",
+    "line": 41,
+    "source": "public static Place New_Zealand_Polygon()\n{\n    var nz = new Place()\n        .WithContext()\n        .WithId(\"https://linked.art/example/place/new_zealand/1\")\n        .WithLabel(\"New Zealand\")\n        .WithClassifiedAs(Aat.Country);\n\n    nz.DefinedBy = \"POLYGON((165.74 -33.55, -179.96 -33.55, -179.96 -47.8, 165.74 -47.8, 165.74 -33.55))\";\n\n    return nz;\n}"
+  },
+  {
+    "id": "object/bust/1",
+    "key": "ProductionDestruction.Bust_1_Technique",
+    "topic": "ProductionDestruction",
+    "method": "Bust_1_Technique",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 37,
+    "source": "public static HumanMadeObject Bust_1_Technique()\n{\n    var bust = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/bust/1\")\n        .WithLabel(\"Bust of a Man\")\n        .WithClassifiedAs(Aat.Sculpture, Aat.TypeOfWork);\n\n    bust.ProducedBy = new Production()\n        {\n            Technique = [Aat.Term(\"300264383\", \"Sculpting\")],\n            CarriedOutBy = [\n                Ulan.Person(\"500015886\", \"Francis Harwood\")]\n        };\n\n    return bust;\n}"
+  },
+  {
+    "id": "object/ccp/1",
+    "key": "ProductionDestruction.Canterbury_1",
+    "topic": "ProductionDestruction",
+    "method": "Canterbury_1",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 177,
+    "source": "public static HumanMadeObject Canterbury_1()\n{\n    var ccp = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/ccp/1\")\n        .WithLabel(\"Chaucer's Canterbury Pilgrims\")\n        .WithClassifiedAs(Aat.Print, Aat.TypeOfWork);\n\n    ccp.ProducedBy = new Production().WithLabel(\"Printing from Plate\");\n    ccp.ProducedBy.UsedSpecificObject = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/ccp-plate\")\n            .WithLabel(\"Plate for CCP\")\n    ];\n\n    return ccp;\n}"
+  },
+  {
+    "id": "object/ccp-plate/1",
+    "key": "ProductionDestruction.Canterbury_Plate_1",
+    "topic": "ProductionDestruction",
+    "method": "Canterbury_Plate_1",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 197,
+    "source": "public static HumanMadeObject Canterbury_Plate_1()\n{\n    var plate = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/ccp-plate/1\")\n        .WithLabel(\"Plate for CCP\")\n        .WithMadeOf(\"copper\", \"300011020\");\n\n    return plate;\n}"
+  },
+  {
+    "id": "object/coppa/1",
+    "key": "ProductionDestruction.Coppa_1_Unknown",
+    "topic": "ProductionDestruction",
+    "method": "Coppa_1_Unknown",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 241,
+    "source": "public static HumanMadeObject Coppa_1_Unknown()\n{\n    var coppa = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/coppa/1\")\n        .WithLabel(\"Coppa Amatoria\");\n\n    coppa.IdentifiedBy = [\n        new Name(\"Coppa Amatoria\").AsPrimaryName()\n    ];\n\n    coppa.ProducedBy = new Production()\n    {\n        CarriedOutBy = [\n            new Group()\n                .WithId(\"https://linked.art/example/group/unknown_italian\")\n                .WithLabel(\"Unidentified Italian\")\n        ]\n    };\n\n    return coppa;\n}"
+  },
+  {
+    "id": "object/gradualpage/1",
+    "key": "ProductionDestruction.GradualPage_1_PartRemoval",
+    "topic": "ProductionDestruction",
+    "method": "GradualPage_1_PartRemoval",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 311,
+    "source": "public static HumanMadeObject GradualPage_1_PartRemoval()\n{\n    var gradualPage = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/gradualpage/1\")\n        .WithLabel(\"Page from a Gradual\")\n        .WithClassifiedAs(Aat.TextOfAPage, Aat.TypeOfWork);\n\n    gradualPage.RemovedBy = [\n        new PartRemoval()\n        {\n            Diminished = new HumanMadeObject()\n                .WithId(\"https://linked.art/example/object/gradual\")\n                .WithLabel(\"Gradual\")\n        }\n    ];\n\n    return gradualPage;\n}"
+  },
+  {
+    "id": "group/harwoodstudio/1",
+    "key": "ProductionDestruction.HarwoodStudio_1_Group",
+    "topic": "ProductionDestruction",
+    "method": "HarwoodStudio_1_Group",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 291,
+    "source": "public static Group HarwoodStudio_1_Group()\n{\n    var grp = new Group()\n        .WithContext()\n        .WithId(\"https://linked.art/example/group/harwoodstudio/1\")\n        .WithLabel(\"Studio of Francis Harwood\")\n        .WithClassifiedAs(Aat.StudioOf);\n\n    grp.FormedBy = new Formation()\n    {\n        InfluencedBy = [\n            Ulan.Person(\"500015886\", \"Francis Harwood\")\n        ]\n    };\n\n    return grp;\n}"
+  },
+  {
+    "id": "object/kellerdana/1",
+    "key": "ProductionDestruction.KellerDana_1_Influenced",
+    "topic": "ProductionDestruction",
+    "method": "KellerDana_1_Influenced",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 94,
+    "source": "public static HumanMadeObject KellerDana_1_Influenced()\n{\n    var dana = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/kellerdana/1\")\n        .WithLabel(\"Copy of Huntington Portrait\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    dana.ProducedBy =\n        new Production()\n        {\n            CarriedOutBy = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/keller\")\n                    .WithLabel(\"Deane Keller\")\n            ],\n            InfluencedBy = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/huntingtondana\")\n                    .WithLabel(\"Huntington Portrait of Dana\")\n            ]\n        };\n\n    return dana;\n}"
+  },
+  {
+    "id": "object/lepeintre/1",
+    "key": "ProductionDestruction.LePeintre_1_Destruction",
+    "topic": "ProductionDestruction",
+    "method": "LePeintre_1_Destruction",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 359,
+    "source": "public static HumanMadeObject LePeintre_1_Destruction()\n{\n    var lepeintre = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/lepeintre/1\")\n        .WithLabel(\"Le Peintre by Picasso\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    var destruction = new Destruction()\n        .WithLabel(\"Destruction of Le Peintre\");\n    destruction.TimeSpan = new LinkedArtTimeSpan\n    {\n        BeginOfTheBegin = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 20, 0, TimeSpan.Zero)),\n        EndOfTheEnd = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 40, 0, TimeSpan.Zero))\n    };\n    lepeintre.DestroyedBy = destruction;\n\n    return lepeintre;\n}"
+  },
+  {
+    "id": "object/lepeintre/2",
+    "key": "ProductionDestruction.LePeintre_2_Destruction_CausedBy",
+    "topic": "ProductionDestruction",
+    "method": "LePeintre_2_Destruction_CausedBy",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 380,
+    "source": "public static HumanMadeObject LePeintre_2_Destruction_CausedBy()\n{\n    var lepeintre2 = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/lepeintre/2\")\n        .WithLabel(\"Le Peintre by Picasso\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    var destruction = new Destruction()\n        .WithLabel(\"Destruction of Le Peintre\");\n    destruction.TimeSpan = new LinkedArtTimeSpan\n    {\n        BeginOfTheBegin = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 20, 0, TimeSpan.Zero)),\n        EndOfTheEnd = new LinkedArtDate(new DateTimeOffset(1998, 9, 2, 22, 40, 0, TimeSpan.Zero))\n    };\n    destruction.CausedBy = [\n        new Event()\n            .WithId(\"https://linked.art/example/event/sr111crash\")\n            .WithLabel(\"Crash of Swiss Air 111\")\n    ];\n    lepeintre2.DestroyedBy = destruction;\n    return lepeintre2;\n}"
+  },
+  {
+    "id": "object/nightwatch/5",
+    "key": "ProductionDestruction.NightWatch_5_Production",
+    "topic": "ProductionDestruction",
+    "method": "NightWatch_5_Production",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 11,
+    "source": "public static HumanMadeObject NightWatch_5_Production()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/5\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    nightWatch.ProducedBy = new Production()\n        {\n            TimeSpan = LinkedArtTimeSpan.FromYear(1642).WithLabel(\"1642\"),\n            TookPlaceAt = [\n                new Place()\n                .WithId(\"https://linked.art/example/place/amsterdam\")\n                .WithLabel(\"Amsterdam\")\n            ],\n            CarriedOutBy = [\n                new Person()\n                .WithId(\"https://linked.art/example/person/rembrandt\")\n                .WithLabel(\"Rembrandt\")\n            ]\n        };\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "object/nuveen/1",
+    "key": "ProductionDestruction.Nuveen_1",
+    "topic": "ProductionDestruction",
+    "method": "Nuveen_1",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 210,
+    "source": "public static HumanMadeObject Nuveen_1()\n{\n    var nuveenPainting = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nuveen/1\")\n        .WithLabel(\"Nuveen Painting\");\n\n    nuveenPainting.IdentifiedBy = [\n        new Name(\"The Nuveen Painting\").AsPrimaryName()\n    ];\n\n    nuveenPainting.ProducedBy = new Production()\n    {\n        CarriedOutBy = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/dine\")\n                .WithLabel(\"Jim Dine\")\n        ],\n        CausedBy = [\n            new Activity()\n                .WithId(\"https://linked.art/example/event/nuveen_commission\")\n                .WithLabel(\"Commission\")\n        ]\n    };\n\n    return nuveenPainting;\n\n}"
+  },
+  {
+    "id": "object/okeeffe-gok/1",
+    "key": "ProductionDestruction.OKeeffe_Gok_1",
+    "topic": "ProductionDestruction",
+    "method": "OKeeffe_Gok_1",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 122,
+    "source": "public static HumanMadeObject OKeeffe_Gok_1()\n{\n    var gok = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/okeeffe-gok/1\")\n        .WithLabel(\"GOK 1918, GOKM\")\n        .WithClassifiedAs(Aat.Photograph, Aat.TypeOfWork);\n\n    gok.IdentifiedBy = [ new Identifier(\"2014.3.78\").AsAccessionNumber() ];\n\n    gok.Shows = [\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/okeeffe\")\n            .WithLabel(\"Visual Content of GOK 1918\")\n    ];\n\n    gok.ProducedBy = new Production().WithLabel(\"Printing of Photograph\");\n    gok.ProducedBy.UsedSpecificObject = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/okeeffe-negative\")\n            .WithLabel(\"Negative of GOK 1918\")\n    ];\n\n    return gok;\n}"
+  },
+  {
+    "id": "object/okeeffe-yuag/1",
+    "key": "ProductionDestruction.OKeeffe_Yuag_1",
+    "topic": "ProductionDestruction",
+    "method": "OKeeffe_Yuag_1",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 149,
+    "source": "public static HumanMadeObject OKeeffe_Yuag_1()\n{\n    var gok = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/okeeffe-yuag/1\")\n        .WithLabel(\"GOK 1918, YUAG\")\n        .WithClassifiedAs(Aat.Photograph, Aat.TypeOfWork);\n\n    gok.IdentifiedBy = [ new Identifier(\"2016.101.242\").AsAccessionNumber() ];\n\n    gok.Shows = [\n        new VisualItem()\n            .WithId(\"https://linked.art/example/visual/okeeffe\")\n            .WithLabel(\"Visual Content of GOK 1918\")\n    ];\n\n    gok.ProducedBy = new Production().WithLabel(\"Printing of Photograph\");\n    gok.ProducedBy.UsedSpecificObject = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/okeeffe-negative\")\n            .WithLabel(\"Negative of GOK 1918\")\n    ];\n\n    return gok;\n}"
+  },
+  {
+    "id": "object/run/1",
+    "key": "ProductionDestruction.RUN_1_Multiple_Artists",
+    "topic": "ProductionDestruction",
+    "method": "RUN_1_Multiple_Artists",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 57,
+    "source": "public static HumanMadeObject RUN_1_Multiple_Artists()\n{\n    var run = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/run/1\")\n        .WithLabel(\"RUN\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    run.ProducedBy = new Production()\n    {\n        Part = [\n            new Production()\n            {\n                Technique = [Aat.Term(\"300054216\", \"Painting\")],\n                CarriedOutBy = [\n                    new Person()\n                        .WithId(\"https://linked.art/example/person/barrow\")\n                        .WithLabel(\"Mark Barrow\")\n                ]\n            },\n            new Production()\n            {\n                Technique = [Aat.Term(\"300053643\", \"hand weaving\")],\n                CarriedOutBy = [\n                    new Person()\n                        .WithId(\"https://linked.art/example/person/parke\")\n                        .WithLabel(\"Sarah Parke\")\n                ]\n            }\n        ]\n    };\n\n    return run;\n}"
+  },
+  {
+    "id": "object/torosaurus/1",
+    "key": "ProductionDestruction.Torosaurus_Gladius",
+    "topic": "ProductionDestruction",
+    "method": "Torosaurus_Gladius",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 333,
+    "source": "public static HumanMadeObject Torosaurus_Gladius()\n{\n    var torosaurus = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/torosaurus/1\")\n        .WithLabel(\"Torosaurus Gladius\");\n\n    torosaurus.EncounteredBy = [\n        new Encounter()\n        {\n            TimeSpan = LinkedArtTimeSpan.FromYear(1891),\n            CarriedOutBy = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/hatcher\")\n                    .WithLabel(\"John Bell Hatcher\")\n            ]\n        }\n    ];\n\n    // The docs example doesn't have a label \"1891\" on the timespan:\n\n    return torosaurus;\n}"
+  },
+  {
+    "id": "object/washday/1",
+    "key": "ProductionDestruction.Washday_1_Influenced",
+    "topic": "ProductionDestruction",
+    "method": "Washday_1_Influenced",
+    "file": "src/LinkedArtNet.Examples/ProductionDestruction.cs",
+    "line": 266,
+    "source": "public static HumanMadeObject Washday_1_Influenced()\n{\n    var washday = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/washday/1\")\n        .WithLabel(\"Wash Day\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    washday.IdentifiedBy = [\n        new Name(\"Wash Day\").AsPrimaryName()\n    ];\n\n    washday.ProducedBy = new Production()\n    {\n        InfluencedBy = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/whomer\")\n                .WithLabel(\"Winslow Homer\")\n        ]\n    };\n\n    return washday;\n}"
+  },
+  {
+    "id": "provenance/ziwei_yuag/1",
+    "key": "Provenance.Gift_of_Landscape_to_YUAG",
+    "topic": "Provenance",
+    "method": "Gift_of_Landscape_to_YUAG",
+    "file": "src/LinkedArtNet.Examples/Provenance.cs",
+    "line": 77,
+    "source": "public static Activity Gift_of_Landscape_to_YUAG()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/ziwei_yuag/1\")\n        .WithLabel(\"Gift of Landscape to YUAG\")\n        .WithClassifiedAs(Aat.ProvenanceActivity)\n        .WithClassifiedAs(Aat.Gift); \n\n    activity.TimeSpan = new LinkedArtTimeSpan()\n    {\n        BeginOfTheBegin = new LinkedArtDate(1999, 1, 1),\n        EndOfTheEnd = new LinkedArtDate(1999, 12, 31).LastSecondOfDay()\n    };\n\n    var acquisition = new Acquisition()\n    {\n        Label = \"Acquisition of Painting 1\",\n        TransferredTitleOf = [\n            new HumanMadeObject()\n                .WithId(\"https://linked.art/example/object/ziwei_landscape\")\n                .WithLabel(\"Landscape\")\n        ],\n        TransferredTitleFrom = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/ziwei\")\n                .WithLabel(\"Xu Ziwei\")\n        ],\n        TransferredTitleTo = [\n            new Group()\n                .WithId(\"https://linked.art/example/group/yuag\")\n                .WithLabel(\"Yale University Art Gallery\")\n        ]\n    };\n\n    activity.Part = [acquisition];\n\n    return activity;\n}"
+  },
+  {
+    "id": "provenance/manet_proust/1",
+    "key": "Provenance.Spring_Sold_To_Proust",
+    "topic": "Provenance",
+    "method": "Spring_Sold_To_Proust",
+    "file": "src/LinkedArtNet.Examples/Provenance.cs",
+    "line": 12,
+    "source": "public static Activity Spring_Sold_To_Proust()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/manet_proust/1\")\n        .WithLabel(\"Purchase of Spring by Proust\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    activity.IdentifiedBy = [new Name(\"Purchase of Spring by Proust from Manet\").AsPrimaryName()];\n    activity.TimeSpan = new LinkedArtTimeSpan()\n    {\n        BeginOfTheBegin = new LinkedArtDate(1881, 1, 1),\n        EndOfTheEnd = new LinkedArtDate(1883, 12, 31).LastSecondOfDay()\n    };\n\n    var acquisition = new Acquisition()\n    {\n        Label = \"Ownership of Spring to Proust\",\n        TransferredTitleOf = [\n            new HumanMadeObject()\n                .WithId(\"https://linked.art/example/object/spring\")\n                .WithLabel(\"Spring\")\n        ],\n        TransferredTitleFrom = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/manet\")\n                .WithLabel(\"Manet\")\n        ],\n        TransferredTitleTo = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/proust\")\n                .WithLabel(\"Proust\")\n        ]\n    };\n\n    var payment = new Payment()\n    {\n        Label = \"3000 Francs to Manet\",\n        PaidAmount = new MonetaryAmount\n        {\n            Value = 3000,\n            Currency = Aat.Currency(\"300412016\", \"French Francs\")\n        },\n        PaidFrom = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/proust\")\n                .WithLabel(\"Proust\")\n        ],\n        PaidTo = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/manet\")\n                .WithLabel(\"Manet\")\n        ]\n    };\n\n    activity.Part = [\n        acquisition,\n        payment\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "provenance/unknown_faure/1",
+    "key": "Provenance.Unknown_Acquisition_of_Spring_by_Faure",
+    "topic": "Provenance",
+    "method": "Unknown_Acquisition_of_Spring_by_Faure",
+    "file": "src/LinkedArtNet.Examples/Provenance.cs",
+    "line": 119,
+    "source": "public static Activity Unknown_Acquisition_of_Spring_by_Faure()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/unknown_faure/1\")\n        .WithLabel(\"Unknown Acquisition of Spring by Faure\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    activity.After = [\n        new Activity()\n            .WithId(\"https://linked.art/example/provenance/manet_proust\")\n            .WithClassifiedAs(Aat.ProvenanceActivity)\n    ];\n    activity.Before = [\n        new Activity()\n            .WithLabel(\"foure_durand\")\n            .WithClassifiedAs(Aat.ProvenanceActivity)\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "provenance/yuag_stora/1",
+    "key": "ProvenanceAcquisition.Exchange_Of_Objects",
+    "topic": "ProvenanceAcquisition",
+    "method": "Exchange_Of_Objects",
+    "file": "src/LinkedArtNet.Examples/ProvenanceAcquisition.cs",
+    "line": 121,
+    "source": "public static Activity Exchange_Of_Objects()\n{\n    var exchange = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/yuag_stora/1\")\n        .WithLabel(\"Exchange of Objects\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    var feigen = new Group()\n        .WithId(\"https://linked.art/example/group/feigen\")\n        .WithLabel(\"Richard Feigen Gallery\");\n    var yuag = new Group()\n        .WithId(\"https://linked.art/example/group/yuag\")\n        .WithLabel(\"Yale University Art Gallery\");\n\n    exchange.Part = [\n        new Acquisition\n        {\n            Label = \"Acquisition of Personnages\",\n            TransferredTitleOf = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/masson_personnages\")\n                    .WithLabel(\"Personnages dans un parc\"),\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/beckmann_nude\")\n                    .WithLabel(\"Nude Woman by Beckmann\")\n            ],\n            TransferredTitleFrom = [feigen, yuag],\n            TransferredTitleTo = [yuag, feigen]\n        },\n        new Acquisition\n        {\n            Label = \"Acquisition of Nude\"\n        }\n    ];\n\n    return exchange;\n}"
+  },
+  {
+    "id": "provenance/yuag_ycba_wiley/1",
+    "key": "ProvenanceAcquisition.Joint_Purchase",
+    "topic": "ProvenanceAcquisition",
+    "method": "Joint_Purchase",
+    "file": "src/LinkedArtNet.Examples/ProvenanceAcquisition.cs",
+    "line": 87,
+    "source": "public static Activity Joint_Purchase()\n{\n    var purchase = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/yuag_ycba_wiley/1\")\n        .WithLabel(\"Purchase of Painting\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    purchase.TimeSpan = LinkedArtTimeSpan.FromYear(2021);\n\n    purchase.Part = [\n        new Acquisition\n        {\n            TransferredTitleOf = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/yiadom-boakye\")\n                    .WithLabel(\"Portrait of Lynette Yiadom-Boakye\")\n            ],\n            TransferredTitleTo = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/yuag\")\n                    .WithLabel(\"Yale University Art Gallery\"),\n                new Group()\n                    .WithId(\"https://linked.art/example/group/ycba\")\n                    .WithLabel(\"Yale Center for British Art\")\n            ]\n        }\n    ];\n\n    return purchase;\n}"
+  },
+  {
+    "id": "provenance/durand_payne/1",
+    "key": "ProvenanceAcquisition.Purchase_Of_Spring_By_Payne",
+    "topic": "ProvenanceAcquisition",
+    "method": "Purchase_Of_Spring_By_Payne",
+    "file": "src/LinkedArtNet.Examples/ProvenanceAcquisition.cs",
+    "line": 9,
+    "source": "public static Activity Purchase_Of_Spring_By_Payne()\n{\n    var purchase = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/durand_payne/1\")\n        .WithLabel(\"Purchase of Spring by Payne\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    purchase.IdentifiedBy = [new Name(\"Purchase of Spring by Payne from Durand-Ruel\").AsPrimaryName()];\n    purchase.TimeSpan = LinkedArtTimeSpan.FromYear(1909);\n\n    purchase.Part = [\n        new Acquisition\n        {\n            Label = \"Ownership of Spring to Payne\",\n            TransferredTitleOf = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/spring\")\n                    .WithLabel(\"Spring\")\n            ],\n            TransferredTitleFrom = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/durand\")\n                    .WithLabel(\"Durand-Ruel Gallery\")\n            ],\n            TransferredTitleTo = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/payne\")\n                    .WithLabel(\"Oliver Payne\")\n            ]\n        }\n    ];\n\n    return purchase;\n}"
+  },
+  {
+    "id": "provenance/payneheirs_getty/1",
+    "key": "ProvenanceAcquisition.Purchase_Through_An_Agent",
+    "topic": "ProvenanceAcquisition",
+    "method": "Purchase_Through_An_Agent",
+    "file": "src/LinkedArtNet.Examples/ProvenanceAcquisition.cs",
+    "line": 47,
+    "source": "public static Activity Purchase_Through_An_Agent()\n{\n    var purchase = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/payneheirs_getty/1\")\n        .WithLabel(\"Purchase of Spring for Getty\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    purchase.Part = [\n        new Acquisition\n        {\n            Label = \"Acquisition of Spring\",\n            CarriedOutBy = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/naumann\")\n                    .WithLabel(\"Otto Naumann\")\n            ],\n            TransferredTitleOf = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/spring\")\n                    .WithLabel(\"Spring\")\n            ],\n            TransferredTitleFrom = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/payne_heirs\")\n                    .WithLabel(\"Family of Oliver Payne\")\n            ],\n            TransferredTitleTo = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/getty\")\n                    .WithLabel(\"J. Paul Getty Museum\")\n            ]\n        }\n    ];\n\n    return purchase;\n}"
+  },
+  {
+    "id": "provenance/fixme/1",
+    "key": "ProvenanceAcquisition.Purchase_With_Commission",
+    "topic": "ProvenanceAcquisition",
+    "method": "Purchase_With_Commission",
+    "file": "src/LinkedArtNet.Examples/ProvenanceAcquisition.cs",
+    "line": 162,
+    "source": "public static Activity Purchase_With_Commission()\n{\n    var purchase = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/fixme/1\")\n        .WithLabel(\"Purchase of Sculpture with Commission\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    var buyer = new Person().WithLabel(\"Buyer\");\n\n    purchase.Part = [\n        new Payment\n        {\n            PaidAmount = new MonetaryAmount\n            {\n                Value = 900,\n                Currency = Aat.UsDollars.WithNotation(\"USD\")\n            },\n            PaidFrom = [buyer],\n            PaidTo = [new Person().WithLabel(\"Seller\")]\n        },\n        new Payment\n        {\n            PaidAmount = new MonetaryAmount\n            {\n                Value = 100,\n                Currency = Aat.UsDollars\n            },\n            PaidFrom = [buyer],\n            PaidTo = [\n                new Group()\n                    .WithLabel(\"Auction House\")\n                    .WithClassifiedAs(Aat.Term(\"300417515\", \"Auction House (organization)\"))\n            ]\n        }.WithClassifiedAs(Aat.Term(\"300393199\", \"Commission\"))\n    ];\n\n    return purchase;\n}"
+  },
+  {
+    "id": "provenance/spring_aic/1",
+    "key": "ProvenanceCustody.Loan_Of_Spring_To_AIC",
+    "topic": "ProvenanceCustody",
+    "method": "Loan_Of_Spring_To_AIC",
+    "file": "src/LinkedArtNet.Examples/ProvenanceCustody.cs",
+    "line": 9,
+    "source": "public static Activity Loan_Of_Spring_To_AIC()\n{\n    var loan = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/spring_aic/1\")\n        .WithLabel(\"Loan of Spring to AIC\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    loan.Part = [\n        new TransferOfCustody\n        {\n            TransferredCustodyOf = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/spring\")\n                    .WithLabel(\"Spring\")\n            ],\n            TransferredCustodyFrom = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/getty\")\n                    .WithLabel(\"Getty Museum\")\n            ],\n            TransferredCustodyTo = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/aic\")\n                    .WithLabel(\"Art Institute of Chicago\")\n            ]\n        }.WithClassifiedAs(Aat.Term(\"300417645\", \"Loan\"))\n    ];\n\n    return loan;\n}"
+  },
+  {
+    "id": "provenance/sharp_sale/1",
+    "key": "ProvenanceCustody.Purchase_Of_Stolen_Painting",
+    "topic": "ProvenanceCustody",
+    "method": "Purchase_Of_Stolen_Painting",
+    "file": "src/LinkedArtNet.Examples/ProvenanceCustody.cs",
+    "line": 112,
+    "source": "public static Activity Purchase_Of_Stolen_Painting()\n{\n    var purchase = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/sharp_sale/1\")\n        .WithLabel(\"Purchase of Stolen Painting\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    var alter = new Person()\n        .WithId(\"https://linked.art/example/person/alter\")\n        .WithLabel(\"Jerry Alter\");\n\n    purchase.Part = [\n        new TransferOfCustody\n        {\n            Label = \"Sale of Painting\",\n            TransferredCustodyOf = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/cheyenne\")\n                    .WithLabel(\"Cheyenne Oklahoma\")\n            ],\n            TransferredCustodyFrom = [alter]\n        }.WithClassifiedAs(Aat.Term(\"300438484\", \"sale of stolen goods\")),\n        new Payment\n        {\n            PaidAmount = new MonetaryAmount\n            {\n                Label = \"Payment to Thief\",\n                Value = 52650,\n                Currency = Aat.UsDollars.WithNotation(\"USD\")\n            },\n            PaidTo = [alter]\n        }\n    ];\n\n    return purchase;\n}"
+  },
+  {
+    "id": "provenance/spring_getty/1",
+    "key": "ProvenanceCustody.Return_Of_Spring_To_Getty",
+    "topic": "ProvenanceCustody",
+    "method": "Return_Of_Spring_To_Getty",
+    "file": "src/LinkedArtNet.Examples/ProvenanceCustody.cs",
+    "line": 43,
+    "source": "public static Activity Return_Of_Spring_To_Getty()\n{\n    var returnOfLoan = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/spring_getty/1\")\n        .WithLabel(\"Return of Spring to Getty\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    returnOfLoan.Part = [\n        new TransferOfCustody\n        {\n            Label = \"Return\",\n            TransferredCustodyOf = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/spring\")\n                    .WithLabel(\"Spring\")\n            ],\n            TransferredCustodyFrom = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/aic\")\n                    .WithLabel(\"Art Institute of Chicago\")\n            ],\n            TransferredCustodyTo = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/getty\")\n                    .WithLabel(\"Getty Museum\")\n            ]\n        }.WithClassifiedAs(Aat.Term(\"300438467\", \"Return of Loan\"))\n    ];\n\n    return returnOfLoan;\n}"
+  },
+  {
+    "id": "provenance/mona_lisa_theft/1",
+    "key": "ProvenanceCustody.Theft_Of_Mona_Lisa",
+    "topic": "ProvenanceCustody",
+    "method": "Theft_Of_Mona_Lisa",
+    "file": "src/LinkedArtNet.Examples/ProvenanceCustody.cs",
+    "line": 78,
+    "source": "public static Activity Theft_Of_Mona_Lisa()\n{\n    var theft = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/mona_lisa_theft/1\")\n        .WithLabel(\"Theft of Mona Lisa\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    theft.Part = [\n        new TransferOfCustody\n        {\n            TransferredCustodyOf = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/monalisa\")\n                    .WithLabel(\"Mona Lisa\")\n            ],\n            TransferredCustodyFrom = [\n                new Group()\n                    .WithId(\"https://linked.art/example/group/louvre\")\n                    .WithLabel(\"Louvre\")\n            ],\n            TransferredCustodyTo = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/peruggia\")\n                    .WithLabel(\"Vincenzo Peruggia\")\n            ]\n        }.WithClassifiedAs(Aat.Term(\"300055292\", \"Theft\"))\n    ];\n\n    return theft;\n}"
+  },
+  {
+    "id": "provenance/getty_bronze/1",
+    "key": "ProvenanceEncounters.Discovery_Of_Victorious_Youth",
+    "topic": "ProvenanceEncounters",
+    "method": "Discovery_Of_Victorious_Youth",
+    "file": "src/LinkedArtNet.Examples/ProvenanceEncounters.cs",
+    "line": 9,
+    "source": "public static Activity Discovery_Of_Victorious_Youth()\n{\n    var discovery = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/getty_bronze/1\")\n        .WithLabel(\"Discovery of Victorious Youth\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    var sculpture = new HumanMadeObject()\n        .WithId(\"https://linked.art/example/object/victorious_youth\")\n        .WithLabel(\"Victorious Youth\");\n    var finders = new Group()\n        .WithId(\"https://linked.art/example/group/ferruccio\")\n        .WithLabel(\"Owners of Ferri Ferruccio\");\n\n    discovery.Part = [\n        new Encounter\n        {\n            Label = \"Encounter of Sculpture\",\n            CarriedOutBy = [finders],\n            Encountered = [sculpture]\n        },\n        new Acquisition\n        {\n            TransferredTitleOf = [sculpture],\n            TransferredTitleTo = [finders]\n        }\n    ];\n\n    return discovery;\n}"
+  },
+  {
+    "id": "provenance/wiley_move/1",
+    "key": "ProvenanceMovement.Movement_Of_Wiley_Painting",
+    "topic": "ProvenanceMovement",
+    "method": "Movement_Of_Wiley_Painting",
+    "file": "src/LinkedArtNet.Examples/ProvenanceMovement.cs",
+    "line": 9,
+    "source": "public static Activity Movement_Of_Wiley_Painting()\n{\n    var movement = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/wiley_move/1\")\n        .WithLabel(\"Movement of Wiley Painting\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    movement.Part = [\n        new Move\n        {\n            Moved = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/yiadom-boakye\")\n                    .WithLabel(\"Portrait of Lynette Yiadom-Boakye\")\n            ],\n            MovedFrom = new Place()\n                .WithId(\"https://linked.art/example/place/ycba_gallery\")\n                .WithLabel(\"YCBA Gallery\"),\n            MovedTo = new Place()\n                .WithId(\"https://linked.art/example/place/yuag_gallery\")\n                .WithLabel(\"YUAG Gallery\")\n        }\n    ];\n\n    return movement;\n}"
+  },
+  {
+    "id": "provenance/nuveen_commission/1",
+    "key": "ProvenancePromises.Commission_Of_Painting",
+    "topic": "ProvenancePromises",
+    "method": "Commission_Of_Painting",
+    "file": "src/LinkedArtNet.Examples/ProvenancePromises.cs",
+    "line": 41,
+    "source": "public static Activity Commission_Of_Painting()\n{\n    var commission = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/nuveen_commission/1\")\n        .WithLabel(\"Commission of Painting\")\n        .WithClassifiedAs(Aat.ProvenanceActivity)\n        .WithClassifiedAs(Aat.Term(\"300393199\", \"Commissioning\"));\n\n    var franke = new Person()\n        .WithId(\"https://linked.art/example/person/franke\")\n        .WithLabel(\"Richard Franke\");\n    var dine = new Person()\n        .WithId(\"https://linked.art/example/person/dine\")\n        .WithLabel(\"Jim Dine\");\n\n    commission.Part = [\n        new Activity()\n            .WithLabel(\"Obligation to Pay Artist\")\n            .WithClassifiedAs(Aat.PromiseActivity)\n            .WithStatement(Aat.Description, \"Promise to pay for a painting to be created by the artist\")\n            .WithCarriedOutBy(franke)\n            .WithParticipant(dine),\n        new Activity()\n            .WithLabel(\"Obligation to Produce Painting\")\n            .WithClassifiedAs(Aat.PromiseActivity)\n            .WithReferredToBy(\n                new LinguisticObject()\n                    .WithClassifiedAs(Aat.Description)\n                    .WithContent(\"Promise to produce a painting for the commissioning party\"))\n            .WithCarriedOutBy(dine)\n            .WithParticipant(franke)\n    ];\n\n    return commission;\n}"
+  },
+  {
+    "id": "provenance/coffin_promise/1",
+    "key": "ProvenancePromises.Promised_Gift",
+    "topic": "ProvenancePromises",
+    "method": "Promised_Gift",
+    "file": "src/LinkedArtNet.Examples/ProvenancePromises.cs",
+    "line": 9,
+    "source": "public static Activity Promised_Gift()\n{\n    var promisedGift = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/coffin_promise/1\")\n        .WithLabel(\"Promised Gift of Coffin\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    promisedGift.Part = [\n        new Activity()\n            .WithLabel(\"Promise of Gift\")\n            .WithClassifiedAs(Aat.PromiseActivity)\n            .WithStatement(Aat.Description, \"Promised gift of Thomas Jaffe, B.A. 1971\")\n            .WithCarriedOutBy(\n                new Person()\n                    .WithId(\"https://linked.art/example/person/jaffe\")\n                    .WithLabel(\"Thomas Jaffe\"))\n            .WithUsedSpecificObject(\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/coffin\")\n                    .WithLabel(\"Coffin\"))\n            .WithParticipant(\n                new Group()\n                    .WithId(\"https://linked.art/example/group/yuag\")\n                    .WithLabel(\"Yale University Art Gallery\"))\n    ];\n\n    return promisedGift;\n}"
+  },
+  {
+    "id": "provenance/2",
+    "key": "ProvenanceRights.Acquisition_Establishes_Ownership_Right",
+    "topic": "ProvenanceRights",
+    "method": "Acquisition_Establishes_Ownership_Right",
+    "file": "src/LinkedArtNet.Examples/ProvenanceRights.cs",
+    "line": 24,
+    "source": "public static Activity Acquisition_Establishes_Ownership_Right()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/2\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    var painting = new HumanMadeObject().WithLabel(\"Painting\");\n    var museum = new Group().WithLabel(\"Museum\");\n\n    activity.Part = [\n        new Acquisition\n        {\n            TransferredTitleOf = [painting],\n            TransferredTitleTo = [museum]\n        },\n        new RightAcquisition\n        {\n            Establishes = [\n                new Right()\n                    .WithLabel(\"Right of Ownership for Painting\")\n                    .WithClassifiedAs(OwnershipRight)\n                    .WithPossessedBy(museum)\n                    .WithAppliesTo(painting)\n            ]\n        }\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "provenance/5",
+    "key": "ProvenanceRights.Copyright_Acquisition",
+    "topic": "ProvenanceRights",
+    "method": "Copyright_Acquisition",
+    "file": "src/LinkedArtNet.Examples/ProvenanceRights.cs",
+    "line": 112,
+    "source": "public static Activity Copyright_Acquisition()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/5\")\n        .WithLabel(\"Copyright acquisition by PCA\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    activity.Part = [\n        new RightAcquisition\n        {\n            Establishes = [\n                new Right()\n                    .WithClassifiedAs(Aat.Term(\"300055598\", \"Copyright\"))\n                    .WithPossessedBy(new Group().WithLabel(\"Paintings Copyright Association\"))\n                    .WithAppliesTo(Painting.WithClassifiedAs(Aat.Artwork))\n            ]\n        }\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "provenance/3",
+    "key": "ProvenanceRights.Shared_Ownership",
+    "topic": "ProvenanceRights",
+    "method": "Shared_Ownership",
+    "file": "src/LinkedArtNet.Examples/ProvenanceRights.cs",
+    "line": 57,
+    "source": "public static Activity Shared_Ownership()\n{\n    var purchase = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/3\")\n        .WithLabel(\"Purchase of Painting by Two Dealers\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    purchase.Part = [\n        new RightAcquisition\n        {\n            Establishes = [\n                new Right()\n                    .WithLabel(\"Total Right of Ownership\")\n                    .WithClassifiedAs(OwnershipRight)\n                    .WithAppliesTo(Painting)\n                    .WithPart(\n                        Share(\"30% Ownership by Dealer 1\", 30, \"Dealer 1\"),\n                        Share(\"70% Ownership by Dealer 2\", 70, \"Dealer 2\"))\n            ]\n        }\n    ];\n\n    return purchase;\n}"
+  },
+  {
+    "id": "provenance/4",
+    "key": "ProvenanceRights.Trading_Shares",
+    "topic": "ProvenanceRights",
+    "method": "Trading_Shares",
+    "file": "src/LinkedArtNet.Examples/ProvenanceRights.cs",
+    "line": 85,
+    "source": "public static Activity Trading_Shares()\n{\n    var trade = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/4\")\n        .WithLabel(\"Trading Shares of Painting between Two Dealers\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    trade.Part = [\n        new RightAcquisition\n        {\n            Establishes = [Share(\"40% Ownership by Dealer 1\", 40, \"Dealer 1\").WithAppliesTo(Painting)],\n            Invalidates = [new Right().WithLabel(\"30% Ownership by Dealer 1\").WithClassifiedAs(OwnershipRight)]\n        },\n        new RightAcquisition\n        {\n            // The site's example gives Dealer 2's new 60% share a value of 70.\n            Establishes = [Share(\"60% Ownership by Dealer 2\", 70, \"Dealer 2\")],\n            Invalidates = [new Right().WithLabel(\"70% Ownership by Dealer 2\").WithClassifiedAs(OwnershipRight)]\n        }\n    ];\n\n    return trade;\n}"
+  },
+  {
+    "id": "provenance/transfer/1",
+    "key": "ProvenanceTransfer.Transfer_Of_Unknown_Kind",
+    "topic": "ProvenanceTransfer",
+    "method": "Transfer_Of_Unknown_Kind",
+    "file": "src/LinkedArtNet.Examples/ProvenanceTransfer.cs",
+    "line": 9,
+    "source": "public static Activity Transfer_Of_Unknown_Kind()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/transfer/1\")\n        .WithLabel(\"Transfer of Painting\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    activity.Part = [\n        new Transfer\n        {\n            Transferred = [\n                new HumanMadeObject()\n                    .WithId(\"https://linked.art/example/object/example\")\n                    .WithLabel(\"Example Painting\")\n            ],\n            TransferredFrom = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/person1\")\n                    .WithLabel(\"Person 1\")\n            ],\n            TransferredTo = [\n                new Person()\n                    .WithId(\"https://linked.art/example/person/person2\")\n                    .WithLabel(\"Person 2\")\n            ]\n        }\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "activity/exha/40",
+    "key": "RequiredTerms.Exhibition_Activity",
+    "topic": "RequiredTerms",
+    "method": "Exhibition_Activity",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 237,
+    "source": "public static Activity Exhibition_Activity()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/activity/exha/40\")\n        .WithLabel(\"Manet and Modern Beauty (Getty)\")\n        .WithClassifiedAs(Aat.Term(\"300054766\", \"Exhibiting\"));\n\n    return activity;\n}"
+  },
+  {
+    "id": "object/nightwatch/44",
+    "key": "RequiredTerms.NightWatch_Brief_Text_Statement",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Brief_Text_Statement",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 71,
+    "source": "public static HumanMadeObject NightWatch_Brief_Text_Statement()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/44\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    nightwatch.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.MaterialsStatement, Aat.Statement)\n            .WithContent(\"Oil on Canvas\")\n    ];\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/49",
+    "key": "RequiredTerms.NightWatch_Collection_Item",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Collection_Item",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 162,
+    "source": "public static HumanMadeObject NightWatch_Collection_Item()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/49\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.CollectionItem);\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/47",
+    "key": "RequiredTerms.NightWatch_Color",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Color",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 128,
+    "source": "public static HumanMadeObject NightWatch_Color()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/47\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    nightwatch.Dimension = [\n        new Dimension\n        {\n            Label = \"brown\",\n            Value = 11754015,\n            Unit = Aat.Rgb\n        }.WithClassifiedAs(Aat.Color)\n    ];\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/50",
+    "key": "RequiredTerms.NightWatch_Label",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Label",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 22,
+    "source": "public static HumanMadeObject NightWatch_Label()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/50\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/41",
+    "key": "RequiredTerms.NightWatch_Primary_Name_In_English",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Primary_Name_In_English",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 34,
+    "source": "public static HumanMadeObject NightWatch_Primary_Name_In_English()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/41\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    nightwatch.IdentifiedBy = [\n        new Name(\"The Night Watch\")\n            .AsPrimaryName()\n            .WithLanguage(Aat.English)\n    ];\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/48",
+    "key": "RequiredTerms.NightWatch_Shape",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Shape",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 149,
+    "source": "public static HumanMadeObject NightWatch_Shape()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/48\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Rectangular, Aat.Shape);\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/42",
+    "key": "RequiredTerms.NightWatch_Statement_With_Display_Title",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Statement_With_Display_Title",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 52,
+    "source": "public static HumanMadeObject NightWatch_Statement_With_Display_Title()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/42\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    nightwatch.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.MaterialsStatement, Aat.Statement)\n            .WithContent(\"Oil on Canvas\")\n            .WithName(\"Materials\", n => n.WithClassifiedAs(Aat.DisplayName))\n    ];\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "visual/nightwatch/40",
+    "key": "RequiredTerms.NightWatch_Style",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Style",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 304,
+    "source": "public static VisualItem NightWatch_Style()\n{\n    var appearance = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/nightwatch/40\")\n        .WithLabel(\"Appearance of Night Watch\")\n        .WithClassifiedAs(Aat.Term(\"300021147\", \"Baroque\"), Aat.Style);\n\n    return appearance;\n}"
+  },
+  {
+    "id": "object/nightwatch/43",
+    "key": "RequiredTerms.NightWatch_TimeSpan_Display_Title",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_TimeSpan_Display_Title",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 89,
+    "source": "public static HumanMadeObject NightWatch_TimeSpan_Display_Title()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/43\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n    nightwatch.ProducedBy = new Production\n    {\n        TimeSpan = new LinkedArtTimeSpan\n        {\n            IdentifiedBy = [\n                new Name()\n                    .WithId(\"https://linked.art/example/Name/1642\")\n                    .WithClassifiedAs(Aat.DisplayName)\n            ],\n            BeginOfTheBegin = new LinkedArtDate(1642, 1, 1),\n            EndOfTheEnd = new LinkedArtDate(1842, 12, 31).EndOfDay()\n        }\n    };\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "object/nightwatch/45",
+    "key": "RequiredTerms.NightWatch_Type_Of_Work",
+    "topic": "RequiredTerms",
+    "method": "NightWatch_Type_Of_Work",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 115,
+    "source": "public static HumanMadeObject NightWatch_Type_Of_Work()\n{\n    var nightwatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/45\")\n        .WithLabel(\"Night Watch by Rembrandt\")\n        .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);\n\n    return nightwatch;\n}"
+  },
+  {
+    "id": "provenance/coffin_promise/40",
+    "key": "RequiredTerms.Promise_Activity",
+    "topic": "RequiredTerms",
+    "method": "Promise_Activity",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 263,
+    "source": "public static Activity Promise_Activity()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/coffin_promise/40\")\n        .WithLabel(\"Promised Gift of Painting\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    activity.Part = [\n        new Activity()\n            .WithLabel(\"Promise of Gift\")\n            .WithClassifiedAs(Aat.PromiseActivity)\n    ];\n\n    return activity;\n}"
+  },
+  {
+    "id": "provenance/manet_proust/40",
+    "key": "RequiredTerms.Provenance_Activity",
+    "topic": "RequiredTerms",
+    "method": "Provenance_Activity",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 250,
+    "source": "public static Activity Provenance_Activity()\n{\n    var activity = new Activity()\n        .WithContext()\n        .WithId(\"https://linked.art/example/provenance/manet_proust/40\")\n        .WithLabel(\"Purchase of Spring by Proust\")\n        .WithClassifiedAs(Aat.ProvenanceActivity);\n\n    return activity;\n}"
+  },
+  {
+    "id": "text/koot_nightwatch/40",
+    "key": "RequiredTerms.Publishing_Activity",
+    "topic": "RequiredTerms",
+    "method": "Publishing_Activity",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 282,
+    "source": "public static LinguisticObject Publishing_Activity()\n{\n    var text = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/koot_nightwatch/40\")\n        .WithLabel(\"Content of Koot's Night Watch\");\n\n    text.UsedFor = [\n        new Activity()\n            .WithLabel(\"MI's Publishing\")\n            .WithClassifiedAs(Aat.PublicationActivity)\n            .WithCarriedOutBy(\n                new Group()\n                    .WithId(\"https://linked.art/example/group/meulenhoff\")\n                    .WithLabel(\"Meulenhoff International\"))\n    ];\n\n    return text;\n}"
+  },
+  {
+    "id": "person/rembrandt/43",
+    "key": "RequiredTerms.Rembrandt_Occupation",
+    "topic": "RequiredTerms",
+    "method": "Rembrandt_Occupation",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 208,
+    "source": "public static Person Rembrandt_Occupation()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/43\")\n        .WithLabel(\"Rembrandt\")\n        .WithClassifiedAs(Aat.Artist, Aat.Occupation);\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/44",
+    "key": "RequiredTerms.Rembrandt_Professional_Activities",
+    "topic": "RequiredTerms",
+    "method": "Rembrandt_Professional_Activities",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 221,
+    "source": "public static Person Rembrandt_Professional_Activities()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/44\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.CarriedOut = [\n        new Activity().WithClassifiedAs(Aat.ProfessionalActivity)\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/42",
+    "key": "RequiredTerms.Rembrandt_Sort_Value",
+    "topic": "RequiredTerms",
+    "method": "Rembrandt_Sort_Value",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 192,
+    "source": "public static Person Rembrandt_Sort_Value()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/42\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.IdentifiedBy = [\n        new Identifier(\"r0000011\").WithClassifiedAs(Aat.SortValue)\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "person/rembrandt/41",
+    "key": "RequiredTerms.Rembrandt_Sorting_Name",
+    "topic": "RequiredTerms",
+    "method": "Rembrandt_Sorting_Name",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 175,
+    "source": "public static Person Rembrandt_Sorting_Name()\n{\n    var rembrandt = new Person()\n        .WithContext()\n        .WithId(\"https://linked.art/example/person/rembrandt/41\")\n        .WithLabel(\"Rembrandt\");\n\n    rembrandt.IdentifiedBy = [\n        new Name(\"Rembrandt van Rijn\").AsPrimaryName(),\n        new Name(\"van Rijn, Rembrandt Harmenszoon\").WithClassifiedAs(Aat.SortName)\n    ];\n\n    return rembrandt;\n}"
+  },
+  {
+    "id": "object/spring/30",
+    "key": "RequiredTerms.Spring_Classified_As_Painting",
+    "topic": "RequiredTerms",
+    "method": "Spring_Classified_As_Painting",
+    "file": "src/LinkedArtNet.Examples/RequiredTerms.cs",
+    "line": 9,
+    "source": "public static HumanMadeObject Spring_Classified_As_Painting()\n{\n    var spring = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/spring/30\")\n        .WithLabel(\"Jeanne (Spring) by Manet\")\n        .WithClassifiedAs(Aat.Painting);\n\n    return spring;\n}"
+  },
+  {
+    "id": "object/nightwatch/15",
+    "key": "Rights.Nightwatch_Credit_Statement",
+    "topic": "Rights",
+    "method": "Nightwatch_Credit_Statement",
+    "file": "src/LinkedArtNet.Examples/Rights.cs",
+    "line": 11,
+    "source": "public static HumanMadeObject Nightwatch_Credit_Statement()\n{\n    var nightWatch = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/nightwatch/15\")\n        .WithLabel(\"Night Watch by Rembrandt\");\n\n\n    nightWatch.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.CreditLine, Aat.Statement)\n            .WithContent(\"On loan from the City of Amsterdam\")\n    ];\n\n    return nightWatch;\n}"
+  },
+  {
+    "id": "visual/nightwatch/2",
+    "key": "Rights.Nightwatch_Rights_PublicDomain",
+    "topic": "Rights",
+    "method": "Nightwatch_Rights_PublicDomain",
+    "file": "src/LinkedArtNet.Examples/Rights.cs",
+    "line": 49,
+    "source": "public static VisualItem Nightwatch_Rights_PublicDomain()\n{\n    var nightwatchVisual = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/nightwatch/2\")\n        .WithLabel(\"Visual Content of Night Watch\");\n\n    var publicDomain = new Right()\n        .WithLabel(\"Night Watch's Public Domain status\")\n        .WithClassifiedAs(RightsStatements.CreativeCommonsPublicDomain);\n\n    publicDomain.IdentifiedBy = [\n        new Name(\"Public Domain\")\n    ];\n\n    nightwatchVisual.SubjectTo = [publicDomain];\n\n    return nightwatchVisual;\n}"
+  },
+  {
+    "id": "visual/nightwatch/1",
+    "key": "Rights.Nightwatch_Rights_Statement",
+    "topic": "Rights",
+    "method": "Nightwatch_Rights_Statement",
+    "file": "src/LinkedArtNet.Examples/Rights.cs",
+    "line": 30,
+    "source": "public static VisualItem Nightwatch_Rights_Statement()\n{\n    var nightwatchVisual = new VisualItem()\n        .WithContext()\n        .WithId(\"https://linked.art/example/visual/nightwatch/1\")\n        .WithLabel(\"Visual Content of Night Watch\");\n    \n    nightwatchVisual.ReferredToBy = [\n        new LinguisticObject()\n            .WithClassifiedAs(Aat.RightsStatement, Aat.Statement)\n            .WithContent(\"Public Domain\")\n    ];\n\n    return nightwatchVisual;\n}"
+  },
+  {
+    "id": "text/koot_nightwatch/1",
+    "key": "TextualDocuments.Abstract_Work",
+    "topic": "TextualDocuments",
+    "method": "Abstract_Work",
+    "file": "src/LinkedArtNet.Examples/TextualDocuments.cs",
+    "line": 163,
+    "source": "public static LinguisticObject Abstract_Work()\n{\n    var koot = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/koot_nightwatch/1\")\n        .WithLabel(\"Content of Koot's Night Watch\");\n\n    koot.IdentifiedBy = [\n        new Name(\"Rembrant's Night Watch. A Fascinating Story\").AsPrimaryName()\n        // Note typo for now\n    ];\n\n    koot.PartOf = [\n        new PropositionalObject()\n            .WithId(\"https://linked.art/example/concept/koot_idea\")\n            .WithLabel(\"Koot's Conceptualization\")\n    ];\n\n    return koot;\n}"
+  },
+  {
+    "id": "text/koot_nightwatch/2",
+    "key": "TextualDocuments.Authorship_And_Publication",
+    "topic": "TextualDocuments",
+    "method": "Authorship_And_Publication",
+    "file": "src/LinkedArtNet.Examples/TextualDocuments.cs",
+    "line": 64,
+    "source": "public static LinguisticObject Authorship_And_Publication()\n{\n    var koot = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/koot_nightwatch/2\")\n        .WithLabel(\"Content of Koot's Night Watch\")\n        .WithClassifiedAs(Aat.Monograph, Aat.TypeOfWork);\n\n    koot.CreatedBy = new Creation()\n    {\n        Label = \"Koot's writing of the work\",\n        CarriedOutBy = [\n            new Person()\n                .WithId(\"https://linked.art/example/person/koot\")\n                .WithLabel(\"Ton Koot\")\n        ]\n    };\n\n    koot.UsedFor = [\n        new Activity()\n        {\n            Label = \"MI's Publishing\",\n            ClassifiedAs = [ Aat.PublicationActivity ],\n            TimeSpan = LinkedArtTimeSpan.FromYear(1969),\n            CarriedOutBy = [ \n                new Group()\n                    .WithId(\"https://linked.art/example/group/meulenhoff\")\n                    .WithLabel(\"Meulenhoff International\")\n            ]\n        }\n    ];\n\n    return koot;\n}"
+  },
+  {
+    "id": "object/yul_10801219/1",
+    "key": "TextualDocuments.HumanMadeObject_Carries_Linguistic",
+    "topic": "TextualDocuments",
+    "method": "HumanMadeObject_Carries_Linguistic",
+    "file": "src/LinkedArtNet.Examples/TextualDocuments.cs",
+    "line": 13,
+    "source": "public static HumanMadeObject HumanMadeObject_Carries_Linguistic()\n{\n    var kootCopy = new HumanMadeObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/object/yul_10801219/1\")\n        .WithLabel(\"Yale's copy of Koot's Night Watch\")\n        .WithClassifiedAs(Aat.Book, Aat.TypeOfWork);\n\n    kootCopy.IdentifiedBy = [ \n        new Name(\"Rembrandt's Night Watch. A Fascinating Story\").AsPrimaryName(),\n        new Identifier(\"mfhd:10801219\").AsSystemAssignedNumber()\n    ];\n\n    kootCopy.ReferredToBy = [\n        new LinguisticObject()\n            .WithContent(\"92 p. with illus.\")\n            .WithClassifiedAs(Aat.PhysicalStatement, Aat.Statement)\n    ];\n\n    kootCopy.Carries = [\n        new LinguisticObject()\n            .WithId(\"https://linked.art/example/text/koot_nightwatch\")\n            .WithLabel(\"Content of Koot's Night Watch\")\n    ];\n\n    return kootCopy;\n}"
+  },
+  {
+    "id": "text/koot_nightwatch/3",
+    "key": "TextualDocuments.Koot_About",
+    "topic": "TextualDocuments",
+    "method": "Koot_About",
+    "file": "src/LinkedArtNet.Examples/TextualDocuments.cs",
+    "line": 145,
+    "source": "public static LinguisticObject Koot_About()\n{\n    var koot = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/koot_nightwatch/3\")\n        .WithLabel(\"Content of Koot's Night Watch\")\n        .WithClassifiedAs(Aat.Monograph, Aat.TypeOfWork);\n\n    koot.About = [\n        new HumanMadeObject()\n            .WithId(\"https://linked.art/example/object/nightwatch\")\n            .WithLabel(\"The Night Watch\")\n    ];\n\n    return koot;\n}"
+  },
+  {
+    "id": "text/koot_nightwatch_ch1/1",
+    "key": "TextualDocuments.Koot_Chapter",
+    "topic": "TextualDocuments",
+    "method": "Koot_Chapter",
+    "file": "src/LinkedArtNet.Examples/TextualDocuments.cs",
+    "line": 101,
+    "source": "public static LinguisticObject Koot_Chapter()\n{\n    var chapter = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/koot_nightwatch_ch1/1\")\n        .WithLabel(\"Chapter 1 of Koot\")\n        .WithClassifiedAs(Aat.Chapter, Aat.TypeOfWork);\n\n    chapter.IdentifiedBy = [new Name(\"Introduction\").AsPrimaryName()];\n\n    chapter.PartOf = [\n        new LinguisticObject()\n            .WithId(\"https://linked.art/example/text/koot_nightwatch\")\n            .WithLabel(\"Koot's Night Watch\")\n    ];\n\n    return chapter;\n}"
+  },
+  {
+    "id": "text/koot_nightwatch/1",
+    "key": "TextualDocuments.Koot_Textual_Content",
+    "topic": "TextualDocuments",
+    "method": "Koot_Textual_Content",
+    "file": "src/LinkedArtNet.Examples/TextualDocuments.cs",
+    "line": 45,
+    "source": "public static LinguisticObject Koot_Textual_Content()\n{\n    var koot = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/koot_nightwatch/1\")\n        .WithLabel(\"Content of Koot's Night Watch\")\n        .WithClassifiedAs(Aat.Monograph, Aat.TypeOfWork)\n        .WithLanguage(\"300388277\", \"English\", \"en\");\n\n    koot.IdentifiedBy = [\n        new Name(\"Rembrandt's Night Watch. A Fascinating Story\").AsPrimaryName(),\n        new Identifier(\"75441784\").AsSystemAssignedNumber()\n    ];\n\n    return koot;\n}",
+    "siteIssue": "The site publishes two examples as text/koot_nightwatch/1; the JSON at that URL is the 'abstract work' example with part_of, not this textual-content example."
+  },
+  {
+    "id": "text/koot_nightwatch_ch1/2",
+    "key": "TextualDocuments.Page_Count",
+    "topic": "TextualDocuments",
+    "method": "Page_Count",
+    "file": "src/LinkedArtNet.Examples/TextualDocuments.cs",
+    "line": 122,
+    "source": "public static LinguisticObject Page_Count()\n{\n    var chapter = new LinguisticObject()\n        .WithContext()\n        .WithId(\"https://linked.art/example/text/koot_nightwatch_ch1/2\")\n        .WithLabel(\"Chapter 1 of Koot\")\n        .WithClassifiedAs(Aat.Chapter, Aat.TypeOfWork);\n\n    chapter.IdentifiedBy = [new Name(\"Introduction\").AsPrimaryName()];\n\n    chapter.ReferredToBy = [\n        new LinguisticObject()\n            .WithContent(\"5 - 15\")\n            .WithClassifiedAs(Aat.PaginationStatement, Aat.Statement)\n    ];\n\n    chapter.WithPageCount(10, \"10 pages\");\n\n    return chapter;\n}"
+  }
+]

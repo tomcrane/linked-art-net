@@ -1,0 +1,74 @@
+@page "/dates"
+@model LinkedArtNet.ExamplesSite.Pages.Dates.IndexModel
+@{
+    ViewData["Title"] = "Date parser";
+}
+<h1>Free-text dates to TimeSpans</h1>
+<p class="lede">
+    Type a date as it appears in a catalogue record and see the Linked Art <code>TimeSpan</code> the
+    <a href="https://github.com/tomcrane/linked-art-net/tree/de-pmc/src/LinkedArtNet.Dates">LinkedArtNet.Dates</a> parser produces.
+    @if (Model.UsesService) { <text>Results come from the public service, so this page exercises the real API.</text> }
+    else { <text>This page parses in-process; the same code runs behind the service.</text> }
+</p>
+<form action="/dates" method="get" class="playground">
+    <input type="text" name="s" value="@Model.S" maxlength="500" aria-label="Date string" placeholder="e.g. late 1950s, c. 1850, fl. 1480-1510, 2nd quarter of the 14th century" autofocus />
+    <select name="intent" aria-label="Intent">
+        @foreach (var i in new[] { ("auto", "auto"), ("single", "one span"), ("pair", "two dates (birth/death)") })
+        {
+            <option value="@i.Item1" selected="@(Model.Intent == i.Item1)">@i.Item2</option>
+        }
+    </select>
+    <select name="profile" aria-label="Profile">
+        @foreach (var p in Model.Profiles)
+        {
+            <option value="@p.Name" selected="@(Model.Profile == p.Name)" title="@p.Description">@p.Name</option>
+        }
+    </select>
+    <button type="submit">Parse</button>
+</form>
+<p class="samples">Try: @foreach (var s in IndexModel.Samples) { <a href="/dates?s=@Uri.EscapeDataString(s)&amp;profile=@Model.Profile">@s</a> }</p>
+
+@if (Model.Result is { } r)
+{
+    <section class="result">
+        <h2><q>@r.Input</q> <span class="status status-@r.Status">@r.Status</span> <span class="muted">@r.Kind · confidence @r.Confidence.ToString("0.00") · @r.Strategy · profile @r.Profile</span></h2>
+        <dl class="kv">
+            @if (r.Canonical is not null) { <dt>Canonical</dt><dd><code>@r.Canonical</code> <a class="muted" href="/about#canonical">what is this?</a></dd> }
+            @if (r.Edtf is not null) { <dt>EDTF</dt><dd><code>@r.Edtf</code></dd> }
+            @if (r.Flags.Count > 0) { <dt>Flags</dt><dd>@string.Join(", ", r.Flags)</dd> }
+            @if (r.Unconsumed is not null) { <dt>Not understood</dt><dd><q>@r.Unconsumed</q></dd> }
+        </dl>
+        @if (r.Bars.Count > 0)
+        {
+            <div class="timeline" aria-label="Timeline">
+                @foreach (var bar in r.Bars)
+                {
+                    var (left, width) = Model.Place(bar.StartYear, bar.EndYear);
+                    <div class="bar bar-@bar.Label" style="left:@left.ToString("0.##")%;width:@width.ToString("0.##")%" title="@bar.Label: @IndexModel.YearLabel(bar.StartYear) to @IndexModel.YearLabel(bar.EndYear)"></div>
+                }
+                <span class="axis-start">@IndexModel.YearLabel(Model.AxisStart)</span><span class="axis-end">@IndexModel.YearLabel(Model.AxisEnd)</span>
+            </div>
+        }
+        @if (r.Notes.Count > 0)
+        {
+            <ul class="notes">@foreach (var n in r.Notes) { <li>@n</li> }</ul>
+        }
+        <div class="json-pair">
+            @if (r.TimeSpanJson is not null) { <div><h3>TimeSpan</h3><pre><code class="language-json">@r.TimeSpanJson</code></pre></div> }
+            @if (r.BeginJson is not null) { <div><h3>Begin</h3><pre><code class="language-json">@r.BeginJson</code></pre></div> }
+            @if (r.EndJson is not null) { <div><h3>End</h3><pre><code class="language-json">@r.EndJson</code></pre></div> }
+        </div>
+        @if (r.Status is "parsed" or "partial")
+        {
+            <h3>In C# <button type="button" class="copy" data-copy="csharp">Copy</button></h3>
+            <pre><code class="language-csharp" id="csharp">@r.CSharp</code></pre>
+        }
+        @if (r.Alternatives.Count > 0)
+        {
+            <h3>Other readings</h3>
+            <ul>@foreach (var a in r.Alternatives) { <li><code>@a.Canonical</code> (@a.Confidence.ToString("0.00")): @a.Note</li> }</ul>
+        }
+        <p class="muted">Source: @r.Source. Wrong? The corpus trainer (coming next) will take a correction; for now
+            <a href="https://github.com/tomcrane/linked-art-net/issues/new?title=@Uri.EscapeDataString("Date parse: " + r.Input)">open an issue</a> with the input and what it should mean.</p>
+    </section>
+}

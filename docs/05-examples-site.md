@@ -1,5 +1,10 @@
 # Design: Examples site (`LinkedArtNet.ExamplesSite`)
 
+Status (2026-10-14): implemented in `src/LinkedArtNet.ExamplesSite` except the trainer (`/dates/train`, Phase 3 step 3)
+and the axe lint. The C# is extracted by `tools/ExampleSourceExtractor` into `examples/source.json` rather than an MSBuild
+task; run it after editing an example (a test fails otherwise). The playground parses in-process unless
+`TimeSpanService:BaseUrl` is set. Run locally with `dotnet run --project src/LinkedArtNet.ExamplesSite`.
+
 A public ASP.NET Core Razor Pages site that shows, for every Linked Art example on https://linked.art,
 the C# fluent code that produces it, the JSON we generate, the JSON the site publishes, and whether
 they match. It also hosts the TimeSpan parser playground and the corpus trainer. It is a learning tool

@@ -1,0 +1,25 @@
+@page "/properties/{name}"
+@model LinkedArtNet.ExamplesSite.Pages.Properties.PropertyModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+<nav class="crumbs"><a href="/properties">Properties and terms</a> › @Model.Title</nav>
+<h1>@if (Model.IsTerm) { @Model.Title } else { <code>@Model.Title</code> }</h1>
+@if (Model.TermId is not null)
+{
+    <p class="meta"><a href="@Model.TermId">@Model.TermId</a></p>
+}
+<p class="lede">Used by @Model.Examples.Count example@(Model.Examples.Count == 1 ? "" : "s").</p>
+<table class="examples">
+    <thead><tr><th>Example</th><th>Section</th><th>What it shows</th></tr></thead>
+    <tbody>
+    @foreach (var e in Model.Examples)
+    {
+        <tr>
+            <td><a href="/examples/@e.Section/@e.Id"><code>@e.Id</code></a></td>
+            <td>@Model.SectionTitle(e.Section)</td>
+            <td>@e.Description</td>
+        </tr>
+    }
+    </tbody>
+</table>

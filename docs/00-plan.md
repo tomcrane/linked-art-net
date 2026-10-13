@@ -270,7 +270,16 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     the integration tests (21, WebApplicationFactory). Multi-stage Dockerfile on the chiseled ASP.NET image with a
     built-in `--healthcheck`; `.github/workflows/docker.yml` pushes to GHCR on `v*` tags.
 
-Next: Phase 3 step 2 (examples site) and step 3 (trainer, capture review, PR submissions); hosting and domains are
-the owner's. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+19. ~~Phase 3 step 2: `LinkedArtNet.ExamplesSite`.~~ Done 2026-10-14. Razor Pages, server-rendered: coverage home,
+    `/examples/{section}` and `/examples/{section}/{id}` (C# source, generated JSON, site JSON, semantic comparison,
+    status and site-issue reason, properties and terms used), `/search`, `/properties` and `/properties/{name}`
+    (reverse index by JSON property or Getty term), `/dates` playground (in-process or against the service via
+    `TimeSpanService:BaseUrl`; timeline, flags, notes, alternatives, copy-as-C#), `/dates/corpus` browser with
+    filters and paging, `/about` with licences and attributions. `tools/ExampleSourceExtractor` (Roslyn) writes
+    `examples/source.json`; `CoverageTests.Example_source_is_current` keeps it fresh. 25 WebApplicationFactory tests
+    including one that renders all 183 example pages. Dockerfile; the GHCR workflow now builds both images.
+    Not done: the trainer (`/dates/train`, step 3) and the axe accessibility lint.
+
+Next: Phase 3 step 3 (trainer, capture review, PR submissions); hosting and domains are the owner's. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

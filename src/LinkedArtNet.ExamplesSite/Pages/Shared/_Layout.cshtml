@@ -1,0 +1,39 @@
+@inject ExampleIndex Index
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@(ViewData["Title"] is string t ? t + " · " : "")Linked Art in C#</title>
+    <meta name="description" content="Every example on linked.art as C# with the LinkedArtNet library, the JSON it produces beside the site's own, and a free-text date parser." />
+    <link rel="stylesheet" href="~/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" media="(prefers-color-scheme: light)" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" media="(prefers-color-scheme: dark)" />
+</head>
+<body>
+<header class="top">
+    <a class="brand" href="/">Linked Art in C#</a>
+    <nav>
+        <a href="/">Examples</a>
+        <a href="/properties">Properties</a>
+        <a href="/dates">Dates</a>
+        <a href="/dates/corpus">Corpus</a>
+        <a href="/about">About</a>
+    </nav>
+    <form class="search" action="/search" method="get" role="search">
+        <input type="search" name="q" placeholder="Search examples, properties, terms" aria-label="Search" value="@Context.Request.Query["q"]" />
+    </form>
+</header>
+<main>
+    @RenderBody()
+</main>
+<footer>
+    <p>@Index.Implemented of @Index.Total examples from <a href="https://linked.art/model/">linked.art</a> implemented, @Index.Validated validated byte-for-byte.
+       <a href="https://github.com/tomcrane/linked-art-net">Source on GitHub</a>. MIT licence; attributions on the <a href="/about">about page</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+<script src="~/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

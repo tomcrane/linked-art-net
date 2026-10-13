@@ -1,0 +1,62 @@
+@page "/about"
+@{
+    ViewData["Title"] = "About";
+}
+<h1>About this site</h1>
+<p class="lede">
+    <a href="https://linked.art/">Linked Art</a> is a community data model for describing art and cultural heritage, built on
+    CIDOC-CRM and published as JSON-LD. <a href="https://github.com/tomcrane/linked-art-net">LinkedArtNet</a> is a .NET
+    implementation of Linked Art 1.0: a typed model with a fluent API, a free-text date parser, a parsing service, and this site.
+</p>
+
+<h2>Why C#?</h2>
+<p>
+    JSON-LD examples are precise but hard to read in bulk. The same example as fluent C# reads like a description of the thing:
+    a painting, produced by someone, at some time, carrying a title. Every example here is checked against the JSON that
+    linked.art publishes, so the code you read is known to produce the real thing. Where it does not, the page says so and
+    links the upstream issue.
+</p>
+
+<h2>Using the library</h2>
+<p>Packages are not yet on NuGet; build from source. The repository README has the quick start. The libraries target .NET 10.</p>
+<pre><code class="language-csharp">var painting = new HumanMadeObject("https://example.org/object/1")
+    .WithLabel("Night Watch")
+    .ClassifiedAs(Aat.Painting, Aat.WorkOfArt);
+painting.ProducedBy().CarriedOutBy(rembrandt).WithTimeSpan("1642");</code></pre>
+
+<h2 id="canonical">Canonical date expressions</h2>
+<p>
+    The date parser reduces every input to a small canonical language before producing a TimeSpan: EDTF where EDTF can say it
+    (<code>1957/1959</code>, <code>1850~</code>), and a few keywords where it cannot (<code>late 195X</code>, <code>century 19</code>,
+    <code>born 1606</code>, <code>fl 1480/1510</code>, <code>period:edo</code>, <code>4.5 Ga ago</code>). The same canonical form
+    always realises to the same TimeSpan under a given profile, which is what makes the corpus testable. The language is documented in
+    <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/docs/canonical-expression.md">docs/canonical-expression.md</a>.
+</p>
+
+<h2>Profiles</h2>
+<p>
+    Conventions differ: "19th century" is 1800 to 1899 in a museum label and 1801 to 1900 to a medievalist; "early" is a third to
+    some and a half to others; US archives write month first. A <strong>profile</strong> fixes these choices. The repository ships
+    <code>default</code>, <code>library</code>, <code>archive-us</code>, <code>catalogue-quarters</code>, <code>medieval-manuscripts</code>
+    and <code>multilingual</code>, and a profile advisor that proposes settings from a sample of your strings.
+</p>
+
+<h2 id="corpus">The corpus and its sources</h2>
+<p>Every entry in the corpus states where it came from. Imported collections, each under a licence compatible with this project's MIT licence:</p>
+<ul>
+    <li><strong>yearrange</strong> (MIT), Christopher Johnson's year-range parser test data.</li>
+    <li><strong>timetwister</strong> (MIT), the Yale date normalisation gem's specification examples.</li>
+    <li><strong>Getty ULAN</strong> (ODC-By), life dates from the Union List of Artist Names, fetched from the Getty SPARQL endpoint.</li>
+    <li><strong>EDTF specification</strong> (public domain), the Library of Congress's examples.</li>
+</ul>
+<p>
+    Named period tables (Japanese eras, Chinese dynasties, British periods, archaeological ages) and the seven language lexicons
+    state their provenance inside each file. Full notices are in
+    <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/corpus/imported/THIRD-PARTY-NOTICES.md">THIRD-PARTY-NOTICES.md</a>.
+</p>
+
+<h2>Licence</h2>
+<p>
+    LinkedArtNet is MIT licensed. The examples' content is linked.art's, reproduced here for comparison; linked.art is
+    published under CC BY 4.0 by the Linked Art community. Getty vocabulary terms are referenced by URI under the Getty's ODC-By licence.
+</p>

@@ -171,8 +171,8 @@ public static partial class CanonicalReader
         var abs = digits.TrimStart('-');
         if (text.StartsWith('Y') ? abs.Length < 5 : abs.Length != 4)
             throw new FormatException($"'{text}': years are four digits, or 'Y' followed by five or more.");
-        var value = long.Parse(abs, CultureInfo.InvariantCulture);
-        if (value > LinkedArtDate.MaxAbsYear) throw new FormatException($"'{text}': year beyond the supported range.");
+        if (!long.TryParse(abs, NumberStyles.None, CultureInfo.InvariantCulture, out var value) || value > LinkedArtDate.MaxAbsYear)
+            throw new FormatException($"'{text}': year beyond the supported range.");
         return digits.StartsWith('-') ? -value : value;
     }
 

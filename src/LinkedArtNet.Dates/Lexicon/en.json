@@ -1,0 +1,59 @@
+{
+  "language": "en",
+  "months": {
+    "january": 1, "jan": 1, "february": 2, "feb": 2, "march": 3, "mar": 3, "april": 4, "apr": 4, "may": 5,
+    "june": 6, "jun": 6, "july": 7, "jul": 7, "august": 8, "aug": 8, "september": 9, "sep": 9, "sept": 9,
+    "october": 10, "oct": 10, "november": 11, "nov": 11, "december": 12, "dec": 12
+  },
+  "seasons": { "spring": "Spring", "summer": "Summer", "autumn": "Autumn", "fall": "Autumn", "winter": "Winter" },
+  "centuryWords": ["century", "centuries", "cent", "cents", "siecle", "siècle", "jahrhundert", "jh", "secolo", "siglo"],
+  "millenniumWords": ["millennium", "millennia", "millenium"],
+  "bands": {
+    "early": "Early", "earlier": "Early", "mid": "Mid", "middle": "Mid", "middle of": "Mid", "late": "Late", "later": "Late",
+    "first half": "FirstHalf", "1st half": "FirstHalf", "first half of": "FirstHalf", "1st half of": "FirstHalf",
+    "second half": "SecondHalf", "2nd half": "SecondHalf", "latter half": "SecondHalf", "second half of": "SecondHalf", "2nd half of": "SecondHalf", "latter half of": "SecondHalf",
+    "first quarter": "FirstQuarter", "1st quarter": "FirstQuarter", "first quarter of": "FirstQuarter", "1st quarter of": "FirstQuarter",
+    "second quarter": "SecondQuarter", "2nd quarter": "SecondQuarter", "second quarter of": "SecondQuarter", "2nd quarter of": "SecondQuarter",
+    "third quarter": "ThirdQuarter", "3rd quarter": "ThirdQuarter", "third quarter of": "ThirdQuarter", "3rd quarter of": "ThirdQuarter",
+    "fourth quarter": "FourthQuarter", "4th quarter": "FourthQuarter", "last quarter": "FourthQuarter", "fourth quarter of": "FourthQuarter", "4th quarter of": "FourthQuarter", "last quarter of": "FourthQuarter",
+    "first third": "FirstThird", "first third of": "FirstThird", "second third": "SecondThird", "middle third": "SecondThird", "second third of": "SecondThird", "middle third of": "SecondThird",
+    "last third": "LastThird", "final third": "LastThird", "last third of": "LastThird", "final third of": "LastThird",
+    "beginning": "BeginningOf", "beginning of": "BeginningOf", "start": "BeginningOf", "start of": "BeginningOf", "opening years of": "BeginningOf",
+    "end": "EndOf", "end of": "EndOf", "close of": "EndOf", "closing years of": "EndOf"
+  },
+  "hedges": {
+    "c": "Approximate", "ca": "Approximate", "circa": "Approximate", "cca": "Approximate", "about": "Approximate", "abt": "Approximate",
+    "approx": "Approximate", "approximately": "Approximate", "around": "Approximate", "roughly": "Approximate", "~": "Approximate",
+    "probably": "Uncertain", "perhaps": "Uncertain", "possibly": "Uncertain", "uncertain": "Uncertain", "maybe": "Uncertain", "prob": "Uncertain"
+  },
+  "eras": { "bc": "Bce", "bce": "Bce", "bp": "Bp", "ad": "Ce", "ce": "Ce", "a.d": "Ce", "anno domini": "Ce" },
+  "relations": {
+    "before": "Before", "ante": "Before", "pre": "Before", "prior to": "Before", "earlier than": "Before",
+    "after": "After", "post": "After", "later than": "After",
+    "by": "By", "until": "Until", "till": "Until", "up to": "Until", "to": "Until",
+    "since": "NotBefore", "from": "NotBefore", "not before": "NotBefore", "no earlier than": "NotBefore", "at the earliest": "NotBefore",
+    "not after": "NotAfter", "no later than": "NotAfter", "at the latest": "NotAfter"
+  },
+  "openEnd": ["present", "present day", "onwards", "onward", "ongoing", "now", "today", "date", "current", "continuing"],
+  "rangeWords": ["to", "through", "thru", "and"],
+  "between": ["between", "from"],
+  "or": ["or"],
+  "floruit": ["fl", "flourished", "floruit", "active", "flor", "worked", "working"],
+  "lifecycle": {
+    "b": "Born", "born": "Born", "birth": "Born", "n": "Born", "né": "Born", "née": "Born", "*": "Born",
+    "bapt": "Baptised", "baptised": "Baptised", "baptized": "Baptised", "bp": "Baptised", "christened": "Baptised",
+    "d": "Died", "died": "Died", "death": "Died", "ob": "Died", "†": "Died", "+": "Died",
+    "bur": "Buried", "buried": "Buried", "burial": "Buried"
+  },
+  "undated": ["nd", "n d", "sd", "s d", "sa", "s a", "undated", "no date", "not dated", "date unknown", "unknown date", "unknown", "unspecified", "s n", "without date"],
+  "magnitudes": { "thousand": "Thousand", "ka": "Thousand", "kya": "Thousand", "kyr": "Thousand", "million": "Million", "ma": "Million", "mya": "Million", "myr": "Million", "billion": "Billion", "ga": "Billion", "bya": "Billion", "gyr": "Billion" },
+  "ago": ["ago", "years ago", "yrs ago", "year ago", "before present", "before the present"],
+  "bp": ["bp", "b p", "ybp", "cal bp"],
+  "corrections": ["ie", "i e", "that is", "recte", "rectius", "really", "actually", "corrected to", "sic for"],
+  "noise": ["the", "of", "in", "on", "at", "a", "an", "circa", "©", "cop", "copyright", "sic", "printed", "published", "dated", "made", "issued", "year", "years", "yr", "yrs", "c", "ca", "cir", "i", "e", "ie", "dates", "date", "approximate", "approx", "probable", "est", "estimated"],
+  "ordinalWords": {
+    "first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10,
+    "eleventh": 11, "twelfth": 12, "thirteenth": 13, "fourteenth": 14, "fifteenth": 15, "sixteenth": 16, "seventeenth": 17,
+    "eighteenth": 18, "nineteenth": 19, "twentieth": 20, "twenty-first": 21, "twentyfirst": 21, "twenty first": 21, "twenty-second": 22, "twenty second": 22
+  }
+}

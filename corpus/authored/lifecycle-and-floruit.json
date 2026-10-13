@@ -3,9 +3,9 @@
   "source": {
     "name": "Authored: lifecycles and floruit",
     "licence": "CC0-1.0",
-    "notes": "Birth-death pairs in the forms found in authority files and catalogue headings ('1606-1669', 'b. 1850', 'd. 1920', '1606?-1669', '(1606-1669)'), floruit ('fl. 1480-1510', 'active 1920s'), and the pair/auto intents. Pair intent splits an interval into Begin (birth) and End (death); a single marked date gives one half; an unmarked single date is Partial. Expectations checked by hand; held at proposed until the grammar strategy parses free text (Phase 2 step 3)."
+    "notes": "Birth-death pairs in the forms found in authority files and catalogue headings ('1606-1669', 'b. 1850', 'd. 1920', '1606?-1669', '(1606-1669)'), floruit ('fl. 1480-1510', 'active 1920s'), and the pair/auto intents. Pair intent splits an interval into Begin (birth) and End (death); a single marked date gives one half; an unmarked single date is Partial. Expectations checked by hand."
   },
-  "defaults": { "intent": "pair", "profile": "default", "status": "proposed", "tags": ["lifecycle"] },
+  "defaults": { "intent": "pair", "profile": "default", "status": "verified", "tags": ["lifecycle"] },
   "entries": [
     { "id": "life-001", "input": "1606-1669", "tags": ["pair", "range"],
       "expect": { "status": "parsed", "kind": "birthDeath", "canonical": "1606/1669",

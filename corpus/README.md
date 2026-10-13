@@ -13,8 +13,7 @@ produce. Design: [docs/06-corpus-and-testing.md](../docs/06-corpus-and-testing.m
 | `proposed/` | Entries submitted from the trainer, awaiting review | CC0-1.0 |
 
 Status: `verified` entries gate CI (`CorpusTests.Verified_entry_passes`); `proposed` and `disputed` are reported.
-Until the grammar strategy lands (Phase 2 step 3) only canonical input parses, so every free-text file is held
-at `proposed` even where the expectations have been checked by hand; the files say so in their notes.
+The seed PMC strings are `proposed` pending the owner's review of the hand-derived expectations.
 
 Tooling:
 

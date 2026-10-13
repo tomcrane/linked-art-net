@@ -15,4 +15,8 @@
     <InternalsVisibleTo Include="LinkedArtNet.Dates.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Lexicon\*.json" LogicalName="LinkedArtNet.Dates.Lexicon.%(Filename)%(Extension)" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,7 @@
 using LinkedArtNet.Dates.Canonical;
+using LinkedArtNet.Dates.Grammar;
 using LinkedArtNet.Dates.Realisation;
+using LinkedArtNet.Dates.Text;
 
 namespace LinkedArtNet.Dates;
 
@@ -12,12 +14,15 @@ public sealed record ParseOptions
 }
 
 /// <summary>A reading of a normalised string produced by one strategy.</summary>
-public sealed record Candidate(DateExpression Expression, double Confidence, string Strategy, string? UnconsumedText = null, IReadOnlyList<string>? Notes = null);
+public sealed record Candidate(DateExpression Expression, double Confidence, string Strategy, string? UnconsumedText = null,
+    IReadOnlyList<string>? Notes = null, IReadOnlySet<DateFlag>? Flags = null);
 
 /// <summary>One link of the strategy chain: cheap and deterministic, returns null when it has nothing to say.</summary>
 public interface IParseStrategy
 {
     string Name { get; }
+    /// <summary>True to receive the trimmed original text instead of the normalised one (EDTF sets keep their brackets).</summary>
+    bool UsesRawText => false;
     Candidate? TryParse(string text, ParseProfile profile);
 }
 
@@ -26,18 +31,28 @@ public sealed class CanonicalStrategy : IParseStrategy
 {
     public string Name => "canonical";
 
+    public bool UsesRawText => true;
+
     public Candidate? TryParse(string text, ParseProfile profile) =>
         CanonicalReader.TryParse(text, out var expression) ? new Candidate(expression!, 1.0, Name) : null;
 }
 
 /// <summary>
-/// Free text in, Linked Art TimeSpans out. Thread-safe; keep one instance. The strategy chain is tried in order and
-/// the first candidate at or above the profile's accept threshold wins; otherwise the best candidate is used and the
-/// rest are reported as alternatives. Nothing here throws for bad input.
+/// Free text in, Linked Art TimeSpans out. Thread-safe; keep one instance. The text is normalised, then the strategy
+/// chain is tried in order (canonical, grammar, salvage by default) and the first candidate at or above the profile's
+/// accept threshold wins; otherwise the best candidate is used and the rest are reported as alternatives.
+/// Nothing here throws for bad input.
 /// </summary>
-public sealed class TimeSpanParser
+public sealed partial class TimeSpanParser
 {
-    public const string Version = "0.1.0";
+    [System.Text.RegularExpressions.GeneratedRegex(@"^\s*\d{4}(?:-\d{2}(?:-\d{2})?)?\s*$")]
+    private static partial System.Text.RegularExpressions.Regex IsoShape();
+
+    // "-1850" is a catalogue's open start; a zero-padded "-0499" is EDTF's BCE year and is left alone.
+    [System.Text.RegularExpressions.GeneratedRegex(@"^\s*-\s*[1-9]\d{2,3}\s*$")]
+    private static partial System.Text.RegularExpressions.Regex LeadingDash();
+
+    public const string Version = "0.2.0";
 
     private readonly IReadOnlyList<IParseStrategy> _strategies;
     private readonly ParseProfile _profile;
@@ -46,13 +61,20 @@ public sealed class TimeSpanParser
     public TimeSpanParser(ParseProfile? profile = null, IEnumerable<IParseStrategy>? strategies = null, Func<long>? currentYear = null)
     {
         _profile = profile ?? ParseProfile.Default;
-        _strategies = strategies?.ToList() ?? [new CanonicalStrategy()];
+        _strategies = strategies?.ToList() ?? DefaultStrategies(_profile);
         _currentYear = currentYear;
     }
 
     public static TimeSpanParser Default { get; } = new();
 
     public ParseProfile Profile => _profile;
+
+    /// <summary>Canonical, grammar (with the profile's languages), salvage.</summary>
+    public static IReadOnlyList<IParseStrategy> DefaultStrategies(ParseProfile profile)
+    {
+        var lexicon = Lexicon.Merge(profile.Languages.Select(Lexicon.Load));
+        return [new CanonicalStrategy(), new GrammarStrategy(new Tokenizer(lexicon)), new SalvageStrategy()];
+    }
 
     public TimeSpanParseResult Parse(string input, Intent intent = Intent.Auto) => Parse(input, new ParseOptions { Intent = intent });
 
@@ -61,18 +83,34 @@ public sealed class TimeSpanParser
         ArgumentNullException.ThrowIfNull(options);
         var profile = options.Profile ?? _profile;
         var original = input ?? "";
-        var text = Normalise(original);
-        if (text.Length == 0) return Unparsed(original, profile, "Empty input.");
+
+        // Fast path: a bare ISO year, month or day ("1984", "2024-04-27") needs no normaliser and no strategy chain.
+        if (original.Length is >= 4 and <= 12 && IsoShape().IsMatch(original) && CanonicalReader.TryParse(original.Trim(), out var iso))
+            return new TimeSpanRealiser(profile, _currentYear).Realise(iso!, original, options.Intent, 1.0, "canonical");
+
+        var normalised = Normaliser.Normalise(original);
+        if (normalised.Text.Length == 0) return Unparsed(original, profile, "Empty input.", normalised);
 
         var candidates = new List<Candidate>();
         foreach (var strategy in _strategies)
         {
-            var candidate = strategy.TryParse(text, profile);
+            Candidate? candidate;
+            try { candidate = strategy.TryParse(strategy.UsesRawText ? original.Trim() : normalised.Text, profile); }
+            catch (Exception ex) when (ex is ArgumentException or FormatException or InvalidOperationException or OverflowException)
+            {
+                candidate = null; // a strategy bug on odd input must never surface; the next strategy gets its turn
+            }
             if (candidate is null) continue;
+            if (strategy.UsesRawText && profile.LeadingDashIsOpenStart && LeadingDash().IsMatch(original))
+            {
+                // "-1850": the EDTF reading (a BCE year) is kept as an alternative; the catalogue reading wins.
+                candidates.Add(candidate with { Confidence = 0.4, Notes = ["EDTF would read a leading minus as a BCE year."] });
+                continue;
+            }
             candidates.Add(candidate);
             if (candidate.Confidence >= profile.AcceptThreshold) break;
         }
-        if (candidates.Count == 0) return Unparsed(original, profile, "No strategy could read the text.");
+        if (candidates.Count == 0) return Unparsed(original, profile, "No strategy could read the text.", normalised);
 
         var best = candidates.OrderByDescending(c => c.Confidence).First();
         var realiser = new TimeSpanRealiser(profile, _currentYear);
@@ -84,20 +122,19 @@ public sealed class TimeSpanParser
             var span = realiser.Realise(other.Expression, original, options.Intent, other.Confidence, other.Strategy);
             alternatives.Add(new Alternative(other.Expression.Canonical, other.Confidence, $"Read by the {other.Strategy} strategy", span.TimeSpan));
         }
-        var notes = result.Notes.ToList();
-        if (best.Notes is { Count: > 0 } n) notes.InsertRange(0, n);
+        var notes = normalised.Notes.Concat(best.Notes ?? []).Concat(result.Notes).ToList();
         var flags = new HashSet<DateFlag>(result.Flags);
+        flags.UnionWith(normalised.Flags);
+        if (best.Flags is not null) flags.UnionWith(best.Flags);
+        if (best.Strategy == "salvage") flags.Add(DateFlag.Salvaged);
         if (best.UnconsumedText is not null) flags.Add(DateFlag.Unconsumed);
 
         return result with { Alternatives = alternatives, Notes = notes, Flags = flags, UnconsumedText = best.UnconsumedText };
     }
 
-    // The full normaliser (Unicode, dashes, brackets, MARC noise) arrives with the grammar strategy; until then: trim.
-    private static string Normalise(string input) => input.Length > 500 ? input[..500].Trim() : input.Trim();
-
-    private static TimeSpanParseResult Unparsed(string input, ParseProfile profile, string note) => new()
+    private static TimeSpanParseResult Unparsed(string input, ParseProfile profile, string note, NormalisedText normalised) => new()
     {
         Input = input, Status = ParseStatus.Unparsed, Kind = ResultKind.None, Confidence = 0,
-        Notes = [note], Profile = profile.Name,
+        Notes = normalised.Notes.Append(note).ToList(), Flags = normalised.Flags, Profile = profile.Name,
     };
 }

@@ -19,7 +19,7 @@ public class ParserAndProfileTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    [InlineData("late 1950s")]
+    [InlineData("hello world")]
     [InlineData("not a date at all")]
     [InlineData(null)]
     public void Never_throws_for_unreadable_input(string? input)

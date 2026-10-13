@@ -3,9 +3,9 @@
   "source": {
     "name": "Authored: BCE and deep time",
     "licence": "CC0-1.0",
-    "notes": "Era words, astronomical year numbering (1 BCE = 0000, 500 BCE = -0499), BCE centuries (always strict: 5th century BCE = 500-401 BCE), ranges across the era boundary, and geological time counted back from 1950 (BP) or the present (taken as 2026 in tests). Expectations checked by hand under the default profile; held at proposed until the grammar strategy parses free text (Phase 2 step 3)."
+    "notes": "Era words, astronomical year numbering (1 BCE = 0000, 500 BCE = -0499), BCE centuries (always strict: 5th century BCE = 500-401 BCE), ranges across the era boundary, and geological time counted back from 1950 (BP) or the present (taken as 2026 in tests). Expectations checked by hand under the default profile."
   },
-  "defaults": { "intent": "single", "profile": "default", "status": "proposed", "tags": ["bce"] },
+  "defaults": { "intent": "single", "profile": "default", "status": "verified", "tags": ["bce"] },
   "entries": [
     { "id": "bce-001", "input": "500 BC", "tags": ["year", "era"],
       "expect": { "status": "parsed", "canonical": "-0499", "edtf": "-0499",
@@ -44,8 +44,8 @@
     { "id": "bce-013", "input": "27 BC - AD 14", "tags": ["range", "era", "era-boundary"],
       "expect": { "status": "parsed", "canonical": "-0026/0014", "edtf": "-0026/0014",
         "timespan": { "begin_of_the_begin": "-0026-01-01T00:00:00Z", "end_of_the_end": "0014-12-31T23:59:59Z" } } },
-    { "id": "bce-014", "input": "ca. 450 - 400 BC", "tags": ["range", "era", "circa", "shared-era"],
-      "expect": { "status": "parsed", "canonical": "-0449~/-0399~", "edtf": "-0449~/-0399~", "flags": ["Approximate", "Bce"] } },
+    { "id": "bce-014", "input": "ca. 450 - 400 BC", "tags": ["range", "era", "circa", "shared-era"], "notes": "The hedge applies to the first bound; the era is shared by both.",
+      "expect": { "status": "parsed", "canonical": "-0449~/-0399", "edtf": "-0449~/-0399", "flags": ["Approximate", "Bce"] } },
     { "id": "bce-015", "input": "4.5 billion years ago", "tags": ["deep-time"],
       "expect": { "status": "parsed", "canonical": "4.5 Ga ago", "edtf": "Y-4549997974/Y-4449997974",
         "timespan": { "begin_of_the_begin": "-4549997974-01-01T00:00:00Z", "end_of_the_end": "-4449997974-12-31T23:59:59Z" }, "flags": ["DeepTime"] },
@@ -53,7 +53,7 @@
     { "id": "bce-016", "input": "66 million years ago", "tags": ["deep-time"],
       "expect": { "status": "parsed", "canonical": "66 Ma ago", "flags": ["DeepTime"] } },
     { "id": "bce-017", "input": "10,000 BP", "tags": ["deep-time", "bp"],
-      "expect": { "status": "parsed", "canonical": "10000 years BP", "edtf": "-8050/-8050",
+      "expect": { "status": "parsed", "canonical": "10000 years BP", "edtf": "-8050",
         "timespan": { "begin_of_the_begin": "-8050-01-01T00:00:00Z", "end_of_the_end": "-8050-12-31T23:59:59Z" }, "flags": ["DeepTime"] },
       "notes": "Written to the year, so no widening: 1950 - 10000 = -8050." },
     { "id": "bce-018", "input": "c. 10 ka BP", "tags": ["deep-time", "bp", "circa"],

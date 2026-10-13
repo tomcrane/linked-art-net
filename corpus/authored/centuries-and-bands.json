@@ -3,9 +3,9 @@
   "source": {
     "name": "Authored: centuries, decades and bands",
     "licence": "CC0-1.0",
-    "notes": "Ordinal centuries in several notations (14th century, C14, XIVth c., 1300s), the popular convention (19th century = 1800-1899), bands (early 0-33, mid 34-66, late 67-99 of a century; early 0-3, mid 3-6, late 7-9 of a decade; halves and quarters exact; beginning/end = first/last decade of a century), shared suffixes ('early - mid 13th century') and hedged bands. Expectations checked by hand under the default profile; held at proposed until the grammar strategy parses free text (Phase 2 step 3)."
+    "notes": "Ordinal centuries in several notations (14th century, C14, XIVth c., 1300s), the popular convention (19th century = 1800-1899), bands (early 0-33, mid 34-66, late 67-99 of a century; early 0-3, mid 3-6, late 7-9 of a decade; halves and quarters exact; beginning/end = first/last decade of a century), shared suffixes ('early - mid 13th century') and hedged bands. Expectations checked by hand under the default profile."
   },
-  "defaults": { "intent": "single", "profile": "default", "status": "proposed", "tags": ["century"] },
+  "defaults": { "intent": "single", "profile": "default", "status": "verified", "tags": ["century"] },
   "entries": [
     { "id": "cen-001", "input": "19th century", "tags": ["ordinal"],
       "expect": { "status": "parsed", "canonical": "century 19", "edtf": "1800/1899",

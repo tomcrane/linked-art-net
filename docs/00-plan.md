@@ -221,6 +221,16 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     (BCE and deep time, centuries and bands, open ends and relations, lifecycles and floruit: 110 entries) plus
     `canonical-forms.json` (18 verified). Free-text files are held at `proposed` until step 3; 256 entries in all.
 
-Next: Phase 2 step 3 (normaliser, tokenizer, grammar), then flip the seed and authored files to verified. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+14. ~~Phase 2 step 3: normaliser, tokenizer, grammar, salvage.~~ Done 2026-10-13. `Normaliser` (NFKC, dashes, quotes,
+    wrapping brackets as Bracketed/Parenthesised, trailing punctuation, [sic]), `Lexicon` (embedded `Lexicon/en.json`,
+    multi-word phrases, dotted abbreviations), `Tokenizer`, `GrammarStrategy` (recursive descent: eras, hedges, bands,
+    centuries in five notations, decades, unspecified digits, months/days/seasons, ranges with abbreviated or
+    incomplete bounds, open ends, relations, sets, lifecycle and floruit, deep time, parentheticals as noise,
+    corrections or secondary dates, repeats), `SalvageStrategy`, ISO fast path, `LeadingDashIsOpenStart` policy.
+    Corpus: 256/256 pass; the seed py_datetime file and the four authored sets are now `verified` (151 verified,
+    105 proposed: the PMC strings await the owner's review).
+
+Next: Phase 2 step 4 (named periods), then 5 (import corpora), 6 (fluent bridge, profiles, profile advisor, other
+languages). Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

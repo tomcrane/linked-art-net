@@ -3,9 +3,9 @@
   "source": {
     "name": "Authored: open ends, relations, hedges and sets",
     "licence": "CC0-1.0",
-    "notes": "Open-ended ranges, before/after/by/until/since/not before/not after, circa and question marks, 'or' sets, inverted ranges and undated markers. Default profile: an open bound is omitted ('before X' gives only end_of_the_end, ending a second before X; 'by X' includes X), hedges are flags only. Expectations checked by hand; held at proposed until the grammar strategy parses free text (Phase 2 step 3)."
+    "notes": "Open-ended ranges, before/after/by/until/since/not before/not after, circa and question marks, 'or' sets, inverted ranges and undated markers. Default profile: an open bound is omitted ('before X' gives only end_of_the_end, ending a second before X; 'by X' includes X), hedges are flags only. Expectations checked by hand."
   },
-  "defaults": { "intent": "single", "profile": "default", "status": "proposed", "tags": ["relation"] },
+  "defaults": { "intent": "single", "profile": "default", "status": "verified", "tags": ["relation"] },
   "entries": [
     { "id": "rel-001", "input": "before 1850", "tags": ["before"],
       "expect": { "status": "parsed", "canonical": "before 1850", "edtf": "../1849",
@@ -37,7 +37,7 @@
         "timespan": { "begin_of_the_begin": "1971-01-01T00:00:00Z" }, "flags": ["OpenEnd"] } },
     { "id": "rel-012", "input": "-1850", "tags": ["open-start", "leading-dash"],
       "expect": { "status": "parsed", "canonical": "../1850", "timespan": { "end_of_the_end": "1850-12-31T23:59:59Z" }, "flags": ["OpenStart"] },
-      "notes": "A leading dash is an open start, not a negative year; '-0499' with four digits is the BCE form." },
+      "notes": "Catalogue convention; EDTF would read 1851 BCE. The profile policy LeadingDashIsOpenStart (default true) decides, and the EDTF reading is kept as an alternative." },
     { "id": "rel-013", "input": "1971 - present", "tags": ["open-end", "present"],
       "expect": { "status": "parsed", "canonical": "1971/..", "flags": ["OpenEnd"] } },
     { "id": "rel-014", "input": "1971 onwards", "tags": ["open-end"],

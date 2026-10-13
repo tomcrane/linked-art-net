@@ -120,7 +120,8 @@ as `Alternatives` and the best is used.
 | 4 | `SalvageStrategy` | Pull plausible years out of noise when the grammar fails ("Not dated (1780's)", "72/127, 2005") | 0.3-0.5, flag `Salvaged` |
 | 5 | `IDateInterpreter` (optional, async) | Anything still unparsed or below threshold; e.g. an LLM | Reported by interpreter, capped at 0.6, flag `Interpreted` |
 
-Strategies 1-4 are synchronous and allocation-light; `Parse()` never does I/O. `ParseAsync()` adds
+Bare ISO shapes ("1984", "2024-04", "2024-04-27") take a fast path before the normaliser and the chain: one
+regex, the canonical reader, the realiser. Strategies 1-4 are synchronous and allocation-light; `Parse()` never does I/O. `ParseAsync()` adds
 strategy 5. A `MemoryCache`-backed memo (keyed by input + profile + intent) sits in front of the
 chain because real datasets repeat strings heavily.
 
@@ -197,6 +198,7 @@ inherited and overridden):
 | `NamedPeriods` | built-in table | plus any `INamedPeriodSource` |
 | `LabelPolicy` | `Label` | `_label` = input; `LabelAndName` also adds `identified_by` Name; `Name` only |
 | `AcceptThreshold` | 0.75 | below this, continue down the strategy chain |
+| `LeadingDashIsOpenStart` | true | free text "-1850" is an open start (the EDTF reading, 1851 BCE, becomes an alternative); zero-padded "-0499" is always EDTF |
 
 Intent and kind:
 

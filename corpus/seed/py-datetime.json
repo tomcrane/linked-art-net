@@ -3,9 +3,9 @@
   "source": {
     "name": "py_datetime prototype tests",
     "licence": "repo",
-    "notes": "The 35 test strings (plus two 'still to do' cases) from py_datetime/tests.py, library-catalogue style. Expectations re-derived under the default profile: Popular century convention (13th century = 1200-1299), century bands early 00-33 / mid 34-66 / late 67-99, decade bands early 0-3 / mid 3-6 / late 7-9, circa does not widen. Where the prototype's expectation differs the entry is 'proposed' and the original is kept in sourceExpectation. Entries were verified by hand but are held at proposed until the grammar strategy (Phase 2 step 3) can parse free text; then the file flips to verified."
+    "notes": "The 35 test strings (plus two 'still to do' cases) from py_datetime/tests.py, library-catalogue style. Expectations re-derived under the default profile: Popular century convention (13th century = 1200-1299), century bands early 00-33 / mid 34-66 / late 67-99, decade bands early 0-3 / mid 3-6 / late 7-9, circa does not widen. Where the prototype's expectation differs the entry is 'proposed' and the original is kept in sourceExpectation."
   },
-  "defaults": { "intent": "single", "profile": "default", "status": "proposed", "tags": ["library-catalogue"] },
+  "defaults": { "intent": "single", "profile": "default", "status": "verified", "tags": ["library-catalogue"] },
   "entries": [
     {
       "id": "pyd-001", "input": "c.1928 - 32", "tags": ["circa", "range", "abbreviated-end"],
@@ -164,11 +164,9 @@
     },
     {
       "id": "pyd-027", "input": "13/11/08", "tags": ["numeric-date", "two-digit-year", "ambiguous"], "status": "proposed",
-      "expect": { "status": "parsed", "canonical": "2008-11-13", "edtf": "2008-11-13",
-        "timespan": { "begin_of_the_begin": "2008-11-13T00:00:00Z", "end_of_the_end": "2008-11-13T23:59:59Z" },
-        "flags": ["TwoDigitYear"], "maxConfidence": 0.6 },
+      "expect": { "status": "unparsed" },
       "sourceExpectation": "2008-11-13 (dateutil)",
-      "notes": "Policy undecided: numeric dates with two-digit years need a TwoDigitYearWindow; the default profile may instead return unparsed. Low confidence either way."
+      "notes": "The default profile has no TwoDigitYearWindow, so a two-digit year is refused; a library profile with the window set reads this as 2008-11-13 (day first) at reduced confidence."
     },
     {
       "id": "pyd-028", "input": "c.1878-79", "tags": ["circa", "range", "abbreviated-end"],

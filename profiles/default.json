@@ -80,6 +80,7 @@
   "defaultEra": "ce",
   "minYearDigits": 3,
   "dayMonthOrder": "dayFirst",
+  "leadingDashIsOpenStart": true,
   "plausibleYearMin": -10000,
   "plausibleYearMax": 2200,
   "labelPolicy": "label",

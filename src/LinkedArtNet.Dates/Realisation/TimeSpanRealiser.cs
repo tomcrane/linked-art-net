@@ -87,6 +87,7 @@ public sealed class TimeSpanRealiser
             };
         }
 
+        if (whole.Start is { Year: <= 0 } || whole.End is { Year: <= 0 }) flags.Add(DateFlag.Bce);
         var status = ParseStatus.Parsed;
         if (intent == Intent.Pair && kind == ResultKind.Single)
         {
@@ -306,7 +307,8 @@ public sealed class TimeSpanRealiser
     {
         var reference = dt.Reference == DeepTimeReference.BeforePresent1950 ? 1950 : _currentYear();
         // Precision from the written value: "4.5" is +-0.05, "4500" is +-0.5, "10" (as "10 ka") is +-0.5 ka.
-        var halfUnit = HalfUnit(dt.Value) * DeepTime.Factor(dt.Magnitude);
+        // "10,000 BP" is given to the year and is not widened; "4.5 Ga" is widened to its written precision.
+        var halfUnit = dt.Magnitude == Magnitude.Years && dt.Value == Math.Floor(dt.Value) ? 0 : HalfUnit(dt.Value) * DeepTime.Factor(dt.Magnitude);
         var yearsAgo = dt.YearsAgo;
         var first = ClampYear((long)Math.Floor(reference - yearsAgo - halfUnit));
         var last = ClampYear((long)Math.Floor(reference - yearsAgo + halfUnit));

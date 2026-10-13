@@ -96,6 +96,12 @@ public sealed record ParseProfile
 
     public DayMonthOrder DayMonthOrder { get; init; } = DayMonthOrder.DayFirst;
 
+    /// <summary>
+    /// Catalogues write "-1850" for "until 1850"; EDTF reads it as 1851 BCE. When true (the default) free text of that shape is
+    /// read as an open start and the EDTF reading is offered as an alternative; BCE years are written "-0499" in canonical input regardless.
+    /// </summary>
+    public bool LeadingDashIsOpenStart { get; init; } = true;
+
     public long PlausibleYearMin { get; init; } = -10_000;
 
     public long PlausibleYearMax { get; init; } = 2200;

@@ -1,0 +1,117 @@
+# Design: TimeSpan parsing service (`LinkedArtNet.Dates.Service`)
+
+A small ASP.NET Core (Kestrel, Minimal API, .NET 10) service that wraps the parser library
+([03-timespan-parser.md](03-timespan-parser.md)) for deployment. Stateless; no database; optional
+LLM escalation; optional capture of unparsed inputs to feed the corpus.
+
+## 1. Endpoints (all under `/v1`)
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/v1/timespan?s=1984` | Parse one string. Query: `s` (required), `intent=auto\|single\|pair` (default `auto`), `profile=<name>` (default `default`), `llm=true` (opt-in escalation, only if the server has an interpreter configured), `shape=full\|timespan` (default `full`). |
+| POST | `/v1/timespan` | Parse many. Body below. Max 500 inputs per call (configurable). |
+| GET | `/v1/profiles` | List available profiles with descriptions. |
+| GET | `/v1/profiles/{name}` | A profile's effective settings (JSON). |
+| GET | `/v1/canonical?e=late%20195X` | Realise a canonical expression without parsing text (debug/trainer aid). |
+| GET | `/healthz`, `/version` | Liveness; parser + corpus version and git SHA. |
+| GET | `/openapi/v1.json`, `/docs` | OpenAPI document and a UI (Scalar). |
+
+### POST body
+
+```json
+{
+  "profile": "default",
+  "intent": "auto",
+  "options": { "llm": false, "emitInnerBounds": false, "labelPolicy": "label" },
+  "inputs": [
+    "1984",
+    { "s": "1850-1920", "intent": "pair" },
+    { "s": "fl. C14", "profile": "medieval-manuscripts", "ref": "row-17" }
+  ]
+}
+```
+
+Per-item fields override request-level fields. `ref` is echoed back so callers can correlate.
+
+### Response (one result; POST returns `{ "results": [ ... ] }` in input order)
+
+```json
+{
+  "input": "late 1950s",
+  "ref": null,
+  "status": "parsed",
+  "kind": "single",
+  "confidence": 0.9,
+  "canonical": "late 195X",
+  "edtf": "1957/1959",
+  "flags": ["Approximate", "Decade", "Band"],
+  "strategy": "pattern",
+  "timespan": {
+    "type": "TimeSpan",
+    "_label": "late 1950s",
+    "begin_of_the_begin": "1957-01-01T00:00:00Z",
+    "end_of_the_end": "1959-12-31T23:59:59Z"
+  },
+  "begin": null,
+  "end": null,
+  "alternatives": [],
+  "notes": ["'late' interpreted as the last three years of the decade (profile 'default')."],
+  "unconsumed": null,
+  "profile": "default",
+  "parserVersion": "0.3.0"
+}
+```
+
+For `kind: "birthDeath"` or `"floruit"` or `"formationDissolution"`, `begin` and `end` hold the two
+TimeSpans and `timespan` is null (or, for floruit, `timespan` holds the single activity span and
+`begin`/`end` the two bounds as spans, so both uses are served). `shape=timespan` returns just the
+Linked Art TimeSpan object(s). `status` is one of `parsed`, `partial`, `undated`, `unparsed`.
+Unparsed inputs still return 200 with `status: "unparsed"`; only malformed requests return 4xx.
+
+The `_label` of every TimeSpan is the exact input string. `labelPolicy=labelAndName` also adds an
+`identified_by` `Name` with the input; `name` adds only the Name.
+
+## 2. Behaviour
+
+- **Deterministic by default.** Same input + profile + parser version => same output. Suitable for
+  `Cache-Control: public, max-age=86400` and an `ETag` of `hash(version, profile, intent, input)`.
+- **Fast.** In-memory LRU memo (inputs repeat heavily in real data). Target p50 < 1 ms, p99 < 20 ms
+  for non-LLM paths on a small container.
+- **LLM escalation** is off unless the server is configured with an interpreter (API key via
+  environment) **and** the caller passes `llm=true`. LLM results are capped in confidence, flagged
+  `Interpreted`, and realised deterministically from the returned canonical expression (never trusted
+  to produce datetimes). Per-request timeout; failure falls back to the deterministic result.
+- **Limits.** Input string max 500 chars; 500 inputs per POST; request body 256 KB; built-in rate
+  limiter (fixed window per IP, generous for GET). CORS: allow any origin for GET and POST without
+  credentials, so the examples site and others can call it from the browser.
+- **Capture (opt-in).** If `Capture:Enabled`, inputs with `status != parsed` or confidence below a
+  threshold are appended (input, profile, result) to a rolling JSONL file or table for triage in the
+  trainer. Documented in the privacy note; off by default; never captures `ref` or headers.
+- **Versioning.** `/v1` path; breaking response changes bump the path. `parserVersion` in every result.
+
+## 3. Implementation notes
+
+- Project `src/LinkedArtNet.Dates.Service`, Minimal API, `TypedResults`, `Microsoft.AspNetCore.OpenApi`
+  + Scalar for `/docs`. Request/response DTOs are the parser library's result types with a thin
+  mapping; JSON via the model's `LinkedArtJson` options so TimeSpan output is byte-identical to the
+  library's.
+- DI: `TimeSpanParser` singleton built from `ParserOptions` (profiles directory, interpreter config);
+  `IDateInterpreter` registered only when configured.
+- Health: `/healthz` runs a parse of `"1984"` and checks the corpus smoke set loads.
+- Tests: `WebApplicationFactory` integration tests for every endpoint, limits, CORS, caching
+  headers, and a contract test that the POST result schema matches the documented JSON schema
+  (`schemas/timespan-result.schema.json`, published with the service).
+- Container: multi-stage Dockerfile (sdk -> `aspnet:10.0-noble-chiseled`), non-root, port 8080,
+  `HEALTHCHECK`. GitHub Actions: build, test, push to GHCR on tag. Hosting target is the owner's call
+  (Azure Container Apps, Fly.io, or a VM behind Caddy all fit a stateless container).
+
+## 4. Example calls
+
+```
+GET /v1/timespan?s=c.%201850
+GET /v1/timespan?s=1850-1920&intent=pair
+GET /v1/timespan?s=fl.%20C14&profile=medieval-manuscripts
+GET /v1/timespan?s=4.5%20billion%20years%20ago
+GET /v1/timespan?s=n.d.
+POST /v1/timespan   { "inputs": ["1984", "late 1950s", "500 BC", "Winter 1945"] }
+```

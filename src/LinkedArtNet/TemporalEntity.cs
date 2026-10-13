@@ -13,6 +13,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(Destruction))]
 [JsonDerivedType(typeof(Dissolution))]
 [JsonDerivedType(typeof(Move))]
+[JsonDerivedType(typeof(Transfer))]
 [JsonDerivedType(typeof(Payment))]
 [JsonDerivedType(typeof(RightAcquisition))]
 [JsonDerivedType(typeof(TransferOfCustody))]

@@ -6,7 +6,8 @@ museums, libraries and archives to describe art and cultural heritage.
 | Project | What |
 |---|---|
 | `src/LinkedArtNet` | The model library: classes for Linked Art 1.0, JSON-LD serialisation, fluent authoring API, Getty vocabulary helpers. |
-| `src/LinkedArtNet.Examples` | C# that regenerates the examples on linked.art and compares the output with the published JSON. |
+| `src/LinkedArtNet.Examples` | One C# method per example published on linked.art; the tests compare each method's JSON with the site's. Coverage: [examples/coverage.md](examples/coverage.md). |
+| `tools/` | Code generators and the site crawler (`ExampleManifest`). |
 | `tests/` | Test projects. |
 | `docs/` | Plan and design documents, starting with [docs/00-plan.md](docs/00-plan.md). |
 
@@ -23,12 +24,12 @@ var nightWatch = new HumanMadeObject()
     .WithClassifiedAs(Aat.Painting, metaType: Aat.TypeOfWork)
     .WithName("The Night Watch", n => n.AsPrimaryName().WithLanguage(Aat.English))
     .WithProducedBy(p => p
-        .WithCarriedOutBy(Ulan.Rembrandt)
-        .WithTookPlaceAt(Tgn.Amsterdam)
+        .WithCarriedOutBy(Ulan.Person("500011051", "Rembrandt"))
+        .WithTookPlaceAt(Tgn.Place("7006952", "Amsterdam"))
         .WithTimeSpan(1642))
     .WithHeightDimension(379.5, Aat.Centimeters, "379.5 cm high")
     .WithStatement(Aat.MaterialStatement, "oil on canvas")
-    .WithCurrentOwner(Ulan.Rijksmuseum);
+    .WithCurrentOwner(Ulan.Group("500246547", "Rijksmuseum"));
 
 string json = LinkedArtJson.Serialize(nightWatch);          // Linked Art JSON-LD
 var back = LinkedArtJson.Deserialize<HumanMadeObject>(json); // reads any Linked Art document by its type
@@ -41,7 +42,7 @@ Requires the .NET 10 SDK (`global.json`).
 ```
 dotnet build linked-art-net.slnx
 dotnet test  linked-art-net.slnx
-dotnet run --project src/LinkedArtNet.Examples   # regenerates and validates the site examples
+dotnet run --project tools/ExampleManifest -- coverage   # compares the examples with linked.art, writes examples/coverage.md
 ```
 
 ## Status

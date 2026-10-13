@@ -60,16 +60,16 @@ public interface IHasInfluencedBy
     List<LinkedArtObject>? InfluencedBy { get; set; }
 }
 
-/// <summary>Classes with a <c>lower_value_limit</c> property of type double?: Dimension, MonetaryAmount.</summary>
-public interface IHasLowerValueLimit
-{
-    double? LowerValueLimit { get; set; }
-}
-
 /// <summary>Classes with a <c>member_of</c> property of type List<Set>: DigitalObject, HumanMadeObject, Period, Place, PropositionalObject, Set, Type.</summary>
 public interface IHasMemberOfSet
 {
     List<Set>? MemberOf { get; set; }
+}
+
+/// <summary>Classes with a <c>notation</c> property of type string: Currency, Language.</summary>
+public interface IHasNotation
+{
+    string? Notation { get; set; }
 }
 
 /// <summary>Classes with a <c>part</c> property of type List<ActivityBase>: Acquisition, Activity.</summary>
@@ -84,7 +84,7 @@ public interface IHasPartProduction
     List<Production>? Part { get; set; }
 }
 
-/// <summary>Classes with a <c>part_of</c> property of type List<Event>: Destruction, Dissolution, EmbeddedActivity, Period.</summary>
+/// <summary>Classes with a <c>part_of</c> property of type List<Event>: Destruction, Dissolution, EmbeddedActivity.</summary>
 public interface IHasPartOfEvent
 {
     List<Event>? PartOf { get; set; }
@@ -108,22 +108,10 @@ public interface IHasSubjectOf
     List<LinguisticObject>? SubjectOf { get; set; }
 }
 
-/// <summary>Classes with a <c>upper_value_limit</c> property of type double?: Dimension, MonetaryAmount.</summary>
-public interface IHasUpperValueLimit
-{
-    double? UpperValueLimit { get; set; }
-}
-
 /// <summary>Classes with a <c>used_for</c> property of type List<Activity>: DigitalObject, HumanMadeObject, LinguisticObject, Set, VisualItem.</summary>
 public interface IHasUsedFor
 {
     List<Activity>? UsedFor { get; set; }
-}
-
-/// <summary>Classes with a <c>value</c> property of type double?: Dimension, MonetaryAmount.</summary>
-public interface IHasValue
-{
-    double? Value { get; set; }
 }
 
 public partial class Acquisition : IHasPartActivityBase
@@ -135,6 +123,10 @@ public partial class Activity : IHasPartActivityBase
 }
 
 public abstract partial class ActivityBase : IHasInfluencedBy
+{
+}
+
+public partial class Currency : IHasNotation
 {
 }
 
@@ -150,7 +142,7 @@ public partial class DigitalService : IHasAccessPoint, IHasConformsTo, IHasForma
 {
 }
 
-public partial class Dimension : IHasAssignedBy, IHasLowerValueLimit, IHasUpperValueLimit, IHasValue
+public partial class Dimension : IHasAssignedBy
 {
 }
 
@@ -170,6 +162,10 @@ public partial class Identifier : IHasAssignedBy, IHasReferredToBy
 {
 }
 
+public partial class Language : IHasNotation
+{
+}
+
 public partial class LinguisticObject : IHasFormat, IHasPartOfPropositionalObject, IHasUsedFor
 {
 }
@@ -182,15 +178,11 @@ public partial class Modification : IHasPartProduction
 {
 }
 
-public partial class MonetaryAmount : IHasLowerValueLimit, IHasUpperValueLimit, IHasValue
-{
-}
-
 public partial class Name : IHasAssignedBy, IHasReferredToBy
 {
 }
 
-public partial class Period : IHasAttributedBy, IHasEquivalent, IHasMemberOfSet, IHasPartOfEvent, IHasRepresentation, IHasSubjectOf
+public partial class Period : IHasAttributedBy, IHasEquivalent, IHasMemberOfSet, IHasRepresentation, IHasSubjectOf
 {
 }
 
@@ -270,6 +262,14 @@ public static partial class LinkedArtExtensions
         configure(item);
         obj.After ??= [];
         obj.After.Add(item);
+        return obj;
+    }
+
+    /// <summary>Appends to <c>applies_to</c> (Right).</summary>
+    public static T WithAppliesTo<T>(this T obj, params LinkedArtEntity[] items) where T : Right
+    {
+        obj.AppliesTo ??= [];
+        obj.AppliesTo.AddRange(items);
         return obj;
     }
 
@@ -957,8 +957,8 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
-    /// <summary>Sets <c>lower_value_limit</c> (Dimension, MonetaryAmount).</summary>
-    public static T WithLowerValueLimit<T>(this T obj, double value) where T : LinkedArtObject, IHasLowerValueLimit
+    /// <summary>Sets <c>lower_value_limit</c> (Dimension).</summary>
+    public static T WithLowerValueLimit<T>(this T obj, double value) where T : Dimension
     {
         obj.LowerValueLimit = value;
         return obj;
@@ -1015,6 +1015,14 @@ public static partial class LinkedArtExtensions
         configure(item);
         obj.MembersContainedBy ??= [];
         obj.MembersContainedBy.Add(item);
+        return obj;
+    }
+
+    /// <summary>Appends to <c>members_exemplified_by</c> (Group).</summary>
+    public static T WithMembersExemplifiedBy<T>(this T obj, params Actor[] items) where T : Group
+    {
+        obj.MembersExemplifiedBy ??= [];
+        obj.MembersExemplifiedBy.AddRange(items);
         return obj;
     }
 
@@ -1094,8 +1102,8 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
-    /// <summary>Sets <c>notation</c> (Language).</summary>
-    public static T WithNotation<T>(this T obj, string value) where T : Language
+    /// <summary>Sets <c>notation</c> (Currency, Language).</summary>
+    public static T WithNotation<T>(this T obj, string value) where T : LinkedArtObject, IHasNotation
     {
         obj.Notation = value;
         return obj;
@@ -1231,6 +1239,24 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
+    /// <summary>Appends to <c>part</c> (Right).</summary>
+    public static T WithPart<T>(this T obj, params Right[] items) where T : Right
+    {
+        obj.Part ??= [];
+        obj.Part.AddRange(items);
+        return obj;
+    }
+
+    /// <summary>Creates a <see cref="Right"/>, configures it, and appends it to <c>part</c> (Right).</summary>
+    public static T WithPart<T>(this T obj, Action<Right> configure) where T : Right
+    {
+        var item = new Right();
+        configure(item);
+        obj.Part ??= [];
+        obj.Part.Add(item);
+        return obj;
+    }
+
     /// <summary>Appends to <c>participant</c> (Period).</summary>
     public static T WithParticipant<T>(this T obj, params Actor[] items) where T : Period
     {
@@ -1275,7 +1301,7 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
-    /// <summary>Appends to <c>part_of</c> (Destruction, Dissolution, EmbeddedActivity, Period).</summary>
+    /// <summary>Appends to <c>part_of</c> (Destruction, Dissolution, EmbeddedActivity).</summary>
     public static T WithPartOf<T>(this T obj, params Event[] items) where T : LinkedArtObject, IHasPartOfEvent
     {
         obj.PartOf ??= [];
@@ -1283,7 +1309,7 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
-    /// <summary>Creates a <see cref="Event"/>, configures it, and appends it to <c>part_of</c> (Destruction, Dissolution, EmbeddedActivity, Period).</summary>
+    /// <summary>Creates a <see cref="Event"/>, configures it, and appends it to <c>part_of</c> (Destruction, Dissolution, EmbeddedActivity).</summary>
     public static T WithPartOf<T>(this T obj, Action<Event> configure) where T : LinkedArtObject, IHasPartOfEvent
     {
         var item = new Event();
@@ -1305,6 +1331,24 @@ public static partial class LinkedArtExtensions
     public static T WithPartOf<T>(this T obj, Action<HumanMadeObject> configure) where T : HumanMadeObject
     {
         var item = new HumanMadeObject();
+        configure(item);
+        obj.PartOf ??= [];
+        obj.PartOf.Add(item);
+        return obj;
+    }
+
+    /// <summary>Appends to <c>part_of</c> (Period).</summary>
+    public static T WithPartOf<T>(this T obj, params Period[] items) where T : Period
+    {
+        obj.PartOf ??= [];
+        obj.PartOf.AddRange(items);
+        return obj;
+    }
+
+    /// <summary>Creates a <see cref="Period"/>, configures it, and appends it to <c>part_of</c> (Period).</summary>
+    public static T WithPartOf<T>(this T obj, Action<Period> configure) where T : Period
+    {
+        var item = new Period();
         configure(item);
         obj.PartOf ??= [];
         obj.PartOf.Add(item);
@@ -1557,6 +1601,24 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
+    /// <summary>Appends to <c>transferred</c> (Transfer).</summary>
+    public static T WithTransferred<T>(this T obj, params HumanMadeObject[] items) where T : Transfer
+    {
+        obj.Transferred ??= [];
+        obj.Transferred.AddRange(items);
+        return obj;
+    }
+
+    /// <summary>Creates a <see cref="HumanMadeObject"/>, configures it, and appends it to <c>transferred</c> (Transfer).</summary>
+    public static T WithTransferred<T>(this T obj, Action<HumanMadeObject> configure) where T : Transfer
+    {
+        var item = new HumanMadeObject();
+        configure(item);
+        obj.Transferred ??= [];
+        obj.Transferred.Add(item);
+        return obj;
+    }
+
     /// <summary>Appends to <c>transferred_custody_from</c> (TransferOfCustody).</summary>
     public static T WithTransferredCustodyFrom<T>(this T obj, params Actor[] items) where T : TransferOfCustody
     {
@@ -1588,6 +1650,14 @@ public static partial class LinkedArtExtensions
     {
         obj.TransferredCustodyTo ??= [];
         obj.TransferredCustodyTo.AddRange(items);
+        return obj;
+    }
+
+    /// <summary>Appends to <c>transferred_from</c> (Transfer).</summary>
+    public static T WithTransferredFrom<T>(this T obj, params Actor[] items) where T : Transfer
+    {
+        obj.TransferredFrom ??= [];
+        obj.TransferredFrom.AddRange(items);
         return obj;
     }
 
@@ -1625,6 +1695,14 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
+    /// <summary>Appends to <c>transferred_to</c> (Transfer).</summary>
+    public static T WithTransferredTo<T>(this T obj, params Actor[] items) where T : Transfer
+    {
+        obj.TransferredTo ??= [];
+        obj.TransferredTo.AddRange(items);
+        return obj;
+    }
+
     /// <summary>Sets <c>unit</c> (Dimension).</summary>
     public static T WithUnit<T>(this T obj, MeasurementUnit value) where T : Dimension
     {
@@ -1641,8 +1719,8 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
-    /// <summary>Sets <c>upper_value_limit</c> (Dimension, MonetaryAmount).</summary>
-    public static T WithUpperValueLimit<T>(this T obj, double value) where T : LinkedArtObject, IHasUpperValueLimit
+    /// <summary>Sets <c>upper_value_limit</c> (Dimension).</summary>
+    public static T WithUpperValueLimit<T>(this T obj, double value) where T : Dimension
     {
         obj.UpperValueLimit = value;
         return obj;
@@ -1674,8 +1752,8 @@ public static partial class LinkedArtExtensions
         return obj;
     }
 
-    /// <summary>Sets <c>value</c> (Dimension, MonetaryAmount).</summary>
-    public static T WithValue<T>(this T obj, double value) where T : LinkedArtObject, IHasValue
+    /// <summary>Sets <c>value</c> (Dimension).</summary>
+    public static T WithValue<T>(this T obj, double value) where T : Dimension
     {
         obj.Value = value;
         return obj;

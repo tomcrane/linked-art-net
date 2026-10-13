@@ -24,4 +24,22 @@ public partial class Right : LinkedArtObject
     [JsonPropertyOrder(211)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<Actor>? PossessedBy { get; set; }
+
+    /// <summary>Applies to: what the right is over. Used by the site's provenance examples; not in the 1.0 schema.</summary>
+    [JsonPropertyName("applies_to")]
+    [JsonPropertyOrder(212)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<LinkedArtEntity>? AppliesTo { get; set; }
+
+    /// <summary>Share of the right, e.g. 40 percent. Used by the site's provenance examples; not in the 1.0 schema.</summary>
+    [JsonPropertyName("dimension")]
+    [JsonPropertyOrder(213)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Dimension>? Dimension { get; set; }
+
+    /// <summary>Partial rights making up this right. Used by the site's provenance examples; not in the 1.0 schema.</summary>
+    [JsonPropertyName("part")]
+    [JsonPropertyOrder(214)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Right>? Part { get; set; }
 }

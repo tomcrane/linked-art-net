@@ -11,3 +11,4 @@
 | [05-examples-site.md](05-examples-site.md) | Razor Pages site: example pages with C# source, playground, trainer |
 | [06-corpus-and-testing.md](06-corpus-and-testing.md) | Corpus format and lifecycle, metrics, whole-repo test strategy |
 | [07-later-alignment-toolkit.md](07-later-alignment-toolkit.md) | Notes for the future transformation/alignment toolkit (LUX, QLever, Postgres) |
+| [upstream-issues.md](upstream-issues.md) | Findings to report to linked.art: id collisions, redirect loop, 38 examples the 1.0 schemas reject, schema file issues |

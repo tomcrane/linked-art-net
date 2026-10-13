@@ -87,13 +87,17 @@ Points worth knowing:
 - **`Period`, `Event`, `Activity`** share one schema definition (event.json), so `Event : Period` and
   `Activity : Event` add nothing but `part`.
 - **`Type` shadows `System.Type`** inside the `LinkedArtNet` namespace; write `System.Type` there.
-- **Site vs schema.** The contract test keys on property names; six properties the site's own
-  validated examples use are kept although the 1.0 schema omits them, and are the only entries in
-  the gap baseline: `Creation.part`, `Production.attributed_by`, `Name.assigned_by`,
-  `Language.notation`, `DigitalService.format`, and `VisualItem.representation` (inherited from
-  `LinkedArtEntity`; harmless). Cardinality follows the site where it disagrees with the schema:
-  `current_permanent_custodian` is a single actor, `held_or_supported_by` and `part_of` on objects are
-  arrays. `object.json` also declares `used_for` twice. All of these are to be reported upstream.
+- **Site vs schema.** The contract test keys on property names; the properties the site's own
+  examples use although the 1.0 schema omits them are kept and are the only entries in the gap
+  baseline: `Creation.part`, `Production.attributed_by`, `Name.assigned_by`, `Language.notation`,
+  `Currency.notation`, `DigitalService.format`, `Group.members_exemplified_by`, `Right.applies_to`,
+  `Right.dimension`, `Right.part`, `VisualItem.representation` (inherited; harmless), and
+  `MonetaryAmount.unit`/`assigned_by` (inherited from `Dimension`, which `MonetaryAmount` now derives
+  from so that a Set's `dimension` list can hold one, as the site does). `Transfer` is a class the
+  schemas lack. Cardinality follows the site where it disagrees with the schema:
+  `current_permanent_custodian` is a single actor, `held_or_supported_by` and `part_of` on objects
+  and periods are arrays. `object.json` also declares `used_for` twice. Every case is listed with its
+  evidence in `docs/upstream-issues.md`.
 - The 1.0 schemas define exactly these 40 classes (verified by
   `SchemaContractTests.Manifest_covers_the_expected_linked_art_classes`). CRM classes such as
   Addition, Removal, PartAddition, Promise and Transformation are **not** in the 1.0 schemas and are
@@ -239,26 +243,32 @@ Formalise the hard-coded Getty identifiers into a **data-driven registry**:
 
 ## 7. Example generation and 100% site coverage
 
-Restructure `Examples` from a console app into:
+Implemented in Phase 1 step 7:
 
-- `LinkedArtNet.Examples` (library): one static method per site example, decorated with
-  `[LinkedArtExample(Id = "object/nightwatch/1", Section = "/model/object/physical/", Title = "...")]`.
-  The method returns the object; nothing writes files.
-- `LinkedArtNet.Examples.Tests` (xunit): a `Theory` over all examples; for each, generate, load the
-  cached site JSON (`examples/cached/<id>.json`, refreshed by a CLI), compare semantically
-  (JSON-LD aware: array order ignored where the model is a set, `@context` normalised), validate the
-  generated JSON against the linked.art 1.0 schema, and round-trip through the deserialiser.
-- `tools/ExampleManifest`: crawls `https://linked.art/model/**` (or the `linked-art/linked.art` repo
-  `docs/**/*.md`) and lists every example JSON URL the site publishes -> `examples/manifest.json`.
-  The coverage test reports which site examples have no C# method. Target: 100% of the manifest.
-- Site bugs: an example can be marked `SiteIssue("https://github.com/linked-art/linked.art/issues/NNN",
-  "two examples share id person/rembrandt/10")`. The test still runs and records "expected mismatch"
-  so the dashboard shows exactly what blocks 100% and why. We file the issues upstream rather than
-  hack our output (no more nulled labels or preserved typos).
+- `LinkedArtNet.Examples` (library): one public static method per site example, decorated with
+  `[LinkedArtExample("object/spring/1")]`, returning the object. Ids are written as literal URIs
+  (`"https://linked.art/example/object/spring/1"`) so each method reads as a practitioner would write
+  it. `ExampleCatalog` discovers the methods; `Example.Key` (`Topic.Method`) is the stable key.
+- `[SiteIssue("reason", Url = "...")]` marks a method that cannot match the site because of a site
+  problem. The tests expect a mismatch (and fail if it unexpectedly matches), the coverage report shows
+  the reason, and the output is never bent to reproduce the bug. An id may have two methods only when
+  the extra ones carry a `SiteIssue` (the site publishes two different examples under five ids).
+- `examples/manifest.json`: every example the site publishes, page by page, with the nearest heading
+  and the introducing paragraph, crawled from the sitemap's `/model/` pages by
+  `tools/ExampleManifest crawl`. `fetch` downloads the site JSON into `examples/cached/` (never
+  following the site's endless `.json.json` redirects), `coverage` writes `examples/coverage.md`,
+  `diff [filter]` prints what differs, `validate [filter]` groups schema errors in site and generated
+  JSON by shape. The pre-1.0 snapshots are kept in `examples/cached-pre-1.0/` for reference.
+- `LinkedArtNet.Examples.Tests`: per method, the object's id is the site URI; the JSON equals the
+  cached site JSON (`JsonEquivalence`, property order ignored, array order significant); the JSON has
+  no schema error that the site's own JSON lacks (`SchemaValidation`, JsonSchema.Net against the
+  vendored 1.0 schemas, choosing the top-level schema by `type`, pruning `anyOf` branches that did not
+  get furthest); it round-trips through `LinkedArtJson`. `SiteJsonTests` validates the site's JSON
+  itself and pins the 38 invalid ids so a site fix shows up. `CoverageTests` keeps `coverage.md`
+  current and every method in the manifest.
+- Coverage at the end of step 7: 123 of 183 implemented, 122 validated, 5 site issues, 60 to do.
 
-Known blockers from the audit to raise upstream: id collisions (`person/rembrandt/10`,
-`object/nightwatch/17`), `Context_Specific_Assignment`, the `exh*` exhibition examples missing from 1.0,
-"Rembrant's" typo, "Painting" label.
+Site problems to raise upstream are collected in `docs/upstream-issues.md`.
 
 ## 8. Tests for the model library
 

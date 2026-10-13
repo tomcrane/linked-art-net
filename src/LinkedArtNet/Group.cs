@@ -18,4 +18,10 @@ public partial class Group : Actor
     [JsonPropertyOrder(221)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Dissolution? DissolvedBy { get; set; }
+
+    /// <summary>Prototypical members of a group that cannot be enumerated (e.g. 14th-century Italian painters). Used by the site; not in the 1.0 schema.</summary>
+    [JsonPropertyName("members_exemplified_by")]
+    [JsonPropertyOrder(222)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<Actor>? MembersExemplifiedBy { get; set; }
 }

@@ -89,7 +89,7 @@ operations headlessly.
 | Project | Layer | Notes |
 |---|---|---|
 | `LinkedArtNet.Tests` | model | `LinkedArtDate` (BCE, year 0, big years, leap rules, lexical forms, `T24:00:00`); fluent builders; serialisation options; polymorphic read; schema-manifest contract (both directions); vocabulary registry integrity |
-| `LinkedArtNet.Examples.Tests` | golden | every site example generated == cached, schema-valid, round-trips; coverage vs `examples/manifest.json`; `SiteIssue` entries reported, not failed |
+| `LinkedArtNet.Examples.Tests` | golden | per example method: id is the site URI, generated JSON == cached site JSON (or an expected mismatch under `SiteIssue`), no schema errors beyond the site's own, round-trips; site JSON validated against the 1.0 schemas with the invalid ids pinned; coverage report current and every method in `examples/manifest.json` |
 | `LinkedArtNet.Dates.Tests` | parser | tokenizer tables; grammar (string -> canonical) theories; realiser (canonical + profile -> datetimes) theories; corpus theories (one `Theory` per corpus file, `verified` only); property tests (FsCheck): canonical round-trip, bound ordering, normaliser idempotence, never throws on arbitrary strings; interpreter contract with a fake |
 | `LinkedArtNet.Dates.Service.Tests` | HTTP | endpoints, limits, CORS, caching headers, result JSON schema, OpenAPI document snapshot |
 | `LinkedArtNet.ExamplesSite.Tests` | HTTP | route smoke, content presence |

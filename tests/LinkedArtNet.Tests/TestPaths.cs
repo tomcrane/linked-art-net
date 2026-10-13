@@ -4,7 +4,7 @@ internal static class TestPaths
 {
     public static string RepoRoot { get; } = FindRepoRoot();
 
-    public static string CachedExamples => Path.Combine(RepoRoot, "src", "LinkedArtNet.Examples", "cached", "new");
+    public static string CachedExamples => Path.Combine(RepoRoot, "examples", "cached");
 
     private static string FindRepoRoot()
     {

@@ -1,3 +1,4 @@
+using LinkedArtNet.Examples;
 using System.Text.Json;
 using LinkedArtNet.Serialization;
 using LinkedArtNet.Vocabulary;
@@ -166,7 +167,7 @@ public class SerializationTests
             "Name", "Identifier", "Dimension", "MonetaryAmount", "Right", "TimeSpan",
             "Period", "Event", "Activity", "Production", "Creation", "Destruction", "Encounter", "Birth", "Death",
             "Formation", "Dissolution", "Modification", "PartRemoval", "Acquisition", "Payment", "TransferOfCustody",
-            "Move", "RightAcquisition", "AttributeAssignment", "InformationObject",
+            "Move", "Transfer", "RightAcquisition", "AttributeAssignment", "InformationObject",
         ];
         Assert.Equal(expected.Order(), LinkedArtTypes.All.Keys.Order());
     }

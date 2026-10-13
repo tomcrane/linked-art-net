@@ -9,6 +9,7 @@ namespace LinkedArtNet;
 /// <see cref="Activity"/>).
 /// </summary>
 [JsonDerivedType(typeof(Move))]
+[JsonDerivedType(typeof(Transfer))]
 [JsonDerivedType(typeof(Payment))]
 [JsonDerivedType(typeof(RightAcquisition))]
 [JsonDerivedType(typeof(TransferOfCustody))]

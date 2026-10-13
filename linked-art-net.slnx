@@ -4,9 +4,11 @@
     <Project Path="src/LinkedArtNet/LinkedArtNet.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/LinkedArtNet.Examples.Tests/LinkedArtNet.Examples.Tests.csproj" />
     <Project Path="tests/LinkedArtNet.Tests/LinkedArtNet.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
+    <Project Path="tools/ExampleManifest/ExampleManifest.csproj" />
     <Project Path="tools/FluentGen/FluentGen.csproj" />
     <Project Path="tools/SchemaInspector/SchemaInspector.csproj" />
     <Project Path="tools/VocabGen/VocabGen.csproj" />

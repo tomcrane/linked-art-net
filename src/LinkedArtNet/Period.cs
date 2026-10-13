@@ -28,7 +28,7 @@ public partial class Period : ActivityBase
     [JsonPropertyName("part_of")]
     [JsonPropertyOrder(130)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<Event>? PartOf { get; set; }
+    public List<Period>? PartOf { get; set; }
 
     [JsonPropertyName("member_of")]
     [JsonPropertyOrder(140)]

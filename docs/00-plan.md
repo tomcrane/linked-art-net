@@ -106,7 +106,7 @@ authority store (QLever or Postgres) and the alignment cache, then a PMC-style p
 | D12 | Service and site are stateless containers; LLM and capture are opt-in. | Simple hosting; deterministic caching; privacy. |
 | D13 | Corpus is CC0 for authored entries, imports carry their MIT/ODC-By attribution. | Publishable artefact. |
 | D14 | Target net10.0 only. | LTS; owner's toolchain; no known consumers on net8. |
-| D15 | Property *names* per class follow the 1.0 JSON schemas; *cardinality* and a handful of extra properties follow the site's validated examples where the two disagree. Each such case is documented in the model and reported upstream. | The schemas are the contract we can test against; the site is what consumers compare with. Six extras, listed in doc 02 §2. |
+| D15 | Property *names* per class follow the 1.0 JSON schemas; *cardinality* and a handful of extra properties follow the site's validated examples where the two disagree. Each such case is documented in the model and reported upstream. | The schemas are the contract we can test against; the site is what consumers compare with. Extras listed in doc 02 §2 and docs/upstream-issues.md. |
 | D16 | `Set`, `Type`, `Material`, `Language`, `Currency`, `MeasurementUnit` are full classes; embedded activities (`Production` etc.) derive from `EmbeddedActivity`/`ActivityBase`, not from `Activity`. | Owner's choice (2026-10-13); the schema gives embedded activities a smaller property set than `Activity`. |
 | D17 | The vocabulary registry blesses only linked.art's published required/recommended/optional terms plus documented structural terms; no instances (TGN places, ULAN actors) and no dataset-specific concepts. Examples construct those inline with `Aat.Term` / `Tgn.Place` / `Ulan.Person`, as a practitioner would. | Owner (2026-10-13): examples should imply actual practice; a constant for Rembrandt or Amsterdam misleads, while qualifiers and classifications deserve re-use. |
 
@@ -189,5 +189,14 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
    `WithTimeSpan(year)`, `AsReference`; TimeSpan factories no longer set labels; label-nulling patches
    removed from the examples.
 
-Next: Phase 1 step 7 (examples as a library + test project + site manifest; `SiteIssue` tracking;
-upstream issues) then step 8 (fill the gaps to 100% of the manifest).
+10. ~~Phase 1 step 7: examples as a library.~~ Done 2026-10-13. `LinkedArtNet.Examples` library with
+    `[LinkedArtExample]` methods, `LinkedArtNet.Examples.Tests` (site match, schema parity, round-trip,
+    coverage), `tools/ExampleManifest` (crawl, fetch, coverage, diff, validate), `examples/manifest.json`
+    (183 site examples), `examples/coverage.md`, `SiteIssue` for five id collisions, `docs/upstream-issues.md`
+    (38 site examples invalid against the 1.0 schemas, 20 distinct discrepancies). Model gained the site's
+    extras needed to read all 183 examples (`Transfer`, `Right.applies_to/dimension/part`,
+    `Currency.notation`, `Group.members_exemplified_by`, `MonetaryAmount : Dimension`, `Period.part_of`).
+    123/183 implemented, 122 validated.
+
+Next: Phase 1 step 8 (the 60 missing examples: vocab/required, concepts, events, provenance pages, places),
+then file the upstream issues and cut `LinkedArtNet 1.0.0-preview`.

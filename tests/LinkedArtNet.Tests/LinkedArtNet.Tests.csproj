@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\LinkedArtNet\LinkedArtNet.csproj" />
+    <ProjectReference Include="..\..\src\LinkedArtNet.Examples\LinkedArtNet.Examples.csproj" />
   </ItemGroup>
 
 </Project>

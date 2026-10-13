@@ -1,0 +1,1361 @@
+{
+  "source": "https://linked.art/sitemap.xml",
+  "crawled": "2026-10-13",
+  "pages": [
+    {
+      "path": "model",
+      "url": "https://linked.art/model/",
+      "title": "Linked Art Data Model",
+      "examples": []
+    },
+    {
+      "path": "actor",
+      "url": "https://linked.art/model/actor/",
+      "title": "Actors: People and Organizations",
+      "examples": [
+        {
+          "id": "person/rembrandt/2",
+          "anchor": "#classes",
+          "heading": "Classes",
+          "description": "Rembrandt (a Person) was a member of the Guild of St Luke (a Group)."
+        },
+        {
+          "id": "person/rembrandt/3",
+          "anchor": "#names",
+          "heading": "Names",
+          "description": "Rembrandt's name is Rembrandt Harmenzoon van Rijn"
+        },
+        {
+          "id": "person/rembrandt/4",
+          "anchor": "#parts-of-names",
+          "heading": "Parts of Names",
+          "description": "Rembrandt's name is Rembrandt / Harmenzoon / van Rijn"
+        },
+        {
+          "id": "person/rembrandt/6",
+          "anchor": "#equivalent-entities",
+          "heading": "Equivalent Entities",
+          "description": "The equivalent entity in ULAN for Rembrandt is http://vocab.getty.edu/ulan/500011051"
+        },
+        {
+          "id": "person/rembrandt/12",
+          "anchor": "#addresses",
+          "heading": "Addresses",
+          "description": "Rembrandt had an address in Amsterdam."
+        },
+        {
+          "id": "group/rembrandthuis/1",
+          "anchor": "#addresses",
+          "heading": "Addresses",
+          "description": "Rembrandt's residence is now a museum at the same address, with a phone number and email address:"
+        },
+        {
+          "id": "person/rembrandt/11",
+          "anchor": "#residence-as-a-place",
+          "heading": "Residence as a Place",
+          "description": "Rembrandt resided at a Place which is where his house is."
+        },
+        {
+          "id": "person/rembrandt/13",
+          "anchor": "#birth-and-death-formation-and-dissolution",
+          "heading": "Birth and Death / Formation and Dissolution",
+          "description": "Rembrandt was born on 1606-07-15 and died on 1669-10-04 in Amsterdam."
+        },
+        {
+          "id": "group/rembrandthuis/2",
+          "anchor": "#birth-and-death-formation-and-dissolution",
+          "heading": "Birth and Death / Formation and Dissolution",
+          "description": "The formation of the Rembrandt House Museum on 1911-06-10."
+        },
+        {
+          "id": "person/rembrandt/7",
+          "anchor": "#active-dates",
+          "heading": "Active Dates",
+          "description": "Rembrandt was professionally active as a painter between 1631 and his death in 1669."
+        },
+        {
+          "id": "person/rembrandt/14",
+          "anchor": "#participation-versus-responsibility",
+          "heading": "Participation versus Responsibility",
+          "description": "Rembrandt was buried some time after he died in 1669 at the location of Westerkerk."
+        },
+        {
+          "id": "person/rembrandt/8",
+          "anchor": "#biography",
+          "heading": "Biography",
+          "description": "Rembrandt with a biography statement."
+        },
+        {
+          "id": "person/rembrandt/9",
+          "anchor": "#nationality",
+          "heading": "Nationality",
+          "description": "Rembrandt was Dutch."
+        },
+        {
+          "id": "person/wiley/1",
+          "anchor": "#ethnicity",
+          "heading": "Ethnicity",
+          "description": "Kehinde Wiley is African-American."
+        },
+        {
+          "id": "person/rembrandt/32",
+          "anchor": "#gender",
+          "heading": "Gender",
+          "description": "Rembrandt was male."
+        },
+        {
+          "id": "person/rembrandt/31",
+          "anchor": "#occupations",
+          "heading": "Occupations",
+          "description": "Rembrandt was an artist."
+        },
+        {
+          "id": "person/rembrandt/2",
+          "anchor": "#organization-membership",
+          "heading": "Organization Membership",
+          "description": "Rembrandt (a Person) was a member of the Guild of St Luke (a Group)."
+        }
+      ]
+    },
+    {
+      "path": "archives",
+      "url": "https://linked.art/model/archives/",
+      "title": "Archives",
+      "examples": [
+        {
+          "id": "object/letter/1",
+          "anchor": "#archival-hierarchy",
+          "heading": "Archival Hierarchy",
+          "description": "A letter between Alfred Stieglitz and Bertha Obermeyer, dated 1920 is part of the \"Stieglitz Family Letters\" sub-series, which is part of \"Series I: Alfred Stieglitz Correspondence\" (which is part of the \"Alfred Stieglitz / Georgia O'Keeffe Archive\" at Yale University)"
+        },
+        {
+          "id": "set/archive_sfl/1",
+          "anchor": "#archival-hierarchy",
+          "heading": "Archival Hierarchy"
+        },
+        {
+          "id": "set/archive_asc/1",
+          "anchor": "#archival-hierarchy",
+          "heading": "Archival Hierarchy"
+        },
+        {
+          "id": "set/archive_sfl/2",
+          "anchor": "#alignment-between-conceptual-and-physical-hierarchies",
+          "heading": "Alignment between Conceptual and Physical Hierarchies",
+          "description": "The Stieglitz Family Letters set has its members in Box 55."
+        },
+        {
+          "id": "object/letter/3",
+          "anchor": "#alignment-between-conceptual-and-physical-hierarchies",
+          "heading": "Alignment between Conceptual and Physical Hierarchies"
+        }
+      ]
+    },
+    {
+      "path": "assertion",
+      "url": "https://linked.art/model/assertion/",
+      "title": "Relationships and Context for Assignment of Attributes",
+      "examples": [
+        {
+          "id": "object/spring/21",
+          "anchor": "#assigning-attributes",
+          "heading": "Assigning Attributes",
+          "description": "It is asserted in 2015 that \"Spring\" has a material of canvas."
+        },
+        {
+          "id": "object/yiadom-boakye/1",
+          "anchor": "#assigned-value-as-subject-entity",
+          "heading": "Assigned Value as Subject Entity",
+          "description": "The Kehinde Wiley painting \"Portrait of Lynette Yiadom-Boakye, Jacob Morland of Capplethwaite\" is jointly owned by the Yale University Art Gallery and the Yale Center for British Art. Both organizations have assigned their own accession numbers to the painting, and both are correct simultaneously."
+        },
+        {
+          "id": "person/rembrandt/10",
+          "anchor": "#source-of-knowledge",
+          "heading": "Source of Knowledge",
+          "description": "The name form \"Rembrandt van Rijn\" was added from Gardner's \"Art through the Ages\"."
+        },
+        {
+          "id": "object/nightwatch/70",
+          "anchor": "#creation-details-of-embedded-statements",
+          "heading": "Creation Details of Embedded Statements",
+          "description": "The description of The Night Watch was generated by an AI at a particular point in time, and is licensed as CC-BY."
+        },
+        {
+          "id": "object/forum/1",
+          "anchor": "#uncertain-or-former-assignments",
+          "heading": "Uncertain or Former Assignments",
+          "description": "The watercolor painting \"Forum Romanum\" was possibly produced by Salomon Corrodi"
+        },
+        {
+          "id": "object/spring/31",
+          "anchor": "#context-specific-assignments",
+          "heading": "Context-Specific Assignments",
+          "description": "Spring was exhibited at the National Gallery of Art's exhibition \"Post-Impressionism: Cross-Currents in European and American Painting\" in 1980, and was assigned a exhibition specific identifier (called a \"dexid\")."
+        },
+        {
+          "id": "object/nightwatch/57",
+          "anchor": "#related-entities",
+          "heading": "Related Entities",
+          "description": "The Night Watch is related to another object in the Rijksmuseum collection \"Nachtwacht\", but the relationship is not captured specifically."
+        },
+        {
+          "id": "person/bol/1",
+          "anchor": "#unmodeled-relationships",
+          "heading": "Unmodeled Relationships",
+          "description": "Ferdinand Bol was a student of Rembrandt."
+        }
+      ]
+    },
+    {
+      "path": "base",
+      "url": "https://linked.art/model/base/",
+      "title": "Basic Patterns",
+      "examples": [
+        {
+          "id": "object/spring/1",
+          "anchor": "#core-properties",
+          "heading": "Core Properties",
+          "description": "The simplest possible object description of \"Spring\" has a URI, a class and a label."
+        },
+        {
+          "id": "object/spring/2",
+          "anchor": "#types-and-classifications",
+          "heading": "Types and Classifications",
+          "description": "The classification of \"Spring\" (an instance of the class HumanMadeObject) is a painting (aat:300033618), and an artwork (aat:300133025):"
+        },
+        {
+          "id": "place/paris/1",
+          "anchor": "#types-and-classifications",
+          "heading": "Types and Classifications"
+        },
+        {
+          "id": "object/spring/3",
+          "anchor": "#types-of-types",
+          "heading": "Types of Types",
+          "description": "The object is classified as being a Painting, and the concept \"Painting\" is for classifying the type of object (as opposed to any other sort of classification)."
+        },
+        {
+          "id": "person/rembrandt/1",
+          "anchor": "#types-of-types",
+          "heading": "Types of Types"
+        },
+        {
+          "id": "object/nightwatch/1",
+          "anchor": "#names",
+          "heading": "Names",
+          "description": "The primary name for \"The Night Watch\" is \"The Night Watch\" in English, and \"De Nachtwacht\" in Dutch:"
+        },
+        {
+          "id": "object/nightwatch/2",
+          "anchor": "#identifiers",
+          "heading": "Identifiers",
+          "description": "The accession number identifier for \"The Night Watch\" is \"SK-C-5\":"
+        },
+        {
+          "id": "object/nightwatch/3",
+          "anchor": "#equivalent-data-uris",
+          "heading": "Equivalent Data URIs",
+          "description": "The Night Watch has an external URI that also identifies the same physical object in wikidata:"
+        },
+        {
+          "id": "object/nightwatch/4",
+          "anchor": "#statements-about-an-entity",
+          "heading": "Statements about an Entity",
+          "description": "Having only a textual description of the materials in English, the content \"Oil on Canvas\" is recorded as referring to the painting as a \"materials\" (aat:300435429) statement:"
+        },
+        {
+          "id": "object/spring/4",
+          "anchor": "#events-and-activities",
+          "heading": "Events and Activities",
+          "description": "\"Spring\" was produced in a Production activity carried out by Manet in 1881, somewhere in France."
+        },
+        {
+          "id": "event/stowe/1",
+          "anchor": "#time-span-details",
+          "heading": "Time Span Details",
+          "description": "The Christie's auction of the Stowe House took place over 40 days in August and September, 1848 (Source)."
+        },
+        {
+          "id": "object/spring/support",
+          "anchor": "#parts",
+          "heading": "Parts",
+          "description": "The canvas support is part of the overall painting of Spring."
+        },
+        {
+          "id": "person/rembrandt/2",
+          "anchor": "#membership",
+          "heading": "Membership",
+          "description": "Rembrandt was a member of the Guild of St Luke (a guild of painters)."
+        },
+        {
+          "id": "text/rembrandtjaccuse/1",
+          "anchor": "#partitioning-of-internal-constructs",
+          "heading": "Partitioning of Internal Constructs",
+          "description": "A video (currently modeled as a Work that contains language, or a LinguisticObject) about Rembrandt's Night Watch was directed by Peter Greenaway and Produced by Femke Wolting."
+        }
+      ]
+    },
+    {
+      "path": "changelog",
+      "url": "https://linked.art/model/changelog/",
+      "title": "Linked Art Data Model Change Log",
+      "examples": []
+    },
+    {
+      "path": "collection",
+      "url": "https://linked.art/model/collection/",
+      "title": "Collections and Sets",
+      "examples": [
+        {
+          "id": "set/exhset/1",
+          "anchor": "#features",
+          "heading": "Features",
+          "description": "The set of objects in an exhibition."
+        },
+        {
+          "id": "object/spring/13",
+          "anchor": "#features",
+          "heading": "Features"
+        },
+        {
+          "id": "object/letter/2",
+          "anchor": "#order-of-members",
+          "heading": "Order of Members",
+          "description": "The Obermeyer letter described in the archives use case should sort as \"000001\" within the Stieglitz Family Letters set."
+        },
+        {
+          "id": "set/exhset/2",
+          "anchor": "#prototypical-members",
+          "heading": "Prototypical Members",
+          "description": "The objects exhibited were typically (but not exclusively) paintings by Manet."
+        },
+        {
+          "id": "set/rijks_objects/1",
+          "anchor": "#collections-of-objects",
+          "heading": "Collections of Objects",
+          "description": "The full collection of the Rijksmuseum."
+        },
+        {
+          "id": "set/rijks_paintings/1",
+          "anchor": "#collections-of-objects",
+          "heading": "Collections of Objects"
+        },
+        {
+          "id": "object/nightwatch/16",
+          "anchor": "#collections-of-objects",
+          "heading": "Collections of Objects"
+        },
+        {
+          "id": "group/14thc_italian/1",
+          "anchor": "#sets-of-people",
+          "heading": "Sets of People",
+          "description": "The prototypical member of the \"14th Century Italians\" group was a person born between 1300 and 1400 in Italy."
+        }
+      ]
+    },
+    {
+      "path": "concept",
+      "url": "https://linked.art/model/concept/",
+      "title": "Concepts",
+      "examples": [
+        {
+          "id": "concept/painting/1",
+          "anchor": "#concept-classes",
+          "heading": "Concept Classes",
+          "description": "A minimal record for a concept of a Painting."
+        },
+        {
+          "id": "concept/painting/2",
+          "anchor": "#importance-of-equivalents",
+          "heading": "Importance of Equivalents"
+        },
+        {
+          "id": "object/nightwatch/52",
+          "anchor": "#importance-of-equivalents",
+          "heading": "Importance of Equivalents"
+        },
+        {
+          "id": "concept/painting/3",
+          "anchor": "#partitioning-versus-classification",
+          "heading": "Partitioning versus Classification",
+          "description": "The concept of painting is a type of work, and has a broader concept of visual artworks."
+        },
+        {
+          "id": "concept/painting/4",
+          "anchor": "#concept-schemes-and-sets",
+          "heading": "Concept Schemes and Sets",
+          "description": "The concept of painting is in the Local Concept Scheme."
+        },
+        {
+          "id": "concept/historyFrance/1",
+          "anchor": "#creation-and-influences",
+          "heading": "Creation and Influences",
+          "description": "The concept \"history of France\" is influenced by the concept of \"history\" and the place \"France\"."
+        }
+      ]
+    },
+    {
+      "path": "conservation",
+      "url": "https://linked.art/model/conservation/",
+      "title": "Conservation Activity",
+      "examples": [
+        {
+          "id": "object/nightwatch/25",
+          "anchor": "#condition-assessment",
+          "heading": "Condition Assessment",
+          "description": "The Rijksmuseum checked the condition of The Night Watch, at the beginning of the project \"Operation Night Watch\""
+        },
+        {
+          "id": "object/nightwatch/26",
+          "anchor": "#conservation-activities",
+          "heading": "Conservation Activities",
+          "description": "Minor conservation improvements were made to The Night Watch."
+        },
+        {
+          "id": "event/operation_nightwatch/1",
+          "anchor": "#conservation-project",
+          "heading": "Conservation Project",
+          "description": "Operation Night Watch is a conservation and research project about The Night Watch"
+        }
+      ]
+    },
+    {
+      "path": "digital",
+      "url": "https://linked.art/model/digital/",
+      "title": "Digital Integration",
+      "examples": [
+        {
+          "id": "digital/operation_nw/1",
+          "anchor": "#core-digital-object-properties",
+          "heading": "Core Digital Object Properties",
+          "description": "The Rijksmuseum published a digital publication on the web about their conservation efforts for The Night Watch."
+        },
+        {
+          "id": "object/spring/8",
+          "anchor": "#digital-surrogates",
+          "heading": "Digital Surrogates",
+          "description": "The same visual item is shown by both the physical painting, and the digitized image of the painting."
+        },
+        {
+          "id": "digital/spring/1",
+          "anchor": "#digital-surrogates",
+          "heading": "Digital Surrogates"
+        },
+        {
+          "id": "person/rembrandt/15",
+          "anchor": "#digital-images",
+          "heading": "Digital Images",
+          "description": "Rembrandt is depicted in a digital image hosted at wikimedia."
+        },
+        {
+          "id": "object/spring/9",
+          "anchor": "#web-pages",
+          "heading": "Web Pages",
+          "description": "There is a home page for Jeanne in the Getty collections."
+        },
+        {
+          "id": "object/spring/10",
+          "anchor": "#iiif-manifests",
+          "heading": "IIIF Manifests",
+          "description": "Jeanne has a IIIF Presentation API Manifest."
+        },
+        {
+          "id": "object/spring/11",
+          "anchor": "#iiif-images",
+          "heading": "IIIF Images",
+          "description": "The image of Jeanne is also available via a IIIF Image API service."
+        }
+      ]
+    },
+    {
+      "path": "document",
+      "url": "https://linked.art/model/document/",
+      "title": "Texts and Documents",
+      "examples": [
+        {
+          "id": "object/yul_10801219/1",
+          "anchor": "#physical-objects-conceptual-texts",
+          "heading": "Physical Objects, Conceptual Texts",
+          "description": "Yale University Library holds a copy of Koot's book about The Night Watch."
+        },
+        {
+          "id": "text/koot_nightwatch/1",
+          "anchor": "#common-features",
+          "heading": "Common Features",
+          "description": "The textual content of Koot's work."
+        },
+        {
+          "id": "text/koot_nightwatch/2",
+          "anchor": "#creation-and-publication",
+          "heading": "Creation and Publication",
+          "description": "The authorship and publication of the text."
+        },
+        {
+          "id": "text/koot_nightwatch_ch1/1",
+          "anchor": "#structure",
+          "heading": "Structure"
+        },
+        {
+          "id": "text/koot_nightwatch_ch1/2",
+          "anchor": "#pages",
+          "heading": "Pages",
+          "description": "The introduction chapter to Koot's book is 10 pages long."
+        },
+        {
+          "id": "text/koot_nightwatch/3",
+          "anchor": "#references-to-other-entities",
+          "heading": "References to other Entities",
+          "description": "Koot's book is about The Night Watch."
+        },
+        {
+          "id": "text/koot_nightwatch/1",
+          "anchor": "#abstract-work",
+          "heading": "Abstract Work",
+          "description": "The text of Koot's book is conceptually part of a larger more abstract work of his conceptualization of the research and discussion, which might have multiple editions, translations or instantiations."
+        }
+      ]
+    },
+    {
+      "path": "event",
+      "url": "https://linked.art/model/event/",
+      "title": "Temporal Context: Periods, Events and Activities",
+      "examples": [
+        {
+          "id": "event/19c/1",
+          "anchor": "#types",
+          "heading": "Types",
+          "description": "The 19th Century is a period that spans from 1800 through the end of 1899."
+        },
+        {
+          "id": "event/vesuvius/1",
+          "anchor": "#causes",
+          "heading": "Causes",
+          "description": "Vesuvius erupts on August 24th, 79 CE."
+        },
+        {
+          "id": "object/pompeii-buildings/1",
+          "anchor": "#causes",
+          "heading": "Causes"
+        },
+        {
+          "id": "event/early_roman/1",
+          "anchor": "#during-vs-part-of",
+          "heading": "During vs Part Of",
+          "description": "The Early Roman Empire period, from 31 BCE through 193 CE, is part of the Roman Empire period."
+        },
+        {
+          "id": "event/vesuvius/2",
+          "anchor": "#during-vs-part-of",
+          "heading": "During vs Part Of"
+        },
+        {
+          "id": "object/pompeii_statue/1",
+          "anchor": "#relative-times",
+          "heading": "Relative Times",
+          "description": "A statue in Pompeii must have been created before the eruption of Vesuvius."
+        }
+      ]
+    },
+    {
+      "path": "exhibition",
+      "url": "https://linked.art/model/exhibition/",
+      "title": "Exhibitions",
+      "examples": [
+        {
+          "id": "activity/exha/1",
+          "anchor": "#exhibition-activity",
+          "heading": "Exhibition Activity",
+          "description": "Manet and Modern Beauty at the Getty, October 2019 to January 2020, was carried out by the Getty Museum in Los Angeles, and influenced by the idea behind the exhibition."
+        },
+        {
+          "id": "concept/exhidea/1",
+          "anchor": "#exhibition-concept",
+          "heading": "Exhibition Concept",
+          "description": "The idea (or abstract work) for the Manet and Modern Beauty exhibition is about Manet and Beauty."
+        },
+        {
+          "id": "concept/exhidea/2",
+          "anchor": "#known-artist-without-known-objects",
+          "heading": "Known Artist without Known Objects",
+          "description": "The conceptualization of the \"Manet and Modern Beauty\" exhibition was influenced by the Manet and his work."
+        },
+        {
+          "id": "activity/exhb/1",
+          "anchor": "#multiple-venues",
+          "heading": "Multiple Venues",
+          "description": "The Art Institute of Chicago exhibited Manet and Modern Beauty in Chicago with a specific set of objects, and is part of the larger multi-venue exhibition."
+        },
+        {
+          "id": "event/exhab/1",
+          "anchor": "#multiple-venues",
+          "heading": "Multiple Venues"
+        },
+        {
+          "id": "set/exhset/1",
+          "anchor": "#objects",
+          "heading": "Objects",
+          "description": "The objects in Manet and Modern Beauty ..."
+        },
+        {
+          "id": "object/spring/12",
+          "anchor": "#objects",
+          "heading": "Objects"
+        }
+      ]
+    },
+    {
+      "path": "intro",
+      "url": "https://linked.art/model/intro/",
+      "title": "Introduction to the Model",
+      "examples": []
+    },
+    {
+      "path": "object",
+      "url": "https://linked.art/model/object/",
+      "title": "Objects",
+      "examples": []
+    },
+    {
+      "path": "object/aboutness",
+      "url": "https://linked.art/model/object/aboutness/",
+      "title": "Objects: Aboutness",
+      "examples": [
+        {
+          "id": "object/spring/5",
+          "anchor": "#description",
+          "heading": "Description",
+          "description": "Spring by Manet has a description, explaining the object and its image."
+        },
+        {
+          "id": "visual/spring/1",
+          "anchor": "#depiction",
+          "heading": "Depiction",
+          "description": "The image of Manet's Spring represents (or depicts) Jeanne Demarsy, a French actress."
+        },
+        {
+          "id": "visual/spring/5",
+          "anchor": "#depictions-of-unidentified-instances",
+          "heading": "Depictions of Unidentified Instances",
+          "description": "The painting Spring also depicts a parasol which, of course, does not have its own identity."
+        },
+        {
+          "id": "visual/spring/2",
+          "anchor": "#subject",
+          "heading": "Subject",
+          "description": "Manet's Spring is about the season spring."
+        },
+        {
+          "id": "visual/spring/3",
+          "anchor": "#style-classification",
+          "heading": "Style Classification",
+          "description": "Manet's Spring is in an impressionist style."
+        },
+        {
+          "id": "visual/spring/4",
+          "anchor": "#other-classifications",
+          "heading": "Other Classifications",
+          "description": "Spring's visual appearance is classified as a Portrait."
+        },
+        {
+          "id": "object/nightwatch/18",
+          "anchor": "#inscriptions-and-signatures",
+          "heading": "Inscriptions and Signatures",
+          "description": "The Night Watch has a signature statement:"
+        },
+        {
+          "id": "object/catalog/1",
+          "anchor": "#single-object-multiple-works",
+          "heading": "Single Object, Multiple Works",
+          "description": "A copy of the exhibition catalog for the \"Post-Impressionism: Cross-Currents in European and American Painting 1880-1906\", at which Manet's \"Spring\" (from the Getty) and Cezanne's \"Houses in Provence\" (from the National Gallery) were exhibited, shows both works and carries its own text."
+        },
+        {
+          "id": "object/harpers/1",
+          "anchor": "#single-object-single-textual-and-visual-work",
+          "heading": "Single Object, Single Textual and Visual Work",
+          "description": "\"Harper's January\" at the Yale University Art Gallery is a print by Edward Penfield that has both significant text and visual content. As there is visual content which is not text, but all text is necessarily visual, the textual content is part_of the visual content."
+        },
+        {
+          "id": "visual/harpers/1",
+          "anchor": "#single-object-single-textual-and-visual-work",
+          "heading": "Single Object, Single Textual and Visual Work"
+        },
+        {
+          "id": "text/harpers/1",
+          "anchor": "#single-object-single-textual-and-visual-work",
+          "heading": "Single Object, Single Textual and Visual Work"
+        }
+      ]
+    },
+    {
+      "path": "object/ownership",
+      "url": "https://linked.art/model/object/ownership/",
+      "title": "Objects: Provenance",
+      "examples": [
+        {
+          "id": "object/spring/6",
+          "anchor": "#ownership",
+          "heading": "Ownership",
+          "description": "The current owner of Spring is the Getty."
+        },
+        {
+          "id": "object/nightwatch/14",
+          "anchor": "#custody",
+          "heading": "Custody",
+          "description": "The Night Watch is owned by the City of Amsterdam, and on permanent loan to the Rijksmuseum."
+        },
+        {
+          "id": "object/nightwatch/17",
+          "anchor": "#custody",
+          "heading": "Custody",
+          "description": "The Night Watch is also (entirely hypothetically) loaned to the Getty Museum."
+        },
+        {
+          "id": "object/spring/7",
+          "anchor": "#location",
+          "heading": "Location",
+          "description": "The current location of the Spring is Gallery W204 (which is part of the West building, which is part of the Getty Center)"
+        },
+        {
+          "id": "object/spring/14",
+          "anchor": "#location",
+          "heading": "Location",
+          "description": "Spring is (also hypothetically) currently in a different gallery for an exhibition."
+        },
+        {
+          "id": "object/spring/15",
+          "anchor": "#simple-historical-ownership",
+          "heading": "Simple Historical Ownership",
+          "description": "Spring was transferred from Manet to Proust, and then later from the Durand-Ruel Gallery to Payne. (The full set of transfers would be given in the real record)"
+        }
+      ]
+    },
+    {
+      "path": "object/physical",
+      "url": "https://linked.art/model/object/physical/",
+      "title": "Objects: Physical Characteristics",
+      "examples": [
+        {
+          "id": "object/nightwatch/6",
+          "anchor": "#dimensions",
+          "heading": "Dimensions",
+          "description": "The Night Watch is 379.5 cm high, by 453.5 cm wide."
+        },
+        {
+          "id": "object/nightwatch/7",
+          "anchor": "#dimension-statement",
+          "heading": "Dimension Statement",
+          "description": "The dimensions, including weight, of the Night Watch, described in a human-readable text."
+        },
+        {
+          "id": "object/nightwatch/8",
+          "anchor": "#dimension-display-labels",
+          "heading": "Dimension Display Labels",
+          "description": "The Night Watch once more, described with human readable labels on each dimension."
+        },
+        {
+          "id": "object/nightwatch/9",
+          "anchor": "#measurements-of-dimensions",
+          "heading": "Measurements of Dimensions",
+          "description": "The measurement of the Night Watch was carried out by the \"Operation Night Watch\" team, during \"Operation Night Watch\""
+        },
+        {
+          "id": "object/spring/29",
+          "anchor": "#measurement-of-object-features",
+          "heading": "Measurement of Object Features",
+          "description": "Spring has \"Framed [Outer Dim]\" and \"Unframed\" dimensions. The \"Unframed\" height and width are 74 and 51.5cm."
+        },
+        {
+          "id": "object/nightwatch/10",
+          "anchor": "#colors",
+          "heading": "Colors",
+          "description": "The Night Watch is primarily a brown color (B35A1F), which is categorized as being brown (aat:300127490)"
+        },
+        {
+          "id": "object/nightwatch/11",
+          "anchor": "#shapes",
+          "heading": "Shapes",
+          "description": "The Night Watch is a landscape format painting, as it is wider than it is high."
+        },
+        {
+          "id": "object/nightwatch/12",
+          "anchor": "#materials",
+          "heading": "Materials",
+          "description": "The Night Watch is made of oil paint and canvas."
+        },
+        {
+          "id": "object/nightwatch/13",
+          "anchor": "#materials-statement",
+          "heading": "Materials Statement",
+          "description": "The Night Watch is \"oil on canvas\"."
+        },
+        {
+          "id": "object/nightwatch/support",
+          "anchor": "#parts",
+          "heading": "Parts",
+          "description": "The support part of the Night Watch is made of canvas, and part of the Night Watch."
+        },
+        {
+          "id": "object/spring/back",
+          "anchor": "#sides-of-an-object",
+          "heading": "Sides of an Object",
+          "description": "On the back of Manet's \"Spring\" is an inscription \"11505F\"."
+        },
+        {
+          "id": "object/chess/1",
+          "anchor": "#number-of-parts",
+          "heading": "Number of Parts",
+          "description": "\"Vessel with miniature chess set\" by Michael Mode consists of 36 parts (the 32 pieces, the board, a lid, and two other parts)"
+        }
+      ]
+    },
+    {
+      "path": "object/production",
+      "url": "https://linked.art/model/object/production/",
+      "title": "Object Production and Destruction",
+      "examples": [
+        {
+          "id": "object/nightwatch/5",
+          "anchor": "#base-production-activity",
+          "heading": "Base Production Activity",
+          "description": "Similar to the Production example in the basic patterns, \"The Night Watch\" was created by Rembrandt in Amsterdam in 1642."
+        },
+        {
+          "id": "object/bust/1",
+          "anchor": "#techniques",
+          "heading": "Techniques",
+          "description": "The sculpture \"Bust of a Man\" was created by Francis Hardwood using the sculpting technique."
+        },
+        {
+          "id": "object/run/1",
+          "anchor": "#multiple-artists-with-different-roles",
+          "heading": "Multiple Artists (with Different Roles)",
+          "description": "A painted textile called \"RÜN\", where the linen was hand-woven by Sarah Parke and then painted by Mark Barrow."
+        },
+        {
+          "id": "object/kellerdana/1",
+          "anchor": "#inspirations-studies-or-copies",
+          "heading": "Inspirations, Studies or Copies",
+          "description": "In 1964, Deane Keller created a copy of Daniel Huntington's portrait of James Dwight Dana, from 1858."
+        },
+        {
+          "id": "object/okeeffe-gok/1",
+          "anchor": "#reproduction-from-an-identifiable-source",
+          "heading": "Reproduction from an Identifiable Source",
+          "description": "Copies of a photograph, taken by Alfred Stieglitz of Georgia O'Keeffe, are printed from the same negative at different times and now owned by different organizations: Yale University Art Gallery, National Gallery of Art, and the Georgia O'Keeffe Museum"
+        },
+        {
+          "id": "object/okeeffe-yuag/1",
+          "anchor": "#reproduction-from-an-identifiable-source",
+          "heading": "Reproduction from an Identifiable Source"
+        },
+        {
+          "id": "object/ccp/1",
+          "anchor": "#reproduction-from-an-identifiable-source",
+          "heading": "Reproduction from an Identifiable Source",
+          "description": "A print at the Yale Center for British Art, Chaucer's Canterbury Pilgrims, made from a specific copper plate held at the Yale University Art Gallery."
+        },
+        {
+          "id": "object/ccp-plate/1",
+          "anchor": "#reproduction-from-an-identifiable-source",
+          "heading": "Reproduction from an Identifiable Source"
+        },
+        {
+          "id": "object/nuveen/1",
+          "anchor": "#cause-of-production",
+          "heading": "Cause of Production",
+          "description": "The production of the Nuveen Painting was caused by its commissioning."
+        },
+        {
+          "id": "object/coppa/1",
+          "anchor": "#unidentified-or-unknown-artist",
+          "heading": "Unidentified or Unknown Artist",
+          "description": "The Coppa Amatoria was created by an unidentified artist or artists from Italy."
+        },
+        {
+          "id": "object/washday/1",
+          "anchor": "#influenced-by-an-artist",
+          "heading": "Influenced By an Artist",
+          "description": "The painting \"Wash Day\" was intentionally created in the manner of Winslow Homer."
+        },
+        {
+          "id": "group/harwoodstudio/1",
+          "anchor": "#attribution-of-a-group-related-to-an-artist",
+          "heading": "Attribution of a Group Related to an Artist",
+          "description": "The \"Bust of a Man\" object described above was previously thought to have been created by the Studio of Francis Harwood, a Group. The example below is the record for the Group."
+        },
+        {
+          "id": "object/gradualpage/1",
+          "anchor": "#production-by-removal",
+          "heading": "Production by Removal",
+          "description": "The collection item is a page from a gradual (manuscript) by the Master of the Libro dei Notai. Source"
+        },
+        {
+          "id": "object/torosaurus/1",
+          "anchor": "#discovery-versus-production",
+          "heading": "Discovery versus Production",
+          "description": "The fossil Torosaurus (VP.04072) was encountered in 1891 by John Bell Hatcher."
+        },
+        {
+          "id": "object/lepeintre/1",
+          "anchor": "#destruction",
+          "heading": "Destruction",
+          "description": "The painting \"Le Peintre\" by Picasso was destroyed (in a plane crash) on September 2nd, 1998 at about 10:30pm. Source"
+        },
+        {
+          "id": "object/lepeintre/2",
+          "anchor": "#cause-of-destruction",
+          "heading": "Cause of Destruction",
+          "description": "Le Peintre was destroyed because of the plane crashing. (Which also would have caused the destruction of the plane, the death of the crew, passengers and many other consequences)"
+        }
+      ]
+    },
+    {
+      "path": "object/rights",
+      "url": "https://linked.art/model/object/rights/",
+      "title": "Objects: Rights Information",
+      "examples": [
+        {
+          "id": "object/nightwatch/15",
+          "anchor": "#credit-attribution-statement",
+          "heading": "Credit / Attribution Statement",
+          "description": "The Night Watch is on loan to the Rijksmuseum from the City of Amsterdam."
+        },
+        {
+          "id": "visual/nightwatch/1",
+          "anchor": "#rights-statement",
+          "heading": "Rights Statement",
+          "description": "The visual content of the Night Watch is in the Public Domain."
+        },
+        {
+          "id": "visual/nightwatch/2",
+          "anchor": "#rights-assertions",
+          "heading": "Rights Assertions",
+          "description": "The visual content of the Night Watch is in the Public Domain."
+        }
+      ]
+    },
+    {
+      "path": "place",
+      "url": "https://linked.art/model/place/",
+      "title": "Places",
+      "examples": [
+        {
+          "id": "place/amsterdam/1",
+          "anchor": "#core-information",
+          "heading": "Core Information",
+          "description": "There is a city called Amsterdam in the Netherlands."
+        },
+        {
+          "id": "place/new_zealand/1",
+          "anchor": "#geospatial-location",
+          "heading": "Geospatial Location",
+          "description": "A polygon that (very approximately) defines the country of New Zealand."
+        },
+        {
+          "id": "place/amsterdam_auction_house/1",
+          "anchor": "#geospatial-approximation",
+          "heading": "Geospatial Approximation",
+          "description": "Many art sales take place in auction houses over time, and while the city might be known, the exact address within the city might not be and it could be misleading to collect all of the art sales within the entire city together."
+        },
+        {
+          "id": "object/flw_house/1",
+          "anchor": "#buildings-and-immovable-objects",
+          "heading": "Buildings and \"Immovable\" Objects",
+          "description": "The Frank Lloyd Wright House was originally built in New Jersey, and subsequently moved to its current location in Arkansas."
+        }
+      ]
+    },
+    {
+      "path": "profile",
+      "url": "https://linked.art/model/profile/",
+      "title": "Linked Art Subset of CIDOC-CRM",
+      "examples": []
+    },
+    {
+      "path": "profile/class_analysis",
+      "url": "https://linked.art/model/profile/class_analysis/",
+      "title": "CIDOC-CRM Class Analysis",
+      "examples": []
+    },
+    {
+      "path": "provenance",
+      "url": "https://linked.art/model/provenance/",
+      "title": "Object Provenance",
+      "examples": [
+        {
+          "id": "provenance/manet_proust/1",
+          "anchor": "#provenance-event",
+          "heading": "Provenance Event",
+          "description": "Édouard Manet sold his painting, Jeanne, to Antonin Proust in 1883 for 3,000 francs."
+        },
+        {
+          "id": "provenance/ziwei_yuag/1",
+          "anchor": "#classifications",
+          "heading": "Classifications",
+          "description": "Xu Ziwei gave her painting \"Landscape\" to Yale University Art Gallery in 1999"
+        },
+        {
+          "id": "provenance/unknown_faure/1",
+          "anchor": "#relative-times",
+          "heading": "Relative Times",
+          "description": "Jean-Baptise Faure owned Spring after Proust (but not necessarily directly from Proust), before transferring it to the Galerie Durand-Ruel (Paris) in 1907."
+        }
+      ]
+    },
+    {
+      "path": "provenance/acquisition",
+      "url": "https://linked.art/model/provenance/acquisition/",
+      "title": "Object Acquisition and Loan",
+      "examples": [
+        {
+          "id": "provenance/durand_payne/1",
+          "anchor": "#object-acquisition",
+          "heading": "Object Acquisition",
+          "description": "Oliver Payne acquired Spring from the Durand-Ruel Gallery in New York in 1909"
+        },
+        {
+          "id": "provenance/yuag_ycba_wiley/1",
+          "anchor": "#multiple-owners",
+          "heading": "Multiple Owners",
+          "description": "The Yale University Art Gallery and the Yale Center for British Art jointly purchased a painting by Kehinde Wiley in 2021 from an undisclosed seller."
+        },
+        {
+          "id": "provenance/payneheirs_getty/1",
+          "anchor": "#agents",
+          "heading": "Agents",
+          "description": "In 2014, the family heirs of Oliver Payne sold Spring (by auction at Christie's) to Otto Naumann, acting for the J. Paul Getty Museum."
+        },
+        {
+          "id": "provenance/yuag_stora/1",
+          "anchor": "#exchange-of-objects",
+          "heading": "Exchange of Objects",
+          "description": "In 1962, the Yale University Art Gallery exchanged \"Nude Woman\" by Beckmann for \"Personnages dans un parc\" by Masson."
+        },
+        {
+          "id": "provenance/manet_proust/1",
+          "anchor": "#payments",
+          "heading": "Payments",
+          "description": "Édouard Manet sold his painting, Jeanne, to Antonin Proust in 1883 for 3,000 francs."
+        },
+        {
+          "id": "provenance/fixme/1",
+          "anchor": "#payment-for-services",
+          "heading": "Payment for Services",
+          "description": "A sculpture is purchased with $900 going to the seller, and $100 going to the auction house."
+        }
+      ]
+    },
+    {
+      "path": "provenance/auctions",
+      "url": "https://linked.art/model/provenance/auctions/",
+      "title": "Auctions",
+      "examples": [
+        {
+          "id": "event/christies_24477/1",
+          "anchor": "#auction",
+          "heading": "Auction",
+          "description": "An auction event takes place on November 5th, 2014 at the New York premises of Christie's."
+        },
+        {
+          "id": "event/christies_24477_16/1",
+          "anchor": "#auction-of-lot",
+          "heading": "Auction of Lot",
+          "description": "Lot 16 was auctioned as part of the auction above."
+        },
+        {
+          "id": "set/24477_16_objects/1",
+          "anchor": "#set-of-objects",
+          "heading": "Set of Objects",
+          "description": "Lot 16 consists of a single painting, Spring."
+        },
+        {
+          "id": "object/spring/20",
+          "anchor": "#set-of-objects",
+          "heading": "Set of Objects"
+        },
+        {
+          "id": "set/24477_16_objects/2",
+          "anchor": "#pre-set-prices",
+          "heading": "Pre-set Prices",
+          "description": "Lot 16 had an estimated price of $25,000,000:"
+        },
+        {
+          "id": "provenance/payneheirs_getty/2",
+          "anchor": "#purchase-of-lot",
+          "heading": "Purchase of Lot",
+          "description": "The Getty acquired Lot 16 for $65,125,000."
+        },
+        {
+          "id": "text/catalog_24477/1",
+          "anchor": "#auction-catalog",
+          "heading": "Auction Catalog"
+        }
+      ]
+    },
+    {
+      "path": "provenance/custody",
+      "url": "https://linked.art/model/provenance/custody/",
+      "title": "Loans, Thefts, Losses and other Changes of Custody",
+      "examples": [
+        {
+          "id": "provenance/spring_aic/1",
+          "anchor": "#loans",
+          "heading": "Loans",
+          "description": "Spring is lent by the Getty to the Art Institute of Chicago."
+        },
+        {
+          "id": "provenance/spring_getty/1",
+          "anchor": "#loans",
+          "heading": "Loans"
+        },
+        {
+          "id": "provenance/payneheirs_getty/2",
+          "anchor": "#institutional-ownership-departmental-custody",
+          "heading": "Institutional Ownership, Departmental Custody",
+          "description": "Spring is acquired by the Getty, and custody given to the Paintings department."
+        },
+        {
+          "id": "provenance/mona_lisa_theft/1",
+          "anchor": "#theft-and-loss",
+          "heading": "Theft and Loss",
+          "description": "The Mona Lisa was stolen from the Louvre in 1911 by Vincenzo Peruggia."
+        },
+        {
+          "id": "provenance/sharp_sale/1",
+          "anchor": "#sale-of-stolen-or-looted-objects",
+          "heading": "Sale of Stolen or Looted Objects",
+          "description": "A painting by Joseph Henry Sharp, \"Cheyenne Oklahoma\", was stolen from the Harwood Museum in Taos, New Mexico and then sold (at auction) for $52,650 to an undisclosed buyer."
+        }
+      ]
+    },
+    {
+      "path": "provenance/encounters",
+      "url": "https://linked.art/model/provenance/encounters/",
+      "title": "Encounters with Objects",
+      "examples": [
+        {
+          "id": "provenance/getty_bronze/1",
+          "anchor": "#encounters",
+          "heading": "Encounters",
+          "description": "The \"Statue of a Victorious Youth\" was discovered in 1964 off the coast of Italy by a fishing trawler, thereby taking ownership of it."
+        }
+      ]
+    },
+    {
+      "path": "provenance/movement",
+      "url": "https://linked.art/model/provenance/movement/",
+      "title": "Object Location and Movement",
+      "examples": [
+        {
+          "id": "provenance/wiley_move/1",
+          "anchor": "#moving-an-object",
+          "heading": "Moving an Object",
+          "description": "The Kehinde Wiley painting \"Portrait of Lynette Yiadom-Boakye\" routinely moves between the Yale Center for British Art and the Yale University Art Gallery"
+        }
+      ]
+    },
+    {
+      "path": "provenance/promises",
+      "url": "https://linked.art/model/provenance/promises/",
+      "title": "Promised Activities",
+      "examples": [
+        {
+          "id": "provenance/coffin_promise/1",
+          "anchor": "#promised-gift",
+          "heading": "Promised Gift",
+          "description": "Thomas Jaffe has promised to give the 19th Century Indo-Pacific Coffin to Yale University Art Gallery."
+        },
+        {
+          "id": "provenance/nuveen_commission/1",
+          "anchor": "#commissions-for-artwork",
+          "heading": "Commissions for Artwork",
+          "description": "The \"Nuveen Painting\" by Jim Dine was commissioned by Richard Franke in 1985."
+        }
+      ]
+    },
+    {
+      "path": "provenance/rights",
+      "url": "https://linked.art/model/provenance/rights/",
+      "title": "Transfer of Rights",
+      "examples": [
+        {
+          "id": "provenance/2",
+          "anchor": "#rights-and-their-acquisition",
+          "heading": "Rights and their Acquisition"
+        },
+        {
+          "id": "provenance/3",
+          "anchor": "#multiple-owners-with-different-stakes",
+          "heading": "Multiple Owners with Different Stakes"
+        },
+        {
+          "id": "provenance/4",
+          "anchor": "#transfer-of-shares",
+          "heading": "Transfer of Shares"
+        },
+        {
+          "id": "provenance/5",
+          "anchor": "#intellectual-property-rights",
+          "heading": "Intellectual Property Rights",
+          "description": "A copyright management organization, the Paintings Copyright Association, acquired the copyright for a particular painting in 2014."
+        }
+      ]
+    },
+    {
+      "path": "provenance/transfer",
+      "url": "https://linked.art/model/provenance/transfer/",
+      "title": "Unknown Transfers",
+      "examples": [
+        {
+          "id": "provenance/transfer/1",
+          "anchor": "#transfer",
+          "heading": "Transfer",
+          "description": "A painting is transferred between two people, however it is not clear whether it was permanent or merely a loan."
+        }
+      ]
+    },
+    {
+      "path": "vocab",
+      "url": "https://linked.art/model/vocab/",
+      "title": "Vocabulary Terms in Linked Art",
+      "examples": [
+        {
+          "id": "object/spring/30",
+          "anchor": "#usage",
+          "heading": "Usage"
+        },
+        {
+          "id": "object/spring/31",
+          "anchor": "#usage",
+          "heading": "Usage"
+        }
+      ]
+    },
+    {
+      "path": "vocab/optional",
+      "url": "https://linked.art/model/vocab/optional/",
+      "title": "Optional Vocabulary Terms",
+      "examples": []
+    },
+    {
+      "path": "vocab/recommended",
+      "url": "https://linked.art/model/vocab/recommended/",
+      "title": "Recommended Vocabulary Terms",
+      "examples": []
+    },
+    {
+      "path": "vocab/recommended/languages",
+      "url": "https://linked.art/model/vocab/recommended/languages/",
+      "title": "Language Terms",
+      "examples": []
+    },
+    {
+      "path": "vocab/recommended/nationalities",
+      "url": "https://linked.art/model/vocab/recommended/nationalities/",
+      "title": "Nationality and Culture Terms",
+      "examples": []
+    },
+    {
+      "path": "vocab/required",
+      "url": "https://linked.art/model/vocab/required/",
+      "title": "Required Vocabulary Terms",
+      "examples": [
+        {
+          "id": "object/nightwatch/41",
+          "anchor": "#primary-name",
+          "heading": "Primary Name"
+        },
+        {
+          "id": "object/nightwatch/42",
+          "anchor": "#display-name",
+          "heading": "Display Name"
+        },
+        {
+          "id": "object/nightwatch/43",
+          "anchor": "#display-name",
+          "heading": "Display Name"
+        },
+        {
+          "id": "person/rembrandt/41",
+          "anchor": "#sort-name",
+          "heading": "Sort Name"
+        },
+        {
+          "id": "person/rembrandt/42",
+          "anchor": "#sort-value",
+          "heading": "Sort Value"
+        },
+        {
+          "id": "object/nightwatch/44",
+          "anchor": "#statement",
+          "heading": "Statement"
+        },
+        {
+          "id": "object/nightwatch/45",
+          "anchor": "#type-of-work",
+          "heading": "Type of Work"
+        },
+        {
+          "id": "visual/nightwatch/40",
+          "anchor": "#style",
+          "heading": "Style"
+        },
+        {
+          "id": "object/nightwatch/48",
+          "anchor": "#shape",
+          "heading": "Shape"
+        },
+        {
+          "id": "person/rembrandt/44",
+          "anchor": "#nationality",
+          "heading": "Nationality"
+        },
+        {
+          "id": "person/rembrandt/43",
+          "anchor": "#occupation",
+          "heading": "Occupation"
+        },
+        {
+          "id": "object/nightwatch/47",
+          "anchor": "#color",
+          "heading": "Color"
+        },
+        {
+          "id": "activity/exha/40",
+          "anchor": "#exhibition-activity",
+          "heading": "Exhibition Activity"
+        },
+        {
+          "id": "provenance/manet_proust/40",
+          "anchor": "#provenance-activity",
+          "heading": "Provenance Activity"
+        },
+        {
+          "id": "text/koot_nightwatch/40",
+          "anchor": "#publication-activity",
+          "heading": "Publication Activity"
+        },
+        {
+          "id": "person/rembrandt/44",
+          "anchor": "#professional-activity",
+          "heading": "Professional Activity"
+        },
+        {
+          "id": "provenance/coffin_promise/40",
+          "anchor": "#promise-activity",
+          "heading": "Promise Activity"
+        },
+        {
+          "id": "object/nightwatch/49",
+          "anchor": "#collection-item",
+          "heading": "Collection Item"
+        },
+        {
+          "id": "object/nightwatch/50",
+          "anchor": "#artwork",
+          "heading": "Artwork"
+        }
+      ]
+    }
+  ]
+}

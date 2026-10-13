@@ -13,8 +13,8 @@ public static partial class Aat
     /// <summary>Summary: The name to use for displaying the node (vocabulary page label: Display Name) (300404669)</summary>
     public static LinkedArtNet.Type DisplayName => MakeType("300404669", "Display Title");
 
-    /// <summary>Summary: The name to use when sorting this entity with others (300451544)</summary>
-    public static LinkedArtNet.Type SortName => MakeType("300451544", "Sort Name");
+    /// <summary>Summary: The name to use when sorting this entity with others (vocabulary page label: Sort Name) (300451544)</summary>
+    public static LinkedArtNet.Type SortName => MakeType("300451544", "Sorting Name");
 
     /// <summary>Summary: The identifier to use when sorting this entity with others (300456575)</summary>
     public static LinkedArtNet.Type SortValue => MakeType("300456575", "Sort Value");
@@ -52,8 +52,8 @@ public static partial class Aat
     /// <summary>Summary: A publishing activity (vocabulary page label: Publication Activity) (300054686)</summary>
     public static LinkedArtNet.Type PublicationActivity => MakeType("300054686", "Publishing");
 
-    /// <summary>Summary: A promise (300435599)</summary>
-    public static LinkedArtNet.Type PromiseActivity => MakeType("300435599", "Promise Activity");
+    /// <summary>Summary: A promise (vocabulary page label: Promise Activity) (300435599)</summary>
+    public static LinkedArtNet.Type PromiseActivity => MakeType("300435599", "Promise");
 
     /// <summary>Summary: The entity is part of a cultural heritage collection (300404024)</summary>
     public static LinkedArtNet.Type CollectionItem => MakeType("300404024", "Collection Item");
@@ -637,8 +637,8 @@ public static partial class Aat
     /// <summary>Shapes: Oval (300263817)</summary>
     public static LinkedArtNet.Type Oval => MakeType("300263817", "Oval");
 
-    /// <summary>Shapes: Rectangular (300263831)</summary>
-    public static LinkedArtNet.Type Rectangular => MakeType("300263831", "Rectangular");
+    /// <summary>Shapes: Rectangular (the site emits the lowercase label) (300263831)</summary>
+    public static LinkedArtNet.Type Rectangular => MakeType("300263831", "rectangular");
 
     /// <summary>Shapes: Square (300263832)</summary>
     public static LinkedArtNet.Type Square => MakeType("300263832", "Square");
@@ -658,8 +658,8 @@ public static partial class Aat
     /// <summary>Name Types: The Name is a pseudonym, pen-name or other adopted name (300404657)</summary>
     public static LinkedArtNet.Type Pseudonym => MakeType("300404657", "Pseudonym");
 
-    /// <summary>Identifier Types: The identifier, typically a number, for an auction lot. The same identifier might be repeated across different auctions (300404628)</summary>
-    public static LinkedArtNet.Type AuctionLotNumber => MakeType("300404628", "Auction Lot Number");
+    /// <summary>Identifier Types: The identifier, typically a number, for an auction lot. The same identifier might be repeated across different auctions (vocabulary page label: Auction Lot Number) (300404628)</summary>
+    public static LinkedArtNet.Type AuctionLotNumber => MakeType("300404628", "Lot Number");
 
     /// <summary>Identifier Types: An International Standard Book Number (300417443)</summary>
     public static LinkedArtNet.Type Isbn => MakeType("300417443", "ISBN");
@@ -951,7 +951,7 @@ public static partial class Aat
     [
         new("PrimaryName", "300404670", "Primary Name", VocabularyKind.Type, null, null),
         new("DisplayName", "300404669", "Display Title", VocabularyKind.Type, null, null),
-        new("SortName", "300451544", "Sort Name", VocabularyKind.Type, null, null),
+        new("SortName", "300451544", "Sorting Name", VocabularyKind.Type, null, null),
         new("SortValue", "300456575", "Sort Value", VocabularyKind.Type, null, null),
         new("Statement", "300418049", "Brief Text", VocabularyKind.Type, null, null),
         new("TypeOfWork", "300435443", "Type of Work", VocabularyKind.Type, null, null),
@@ -964,7 +964,7 @@ public static partial class Aat
         new("ProvenanceActivity", "300055863", "Provenance Activity", VocabularyKind.Type, null, null),
         new("ProfessionalActivity", "300393177", "Professional Activities", VocabularyKind.Type, null, null),
         new("PublicationActivity", "300054686", "Publishing", VocabularyKind.Type, null, null),
-        new("PromiseActivity", "300435599", "Promise Activity", VocabularyKind.Type, null, null),
+        new("PromiseActivity", "300435599", "Promise", VocabularyKind.Type, null, null),
         new("CollectionItem", "300404024", "Collection Item", VocabularyKind.Type, null, null),
         new("Artwork", "300133025", "Artwork", VocabularyKind.Type, null, null),
         new("AlternateName", "300264273", "Alternate Name", VocabularyKind.Type, null, null),
@@ -1159,14 +1159,14 @@ public static partial class Aat
         new("Oblong", "300311843", "Oblong", VocabularyKind.Type, null, null),
         new("Octagonal", "300263824", "Octagonal", VocabularyKind.Type, null, null),
         new("Oval", "300263817", "Oval", VocabularyKind.Type, null, null),
-        new("Rectangular", "300263831", "Rectangular", VocabularyKind.Type, null, null),
+        new("Rectangular", "300263831", "rectangular", VocabularyKind.Type, null, null),
         new("Square", "300263832", "Square", VocabularyKind.Type, null, null),
         new("Upright", "300343370", "Upright", VocabularyKind.Type, null, null),
         new("TranslatedTitle", "300417194", "Translated Title", VocabularyKind.Type, null, null),
         new("SubTitle", "300312006", "Sub-title", VocabularyKind.Type, null, null),
         new("Alias", "300404664", "Alias", VocabularyKind.Type, null, null),
         new("Pseudonym", "300404657", "Pseudonym", VocabularyKind.Type, null, null),
-        new("AuctionLotNumber", "300404628", "Auction Lot Number", VocabularyKind.Type, null, null),
+        new("AuctionLotNumber", "300404628", "Lot Number", VocabularyKind.Type, null, null),
         new("Isbn", "300417443", "ISBN", VocabularyKind.Type, null, null),
         new("Issn", "300417430", "ISSN", VocabularyKind.Type, null, null),
         new("Doi", "300417432", "DOI", VocabularyKind.Type, null, null),

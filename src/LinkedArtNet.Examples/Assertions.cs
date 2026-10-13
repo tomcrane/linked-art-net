@@ -175,13 +175,12 @@ namespace LinkedArtNet.Examples
         }
 
 
-        [LinkedArtExample("object/nightwatch/17")]
-        [SiteIssue("The site publishes two examples as object/nightwatch/17; the JSON at that URL is the ownership page's 'permanent custody' example, not this non-specific relationship.")]
+        [LinkedArtExample("object/nightwatch/57")]
         public static HumanMadeObject Non_Specific_Relationship()
         {
             var nightwatch = new HumanMadeObject()
                 .WithContext()
-                .WithId("https://linked.art/example/object/nightwatch/17")
+                .WithId("https://linked.art/example/object/nightwatch/57")
                 .WithLabel("The Night Watch")
                 .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork);
 
@@ -230,5 +229,35 @@ namespace LinkedArtNet.Examples
 
             return bol;
         }
+
+        [LinkedArtExample("object/nightwatch/70")]
+        public static HumanMadeObject Statement_With_Creation_And_License()
+        {
+            var nightwatch = new HumanMadeObject()
+                .WithContext()
+                .WithId("https://linked.art/example/object/nightwatch/70")
+                .WithLabel("Night Watch");
+
+            nightwatch.ReferredToBy = [
+                new LinguisticObject()
+                    .WithClassifiedAs(Aat.Description, Aat.Statement)
+                    .WithClassifiedAs(Aat.Term("300456841"))
+                    .WithContent("Rembrandt's The Night Watch is a dynamic 17th-century group portrait of an Amsterdam militia company ...")
+                    .WithCreatedBy(c => c
+                        .WithTechnique(Aat.Term("300456842"))
+                        .WithTimeSpan(new LinkedArtTimeSpan
+                        {
+                            BeginOfTheBegin = new LinkedArtDate(2024, 11, 7, 20, 50, 0),
+                            EndOfTheEnd = new LinkedArtDate(2024, 11, 7, 20, 50, 0)
+                        }))
+                    .WithSubjectTo(
+                        new Right()
+                            .WithClassifiedAs("https://creativecommons.org/licenses/by/4.0/", "CC-BY")
+                            .WithName("CC-BY 4.0"))
+            ];
+
+            return nightwatch;
+        }
+
     }
 }

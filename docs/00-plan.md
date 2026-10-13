@@ -198,5 +198,10 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     `Currency.notation`, `Group.members_exemplified_by`, `MonetaryAmount : Dimension`, `Period.part_of`).
     123/183 implemented, 122 validated.
 
-Next: Phase 1 step 8 (the 60 missing examples: vocab/required, concepts, events, provenance pages, places),
-then file the upstream issues and cut `LinkedArtNet 1.0.0-preview`.
+11. ~~Phase 1 step 8: fill the gaps.~~ Done 2026-10-13. 183/183 site examples implemented, 182 validated, 3
+    blocked by site id collisions (`SiteIssue`). New topics: RequiredTerms, Auctions, Concepts, Events and one
+    class per provenance sub-page. Four registry labels now follow what the site emits (Sorting Name, Promise,
+    rectangular, Lot Number). `CoverageTests.Every_site_example_is_implemented` keeps it at 100%.
+
+Next: owner files the upstream issues (docs/upstream-issues.md) and cuts `LinkedArtNet 1.0.0-preview`; then
+Phase 2 (the TimeSpan parser).

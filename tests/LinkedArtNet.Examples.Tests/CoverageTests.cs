@@ -48,11 +48,11 @@ public class CoverageTests
     }
 
     [Fact]
-    public void Coverage_summary()
+    public void Every_site_example_is_implemented()
     {
-        // Not an assertion yet: Phase 1 step 8 closes the gap, then this becomes "every manifest example is implemented".
+        // 100% since Phase 1 step 8: a re-crawl that finds new site examples fails here until they get a method.
         var missing = Manifest.ExampleIds.Where(id => ExampleCatalog.Find(id) is null).ToList();
-        Assert.True(missing.Count < Manifest.ExampleIds.Count, "No examples implemented at all.");
+        Assert.True(missing.Count == 0, "Site examples without a [LinkedArtExample] method: " + string.Join(", ", missing));
     }
 
     private static string Normalise(string text) => text.Replace("\r\n", "\n").TrimEnd();

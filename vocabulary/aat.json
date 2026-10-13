@@ -4,7 +4,7 @@
   "terms": [
     { "name": "PrimaryName", "id": "300404670", "label": "Primary Name", "tier": "required", "notes": "Summary: The primary name of the entity" },
     { "name": "DisplayName", "id": "300404669", "label": "Display Title", "tier": "required", "notes": "Summary: The name to use for displaying the node (vocabulary page label: Display Name)" },
-    { "name": "SortName", "id": "300451544", "label": "Sort Name", "tier": "required", "notes": "Summary: The name to use when sorting this entity with others" },
+    { "name": "SortName", "id": "300451544", "label": "Sorting Name", "tier": "required", "notes": "Summary: The name to use when sorting this entity with others (vocabulary page label: Sort Name)" },
     { "name": "SortValue", "id": "300456575", "label": "Sort Value", "tier": "required", "notes": "Summary: The identifier to use when sorting this entity with others" },
     { "name": "Statement", "id": "300418049", "label": "Brief Text", "tier": "required", "notes": "Summary: A type of statement (vocabulary page label: Statement)" },
     { "name": "TypeOfWork", "id": "300435443", "label": "Type of Work", "tier": "required", "notes": "Summary: A type of works" },
@@ -17,7 +17,7 @@
     { "name": "ProvenanceActivity", "id": "300055863", "label": "Provenance Activity", "tier": "required", "notes": "Summary: A provenance activity" },
     { "name": "ProfessionalActivity", "id": "300393177", "label": "Professional Activities", "tier": "required", "notes": "Summary: A professional activity (vocabulary page label: Professional Activity)" },
     { "name": "PublicationActivity", "id": "300054686", "label": "Publishing", "tier": "required", "notes": "Summary: A publishing activity (vocabulary page label: Publication Activity)" },
-    { "name": "PromiseActivity", "id": "300435599", "label": "Promise Activity", "tier": "required", "notes": "Summary: A promise" },
+    { "name": "PromiseActivity", "id": "300435599", "label": "Promise", "tier": "required", "notes": "Summary: A promise (vocabulary page label: Promise Activity)" },
     { "name": "CollectionItem", "id": "300404024", "label": "Collection Item", "tier": "required", "notes": "Summary: The entity is part of a cultural heritage collection" },
     { "name": "Artwork", "id": "300133025", "label": "Artwork", "tier": "required", "notes": "Summary: The entity is an artwork" },
 
@@ -228,7 +228,7 @@
     { "name": "Oblong", "id": "300311843", "label": "Oblong", "tier": "recommended", "notes": "Shapes: Oblong" },
     { "name": "Octagonal", "id": "300263824", "label": "Octagonal", "tier": "recommended", "notes": "Shapes: Octagonal" },
     { "name": "Oval", "id": "300263817", "label": "Oval", "tier": "recommended", "notes": "Shapes: Oval" },
-    { "name": "Rectangular", "id": "300263831", "label": "Rectangular", "tier": "recommended", "notes": "Shapes: Rectangular" },
+    { "name": "Rectangular", "id": "300263831", "label": "rectangular", "tier": "recommended", "notes": "Shapes: Rectangular (the site emits the lowercase label)" },
     { "name": "Square", "id": "300263832", "label": "Square", "tier": "recommended", "notes": "Shapes: Square" },
     { "name": "Upright", "id": "300343370", "label": "Upright", "tier": "recommended", "notes": "Shapes: Upright" },
 
@@ -237,7 +237,7 @@
     { "name": "Alias", "id": "300404664", "label": "Alias", "tier": "optional", "notes": "Name Types: The Name is an alias or nickname, likely for a person" },
     { "name": "Pseudonym", "id": "300404657", "label": "Pseudonym", "tier": "optional", "notes": "Name Types: The Name is a pseudonym, pen-name or other adopted name" },
 
-    { "name": "AuctionLotNumber", "id": "300404628", "label": "Auction Lot Number", "tier": "optional", "notes": "Identifier Types: The identifier, typically a number, for an auction lot. The same identifier might be repeated across different auctions" },
+    { "name": "AuctionLotNumber", "id": "300404628", "label": "Lot Number", "tier": "optional", "notes": "Identifier Types: The identifier, typically a number, for an auction lot. The same identifier might be repeated across different auctions (vocabulary page label: Auction Lot Number)" },
     { "name": "Isbn", "id": "300417443", "label": "ISBN", "tier": "optional", "notes": "Identifier Types: An International Standard Book Number" },
     { "name": "Issn", "id": "300417430", "label": "ISSN", "tier": "optional", "notes": "Identifier Types: An International Standard Serial Number (for journals)" },
     { "name": "Doi", "id": "300417432", "label": "DOI", "tier": "optional", "notes": "Identifier Types: A Digital Object Identifier" },

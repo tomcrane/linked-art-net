@@ -18,8 +18,6 @@ where two pages (or two blocks on one page) use the same id, one example's JSON 
 
 | Id | Example shown on the page | JSON actually published |
 |---|---|---|
-| `person/rembrandt/10` | actor page: Rembrandt classified as male | assertion page: "Source of Knowledge" (identifier assigned from a document) |
-| `object/nightwatch/17` | assertion page: non-specific relationship via `attributed_by` | ownership page: permanent custody |
 | `text/koot_nightwatch/1` | document page: textual content (`carried_by`) | document page: abstract work with `part_of` |
 | `set/exhset/1` | collection page: unclassified exhibition set | exhibition page: set classified as Exhibition Collection |
 | `object/spring/31` | assertion page: context-specific identifier assignment | vocab/required page: usage example with local `vocab/terms/painting` ids |
@@ -70,3 +68,18 @@ follows the site in every case (decision D15) and documents each property as a s
 ## 5. Text
 
 - "Rembrant's" typo and the capitalised "Painting" label noted in the original audit (`docs/01-current-state.md`).
+
+## 6. Labels on the vocabulary pages differ from the labels in the examples
+
+The required/recommended vocabulary tables and the usage examples beneath them disagree on a few labels;
+the library's registry uses the label the examples emit and notes the table's label:
+
+| AAT | Table | Examples |
+|---|---|---|
+| 300451544 | Sort Name | Sorting Name |
+| 300435599 | Promise Activity | Promise |
+| 300404669 | Display Name | Display Title |
+| 300418049 | Statement | Brief Text |
+| 300054686 | Publication Activity | Publishing |
+| 300263831 | Rectangular | rectangular |
+| 300404628 | Auction Lot Number | Lot Number |

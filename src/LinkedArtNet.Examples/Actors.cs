@@ -257,13 +257,12 @@ namespace LinkedArtNet.Examples
         }
 
 
-        [LinkedArtExample("person/rembrandt/10")]
-        [SiteIssue("The site publishes two examples as person/rembrandt/10; the JSON at that URL is the assertion page's 'Source of Knowledge' example, not the gender example shown on the actor page.")]
+        [LinkedArtExample("person/rembrandt/32")]
         public static Person Rembrandt_Was_Male()
         {
             var rembrandt = new Person()
                 .WithContext()
-                .WithId("https://linked.art/example/person/rembrandt/10")
+                .WithId("https://linked.art/example/person/rembrandt/32")
                 .WithLabel("Rembrandt")
                 .WithClassifiedAs(Aat.Term("300189559", "Male"), Aat.Gender);
 

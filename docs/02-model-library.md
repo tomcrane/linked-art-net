@@ -252,7 +252,7 @@ Implemented in Phase 1 step 7:
 - `[SiteIssue("reason", Url = "...")]` marks a method that cannot match the site because of a site
   problem. The tests expect a mismatch (and fail if it unexpectedly matches), the coverage report shows
   the reason, and the output is never bent to reproduce the bug. An id may have two methods only when
-  the extra ones carry a `SiteIssue` (the site publishes two different examples under five ids).
+  the extra ones carry a `SiteIssue` (the site publishes two different examples under three ids).
 - `examples/manifest.json`: every example the site publishes, page by page, with the nearest heading
   and the introducing paragraph, crawled from the sitemap's `/model/` pages by
   `tools/ExampleManifest crawl`. `fetch` downloads the site JSON into `examples/cached/` (never
@@ -266,7 +266,7 @@ Implemented in Phase 1 step 7:
   get furthest); it round-trips through `LinkedArtJson`. `SiteJsonTests` validates the site's JSON
   itself and pins the 38 invalid ids so a site fix shows up. `CoverageTests` keeps `coverage.md`
   current and every method in the manifest.
-- Coverage at the end of step 7: 123 of 183 implemented, 122 validated, 5 site issues, 60 to do.
+- Coverage after step 8: 183 of 183 implemented, 182 validated, 3 blocked by site id collisions.
 
 Site problems to raise upstream are collected in `docs/upstream-issues.md`.
 

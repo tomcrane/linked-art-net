@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E30 Right. A legal right over a work or object (copyright, licence).</summary>
-public partial class Right : LinkedArtObject
+public partial class Right : LinkedArtObject, IHasDimensions
 {
     public Right() : base(nameof(Right))
     {

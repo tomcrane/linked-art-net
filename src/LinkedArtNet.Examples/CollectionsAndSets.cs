@@ -162,5 +162,38 @@ namespace LinkedArtNet.Examples
 
             return nightwatch;
         }
+
+        [LinkedArtExample("group/14thc_italian/1")]
+        public static Group Unidentified_14th_Century_Italian()
+        {
+            var group = new Group()
+                .WithContext()
+                .WithId("https://linked.art/example/group/14thc_italian/1")
+                .WithLabel("14th c italians");
+
+            group.IdentifiedBy = [new Name("Unidentified 14th Century Italian").AsPrimaryName()];
+
+            group.MembersExemplifiedBy = [
+                new Person
+                {
+                    Born = new Birth
+                    {
+                        TimeSpan = new LinkedArtTimeSpan
+                        {
+                            BeginOfTheBegin = new LinkedArtDate(1300, 1, 1),
+                            EndOfTheEnd = new LinkedArtDate(1399, 12, 31)
+                        },
+                        TookPlaceAt = [
+                            new Place()
+                                .WithId("https://vocab.getty.edu/tgn/1000080")
+                                .WithLabel("Italy")
+                        ]
+                    }
+                }
+            ];
+
+            return group;
+        }
+
     }
 }

@@ -8,943 +8,943 @@ namespace LinkedArtNet.Vocabulary;
 public static partial class Aat
 {
     /// <summary>Summary: The primary name of the entity (300404670)</summary>
-    public static Type PrimaryName => MakeType("300404670", "Primary Name");
+    public static LinkedArtNet.Type PrimaryName => MakeType("300404670", "Primary Name");
 
     /// <summary>Summary: The name to use for displaying the node (vocabulary page label: Display Name) (300404669)</summary>
-    public static Type DisplayName => MakeType("300404669", "Display Title");
+    public static LinkedArtNet.Type DisplayName => MakeType("300404669", "Display Title");
 
     /// <summary>Summary: The name to use when sorting this entity with others (300451544)</summary>
-    public static Type SortName => MakeType("300451544", "Sort Name");
+    public static LinkedArtNet.Type SortName => MakeType("300451544", "Sort Name");
 
     /// <summary>Summary: The identifier to use when sorting this entity with others (300456575)</summary>
-    public static Type SortValue => MakeType("300456575", "Sort Value");
+    public static LinkedArtNet.Type SortValue => MakeType("300456575", "Sort Value");
 
     /// <summary>Summary: A type of statement (vocabulary page label: Statement) (300418049)</summary>
-    public static Type Statement => MakeType("300418049", "Brief Text");
+    public static LinkedArtNet.Type Statement => MakeType("300418049", "Brief Text");
 
     /// <summary>Summary: A type of works (300435443)</summary>
-    public static Type TypeOfWork => MakeType("300435443", "Type of Work");
+    public static LinkedArtNet.Type TypeOfWork => MakeType("300435443", "Type of Work");
 
     /// <summary>Summary: A style (300015646)</summary>
-    public static Type Style => MakeType("300015646", "Style");
+    public static LinkedArtNet.Type Style => MakeType("300015646", "Style");
 
     /// <summary>Summary: A shape (300056273)</summary>
-    public static Type Shape => MakeType("300056273", "Shape");
+    public static LinkedArtNet.Type Shape => MakeType("300056273", "Shape");
 
     /// <summary>Summary: An occupation (300263369)</summary>
-    public static Type Occupation => MakeType("300263369", "Occupation");
+    public static LinkedArtNet.Type Occupation => MakeType("300263369", "Occupation");
 
     /// <summary>Summary: A nationality (300379842)</summary>
-    public static Type Nationality => MakeType("300379842", "Nationality");
+    public static LinkedArtNet.Type Nationality => MakeType("300379842", "Nationality");
 
     /// <summary>Summary: A color (300080438)</summary>
-    public static Type Color => MakeType("300080438", "Color");
+    public static LinkedArtNet.Type Color => MakeType("300080438", "Color");
 
     /// <summary>Summary: An exhibition (300054766)</summary>
-    public static Type ExhibitionActivity => MakeType("300054766", "Exhibition Activity");
+    public static LinkedArtNet.Type ExhibitionActivity => MakeType("300054766", "Exhibition Activity");
 
     /// <summary>Summary: A provenance activity (300055863)</summary>
-    public static Type ProvenanceActivity => MakeType("300055863", "Provenance Activity");
+    public static LinkedArtNet.Type ProvenanceActivity => MakeType("300055863", "Provenance Activity");
 
     /// <summary>Summary: A professional activity (vocabulary page label: Professional Activity) (300393177)</summary>
-    public static Type ProfessionalActivity => MakeType("300393177", "Professional Activities");
+    public static LinkedArtNet.Type ProfessionalActivity => MakeType("300393177", "Professional Activities");
 
     /// <summary>Summary: A publishing activity (vocabulary page label: Publication Activity) (300054686)</summary>
-    public static Type PublicationActivity => MakeType("300054686", "Publishing");
+    public static LinkedArtNet.Type PublicationActivity => MakeType("300054686", "Publishing");
 
     /// <summary>Summary: A promise (300435599)</summary>
-    public static Type PromiseActivity => MakeType("300435599", "Promise Activity");
+    public static LinkedArtNet.Type PromiseActivity => MakeType("300435599", "Promise Activity");
 
     /// <summary>Summary: The entity is part of a cultural heritage collection (300404024)</summary>
-    public static Type CollectionItem => MakeType("300404024", "Collection Item");
+    public static LinkedArtNet.Type CollectionItem => MakeType("300404024", "Collection Item");
 
     /// <summary>Summary: The entity is an artwork (300133025)</summary>
-    public static Type Artwork => MakeType("300133025", "Artwork");
+    public static LinkedArtNet.Type Artwork => MakeType("300133025", "Artwork");
 
     /// <summary>Name Types: An alternate name, as opposed to the primary name, of an entity (300264273)</summary>
-    public static Type AlternateName => MakeType("300264273", "Alternate Name");
+    public static LinkedArtNet.Type AlternateName => MakeType("300264273", "Alternate Name");
 
     /// <summary>Name Types: The given or first name of a Person (300404651)</summary>
-    public static Type GivenName => MakeType("300404651", "Given Name");
+    public static LinkedArtNet.Type GivenName => MakeType("300404651", "Given Name");
 
     /// <summary>Name Types: The middle name of a Person (300404654)</summary>
-    public static Type MiddleName => MakeType("300404654", "Middle Name");
+    public static LinkedArtNet.Type MiddleName => MakeType("300404654", "Middle Name");
 
     /// <summary>Name Types: The family or sirname of a Person (300404652)</summary>
-    public static Type FamilyName => MakeType("300404652", "Family Name");
+    public static LinkedArtNet.Type FamilyName => MakeType("300404652", "Family Name");
 
     /// <summary>Name Types: A former name, for any reason, of a Person (300435719)</summary>
-    public static Type FormerName => MakeType("300435719", "Former Name");
+    public static LinkedArtNet.Type FormerName => MakeType("300435719", "Former Name");
 
     /// <summary>Identifier Types: An accession number for the object (300312355)</summary>
-    public static Type AccessionNumber => MakeType("300312355", "Accession Number");
+    public static LinkedArtNet.Type AccessionNumber => MakeType("300312355", "Accession Number");
 
     /// <summary>Identifier Types: An identifier assigned by the institution but not an accession or system number (300404621)</summary>
-    public static Type LocalNumber => MakeType("300404621", "Local Number");
+    public static LinkedArtNet.Type LocalNumber => MakeType("300404621", "Local Number");
 
     /// <summary>Identifier Types: An identifier assigned by an automated system, such as a collection management system (vocabulary page label: System Number) (300435704)</summary>
-    public static Type SystemNumber => MakeType("300435704", "System-Assigned Number");
+    public static LinkedArtNet.Type SystemNumber => MakeType("300435704", "System-Assigned Number");
 
     /// <summary>Identifier Types: An identifier for where the object is physically in the repository, typically used in libraries (300311706)</summary>
-    public static Type CallNumber => MakeType("300311706", "Call Number");
+    public static LinkedArtNet.Type CallNumber => MakeType("300311706", "Call Number");
 
     /// <summary>Statement Types: A general note about the entity (300027200)</summary>
-    public static Type Note => MakeType("300027200", "Note");
+    public static LinkedArtNet.Type Note => MakeType("300027200", "Note");
 
     /// <summary>Statement Types: A description of the entity (300435416)</summary>
-    public static Type Description => MakeType("300435416", "Description");
+    public static LinkedArtNet.Type Description => MakeType("300435416", "Description");
 
     /// <summary>Statement Types: A statement about how to get access to the entity (300133046)</summary>
-    public static Type AccessStatement => MakeType("300133046", "Access Statement");
+    public static LinkedArtNet.Type AccessStatement => MakeType("300133046", "Access Statement");
 
     /// <summary>Statement Types: A list of citations of the entity, typically in a consistent format (300026497)</summary>
-    public static Type BibliographyStatement => MakeType("300026497", "Bibliography Statement");
+    public static LinkedArtNet.Type BibliographyStatement => MakeType("300026497", "Bibliography Statement");
 
     /// <summary>Statement Types: A description of the physical condition of the object (300435425)</summary>
-    public static Type ConditionStatement => MakeType("300435425", "Condition Statement");
+    public static LinkedArtNet.Type ConditionStatement => MakeType("300435425", "Condition Statement");
 
     /// <summary>Statement Types: A short statement of who should be acknowledged for the object (vocabulary page label: Credit Line) (300026687)</summary>
-    public static Type CreditLine => MakeType("300026687", "Credit Statement");
+    public static LinkedArtNet.Type CreditLine => MakeType("300026687", "Credit Statement");
 
     /// <summary>Statement Types: A description of the dimensions of the object (vocabulary page label: Dimensions Statement) (300435430)</summary>
-    public static Type DimensionsStatement => MakeType("300435430", "Dimension Statement");
+    public static LinkedArtNet.Type DimensionsStatement => MakeType("300435430", "Dimension Statement");
 
     /// <summary>Statement Types: A statement or citation list about exhibitions that the object has been in (300435424)</summary>
-    public static Type ExhibitionStatement => MakeType("300435424", "Exhibition Statement");
+    public static LinkedArtNet.Type ExhibitionStatement => MakeType("300435424", "Exhibition Statement");
 
     /// <summary>Statement Types: A description of inscriptions on the object (vocabulary page label: Inscription Statement) (300435414)</summary>
-    public static Type InscriptionStatement => MakeType("300435414", "Inscription");
+    public static LinkedArtNet.Type InscriptionStatement => MakeType("300435414", "Inscription");
 
     /// <summary>Statement Types: A description of non-inscription markings on the object (300435420)</summary>
-    public static Type MarkingsStatement => MakeType("300435420", "Markings Statement");
+    public static LinkedArtNet.Type MarkingsStatement => MakeType("300435420", "Markings Statement");
 
     /// <summary>Statement Types: A description or list of the materials the object is made of (vocabulary page label: Materials Statement) (300435429)</summary>
-    public static Type MaterialsStatement => MakeType("300435429", "Material Statement");
+    public static LinkedArtNet.Type MaterialsStatement => MakeType("300435429", "Material Statement");
 
     /// <summary>Statement Types: A description of the production or creation of the object (300435436)</summary>
-    public static Type ProductionStatement => MakeType("300435436", "Production Statement");
+    public static LinkedArtNet.Type ProductionStatement => MakeType("300435436", "Production Statement");
 
     /// <summary>Statement Types: A description or semi-structured value describing the ownership history of the object (300435438)</summary>
-    public static Type ProvenanceStatement => MakeType("300435438", "Provenance Statement");
+    public static LinkedArtNet.Type ProvenanceStatement => MakeType("300435438", "Provenance Statement");
 
     /// <summary>Statement Types: A description of copyright or other licenses pertaining to the object (vocabulary page label: Rights Statement) (300435434)</summary>
-    public static Type RightsStatement => MakeType("300435434", "Copyright/License Statement");
+    public static LinkedArtNet.Type RightsStatement => MakeType("300435434", "Copyright/License Statement");
 
     /// <summary>Statement Types: A description of the artist's signature which is on the object, often part of the artwork (vocabulary page label: Signature Statement) (300028705)</summary>
-    public static Type SignatureStatement => MakeType("300028705", "Signature");
+    public static LinkedArtNet.Type SignatureStatement => MakeType("300028705", "Signature");
 
     /// <summary>Statement Types: A summary of the intellectual content of the object, as opposed to a Description of the object as a whole (300026032)</summary>
-    public static Type Summary => MakeType("300026032", "Summary");
+    public static LinkedArtNet.Type Summary => MakeType("300026032", "Summary");
 
     /// <summary>Object Types: Structure or part of a structure which is the result of conscious construction (300263552)</summary>
-    public static Type Architecture => MakeType("300263552", "Architecture");
+    public static LinkedArtNet.Type Architecture => MakeType("300263552", "Architecture");
 
     /// <summary>Object Types: Clothing designed to protect the body in combat (300036745)</summary>
-    public static Type Armor => MakeType("300036745", "Armor");
+    public static LinkedArtNet.Type Armor => MakeType("300036745", "Armor");
 
     /// <summary>Object Types: Object comprised of a sequence of leaves of paper or other material, typically carrying language or image, and bound together into a codex (300028051)</summary>
-    public static Type Book => MakeType("300028051", "Book");
+    public static LinkedArtNet.Type Book => MakeType("300028051", "Book");
 
     /// <summary>Object Types: Object made for the purpose of covering the body, excluding jewelry and accessories (300266639)</summary>
-    public static Type Clothing => MakeType("300266639", "Clothing");
+    public static LinkedArtNet.Type Clothing => MakeType("300266639", "Clothing");
 
     /// <summary>Object Types: Object typically made of metal, used as currency (300037222)</summary>
-    public static Type Coin => MakeType("300037222", "Coin");
+    public static LinkedArtNet.Type Coin => MakeType("300037222", "Coin");
 
     /// <summary>Object Types: Objects that are primarily utilitarian in form or function but have aesthetic value, including ceramics, furniture, textiles, glass, clocks and so on (300411641)</summary>
-    public static Type DecorativeArts => MakeType("300411641", "Decorative Arts");
+    public static LinkedArtNet.Type DecorativeArts => MakeType("300411641", "Decorative Arts");
 
     /// <summary>Object Types: Object created by application of lines on a surface (300033973)</summary>
-    public static Type Drawing => MakeType("300033973", "Drawing");
+    public static LinkedArtNet.Type Drawing => MakeType("300033973", "Drawing");
 
     /// <summary>Object Types: Part of an object which surrounds a generally two dimensional artwork such as a painting (300404391)</summary>
-    public static Type Frame => MakeType("300404391", "Frame");
+    public static LinkedArtNet.Type Frame => MakeType("300404391", "Frame");
 
     /// <summary>Object Types: Objects used for sitting, reclining, or storage, such as a chair or cabinet (300037680)</summary>
-    public static Type Furniture => MakeType("300037680", "Furniture");
+    public static LinkedArtNet.Type Furniture => MakeType("300037680", "Furniture");
 
     /// <summary>Object Types: Objects worn on the body for adornment rather than function typically of precious materials (300209286)</summary>
-    public static Type Jewelry => MakeType("300209286", "Jewelry");
+    public static LinkedArtNet.Type Jewelry => MakeType("300209286", "Jewelry");
 
     /// <summary>Object Types: Prints created using the process of lithography (300041379)</summary>
-    public static Type Lithograph => MakeType("300041379", "Lithograph");
+    public static LinkedArtNet.Type Lithograph => MakeType("300041379", "Lithograph");
 
     /// <summary>Object Types: Handwritten books, typically decorated and illustrated (300265483)</summary>
-    public static Type Manuscript => MakeType("300265483", "Manuscript");
+    public static LinkedArtNet.Type Manuscript => MakeType("300265483", "Manuscript");
 
     /// <summary>Object Types: Flat object which depicts a representation of the Earth's surface, including physical and/or political features (300028094)</summary>
-    public static Type Map => MakeType("300028094", "Map");
+    public static LinkedArtNet.Type Map => MakeType("300028094", "Map");
 
     /// <summary>Object Types: A painting on a very small scale, often excised from an illuminated Manuscript (300033936)</summary>
-    public static Type Miniature => MakeType("300033936", "Miniature");
+    public static LinkedArtNet.Type Miniature => MakeType("300033936", "Miniature");
 
     /// <summary>Object Types: Objects created by arrangement of small pieces of durable material, such as stone or colored glass (300015342)</summary>
-    public static Type Mosaic => MakeType("300015342", "Mosaic");
+    public static LinkedArtNet.Type Mosaic => MakeType("300015342", "Mosaic");
 
     /// <summary>Object Types: Object whose primary function is to enable the user to create music (300041620)</summary>
-    public static Type MusicalInstrument => MakeType("300041620", "Musical Instrument");
+    public static LinkedArtNet.Type MusicalInstrument => MakeType("300041620", "Musical Instrument");
 
     /// <summary>Object Types: Object created by application of colored liquid onto a surface (300033618)</summary>
-    public static Type Painting => MakeType("300033618", "Painting");
+    public static LinkedArtNet.Type Painting => MakeType("300033618", "Painting");
 
     /// <summary>Object Types: Object produced by chemical action of light on a sensitive film (300046300)</summary>
-    public static Type Photograph => MakeType("300046300", "Photograph");
+    public static LinkedArtNet.Type Photograph => MakeType("300046300", "Photograph");
 
     /// <summary>Object Types: Objects created by transferring an image using a printing process (300041273)</summary>
-    public static Type Print => MakeType("300041273", "Print");
+    public static LinkedArtNet.Type Print => MakeType("300041273", "Print");
 
     /// <summary>Object Types: Object created by carving or engraving a hard material or molding a malleable material (300047090)</summary>
-    public static Type Sculpture => MakeType("300047090", "Sculpture");
+    public static LinkedArtNet.Type Sculpture => MakeType("300047090", "Sculpture");
 
     /// <summary>Object Types: Objects made of colored glass, often in the form of a window, meant to be observed through refracted light (300263722)</summary>
-    public static Type StainedGlass => MakeType("300263722", "Stained Glass");
+    public static LinkedArtNet.Type StainedGlass => MakeType("300263722", "Stained Glass");
 
     /// <summary>Object Types: A woven textile object, typically hung on a wall (300205002)</summary>
-    public static Type Tapestry => MakeType("300205002", "Tapestry");
+    public static LinkedArtNet.Type Tapestry => MakeType("300205002", "Tapestry");
 
     /// <summary>Place Types: The Place is a continent (Europe, Asia, North America, etc) (300128176)</summary>
-    public static Type Continent => MakeType("300128176", "Continent");
+    public static LinkedArtNet.Type Continent => MakeType("300128176", "Continent");
 
     /// <summary>Place Types: The Place is a country or Nation (France, Japan, USA, etc) (vocabulary page label: Country) (300128207)</summary>
-    public static Type Country => MakeType("300128207", "Nation");
+    public static LinkedArtNet.Type Country => MakeType("300128207", "Nation");
 
     /// <summary>Place Types: The Place is a state (New York, California, etc) (300000776)</summary>
-    public static Type State => MakeType("300000776", "State");
+    public static LinkedArtNet.Type State => MakeType("300000776", "State");
 
     /// <summary>Place Types: The Place is a province or similar region (Ontario, Yorkshire, etc) (300000774)</summary>
-    public static Type Province => MakeType("300000774", "Province");
+    public static LinkedArtNet.Type Province => MakeType("300000774", "Province");
 
     /// <summary>Place Types: The Place is a county (New Haven county, etc) (300000771)</summary>
-    public static Type County => MakeType("300000771", "County");
+    public static LinkedArtNet.Type County => MakeType("300000771", "County");
 
     /// <summary>Place Types: The Place is a city (Paris, Chicago, Tokyo, etc) (300008389)</summary>
-    public static Type City => MakeType("300008389", "City");
+    public static LinkedArtNet.Type City => MakeType("300008389", "City");
 
     /// <summary>Place Types: The Place is a museum location (300005768)</summary>
-    public static Type MuseumPlace => MakeType("300005768", "Museum (as Place)");
+    public static LinkedArtNet.Type MuseumPlace => MakeType("300005768", "Museum (as Place)");
 
     /// <summary>Place Types: The Place is a (museum) gallery room in which art is displayed (300240057)</summary>
-    public static Type Gallery => MakeType("300240057", "Gallery");
+    public static LinkedArtNet.Type Gallery => MakeType("300240057", "Gallery");
 
     /// <summary>Group Types: The Group is a commercial company or business (300160084)</summary>
-    public static Type Company => MakeType("300160084", "Company");
+    public static LinkedArtNet.Type Company => MakeType("300160084", "Company");
 
     /// <summary>Group Types: The Group is a department of another organization (300263534)</summary>
-    public static Type Department => MakeType("300263534", "Department");
+    public static LinkedArtNet.Type Department => MakeType("300263534", "Department");
 
     /// <summary>Group Types: The Group is an (extended) family related by blood and/or marriage (300055474)</summary>
-    public static Type Family => MakeType("300055474", "Family");
+    public static LinkedArtNet.Type Family => MakeType("300055474", "Family");
 
     /// <summary>Group Types: The Group is a museum (300312281)</summary>
-    public static Type Museum => MakeType("300312281", "Museum");
+    public static LinkedArtNet.Type Museum => MakeType("300312281", "Museum");
 
     /// <summary>Group Types: The Group is an organization or society of some sort (300025948)</summary>
-    public static Type Organization => MakeType("300025948", "Organization");
+    public static LinkedArtNet.Type Organization => MakeType("300025948", "Organization");
 
     /// <summary>Digital Types: The Digital Object is an image (300215302)</summary>
-    public static Type DigitalImage => MakeType("300215302", "Digital Image");
+    public static LinkedArtNet.Type DigitalImage => MakeType("300215302", "Digital Image");
 
     /// <summary>Digital Types: The Digital Object is a web page (300264578)</summary>
-    public static Type WebPage => MakeType("300264578", "Web Page");
+    public static LinkedArtNet.Type WebPage => MakeType("300264578", "Web Page");
 
     /// <summary>Set Types: The Set is a top level Archive (300375748)</summary>
-    public static Type Archive => MakeType("300375748", "Archive");
+    public static LinkedArtNet.Type Archive => MakeType("300375748", "Archive");
 
     /// <summary>Set Types: The Set is some grouping within an archive (300404022)</summary>
-    public static Type ArchivalGrouping => MakeType("300404022", "Archival Grouping");
+    public static LinkedArtNet.Type ArchivalGrouping => MakeType("300404022", "Archival Grouping");
 
     /// <summary>Set Types: The Set is some grouping within an archival grouping (vocabulary page label: Archival Sub-Grouping) (300404023)</summary>
-    public static Type ArchivalSubGrouping => MakeType("300404023", "Archival SubGrouping");
+    public static LinkedArtNet.Type ArchivalSubGrouping => MakeType("300404023", "Archival SubGrouping");
 
     /// <summary>Set Types: The Set is a collection of things, typically physical objects and managed by an organization (300025976)</summary>
-    public static Type Collection => MakeType("300025976", "Collection");
+    public static LinkedArtNet.Type Collection => MakeType("300025976", "Collection");
 
     /// <summary>Dimension Types: The Dimension measures the depth of the entity, from the front to the back (300072633)</summary>
-    public static Type Depth => MakeType("300072633", "Depth");
+    public static LinkedArtNet.Type Depth => MakeType("300072633", "Depth");
 
     /// <summary>Dimension Types: The Dimension measures the height of the entity, from the top to the bottom (300055644)</summary>
-    public static Type Height => MakeType("300055644", "Height");
+    public static LinkedArtNet.Type Height => MakeType("300055644", "Height");
 
     /// <summary>Dimension Types: The Dimension measures some unknown physical dimension of the entity (300055642)</summary>
-    public static Type UnknownPhysicalDimension => MakeType("300055642", "Unknown Physical Dimension");
+    public static LinkedArtNet.Type UnknownPhysicalDimension => MakeType("300055642", "Unknown Physical Dimension");
 
     /// <summary>Dimension Types: The Dimension measures the weight of the entity (300056240)</summary>
-    public static Type Weight => MakeType("300056240", "Weight");
+    public static LinkedArtNet.Type Weight => MakeType("300056240", "Weight");
 
     /// <summary>Dimension Types: The Dimension measures the width of the object, from left to right (300055647)</summary>
-    public static Type Width => MakeType("300055647", "Width");
+    public static LinkedArtNet.Type Width => MakeType("300055647", "Width");
 
     /// <summary>Languages: Ancient Greek (300387827)</summary>
-    public static Language AncientGreek => MakeLanguage("300387827", "Ancient Greek", "grc");
+    public static LinkedArtNet.Language AncientGreek => MakeLanguage("300387827", "Ancient Greek", "grc");
 
     /// <summary>Languages: Arabic (300387843)</summary>
-    public static Language Arabic => MakeLanguage("300387843", "Arabic", "ar");
+    public static LinkedArtNet.Language Arabic => MakeLanguage("300387843", "Arabic", "ar");
 
     /// <summary>Languages: Chinese (300388113)</summary>
-    public static Language Chinese => MakeLanguage("300388113", "Chinese", "zh");
+    public static LinkedArtNet.Language Chinese => MakeLanguage("300388113", "Chinese", "zh");
 
     /// <summary>Languages: Danish (300388204)</summary>
-    public static Language Danish => MakeLanguage("300388204", "Danish", "da");
+    public static LinkedArtNet.Language Danish => MakeLanguage("300388204", "Danish", "da");
 
     /// <summary>Languages: Dutch (300388256)</summary>
-    public static Language Dutch => MakeLanguage("300388256", "Dutch", "nl");
+    public static LinkedArtNet.Language Dutch => MakeLanguage("300388256", "Dutch", "nl");
 
     /// <summary>Languages: English (300388277)</summary>
-    public static Language English => MakeLanguage("300388277", "English", "en");
+    public static LinkedArtNet.Language English => MakeLanguage("300388277", "English", "en");
 
     /// <summary>Languages: Farsi (300388296)</summary>
-    public static Language Farsi => MakeLanguage("300388296", "Farsi", "fa");
+    public static LinkedArtNet.Language Farsi => MakeLanguage("300388296", "Farsi", "fa");
 
     /// <summary>Languages: Finnish (300388299)</summary>
-    public static Language Finnish => MakeLanguage("300388299", "Finnish", "fi");
+    public static LinkedArtNet.Language Finnish => MakeLanguage("300388299", "Finnish", "fi");
 
     /// <summary>Languages: French (300388306)</summary>
-    public static Language French => MakeLanguage("300388306", "French", "fr");
+    public static LinkedArtNet.Language French => MakeLanguage("300388306", "French", "fr");
 
     /// <summary>Languages: German (300388344)</summary>
-    public static Language German => MakeLanguage("300388344", "German", "de");
+    public static LinkedArtNet.Language German => MakeLanguage("300388344", "German", "de");
 
     /// <summary>Languages: Greek (300388361)</summary>
-    public static Language Greek => MakeLanguage("300388361", "Greek", "el");
+    public static LinkedArtNet.Language Greek => MakeLanguage("300388361", "Greek", "el");
 
     /// <summary>Languages: Hebrew (300388401)</summary>
-    public static Language Hebrew => MakeLanguage("300388401", "Hebrew", "he");
+    public static LinkedArtNet.Language Hebrew => MakeLanguage("300388401", "Hebrew", "he");
 
     /// <summary>Languages: Hindi (300388412)</summary>
-    public static Language Hindi => MakeLanguage("300388412", "Hindi", "hi");
+    public static LinkedArtNet.Language Hindi => MakeLanguage("300388412", "Hindi", "hi");
 
     /// <summary>Languages: Icelandic (300388449)</summary>
-    public static Language Icelandic => MakeLanguage("300388449", "Icelandic", "is");
+    public static LinkedArtNet.Language Icelandic => MakeLanguage("300388449", "Icelandic", "is");
 
     /// <summary>Languages: Irish (300388467)</summary>
-    public static Language Irish => MakeLanguage("300388467", "Irish", "ga");
+    public static LinkedArtNet.Language Irish => MakeLanguage("300388467", "Irish", "ga");
 
     /// <summary>Languages: Italian (300388474)</summary>
-    public static Language Italian => MakeLanguage("300388474", "Italian", "it");
+    public static LinkedArtNet.Language Italian => MakeLanguage("300388474", "Italian", "it");
 
     /// <summary>Languages: Japanese (300388486)</summary>
-    public static Language Japanese => MakeLanguage("300388486", "Japanese", "ja");
+    public static LinkedArtNet.Language Japanese => MakeLanguage("300388486", "Japanese", "ja");
 
     /// <summary>Languages: Korean (300388633)</summary>
-    public static Language Korean => MakeLanguage("300388633", "Korean", "ko");
+    public static LinkedArtNet.Language Korean => MakeLanguage("300388633", "Korean", "ko");
 
     /// <summary>Languages: Latin (300388693)</summary>
-    public static Language Latin => MakeLanguage("300388693", "Latin", "la");
+    public static LinkedArtNet.Language Latin => MakeLanguage("300388693", "Latin", "la");
 
     /// <summary>Languages: Norwegian (300388992)</summary>
-    public static Language Norwegian => MakeLanguage("300388992", "Norwegian", "no");
+    public static LinkedArtNet.Language Norwegian => MakeLanguage("300388992", "Norwegian", "no");
 
     /// <summary>Languages: Polish (300389109)</summary>
-    public static Language Polish => MakeLanguage("300389109", "Polish", "pl");
+    public static LinkedArtNet.Language Polish => MakeLanguage("300389109", "Polish", "pl");
 
     /// <summary>Languages: Portuguese (300389115)</summary>
-    public static Language Portuguese => MakeLanguage("300389115", "Portuguese", "pt");
+    public static LinkedArtNet.Language Portuguese => MakeLanguage("300389115", "Portuguese", "pt");
 
     /// <summary>Languages: Romanian (300389157)</summary>
-    public static Language Romanian => MakeLanguage("300389157", "Romanian", "ro");
+    public static LinkedArtNet.Language Romanian => MakeLanguage("300389157", "Romanian", "ro");
 
     /// <summary>Languages: Russian (300389168)</summary>
-    public static Language Russian => MakeLanguage("300389168", "Russian", "ru");
+    public static LinkedArtNet.Language Russian => MakeLanguage("300389168", "Russian", "ru");
 
     /// <summary>Languages: Spanish (300389311)</summary>
-    public static Language Spanish => MakeLanguage("300389311", "Spanish", "es");
+    public static LinkedArtNet.Language Spanish => MakeLanguage("300389311", "Spanish", "es");
 
     /// <summary>Languages: Swedish (300389336)</summary>
-    public static Language Swedish => MakeLanguage("300389336", "Swedish", "sv");
+    public static LinkedArtNet.Language Swedish => MakeLanguage("300389336", "Swedish", "sv");
 
     /// <summary>Languages: Tamil (300389365)</summary>
-    public static Language Tamil => MakeLanguage("300389365", "Tamil", "ta");
+    public static LinkedArtNet.Language Tamil => MakeLanguage("300389365", "Tamil", "ta");
 
     /// <summary>Languages: Thai (300389405)</summary>
-    public static Language Thai => MakeLanguage("300389405", "Thai", "th");
+    public static LinkedArtNet.Language Thai => MakeLanguage("300389405", "Thai", "th");
 
     /// <summary>Languages: Turkish (300389470)</summary>
-    public static Language Turkish => MakeLanguage("300389470", "Turkish", "tr");
+    public static LinkedArtNet.Language Turkish => MakeLanguage("300389470", "Turkish", "tr");
 
     /// <summary>Languages: Urdu (300389502)</summary>
-    public static Language Urdu => MakeLanguage("300389502", "Urdu", "ur");
+    public static LinkedArtNet.Language Urdu => MakeLanguage("300389502", "Urdu", "ur");
 
     /// <summary>Languages: Welsh (300389555)</summary>
-    public static Language Welsh => MakeLanguage("300389555", "Welsh", "cy");
+    public static LinkedArtNet.Language Welsh => MakeLanguage("300389555", "Welsh", "cy");
 
     /// <summary>Measurement Units: bytes (300265869)</summary>
-    public static MeasurementUnit Bytes => MakeUnit("300265869", "bytes");
+    public static LinkedArtNet.MeasurementUnit Bytes => MakeUnit("300265869", "bytes");
 
     /// <summary>Measurement Units: centimeters (300379098)</summary>
-    public static MeasurementUnit Centimeters => MakeUnit("300379098", "centimeters");
+    public static LinkedArtNet.MeasurementUnit Centimeters => MakeUnit("300379098", "centimeters");
 
     /// <summary>Measurement Units: days (300379242)</summary>
-    public static MeasurementUnit Days => MakeUnit("300379242", "days");
+    public static LinkedArtNet.MeasurementUnit Days => MakeUnit("300379242", "days");
 
     /// <summary>Measurement Units: feet (300379101)</summary>
-    public static MeasurementUnit Feet => MakeUnit("300379101", "feet");
+    public static LinkedArtNet.MeasurementUnit Feet => MakeUnit("300379101", "feet");
 
     /// <summary>Measurement Units: gigabytes (300265874)</summary>
-    public static MeasurementUnit Gigabytes => MakeUnit("300265874", "gigabytes");
+    public static LinkedArtNet.MeasurementUnit Gigabytes => MakeUnit("300265874", "gigabytes");
 
     /// <summary>Measurement Units: grams (300379225)</summary>
-    public static MeasurementUnit Grams => MakeUnit("300379225", "grams");
+    public static LinkedArtNet.MeasurementUnit Grams => MakeUnit("300379225", "grams");
 
     /// <summary>Measurement Units: hours (300379241)</summary>
-    public static MeasurementUnit Hours => MakeUnit("300379241", "hours");
+    public static LinkedArtNet.MeasurementUnit Hours => MakeUnit("300379241", "hours");
 
     /// <summary>Measurement Units: inches (300379100)</summary>
-    public static MeasurementUnit Inches => MakeUnit("300379100", "inches");
+    public static LinkedArtNet.MeasurementUnit Inches => MakeUnit("300379100", "inches");
 
     /// <summary>Measurement Units: kilobytes (300265870)</summary>
-    public static MeasurementUnit Kilobytes => MakeUnit("300265870", "kilobytes");
+    public static LinkedArtNet.MeasurementUnit Kilobytes => MakeUnit("300265870", "kilobytes");
 
     /// <summary>Measurement Units: kilograms (300379226)</summary>
-    public static MeasurementUnit Kilograms => MakeUnit("300379226", "kilograms");
+    public static LinkedArtNet.MeasurementUnit Kilograms => MakeUnit("300379226", "kilograms");
 
     /// <summary>Measurement Units: megabytes (300265873)</summary>
-    public static MeasurementUnit Megabytes => MakeUnit("300265873", "megabytes");
+    public static LinkedArtNet.MeasurementUnit Megabytes => MakeUnit("300265873", "megabytes");
 
     /// <summary>Measurement Units: meters (300379099)</summary>
-    public static MeasurementUnit Meters => MakeUnit("300379099", "meters");
+    public static LinkedArtNet.MeasurementUnit Meters => MakeUnit("300379099", "meters");
 
     /// <summary>Measurement Units: minutes (300379240)</summary>
-    public static MeasurementUnit Minutes => MakeUnit("300379240", "minutes");
+    public static LinkedArtNet.MeasurementUnit Minutes => MakeUnit("300379240", "minutes");
 
     /// <summary>Measurement Units: millimeters (300379097)</summary>
-    public static MeasurementUnit Millimeters => MakeUnit("300379097", "millimeters");
+    public static LinkedArtNet.MeasurementUnit Millimeters => MakeUnit("300379097", "millimeters");
 
     /// <summary>Measurement Units: months (300379245)</summary>
-    public static MeasurementUnit Months => MakeUnit("300379245", "months");
+    public static LinkedArtNet.MeasurementUnit Months => MakeUnit("300379245", "months");
 
     /// <summary>Measurement Units: parts (300404159)</summary>
-    public static MeasurementUnit Parts => MakeUnit("300404159", "parts");
+    public static LinkedArtNet.MeasurementUnit Parts => MakeUnit("300404159", "parts");
 
     /// <summary>Measurement Units: percent (300417377)</summary>
-    public static MeasurementUnit Percent => MakeUnit("300417377", "percent");
+    public static LinkedArtNet.MeasurementUnit Percent => MakeUnit("300417377", "percent");
 
     /// <summary>Measurement Units: pounds (300379254)</summary>
-    public static MeasurementUnit Pounds => MakeUnit("300379254", "pounds");
+    public static LinkedArtNet.MeasurementUnit Pounds => MakeUnit("300379254", "pounds");
 
     /// <summary>Measurement Units: seconds (300379239)</summary>
-    public static MeasurementUnit Seconds => MakeUnit("300379239", "seconds");
+    public static LinkedArtNet.MeasurementUnit Seconds => MakeUnit("300379239", "seconds");
 
     /// <summary>Measurement Units: years (300379244)</summary>
-    public static MeasurementUnit Years => MakeUnit("300379244", "years");
+    public static LinkedArtNet.MeasurementUnit Years => MakeUnit("300379244", "years");
 
     /// <summary>Materials: bone (300011798)</summary>
-    public static Material Bone => MakeMaterial("300011798", "bone");
+    public static LinkedArtNet.Material Bone => MakeMaterial("300011798", "bone");
 
     /// <summary>Materials: bronze (300010957)</summary>
-    public static Material Bronze => MakeMaterial("300010957", "bronze");
+    public static LinkedArtNet.Material Bronze => MakeMaterial("300010957", "bronze");
 
     /// <summary>Materials: canvas (300014078)</summary>
-    public static Material Canvas => MakeMaterial("300014078", "canvas");
+    public static LinkedArtNet.Material Canvas => MakeMaterial("300014078", "canvas");
 
     /// <summary>Materials: chalk (300011727)</summary>
-    public static Material Chalk => MakeMaterial("300011727", "chalk");
+    public static LinkedArtNet.Material Chalk => MakeMaterial("300011727", "chalk");
 
     /// <summary>Materials: clay (300010439)</summary>
-    public static Material Clay => MakeMaterial("300010439", "clay");
+    public static LinkedArtNet.Material Clay => MakeMaterial("300010439", "clay");
 
     /// <summary>Materials: copper (300011020)</summary>
-    public static Material Copper => MakeMaterial("300011020", "copper");
+    public static LinkedArtNet.Material Copper => MakeMaterial("300011020", "copper");
 
     /// <summary>Materials: glass (300010797)</summary>
-    public static Material Glass => MakeMaterial("300010797", "glass");
+    public static LinkedArtNet.Material Glass => MakeMaterial("300010797", "glass");
 
     /// <summary>Materials: gold leaf (300264831)</summary>
-    public static Material GoldLeaf => MakeMaterial("300264831", "gold leaf");
+    public static LinkedArtNet.Material GoldLeaf => MakeMaterial("300264831", "gold leaf");
 
     /// <summary>Materials: graphite (300011098)</summary>
-    public static Material Graphite => MakeMaterial("300011098", "graphite");
+    public static LinkedArtNet.Material Graphite => MakeMaterial("300011098", "graphite");
 
     /// <summary>Materials: ink (300015012)</summary>
-    public static Material Ink => MakeMaterial("300015012", "ink");
+    public static LinkedArtNet.Material Ink => MakeMaterial("300015012", "ink");
 
     /// <summary>Materials: marble (300011443)</summary>
-    public static Material Marble => MakeMaterial("300011443", "marble");
+    public static LinkedArtNet.Material Marble => MakeMaterial("300011443", "marble");
 
     /// <summary>Materials: metal (300010900)</summary>
-    public static Material Metal => MakeMaterial("300010900", "metal");
+    public static LinkedArtNet.Material Metal => MakeMaterial("300010900", "metal");
 
     /// <summary>Materials: oak (300012264)</summary>
-    public static Material Oak => MakeMaterial("300012264", "oak");
+    public static LinkedArtNet.Material Oak => MakeMaterial("300012264", "oak");
 
     /// <summary>Materials: oil (300015050)</summary>
-    public static Material Oil => MakeMaterial("300015050", "oil");
+    public static LinkedArtNet.Material Oil => MakeMaterial("300015050", "oil");
 
     /// <summary>Materials: paper (300014109)</summary>
-    public static Material Paper => MakeMaterial("300014109", "paper");
+    public static LinkedArtNet.Material Paper => MakeMaterial("300014109", "paper");
 
     /// <summary>Materials: plaster (300014922)</summary>
-    public static Material Plaster => MakeMaterial("300014922", "plaster");
+    public static LinkedArtNet.Material Plaster => MakeMaterial("300014922", "plaster");
 
     /// <summary>Materials: silver (300011029)</summary>
-    public static Material Silver => MakeMaterial("300011029", "silver");
+    public static LinkedArtNet.Material Silver => MakeMaterial("300011029", "silver");
 
     /// <summary>Materials: stone (300011176)</summary>
-    public static Material Stone => MakeMaterial("300011176", "stone");
+    public static LinkedArtNet.Material Stone => MakeMaterial("300011176", "stone");
 
     /// <summary>Materials: tempera (300015062)</summary>
-    public static Material Tempera => MakeMaterial("300015062", "tempera");
+    public static LinkedArtNet.Material Tempera => MakeMaterial("300015062", "tempera");
 
     /// <summary>Materials: terracotta (300010669)</summary>
-    public static Material Terracotta => MakeMaterial("300010669", "terracotta");
+    public static LinkedArtNet.Material Terracotta => MakeMaterial("300010669", "terracotta");
 
     /// <summary>Materials: watercolors (300015045)</summary>
-    public static Material Watercolors => MakeMaterial("300015045", "watercolors");
+    public static LinkedArtNet.Material Watercolors => MakeMaterial("300015045", "watercolors");
 
     /// <summary>Materials: wood (300011914)</summary>
-    public static Material Wood => MakeMaterial("300011914", "wood");
+    public static LinkedArtNet.Material Wood => MakeMaterial("300011914", "wood");
 
     /// <summary>Currencies: British Pounds (300411998)</summary>
-    public static Currency BritishPounds => MakeCurrency("300411998", "British Pounds");
+    public static LinkedArtNet.Currency BritishPounds => MakeCurrency("300411998", "British Pounds");
 
     /// <summary>Currencies: Canadian Dollars (300412000)</summary>
-    public static Currency CanadianDollars => MakeCurrency("300412000", "Canadian Dollars");
+    public static LinkedArtNet.Currency CanadianDollars => MakeCurrency("300412000", "Canadian Dollars");
 
     /// <summary>Currencies: Euros (300411996)</summary>
-    public static Currency Euros => MakeCurrency("300411996", "Euros");
+    public static LinkedArtNet.Currency Euros => MakeCurrency("300411996", "Euros");
 
     /// <summary>Currencies: Japanese Yen (300411997)</summary>
-    public static Currency JapaneseYen => MakeCurrency("300411997", "Japanese Yen");
+    public static LinkedArtNet.Currency JapaneseYen => MakeCurrency("300411997", "Japanese Yen");
 
     /// <summary>Currencies: Swiss Francs (300412001)</summary>
-    public static Currency SwissFrancs => MakeCurrency("300412001", "Swiss Francs");
+    public static LinkedArtNet.Currency SwissFrancs => MakeCurrency("300412001", "Swiss Francs");
 
     /// <summary>Currencies: US Dollars (300411994)</summary>
-    public static Currency UsDollars => MakeCurrency("300411994", "US Dollars");
+    public static LinkedArtNet.Currency UsDollars => MakeCurrency("300411994", "US Dollars");
 
     /// <summary>Nationalities: American (300107956)</summary>
-    public static Type AmericanNationality => MakeType("300107956", "American");
+    public static LinkedArtNet.Type AmericanNationality => MakeType("300107956", "American");
 
     /// <summary>Nationalities: Austrian (300111153)</summary>
-    public static Type AustrianNationality => MakeType("300111153", "Austrian");
+    public static LinkedArtNet.Type AustrianNationality => MakeType("300111153", "Austrian");
 
     /// <summary>Nationalities: Australian (300021861)</summary>
-    public static Type AustralianNationality => MakeType("300021861", "Australian");
+    public static LinkedArtNet.Type AustralianNationality => MakeType("300021861", "Australian");
 
     /// <summary>Nationalities: Belgian (300111156)</summary>
-    public static Type BelgianNationality => MakeType("300111156", "Belgian");
+    public static LinkedArtNet.Type BelgianNationality => MakeType("300111156", "Belgian");
 
     /// <summary>Nationalities: British (300111159)</summary>
-    public static Type BritishNationality => MakeType("300111159", "British");
+    public static LinkedArtNet.Type BritishNationality => MakeType("300111159", "British");
 
     /// <summary>Nationalities: Canadian (300107962)</summary>
-    public static Type CanadianNationality => MakeType("300107962", "Canadian");
+    public static LinkedArtNet.Type CanadianNationality => MakeType("300107962", "Canadian");
 
     /// <summary>Nationalities: Chinese (300018322)</summary>
-    public static Type ChineseNationality => MakeType("300018322", "Chinese");
+    public static LinkedArtNet.Type ChineseNationality => MakeType("300018322", "Chinese");
 
     /// <summary>Nationalities: Czech (300111166)</summary>
-    public static Type CzechNationality => MakeType("300111166", "Czech");
+    public static LinkedArtNet.Type CzechNationality => MakeType("300111166", "Czech");
 
     /// <summary>Nationalities: Danish (300111172)</summary>
-    public static Type DanishNationality => MakeType("300111172", "Danish");
+    public static LinkedArtNet.Type DanishNationality => MakeType("300111172", "Danish");
 
     /// <summary>Nationalities: Dutch (300111175)</summary>
-    public static Type DutchNationality => MakeType("300111175", "Dutch");
+    public static LinkedArtNet.Type DutchNationality => MakeType("300111175", "Dutch");
 
     /// <summary>Nationalities: Egyptian (300020251)</summary>
-    public static Type EgyptianNationality => MakeType("300020251", "Egyptian");
+    public static LinkedArtNet.Type EgyptianNationality => MakeType("300020251", "Egyptian");
 
     /// <summary>Nationalities: Flemish (300111184)</summary>
-    public static Type FlemishNationality => MakeType("300111184", "Flemish");
+    public static LinkedArtNet.Type FlemishNationality => MakeType("300111184", "Flemish");
 
     /// <summary>Nationalities: French (300111188)</summary>
-    public static Type FrenchNationality => MakeType("300111188", "French");
+    public static LinkedArtNet.Type FrenchNationality => MakeType("300111188", "French");
 
     /// <summary>Nationalities: German (300111192)</summary>
-    public static Type GermanNationality => MakeType("300111192", "German");
+    public static LinkedArtNet.Type GermanNationality => MakeType("300111192", "German");
 
     /// <summary>Nationalities: Greek (300264816)</summary>
-    public static Type GreekNationality => MakeType("300264816", "Greek");
+    public static LinkedArtNet.Type GreekNationality => MakeType("300264816", "Greek");
 
     /// <summary>Nationalities: Hungarian (300111195)</summary>
-    public static Type HungarianNationality => MakeType("300111195", "Hungarian");
+    public static LinkedArtNet.Type HungarianNationality => MakeType("300111195", "Hungarian");
 
     /// <summary>Nationalities: Indian (300018863)</summary>
-    public static Type IndianNationality => MakeType("300018863", "Indian");
+    public static LinkedArtNet.Type IndianNationality => MakeType("300018863", "Indian");
 
     /// <summary>Nationalities: Irish (300111259)</summary>
-    public static Type IrishNationality => MakeType("300111259", "Irish");
+    public static LinkedArtNet.Type IrishNationality => MakeType("300111259", "Irish");
 
     /// <summary>Nationalities: Italian (300111198)</summary>
-    public static Type ItalianNationality => MakeType("300111198", "Italian");
+    public static LinkedArtNet.Type ItalianNationality => MakeType("300111198", "Italian");
 
     /// <summary>Nationalities: Japanese (300018519)</summary>
-    public static Type JapaneseNationality => MakeType("300018519", "Japanese");
+    public static LinkedArtNet.Type JapaneseNationality => MakeType("300018519", "Japanese");
 
     /// <summary>Nationalities: Mexican (300107963)</summary>
-    public static Type MexicanNationality => MakeType("300107963", "Mexican");
+    public static LinkedArtNet.Type MexicanNationality => MakeType("300107963", "Mexican");
 
     /// <summary>Nationalities: New Zealander (300021959)</summary>
-    public static Type NewZealanderNationality => MakeType("300021959", "New Zealander");
+    public static LinkedArtNet.Type NewZealanderNationality => MakeType("300021959", "New Zealander");
 
     /// <summary>Nationalities: Norwegian (300111201)</summary>
-    public static Type NorwegianNationality => MakeType("300111201", "Norwegian");
+    public static LinkedArtNet.Type NorwegianNationality => MakeType("300111201", "Norwegian");
 
     /// <summary>Nationalities: Polish (300111204)</summary>
-    public static Type PolishNationality => MakeType("300111204", "Polish");
+    public static LinkedArtNet.Type PolishNationality => MakeType("300111204", "Polish");
 
     /// <summary>Nationalities: Portuguese (300111207)</summary>
-    public static Type PortugueseNationality => MakeType("300111207", "Portuguese");
+    public static LinkedArtNet.Type PortugueseNationality => MakeType("300111207", "Portuguese");
 
     /// <summary>Nationalities: Russian (300111276)</summary>
-    public static Type RussianNationality => MakeType("300111276", "Russian");
+    public static LinkedArtNet.Type RussianNationality => MakeType("300111276", "Russian");
 
     /// <summary>Nationalities: Spanish (300111215)</summary>
-    public static Type SpanishNationality => MakeType("300111215", "Spanish");
+    public static LinkedArtNet.Type SpanishNationality => MakeType("300111215", "Spanish");
 
     /// <summary>Nationalities: Swedish (300111218)</summary>
-    public static Type SwedishNationality => MakeType("300111218", "Swedish");
+    public static LinkedArtNet.Type SwedishNationality => MakeType("300111218", "Swedish");
 
     /// <summary>Nationalities: Swiss (300111221)</summary>
-    public static Type SwissNationality => MakeType("300111221", "Swiss");
+    public static LinkedArtNet.Type SwissNationality => MakeType("300111221", "Swiss");
 
     /// <summary>Occupations: Artist (300025103)</summary>
-    public static Type Artist => MakeType("300025103", "Artist");
+    public static LinkedArtNet.Type Artist => MakeType("300025103", "Artist");
 
     /// <summary>Occupations: Art Collector (300025234)</summary>
-    public static Type ArtCollector => MakeType("300025234", "Art Collector");
+    public static LinkedArtNet.Type ArtCollector => MakeType("300025234", "Art Collector");
 
     /// <summary>Occupations: Art Dealer (300025236)</summary>
-    public static Type ArtDealer => MakeType("300025236", "Art Dealer");
+    public static LinkedArtNet.Type ArtDealer => MakeType("300025236", "Art Dealer");
 
     /// <summary>Occupations: Architect (300024987)</summary>
-    public static Type Architect => MakeType("300024987", "Architect");
+    public static LinkedArtNet.Type Architect => MakeType("300024987", "Architect");
 
     /// <summary>Occupations: Author (300025492)</summary>
-    public static Type Author => MakeType("300025492", "Author");
+    public static LinkedArtNet.Type Author => MakeType("300025492", "Author");
 
     /// <summary>Occupations: (Music) Composer (300025671)</summary>
-    public static Type MusicComposer => MakeType("300025671", "(Music) Composer");
+    public static LinkedArtNet.Type MusicComposer => MakeType("300025671", "(Music) Composer");
 
     /// <summary>Occupations: Printer (300025732)</summary>
-    public static Type Printer => MakeType("300025732", "Printer");
+    public static LinkedArtNet.Type Printer => MakeType("300025732", "Printer");
 
     /// <summary>Occupations: Publisher (300025574)</summary>
-    public static Type Publisher => MakeType("300025574", "Publisher");
+    public static LinkedArtNet.Type Publisher => MakeType("300025574", "Publisher");
 
     /// <summary>Shapes: Arched (300126995)</summary>
-    public static Type Arched => MakeType("300126995", "Arched");
+    public static LinkedArtNet.Type Arched => MakeType("300126995", "Arched");
 
     /// <summary>Shapes: Circle (300263827)</summary>
-    public static Type Circle => MakeType("300263827", "Circle");
+    public static LinkedArtNet.Type Circle => MakeType("300263827", "Circle");
 
     /// <summary>Shapes: Oblong (300311843)</summary>
-    public static Type Oblong => MakeType("300311843", "Oblong");
+    public static LinkedArtNet.Type Oblong => MakeType("300311843", "Oblong");
 
     /// <summary>Shapes: Octagonal (300263824)</summary>
-    public static Type Octagonal => MakeType("300263824", "Octagonal");
+    public static LinkedArtNet.Type Octagonal => MakeType("300263824", "Octagonal");
 
     /// <summary>Shapes: Oval (300263817)</summary>
-    public static Type Oval => MakeType("300263817", "Oval");
+    public static LinkedArtNet.Type Oval => MakeType("300263817", "Oval");
 
     /// <summary>Shapes: Rectangular (300263831)</summary>
-    public static Type Rectangular => MakeType("300263831", "Rectangular");
+    public static LinkedArtNet.Type Rectangular => MakeType("300263831", "Rectangular");
 
     /// <summary>Shapes: Square (300263832)</summary>
-    public static Type Square => MakeType("300263832", "Square");
+    public static LinkedArtNet.Type Square => MakeType("300263832", "Square");
 
     /// <summary>Shapes: Upright (300343370)</summary>
-    public static Type Upright => MakeType("300343370", "Upright");
+    public static LinkedArtNet.Type Upright => MakeType("300343370", "Upright");
 
     /// <summary>Name Types: The Name is a translation of another name (300417194)</summary>
-    public static Type TranslatedTitle => MakeType("300417194", "Translated Title");
+    public static LinkedArtNet.Type TranslatedTitle => MakeType("300417194", "Translated Title");
 
     /// <summary>Name Types: The Name is part of a larger title, and is the sub-title (300312006)</summary>
-    public static Type SubTitle => MakeType("300312006", "Sub-title");
+    public static LinkedArtNet.Type SubTitle => MakeType("300312006", "Sub-title");
 
     /// <summary>Name Types: The Name is an alias or nickname, likely for a person (300404664)</summary>
-    public static Type Alias => MakeType("300404664", "Alias");
+    public static LinkedArtNet.Type Alias => MakeType("300404664", "Alias");
 
     /// <summary>Name Types: The Name is a pseudonym, pen-name or other adopted name (300404657)</summary>
-    public static Type Pseudonym => MakeType("300404657", "Pseudonym");
+    public static LinkedArtNet.Type Pseudonym => MakeType("300404657", "Pseudonym");
 
     /// <summary>Identifier Types: The identifier, typically a number, for an auction lot. The same identifier might be repeated across different auctions (300404628)</summary>
-    public static Type AuctionLotNumber => MakeType("300404628", "Auction Lot Number");
+    public static LinkedArtNet.Type AuctionLotNumber => MakeType("300404628", "Auction Lot Number");
 
     /// <summary>Identifier Types: An International Standard Book Number (300417443)</summary>
-    public static Type Isbn => MakeType("300417443", "ISBN");
+    public static LinkedArtNet.Type Isbn => MakeType("300417443", "ISBN");
 
     /// <summary>Identifier Types: An International Standard Serial Number (for journals) (300417430)</summary>
-    public static Type Issn => MakeType("300417430", "ISSN");
+    public static LinkedArtNet.Type Issn => MakeType("300417430", "ISSN");
 
     /// <summary>Identifier Types: A Digital Object Identifier (300417432)</summary>
-    public static Type Doi => MakeType("300417432", "DOI");
+    public static LinkedArtNet.Type Doi => MakeType("300417432", "DOI");
 
     /// <summary>Identifier Types: An identifier based on the stock managed by a commercial organization (300412177)</summary>
-    public static Type StockNumber => MakeType("300412177", "Stock Number");
+    public static LinkedArtNet.Type StockNumber => MakeType("300412177", "Stock Number");
 
     /// <summary>Contact Identifier Types: An email address, as a string rather than a mailto: URI (300435686)</summary>
-    public static Type EmailAddress => MakeType("300435686", "Email Address");
+    public static LinkedArtNet.Type EmailAddress => MakeType("300435686", "Email Address");
 
     /// <summary>Contact Identifier Types: A street address (300386983)</summary>
-    public static Type StreetAddress => MakeType("300386983", "Street Address");
+    public static LinkedArtNet.Type StreetAddress => MakeType("300386983", "Street Address");
 
     /// <summary>Contact Identifier Types: A telephone number (300435688)</summary>
-    public static Type TelephoneNumber => MakeType("300435688", "Telephone Number");
+    public static LinkedArtNet.Type TelephoneNumber => MakeType("300435688", "Telephone Number");
 
     /// <summary>Contact Identifier Types: A fax number (300435689)</summary>
-    public static Type FaxNumber => MakeType("300435689", "Fax Number");
+    public static LinkedArtNet.Type FaxNumber => MakeType("300435689", "Fax Number");
 
     /// <summary>Statement Types: A description of the life of a person (vocabulary page label: Biography (Statement)) (300435422)</summary>
-    public static Type BiographyStatement => MakeType("300435422", "Biography Statement");
+    public static LinkedArtNet.Type BiographyStatement => MakeType("300435422", "Biography Statement");
 
     /// <summary>Statement Types: Context of any sort relevant to the resource it is associated with (300435428)</summary>
-    public static Type ContextStatement => MakeType("300435428", "Context Statement");
+    public static LinkedArtNet.Type ContextStatement => MakeType("300435428", "Context Statement");
 
     /// <summary>Statement Types: The culture from which the object or work is drawn, or that the person or group is part of (300435431)</summary>
-    public static Type CultureStatement => MakeType("300435431", "Culture Statement");
+    public static LinkedArtNet.Type CultureStatement => MakeType("300435431", "Culture Statement");
 
     /// <summary>Statement Types: The edition or number of a work or object (300435435)</summary>
-    public static Type EditionStatement => MakeType("300435435", "Edition Statement");
+    public static LinkedArtNet.Type EditionStatement => MakeType("300435435", "Edition Statement");
 
     /// <summary>Statement Types: The foliation statement of an object with folios, such as "i-ix, f1r-f256v" (300435441)</summary>
-    public static Type FoliationStatement => MakeType("300435441", "Foliation Statement");
+    public static LinkedArtNet.Type FoliationStatement => MakeType("300435441", "Foliation Statement");
 
     /// <summary>Statement Types: A statement declaring the language or languages of a text (300435433)</summary>
-    public static Type LanguageStatement => MakeType("300435433", "Language Statement");
+    public static LinkedArtNet.Type LanguageStatement => MakeType("300435433", "Language Statement");
 
     /// <summary>Statement Types: Similar to a foliation statement, a description of the page count for the object (300435440)</summary>
-    public static Type PaginationStatement => MakeType("300435440", "Pagination Statement");
+    public static LinkedArtNet.Type PaginationStatement => MakeType("300435440", "Pagination Statement");
 
     /// <summary>Statement Types: A statement about the period of time from which the object, work or other entity originates (300435432)</summary>
-    public static Type PeriodStatement => MakeType("300435432", "Period Statement");
+    public static LinkedArtNet.Type PeriodStatement => MakeType("300435432", "Period Statement");
 
     /// <summary>Statement Types: A statement as to the significance of the object or work (300435427)</summary>
-    public static Type SignificanceStatement => MakeType("300435427", "Significance Statement");
+    public static LinkedArtNet.Type SignificanceStatement => MakeType("300435427", "Significance Statement");
 
     /// <summary>Statement Types: A statement as to the value of the object or work (300435426)</summary>
-    public static Type ValuationStatement => MakeType("300435426", "Valuation Statement");
+    public static LinkedArtNet.Type ValuationStatement => MakeType("300435426", "Valuation Statement");
 
     /// <summary>Document Types: A note or comment added to text, diagrams, or data, which can vary in length and format. (300026100)</summary>
-    public static Type Annotation => MakeType("300026100", "Annotation");
+    public static LinkedArtNet.Type Annotation => MakeType("300026100", "Annotation");
 
     /// <summary>Document Types: A nonfictional prose forming an independent part of a publication. (300048715)</summary>
-    public static Type Article => MakeType("300048715", "Article");
+    public static LinkedArtNet.Type Article => MakeType("300048715", "Article");
 
     /// <summary>Document Types: A catalog listing items to be sold at an auction, often including descriptions and estimates. (300026068)</summary>
-    public static Type AuctionCatalog => MakeType("300026068", "Auction Catalog");
+    public static LinkedArtNet.Type AuctionCatalog => MakeType("300026068", "Auction Catalog");
 
     /// <summary>Document Types: A comprehensive, annotated listing of all the known artworks by an artist. (300026061)</summary>
-    public static Type CatalogueRaisonn => MakeType("300026061", "Catalogue raisonné");
+    public static LinkedArtNet.Type CatalogueRaisonn => MakeType("300026061", "Catalogue raisonné");
 
     /// <summary>Document Types: A main division of a book, typically with a number or title. (300311699)</summary>
-    public static Type Chapter => MakeType("300311699", "Chapter");
+    public static LinkedArtNet.Type Chapter => MakeType("300311699", "Chapter");
 
     /// <summary>Document Types: Factual information used as a basis for reasoning, discussion, or calculation. (300438434)</summary>
-    public static Type Data => MakeType("300438434", "Data");
+    public static LinkedArtNet.Type Data => MakeType("300438434", "Data");
 
     /// <summary>Document Types: A publication accompanying an exhibition, detailing the works displayed. (300026096)</summary>
-    public static Type ExhibitionCatalog => MakeType("300026096", "Exhibition Catalog");
+    public static LinkedArtNet.Type ExhibitionCatalog => MakeType("300026096", "Exhibition Catalog");
 
     /// <summary>Document Types: A single edition of a periodical released at a particular time. (300312349)</summary>
-    public static Type Issue => MakeType("300312349", "Issue");
+    public static LinkedArtNet.Type Issue => MakeType("300312349", "Issue");
 
     /// <summary>Document Types: A periodical publication containing scholarly articles on a specific subject. (300215390)</summary>
-    public static Type Journal => MakeType("300215390", "Journal");
+    public static LinkedArtNet.Type Journal => MakeType("300215390", "Journal");
 
     /// <summary>Document Types: A detailed written study on a single specialized subject or aspect of it. (300060417)</summary>
-    public static Type Monograph => MakeType("300060417", "Monograph");
+    public static LinkedArtNet.Type Monograph => MakeType("300060417", "Monograph");
 
     /// <summary>Document Types: An official document granting exclusive rights to an invention or process. (300027832)</summary>
-    public static Type Patent => MakeType("300027832", "Patent");
+    public static LinkedArtNet.Type Patent => MakeType("300027832", "Patent");
 
     /// <summary>Document Types: A published record of a conference, including papers and discussions. (300027316)</summary>
-    public static Type Proceedings => MakeType("300027316", "Proceedings");
+    public static LinkedArtNet.Type Proceedings => MakeType("300027316", "Proceedings");
 
     /// <summary>Document Types: The written or printed words found on a single page. (vocabulary page label: Text of a Page) (300194222)</summary>
-    public static Type TextOfAPage => MakeType("300194222", "Page");
+    public static LinkedArtNet.Type TextOfAPage => MakeType("300194222", "Page");
 
     /// <summary>Document Types: A dissertation presenting original research, submitted for an academic degree. (300028028)</summary>
-    public static Type Thesis => MakeType("300028028", "Thesis");
+    public static LinkedArtNet.Type Thesis => MakeType("300028028", "Thesis");
 
     /// <summary>Document Types: A book forming part of a work or series, often numbered. (300265632)</summary>
-    public static Type Volume => MakeType("300265632", "Volume");
+    public static LinkedArtNet.Type Volume => MakeType("300265632", "Volume");
 
     /// <summary>Place Types: A rectangular area in a city enclosed by streets, containing buildings. (300008077)</summary>
-    public static Type CityBlock => MakeType("300008077", "City Block");
+    public static LinkedArtNet.Type CityBlock => MakeType("300008077", "City Block");
 
     /// <summary>Place Types: A subdivision of a county with some self-government. (300000792)</summary>
-    public static Type Township => MakeType("300000792", "Township");
+    public static LinkedArtNet.Type Township => MakeType("300000792", "Township");
 
     /// <summary>Place Types: A location designated for storing objects or materials. (300150151)</summary>
-    public static Type StoragePlace => MakeType("300150151", "Storage place");
+    public static LinkedArtNet.Type StoragePlace => MakeType("300150151", "Storage place");
 
     /// <summary>Place Types: A vast body of salt water covering a major part of the Earth's surface. (300008687)</summary>
-    public static Type Ocean => MakeType("300008687", "Ocean");
+    public static LinkedArtNet.Type Ocean => MakeType("300008687", "Ocean");
 
     /// <summary>Place Types: A large body of salt water, smaller than an ocean, partially enclosed by land. (300008694)</summary>
-    public static Type Sea => MakeType("300008694", "Sea");
+    public static LinkedArtNet.Type Sea => MakeType("300008694", "Sea");
 
     /// <summary>Place Types: A broad inlet of the sea where the land curves inward. (300132316)</summary>
-    public static Type Bay => MakeType("300132316", "Bay");
+    public static LinkedArtNet.Type Bay => MakeType("300132316", "Bay");
 
     /// <summary>Group Types: A workshop or studio of an artist, including assistants and apprentices. (300404277)</summary>
-    public static Type AtelierOf => MakeType("300404277", "Atelier (of)");
+    public static LinkedArtNet.Type AtelierOf => MakeType("300404277", "Atelier (of)");
 
     /// <summary>Group Types: A group of artists influenced by a particular master, often without direct contact. (300404283)</summary>
-    public static Type CircleOf => MakeType("300404283", "Circle (of)");
+    public static LinkedArtNet.Type CircleOf => MakeType("300404283", "Circle (of)");
 
     /// <summary>Group Types: Artists who adopt the style of a master or movement. (300404282)</summary>
-    public static Type FollowersOf => MakeType("300404282", "Followers (of)");
+    public static LinkedArtNet.Type FollowersOf => MakeType("300404282", "Followers (of)");
 
     /// <summary>Group Types: Students under the guidance of a specific teacher or master. (300404279)</summary>
-    public static Type PupilsOf => MakeType("300404279", "Pupils (of)");
+    public static LinkedArtNet.Type PupilsOf => MakeType("300404279", "Pupils (of)");
 
     /// <summary>Group Types: Artists sharing common styles or philosophies, often linked to a location or period. (300404284)</summary>
-    public static Type SchoolOf => MakeType("300404284", "School (of)");
+    public static LinkedArtNet.Type SchoolOf => MakeType("300404284", "School (of)");
 
     /// <summary>Group Types: The workplace of an artist or professional, sometimes including collaborators. (vocabulary page label: Studio (of)) (300404275)</summary>
-    public static Type StudioOf => MakeType("300404275", "Studio");
+    public static LinkedArtNet.Type StudioOf => MakeType("300404275", "Studio");
 
     /// <summary>Group Types: A place where an artist or craftsperson and their team produce works collectively. (300404274)</summary>
-    public static Type WorkshopOf => MakeType("300404274", "Workshop (of)");
+    public static LinkedArtNet.Type WorkshopOf => MakeType("300404274", "Workshop (of)");
 
     /// <summary>Object Types: A container with a flat base and sides, typically square or rectangular. (300045643)</summary>
-    public static Type Box => MakeType("300045643", "Box");
+    public static LinkedArtNet.Type Box => MakeType("300045643", "Box");
 
     /// <summary>Object Types: A structure with walls and a roof, such as a house or factory. (300004792)</summary>
-    public static Type Building => MakeType("300004792", "Building");
+    public static LinkedArtNet.Type Building => MakeType("300004792", "Building");
 
     /// <summary>Object Types: Decorative needlework stitched on fabric. (300264024)</summary>
-    public static Type Embroidery => MakeType("300264024", "Embroidery");
+    public static LinkedArtNet.Type Embroidery => MakeType("300264024", "Embroidery");
 
     /// <summary>Object Types: A glossy coating fused onto metal, glass, or ceramics for protection or decoration. (300178264)</summary>
-    public static Type Enamel => MakeType("300178264", "Enamel");
+    public static LinkedArtNet.Type Enamel => MakeType("300178264", "Enamel");
 
     /// <summary>Object Types: A flat paper container with a sealable flap, used for enclosing documents. (300197601)</summary>
-    public static Type Envelope => MakeType("300197601", "Envelope");
+    public static LinkedArtNet.Type Envelope => MakeType("300197601", "Envelope");
 
     /// <summary>Object Types: A cover or holder for storing loose papers. (300197602)</summary>
-    public static Type Folder => MakeType("300197602", "Folder");
+    public static LinkedArtNet.Type Folder => MakeType("300197602", "Folder");
 
     /// <summary>Object Types: A tool or instrument used in performing an action or task. (300024841)</summary>
-    public static Type Implement => MakeType("300024841", "Implement");
+    public static LinkedArtNet.Type Implement => MakeType("300024841", "Implement");
 
     /// <summary>Object Types: A book with blank pages for mounting and displaying photographs. (300026695)</summary>
-    public static Type PhotoAlbum => MakeType("300026695", "Photo Album");
+    public static LinkedArtNet.Type PhotoAlbum => MakeType("300026695", "Photo Album");
 
     /// <summary>Object Types: A book composed primarily of photographs, often centered around a theme or artist. (300265728)</summary>
-    public static Type PhotoBook => MakeType("300265728", "Photo Book");
+    public static LinkedArtNet.Type PhotoBook => MakeType("300265728", "Photo Book");
 
     /// <summary>Object Types: An image with inverted colors and tones, used to produce positive photographs. (300127173)</summary>
-    public static Type PhotographicNegative => MakeType("300127173", "Photographic Negative");
+    public static LinkedArtNet.Type PhotographicNegative => MakeType("300127173", "Photographic Negative");
 
     /// <summary>Object Types: A small part or quantity intended to show what the whole is like. (300028875)</summary>
-    public static Type Sample => MakeType("300028875", "Sample");
+    public static LinkedArtNet.Type Sample => MakeType("300028875", "Sample");
 
     /// <summary>Object Types: A hollow container, especially for holding liquids. (300193015)</summary>
-    public static Type Vessel => MakeType("300193015", "Vessel");
+    public static LinkedArtNet.Type Vessel => MakeType("300193015", "Vessel");
 
     /// <summary>Parts of Objects Types: The rear part or side of an object, opposite the front. (vocabulary page label: Back) (300190692)</summary>
-    public static Type Back => MakeType("300190692", "Back Part");
+    public static LinkedArtNet.Type Back => MakeType("300190692", "Back Part");
 
     /// <summary>Parts of Objects Types: The bottom support of an object; foundation. (300001656)</summary>
-    public static Type BasePart => MakeType("300001656", "Base");
+    public static LinkedArtNet.Type BasePart => MakeType("300001656", "Base");
 
     /// <summary>Parts of Objects Types: The lowest part or point of something. (300190695)</summary>
-    public static Type Bottom => MakeType("300190695", "Bottom");
+    public static LinkedArtNet.Type Bottom => MakeType("300190695", "Bottom");
 
     /// <summary>Parts of Objects Types: The foremost part or side of an object. (300190703)</summary>
-    public static Type Front => MakeType("300190703", "Front");
+    public static LinkedArtNet.Type Front => MakeType("300190703", "Front");
 
     /// <summary>Parts of Objects Types: A backing or support on which something is mounted for display or study. (300131087)</summary>
-    public static Type Mount => MakeType("300131087", "Mount");
+    public static LinkedArtNet.Type Mount => MakeType("300131087", "Mount");
 
     /// <summary>Parts of Objects Types: A flat or curved component, often rectangular, forming part of a surface. (300014657)</summary>
-    public static Type Panel => MakeType("300014657", "Panel");
+    public static LinkedArtNet.Type Panel => MakeType("300014657", "Panel");
 
     /// <summary>Parts of Objects Types: A position to the left or right of an object or central point. (300190706)</summary>
-    public static Type Side => MakeType("300190706", "Side");
+    public static LinkedArtNet.Type Side => MakeType("300190706", "Side");
 
     /// <summary>Parts of Objects Types: The material or structure upon which a work of art is executed. (300014844)</summary>
-    public static Type Support => MakeType("300014844", "Support");
+    public static LinkedArtNet.Type Support => MakeType("300014844", "Support");
 
     /// <summary>Parts of Objects Types: The highest or uppermost part of something. (300190710)</summary>
-    public static Type Top => MakeType("300190710", "Top");
+    public static LinkedArtNet.Type Top => MakeType("300190710", "Top");
 
     /// <summary>Dimension Types: A straight line passing through the center of a circle or sphere. (300055624)</summary>
-    public static Type Diameter => MakeType("300055624", "Diameter");
+    public static LinkedArtNet.Type Diameter => MakeType("300055624", "Diameter");
 
     /// <summary>Dimension Types: The measurement of something from end to end. (300055645)</summary>
-    public static Type Length => MakeType("300055645", "Length");
+    public static LinkedArtNet.Type Length => MakeType("300055645", "Length");
 
     /// <summary>Dimension Types: The distance between the two opposite surfaces of an object; depth. (300055646)</summary>
-    public static Type Thickness => MakeType("300055646", "Thickness");
+    public static LinkedArtNet.Type Thickness => MakeType("300055646", "Thickness");
 
     /// <summary>Dimension type used in the digital model pages (300265863)</summary>
-    public static Type FileSize => MakeType("300265863", "File Size");
+    public static LinkedArtNet.Type FileSize => MakeType("300265863", "File Size");
 
     /// <summary>Dimension type for counts (pages, components) (300404433)</summary>
-    public static Type Count => MakeType("300404433", "Count");
+    public static LinkedArtNet.Type Count => MakeType("300404433", "Count");
 
     /// <summary>Unit for RGB colour values (300266239)</summary>
-    public static MeasurementUnit Rgb => MakeUnit("300266239", "rgb");
+    public static LinkedArtNet.MeasurementUnit Rgb => MakeUnit("300266239", "rgb");
 
     /// <summary>Meta-type for part classifications (300241583)</summary>
-    public static Type PartType => MakeType("300241583", "Part Type");
+    public static LinkedArtNet.Type PartType => MakeType("300241583", "Part Type");
 
     /// <summary>Unit for component counts; the site uses the same id as Part Type (same id as PartType, with this label) (300241583)</summary>
-    public static MeasurementUnit Components => MakeUnit("300241583", "Components");
+    public static LinkedArtNet.MeasurementUnit Components => MakeUnit("300241583", "Components");
 
     /// <summary>Unit for page counts; the site uses the same id as Text of a Page (same id as TextOfAPage, with this label) (300194222)</summary>
-    public static MeasurementUnit Pages => MakeUnit("300194222", "Pages");
+    public static LinkedArtNet.MeasurementUnit Pages => MakeUnit("300194222", "Pages");
 
     /// <summary>Statement type used in the physical model page (300435452)</summary>
-    public static Type PhysicalStatement => MakeType("300435452", "Physical Statement");
+    public static LinkedArtNet.Type PhysicalStatement => MakeType("300435452", "Physical Statement");
 
     /// <summary>Statement type used in the document model page (300202362)</summary>
-    public static Type PublicationStatement => MakeType("300202362", "Publication Statement");
+    public static LinkedArtNet.Type PublicationStatement => MakeType("300202362", "Publication Statement");
 
     /// <summary>Archival statement type (archives model page) (300055458)</summary>
-    public static Type AccrualsStatement => MakeType("300055458", "Accruals");
+    public static LinkedArtNet.Type AccrualsStatement => MakeType("300055458", "Accruals");
 
     /// <summary>Archival statement type (archives model page) (300077565)</summary>
-    public static Type AdministrativeHistoryStatement => MakeType("300077565", "Administrative History");
+    public static LinkedArtNet.Type AdministrativeHistoryStatement => MakeType("300077565", "Administrative History");
 
     /// <summary>Archival statement type (archives model page) (300444118)</summary>
-    public static Type ArrangementDescriptionStatement => MakeType("300444118", "Arrangement Description");
+    public static LinkedArtNet.Type ArrangementDescriptionStatement => MakeType("300444118", "Arrangement Description");
 
     /// <summary>Archival statement type (archives model page) (300444119)</summary>
-    public static Type RelatedMaterialStatement => MakeType("300444119", "Related Material");
+    public static LinkedArtNet.Type RelatedMaterialStatement => MakeType("300444119", "Related Material");
 
     /// <summary>Classification of archival material (archives model page) (300379505)</summary>
-    public static Type ArchivalMaterials => MakeType("300379505", "Archival Materials");
+    public static LinkedArtNet.Type ArchivalMaterials => MakeType("300379505", "Archival Materials");
 
     /// <summary>Name type used in the examples alongside Alternate Name (300404671)</summary>
-    public static Type AlternateTitle => MakeType("300404671", "Alternate Title");
+    public static LinkedArtNet.Type AlternateTitle => MakeType("300404671", "Alternate Title");
 
     /// <summary>Identifier type used in the examples (300404622)</summary>
-    public static Type CreationNumber => MakeType("300404622", "Creation Number");
+    public static LinkedArtNet.Type CreationNumber => MakeType("300404622", "Creation Number");
 
     /// <summary>Identifier type used in the archives model page (300445023)</summary>
-    public static Type EntryNumbers => MakeType("300445023", "Entry Numbers");
+    public static LinkedArtNet.Type EntryNumbers => MakeType("300445023", "Entry Numbers");
 
     /// <summary>Classification of the exhibition concept (PropositionalObject) (300417531)</summary>
-    public static Type Exhibition => MakeType("300417531", "Exhibition");
+    public static LinkedArtNet.Type Exhibition => MakeType("300417531", "Exhibition");
 
     /// <summary>Provenance activity classification (300417637)</summary>
-    public static Type Gift => MakeType("300417637", "Gift");
+    public static LinkedArtNet.Type Gift => MakeType("300417637", "Gift");
 
     /// <summary>Provenance activity classification (300054751)</summary>
-    public static Type AuctionEvent => MakeType("300054751", "Auction Event");
+    public static LinkedArtNet.Type AuctionEvent => MakeType("300054751", "Auction Event");
 
     /// <summary>Activity classification used in the exhibition model page (300054277)</summary>
-    public static Type Curating => MakeType("300054277", "Curating");
+    public static LinkedArtNet.Type Curating => MakeType("300054277", "Curating");
 
     /// <summary>Activity classification used in the conservation examples (300404519)</summary>
-    public static Type ConservationActivity => MakeType("300404519", "Conservation Activity");
+    public static LinkedArtNet.Type ConservationActivity => MakeType("300404519", "Conservation Activity");
 
     /// <summary>Activity classification used in the exhibition model page (300054773)</summary>
-    public static Type ExhibitingInMultipleLocations => MakeType("300054773", "Exhibiting in multiple locations");
+    public static LinkedArtNet.Type ExhibitingInMultipleLocations => MakeType("300054773", "Exhibiting in multiple locations");
 
     /// <summary>Attribution qualifier used in the assertion model page (300404272)</summary>
-    public static Type PossiblyBy => MakeType("300404272", "Possibly By");
+    public static LinkedArtNet.Type PossiblyBy => MakeType("300404272", "Possibly By");
 
     /// <summary>Meta-type for gender classifications (300055147)</summary>
-    public static Type Gender => MakeType("300055147", "Gender");
+    public static LinkedArtNet.Type Gender => MakeType("300055147", "Gender");
 
     /// <summary>Meta-type for ethnicity classifications (300250435)</summary>
-    public static Type Ethnicity => MakeType("300250435", "Ethnicity");
+    public static LinkedArtNet.Type Ethnicity => MakeType("300250435", "Ethnicity");
 
     /// <summary>Every term in the registry, in file order.</summary>
     public static IReadOnlyList<VocabularyTerm> Terms { get; } =

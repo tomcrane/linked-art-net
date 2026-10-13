@@ -183,7 +183,7 @@ Mechanics:
 - The ~100 `WithX`/`AddX` list helpers are produced by a **source generator** from the property
   manifest, so they stay in sync with the model and we don't hand-write them.
 - `WithClassifiedAs(Type, metaType: ...)` uses a named optional parameter; the string overload is
-  removed in favour of `Aat.Of("300033618", "Painting")` / `Aat.Painting`.
+  removed in favour of `Aat.Term("300033618", "Painting")` / `Aat.Painting`.
 - Factories on `LinkedArtTimeSpan`: `Year(long)`, `Day(y,m,d)`, `Between(a, b)`, `From(begin, end)`;
   these do **not** set `_label` by default (the site examples don't); `WithLabel` is explicit.
 - Statement helper: `WithStatement(Type classification, string content, Action<LinguisticObject>? cfg)`
@@ -220,8 +220,8 @@ meta-types). Terms are typed by `kind` (Type, Material, Language with ISO notati
 MeasurementUnit) and carry their `tier`. Labels are the ones linked.art's own examples write for the id,
 falling back to the vocabulary page. **What it does not bless:** instances (people, places, organisations)
 and dataset-specific concepts (depicted subjects, individual techniques, colours, styles). Those are built
-the way a practitioner builds them: `Aat.Of("300046218", "Parasol")`, `Tgn.Of("7006952", "Amsterdam")`,
-`Ulan.PersonOf("500011051", "Rembrandt")`, and that is how the examples do it. An `aliasOf` entry gives a
+the way a practitioner builds them: `Aat.Term("300046218", "Parasol")`, `Tgn.Place("7006952", "Amsterdam")`,
+`Ulan.Person("500011051", "Rembrandt")`, and that is how the examples do it. An `aliasOf` entry gives a
 second label and kind for an id the site uses two ways (e.g. Part Type / Components as a unit).
 
 Formalise the hard-coded Getty identifiers into a **data-driven registry**:
@@ -229,7 +229,7 @@ Formalise the hard-coded Getty identifiers into a **data-driven registry**:
 - `vocabulary/aat.json`, `tgn.json`, `ulan.json`: entries `{ "id": "300033618", "name": "Painting",
   "label": "paintings (visual works)", "metaType": "TypeOfWork"?, "usedFor": "...", "since": "1.0" }`.
 - A source generator emits `Aat.Painting` (returns a fresh `Type` each call, as now, to avoid shared
-  mutable state), `Aat.Of(id, label)` for ad-hoc terms, `Aat.TryGet(id)`, and `KnownTerm` records
+  mutable state), `Aat.Term(id, label)` for ad-hoc terms, `Aat.TryGet(id)`, and `KnownTerm` records
   (id, uri, label, source) for lookups and `_label` consistency.
 - Tests: ids unique, names unique, every id used in Examples is in the registry (no inline
   `AatType("...", "3000...")`), and an opt-in network test that checks labels against Getty SPARQL.

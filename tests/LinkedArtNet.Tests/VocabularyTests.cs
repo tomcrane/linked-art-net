@@ -62,12 +62,12 @@ public class VocabularyTests
 
         Assert.IsType<Material>(Aat.Oil);
         Assert.IsType<MeasurementUnit>(Aat.Centimeters);
-        Assert.IsType<Currency>(Aat.OfCurrency("300412016", "French Francs"));
+        Assert.IsType<Currency>(Aat.Currency("300412016", "French Francs"));
         var english = Assert.IsType<Language>(Aat.English);
         Assert.Equal("en", english.Notation);
-        Assert.IsType<Place>(Tgn.Of("7006952", "Amsterdam"));
-        Assert.IsType<Person>(Ulan.PersonOf("500011051", "Rembrandt"));
-        Assert.IsType<Group>(Ulan.GroupOf("500246547", "Rijksmuseum"));
+        Assert.IsType<Place>(Tgn.Place("7006952", "Amsterdam"));
+        Assert.IsType<Person>(Ulan.Person("500011051", "Rembrandt"));
+        Assert.IsType<Group>(Ulan.Group("500246547", "Rijksmuseum"));
     }
 
     [Fact]
@@ -77,22 +77,22 @@ public class VocabularyTests
         Assert.Equal("Painting", Aat.TryGet("http://vocab.getty.edu/aat/300033618")!.Label);
         Assert.Null(Aat.TryGet("300000000"));
 
-        Assert.Equal("Painting", Aat.Of("300033618").Label);
-        Assert.Equal("paintings (visual works)", Aat.Of("300033618", "paintings (visual works)").Label);
-        Assert.Null(Aat.Of("300000000").Label);
-        Assert.Equal("http://vocab.getty.edu/aat/300000000", Aat.Of("300000000").Id);
+        Assert.Equal("Painting", Aat.Term("300033618").Label);
+        Assert.Equal("paintings (visual works)", Aat.Term("300033618", "paintings (visual works)").Label);
+        Assert.Null(Aat.Term("300000000").Label);
+        Assert.Equal("http://vocab.getty.edu/aat/300000000", Aat.Term("300000000").Id);
 
-        Assert.Equal("nl", Aat.OfLanguage("300388256").Notation);
-        Assert.Equal("Place", Tgn.Of("7008038").Type);
-        Assert.Equal("http://vocab.getty.edu/ulan/500010363", Ulan.PersonOf("500010363").Id);
+        Assert.Equal("nl", Aat.Language("300388256").Notation);
+        Assert.Equal("Place", Tgn.Place("7008038").Type);
+        Assert.Equal("http://vocab.getty.edu/ulan/500010363", Ulan.Person("500010363").Id);
     }
 
     [Fact]
     public void Alias_terms_share_an_id_but_not_a_label()
     {
-        Assert.Equal(Aat.Count.Id, Aat.Of("300404433", "Count Of").Id);
-        Assert.NotEqual(Aat.Count.Label, Aat.Of("300404433", "Count Of").Label);
-        Assert.Equal(Aat.SystemNumber.Id, Aat.Of("300435704", "Record Identifiers").Id);
+        Assert.Equal(Aat.Count.Id, Aat.Term("300404433", "Count Of").Id);
+        Assert.NotEqual(Aat.Count.Label, Aat.Term("300404433", "Count Of").Label);
+        Assert.Equal(Aat.SystemNumber.Id, Aat.Term("300435704", "Record Identifiers").Id);
         Assert.Equal(Aat.PartType.Id, Aat.Components.Id);
         Assert.IsType<MeasurementUnit>(Aat.Components);
     }

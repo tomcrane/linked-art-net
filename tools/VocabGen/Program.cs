@@ -62,14 +62,14 @@ static string Generate(Registry registry, string className, string summary, stri
         sb.AppendLine($"    /// <summary>{Escape(doc)} ({term.Id})</summary>");
         var (returnType, factory) = term.Kind switch
         {
-            "Material" => ("Material", "MakeMaterial"),
-            "Language" => ("Language", "MakeLanguage"),
-            "Currency" => ("Currency", "MakeCurrency"),
-            "MeasurementUnit" => ("MeasurementUnit", "MakeUnit"),
-            "Place" => ("Place", "MakePlace"),
-            "Person" => ("Person", "MakePerson"),
-            "Group" => ("Group", "MakeGroup"),
-            _ => ("Type", "MakeType"),
+            "Material" => ("LinkedArtNet.Material", "MakeMaterial"),
+            "Language" => ("LinkedArtNet.Language", "MakeLanguage"),
+            "Currency" => ("LinkedArtNet.Currency", "MakeCurrency"),
+            "MeasurementUnit" => ("LinkedArtNet.MeasurementUnit", "MakeUnit"),
+            "Place" => ("LinkedArtNet.Place", "MakePlace"),
+            "Person" => ("LinkedArtNet.Person", "MakePerson"),
+            "Group" => ("LinkedArtNet.Group", "MakeGroup"),
+            _ => ("LinkedArtNet.Type", "MakeType"),
         };
         var extra = term.Kind == "Language" ? $", {Literal(term.Notation)}" : "";
         sb.AppendLine($"    public static {returnType} {term.Name} => {factory}(\"{term.Id}\", {Literal(term.Label)}{extra});");

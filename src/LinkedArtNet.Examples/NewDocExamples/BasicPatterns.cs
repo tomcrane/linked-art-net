@@ -84,7 +84,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/person/rembrandt/1")
                 .WithLabel("Rembrandt")
-                .WithClassifiedAs(Getty.Nationality("300111175", "Dutch"));
+                .WithClassifiedAs(Aat.NationalityTerm("300111175", "Dutch"));
 
             Documentation.Save(rembrandt);
         }
@@ -276,12 +276,12 @@ namespace Examples.NewDocExamples
             jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008).WithLabel("2008");
 
             var directorActivity = new Creation()
-                .WithClassifiedAs(Aat.Of("300025654", "Director"));
+                .WithClassifiedAs(Aat.Term("300025654", "Director"));
             directorActivity.CarriedOutBy = [
                 new Person().WithId($"{Documentation.IdRoot}/person/greenaway").WithLabel("Peter Greenaway")
             ];
             var producerActivity = new Creation()
-                .WithClassifiedAs(Aat.Of("300197742", "Producer"));
+                .WithClassifiedAs(Aat.Term("300197742", "Producer"));
             producerActivity.CarriedOutBy = [
                 new Person().WithId($"{Documentation.IdRoot}/person/wolting").WithLabel("Femke Wolting")
             ];

@@ -44,7 +44,7 @@ namespace Examples.NewDocExamples
                             .WithLabel("Rijksmuseum")
                     ],
                     AssignedProperty = "classified_as",
-                    Assigned = [ Aat.Of("300387447", "Microcracks") ],
+                    Assigned = [ Aat.Term("300387447", "Microcracks") ],
                     PartOf = [
                         new Activity()
                             .WithId($"{Documentation.IdRoot}/event/operation_nightwatch")
@@ -74,7 +74,7 @@ namespace Examples.NewDocExamples
                             .WithClassifiedAs(Aat.Description, Aat.Statement)
                             .WithContent("Minor conservation work in response to earlier survey")
                     ],
-                    Technique = [Aat.Of("300053027", "Cleaning")],
+                    Technique = [Aat.Term("300053027", "Cleaning")],
                     TimeSpan = new LinkedArtTimeSpan
                     {
                         BeginOfTheBegin = new LinkedArtDate(2020, 1, 1),

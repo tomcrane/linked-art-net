@@ -27,7 +27,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/activity/exha/1")
                 .WithLabel("Manet and Modern Beauty (Getty)")
-                .WithClassifiedAs(Aat.Of("300054766", "Exhibiting"));
+                .WithClassifiedAs(Aat.Term("300054766", "Exhibiting"));
 
             activity.IdentifiedBy = [ new Name("Manet and Modern Beauty").AsPrimaryName() ];
 
@@ -44,12 +44,12 @@ namespace Examples.NewDocExamples
             };
 
             activity.TookPlaceAt = [
-                Tgn.Of("7023900", "Los Angeles")
+                Tgn.Place("7023900", "Los Angeles")
                     .WithClassifiedAs(Aat.City)
             ];
 
             activity.CarriedOutBy = [
-                Ulan.GroupOf("500115988", "Getty Museum")
+                Ulan.Group("500115988", "Getty Museum")
                     .WithClassifiedAs(Aat.Museum)
             ];
 
@@ -81,8 +81,8 @@ namespace Examples.NewDocExamples
             concept.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
             concept.About = [
-                Aat.Of("300055821", "Beauty"),
-                Ulan.PersonOf("500010363", "Manet")
+                Aat.Term("300055821", "Beauty"),
+                Ulan.Person("500010363", "Manet")
             ];
 
             concept.CreatedBy = new Creation()
@@ -117,7 +117,7 @@ namespace Examples.NewDocExamples
             concept.CreatedBy = new Creation()
             {
                 InfluencedBy = [
-                    Ulan.PersonOf("500010363", "Manet")
+                    Ulan.Person("500010363", "Manet")
                 ]
             };
 
@@ -131,7 +131,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/activity/exhb/1")
                 .WithLabel("Manet and Modern Beauty (AIC)")
-                .WithClassifiedAs(Aat.Of("300054766", "Exhibiting"));
+                .WithClassifiedAs(Aat.Term("300054766", "Exhibiting"));
 
             activity.IdentifiedBy = [new Name("Manet and Modern Beauty").AsPrimaryName()];
 
@@ -142,12 +142,12 @@ namespace Examples.NewDocExamples
             };
 
             activity.TookPlaceAt = [
-                Tgn.Of("7013596", "Chicago")
+                Tgn.Place("7013596", "Chicago")
                     .WithClassifiedAs(Aat.City)
             ];
 
             activity.CarriedOutBy = [
-                Ulan.GroupOf("500304669", "Art Institute")
+                Ulan.Group("500304669", "Art Institute")
                     .WithClassifiedAs(Aat.Museum)
             ];
 
@@ -207,7 +207,7 @@ namespace Examples.NewDocExamples
                 .WithContext()
                 .WithId($"{Documentation.IdRoot}/set/exset/1")
                 .WithLabel("Exhibition objects")
-                .WithClassifiedAs(Aat.Of("300378926", "Exhibition Collection"));
+                .WithClassifiedAs(Aat.Term("300378926", "Exhibition Collection"));
 
             set.IdentifiedBy = [new Name("Objects in Manet and Modern Beauty").AsPrimaryName()];
 

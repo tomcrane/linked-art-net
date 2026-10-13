@@ -88,7 +88,7 @@ public static class DimensionExtensions
     {
         var count = new Dimension { Value = value, Unit = Aat.Pages }
             .WithLabel(string.IsNullOrWhiteSpace(label) ? value.ToString() : label)
-            .WithClassifiedAs(Aat.Of("300404433", "Count Of"));
+            .WithClassifiedAs(Aat.Term("300404433", "Count Of"));
         return laObj.WithDimension(count);
     }
 }

@@ -134,10 +134,10 @@ public class SerializationTests
         spring.ProducedBy = new Production
         {
             TimeSpan = LinkedArtTimeSpan.FromYear(1881),
-            CarriedOutBy = [Getty.UlanPerson("Manet", "500010363")],
-            TookPlaceAt = [Getty.TgnPlace("Paris", "7008038")],
+            CarriedOutBy = [Ulan.Person("500010363", "Manet")],
+            TookPlaceAt = [Tgn.Place("7008038", "Paris")],
         };
-        spring.CurrentOwner = [Getty.UlanGroup("Getty Museum", "500115988")];
+        spring.CurrentOwner = [Ulan.Group("500115988", "Getty Museum")];
         spring.ReferredToBy = [new LinguisticObject().WithContent("A painting of a woman.").WithClassifiedAs(Aat.Description, Aat.Statement)];
 
         var json = LinkedArtJson.Serialize(spring);

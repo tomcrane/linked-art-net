@@ -126,7 +126,7 @@ namespace Examples.NewDocExamples
                 .WithId($"{Documentation.IdRoot}/object/nightwatch/10")
                 .WithLabel("Night Watch by Rembrandt")
                 .WithClassifiedAs(Aat.Painting, Aat.TypeOfWork)
-                .WithRgbColor("#B35A1F", Aat.Of("300127490", "Brown"), "brown");
+                .WithRgbColor("#B35A1F", Aat.Term("300127490", "Brown"), "brown");
 
             Documentation.Save(nightWatch);
         }

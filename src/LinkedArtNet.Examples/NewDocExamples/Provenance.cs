@@ -57,7 +57,7 @@ namespace Examples.NewDocExamples
                 PaidAmount = new MonetaryAmount
                 {
                     Value = 3000,
-                    Currency = Aat.OfCurrency("300412016", "French Francs")
+                    Currency = Aat.Currency("300412016", "French Francs")
                 },
                 PaidFrom = [
                     new Person()

@@ -53,15 +53,15 @@ public class FluentApiTests
             .WithClassifiedAs(Aat.Painting, metaType: Aat.TypeOfWork)
             .WithName("The Night Watch", n => n.AsPrimaryName().WithLanguage(Aat.English))
             .WithName("De Nachtwacht", n => n.WithLanguage(Aat.Dutch))
-            .WithIdentifier("SK-C-5", i => i.AsAccessionNumber().WithAssignedBy(a => a.WithCarriedOutBy(Ulan.GroupOf("500246547", "Rijksmuseum"))))
+            .WithIdentifier("SK-C-5", i => i.AsAccessionNumber().WithAssignedBy(a => a.WithCarriedOutBy(Ulan.Group("500246547", "Rijksmuseum"))))
             .WithProducedBy(p => p
-                .WithCarriedOutBy(Ulan.PersonOf("500011051", "Rembrandt"))
-                .WithTookPlaceAt(Tgn.Of("7006952", "Amsterdam"))
+                .WithCarriedOutBy(Ulan.Person("500011051", "Rembrandt"))
+                .WithTookPlaceAt(Tgn.Place("7006952", "Amsterdam"))
                 .WithTimeSpan(1642))
             .WithHeightDimension(379.5, Aat.Centimeters, "379.5 cm high")
             .WithStatement(Aat.MaterialsStatement, "oil on canvas")
-            .WithCurrentOwner(Ulan.GroupOf("500246547", "Rijksmuseum"))
-            .WithShows(v => v.WithRepresents(Ulan.PersonOf("500011051", "Rembrandt").AsReference()));
+            .WithCurrentOwner(Ulan.Group("500246547", "Rijksmuseum"))
+            .WithShows(v => v.WithRepresents(Ulan.Person("500011051", "Rembrandt").AsReference()));
 
         HumanMadeObject stillTyped = nightWatch; // the chain never degraded to LinkedArtObject
 
@@ -81,8 +81,8 @@ public class FluentApiTests
     public void Params_helpers_append_rather_than_replace()
     {
         var production = new Production()
-            .WithCarriedOutBy(Ulan.PersonOf("500011051", "Rembrandt"))
-            .WithCarriedOutBy(Ulan.PersonOf("500010363", "Manet"), Ulan.PersonOf("500015886", "Francis Harwood"));
+            .WithCarriedOutBy(Ulan.Person("500011051", "Rembrandt"))
+            .WithCarriedOutBy(Ulan.Person("500010363", "Manet"), Ulan.Person("500015886", "Francis Harwood"));
         Assert.Equal(3, production.CarriedOutBy!.Count);
     }
 

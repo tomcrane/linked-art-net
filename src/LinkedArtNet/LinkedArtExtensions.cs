@@ -87,7 +87,7 @@ public static partial class LinkedArtExtensions
     }
 
     public static T WithLanguage<T>(this T laObj, string aatCode, string label, string? notation = null) where T : LinkedArtObject, IHasLanguage
-        => laObj.WithLanguage(Getty.Language(aatCode, label, notation));
+        => laObj.WithLanguage(Aat.Language(aatCode, label, notation));
 
     public static HumanMadeObject WithMadeOf(this HumanMadeObject hmo, string? materialTypeLabel, string materialTypeId)
     {

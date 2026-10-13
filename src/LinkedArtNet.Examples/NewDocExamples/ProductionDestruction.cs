@@ -63,9 +63,9 @@ namespace Examples.NewDocExamples
 
             bust.ProducedBy = new Production()
                 {
-                    Technique = [Aat.Of("300264383", "Sculpting")],
+                    Technique = [Aat.Term("300264383", "Sculpting")],
                     CarriedOutBy = [
-                        Ulan.PersonOf("500015886", "Francis Harwood")]
+                        Ulan.Person("500015886", "Francis Harwood")]
                 };
         
             Documentation.Save(bust);
@@ -85,7 +85,7 @@ namespace Examples.NewDocExamples
                 Part = [
                     new Production()
                     {
-                        Technique = [Aat.Of("300054216", "Painting")],
+                        Technique = [Aat.Term("300054216", "Painting")],
                         CarriedOutBy = [
                             new Person()
                                 .WithId($"{Documentation.IdRoot}/person/barrow")
@@ -94,7 +94,7 @@ namespace Examples.NewDocExamples
                     },
                     new Production()
                     {
-                        Technique = [Aat.Of("300053643", "hand weaving")],
+                        Technique = [Aat.Term("300053643", "hand weaving")],
                         CarriedOutBy = [
                             new Person()
                                 .WithId($"{Documentation.IdRoot}/person/parke")
@@ -308,7 +308,7 @@ namespace Examples.NewDocExamples
             grp.FormedBy = new Formation()
             {
                 InfluencedBy = [
-                    Ulan.PersonOf("500015886", "Francis Harwood")
+                    Ulan.Person("500015886", "Francis Harwood")
                 ]
             };
 

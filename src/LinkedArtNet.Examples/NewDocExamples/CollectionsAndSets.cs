@@ -95,7 +95,7 @@ namespace Examples.NewDocExamples
             paintingByManet.ProducedBy = new Production()
             {
                 CarriedOutBy = [
-                    Ulan.PersonOf("500010363", "Manet")
+                    Ulan.Person("500010363", "Manet")
                 ]
             };
             set.MembersExemplifiedBy = [paintingByManet];

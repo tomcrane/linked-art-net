@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E56 Language.</summary>
-public class Language : Type
+public partial class Language : Type
 {
     public Language() : base(nameof(Language))
     {

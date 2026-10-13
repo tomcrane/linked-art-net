@@ -1,7 +1,7 @@
 namespace LinkedArtNet.Vocabulary;
 
 /// <summary>A IIIF Presentation API Manifest, modelled as a text carried by a digital object.</summary>
-public class IIIFManifest : LinguisticObject
+public partial class IIIFManifest : LinguisticObject
 {
     public IIIFManifest(string format, string id)
     {
@@ -18,7 +18,7 @@ public class IIIFManifest : LinguisticObject
 }
 
 /// <summary>A IIIF Image API service.</summary>
-public class IIIFImageService : DigitalService
+public partial class IIIFImageService : DigitalService
 {
     public IIIFImageService(string format, string id)
     {

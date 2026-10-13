@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>la:Payment of money, usually as part of a provenance activity.</summary>
-public class Payment : ActivityBase
+public partial class Payment : ActivityBase
 {
     public Payment() : base(nameof(Payment))
     {

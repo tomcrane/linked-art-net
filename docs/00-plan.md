@@ -182,5 +182,11 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
    `Aat.English` a Language); aliases for the site's inconsistent labels; no inline AAT ids remain in
    the examples; tests keep JSON and generated code in sync.
 
-Next: Phase 1 step 6 (fluent API v2: generated list helpers, lambda relationship builders, factories
-that do not set labels; migrate examples and remove post-hoc patches).
+9. ~~Phase 1 step 6: fluent API v2.~~ Done 2026-10-13. `tools/FluentGen` generates `With{Property}` helpers
+   for every model property (params append, lambda-configured child, scalar set), keeping the chain's
+   static type; shared properties get generated `IHas…` interfaces. Hand-written `WithName`, `WithIdentifier`,
+   `WithTimeSpan(year)`, `AsReference`; TimeSpan factories no longer set labels; label-nulling patches
+   removed from the examples.
+
+Next: Phase 1 step 7 (examples as a library + test project + site manifest; `SiteIssue` tracking;
+upstream issues) then step 8 (fill the gaps to 100% of the manifest).

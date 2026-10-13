@@ -4,7 +4,7 @@ using LinkedArtNet.Vocabulary;
 namespace LinkedArtNet;
 
 /// <summary>crm:E42 Identifier. An accession number, system number, sort value, contact point, ...</summary>
-public class Identifier : LinkedArtObject, IHasContent, IHasStatements
+public partial class Identifier : LinkedArtObject, IHasContent
 {
     public Identifier() : base(nameof(Identifier))
     {

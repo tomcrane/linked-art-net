@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E52 Time-Span. See <see cref="LinkedArtDate"/> for the date conventions.</summary>
-public class LinkedArtTimeSpan : LinkedArtObject
+public partial class LinkedArtTimeSpan : LinkedArtObject
 {
     public LinkedArtTimeSpan() : base("TimeSpan")
     {
@@ -35,28 +35,51 @@ public class LinkedArtTimeSpan : LinkedArtObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Dimension? Duration { get; set; }
 
-    /// <summary>A span covering a whole year, labelled with the year.</summary>
-    public static LinkedArtTimeSpan FromYear(long year, string? id = null)
+    /// <summary>A span covering a whole year. No <c>_label</c> is set; add one with <c>WithLabel</c> if wanted.</summary>
+    public static LinkedArtTimeSpan FromYear(long year, string? id = null) => new LinkedArtTimeSpan
     {
-        var ts = new LinkedArtTimeSpan()
-            .WithId(id)
-            .WithLabel(year.ToString(CultureInfo.InvariantCulture));
-        ts.BeginOfTheBegin = LinkedArtDate.StartOfYear(year);
-        ts.EndOfTheEnd = LinkedArtDate.EndOfYear(year);
-        return ts;
-    }
+        BeginOfTheBegin = LinkedArtDate.StartOfYear(year),
+        EndOfTheEnd = LinkedArtDate.EndOfYear(year),
+    }.WithId(id);
+
+    /// <summary>A span covering a whole month.</summary>
+    public static LinkedArtTimeSpan FromMonth(long year, int month, string? id = null) => new LinkedArtTimeSpan
+    {
+        BeginOfTheBegin = LinkedArtDate.StartOfMonth(year, month),
+        EndOfTheEnd = LinkedArtDate.EndOfMonth(year, month),
+    }.WithId(id);
 
     /// <summary>A span covering a whole day.</summary>
     public static LinkedArtTimeSpan FromDay(long year, int month, int day, string? id = null)
     {
         var begin = new LinkedArtDate(year, month, day);
-        // TODO (plan: Phase 1 step 6): factories should not set labels by default; this keeps the
-        // legacy label form until the examples are migrated.
-        var ts = new LinkedArtTimeSpan()
-            .WithId(id)
-            .WithLabel(string.Create(CultureInfo.InvariantCulture, $"{begin.Year:D4}-{begin.Month:D2}-{begin.Day:D2}T00:00:00"));
-        ts.BeginOfTheBegin = begin;
-        ts.EndOfTheEnd = begin.LastSecondOfDay();
-        return ts;
+        return new LinkedArtTimeSpan { BeginOfTheBegin = begin, EndOfTheEnd = begin.LastSecondOfDay() }.WithId(id);
+    }
+
+    /// <summary>A span from the start of one year to the end of another (inclusive).</summary>
+    public static LinkedArtTimeSpan FromYears(long firstYear, long lastYear, string? id = null) => new LinkedArtTimeSpan
+    {
+        BeginOfTheBegin = LinkedArtDate.StartOfYear(firstYear),
+        EndOfTheEnd = LinkedArtDate.EndOfYear(lastYear),
+    }.WithId(id);
+
+    /// <summary>A span between two instants; <paramref name="end"/> is inclusive, so pass the last second wanted.</summary>
+    public static LinkedArtTimeSpan Between(LinkedArtDate begin, LinkedArtDate end, string? id = null)
+    {
+        if (end < begin) throw new ArgumentException("The end of a time span cannot be before its beginning.", nameof(end));
+        return new LinkedArtTimeSpan { BeginOfTheBegin = begin, EndOfTheEnd = end }.WithId(id);
+    }
+
+    /// <summary>True when every date present is in order: begin_of_the_begin &lt;= end_of_the_begin &lt;= begin_of_the_end &lt;= end_of_the_end.</summary>
+    public bool IsOrdered()
+    {
+        LinkedArtDate? previous = null;
+        foreach (var date in new[] { BeginOfTheBegin, EndOfTheBegin, BeginOfTheEnd, EndOfTheEnd })
+        {
+            if (date is null) continue;
+            if (previous is not null && date < previous) return false;
+            previous = date;
+        }
+        return true;
     }
 }

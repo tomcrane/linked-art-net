@@ -7,6 +7,7 @@
     <Project Path="tests/LinkedArtNet.Tests/LinkedArtNet.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
+    <Project Path="tools/FluentGen/FluentGen.csproj" />
     <Project Path="tools/SchemaInspector/SchemaInspector.csproj" />
     <Project Path="tools/VocabGen/VocabGen.csproj" />
   </Folder>

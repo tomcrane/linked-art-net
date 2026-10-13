@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>dig:D1 Digital Object. A file, web page, API endpoint or other digital resource.</summary>
-public class DigitalObject : LinkedArtEntity, IHasDimensions
+public partial class DigitalObject : LinkedArtEntity, IHasDimensions
 {
     public DigitalObject() : base(nameof(DigitalObject))
     {

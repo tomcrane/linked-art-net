@@ -15,7 +15,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(Encounter))]
 [JsonDerivedType(typeof(PartRemoval))]
 [JsonDerivedType(typeof(AttributeAssignment))]
-public abstract class EmbeddedActivity : ActivityBase
+public abstract partial class EmbeddedActivity : ActivityBase
 {
     protected EmbeddedActivity(string type) : base(type)
     {

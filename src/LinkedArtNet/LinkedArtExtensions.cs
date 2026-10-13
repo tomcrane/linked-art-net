@@ -3,7 +3,7 @@ using LinkedArtNet.Vocabulary;
 namespace LinkedArtNet;
 
 /// <summary>Fluent helpers for building Linked Art graphs. Every method returns the object it was called on.</summary>
-public static class LinkedArtExtensions
+public static partial class LinkedArtExtensions
 {
     public static readonly string[] Context = ["https://linked.art/ns/v1/linked-art.json"];
 
@@ -109,12 +109,56 @@ public static class LinkedArtExtensions
 
     /// <summary>Adds a <c>referred_to_by</c> statement: a <see cref="LinguisticObject"/> classified as the given type and as Brief Text.</summary>
     public static T WithStatement<T>(this T laObj, Type statementType, string content, Action<LinguisticObject>? configure = null)
-        where T : LinkedArtObject, IHasStatements
+        where T : LinkedArtObject, IHasReferredToBy
     {
         var statement = new LinguisticObject().WithContent(content).WithClassifiedAs(statementType, Aat.BriefText);
         configure?.Invoke(statement);
         laObj.ReferredToBy ??= [];
         laObj.ReferredToBy.Add(statement);
         return laObj;
+    }
+
+    /// <summary>Adds a <see cref="Name"/> to <c>identified_by</c>, optionally configuring it (e.g. <c>n => n.AsPrimaryName().WithLanguage(Aat.English)</c>).</summary>
+    public static T WithName<T>(this T laObj, string content, Action<Name>? configure = null) where T : LinkedArtObject
+    {
+        var name = new Name(content);
+        configure?.Invoke(name);
+        laObj.IdentifiedBy ??= [];
+        laObj.IdentifiedBy.Add(name);
+        return laObj;
+    }
+
+    /// <summary>Adds an <see cref="Identifier"/> to <c>identified_by</c>, optionally configuring it (e.g. <c>i => i.AsAccessionNumber()</c>).</summary>
+    public static T WithIdentifier<T>(this T laObj, string content, Action<Identifier>? configure = null) where T : LinkedArtObject
+    {
+        var identifier = new Identifier(content);
+        configure?.Invoke(identifier);
+        laObj.IdentifiedBy ??= [];
+        laObj.IdentifiedBy.Add(identifier);
+        return laObj;
+    }
+
+    /// <summary>Sets <c>timespan</c> to a whole year.</summary>
+    public static T WithTimeSpan<T>(this T temporal, long year) where T : TemporalEntity
+    {
+        temporal.TimeSpan = LinkedArtTimeSpan.FromYear(year);
+        return temporal;
+    }
+
+    /// <summary>Sets <c>timespan</c> to a whole day.</summary>
+    public static T WithTimeSpan<T>(this T temporal, long year, int month, int day) where T : TemporalEntity
+    {
+        temporal.TimeSpan = LinkedArtTimeSpan.FromDay(year, month, day);
+        return temporal;
+    }
+
+    /// <summary>A reference to this object: a new instance of the same class carrying only <c>id</c>, <c>type</c> and <c>_label</c>.</summary>
+    public static T AsReference<T>(this T laObj) where T : LinkedArtObject
+    {
+        var reference = (T)(Activator.CreateInstance(laObj.GetType())
+            ?? throw new InvalidOperationException($"{laObj.GetType().Name} has no parameterless constructor."));
+        reference.Id = laObj.Id;
+        reference.Label = laObj.Label;
+        return reference;
     }
 }

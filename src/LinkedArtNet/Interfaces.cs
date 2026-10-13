@@ -19,7 +19,7 @@ public interface IHasDimensions
 }
 
 /// <summary>Classes with a <c>referred_to_by</c> list of statements.</summary>
-public interface IHasStatements
+public interface IHasReferredToBy
 {
     List<LinguisticObject>? ReferredToBy { get; set; }
 }

@@ -39,7 +39,6 @@ namespace Examples.NewDocExamples
             ];
 
             // remove label from year to match docs
-            spring.AttributedBy[0]!.TimeSpan!.Label = null;
 
             Documentation.Save( spring );
         }

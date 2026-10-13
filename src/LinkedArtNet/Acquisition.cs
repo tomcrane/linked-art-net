@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E8 Acquisition: a transfer of ownership.</summary>
-public class Acquisition : EmbeddedActivity
+public partial class Acquisition : EmbeddedActivity
 {
     public Acquisition() : base(nameof(Acquisition))
     {

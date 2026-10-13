@@ -20,13 +20,18 @@ var nightWatch = new HumanMadeObject()
     .WithContext()
     .WithId("https://linked.art/example/object/nightwatch/1")
     .WithLabel("Night Watch by Rembrandt")
-    .WithClassifiedAs(Getty.Painting, Getty.TypeOfWork);
+    .WithClassifiedAs(Aat.Painting, metaType: Aat.TypeOfWork)
+    .WithName("The Night Watch", n => n.AsPrimaryName().WithLanguage(Aat.English))
+    .WithProducedBy(p => p
+        .WithCarriedOutBy(Ulan.Rembrandt)
+        .WithTookPlaceAt(Tgn.Amsterdam)
+        .WithTimeSpan(1642))
+    .WithHeightDimension(379.5, Aat.Centimeters, "379.5 cm high")
+    .WithStatement(Aat.MaterialStatement, "oil on canvas")
+    .WithCurrentOwner(Ulan.Rijksmuseum);
 
-var production = new Activity(Types.Production) { TimeSpan = LinkedArtTimeSpan.FromYear(1642) };
-production.CarriedOutBy = [new Person().WithId("http://vocab.getty.edu/ulan/500011051").WithLabel("Rembrandt")];
-nightWatch.ProducedBy = production;
-
-Console.WriteLine(JsonSerializer.Serialize(nightWatch, new JsonSerializerOptions { WriteIndented = true }));
+string json = LinkedArtJson.Serialize(nightWatch);          // Linked Art JSON-LD
+var back = LinkedArtJson.Deserialize<HumanMadeObject>(json); // reads any Linked Art document by its type
 ```
 
 ## Building

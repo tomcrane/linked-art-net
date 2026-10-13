@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E9 Move of objects from one place to another.</summary>
-public class Move : ActivityBase
+public partial class Move : ActivityBase
 {
     public Move() : base(nameof(Move))
     {

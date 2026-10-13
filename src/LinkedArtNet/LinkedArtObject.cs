@@ -61,7 +61,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(Encounter))]
 [JsonDerivedType(typeof(PartRemoval))]
 [JsonDerivedType(typeof(AttributeAssignment))]
-public abstract class LinkedArtObject
+public abstract partial class LinkedArtObject
 {
     protected LinkedArtObject(string type)
     {

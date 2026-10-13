@@ -11,7 +11,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(Language))]
 [JsonDerivedType(typeof(Currency))]
 [JsonDerivedType(typeof(MeasurementUnit))]
-public class Type : LinkedArtEntity
+public partial class Type : LinkedArtEntity
 {
     public Type() : base(nameof(Type))
     {

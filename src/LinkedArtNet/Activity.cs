@@ -7,7 +7,7 @@ namespace LinkedArtNet;
 /// or a conservation project. Specific embedded activities (<see cref="Production"/>, <see cref="Acquisition"/>,
 /// ...) are not subclasses of this; they derive from <see cref="EmbeddedActivity"/>.
 /// </summary>
-public class Activity : Event
+public partial class Activity : Event
 {
     public Activity() : base(nameof(Activity))
     {

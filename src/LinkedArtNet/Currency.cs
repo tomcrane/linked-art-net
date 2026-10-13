@@ -1,7 +1,7 @@
 namespace LinkedArtNet;
 
 /// <summary>crm:E98 Currency.</summary>
-public class Currency : Type
+public partial class Currency : Type
 {
     public Currency() : base(nameof(Currency))
     {

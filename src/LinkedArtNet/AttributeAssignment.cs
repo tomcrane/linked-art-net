@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E13 Attribute Assignment: an assertion about an entity, with its source and context.</summary>
-public class AttributeAssignment : EmbeddedActivity
+public partial class AttributeAssignment : EmbeddedActivity
 {
     public AttributeAssignment() : base(nameof(AttributeAssignment))
     {

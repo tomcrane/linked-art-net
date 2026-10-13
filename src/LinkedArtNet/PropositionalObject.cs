@@ -10,7 +10,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(LinguisticObject))]
 [JsonDerivedType(typeof(IIIFManifest))]
 [JsonDerivedType(typeof(VisualItem))]
-public class PropositionalObject : LinkedArtEntity, IHasDimensions
+public partial class PropositionalObject : LinkedArtEntity, IHasDimensions
 {
     public PropositionalObject() : base(nameof(PropositionalObject))
     {

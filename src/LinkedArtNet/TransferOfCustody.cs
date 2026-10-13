@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E10 Transfer of Custody: physical possession changed hands (a loan, a deposit).</summary>
-public class TransferOfCustody : ActivityBase
+public partial class TransferOfCustody : ActivityBase
 {
     public TransferOfCustody() : base(nameof(TransferOfCustody))
     {

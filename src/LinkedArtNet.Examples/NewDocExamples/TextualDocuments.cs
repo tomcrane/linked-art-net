@@ -102,7 +102,6 @@ namespace Examples.NewDocExamples
             ];
 
             // remove the label from year to match example
-            koot.UsedFor[0]!.TimeSpan!.Label = null;
             Documentation.Save(koot);
         }
 

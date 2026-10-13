@@ -5,7 +5,7 @@ namespace LinkedArtNet;
 
 /// <summary>crm:E33 Linguistic Object. Text: a statement, a description, a book's content, a web page.</summary>
 [JsonDerivedType(typeof(IIIFManifest))]
-public class LinguisticObject : PropositionalObject, IHasContent, IHasLanguage
+public partial class LinguisticObject : PropositionalObject, IHasContent, IHasLanguage
 {
     public LinguisticObject() : base(nameof(LinguisticObject))
     {

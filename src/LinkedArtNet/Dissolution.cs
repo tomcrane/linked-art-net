@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E68 Dissolution of a <see cref="Group"/>.</summary>
-public class Dissolution : TemporalEntity
+public partial class Dissolution : TemporalEntity
 {
     public Dissolution() : base(nameof(Dissolution))
     {

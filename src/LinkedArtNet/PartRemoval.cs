@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E80 Part Removal: an object was removed from a larger one.</summary>
-public class PartRemoval : EmbeddedActivity
+public partial class PartRemoval : EmbeddedActivity
 {
     public PartRemoval() : base(nameof(PartRemoval))
     {

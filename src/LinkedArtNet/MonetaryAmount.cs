@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E97 Monetary Amount.</summary>
-public class MonetaryAmount : LinkedArtObject
+public partial class MonetaryAmount : LinkedArtObject
 {
     public MonetaryAmount() : base(nameof(MonetaryAmount))
     {

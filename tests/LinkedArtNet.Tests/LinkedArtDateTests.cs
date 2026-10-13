@@ -240,7 +240,7 @@ public class LinkedArtDateTests
     public void TimeSpan_factories()
     {
         var year = LinkedArtTimeSpan.FromYear(1881);
-        Assert.Equal("1881", year.Label);
+        Assert.Null(year.Label); // factories set no label; use WithLabel
         Assert.Equal(new LinkedArtDate(1881, 1, 1), year.BeginOfTheBegin);
         Assert.Equal(new LinkedArtDate(1881, 12, 31, 23, 59, 59), year.EndOfTheEnd);
 

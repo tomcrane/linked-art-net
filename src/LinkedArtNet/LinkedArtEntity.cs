@@ -24,7 +24,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(Language))]
 [JsonDerivedType(typeof(Currency))]
 [JsonDerivedType(typeof(MeasurementUnit))]
-public abstract class LinkedArtEntity : LinkedArtObject, IHasStatements
+public abstract partial class LinkedArtEntity : LinkedArtObject
 {
     protected LinkedArtEntity(string type) : base(type)
     {

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E21 Person.</summary>
-public class Person : Actor
+public partial class Person : Actor
 {
     public Person() : base(nameof(Person))
     {

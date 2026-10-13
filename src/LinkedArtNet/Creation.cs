@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E65 Creation of a conceptual work (text, image content, set).</summary>
-public class Creation : EmbeddedActivity
+public partial class Creation : EmbeddedActivity
 {
     public Creation() : base(nameof(Creation))
     {

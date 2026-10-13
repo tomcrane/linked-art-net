@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E54 Dimension. A measured value with a unit (height, width, file size, colour, count, duration).</summary>
-public class Dimension : LinkedArtObject
+public partial class Dimension : LinkedArtObject
 {
     public Dimension() : base(nameof(Dimension))
     {

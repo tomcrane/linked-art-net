@@ -1,7 +1,7 @@
 namespace LinkedArtNet;
 
 /// <summary>crm:E57 Material.</summary>
-public class Material : Type
+public partial class Material : Type
 {
     public Material() : base(nameof(Material))
     {

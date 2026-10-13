@@ -23,7 +23,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(Period))]
 [JsonDerivedType(typeof(Event))]
 [JsonDerivedType(typeof(Activity))]
-public abstract class ActivityBase : TemporalEntity
+public abstract partial class ActivityBase : TemporalEntity
 {
     protected ActivityBase(string type) : base(type)
     {

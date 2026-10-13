@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E22 Human-Made Object. A physical thing, or part of one.</summary>
-public class HumanMadeObject : LinkedArtEntity, IHasDimensions
+public partial class HumanMadeObject : LinkedArtEntity, IHasDimensions
 {
     public HumanMadeObject() : base(nameof(HumanMadeObject))
     {

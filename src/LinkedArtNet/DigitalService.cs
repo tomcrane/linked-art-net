@@ -8,7 +8,7 @@ namespace LinkedArtNet;
 /// is available. In the 1.0 schema it is an embedded structure, not a <see cref="DigitalObject"/>.
 /// </summary>
 [JsonDerivedType(typeof(IIIFImageService))]
-public class DigitalService : LinkedArtObject, IHasStatements
+public partial class DigitalService : LinkedArtObject
 {
     public DigitalService() : base(nameof(DigitalService))
     {

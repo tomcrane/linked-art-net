@@ -37,7 +37,7 @@ namespace Examples.NewDocExamples
 
             nightWatch.ProducedBy = new Production()
                 {
-                    TimeSpan = LinkedArtTimeSpan.FromYear(1642),
+                    TimeSpan = LinkedArtTimeSpan.FromYear(1642).WithLabel("1642"),
                     TookPlaceAt = [
                         new Place()
                         .WithId($"{Documentation.IdRoot}/place/amsterdam")
@@ -357,7 +357,6 @@ namespace Examples.NewDocExamples
             ];
 
             // The docs example doesn't have a label "1891" on the timespan:
-            torosaurus.EncounteredBy[0].TimeSpan!.Label = null;
 
             Documentation.Save(torosaurus);
         }

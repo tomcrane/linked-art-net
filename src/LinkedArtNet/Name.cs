@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>la:Name (crm:E33_E41 Linguistic Appellation). A name or title.</summary>
-public class Name : LinkedArtObject, IHasContent, IHasLanguage, IHasStatements
+public partial class Name : LinkedArtObject, IHasContent, IHasLanguage
 {
     public Name() : base(nameof(Name))
     {

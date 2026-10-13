@@ -27,7 +27,7 @@ namespace LinkedArtNet;
 [JsonDerivedType(typeof(Period))]
 [JsonDerivedType(typeof(Event))]
 [JsonDerivedType(typeof(Activity))]
-public abstract class TemporalEntity : LinkedArtObject, IHasStatements
+public abstract partial class TemporalEntity : LinkedArtObject
 {
     protected TemporalEntity(string type) : base(type)
     {

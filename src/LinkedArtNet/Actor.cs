@@ -5,7 +5,7 @@ namespace LinkedArtNet;
 /// <summary>crm:E39 Actor: a <see cref="Person"/> or <see cref="Group"/>.</summary>
 [JsonDerivedType(typeof(Person))]
 [JsonDerivedType(typeof(Group))]
-public abstract class Actor : LinkedArtEntity
+public abstract partial class Actor : LinkedArtEntity
 {
     protected Actor(string type) : base(type)
     {

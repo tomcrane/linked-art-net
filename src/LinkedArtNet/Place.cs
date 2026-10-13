@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E53 Place.</summary>
-public class Place : LinkedArtEntity
+public partial class Place : LinkedArtEntity
 {
     public Place() : base(nameof(Place))
     {

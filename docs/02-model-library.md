@@ -139,6 +139,17 @@ Replace per-property attributes with a central `LinkedArtJson` configuration:
 
 ## 4. Fluent API
 
+*Status 2026-10-13:* implemented. `tools/FluentGen` reflects over the model and writes
+`src/LinkedArtNet/Fluent/FluentExtensions.g.cs` (a committed file checked by `FluentApiTests`): for each
+property a `With{Property}<T>(this T, …)` family that returns `T`. List properties get a `params` append and,
+when the item class is concrete, an `Action<TItem>` overload that creates and configures one item; single
+model-typed properties get set and `Action` overloads; scalars get a setter. Where several unrelated classes
+declare the same property, one method is constrained to a generated `IHas{Property}` interface the classes
+implement through partial declarations (C# cannot overload on constraints alone). Hand-written helpers cover
+`WithName`, `WithIdentifier`, `WithStatement`, `WithClassifiedAs(type, metaType:)`, `WithTimeSpan(year)`,
+dimensions and `AsReference()`. Property-named helpers (`WithProducedBy`) were preferred over invented verbs
+(`WithProduction`) so the JSON property is always obvious from the C#.
+
 Keep the existing style (it reads well in the examples) and fix the rough edges. Principles: every
 list property gets `Add`-style builders; chains never lose their static type; relationships can be
 built inline with lambdas; vocabulary is strongly typed; nothing requires post-hoc patching.

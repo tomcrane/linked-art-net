@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>sci:S19 Encounter Event: finding or excavating an object.</summary>
-public class Encounter : EmbeddedActivity
+public partial class Encounter : EmbeddedActivity
 {
     public Encounter() : base(nameof(Encounter))
     {

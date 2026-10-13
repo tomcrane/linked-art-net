@@ -175,7 +175,7 @@ namespace Examples.NewDocExamples
                 new Production()
                 {
                     // https://linked.art/example/object/spring/4.json has no Z timespan
-                    TimeSpan = LinkedArtTimeSpan.FromYear(1881),
+                    TimeSpan = LinkedArtTimeSpan.FromYear(1881).WithLabel("1881"),
                     TookPlaceAt = [
                         new Place()
                             .WithId($"{Documentation.IdRoot}/place/france")
@@ -273,7 +273,7 @@ namespace Examples.NewDocExamples
                 .WithLabel("Rembrandt's J'accuse");
 
             jaccuse.CreatedBy = new Creation();
-            jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008);
+            jaccuse.CreatedBy.TimeSpan = LinkedArtTimeSpan.FromYear(2008).WithLabel("2008");
 
             var directorActivity = new Creation()
                 .WithClassifiedAs(Aat.Director);

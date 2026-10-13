@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>la:RightAcquisition: rights were established or invalidated.</summary>
-public class RightAcquisition : ActivityBase
+public partial class RightAcquisition : ActivityBase
 {
     public RightAcquisition() : base(nameof(RightAcquisition))
     {

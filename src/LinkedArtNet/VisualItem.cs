@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E36 Visual Item. The image content shown by an object or a digital file.</summary>
-public class VisualItem : PropositionalObject
+public partial class VisualItem : PropositionalObject
 {
     public VisualItem() : base(nameof(VisualItem))
     {

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>crm:E12 Production of a physical object.</summary>
-public class Production : EmbeddedActivity
+public partial class Production : EmbeddedActivity
 {
     public Production() : base(nameof(Production))
     {

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace LinkedArtNet;
 
 /// <summary>la:Set. A collection, archival grouping, exhibition object list or other set of things.</summary>
-public class Set : LinkedArtEntity, IHasDimensions
+public partial class Set : LinkedArtEntity, IHasDimensions
 {
     public Set() : base(nameof(Set))
     {

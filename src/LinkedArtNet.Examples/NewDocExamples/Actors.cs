@@ -157,9 +157,6 @@ namespace Examples.NewDocExamples
                 ]
             };
 
-            // site examples don't have labels - maybe make that a flag?
-            rembrandt.Born.TimeSpan.Label = null;
-            rembrandt.Died.TimeSpan.Label = null;
 
             Documentation.Save(rembrandt);
         }
@@ -177,7 +174,6 @@ namespace Examples.NewDocExamples
                 TimeSpan = LinkedArtTimeSpan.FromDay(1911, 6, 10)
             };
 
-            museum.FormedBy.TimeSpan.Label = null;  
 
             Documentation.Save(museum);
         }

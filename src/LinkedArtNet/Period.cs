@@ -9,7 +9,7 @@ namespace LinkedArtNet;
 /// </summary>
 [JsonDerivedType(typeof(Event))]
 [JsonDerivedType(typeof(Activity))]
-public class Period : ActivityBase
+public partial class Period : ActivityBase
 {
     public Period() : base(nameof(Period))
     {

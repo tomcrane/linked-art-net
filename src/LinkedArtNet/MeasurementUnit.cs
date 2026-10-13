@@ -3,7 +3,7 @@ using LinkedArtNet.Vocabulary;
 namespace LinkedArtNet;
 
 /// <summary>crm:E58 Measurement Unit.</summary>
-public class MeasurementUnit : Type
+public partial class MeasurementUnit : Type
 {
     public MeasurementUnit() : base(nameof(MeasurementUnit))
     {

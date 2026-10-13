@@ -1,0 +1,6343 @@
+{
+  "Version": "1.0",
+  "Source": "https://linked.art/api/1.0/schema/",
+  "Classes": {
+    "Acquisition": {
+      "File": "object.json",
+      "DefinitionName": "EmbeddedAcquisition",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "An acquisition of the object",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part": {
+          "Array": true,
+          "Range": [
+            "Production"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this activity is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "transferred_title_from": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "transferred_title_of": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef"
+          ]
+        },
+        "transferred_title_to": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Activity": {
+      "File": "event.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "SharesDefinitionWith": [
+        "Period",
+        "Event"
+      ],
+      "Description": "_crm:E4\\_Period_, _crm:E6\\_Event_ or _crm:E7\\_Activity_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "part": {
+          "Array": true,
+          "Range": [
+            "Acquisition",
+            "Activity",
+            "Encounter",
+            "Move",
+            "Payment",
+            "RightAcquisition",
+            "TransferOfCustody"
+          ],
+          "Description": "More specific parts of the event"
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this one is part of"
+        },
+        "participant": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "ActivityRef": {
+      "File": "core.json",
+      "DefinitionName": "ActivityRef",
+      "TopLevel": false,
+      "Reference": true,
+      "Description": "Reference to an \u0060Activity\u0060",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "AttributeAssignment": {
+      "File": "core.json",
+      "DefinitionName": "AttributeAssignment",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "An activity which involves the assignment of some value to some entity, often with an explicit relationship between value and entity",
+      "Required": [
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "assigned": {
+          "Array": false,
+          "Range": [],
+          "Description": "Attribute Assignments can assign any entity, structure or value"
+        },
+        "assigned_property": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": [],
+          "Description": "The relationship from the attributed entity to the assigned entity, given as a string which resolves to a relationship in the context definition"
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Birth": {
+      "File": "person.json",
+      "DefinitionName": "Birth",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The birth event of a person",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Creation": {
+      "File": "core.json",
+      "DefinitionName": "Creation",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The creation of the intellectual/conceptual entity",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this creation is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Currency": {
+      "File": "concept.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "SharesDefinitionWith": [
+        "Type",
+        "Material",
+        "Language",
+        "MeasurementUnit"
+      ],
+      "Description": "_crm:E55\\_Type_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "broader": {
+          "Array": true,
+          "Range": [
+            "CurrencyRef",
+            "LanguageRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "TypeRef"
+          ],
+          "Description": "This concept is contained within one or more larger/broader concept entities"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "CurrencyRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Death": {
+      "File": "person.json",
+      "DefinitionName": "Death",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The death event of a person",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Destruction": {
+      "File": "object.json",
+      "DefinitionName": "Destruction",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The destruction of the object (separate from any cause of that end of existence)",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this event is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "DigitalObject": {
+      "File": "digital.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_dig:D1\\_Digital\\_Object_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "access_point": {
+          "Array": true,
+          "Range": [
+            "DigitalObjectRef"
+          ]
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "conforms_to": {
+          "Array": true,
+          "Range": [
+            "InformationObjectRef"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "digitally_available_via": {
+          "Array": true,
+          "Range": [
+            "DigitalService"
+          ]
+        },
+        "digitally_carries": {
+          "Array": true,
+          "Range": [
+            "LinguisticObjectRef"
+          ]
+        },
+        "digitally_shows": {
+          "Array": true,
+          "Range": [
+            "VisualItemRef"
+          ]
+        },
+        "dimension": {
+          "Array": true,
+          "Range": [
+            "Dimension"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "format": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "DigitalObjectRef"
+          ],
+          "Description": "Reference to another Digital Object of which this is part"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_for": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        }
+      }
+    },
+    "DigitalObjectRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "DigitalService": {
+      "File": "core.json",
+      "DefinitionName": "DigitalService",
+      "TopLevel": false,
+      "Reference": false,
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "access_point": {
+          "Array": true,
+          "Range": [
+            "DigitalObjectRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "conforms_to": {
+          "Array": true,
+          "Range": [
+            "InformationObjectRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Dimension": {
+      "File": "core.json",
+      "DefinitionName": "Dimension",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "A measurable aspect of an entity, with a numeric value, a unit for that value, and a type relative to the entity",
+      "Required": [
+        "type",
+        "value",
+        "unit"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "assigned_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ],
+          "Description": "The Measurement(s) that led to the assigning of this dimension"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "lower_value_limit": {
+          "Array": false,
+          "Scalar": "number",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "unit": {
+          "Array": false,
+          "Range": [
+            "MeasurementUnitRef"
+          ],
+          "Description": "Reference to the MeasurementUnit for this dimension"
+        },
+        "upper_value_limit": {
+          "Array": false,
+          "Scalar": "number",
+          "Range": []
+        },
+        "value": {
+          "Array": false,
+          "Scalar": "number",
+          "Range": []
+        }
+      }
+    },
+    "Dissolution": {
+      "File": "group.json",
+      "DefinitionName": "Dissolution",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The event which dissolved or ended the Group",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this dissolution is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Encounter": {
+      "File": "object.json",
+      "DefinitionName": "Encounter",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The activity during which this object was encountered, found or discovered.",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "encountered": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef"
+          ],
+          "Description": "The objects that were encountered during this event"
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this activity is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Event": {
+      "File": "event.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "SharesDefinitionWith": [
+        "Period",
+        "Activity"
+      ],
+      "Description": "_crm:E4\\_Period_, _crm:E6\\_Event_ or _crm:E7\\_Activity_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this one is part of"
+        },
+        "participant": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "EventRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Formation": {
+      "File": "group.json",
+      "DefinitionName": "Formation",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The activity which formed or created the Group",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this formation is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Group": {
+      "File": "group.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_crm:E74\\_Group_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "carried_out": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "contact_point": {
+          "Array": true,
+          "Range": [
+            "Identifier"
+          ]
+        },
+        "dissolved_by": {
+          "Array": false,
+          "Range": [
+            "Dissolution"
+          ],
+          "Description": "The activity of dissolving or ending the Group"
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "formed_by": {
+          "Array": false,
+          "Range": [
+            "Formation"
+          ],
+          "Description": "The activity of forming or creating the Group"
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "GroupRef"
+          ]
+        },
+        "participated_in": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "residence": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "GroupRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "HumanMadeObject": {
+      "File": "object.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_crm:E22\\_Human-Made\\_Object_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "carries": {
+          "Array": true,
+          "Range": [
+            "LinguisticObjectRef"
+          ]
+        },
+        "changed_ownership_through": {
+          "Array": true,
+          "Range": [
+            "Acquisition"
+          ],
+          "Description": "One or more Acquisition activities in which the object changed ownership"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "current_custodian": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "current_location": {
+          "Array": false,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "current_owner": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "current_permanent_custodian": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "current_permanent_location": {
+          "Array": false,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "destroyed_by": {
+          "Array": false,
+          "Range": [
+            "Destruction"
+          ],
+          "Description": "The \u0060Destruction\u0060 event in which this object was destroyed"
+        },
+        "dimension": {
+          "Array": true,
+          "Range": [
+            "Dimension"
+          ]
+        },
+        "encountered_by": {
+          "Array": true,
+          "Range": [
+            "Encounter"
+          ],
+          "Description": "One or more Encounter activities in which this object was encountered"
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "held_or_supported_by": {
+          "Array": false,
+          "Range": [
+            "HumanMadeObjectRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "made_of": {
+          "Array": true,
+          "Range": [
+            "MaterialRef"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "modified_by": {
+          "Array": true,
+          "Range": [
+            "Modification"
+          ],
+          "Description": "One or more Modification activities in which this object was modified"
+        },
+        "part": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObject"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "HumanMadeObjectRef"
+          ],
+          "Description": "Another Human-Made Object of which this Object is part"
+        },
+        "produced_by": {
+          "Array": false,
+          "Range": [
+            "Production"
+          ],
+          "Description": "The \u0060Production\u0060 activity which created this object"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "removed_by": {
+          "Array": true,
+          "Range": [
+            "PartRemoval"
+          ],
+          "Description": "One or more \u0060PartRemoval\u0060 activities in which this object was removed from another object"
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "shows": {
+          "Array": true,
+          "Range": [
+            "VisualItemRef"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_for": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        }
+      }
+    },
+    "HumanMadeObjectRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Identifier": {
+      "File": "core.json",
+      "DefinitionName": "Identifier",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "An identifier for an entity",
+      "Required": [
+        "type",
+        "content"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "assigned_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ],
+          "Description": "The activity through which this \u0060Identifier\u0060 was assigned to the entity"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "content": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "part": {
+          "Array": true,
+          "Range": [
+            "Identifier"
+          ],
+          "Description": "A list of one or more \u0060Identifier\u0060 structures, which are parts of this \u0060Identifier\u0060"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "InformationObjectRef": {
+      "File": "core.json",
+      "DefinitionName": "InfoObjectRef",
+      "TopLevel": false,
+      "Reference": true,
+      "Description": "Reference to an \u0060InformationObject\u0060",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Language": {
+      "File": "concept.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "SharesDefinitionWith": [
+        "Type",
+        "Currency",
+        "Material",
+        "MeasurementUnit"
+      ],
+      "Description": "_crm:E55\\_Type_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "broader": {
+          "Array": true,
+          "Range": [
+            "CurrencyRef",
+            "LanguageRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "TypeRef"
+          ],
+          "Description": "This concept is contained within one or more larger/broader concept entities"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "LanguageRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "LinguisticObject": {
+      "File": "text.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_crm:E33\\_Linguistic\\_Object_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "about": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "conceptually_part_of": {
+          "Array": true,
+          "Range": [
+            "PropositionalObjectRef"
+          ]
+        },
+        "content": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "digitally_carried_by": {
+          "Array": true,
+          "Range": [
+            "DigitalObject"
+          ]
+        },
+        "dimension": {
+          "Array": true,
+          "Range": [
+            "Dimension"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "format": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "language": {
+          "Array": true,
+          "Range": [
+            "LanguageRef"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "part_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObjectRef",
+            "VisualItemRef"
+          ],
+          "Description": "Reference to another Linguistic Object or Visual Item of which this is part"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "subject_to": {
+          "Array": true,
+          "Range": [
+            "Right"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_for": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        }
+      }
+    },
+    "LinguisticObjectRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Material": {
+      "File": "concept.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "SharesDefinitionWith": [
+        "Type",
+        "Currency",
+        "Language",
+        "MeasurementUnit"
+      ],
+      "Description": "_crm:E55\\_Type_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "broader": {
+          "Array": true,
+          "Range": [
+            "CurrencyRef",
+            "LanguageRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "TypeRef"
+          ],
+          "Description": "This concept is contained within one or more larger/broader concept entities"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "MaterialRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "MeasurementUnit": {
+      "File": "concept.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "SharesDefinitionWith": [
+        "Type",
+        "Currency",
+        "Material",
+        "Language"
+      ],
+      "Description": "_crm:E55\\_Type_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "broader": {
+          "Array": true,
+          "Range": [
+            "CurrencyRef",
+            "LanguageRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "TypeRef"
+          ],
+          "Description": "This concept is contained within one or more larger/broader concept entities"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "MeasurementUnitRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Modification": {
+      "File": "object.json",
+      "DefinitionName": "Modification",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "A modification of the object",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part": {
+          "Array": true,
+          "Range": [
+            "Production"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this activity is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "MonetaryAmount": {
+      "File": "core.json",
+      "DefinitionName": "MonetaryAmount",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "An amount of money, with a value and a currency",
+      "Required": [
+        "type",
+        "value",
+        "currency"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "currency": {
+          "Array": false,
+          "Range": [
+            "CurrencyRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "lower_value_limit": {
+          "Array": false,
+          "Scalar": "number",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "upper_value_limit": {
+          "Array": false,
+          "Scalar": "number",
+          "Range": []
+        },
+        "value": {
+          "Array": false,
+          "Scalar": "number",
+          "Range": []
+        }
+      }
+    },
+    "Move": {
+      "File": "provenance.json",
+      "DefinitionName": "Move",
+      "TopLevel": false,
+      "Reference": false,
+      "Required": [
+        "type",
+        "moved"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "moved": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef"
+          ],
+          "Description": "The objects that were moved"
+        },
+        "moved_from": {
+          "Array": false,
+          "Range": [
+            "PlaceRef"
+          ],
+          "Description": "Reference to the Place where the objects were moved from"
+        },
+        "moved_to": {
+          "Array": false,
+          "Range": [
+            "PlaceRef"
+          ],
+          "Description": "Reference to the Place where the objects were moved to"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Name": {
+      "File": "core.json",
+      "DefinitionName": "Name",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "A name of an entity",
+      "Required": [
+        "type",
+        "content"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "content": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "language": {
+          "Array": true,
+          "Range": [
+            "LanguageRef"
+          ]
+        },
+        "part": {
+          "Array": true,
+          "Range": [
+            "Name"
+          ],
+          "Description": "A list of one or more \u0060Name\u0060 structures, which are parts of this \u0060Name\u0060"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "PartRemoval": {
+      "File": "object.json",
+      "DefinitionName": "PartRemoval",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The activity of removing this object from some other object.",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "diminished": {
+          "Array": false,
+          "Range": [
+            "HumanMadeObjectRef"
+          ],
+          "Description": "A reference to the object which the object was removed from"
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this activity is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Payment": {
+      "File": "provenance.json",
+      "DefinitionName": "Payment",
+      "TopLevel": false,
+      "Reference": false,
+      "Required": [
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "paid_amount": {
+          "Array": false,
+          "Range": [
+            "MonetaryAmount"
+          ]
+        },
+        "paid_from": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "paid_to": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Period": {
+      "File": "event.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "SharesDefinitionWith": [
+        "Event",
+        "Activity"
+      ],
+      "Description": "_crm:E4\\_Period_, _crm:E6\\_Event_ or _crm:E7\\_Activity_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this one is part of"
+        },
+        "participant": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "PeriodRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Person": {
+      "File": "person.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_crm:E21\\_Person_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "born": {
+          "Array": false,
+          "Range": [
+            "Birth"
+          ],
+          "Description": "The event in which this Person was born"
+        },
+        "carried_out": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "contact_point": {
+          "Array": true,
+          "Range": [
+            "Identifier"
+          ]
+        },
+        "died": {
+          "Array": false,
+          "Range": [
+            "Death"
+          ],
+          "Description": "The event in which this Person died"
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "GroupRef"
+          ]
+        },
+        "participated_in": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "residence": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "PersonRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Place": {
+      "File": "place.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_crm:E53\\_Place_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "defined_by": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": [],
+          "Description": "A string with a WKT or GeoJSON definition of the area of the Place"
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "part_of": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ],
+          "Description": "This \u0060Place\u0060 is contained within one or more larger \u0060Place\u0060 entities"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "PlaceRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Production": {
+      "File": "object.json",
+      "DefinitionName": "Production",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "The production/creation of the object",
+      "Required": [],
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "part": {
+          "Array": true,
+          "Range": [
+            "Production"
+          ]
+        },
+        "part_of": {
+          "Array": false,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ],
+          "Description": "An identified event or activity which this activity is part of"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "PropositionalObject": {
+      "File": "abstract.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_crm:E89\\_Propositional\\_Object_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "about": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "conceptually_part_of": {
+          "Array": true,
+          "Range": [
+            "PropositionalObjectRef"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "dimension": {
+          "Array": true,
+          "Range": [
+            "Dimension"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "subject_to": {
+          "Array": true,
+          "Range": [
+            "Right"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "PropositionalObjectRef": {
+      "File": "core.json",
+      "DefinitionName": "AbstractWorkRef",
+      "TopLevel": false,
+      "Reference": true,
+      "Description": "Reference to a \u0060PropositionalObject\u0060",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "Right": {
+      "File": "core.json",
+      "DefinitionName": "Right",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "A legal right that can be held by some party over some entity",
+      "Required": [
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "possessed_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "RightAcquisition": {
+      "File": "provenance.json",
+      "DefinitionName": "RightAcquisition",
+      "TopLevel": false,
+      "Reference": false,
+      "Required": [
+        "type",
+        "establishes"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "establishes": {
+          "Array": true,
+          "Range": [
+            "Right"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "invalidates": {
+          "Array": true,
+          "Range": [
+            "Right"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Set": {
+      "File": "set.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_la:Set_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "about": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "dimension": {
+          "Array": true,
+          "Range": [
+            "Dimension"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "members_contained_by": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef"
+          ]
+        },
+        "members_exemplified_by": {
+          "Array": true,
+          "Range": [],
+          "Description": "Note Well: Nothing below this is validated! Exemplar templates for members of the set"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_for": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        }
+      }
+    },
+    "SetRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "TimeSpan": {
+      "File": "core.json",
+      "DefinitionName": "TimeSpan",
+      "TopLevel": false,
+      "Reference": false,
+      "Description": "A data structure for recording a span of time",
+      "Required": [
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "begin_of_the_begin": {
+          "Array": false,
+          "Scalar": "string:date-time",
+          "Range": [],
+          "Description": "The earliest possible date-time at which the timespan could have started"
+        },
+        "begin_of_the_end": {
+          "Array": false,
+          "Scalar": "string:date-time",
+          "Range": [],
+          "Description": "The earliest possible date-time at which the timespan could have ended"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "duration": {
+          "Array": false,
+          "Range": [
+            "Dimension"
+          ],
+          "Description": "A \u0060Dimension\u0060 that describes the duration of the timespan within any given date-times"
+        },
+        "end_of_the_begin": {
+          "Array": false,
+          "Scalar": "string:date-time",
+          "Range": [],
+          "Description": "The latest possible date-time at which the timespan could have started"
+        },
+        "end_of_the_end": {
+          "Array": false,
+          "Scalar": "string:date-time",
+          "Range": [],
+          "Description": "The latest possible date-time at which the timespan could have ended"
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "TransferOfCustody": {
+      "File": "provenance.json",
+      "DefinitionName": "TransferOfCustody",
+      "TopLevel": false,
+      "Reference": false,
+      "Required": [
+        "type",
+        "transferred_custody_of"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "after": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "before": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef",
+            "PeriodRef"
+          ]
+        },
+        "carried_out_by": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "caused_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "EventRef"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "during": {
+          "Array": true,
+          "Range": [
+            "PeriodRef"
+          ]
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "influenced_by": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "technique": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "timespan": {
+          "Array": false,
+          "Range": [
+            "TimeSpan"
+          ]
+        },
+        "took_place_at": {
+          "Array": true,
+          "Range": [
+            "PlaceRef"
+          ]
+        },
+        "transferred_custody_from": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "transferred_custody_of": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef"
+          ]
+        },
+        "transferred_custody_to": {
+          "Array": true,
+          "Range": [
+            "GroupRef",
+            "PersonRef"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_specific_object": {
+          "Array": true,
+          "Range": [
+            "HumanMadeObjectRef",
+            "SetRef"
+          ]
+        }
+      }
+    },
+    "Type": {
+      "File": "concept.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "SharesDefinitionWith": [
+        "Currency",
+        "Material",
+        "Language",
+        "MeasurementUnit"
+      ],
+      "Description": "_crm:E55\\_Type_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "broader": {
+          "Array": true,
+          "Range": [
+            "CurrencyRef",
+            "LanguageRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "TypeRef"
+          ],
+          "Description": "This concept is contained within one or more larger/broader concept entities"
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "representation": {
+          "Array": true,
+          "Range": [
+            "VisualItem"
+          ]
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "TypeRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "VisualItem",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    },
+    "VisualItem": {
+      "File": "image.json",
+      "DefinitionName": "",
+      "TopLevel": true,
+      "Reference": false,
+      "Description": "_crm:E36\\_Visual\\_Item_",
+      "Required": [
+        "@context",
+        "id",
+        "type",
+        "_label"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "@context": {
+          "Array": true,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "about": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "attributed_by": {
+          "Array": true,
+          "Range": [
+            "AttributeAssignment"
+          ]
+        },
+        "classified_as": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ]
+        },
+        "conceptually_part_of": {
+          "Array": true,
+          "Range": [
+            "PropositionalObjectRef"
+          ]
+        },
+        "created_by": {
+          "Array": false,
+          "Range": [
+            "Creation"
+          ]
+        },
+        "digitally_shown_by": {
+          "Array": true,
+          "Range": [
+            "DigitalObject"
+          ]
+        },
+        "dimension": {
+          "Array": true,
+          "Range": [
+            "Dimension"
+          ]
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "identified_by": {
+          "Array": true,
+          "Range": [
+            "Identifier",
+            "Name"
+          ]
+        },
+        "member_of": {
+          "Array": true,
+          "Range": [
+            "SetRef"
+          ]
+        },
+        "part_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObjectRef",
+            "VisualItemRef"
+          ],
+          "Description": "Reference to another Visual Item or Linguistic Object of which this is part"
+        },
+        "referred_to_by": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "represents": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ],
+          "Description": "An entity which is represented in this image content"
+        },
+        "represents_instance_of_type": {
+          "Array": true,
+          "Range": [
+            "Type"
+          ],
+          "Description": "A Type of an entity, which is represented in this image content"
+        },
+        "subject_of": {
+          "Array": true,
+          "Range": [
+            "LinguisticObject"
+          ]
+        },
+        "subject_to": {
+          "Array": true,
+          "Range": [
+            "Right"
+          ]
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "used_for": {
+          "Array": true,
+          "Range": [
+            "Activity"
+          ]
+        }
+      }
+    },
+    "VisualItemRef": {
+      "File": "core.json",
+      "DefinitionName": "AnyRef",
+      "TopLevel": false,
+      "Reference": true,
+      "SharesDefinitionWith": [
+        "HumanMadeObject",
+        "Person",
+        "Group",
+        "LinguisticObject",
+        "Set",
+        "Place",
+        "DigitalObject",
+        "Type",
+        "Event",
+        "Activity",
+        "Period",
+        "Language",
+        "Material",
+        "Currency",
+        "MeasurementUnit",
+        "PropositionalObject"
+      ],
+      "Description": "Reference to another primary entity",
+      "Required": [
+        "id",
+        "type"
+      ],
+      "AdditionalProperties": false,
+      "Properties": {
+        "_label": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        },
+        "equivalent": {
+          "Array": true,
+          "Range": [
+            "ActivityRef",
+            "CurrencyRef",
+            "DigitalObjectRef",
+            "EventRef",
+            "GroupRef",
+            "HumanMadeObjectRef",
+            "LanguageRef",
+            "LinguisticObjectRef",
+            "MaterialRef",
+            "MeasurementUnitRef",
+            "PeriodRef",
+            "PersonRef",
+            "PlaceRef",
+            "PropositionalObjectRef",
+            "SetRef",
+            "TypeRef",
+            "VisualItemRef"
+          ]
+        },
+        "id": {
+          "Array": false,
+          "Scalar": "string:uri",
+          "Range": []
+        },
+        "type": {
+          "Array": false,
+          "Scalar": "string",
+          "Range": []
+        }
+      }
+    }
+  }
+}

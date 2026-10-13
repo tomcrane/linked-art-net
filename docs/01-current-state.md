@@ -19,11 +19,17 @@ holds exactly the `pmc-2` model library and parsers, minus the pipeline. The sol
 | `Vocabulary.IIIFManifest`, `IIIFImageService` | | Convenience constructors. |
 | `Types` enum | | Acquisition, AttributeAssignment, Birth, Creation, Currency, Death, Destruction, Dissolution, Encounter, Event, Formation, InformationObject, Language, Material, Modification, PartRemoval, Payment, Production, Set, Type, VisualItem. |
 
-Missing classes: Move, TransferOfCustody, RightAcquisition, Promise, Removal, Addition, PartAddition,
-Transformation, a `Type`/Concept hierarchy with `broader`, Set, Material, Currency, Exhibition-as-class,
-Procedure, Event-as-class. Missing properties include `moved_from/to`, `transferred_custody_*`,
-`possessed_by`, `upper/lower_value_limit`, `assigned_to`, `used_object_of_type`, `added_by`,
-`part_removed_by`, `participant`, `approximated_by`, `refers_to`, `broader`.
+The 1.0 JSON schemas (vendored in `schemas/linked-art/1.0`, inspected by `tools/SchemaInspector`)
+define exactly 41 classes: HumanMadeObject, DigitalObject, DigitalService, VisualItem,
+LinguisticObject, PropositionalObject, Set, Person, Group, Place, Type, Material, Language, Currency,
+MeasurementUnit, Name, Identifier, Dimension, MonetaryAmount, Right, TimeSpan, Period, Event,
+Activity, Production, Creation, Destruction, Encounter, Birth, Death, Formation, Dissolution,
+Modification, PartRemoval, Acquisition, Payment, TransferOfCustody, Move, RightAcquisition,
+AttributeAssignment (plus InformationObject as a reference-only shape). Classes with no C# type at
+all: Move, TransferOfCustody, RightAcquisition, Event (as a class), Set, Type, Material, Currency.
+Everything event-like is a generic `Activity`. The exact property gaps are measured by
+`SchemaContractTests` and listed in `docs/model-gap-report.md`. The schema for `object.json` declares
+`used_for` twice (an upstream bug to report).
 
 Assessment: the model was grown to exactly what the site examples needed. Every key in
 `Examples/cached/new/**` has a property. Type safety is weak because most properties live on the

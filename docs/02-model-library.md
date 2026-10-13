@@ -56,12 +56,17 @@ LinkedArtObject (abstract)            id, type, _label, identified_by, classifie
  |              |                     influenced_by, motivated_by, part (Activity), after, before, during,
  |              |                     assigned_by?
  |              |-- Production, Creation, Destruction, Encounter, Birth, Death, Formation, Dissolution,
- |              |   Modification, Removal, Addition, PartRemoval (diminished), PartAddition (augmented),
+ |              |   Modification, PartRemoval (diminished),
  |              |   Acquisition (transferred_title_of/from/to), Payment (paid_amount/from/to),
  |              |   TransferOfCustody (transferred_custody_of/from/to), Move (moved, moved_from, moved_to),
- |              |   RightAcquisition (establishes, invalidates), Promise,
+ |              |   RightAcquisition (establishes, invalidates),
  |              |   AttributeAssignment (assigned, assigned_property, assigned_to)
 ```
+
+The 1.0 schemas define exactly these 41 classes (verified by `SchemaContractTests.Manifest_covers_the_expected_linked_art_classes`).
+CRM classes such as Addition, Removal, PartAddition, Promise and Transformation are **not** in the
+1.0 schemas and are not modelled. `InformationObject` exists only as a reference shape (for
+`conforms_to`).
 
 The exact property-to-class assignment is **generated from the schemas, not hand-maintained**: a tool
 (`tools/SchemaInspector`) reads `core.json` and the per-class schemas and emits a manifest of

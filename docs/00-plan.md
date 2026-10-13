@@ -160,9 +160,12 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
 
 ## 7. First concrete steps
 
-1. Commit `docs/` to `de-pmc`.
-2. Phase 0 restructure PR.
-3. `LinkedArtDate` struct + tests (unblocks both tracks).
-4. Corpus schema + `seed/py-datetime.json` + `seed/pmc-outputs.json` (hand-derived expectations) so
-   parser work is test-first from the first commit.
-5. `tools/SchemaInspector` + contract test, to see the real size of the model gap.
+1. ~~Commit `docs/` to `de-pmc`.~~ Done 2026-10-13.
+2. ~~Phase 0 restructure.~~ Done 2026-10-13 (`src/`, `tests/`, `tools/`, `linked-art-net.slnx`, build props, CI).
+3. ~~`LinkedArtDate` struct + tests.~~ Done 2026-10-13 (73 tests incl. FsCheck properties).
+4. ~~Corpus schema + `seed/py-datetime.json` + `seed/pmc-outputs.json`.~~ Done 2026-10-13 (37 + 91 entries).
+5. ~~`tools/SchemaInspector` + contract test.~~ Done 2026-10-13. Gap at baseline: 28 missing properties,
+   913 extra properties, 3 unmapped classes (see `docs/model-gap-report.md`).
+
+Next: Phase 1 step 3 (class hierarchy; move properties off `LinkedArtObject`), which drives the
+913 extras to zero and will touch every example file.

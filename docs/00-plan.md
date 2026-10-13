@@ -61,7 +61,11 @@ done first in Phase 1.
 5. Import corpora (yearrange, timetwister, cultural_dates, EDTF, Getty sample) as `proposed`; review
    in batches; drive accuracy up; calibration report.
 6. Fluent bridge (`WithTimeSpan("...")`, `WithLifespan`), profiles for library, archive and medieval
-   manuscripts; FR/DE/IT/ES/NL/LA lexicons.
+   manuscripts; FR/DE/IT/ES/NL/LA lexicons. Profile advisor (`tools/Corpus advise` or a library call): scans a
+   dataset's strings, reports the vocabulary in use (early/mid/late, dash styles, century notations, era
+   words) and recommends profile settings, e.g. a halves band table where "mid" never occurs. Parsing itself
+   never depends on other strings (deterministic per string and profile); the advisor runs beforehand and
+   the owner pins the result as a profile. Owner's observation, 2026-10-13.
 7. `IDateInterpreter` + `LinkedArtNet.Dates.Llm` reference implementation, behind opt-in.
 - Acceptance: >= 98% exact match on `verified` corpus (>= 3,000 entries), 100% on seed; property
   tests green; p50 < 50 µs on idioms; NuGet `LinkedArtNet.Dates 1.0.0-preview`.

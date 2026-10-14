@@ -289,6 +289,13 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     API (`Trainer:Submission:Repo`, `:Token`, `:BaseBranch`). Store is two JSON files in `Trainer:DataDirectory`
     (gitignored; mount a volume in a container). 5 tests incl. a round trip against a fake GitHub.
 
+21. ~~Corpus contribution workflow.~~ Done 2026-10-14. `docs/08-corpus-contributions.md` is the operating guide from
+    capture or paste, through trainer review and export, to verification and the CI gate. `tools/Corpus promote <file>
+    [id ...] [--to verified|disputed|proposed] [--dry-run]` flips statuses in place (status tokens only, refuses a
+    failing entry, rewrites the report). `tools/Corpus review` writes the Markdown that
+    `.github/workflows/corpus-review.yml` posts on every pull request touching `corpus/` (job summary always, an
+    updated comment for in-repo branches). 17 tests.
+
 Next: Phase 3 is complete apart from hosting, which is the owner's. Candidates: the open Phase 2 items (PeriodO period
 source, `IDateInterpreter` LLM interpreter, benchmarks), the axe lint, or the owner's review items. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),

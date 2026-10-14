@@ -164,6 +164,13 @@ public class GrammarTests
     [InlineData("Original circa 1830's, reproduction 1930's", "193X")]
     [InlineData("Original album was printed in 1914. This is the later edition printed in 1972.", "1972")]
     [InlineData("19th century, late to early 20th century", "late century 19/early century 20")]
+    // prose around relations: dates from, based on, counts, alternatives, a probable date inside an open one
+    [InlineData("This re-carved print is from 1927", "1927")]
+    [InlineData("1936 (early post-1945 printing)", "after 1945")]
+    [InlineData("5 of 100, not dated (1930)", "1930")]
+    [InlineData("94/300 (accually 94/3000), not dated (1978)", "1978")]
+    [InlineData("between 1783 or 1784", "[1783,1784]")]
+    [InlineData("After 1580, probably 1584.", "1584?")]
     // negated relations keep their direction
     [InlineData("not earlier than 1450", "not-before 1450")]
     [InlineData("not later than 1450", "not-after 1450")]
@@ -279,6 +286,8 @@ public class GrammarTests
         // explicit years right after a period name date the period as the cataloguer does
         Assert.Equal("1568/1615", TimeSpanParser.Default.Parse("Momoyama period, 1568-1615").Canonical);
         Assert.Equal("1867/1912", TimeSpanParser.Default.Parse("Meiji Period (1867-1912)").Canonical);
+        // "made after a painting in ..." names the source; the later clause dates the copy
+        Assert.Equal("193X~", TimeSpanParser.Default.Parse("Made after a painting in Edo era. Ca. 1930s.").Canonical);
     }
 
     [Fact]

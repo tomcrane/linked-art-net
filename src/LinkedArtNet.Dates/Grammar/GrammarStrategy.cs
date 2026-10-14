@@ -99,6 +99,7 @@ internal sealed class DateParser
             var secondary = ParseGroup(group);
             if (secondary is null) { _notes.Add("A parenthetical remark with no date in it was ignored."); continue; }
             if (secondary == expression || IsRestatement(expression, secondary)) { _notes.Add("The same date is given twice."); continue; }
+            if (expression is Undated) { expression = secondary; Penalise(0.15, "The date was taken from a parenthetical remark."); continue; }
             if (IsEditionClause(group))
             {
                 // "1932 (printed between 1963 and 1981)", "1877 (1890's reproduction)": the printing or edition is the object's date.
@@ -132,7 +133,8 @@ internal sealed class DateParser
         // edition, printing or reproduction dates the object; the first date is the original it reproduces.
         var tail = _p;
         SkipNoise();
-        var originalFirst = _t.Take(ignoredBefore).Any(x => Lexicon.Normalise(x.Text) is "original" or "originally");
+        var leading = _t.Take(ignoredBefore).ToList();
+        var originalFirst = leading.Any(x => Lexicon.Normalise(x.Text) is "original" or "originally") || CopiesAnOriginal(leading);
         if (_p < _t.Count && (IsEditionClause(_t.Skip(tail).ToList()) || originalFirst))
         {
             var inner = new DateParser(_t.Skip(tail).ToList(), _text, _profile, _lexicon, _periods);
@@ -159,6 +161,16 @@ internal sealed class DateParser
         return new Candidate(expression, _confidence, "grammar", null, _notes, _flags);
     }
 
+    /// <summary>"made after a painting in ...": "after a/an/the" followed by a noun describes the source, not a date relation.</summary>
+    private static bool CopiesAnOriginal(List<Token> tokens)
+    {
+        for (var i = 0; i + 2 < tokens.Count; i++)
+            if (tokens[i] is { Kind: TokenKind.Relation, Value: Relation.After } && tokens[i + 1].Kind == TokenKind.Noise
+                && Lexicon.Normalise(tokens[i + 1].Text) is "a" or "an" or "the" && tokens[i + 2].Kind == TokenKind.Word)
+                return true;
+        return false;
+    }
+
     private static bool IsEditionWord(Token t) => t.Kind == TokenKind.Noise && t.Value is string marker && marker == Token.EditionMarker;
 
     /// <summary>
@@ -180,7 +192,16 @@ internal sealed class DateParser
         for (var i = 0; i < tokens.Count; i++)
         {
             var t = tokens[i];
-            bool Follows(int k) => k >= tokens.Count || tokens[k].Kind is TokenKind.Comma or TokenKind.Noise or TokenKind.Other or TokenKind.Word;
+            bool Follows(int k) => k >= tokens.Count || tokens[k].Kind is TokenKind.Comma or TokenKind.Noise or TokenKind.Other or TokenKind.Word or TokenKind.OpenParen or TokenKind.CloseParen or TokenKind.Undated;
+            // "5 of 100, not dated (1930)": a count out of a round number is a print run.
+            if (t is { Kind: TokenKind.Number } count && !count.HasDecimal && count.Digits <= 3 && i + 2 < tokens.Count && tokens[i + 1] is { Kind: TokenKind.Noise } ofWord && Lexicon.Normalise(ofWord.Text) == "of"
+                && tokens[i + 2] is { Kind: TokenKind.Number } run && !run.HasDecimal && run.Digits <= 4 && count.Number <= run.Number && run.Number >= 25 && run.Number % 25 == 0 && Follows(i + 3))
+            {
+                _notes.Add($"The edition number {count.Text} of {run.Text} was ignored.");
+                i += 2;
+                if (i + 1 < tokens.Count && tokens[i + 1].Kind == TokenKind.Comma) i++;
+                continue;
+            }
             if (t is { Kind: TokenKind.Number } a && !a.HasDecimal && a.Digits <= 3 && i + 2 < tokens.Count && tokens[i + 1].Kind == TokenKind.Slash
                 && tokens[i + 2] is { Kind: TokenKind.Number } b && !b.HasDecimal && b.Digits <= 4 && a.Number <= b.Number && b.Number % 25 == 0 && Follows(i + 3))
             {
@@ -418,6 +439,15 @@ internal sealed class DateParser
         if (_t[_p].Kind == TokenKind.Between)
         {
             var save = _p;
+            // "this print is from 1927": "is from" gives the date itself, not an open start.
+            if (Lexicon.Normalise(_t[_p].Text) == "from" && _p > 0 && _t[_p - 1] is { Kind: TokenKind.Word } verb
+                && Lexicon.Normalise(verb.Text) is "is" or "are" or "was" or "were" or "dates" or "date" or "dating")
+            {
+                _p++;
+                var only = ParseSingle();
+                if (only is not null && Finish(only) is { } dated) { _notes.Add("'is from' gives the date itself, not a start."); return dated; }
+                _p = save;
+            }
             _p++;
             var a = ParseSingle();
             SkipNoise();
@@ -426,6 +456,13 @@ internal sealed class DateParser
                 _p++;
                 var b = ParseSingle();
                 if (b is not null) return MakeInterval(a, b);
+            }
+            // "between 1783 or 1784": one of the two.
+            if (a is not null && _p < _t.Count && _t[_p].Kind == TokenKind.Or && Finish(a) is { } first)
+            {
+                _p++;
+                var b = ParseSingle();
+                if (b is not null && Finish(b) is { } second) { _notes.Add("'between X or Y' offers two readings."); return new OneOf([first, second]); }
             }
             if (a is not null && Finish(a) is { } fromOnly)
             {
@@ -626,7 +663,7 @@ internal sealed class DateParser
                 _p++; SkipJoiner(); SkipNoise(); continue;
             }
             // "the later edition printed in 1972": the band belongs to the edition noun, not to the date.
-            if (t.Kind == TokenKind.Band && Peek(1) is { } afterBand && IsEditionWord(afterBand)) { _p++; SkipNoise(); continue; }
+            if (t.Kind == TokenKind.Band && Peek(1) is { } afterBand && (IsEditionWord(afterBand) || afterBand.Kind == TokenKind.Relation)) { _p++; SkipNoise(); continue; }
             if (t.Kind == TokenKind.Band && piece.Band is null)
             {
                 piece = piece with { Band = (Band)t.Value! };
@@ -1107,6 +1144,7 @@ internal sealed class DateParser
         if (start is null || end is null) return null;
         if (start == StartOf(a) && end == EndOf(a)) return a;
         if (start == StartOf(b) && end == EndOf(b)) return b;
+        if (start is Relative || end is Relative) return null; // an open relation can only lose whole, never supply a bound
         return new Interval(start, end);
 
         static DateExpression? StartOf(DateExpression e) => e is Interval i ? i.Start : e;
@@ -1120,6 +1158,7 @@ internal sealed class DateParser
         {
             Qualified q => IsPlainBound(q.Inner),
             Banded bd => IsPlainBound(bd.Inner),
+            Relative r => IsPlainBound(r.Inner),
             DatePoint => true,
             _ => false,
         };
@@ -1142,6 +1181,12 @@ internal sealed class DateParser
         NamedPeriod { Resolved: { } r } => StartYear(r),
         Banded bd => BandYears(bd) is { } span ? span.Start : null,
         Qualified q => StartYear(q.Inner),
+        Relative r => r.Relation switch
+        {
+            Relation.After => StartYear(r.Inner) is { } y ? y + 1 : null,
+            Relation.NotBefore => StartYear(r.Inner),
+            _ => long.MinValue,
+        },
         Interval { Start: { } s } => StartYear(s),
         _ => null,
     };
@@ -1154,6 +1199,12 @@ internal sealed class DateParser
         NamedPeriod { Resolved: { } r } => EndYear(r),
         Banded bd => BandYears(bd) is { } span ? span.End : null,
         Qualified q => EndYear(q.Inner),
+        Relative r => r.Relation switch
+        {
+            Relation.Before => EndYear(r.Inner) is { } y ? y - 1 : null,
+            Relation.NotAfter or Relation.Until => EndYear(r.Inner),
+            _ => long.MaxValue,
+        },
         Interval { End: { } en } => EndYear(en),
         _ => null,
     };

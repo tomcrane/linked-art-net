@@ -55,16 +55,17 @@ internal sealed class DateParser
         _p = 0;
 
         DateExpression? expression = null;
+        var ignoredBefore = 0;
         try
         {
             // Leading prose ("Italian artist, 15th century"): try again from later positions, at a cost.
-            for (var start = 0; start < Math.Min(_t.Count, 10) && expression is null; start++)
+            for (var start = 0; start < Math.Min(_t.Count, 30) && expression is null; start++)
             {
                 _p = start;
                 var notesBefore = _notes.Count;
                 expression = ParseExpression();
                 if (expression is null) { _notes.RemoveRange(notesBefore, _notes.Count - notesBefore); continue; }
-                if (start > 0) Penalise(0.1, $"Leading text \"{_text[_t[0].Start.._t[start].Start].Trim()}\" was ignored.");
+                if (start > 0) { Penalise(0.1, $"Leading text \"{_text[_t[0].Start.._t[start].Start].Trim()}\" was ignored."); ignoredBefore = start; }
             }
         }
         catch (ArgumentException ex)
@@ -123,7 +124,8 @@ internal sealed class DateParser
         // edition, printing or reproduction dates the object; the first date is the original it reproduces.
         var tail = _p;
         SkipNoise();
-        if (_p < _t.Count && IsEditionClause(_t.Skip(tail).ToList()))
+        var originalFirst = _t.Take(ignoredBefore).Any(x => Lexicon.Normalise(x.Text) is "original" or "originally");
+        if (_p < _t.Count && (IsEditionClause(_t.Skip(tail).ToList()) || originalFirst))
         {
             var inner = new DateParser(_t.Skip(tail).ToList(), _text, _profile, _lexicon, _periods);
             var later = inner.Parse();
@@ -132,7 +134,9 @@ internal sealed class DateParser
                 _notes.AddRange(inner._notes);
                 foreach (var f in inner._flags) _flags.Add(f);
                 _flags.Add(DateFlag.SecondaryDate);
-                Penalise(0.05, $"The edition or printing date {later.Expression.Canonical} is the object's date; {expression.Canonical} is the original.");
+                Penalise(0.05, IsEditionClause(_t.Skip(tail).ToList())
+                    ? $"The edition or printing date {later.Expression.Canonical} is the object's date; {expression.Canonical} is the original."
+                    : $"The text opens with the original, {expression.Canonical}; the later clause, {later.Expression.Canonical}, dates this copy.");
                 if (later.UnconsumedText is not null) Penalise(0.15, $"Could not read \"{later.UnconsumedText}\".");
                 return new Candidate(later.Expression, _confidence, "grammar", later.UnconsumedText, _notes, _flags);
             }
@@ -452,6 +456,8 @@ internal sealed class DateParser
             var connector = _t[_p];
             _p++;
             SkipNoise();
+            // "1997 and printed in January 2005": an edition word after the connector makes this a second clause, not a range.
+            if (_t.Skip(save + 1).Take(_p - save - 1).Any(IsEditionWord)) { _p = save; single = start; return null; }
             if (_p >= _t.Count)
             {
                 if (connector.Kind is TokenKind.Dash or TokenKind.Slash && Finish(start) is { } open) { _notes.Add($"A trailing '{connector.Text}' means the end is open."); return new Interval(open, null); }
@@ -600,8 +606,10 @@ internal sealed class DateParser
             if (t.Kind == TokenKind.Hedge && !IsCenturyLetterAt(_p))
             {
                 piece = piece with { Hedge = Merge(piece.Hedge, (Qualification)t.Value!) };
-                _p++; SkipJoiner(); continue;
+                _p++; SkipJoiner(); SkipNoise(); continue;
             }
+            // "the later edition printed in 1972": the band belongs to the edition noun, not to the date.
+            if (t.Kind == TokenKind.Band && Peek(1) is { } afterBand && IsEditionWord(afterBand)) { _p++; SkipNoise(); continue; }
             if (t.Kind == TokenKind.Band && piece.Band is null)
             {
                 piece = piece with { Band = (Band)t.Value! };
@@ -611,7 +619,7 @@ internal sealed class DateParser
                 SkipNoise();
                 continue;
             }
-            if (t.Kind == TokenKind.Relation) { piece = piece with { Relation = (Relation)t.Value! }; _p++; SkipJoiner(); continue; }
+            if (t.Kind == TokenKind.Relation) { piece = piece with { Relation = (Relation)t.Value! }; _p++; SkipJoiner(); SkipNoise(); continue; }
             if (t.Kind == TokenKind.Era && eraFirst is null) { eraFirst = (Era)t.Value!; _p++; continue; }
             break;
         }

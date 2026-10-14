@@ -140,6 +140,22 @@ The file stays in `corpus/proposed/` after verification: the folder names where 
 the `status` field says whether they are enforced. The corpus browser at `/dates/corpus` filters by file,
 status and result, so a merged file can be checked there too.
 
+### 5.1 Triage of imported corpora
+
+An imported source is not ground truth: yearrange is inconsistent and ULAN's years are estimates. The failures list
+for `proposed` entries is therefore a list of decisions, and each entry takes one of three:
+
+| Verdict | Command | Effect |
+|---|---|---|
+| The parser is right | `accept <file> <ids or --match/--tag> [--verify]` | The parser's reading becomes the expectation; the source's moves to `sourceExpectation`; a dated note says so. With `--verify` the entry gates CI from then on. |
+| The source is right | nothing, or a `parser-gap` tag | The entry stays failing: the failures list is the parser backlog. |
+| Neither, or it depends | `promote <file> <ids> --to disputed` | Reported separately, never enforced. |
+
+Work by cluster, not by entry. `review <file> --failing --match "<regex>"` shows one cluster; `accept` takes the same
+filter, so one decision covers the whole cluster. `accept --dry-run` prints each entry's old and new expectation first.
+Only failing entries are rewritten; passing ones are counted and left alone. The report's "By cause" line and the
+`### Bounds differ` and `### Flags only` headings are where clusters show up.
+
 ## 6. What CI guarantees afterwards
 
 `CorpusTests.Verified_entry_passes` is a theory with one case per verified entry across every file under

@@ -5,8 +5,10 @@
 //   dotnet run --project tools/Corpus -- stats               counts by file, status and tag
 //   dotnet run --project tools/Corpus -- promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]
 //                                                           set entry statuses in place (whole file when no ids); verified refuses failing entries; refreshes the report
-//   dotnet run --project tools/Corpus -- review <file ...> [--out <markdown>]
-//                                                           Markdown review of the files for a pull request (corpus-review.yml posts it)
+//   dotnet run --project tools/Corpus -- review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>]
+//                                                           Markdown review of the files (or the entries a filter selects); corpus-review.yml posts it
+//   dotnet run --project tools/Corpus -- accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run]
+//                                                           adopt the parser's reading as the expectation of failing entries, keeping the source's in sourceExpectation
 //   dotnet run --project tools/Corpus -- import yearrange <date-tests.json> | import timetwister <dates_spec.rb> | import getty <dir of ulan-*.json>
 //                                                           write corpus/imported/<source>.json (proposed; see THIRD-PARTY-NOTICES.md)
 //
@@ -28,6 +30,7 @@ if (command == "advise") return Advise(args.Length > 1 ? args[1] : throw new Arg
 if (command == "import") return await Importers.Run(args.Length > 1 ? args[1] : "", args.Length > 2 ? args[2] : null, corpusRoot);
 if (command == "promote") return Promote(args.Skip(1).ToArray());
 if (command == "review") return Review(args.Skip(1).ToArray());
+if (command == "accept") return Accept(args.Skip(1).ToArray());
 
 return command switch
 {
@@ -39,7 +42,7 @@ return command switch
 
 static int Usage()
 {
-    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run] | review <file ...> [--out <markdown>] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
+    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run] | review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>] | accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
     return 2;
 }
 
@@ -113,15 +116,19 @@ string? ResolveCorpusPath(string given) => new[] { given, Path.Combine(corpusRoo
 
 int Review(string[] rest)
 {
-    string? outPath = null;
+    string? outPath = null, match = null, tag = null;
+    var failingOnly = false;
     var files = new List<string>();
     for (var i = 0; i < rest.Length; i++)
     {
         if (rest[i] == "--out" && i + 1 < rest.Length) outPath = rest[++i];
+        else if (rest[i] == "--match" && i + 1 < rest.Length) match = rest[++i];
+        else if (rest[i] == "--tag" && i + 1 < rest.Length) tag = rest[++i];
+        else if (rest[i] == "--failing") failingOnly = true;
         else if (rest[i].StartsWith("--")) { Console.Error.WriteLine($"review: unknown option {rest[i]}"); return 2; }
         else files.Add(rest[i]);
     }
-    if (files.Count == 0) { Console.Error.WriteLine("review needs one or more corpus files: review <file ...> [--out <markdown>]"); return 2; }
+    if (files.Count == 0) { Console.Error.WriteLine("review needs one or more corpus files: review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>]"); return 2; }
     var loaded = new List<CorpusFile>();
     foreach (var given in files)
     {
@@ -130,7 +137,10 @@ int Review(string[] rest)
         loaded.Add(CorpusFile.Load(path, corpusRoot));
     }
     var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
-    var markdown = CorpusReview.Markdown(loaded, new CorpusEvaluator(catalog.Get), TimeSpanParser.Version);
+    var evaluator = new CorpusEvaluator(catalog.Get);
+    if (EntryFilter(match, tag, failingOnly, evaluator) is { } filter)
+        loaded = loaded.Select(f => f with { Entries = f.Entries.Where(filter).ToList() }).Where(f => f.Entries.Count > 0).ToList();
+    var markdown = CorpusReview.Markdown(loaded, evaluator, TimeSpanParser.Version);
     if (outPath is null) Console.Write(markdown);
     else
     {
@@ -138,6 +148,49 @@ int Review(string[] rest)
         Console.WriteLine($"-> {outPath}");
     }
     return 0;
+}
+
+// accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run]: adopt the parser's reading where the source was wrong.
+int Accept(string[] rest)
+{
+    if (rest.Length == 0 || rest[0].StartsWith("--")) { Console.Error.WriteLine("accept needs a corpus file: accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run]"); return 2; }
+    var path = ResolveCorpusPath(rest[0]);
+    if (path is null) { Console.Error.WriteLine($"No such corpus file: {rest[0]}"); return 2; }
+    string? match = null, tag = null;
+    var ids = new List<string>();
+    var verify = false; var dryRun = false;
+    for (var i = 1; i < rest.Length; i++)
+    {
+        switch (rest[i])
+        {
+            case "--match" when i + 1 < rest.Length: match = rest[++i]; break;
+            case "--tag" when i + 1 < rest.Length: tag = rest[++i]; break;
+            case "--verify": verify = true; break;
+            case "--dry-run": dryRun = true; break;
+            case var o when o.StartsWith("--"): Console.Error.WriteLine($"accept: unknown option {o}"); return 2;
+            default: ids.Add(rest[i]); break;
+        }
+    }
+    var filter = EntryFilter(match, tag, failingOnly: false);
+    var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
+    var outcome = CorpusAcceptance.Accept(path, ids.Count == 0 ? null : ids, filter, verify ? EntryStatus.Verified : null, new CorpusEvaluator(catalog.Get), dryRun);
+    var relative = Path.GetRelativePath(corpusRoot, path).Replace(Path.DirectorySeparatorChar, '/');
+    foreach (var c in outcome.Changed) Console.WriteLine($"{c.Id} \"{c.Input}\"\n    was: {c.Before}\n    now: {c.After}");
+    Console.WriteLine();
+    Console.WriteLine($"{(dryRun ? "Would accept" : "Accepted")} the parser's reading for {outcome.Changed.Count} entries in {relative}" +
+                      (outcome.AlreadyPassing.Count > 0 ? $"; {outcome.AlreadyPassing.Count} targeted entries already pass" : "") +
+                      (verify && outcome.Changed.Count > 0 ? "; set to verified" : "") + ".");
+    if (dryRun || outcome.Changed.Count == 0) return 0;
+    Console.WriteLine();
+    return Run(null, true);
+}
+
+/// <summary>A filter over entries from the review/accept options: a regex on the input, a tag, or only the failing ones.</summary>
+Func<CorpusEntry, bool>? EntryFilter(string? match, string? tag, bool failingOnly, CorpusEvaluator? evaluator = null)
+{
+    var regex = match is null ? null : new System.Text.RegularExpressions.Regex(match, System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+    if (regex is null && tag is null && !failingOnly) return null;
+    return e => (regex is null || regex.IsMatch(e.Input)) && (tag is null || e.Tags.Contains(tag, StringComparer.OrdinalIgnoreCase)) && (!failingOnly || !evaluator!.Evaluate(e).Passed);
 }
 
 int Promote(string[] rest)

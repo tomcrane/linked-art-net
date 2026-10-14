@@ -162,6 +162,9 @@ public class GrammarTests
     [InlineData("19thC(late)", "late century 19")]
     [InlineData("c. 1801-02", "1801~/1802~")]
     [InlineData("Original circa 1830's, reproduction 1930's", "193X")]
+    [InlineData("Original album was printed in 1914. This is the later edition printed in 1972.", "1972")]
+    [InlineData("Cut as a jigsaw print in 1997 and printed in January 2005.", "2005-01")]
+    [InlineData("Originally 1858, this re-carved edition was published probably in early 20th century.", "early century 20?")]
     [InlineData("1940s(early)", "early 194X")]
     // a second lifecycle marker after a comma
     [InlineData("active 1430, died 1462", "fl 1430/died 1462")]

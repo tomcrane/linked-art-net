@@ -1484,17 +1484,10 @@
       }
     },
     {
-      "id": "yr-0095",
+      "id": "yr-0095", "status": "verified",
       "input": "Originally in 1858, this was a re-carved edition published in around 1900.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1858,
-          "end": 1858
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1858..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1858..1858."
     },
     {
       "id": "yr-0096",
@@ -1982,20 +1975,13 @@
       }
     },
     {
-      "id": "yr-0128",
+      "id": "yr-0128", "status": "verified",
       "input": "20th century reproduction of 1794-95 design",
       "tags": [
         "range",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1794,
-          "end": 1795
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20","edtf":"1900/1999","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1794..1795", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1794..1795."
     },
     {
       "id": "yr-0129",
@@ -2095,43 +2081,23 @@
       }
     },
     {
-      "id": "yr-0135",
+      "id": "yr-0135", "status": "verified",
       "input": "Original circa 1710, reproduction 20th century",
       "tags": [
         "circa",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20","edtf":"1900/1999","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999; flags Approximate."
     },
     {
-      "id": "yr-0136",
+      "id": "yr-0136", "status": "verified",
       "input": "Originally ca. 1829-33, this one was re-carved probably in 1930s.",
       "tags": [
         "circa",
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"193X?","edtf":"193X?","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1939-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0137",
@@ -2604,23 +2570,13 @@
       }
     },
     {
-      "id": "yr-0167",
+      "id": "yr-0167", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition in ca. 1900.",
       "tags": [
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838; flags Approximate."
     },
     {
       "id": "yr-0168",
@@ -2754,7 +2710,7 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0177",
+      "id": "yr-0177", "status": "verified",
       "input": "Originally ca. 1794-95, this one was re-carved probably in early 20th century.",
       "tags": [
         "circa",
@@ -2762,35 +2718,15 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1794,
-          "end": 1795
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1794..1795; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1794..1795; flags Approximate."
     },
     {
-      "id": "yr-0178",
+      "id": "yr-0178", "status": "verified",
       "input": "Originally ca. 1834, this is a re-carved edition in ca. 1900.",
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1834
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1834; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1834; flags Approximate."
     },
     {
       "id": "yr-0179",
@@ -3152,17 +3088,10 @@
       }
     },
     {
-      "id": "yr-0203",
+      "id": "yr-0203", "status": "verified",
       "input": "Originally in 2002. The hand-colored version in 2008.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 2002,
-          "end": 2002
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"2008","edtf":"2008","timespan":{"begin_of_the_begin":"2008-01-01T00:00:00Z","end_of_the_end":"2008-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 2002..2002", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 2002..2002."
     },
     {
       "id": "yr-0204",
@@ -3979,19 +3908,12 @@
       }
     },
     {
-      "id": "yr-0255",
+      "id": "yr-0255", "status": "verified",
       "input": "1834 (1836 edition)",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1834
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1836","edtf":"1836","timespan":{"begin_of_the_begin":"1836-01-01T00:00:00Z","end_of_the_end":"1836-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1834", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1834."
     },
     {
       "id": "yr-0256",
@@ -4124,14 +4046,14 @@
       }
     },
     {
-      "id": "yr-0264",
+      "id": "yr-0264", "status": "verified",
       "input": "Originally in 1854-57, this one is a re-carved edition probably made in early 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1854, "end": 1857}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1854..1857", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1854..1857."
     },
     {
       "id": "yr-0265",
@@ -4149,33 +4071,23 @@
       }
     },
     {
-      "id": "yr-0266",
+      "id": "yr-0266", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition in ca. 1940-50.",
       "tags": [
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1940~/1950~","edtf":"1940~/1950~","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1950-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838; flags Approximate."
     },
     {
-      "id": "yr-0267",
+      "id": "yr-0267", "status": "verified",
       "input": "Originally in 1856-58, this is probably in mid 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-0268",
@@ -4244,22 +4156,15 @@
       }
     },
     {
-      "id": "yr-0272",
+      "id": "yr-0272", "status": "verified",
       "input": "Originally in 1832-33. This edition was made in 1919.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1832,
-          "end": 1833
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1919","edtf":"1919","timespan":{"begin_of_the_begin":"1919-01-01T00:00:00Z","end_of_the_end":"1919-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1832..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1832..1833."
     },
     {
-      "id": "yr-0273",
+      "id": "yr-0273", "status": "verified",
       "input": "Originally in late 1830s, this edition ca. early 20th C.",
       "tags": [
         "circa",
@@ -4267,17 +4172,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1839
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20~","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1839; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1839; flags Approximate."
     },
     {
       "id": "yr-0274",
@@ -4387,19 +4282,12 @@
       }
     },
     {
-      "id": "yr-0281",
+      "id": "yr-0281", "status": "verified",
       "input": "1855 (Meiji edition)",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1855,
-          "end": 1855
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1855..1855", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1855..1855."
     },
     {
       "id": "yr-0282",
@@ -4514,19 +4402,12 @@
       }
     },
     {
-      "id": "yr-0289",
+      "id": "yr-0289", "status": "verified",
       "input": "Original series in 1928-43, until 1948 after the war. Second series in 1954-58.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1928,
-          "end": 1943
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1928/1954","edtf":"1928/1954","timespan":{"begin_of_the_begin":"1928-01-01T00:00:00Z","end_of_the_end":"1954-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1928..1943", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1928..1943."
     },
     {
       "id": "yr-0290",
@@ -4581,7 +4462,7 @@
       }
     },
     {
-      "id": "yr-0293",
+      "id": "yr-0293", "status": "verified",
       "input": "Originally ca. 1829-33, this one was published probably in early 20th C.",
       "tags": [
         "circa",
@@ -4589,17 +4470,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0294",
@@ -4966,14 +4837,14 @@
       }
     },
     {
-      "id": "yr-0318",
+      "id": "yr-0318", "status": "verified",
       "input": "Originally in 1829-33, this one is re-carved edition in the late 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
       "id": "yr-0319",
@@ -5256,17 +5127,10 @@
       }
     },
     {
-      "id": "yr-0338",
+      "id": "yr-0338", "status": "verified",
       "input": "Original album was printed in 1894. This is the second edition printed in 1971.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1894,
-          "end": 1894
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1971","edtf":"1971","timespan":{"begin_of_the_begin":"1971-01-01T00:00:00Z","end_of_the_end":"1971-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1894..1894", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1894..1894."
     },
     {
       "id": "yr-0339",
@@ -5310,38 +5174,21 @@
       }
     },
     {
-      "id": "yr-0342",
+      "id": "yr-0342", "status": "verified",
       "input": "Originally ca. 1834-5, this is a re-carved edition in ca. 1900.",
       "tags": [
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1835
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1835; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1835; flags Approximate."
     },
     {
-      "id": "yr-0343",
+      "id": "yr-0343", "status": "verified",
       "input": "1946 (printed after 1989)",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1946,
-          "end": 1946
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1946/1989","edtf":"1946/1989","timespan":{"begin_of_the_begin":"1946-01-01T00:00:00Z","end_of_the_end":"1989-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1946..1946", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1946..1946."
     },
     {
       "id": "yr-0344",
@@ -5437,7 +5284,7 @@
       }
     },
     {
-      "id": "yr-0349",
+      "id": "yr-0349", "status": "verified",
       "input": "Originally ca. 1829-33. This edition was made probably in the mid 20th century.",
       "tags": [
         "circa",
@@ -5445,17 +5292,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0350",
@@ -5556,24 +5393,14 @@
       }
     },
     {
-      "id": "yr-0356",
+      "id": "yr-0356", "status": "verified",
       "input": "Originally ca. 1829-33. This re-carved edition was made probably in 1960s.",
       "tags": [
         "circa",
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"196X?","edtf":"196X?","timespan":{"begin_of_the_begin":"1960-01-01T00:00:00Z","end_of_the_end":"1969-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0357",
@@ -5644,13 +5471,13 @@
       }
     },
     {
-      "id": "yr-0362",
+      "id": "yr-0362", "status": "verified",
       "input": "Original design 1833 (Meiji Reproduction?)",
       "tags": [
         "uncertain",
         "bracketed"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1833, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1833..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1833..1833."
     },
     {
       "id": "yr-0363",
@@ -5914,24 +5741,14 @@
       }
     },
     {
-      "id": "yr-0380",
+      "id": "yr-0380", "status": "verified",
       "input": "Originally ca. 1833, this is a re-carved edition probably in late 20th C.",
       "tags": [
         "circa",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20?","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1975..1999; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1975..1999; flags Approximate."
     },
     {
       "id": "yr-0381",
@@ -6109,17 +5926,10 @@
       }
     },
     {
-      "id": "yr-0392",
+      "id": "yr-0392", "status": "verified",
       "input": "Original album was printed in 1914. This is the later edition printed in 1972.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1914,
-          "end": 1914
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1972","edtf":"1972","timespan":{"begin_of_the_begin":"1972-01-01T00:00:00Z","end_of_the_end":"1972-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1914..1914", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1914..1914."
     },
     {
       "id": "yr-0393",
@@ -6181,24 +5991,14 @@
       }
     },
     {
-      "id": "yr-0397",
+      "id": "yr-0397", "status": "verified",
       "input": "Originally ca. 1834, this is a re-carved edition in early 20th Century.",
       "tags": [
         "circa",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924; flags Approximate."
     },
     {
       "id": "yr-0398",
@@ -6253,29 +6053,22 @@
       }
     },
     {
-      "id": "yr-0402",
+      "id": "yr-0402", "status": "verified",
       "input": "The series was published originally in 1829. This edition was made probably in early Meiji period.",
       "tags": [
         "band",
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1829}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early period:meiji?","edtf":"1868/1880","timespan":{"begin_of_the_begin":"1868-01-01T00:00:00Z","end_of_the_end":"1880-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1829", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1829."
     },
     {
-      "id": "yr-0403",
+      "id": "yr-0403", "status": "verified",
       "input": "20 Century reproduction of 1829-33 print",
       "tags": [
         "range",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20","edtf":"1900/1999","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
       "id": "yr-0404",
@@ -6306,7 +6099,7 @@
       }
     },
     {
-      "id": "yr-0406",
+      "id": "yr-0406", "status": "verified",
       "input": "Ca. 1850s. This edition was made probably in the early 20th century.",
       "tags": [
         "circa",
@@ -6314,17 +6107,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924; flags Approximate."
     },
     {
       "id": "yr-0407",
@@ -6482,21 +6265,14 @@
       }
     },
     {
-      "id": "yr-0418",
+      "id": "yr-0418", "status": "verified",
       "input": "Originally in Edo period (1603-1867), this is a re-carved edition in 1956.",
       "tags": [
         "range",
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1867
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1956","edtf":"1956","timespan":{"begin_of_the_begin":"1956-01-01T00:00:00Z","end_of_the_end":"1956-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1867", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1867."
     },
     {
       "id": "yr-0419",
@@ -6539,13 +6315,13 @@
       "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0422",
+      "id": "yr-0422", "status": "verified",
       "input": "Early 20th C. copy of original published in 1833.",
       "tags": [
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"1833","edtf":"1833","timespan":{"begin_of_the_begin":"1833-01-01T00:00:00Z","end_of_the_end":"1833-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924."
     },
     {
       "id": "yr-0423",
@@ -6594,24 +6370,24 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0427",
+      "id": "yr-0427", "status": "verified",
       "input": "Originally published in 1829-33. This edition was made probably in the early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
-      "id": "yr-0428",
+      "id": "yr-0428", "status": "verified",
       "input": "Originally in 1835-36. This re-carved edition was published probably in the early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1835, "end": 1836}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1835..1836", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1835..1836."
     },
     {
       "id": "yr-0429",
@@ -6671,14 +6447,14 @@
       }
     },
     {
-      "id": "yr-0434",
+      "id": "yr-0434", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition was made probably in the early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838."
     },
     {
       "id": "yr-0435",
@@ -6696,23 +6472,13 @@
       }
     },
     {
-      "id": "yr-0436",
+      "id": "yr-0436", "status": "verified",
       "input": "1848 (circa (published posthumously in 1863))",
       "tags": [
         "circa",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1848,
-          "end": 1848
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1863~","edtf":"1863~","timespan":{"begin_of_the_begin":"1863-01-01T00:00:00Z","end_of_the_end":"1863-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1848..1848; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1848..1848; flags Approximate."
     },
     {
       "id": "yr-0437",
@@ -6967,14 +6733,14 @@
       "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0455",
+      "id": "yr-0455", "status": "verified",
       "input": "Originally published in late 1830s. This edition was made probably in early 20th century.",
       "tags": [
         "decade",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1839}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1839", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1839."
     },
     {
       "id": "yr-0456",
@@ -7228,24 +6994,14 @@
       }
     },
     {
-      "id": "yr-0473",
+      "id": "yr-0473", "status": "verified",
       "input": "Originally published in 1829 - 33, this edition was made ca. 1930s.",
       "tags": [
         "circa",
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"193X~","edtf":"193X~","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1939-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0474",
@@ -7310,21 +7066,14 @@
       }
     },
     {
-      "id": "yr-0478",
+      "id": "yr-0478", "status": "verified",
       "input": "Originally in 1834-42, this re-carved edition was published in early 20th Century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1842
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1842", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1842."
     },
     {
       "id": "yr-0479",
@@ -7342,21 +7091,14 @@
       }
     },
     {
-      "id": "yr-0480",
+      "id": "yr-0480", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition in early 20th Century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838."
     },
     {
       "id": "yr-0481",
@@ -7521,14 +7263,14 @@
       }
     },
     {
-      "id": "yr-0492",
+      "id": "yr-0492", "status": "verified",
       "input": "Originally in 1849-53, this one is re-carved edition in late 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1849, "end": 1853}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1849..1853", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1849..1853."
     },
     {
       "id": "yr-0493",
@@ -7544,23 +7286,13 @@
       }
     },
     {
-      "id": "yr-0494",
+      "id": "yr-0494", "status": "verified",
       "input": "Originally in 1854-57, this re-carved edition was published in ca. 1900.",
       "tags": [
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1854,
-          "end": 1857
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1854..1857; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1854..1857; flags Approximate."
     },
     {
       "id": "yr-0495",
@@ -7578,29 +7310,22 @@
       }
     },
     {
-      "id": "yr-0496",
+      "id": "yr-0496", "status": "verified",
       "input": "Originally in 1778. This book was published in Meiji era.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1778,
-          "end": 1778
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1778..1778", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1778..1778."
     },
     {
-      "id": "yr-0497",
+      "id": "yr-0497", "status": "verified",
       "input": "Originally in 1856-58, this edition was made probably in mid 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-0498",
@@ -7618,7 +7343,7 @@
       }
     },
     {
-      "id": "yr-0499",
+      "id": "yr-0499", "status": "verified",
       "input": "Original date was unknown but ca. Bunka era (1804-18), this is a re-carved edition in ca. 1900.",
       "tags": [
         "circa",
@@ -7626,37 +7351,17 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1804,
-          "end": 1818
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1804/1900~","edtf":"1804/1900~","timespan":{"begin_of_the_begin":"1804-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1804..1818; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1804..1818; flags Approximate."
     },
     {
-      "id": "yr-0500",
+      "id": "yr-0500", "status": "verified",
       "input": "Originally 1832-33, this was re-carved in ca. 1950s.",
       "tags": [
         "circa",
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1832,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"195X~","edtf":"195X~","timespan":{"begin_of_the_begin":"1950-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1832..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1832..1833; flags Approximate."
     },
     {
       "id": "yr-0501",
@@ -7822,23 +7527,13 @@
       "expect": {"status": "parsed", "years": {"start": 1890, "end": 1899}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0512",
+      "id": "yr-0512", "status": "verified",
       "input": "Original circa 1830\u0027s, reproduction 1930\u0027s",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1830,
-          "end": 1839
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"193X","edtf":"193X","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1939-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1830..1839; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1830..1839; flags Approximate."
     },
     {
       "id": "yr-0513",
@@ -8396,7 +8091,7 @@
       }
     },
     {
-      "id": "yr-0551",
+      "id": "yr-0551", "status": "verified",
       "input": "Originally ca. 1829-33. This re-carved edition was made probably in the early 20th century.",
       "tags": [
         "circa",
@@ -8404,17 +8099,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0552",
@@ -8455,17 +8140,10 @@
       }
     },
     {
-      "id": "yr-0554",
+      "id": "yr-0554", "status": "verified",
       "input": "Originally in 1858. This was a re-carved edition published around 1900.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1858,
-          "end": 1858
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1858..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1858..1858."
     },
     {
       "id": "yr-0555",
@@ -8542,19 +8220,12 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0560",
+      "id": "yr-0560", "status": "verified",
       "input": "Originally in 1857. This recarved edition was made in Meiji era.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1857,
-          "end": 1857
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1857..1857", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1857..1857."
     },
     {
       "id": "yr-0561",
@@ -8785,19 +8456,12 @@
       }
     },
     {
-      "id": "yr-0578",
+      "id": "yr-0578", "status": "verified",
       "input": "Originally in Edo era, this one was printed in Meiji era.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-0579",
@@ -8815,19 +8479,12 @@
       }
     },
     {
-      "id": "yr-0580",
+      "id": "yr-0580", "status": "verified",
       "input": "Cut as a jigsaw print in 1997 and printed in January 2005.",
       "tags": [
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1997,
-          "end": 1997
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"2005-01","edtf":"2005-01","timespan":{"begin_of_the_begin":"2005-01-01T00:00:00Z","end_of_the_end":"2005-01-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1997..1997", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1997..1997."
     },
     {
       "id": "yr-0581",
@@ -8927,23 +8584,13 @@
       }
     },
     {
-      "id": "yr-0587",
+      "id": "yr-0587", "status": "verified",
       "input": "Originally ca. 1790, this re-carved edition was made probably in 1950s.",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"195X?","edtf":"195X?","timespan":{"begin_of_the_begin":"1950-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1950..1959; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1950..1959; flags Approximate."
     },
     {
       "id": "yr-0588",
@@ -9079,7 +8726,7 @@
       }
     },
     {
-      "id": "yr-0597",
+      "id": "yr-0597", "status": "verified",
       "input": "Originally ca. 1829-33, this one was re-carved probably in early 20th C.",
       "tags": [
         "circa",
@@ -9087,17 +8734,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0598",
@@ -9209,14 +8846,14 @@
       "expect": {"status": "parsed", "years": {"start": 1940, "end": 1999}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0605",
+      "id": "yr-0605", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition in late 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838."
     },
     {
       "id": "yr-0606",
@@ -9548,14 +9185,14 @@
       }
     },
     {
-      "id": "yr-0628",
+      "id": "yr-0628", "status": "verified",
       "input": "Originally in 1856-58, this edition was probably made in mid 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-0629",
@@ -9588,22 +9225,12 @@
       }
     },
     {
-      "id": "yr-0631",
+      "id": "yr-0631", "status": "verified",
       "input": "Originally in 1859. This was re-carved edition in ca. 1900.",
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1859,
-          "end": 1859
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1859..1859; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1859..1859; flags Approximate."
     },
     {
       "id": "yr-0632",
@@ -9622,17 +9249,10 @@
       }
     },
     {
-      "id": "yr-0633",
+      "id": "yr-0633", "status": "verified",
       "input": "Originally in 1798, this is a re-carved edition in 1973.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1798,
-          "end": 1798
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1973","edtf":"1973","timespan":{"begin_of_the_begin":"1973-01-01T00:00:00Z","end_of_the_end":"1973-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1798..1798", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1798..1798."
     },
     {
       "id": "yr-0634",
@@ -9645,27 +9265,20 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0635",
+      "id": "yr-0635", "status": "verified",
       "input": "Original paintings in Edo era. This album was printed in Meiji.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
-      "id": "yr-0636",
+      "id": "yr-0636", "status": "verified",
       "input": "Originally in 1797. This edition was probably in Meiji-Taisho period.",
       "tags": [
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1797, "end": 1797}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji?/period:taisho","edtf":"1868?/1926","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1797..1797", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1797..1797."
     },
     {
       "id": "yr-0637",
@@ -10108,13 +9721,13 @@
       }
     },
     {
-      "id": "yr-0668",
+      "id": "yr-0668", "status": "verified",
       "input": "Originally in 1856-58, this is probably in middle 20th century.",
       "tags": [
         "range",
         "century"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-0669",
@@ -10155,14 +9768,14 @@
       }
     },
     {
-      "id": "yr-0671",
+      "id": "yr-0671", "status": "verified",
       "input": "Originally in 1856-58, this recarved edition was made probably in mid 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-0672",
@@ -10232,21 +9845,14 @@
       }
     },
     {
-      "id": "yr-0676",
+      "id": "yr-0676", "status": "verified",
       "input": "1830-32 (Meiji Period Reproduction)",
       "tags": [
         "range",
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1830,
-          "end": 1832
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1830..1832", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1830..1832."
     },
     {
       "id": "yr-0677",
@@ -10289,14 +9895,14 @@
       }
     },
     {
-      "id": "yr-0680",
+      "id": "yr-0680", "status": "verified",
       "input": "Originally in 1856-58, this is probably in mid 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-0681",
@@ -10314,21 +9920,14 @@
       }
     },
     {
-      "id": "yr-0682",
+      "id": "yr-0682", "status": "verified",
       "input": "1880 (early 19th century reproduction)",
       "tags": [
         "century",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1880,
-          "end": 1882
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 19","edtf":"1800/1824","timespan":{"begin_of_the_begin":"1800-01-01T00:00:00Z","end_of_the_end":"1824-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1880..1882", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1880..1882."
     },
     {
       "id": "yr-0683",
@@ -10446,19 +10045,12 @@
       }
     },
     {
-      "id": "yr-0690",
+      "id": "yr-0690", "status": "verified",
       "input": "1976 reproduction of 1794-95 design",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1794,
-          "end": 1795
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1976","edtf":"1976","timespan":{"begin_of_the_begin":"1976-01-01T00:00:00Z","end_of_the_end":"1976-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1794..1795", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1794..1795."
     },
     {
       "id": "yr-0691",
@@ -10558,21 +10150,14 @@
       }
     },
     {
-      "id": "yr-0697",
+      "id": "yr-0697", "status": "verified",
       "input": "1950\u0027s (early printing)",
       "tags": [
         "decade",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1952
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"195X","edtf":"195X","timespan":{"begin_of_the_begin":"1950-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1950..1952", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1950..1952."
     },
     {
       "id": "yr-0698",
@@ -10741,37 +10326,20 @@
       }
     },
     {
-      "id": "yr-0709",
+      "id": "yr-0709", "status": "verified",
       "input": "Original 1888, this edition ca. 1980.",
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1888,
-          "end": 1888
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1980~","edtf":"1980~","timespan":{"begin_of_the_begin":"1980-01-01T00:00:00Z","end_of_the_end":"1980-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1888..1888; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1888..1888; flags Approximate."
     },
     {
-      "id": "yr-0710",
+      "id": "yr-0710", "status": "verified",
       "input": "Original 1928 (this printing after 1945)",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1928,
-          "end": 1928
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1928/1945","edtf":"1928/1945","timespan":{"begin_of_the_begin":"1928-01-01T00:00:00Z","end_of_the_end":"1945-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1928..1928", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1928..1928."
     },
     {
       "id": "yr-0711",
@@ -11048,19 +10616,12 @@
       }
     },
     {
-      "id": "yr-0730",
+      "id": "yr-0730", "status": "verified",
       "input": "1886 (published 1892).",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1886,
-          "end": 1886
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1892","edtf":"1892","timespan":{"begin_of_the_begin":"1892-01-01T00:00:00Z","end_of_the_end":"1892-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1886..1886", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1886..1886."
     },
     {
       "id": "yr-0731",
@@ -11164,21 +10725,14 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0738",
+      "id": "yr-0738", "status": "verified",
       "input": "Originally in Edo period (1603-1867), this is a re-carved edition printed in 1956.",
       "tags": [
         "range",
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1867
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1956","edtf":"1956","timespan":{"begin_of_the_begin":"1956-01-01T00:00:00Z","end_of_the_end":"1956-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1867", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1867."
     },
     {
       "id": "yr-0739",
@@ -11234,7 +10788,7 @@
       }
     },
     {
-      "id": "yr-0742",
+      "id": "yr-0742", "status": "verified",
       "input": "Originally in 1833-34, this re-carved edition was made in ca. early 20th century.",
       "tags": [
         "circa",
@@ -11242,17 +10796,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1833,
-          "end": 1834
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20~","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1833..1834; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1833..1834; flags Approximate."
     },
     {
       "id": "yr-0743",
@@ -11337,24 +10881,17 @@
       }
     },
     {
-      "id": "yr-0748",
+      "id": "yr-0748", "status": "verified",
       "input": "Originally in 1829-33, this one is re-carved edition in the late 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
-      "id": "yr-0749",
+      "id": "yr-0749", "status": "verified",
       "input": "Originally ca. 1830s. This re-carved edition was made probably in mid 20th century.",
       "tags": [
         "circa",
@@ -11362,36 +10899,16 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1940..1959; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1940..1959; flags Approximate."
     },
     {
-      "id": "yr-0750",
+      "id": "yr-0750", "status": "verified",
       "input": "Originally ca. 1829-33, this re-carved edition was made in 1924.",
       "tags": [
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1924","edtf":"1924","timespan":{"begin_of_the_begin":"1924-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0751",
@@ -11459,21 +10976,14 @@
       }
     },
     {
-      "id": "yr-0757",
+      "id": "yr-0757", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition published in early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838."
     },
     {
       "id": "yr-0758",
@@ -11527,7 +11037,7 @@
       }
     },
     {
-      "id": "yr-0761",
+      "id": "yr-0761", "status": "verified",
       "input": "Originally ca. 1829-33. This re-carved edition was made probably in early 20th century.",
       "tags": [
         "circa",
@@ -11535,17 +11045,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0762",
@@ -11630,7 +11130,7 @@
       }
     },
     {
-      "id": "yr-0768",
+      "id": "yr-0768", "status": "verified",
       "input": "Originally in Edo period (1603-1867), this is a re-carved edition printed in early 20th century.",
       "tags": [
         "range",
@@ -11639,14 +11139,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1867
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1867", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1867."
     },
     {
       "id": "yr-0769",
@@ -11695,35 +11188,21 @@
       "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0773",
+      "id": "yr-0773", "status": "verified",
       "input": "[between 1800 and 1830 printed between 1890 and 1930]",
       "tags": [
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1830
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1890/1930","edtf":"1890/1930","timespan":{"begin_of_the_begin":"1890-01-01T00:00:00Z","end_of_the_end":"1930-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1830", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1830."
     },
     {
-      "id": "yr-0774",
+      "id": "yr-0774", "status": "verified",
       "input": "Originally in 1801-03, this re-carved edition was made in 1972.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1801,
-          "end": 1803
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1972","edtf":"1972","timespan":{"begin_of_the_begin":"1972-01-01T00:00:00Z","end_of_the_end":"1972-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1801..1803", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1801..1803."
     },
     {
       "id": "yr-0775",
@@ -11771,43 +11250,33 @@
       "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0778",
+      "id": "yr-0778", "status": "verified",
       "input": "Originally in 1829-33, this one is re-carved edition in ca. 1970-80.",
       "tags": [
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1970~/1980~","edtf":"1970~/1980~","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1980-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
-      "id": "yr-0779",
+      "id": "yr-0779", "status": "verified",
       "input": "Originally in 1835-36. This re-carved edition was published probably in early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1835, "end": 1836}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1835..1836", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1835..1836."
     },
     {
-      "id": "yr-0780",
+      "id": "yr-0780", "status": "verified",
       "input": "Originally in 1829 - 1833. This re-carved edition was made probably in early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
       "id": "yr-0781",
@@ -11918,7 +11387,7 @@
       }
     },
     {
-      "id": "yr-0791",
+      "id": "yr-0791", "status": "verified",
       "input": "Originally ca. 1794-95. This edition was made probably in the early 20th century.",
       "tags": [
         "circa",
@@ -11926,17 +11395,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1794,
-          "end": 1795
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1794..1795; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1794..1795; flags Approximate."
     },
     {
       "id": "yr-0792",
@@ -12059,52 +11518,32 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0800",
+      "id": "yr-0800", "status": "verified",
       "input": "Originally around 1840s. This reproduction was made probably in the middle of 20th century.",
       "tags": [
         "decade",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1940..1959; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1940..1959; flags Approximate."
     },
     {
-      "id": "yr-0801",
+      "id": "yr-0801", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition was published probably in mid 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838."
     },
     {
-      "id": "yr-0802",
+      "id": "yr-0802", "status": "verified",
       "input": "Originally around 1834. This edition was made probably in the mid 20th century.",
       "tags": [
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1940..1959; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1940..1959; flags Approximate."
     },
     {
       "id": "yr-0803",
@@ -12157,40 +11596,30 @@
       }
     },
     {
-      "id": "yr-0806",
+      "id": "yr-0806", "status": "verified",
       "input": "Originally ca. 1834. This edition was made probably in 1930s.",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"193X?","edtf":"193X?","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1939-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1930..1939; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1930..1939; flags Approximate."
     },
     {
-      "id": "yr-0807",
+      "id": "yr-0807", "status": "verified",
       "input": "Originally published in 1829 - 33. This re-carved edition was published probably in 1930s.",
       "tags": [
         "range",
         "decade"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"193X?","edtf":"193X?","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1939-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
-      "id": "yr-0808",
+      "id": "yr-0808", "status": "verified",
       "input": "1831 - 34. This re-carved edition was made probably in 1845 - 50.",
       "tags": [
         "range"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1831, "end": 1834}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"1845?/1850?","edtf":"1845?/1850?","timespan":{"begin_of_the_begin":"1845-01-01T00:00:00Z","end_of_the_end":"1850-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1831..1834", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1831..1834."
     },
     {
       "id": "yr-0809",
@@ -12248,13 +11677,13 @@
       }
     },
     {
-      "id": "yr-0814",
+      "id": "yr-0814", "status": "verified",
       "input": "Originally 1832-33, this re-carved edition was made probably in 1950s.",
       "tags": [
         "range",
         "decade"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1832, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"195X?","edtf":"195X?","timespan":{"begin_of_the_begin":"1950-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1832..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1832..1833."
     },
     {
       "id": "yr-0815",
@@ -12272,7 +11701,7 @@
       }
     },
     {
-      "id": "yr-0816",
+      "id": "yr-0816", "status": "verified",
       "input": "Originally ca. 1829-33. This re-carved edition was made probably in the mid 20th century.",
       "tags": [
         "circa",
@@ -12280,17 +11709,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-0817",
@@ -12310,52 +11729,28 @@
       "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0819",
+      "id": "yr-0819", "status": "verified",
       "input": "Original published in Edo era, this edition was made in Meiji era.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
-      "id": "yr-0820",
+      "id": "yr-0820", "status": "verified",
       "input": "Originally in 1798, this is a re-carved edition was made in 1973.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1798,
-          "end": 1798
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1973","edtf":"1973","timespan":{"begin_of_the_begin":"1973-01-01T00:00:00Z","end_of_the_end":"1973-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1798..1798", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1798..1798."
     },
     {
-      "id": "yr-0821",
+      "id": "yr-0821", "status": "verified",
       "input": "1834-35. This edition was printed in Edo period ca. 1860.",
       "tags": [
         "circa",
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1835
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1860","edtf":"1860","timespan":{"begin_of_the_begin":"1860-01-01T00:00:00Z","end_of_the_end":"1860-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1835; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1835; flags Approximate."
     },
     {
       "id": "yr-0822",
@@ -12442,7 +11837,7 @@
       "expect": {"status": "parsed", "years": {"start": 1878, "end": 1878}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0829",
+      "id": "yr-0829", "status": "verified",
       "input": "Originally ca. 1794-95, this one was re-carved probably in mid 20th C.",
       "tags": [
         "circa",
@@ -12450,17 +11845,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1794,
-          "end": 1795
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1794..1795; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1794..1795; flags Approximate."
     },
     {
       "id": "yr-0830",
@@ -12495,22 +11880,12 @@
       }
     },
     {
-      "id": "yr-0832",
+      "id": "yr-0832", "status": "verified",
       "input": "Originally 1914 , this edition ca. 1980.",
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1914,
-          "end": 1914
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1980~","edtf":"1980~","timespan":{"begin_of_the_begin":"1980-01-01T00:00:00Z","end_of_the_end":"1980-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1914..1914; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1914..1914; flags Approximate."
     },
     {
       "id": "yr-0833",
@@ -12554,19 +11929,12 @@
       }
     },
     {
-      "id": "yr-0836",
+      "id": "yr-0836", "status": "verified",
       "input": "(original publishing date 1853).",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1853,
-          "end": 1853
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"../1853","edtf":"../1853","timespan":{"end_of_the_end":"1853-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1853..1853", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1853..1853."
     },
     {
       "id": "yr-0837",
@@ -12603,13 +11971,13 @@
       }
     },
     {
-      "id": "yr-0839",
+      "id": "yr-0839", "status": "verified",
       "input": "1886? (published 1892).",
       "tags": [
         "uncertain",
         "bracketed"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1886, "end": 1886}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"1892","edtf":"1892","timespan":{"begin_of_the_begin":"1892-01-01T00:00:00Z","end_of_the_end":"1892-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1886..1886", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1886..1886."
     },
     {
       "id": "yr-0840",
@@ -12700,35 +12068,21 @@
       "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0847",
+      "id": "yr-0847", "status": "verified",
       "input": "(originally in Edo, this book was printed later in Meiji era).",
       "tags": [
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late period:meiji","edtf":"1899/1912","timespan":{"begin_of_the_begin":"1899-01-01T00:00:00Z","end_of_the_end":"1912-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
-      "id": "yr-0848",
+      "id": "yr-0848", "status": "verified",
       "input": "(originally in Edo, this book was printed later in Meiji).",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late period:meiji","edtf":"1899/1912","timespan":{"begin_of_the_begin":"1899-01-01T00:00:00Z","end_of_the_end":"1912-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-0849",
@@ -12766,19 +12120,12 @@
       "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0852",
+      "id": "yr-0852", "status": "verified",
       "input": "Originally in 1929, this is a re-carved edition published in late Showa.",
       "tags": [
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1929,
-          "end": 1929
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late period:showa","edtf":"1970/1989","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1989-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1929..1929", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1929..1929."
     },
     {
       "id": "yr-0853",
@@ -12831,23 +12178,13 @@
       }
     },
     {
-      "id": "yr-0856",
+      "id": "yr-0856", "status": "verified",
       "input": "Originally ca. 1780s, this edition ca. 1804.",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1780,
-          "end": 1789
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1804~","edtf":"1804~","timespan":{"begin_of_the_begin":"1804-01-01T00:00:00Z","end_of_the_end":"1804-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1780..1789; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1780..1789; flags Approximate."
     },
     {
       "id": "yr-0857",
@@ -12896,14 +12233,14 @@
       }
     },
     {
-      "id": "yr-0861",
+      "id": "yr-0861", "status": "verified",
       "input": "Originally in 1829-33, this one is re-carved edition probably in mid 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
       "id": "yr-0862",
@@ -12941,13 +12278,13 @@
       }
     },
     {
-      "id": "yr-0865",
+      "id": "yr-0865", "status": "verified",
       "input": "Originally in 1829-33. This re-carved edition was made probably in 1960s.",
       "tags": [
         "range",
         "decade"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"196X?","edtf":"196X?","timespan":{"begin_of_the_begin":"1960-01-01T00:00:00Z","end_of_the_end":"1969-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
       "id": "yr-0866",
@@ -12988,14 +12325,14 @@
       }
     },
     {
-      "id": "yr-0869",
+      "id": "yr-0869", "status": "verified",
       "input": "Originally in 1856-58, this edition was made probably in early 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-0870",
@@ -13460,22 +12797,12 @@
       }
     },
     {
-      "id": "yr-0900",
+      "id": "yr-0900", "status": "verified",
       "input": "woodblock carved 1698, printed c. 1915",
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1698,
-          "end": 1698
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1915~","edtf":"1915~","timespan":{"begin_of_the_begin":"1915-01-01T00:00:00Z","end_of_the_end":"1915-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1698..1698; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1698..1698; flags Approximate."
     },
     {
       "id": "yr-0901",
@@ -13548,17 +12875,10 @@
       "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0906",
+      "id": "yr-0906", "status": "verified",
       "input": "1963; printed 1964",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1963,
-          "end": 1963
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1964","edtf":"1964","timespan":{"begin_of_the_begin":"1964-01-01T00:00:00Z","end_of_the_end":"1964-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1963..1963", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1963..1963."
     },
     {
       "id": "yr-0907",
@@ -13586,38 +12906,21 @@
       }
     },
     {
-      "id": "yr-0909",
+      "id": "yr-0909", "status": "verified",
       "input": "1938 (printed after water-colour in 1925)",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1938,
-          "end": 1938
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1925/1938","edtf":"1925/1938","timespan":{"begin_of_the_begin":"1925-01-01T00:00:00Z","end_of_the_end":"1938-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1938..1938", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1938..1938."
     },
     {
-      "id": "yr-0910",
+      "id": "yr-0910", "status": "verified",
       "input": "Originally in 1837-38, this was a re-carved edition in ca. 1900.",
       "tags": [
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838; flags Approximate."
     },
     {
       "id": "yr-0911",
@@ -13638,19 +12941,12 @@
       }
     },
     {
-      "id": "yr-0912",
+      "id": "yr-0912", "status": "verified",
       "input": "Originally in Edo period. This re-carved edition was made in Meiji period.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-0913",
@@ -13686,14 +12982,14 @@
       "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0916",
+      "id": "yr-0916", "status": "verified",
       "input": "Originally in 1829-33, this one is re-carved edition in the mid 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833."
     },
     {
       "id": "yr-0917",
@@ -14217,12 +13513,12 @@
       }
     },
     {
-      "id": "yr-0951",
+      "id": "yr-0951", "status": "verified",
       "input": "Originally in Edo era, this re-carved edition was made probably in Taisho era.",
       "tags": [
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:taisho?","edtf":"1912/1926","timespan":{"begin_of_the_begin":"1912-07-30T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-0952",
@@ -14338,14 +13634,14 @@
       "expect": {"status": "parsed", "years": {"start": 1786, "end": 1786}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0959",
+      "id": "yr-0959", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition published in early 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838."
     },
     {
       "id": "yr-0960",
@@ -14379,14 +13675,14 @@
       }
     },
     {
-      "id": "yr-0962",
+      "id": "yr-0962", "status": "verified",
       "input": "Originally in 1834-42, this re-carved edition was published in early 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1834, "end": 1842}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1842", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1842."
     },
     {
       "id": "yr-0963",
@@ -14529,7 +13825,7 @@
       }
     },
     {
-      "id": "yr-0973",
+      "id": "yr-0973", "status": "verified",
       "input": "Originally ca. 1834-42. This is a re-carved edition in early 20th C.",
       "tags": [
         "circa",
@@ -14537,17 +13833,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1842
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1842; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1842; flags Approximate."
     },
     {
       "id": "yr-0974",
@@ -14580,17 +13866,10 @@
       }
     },
     {
-      "id": "yr-0976",
+      "id": "yr-0976", "status": "verified",
       "input": "Originally in 1879. This re-carved edition was made in 1968.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1879,
-          "end": 1879
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1968","edtf":"1968","timespan":{"begin_of_the_begin":"1968-01-01T00:00:00Z","end_of_the_end":"1968-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1879..1879", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1879..1879."
     },
     {
       "id": "yr-0977",
@@ -14646,12 +13925,12 @@
       }
     },
     {
-      "id": "yr-0981",
+      "id": "yr-0981", "status": "verified",
       "input": "Original surimono in Edo era. This was probably later printing in Edo-Meiji era.",
       "tags": [
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:edo?/period:meiji","edtf":"1603?/1912","timespan":{"begin_of_the_begin":"1603-01-01T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-0982",
@@ -14870,14 +14149,14 @@
       }
     },
     {
-      "id": "yr-0995",
+      "id": "yr-0995", "status": "verified",
       "input": "Originally in 1831-32, this re-carved edition was published probably in mid 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1831, "end": 1832}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1831..1832", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1831..1832."
     },
     {
       "id": "yr-0996",
@@ -15436,20 +14715,13 @@
       }
     },
     {
-      "id": "yr-1034",
+      "id": "yr-1034", "status": "verified",
       "input": "The series was published originally in 1844-48. This edition was made in Meiji period.",
       "tags": [
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1844,
-          "end": 1848
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1844..1848", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1844..1848."
     },
     {
       "id": "yr-1035",
@@ -15467,32 +14739,18 @@
       }
     },
     {
-      "id": "yr-1036",
+      "id": "yr-1036", "status": "verified",
       "input": "Originally published in Edo era. This edition was made in Meiji period.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
-      "id": "yr-1037",
+      "id": "yr-1037", "status": "verified",
       "input": "Originally in 1864. This edition in 1866.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1864,
-          "end": 1864
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1866","edtf":"1866","timespan":{"begin_of_the_begin":"1866-01-01T00:00:00Z","end_of_the_end":"1866-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1864..1864", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1864..1864."
     },
     {
       "id": "yr-1038",
@@ -15525,17 +14783,10 @@
       }
     },
     {
-      "id": "yr-1040",
+      "id": "yr-1040", "status": "verified",
       "input": "Originally in 1865. This edition was published in 1881.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1865,
-          "end": 1865
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1881","edtf":"1881","timespan":{"begin_of_the_begin":"1881-01-01T00:00:00Z","end_of_the_end":"1881-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1865..1865", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1865..1865."
     },
     {
       "id": "yr-1041",
@@ -15687,12 +14938,12 @@
       "expect": {"status": "parsed", "years": {"start": 1600, "end": 1699}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1051",
+      "id": "yr-1051", "status": "verified",
       "input": "Originally in 1856-58, this is probably made in 1910-15.",
       "tags": [
         "range"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"1910?/1915?","edtf":"1910?/1915?","timespan":{"begin_of_the_begin":"1910-01-01T00:00:00Z","end_of_the_end":"1915-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-1052",
@@ -15883,19 +15134,12 @@
       }
     },
     {
-      "id": "yr-1064",
+      "id": "yr-1064", "status": "verified",
       "input": "Original paintings in Edo period, this album was made in Meiji era.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-1065",
@@ -16149,7 +15393,7 @@
       }
     },
     {
-      "id": "yr-1081",
+      "id": "yr-1081", "status": "verified",
       "input": "The series originally ca. 1830-1842. This edition was probably in early 20th C.",
       "tags": [
         "circa",
@@ -16157,17 +15401,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1830,
-          "end": 1842
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1830..1842; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1830..1842; flags Approximate."
     },
     {
       "id": "yr-1082",
@@ -16243,36 +15477,19 @@
       }
     },
     {
-      "id": "yr-1087",
+      "id": "yr-1087", "status": "verified",
       "input": "c. 1880 (Meiji reprint)",
       "tags": [
         "circa",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1880,
-          "end": 1880
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1880..1880; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1880..1880; flags Approximate."
     },
     {
-      "id": "yr-1088",
+      "id": "yr-1088", "status": "verified",
       "input": "Originally 1909. This one was printed in 1987.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1909,
-          "end": 1909
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1987","edtf":"1987","timespan":{"begin_of_the_begin":"1987-01-01T00:00:00Z","end_of_the_end":"1987-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1909..1909", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1909..1909."
     },
     {
       "id": "yr-1089",
@@ -16375,19 +15592,12 @@
       }
     },
     {
-      "id": "yr-1096",
+      "id": "yr-1096", "status": "verified",
       "input": "Originally compiled and published by Hoitsu in 1815 (Vol.1) and 1826 (Vol.2).",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1815,
-          "end": 1815
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1815/1826","edtf":"1815/1826","timespan":{"begin_of_the_begin":"1815-01-01T00:00:00Z","end_of_the_end":"1826-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1815..1815", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1815..1815."
     },
     {
       "id": "yr-1097",
@@ -16509,17 +15719,10 @@
       }
     },
     {
-      "id": "yr-1105",
+      "id": "yr-1105", "status": "verified",
       "input": "Originally in 1796, this was re-carved edition in 1955.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1796,
-          "end": 1796
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1955","edtf":"1955","timespan":{"begin_of_the_begin":"1955-01-01T00:00:00Z","end_of_the_end":"1955-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1796..1796", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1796..1796."
     },
     {
       "id": "yr-1106",
@@ -16788,22 +15991,12 @@
       }
     },
     {
-      "id": "yr-1124",
+      "id": "yr-1124", "status": "verified",
       "input": "Originally in ca. 1831, this was re-carved edition in 1955.",
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1831,
-          "end": 1831
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1955","edtf":"1955","timespan":{"begin_of_the_begin":"1955-01-01T00:00:00Z","end_of_the_end":"1955-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1831..1831; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1831..1831; flags Approximate."
     },
     {
       "id": "yr-1125",
@@ -16925,23 +16118,13 @@
       }
     },
     {
-      "id": "yr-1133",
+      "id": "yr-1133", "status": "verified",
       "input": "Originally 1767 in Edo period. This is a re-carved edition made in ca.1900.",
       "tags": [
         "circa",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1767,
-          "end": 1767
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1767..1767; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1767..1767; flags Approximate."
     },
     {
       "id": "yr-1134",
@@ -17028,24 +16211,14 @@
       }
     },
     {
-      "id": "yr-1139",
+      "id": "yr-1139", "status": "verified",
       "input": "Original album was published ca. 1899. This one in late 20th C.",
       "tags": [
         "circa",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1975..1999; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1975..1999; flags Approximate."
     },
     {
       "id": "yr-1140",
@@ -17222,21 +16395,14 @@
       }
     },
     {
-      "id": "yr-1152",
+      "id": "yr-1152", "status": "verified",
       "input": "Originally 1832-33, this was re-carved in early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1832,
-          "end": 1833
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1832..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1832..1833."
     },
     {
       "id": "yr-1153",
@@ -17543,14 +16709,14 @@
       }
     },
     {
-      "id": "yr-1176",
+      "id": "yr-1176", "status": "verified",
       "input": "Originally in 1801-03, this re-carved edition was made probably in early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1801, "end": 1803}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1801..1803", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1801..1803."
     },
     {
       "id": "yr-1177",
@@ -17696,21 +16862,14 @@
       }
     },
     {
-      "id": "yr-1187",
+      "id": "yr-1187", "status": "verified",
       "input": "Originally in Edo era. This Meiji A-Copy surimono was made in early 1890s.",
       "tags": [
         "decade",
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1892
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1890..1892", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1890..1892."
     },
     {
       "id": "yr-1188",
@@ -17835,29 +16994,22 @@
       }
     },
     {
-      "id": "yr-1196",
+      "id": "yr-1196", "status": "verified",
       "input": "Originally in 1837-38, this is a re-carved edition made probably in early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838."
     },
     {
-      "id": "yr-1197",
+      "id": "yr-1197", "status": "verified",
       "input": "Original published in 1857, this edition published in Meiji era by Uoei.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1857,
-          "end": 1857
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1857..1857", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1857..1857."
     },
     {
       "id": "yr-1198",
@@ -17876,19 +17028,12 @@
       }
     },
     {
-      "id": "yr-1199",
+      "id": "yr-1199", "status": "verified",
       "input": "Originally in 1855, this re-carved edition was made in Meiji era by Uoei.",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1855,
-          "end": 1855
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1855..1855", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1855..1855."
     },
     {
       "id": "yr-1200",
@@ -17910,7 +17055,7 @@
       }
     },
     {
-      "id": "yr-1201",
+      "id": "yr-1201", "status": "verified",
       "input": "Originally in Edo period (1603-1867), this is a re-carved edition in late 20th C.",
       "tags": [
         "range",
@@ -17919,7 +17064,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1867}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1867", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1867."
     },
     {
       "id": "yr-1202",
@@ -17937,24 +17082,14 @@
       }
     },
     {
-      "id": "yr-1203",
+      "id": "yr-1203", "status": "verified",
       "input": "[ca. 1700, printed between 1868 and 1900]",
       "tags": [
         "circa",
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1900
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1868/1900","edtf":"1868/1900","timespan":{"begin_of_the_begin":"1868-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1868..1900; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1868..1900; flags Approximate."
     },
     {
       "id": "yr-1204",
@@ -17973,7 +17108,7 @@
       }
     },
     {
-      "id": "yr-1205",
+      "id": "yr-1205", "status": "verified",
       "input": "Originally in Edo period (1603-1867), this is a re-carved edition in 20th C.",
       "tags": [
         "range",
@@ -17981,7 +17116,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1867}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20","edtf":"1900/1999","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1867", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1867."
     },
     {
       "id": "yr-1206",
@@ -18049,24 +17184,14 @@
       }
     },
     {
-      "id": "yr-1210",
+      "id": "yr-1210", "status": "verified",
       "input": "Originally ca. 1829-33, this one was published probably in 20th century.",
       "tags": [
         "circa",
         "range",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20?","edtf":"1900/1999","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-1211",
@@ -18167,7 +17292,7 @@
       }
     },
     {
-      "id": "yr-1217",
+      "id": "yr-1217", "status": "verified",
       "input": "Originally in Edo period (1603-1867), this is a re-carved edition made in 20th century.",
       "tags": [
         "range",
@@ -18175,14 +17300,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1867
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20","edtf":"1900/1999","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1867", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1867."
     },
     {
       "id": "yr-1218",
@@ -18961,7 +18079,7 @@
       }
     },
     {
-      "id": "yr-1273",
+      "id": "yr-1273", "status": "verified",
       "input": "Originally in Edo period (1603-1867), this is a re-carved edition in 20th century.",
       "tags": [
         "range",
@@ -18969,14 +18087,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1867
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20","edtf":"1900/1999","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1867", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1867."
     },
     {
       "id": "yr-1274",
@@ -19361,23 +18472,13 @@
       }
     },
     {
-      "id": "yr-1299",
+      "id": "yr-1299", "status": "verified",
       "input": "Original sumi-painting made in ca. 1640s. Date of this Woodblock print was probably in 1970s.",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1640,
-          "end": 1649
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"197X?","edtf":"197X?","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1979-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1640..1649; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1640..1649; flags Approximate."
     },
     {
       "id": "yr-1300",
@@ -19409,29 +18510,22 @@
       }
     },
     {
-      "id": "yr-1302",
+      "id": "yr-1302", "status": "verified",
       "input": "The series of 25 volumes which was published during 1890-94. This one was published in 1891.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1894
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1891","edtf":"1891","timespan":{"begin_of_the_begin":"1891-01-01T00:00:00Z","end_of_the_end":"1891-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1890..1894", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1890..1894."
     },
     {
-      "id": "yr-1303",
+      "id": "yr-1303", "status": "verified",
       "input": "Originally in 1856-58, this was made probably in mid 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 20?","edtf":"1940/1959","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1959-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-1304",
@@ -19533,24 +18627,14 @@
       }
     },
     {
-      "id": "yr-1311",
+      "id": "yr-1311", "status": "verified",
       "input": "Originally in ca.1834-35, this is a re-carved edition made in probably 1930s.",
       "tags": [
         "circa",
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1835
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"193X?","edtf":"193X?","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1939-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1835; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1835; flags Approximate."
     },
     {
       "id": "yr-1312",
@@ -19568,24 +18652,14 @@
       }
     },
     {
-      "id": "yr-1313",
+      "id": "yr-1313", "status": "verified",
       "input": "Originally ca. 1833, this is a re-carved edition probably in late 20th century.",
       "tags": [
         "circa",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20?","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1975..1999; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1975..1999; flags Approximate."
     },
     {
       "id": "yr-1314",
@@ -19621,24 +18695,14 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1317",
+      "id": "yr-1317", "status": "verified",
       "input": "Originally in ca. 1832, this one is a re-carved edition probably made in early 20th C.",
       "tags": [
         "circa",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924; flags Approximate."
     },
     {
       "id": "yr-1318",
@@ -19772,7 +18836,7 @@
       }
     },
     {
-      "id": "yr-1327",
+      "id": "yr-1327", "status": "verified",
       "input": "Originally ca. 1834-42. This is a re-carved edition made probably in early 20th century.",
       "tags": [
         "circa",
@@ -19780,37 +18844,27 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1842
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1842; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1842; flags Approximate."
     },
     {
-      "id": "yr-1328",
+      "id": "yr-1328", "status": "verified",
       "input": "Originally in 1856-58, this was made probably in early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
-      "id": "yr-1329",
+      "id": "yr-1329", "status": "verified",
       "input": "Originally in 1834-42, this edition was probably made in the early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1834, "end": 1842}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1842", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1842."
     },
     {
       "id": "yr-1330",
@@ -19846,24 +18900,14 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1333",
+      "id": "yr-1333", "status": "verified",
       "input": "Originally in ca. 1835, this re-carved edition was made probably in early 20th century.",
       "tags": [
         "circa",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924; flags Approximate."
     },
     {
       "id": "yr-1334",
@@ -20068,20 +19112,13 @@
       }
     },
     {
-      "id": "yr-1346",
+      "id": "yr-1346", "status": "verified",
       "input": "Originally in 1930-31, this one is re-carved edition in 1970s.",
       "tags": [
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1931
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"197X","edtf":"197X","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1979-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1930..1931", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1930..1931."
     },
     {
       "id": "yr-1347",
@@ -20226,27 +19263,17 @@
       }
     },
     {
-      "id": "yr-1355",
+      "id": "yr-1355", "status": "verified",
       "input": "Originally in 1801-03, this re-carved edition was published in ca. 1970s.",
       "tags": [
         "circa",
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1801,
-          "end": 1803
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"197X~","edtf":"197X~","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1979-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1801..1803; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1801..1803; flags Approximate."
     },
     {
-      "id": "yr-1356",
+      "id": "yr-1356", "status": "verified",
       "input": "Originally ca. 1690s. This woodblock print was made probably in early 20th century.",
       "tags": [
         "circa",
@@ -20254,17 +19281,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924; flags Approximate."
     },
     {
       "id": "yr-1357",
@@ -20277,19 +19294,12 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1358",
+      "id": "yr-1358", "status": "verified",
       "input": "Originally 1832-33, this re-carved edition was made in 1919.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1832,
-          "end": 1833
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1919","edtf":"1919","timespan":{"begin_of_the_begin":"1919-01-01T00:00:00Z","end_of_the_end":"1919-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1832..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1832..1833."
     },
     {
       "id": "yr-1359",
@@ -20430,12 +19440,12 @@
       }
     },
     {
-      "id": "yr-1370",
+      "id": "yr-1370", "status": "verified",
       "input": "Originally in Edo era. This album edition was made probably in Meiji era.",
       "tags": [
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji?","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-1371",
@@ -20470,19 +19480,12 @@
       }
     },
     {
-      "id": "yr-1373",
+      "id": "yr-1373", "status": "verified",
       "input": "Originally 1832-33. This edition was made in 1919.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1832,
-          "end": 1833
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1919","edtf":"1919","timespan":{"begin_of_the_begin":"1919-01-01T00:00:00Z","end_of_the_end":"1919-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1832..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1832..1833."
     },
     {
       "id": "yr-1374",
@@ -20874,14 +19877,14 @@
       }
     },
     {
-      "id": "yr-1402",
+      "id": "yr-1402", "status": "verified",
       "input": "Originally published in 1833/1834. This edition was published probably in the early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1833, "end": 1834}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1833..1834", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1833..1834."
     },
     {
       "id": "yr-1403",
@@ -20961,7 +19964,7 @@
       "expect": {"status": "parsed", "years": {"start": 1920, "end": 1939}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1408",
+      "id": "yr-1408", "status": "verified",
       "input": "Originally in ca. 1800s. This re-carved edition was made probably in the early 20th century.",
       "tags": [
         "circa",
@@ -20969,20 +19972,10 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924; flags Approximate."
     },
     {
-      "id": "yr-1409",
+      "id": "yr-1409", "status": "verified",
       "input": "Originally in ca. 1790-1800. This re-carved edition was made probably in the early 20th century.",
       "tags": [
         "circa",
@@ -20990,27 +19983,17 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1790,
-          "end": 1800
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1790..1800; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1790..1800; flags Approximate."
     },
     {
-      "id": "yr-1410",
+      "id": "yr-1410", "status": "verified",
       "input": "Originally published in 1833/1834. This edition was published probably in early 20th century.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1833, "end": 1834}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1833..1834", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1833..1834."
     },
     {
       "id": "yr-1411",
@@ -21099,14 +20082,14 @@
       }
     },
     {
-      "id": "yr-1417",
+      "id": "yr-1417", "status": "verified",
       "input": "Originally in 1856-58, this is probably in early 20th C.",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
       "id": "yr-1418",
@@ -21203,19 +20186,12 @@
       }
     },
     {
-      "id": "yr-1425",
+      "id": "yr-1425", "status": "verified",
       "input": "Originally published in 1849-53. This is a later edition in 1874.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1849,
-          "end": 1853
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1874","edtf":"1874","timespan":{"begin_of_the_begin":"1874-01-01T00:00:00Z","end_of_the_end":"1874-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1849..1853", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1849..1853."
     },
     {
       "id": "yr-1426",
@@ -21308,20 +20284,13 @@
       }
     },
     {
-      "id": "yr-1433",
+      "id": "yr-1433", "status": "verified",
       "input": "1830\u0027s (Meiji printing)",
       "tags": [
         "decade",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1830,
-          "end": 1839
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1830..1839", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1830..1839."
     },
     {
       "id": "yr-1434",
@@ -21395,17 +20364,10 @@
       }
     },
     {
-      "id": "yr-1438",
+      "id": "yr-1438", "status": "verified",
       "input": "Original kuchi-e in 1913. This re-carved edition was made in 1975.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1913,
-          "end": 1913
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1975","edtf":"1975","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1975-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1913..1913", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1913..1913."
     },
     {
       "id": "yr-1439",
@@ -21423,19 +20385,12 @@
       }
     },
     {
-      "id": "yr-1440",
+      "id": "yr-1440", "status": "verified",
       "input": "Original series in 1928-43 to 1948 after the war. Second series in 1954-58.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1928,
-          "end": 1943
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1948","edtf":"1948","timespan":{"begin_of_the_begin":"1948-01-01T00:00:00Z","end_of_the_end":"1948-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1928..1943", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1928..1943."
     },
     {
       "id": "yr-1441",
@@ -21458,12 +20413,12 @@
       }
     },
     {
-      "id": "yr-1442",
+      "id": "yr-1442", "status": "verified",
       "input": "Original paintings were done in Edo era. This woodblock version was made probably in Meiji period.",
       "tags": [
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji?","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-1443",
@@ -21538,21 +20493,14 @@
       }
     },
     {
-      "id": "yr-1448",
+      "id": "yr-1448", "status": "verified",
       "input": "Not dated (1930), printed 1937-1965)",
       "tags": [
         "range",
         "bracketed",
         "undated"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1937,
-          "end": 1965
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1930/1965","edtf":"1930/1965","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1965-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1937..1965", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1937..1965."
     },
     {
       "id": "yr-1449",
@@ -21706,24 +20654,14 @@
       }
     },
     {
-      "id": "yr-1459",
+      "id": "yr-1459", "status": "verified",
       "input": "Originally in ca. 1835. This a re-carved edition that was made probably in early 20th century.",
       "tags": [
         "circa",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924; flags Approximate."
     },
     {
       "id": "yr-1460",
@@ -21887,35 +20825,21 @@
       }
     },
     {
-      "id": "yr-1470",
+      "id": "yr-1470", "status": "verified",
       "input": "Original was made in 1834-5. This edition was published in 1980s.",
       "tags": [
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1835
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"198X","edtf":"198X","timespan":{"begin_of_the_begin":"1980-01-01T00:00:00Z","end_of_the_end":"1989-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1835", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1835."
     },
     {
-      "id": "yr-1471",
+      "id": "yr-1471", "status": "verified",
       "input": "Originally published in 1934-35. This re-carved edition was published in 1980.",
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1934,
-          "end": 1935
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1980","edtf":"1980","timespan":{"begin_of_the_begin":"1980-01-01T00:00:00Z","end_of_the_end":"1980-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1934..1935", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1934..1935."
     },
     {
       "id": "yr-1472",
@@ -21987,23 +20911,13 @@
       }
     },
     {
-      "id": "yr-1476",
+      "id": "yr-1476", "status": "verified",
       "input": "Originally in ca. 1830s, this one is re-carved probably in 1910s.",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1830,
-          "end": 1839
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"191X?","edtf":"191X?","timespan":{"begin_of_the_begin":"1910-01-01T00:00:00Z","end_of_the_end":"1919-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1830..1839; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1830..1839; flags Approximate."
     },
     {
       "id": "yr-1477",
@@ -22119,35 +21033,21 @@
       "expect": {"status": "parsed", "years": {"start": 1923, "end": 1932}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1484",
+      "id": "yr-1484", "status": "verified",
       "input": "Originally in 1830-40s. This is a Meiji B-copy published in Meiji era.",
       "tags": [
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1830,
-          "end": 1849
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1830..1849", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1830..1849."
     },
     {
-      "id": "yr-1485",
+      "id": "yr-1485", "status": "verified",
       "input": "1901 (Meiji printing)",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1901,
-          "end": 1901
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1901..1901", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1901..1901."
     },
     {
       "id": "yr-1486",
@@ -22307,19 +21207,12 @@
       }
     },
     {
-      "id": "yr-1496",
+      "id": "yr-1496", "status": "verified",
       "input": "1933 (printing after 1945)",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1933,
-          "end": 1933
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1933/1945","edtf":"1933/1945","timespan":{"begin_of_the_begin":"1933-01-01T00:00:00Z","end_of_the_end":"1945-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1933..1933", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1933..1933."
     },
     {
       "id": "yr-1497",
@@ -22435,23 +21328,13 @@
       }
     },
     {
-      "id": "yr-1504",
+      "id": "yr-1504", "status": "verified",
       "input": "Original circa 1800, reproduction 1940-60\u0027s",
       "tags": [
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1969
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1940/196X","edtf":"1940/196X","timespan":{"begin_of_the_begin":"1940-01-01T00:00:00Z","end_of_the_end":"1969-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1940..1969; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1940..1969; flags Approximate."
     },
     {
       "id": "yr-1505",
@@ -22629,19 +21512,12 @@
       }
     },
     {
-      "id": "yr-1516",
+      "id": "yr-1516", "status": "verified",
       "input": "Originally in 1930s, this re-carved edition was made in 1980s.",
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"198X","edtf":"198X","timespan":{"begin_of_the_begin":"1980-01-01T00:00:00Z","end_of_the_end":"1989-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1930..1939", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1930..1939."
     },
     {
       "id": "yr-1517",
@@ -22801,24 +21677,14 @@
       "expect": {"status": "parsed", "years": {"start": 1800, "end": 1824}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1528",
+      "id": "yr-1528", "status": "verified",
       "input": "Originally ca. 1829-33, this one was re-carved in probably in 1930\u0027s.",
       "tags": [
         "circa",
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"193X?","edtf":"193X?","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1939-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
       "id": "yr-1529",
@@ -22909,24 +21775,14 @@
       }
     },
     {
-      "id": "yr-1535",
+      "id": "yr-1535", "status": "verified",
       "input": "1857, this one is published ca. early Meiji period.",
       "tags": [
         "circa",
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1857,
-          "end": 1857
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early period:meiji~","edtf":"1868/1880","timespan":{"begin_of_the_begin":"1868-01-01T00:00:00Z","end_of_the_end":"1880-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1857..1857; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1857..1857; flags Approximate."
     },
     {
       "id": "yr-1536",

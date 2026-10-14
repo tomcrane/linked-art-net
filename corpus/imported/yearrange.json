@@ -1422,20 +1422,13 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0091",
+      "id": "yr-0091", "status": "verified",
       "input": "Japanese, Sh\u00F4wa era, 20th century",
       "tags": [
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:showa","edtf":"1926/1989","timespan":{"begin_of_the_begin":"1926-12-25T00:00:00Z","end_of_the_end":"1989-01-07T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0092",
@@ -2277,20 +2270,13 @@
       "expect": {"status": "parsed", "years": {"start": 1833, "end": 1834}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0148",
+      "id": "yr-0148", "status": "verified",
       "input": "Japanese, Edo period, 19th century",
       "tags": [
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 19/period:edo","edtf":"1800/1868","timespan":{"begin_of_the_begin":"1800-01-01T00:00:00Z","end_of_the_end":"1868-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899."
     },
     {
       "id": "yr-0149",
@@ -2865,20 +2851,13 @@
       }
     },
     {
-      "id": "yr-0188",
+      "id": "yr-0188", "status": "verified",
       "input": "Japanese, Taish\u00F4 era, 20th century",
       "tags": [
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:taisho","edtf":"1912/1926","timespan":{"begin_of_the_begin":"1912-07-30T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0189",
@@ -3973,20 +3952,13 @@
       }
     },
     {
-      "id": "yr-0260",
+      "id": "yr-0260", "status": "verified",
       "input": "Japanese, Taish\u00F4 era\u2013Sh\u00F4wa era, 20th century",
       "tags": [
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:taisho/period:showa","edtf":"1912/1989","timespan":{"begin_of_the_begin":"1912-07-30T00:00:00Z","end_of_the_end":"1989-01-07T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0261",
@@ -4023,20 +3995,13 @@
       }
     },
     {
-      "id": "yr-0263",
+      "id": "yr-0263", "status": "verified",
       "input": "Japanese, Meiji era, beginning of 20th century",
       "tags": [
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"beginning century 20","edtf":"1900/1909","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1909-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924."
     },
     {
       "id": "yr-0264", "status": "verified",
@@ -7807,20 +7772,13 @@
       }
     },
     {
-      "id": "yr-0532",
+      "id": "yr-0532", "status": "verified",
       "input": "Japanese, Meiji era, 20th century",
       "tags": [
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20/period:meiji","edtf":"1900/1912","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0533",
@@ -7832,20 +7790,13 @@
       "expect": {"status": "parsed", "years": {"start": 1930, "end": 1939}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0534",
+      "id": "yr-0534", "status": "verified",
       "input": "Japanese, Meiji era\u2013Taish\u00F4 era, 20th century",
       "tags": [
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 20/period:taisho","edtf":"1900/1926","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0535",
@@ -21630,14 +21581,14 @@
       }
     },
     {
-      "id": "yr-1525",
+      "id": "yr-1525", "status": "verified",
       "input": "Japanese, Taish\u00F4 era?, 20th century",
       "tags": [
         "uncertain",
         "century",
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1999}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:taisho?","edtf":"1912/1926","timespan":{"begin_of_the_begin":"1912-07-30T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-1526",
@@ -21708,21 +21659,14 @@
       }
     },
     {
-      "id": "yr-1531",
+      "id": "yr-1531", "status": "verified",
       "input": "Japanese, Meiji era, early 20th century",
       "tags": [
         "century",
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20/period:meiji","edtf":"1900/1912","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924."
     },
     {
       "id": "yr-1532",

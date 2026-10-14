@@ -73,7 +73,7 @@ public class IndexModel(TrainerStore store, Trainer trainer, GitHubSubmitter git
         var reviewers = string.Join(", ", pending.Select(s => s.Reviewer).Distinct());
         var title = $"Corpus: {pending.Count} proposed entr{(pending.Count == 1 ? "y" : "ies")} from the trainer";
         var body = $"{pending.Count} date string{(pending.Count == 1 ? "" : "s")} reviewed in the examples-site trainer by {reviewers}.\n\n" +
-                   "Entries are `proposed`; a maintainer verifies them by running `dotnet run --project tools/Corpus -- run --all` and changing the status.\n\n" +
+                   $"Entries are `proposed`; a maintainer verifies them with `dotnet run --project tools/Corpus -- promote corpus/proposed/{name}` (`--dry-run` shows the evaluation first).\n\n" +
                    string.Join("\n", pending.Select(s => $"- `{s.Entry.Input}` → {s.Entry.Expect.Status}{(s.Entry.Expect.Canonical is null ? "" : $" `{s.Entry.Expect.Canonical}`")}"));
         try
         {

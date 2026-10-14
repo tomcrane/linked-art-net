@@ -65,7 +65,8 @@ silent.
 
 `proposed` (from the trainer or an import) -> `verified` (a human has checked it; CI enforces) ->
 `disputed` (two reviewers disagree; excluded from pass/fail, listed in reports). Imports arrive as
-`proposed` and are reviewed in batches via the trainer's "review import" mode.
+`proposed` and are reviewed by editing their files; the planned trainer "review import" mode is not built.
+The end-to-end operating guide is [08-corpus-contributions.md](08-corpus-contributions.md).
 
 ### 1.5 Metrics (reported by `tools/Corpus run`)
 
@@ -81,8 +82,9 @@ silent.
 Described in [05-examples-site.md](05-examples-site.md) §1. Key behaviours: shows the parser's
 current answer and alternatives; reviewer edits the **canonical expression**, not datetimes, and sees
 the re-realised spans instantly; tags are suggested from flags; submissions open a PR with the new
-`proposed/*.json` entries. A CLI (`tools/Corpus import|validate|run|promote|stats`) covers the same
-operations headlessly.
+`proposed/*.json` entries. The CLI (`tools/Corpus import|validate|run|promote|stats`) covers the same operations
+headlessly; `promote` flips statuses in place and refuses a failing entry (see
+[08-corpus-contributions.md](08-corpus-contributions.md) §5).
 
 ## 2. Testing strategy (whole repo)
 

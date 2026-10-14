@@ -3,6 +3,8 @@
 //   dotnet run --project tools/Corpus -- validate            schema, unique ids, parseable canonical strings, ordered bounds, known flags
 //   dotnet run --project tools/Corpus -- run [--all|--status verified|proposed] [--write]   evaluate; --write updates corpus/report.md and report.json
 //   dotnet run --project tools/Corpus -- stats               counts by file, status and tag
+//   dotnet run --project tools/Corpus -- promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]
+//                                                           set entry statuses in place (whole file when no ids); verified refuses failing entries; refreshes the report
 //   dotnet run --project tools/Corpus -- import yearrange <date-tests.json> | import timetwister <dates_spec.rb> | import getty <dir of ulan-*.json>
 //                                                           write corpus/imported/<source>.json (proposed; see THIRD-PARTY-NOTICES.md)
 //
@@ -22,6 +24,7 @@ var schemaPath = Path.Combine(corpusRoot, "schema", "corpus-entry.schema.json");
 if (command == "tokens") return Tokens(args.Length > 2 ? args[1] : "default", args.Length > 2 ? args[2] : args.Length > 1 ? args[1] : "");
 if (command == "advise") return Advise(args.Length > 1 ? args[1] : throw new ArgumentException("advise needs a file of strings, one per line"));
 if (command == "import") return await Importers.Run(args.Length > 1 ? args[1] : "", args.Length > 2 ? args[2] : null, corpusRoot);
+if (command == "promote") return Promote(args.Skip(1).ToArray());
 
 return command switch
 {
@@ -33,7 +36,7 @@ return command switch
 
 static int Usage()
 {
-    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
+    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
     return 2;
 }
 
@@ -101,6 +104,41 @@ int Run(EntryStatus? status, bool write)
         Console.WriteLine("-> corpus/report.md, corpus/report.json");
     }
     return results.Any(r => !r.Passed && r.Entry.Status == EntryStatus.Verified) ? 1 : 0;
+}
+
+int Promote(string[] rest)
+{
+    if (rest.Length == 0 || rest[0].StartsWith("--")) { Console.Error.WriteLine("promote needs a corpus file: promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]"); return 2; }
+    var to = EntryStatus.Verified;
+    var toIndex = Array.IndexOf(rest, "--to");
+    if (toIndex >= 0 && !(toIndex + 1 < rest.Length && Enum.TryParse(rest[toIndex + 1], true, out to))) { Console.Error.WriteLine("--to needs verified, disputed or proposed"); return 2; }
+    var dryRun = rest.Contains("--dry-run");
+    var ids = rest.Skip(1).Where((a, i) => !a.StartsWith("--") && i + 1 != toIndex + 1).ToList();
+    var given = rest[0];
+    var path = new[] { given, Path.Combine(corpusRoot, given), Path.Combine(repoRoot, given) }.FirstOrDefault(File.Exists);
+    if (path is null) { Console.Error.WriteLine($"No such corpus file: {given}"); return 2; }
+
+    var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
+    var outcome = CorpusPromotion.Promote(path, ids.Count == 0 ? null : ids, to, new CorpusEvaluator(catalog.Get), dryRun);
+    var relative = Path.GetRelativePath(corpusRoot, path).Replace(Path.DirectorySeparatorChar, '/');
+    foreach (var f in outcome.Failures)
+    {
+        Console.WriteLine($"FAIL {f.Entry.Id} \"{f.Entry.Input}\" -> {f.Result.Canonical ?? f.Result.Status.ToString()}");
+        foreach (var reason in f.Failures) Console.WriteLine("     " + reason);
+    }
+    if (!outcome.Applied)
+    {
+        Console.WriteLine($"Not promoted: {outcome.Failures.Count} of the entries fail. Fix the expectation or mark them disputed (--to disputed).");
+        return 1;
+    }
+    var status = to.ToString().ToLowerInvariant();
+    if (outcome.Changed.Count == 0) { Console.WriteLine($"{relative}: nothing to do, {outcome.Unchanged.Count} entries already {status}."); return 0; }
+    Console.WriteLine($"{(dryRun ? "Would set" : "Set")} {outcome.Changed.Count} entries to {status} in {relative}" +
+                      (outcome.Unchanged.Count > 0 ? $" ({outcome.Unchanged.Count} already were)" : "") + ":");
+    foreach (var id in outcome.Changed) Console.WriteLine("  " + id);
+    if (dryRun) return 0;
+    Console.WriteLine();
+    return Run(null, true);
 }
 
 int Tokens(string profileName, string text)

@@ -5,7 +5,7 @@
     "licence": "repo",
     "notes": "The 91 distinct TimeSpan _label strings found in the committed PmcTransformer outputs on the pmc-2 branch (library <year> and archive <Date> fields). Expectations derived by hand under the default profile; the old parser got several of these wrong (off-by-one range ends, lost decades, timezone leaks), so they are not copied from it."
   },
-  "defaults": { "intent": "single", "profile": "default", "status": "proposed", "tags": ["pmc"] },
+  "defaults": { "intent": "single", "profile": "default", "status": "verified", "tags": ["pmc"] },
   "entries": [
     { "id": "pmc-001", "status": "verified", "input": "2019", "tags": ["year"],
       "expect": { "status": "parsed", "canonical": "2019", "edtf": "2019",

@@ -2530,19 +2530,12 @@
       "expect": {"status":"parsed","kind":"single","canonical":"1900~","edtf":"1900~","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1837..1838; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1837..1838; flags Approximate."
     },
     {
-      "id": "yr-0168",
+      "id": "yr-0168", "status": "verified",
       "input": "1847 (1852)",
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1847,
-          "end": 1847
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1847/1852","edtf":"1847/1852","timespan":{"begin_of_the_begin":"1847-01-01T00:00:00Z","end_of_the_end":"1852-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1847..1847", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1847..1847."
     },
     {
       "id": "yr-0169",
@@ -7256,20 +7249,13 @@
       "expect": {"status": "parsed", "years": {"start": 1757, "end": 1759}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0504",
+      "id": "yr-0504", "status": "verified",
       "input": "1806 or early 1801-02",
       "tags": [
         "range",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1801,
-          "end": 1802
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1806,early 1801/1802]","edtf":"1801/1806","timespan":{"begin_of_the_begin":"1801-01-01T00:00:00Z","end_of_the_end":"1806-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1801..1802", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1801..1802."
     },
     {
       "id": "yr-0505",
@@ -8014,23 +8000,13 @@
       }
     },
     {
-      "id": "yr-0558",
+      "id": "yr-0558", "status": "verified",
       "input": "Original series in ca. 1834. This is re-carved edition in March 1951.",
       "tags": [
         "circa",
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1834
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1951-03","edtf":"1951-03","timespan":{"begin_of_the_begin":"1951-03-01T00:00:00Z","end_of_the_end":"1951-03-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1834..1834; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1834..1834; flags Approximate."
     },
     {
       "id": "yr-0559",
@@ -8161,19 +8137,12 @@
       }
     },
     {
-      "id": "yr-0569",
+      "id": "yr-0569", "status": "verified",
       "input": "December 1743 or January 1744",
       "tags": [
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1743,
-          "end": 1743
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1743-12,1744-01]","edtf":"[1743-12,1744-01]","timespan":{"begin_of_the_begin":"1743-12-01T00:00:00Z","end_of_the_end":"1744-01-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1743..1743", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1743..1743."
     },
     {
       "id": "yr-0570",
@@ -9589,20 +9558,13 @@
       }
     },
     {
-      "id": "yr-0673",
+      "id": "yr-0673", "status": "verified",
       "input": "1936 (early post-1945 printing)",
       "tags": [
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1936,
-          "end": 1936
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"after 1945","edtf":"1946/..","timespan":{"begin_of_the_begin":"1946-01-01T00:00:00Z"}}, "sourceExpectation": "status parsed; years 1936..1936", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1936..1936."
     },
     {
       "id": "yr-0674",
@@ -9624,19 +9586,12 @@
       }
     },
     {
-      "id": "yr-0675",
+      "id": "yr-0675", "status": "verified",
       "input": "winter 1883",
       "tags": [
         "season"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1883,
-          "end": 1883
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1883-24","edtf":"1883-24","timespan":{"begin_of_the_begin":"1883-12-01T00:00:00Z","end_of_the_end":"1884-02-29T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1883..1883", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1883..1883."
     },
     {
       "id": "yr-0676", "status": "verified",
@@ -14213,19 +14168,12 @@
       }
     },
     {
-      "id": "yr-1022",
+      "id": "yr-1022", "status": "verified",
       "input": "Heisei period, 1989-present",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1989,
-          "end": 2024
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1989/..","edtf":"1989/..","timespan":{"begin_of_the_begin":"1989-01-01T00:00:00Z"}}, "sourceExpectation": "status parsed; years 1989..2024", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1989..2024."
     },
     {
       "id": "yr-1023",
@@ -14549,19 +14497,12 @@
       }
     },
     {
-      "id": "yr-1047",
+      "id": "yr-1047", "status": "verified",
       "input": "1680s or 1690s",
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1680,
-          "end": 1689
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[168X,169X]","edtf":"[168X,169X]","timespan":{"begin_of_the_begin":"1680-01-01T00:00:00Z","end_of_the_end":"1699-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1680..1689", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1680..1689."
     },
     {
       "id": "yr-1048",
@@ -17783,19 +17724,12 @@
       }
     },
     {
-      "id": "yr-1277",
+      "id": "yr-1277", "status": "verified",
       "input": "late 1777 or early in 1778",
       "tags": [
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1777,
-          "end": 1777
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[late 1777,early 1778]","edtf":"1777/1778","timespan":{"begin_of_the_begin":"1777-09-01T00:00:00Z","end_of_the_end":"1778-04-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1777..1777", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1777..1777."
     },
     {
       "id": "yr-1278",
@@ -18387,17 +18321,10 @@
       }
     },
     {
-      "id": "yr-1321",
+      "id": "yr-1321", "status": "verified",
       "input": "1842 or 1854 or 1866",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1842,
-          "end": 1854
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1842,1854,1866]","edtf":"[1842,1854,1866]","timespan":{"begin_of_the_begin":"1842-01-01T00:00:00Z","end_of_the_end":"1866-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1842..1854", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1842..1854."
     },
     {
       "id": "yr-1322", "status": "verified",
@@ -18564,7 +18491,7 @@
       }
     },
     {
-      "id": "yr-1336",
+      "id": "yr-1336", "status": "verified",
       "input": "c. 1953 (this item: 1970s/80s)",
       "tags": [
         "circa",
@@ -18572,17 +18499,7 @@
         "decade",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1970,
-          "end": 1989
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"197X/198X","edtf":"197X/198X","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1989-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1970..1989; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1970..1989; flags Approximate."
     },
     {
       "id": "yr-1337",
@@ -18859,7 +18776,7 @@
       }
     },
     {
-      "id": "yr-1353",
+      "id": "yr-1353", "status": "verified",
       "input": "c. early 1800s (this item: Taisho-era strike)",
       "tags": [
         "decade",
@@ -18867,7 +18784,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1824}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:taisho","edtf":"1912/1926","timespan":{"begin_of_the_begin":"1912-07-30T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1824", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1824."
     },
     {
       "id": "yr-1354", "status": "verified",
@@ -22785,10 +22702,10 @@
       "expect": {"status":"parsed","kind":"single","canonical":"before 1425?","edtf":"../1424","timespan":{"end_of_the_end":"1424-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1425..1425", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1425..1425."
     },
     {
-      "id": "yr-1633",
+      "id": "yr-1633", "status": "verified",
       "input": "After 1580, probably 1584.",
       "tags": [],
-      "expect": {"status": "parsed", "years": {"start": 1580, "end": 1580}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"1584?","edtf":"1584?","timespan":{"begin_of_the_begin":"1584-01-01T00:00:00Z","end_of_the_end":"1584-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1580..1580", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1580..1580."
     },
     {
       "id": "yr-1634",

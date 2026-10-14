@@ -264,12 +264,17 @@ internal sealed class DateParser
                 continue;
             }
             // "1788 (artist;circa)", "1795 (c. 11th month)": a hedge in a remark that names no year applies to the main date.
-            if (inner.Any(x => x.Kind == TokenKind.Hedge && !IsCenturyLetter(x))
+            // A "c." is circa unless it sits next to a century number: "20th C.", "C. 14"; "c. 11th month" is circa.
+            bool HedgeAt(int k) => inner[k].Kind == TokenKind.Hedge && (!IsCenturyLetter(inner[k])
+                || (!(k > 0 && inner[k - 1].Kind is TokenKind.Ordinal or TokenKind.Number)
+                    && !(k + 1 < inner.Count && inner[k + 1].Kind is TokenKind.Ordinal or TokenKind.Number && (k + 2 >= inner.Count || inner[k + 2].Kind != TokenKind.Word))));
+            var hedgeAt = Enumerable.Range(0, inner.Count).Where(HedgeAt).Select(k => (int?)k).FirstOrDefault();
+            if (hedgeAt is { } h
                 && !inner.Any(x => (x.Kind == TokenKind.Number && x.Digits >= 3) || x.Kind == TokenKind.Unspecified || (x.Kind == TokenKind.Roman && x.Number >= 1000))
                 && !inner.Where((x, k) => x.Kind == TokenKind.Ordinal && k + 1 < inner.Count && (inner[k + 1].Kind == TokenKind.CenturyWord || IsCenturyLetter(inner[k + 1]))).Any()
                 && !inner.Any(x => x.Kind == TokenKind.Word && _periods is not null && _periods.TryResolve(x.Text, out _)))
             {
-                main.Add(inner.First(x => x.Kind == TokenKind.Hedge && !IsCenturyLetter(x)));
+                main.Add(inner[h]);
                 continue;
             }
             if (!inner.Any(x => x.Kind is TokenKind.Number or TokenKind.Ordinal or TokenKind.Roman or TokenKind.Unspecified))

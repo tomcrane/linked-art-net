@@ -1,8 +1,8 @@
 # Corpus run
 
-Generated 2026-10-14 16:43 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 16:44 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
-## verified: 611/612 pass (99.8%), calibration error 0.128
+## verified: 612/612 pass (100.0%), calibration error 0.129
 
 - authored/bce-and-deep-time.json: 20/20
 - authored/canonical-forms.json: 18/18
@@ -11,12 +11,11 @@ Generated 2026-10-14 16:43 UTC by `dotnet run --project tools/Corpus -- run --al
 - authored/multilingual.json: 44/44
 - authored/named-periods.json: 30/30
 - authored/open-ended-and-relations.json: 36/36
-- imported/yearrange.json: 281/282
+- imported/yearrange.json: 282/282
 - seed/pmc-outputs.json: 91/91
 - seed/py-datetime.json: 37/37
 
 Status (expected->actual): parsed->parsed 596, partial->partial 2, undated->undated 8, unparsed->unparsed 6
-Weakest tags: bracketed 83/84, circa 117/118, yearrange 281/282, imported 281/282
 
 ## proposed: 1656/1698 pass (97.5%), calibration error 0.139
 
@@ -35,11 +34,11 @@ Weakest tags: single 26/37, timetwister 79/91, archival 79/91, month 181/190, de
 Status (expected->actual): parsed->parsed 2
 Weakest tags: yearrange 0/2, imported 0/2, range 0/1, band 0/1, named-period 0/2
 
-Since the last run: 4 newly passing, 1 newly failing: yr-0541
+Since the last run: 1 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 3, bounds differ 41, flags only 1.
+By cause: not parsed 3, bounds differ 41.
 
 ### Not parsed (3)
 
@@ -214,12 +213,4 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 3900..3999
   - years.start: expected 3900, got 1640
   - years.end: expected 3999, got 1640
-
-### Flags only (1)
-
-The bounds agree and only a hedge flag differs: usually how the importer mapped the source's flag.
-
-- `yr-0541` (verified) "1795 (c. 11th month)" -> 1795
-  - expected: status parsed; years 1795..1795; flags Approximate
-  - flag Approximate missing (flags: )
 

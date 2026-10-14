@@ -2080,19 +2080,12 @@
       }
     },
     {
-      "id": "yr-0138",
+      "id": "yr-0138", "status": "verified",
       "input": "\u6C5F\u6238\u6642\u4EE3\uFF3F19\uFF43",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 19/period:edo","edtf":"1800/1868","timespan":{"begin_of_the_begin":"1800-01-01T00:00:00Z","end_of_the_end":"1868-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899."
     },
     {
       "id": "yr-0139",
@@ -3402,19 +3395,12 @@
       }
     },
     {
-      "id": "yr-0228",
+      "id": "yr-0228", "status": "verified",
       "input": "Japanese, Edo period\u2013Meiji era",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:edo/period:meiji","edtf":"1603/1912","timespan":{"begin_of_the_begin":"1603-01-01T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-0229",
@@ -4474,7 +4460,7 @@
       }
     },
     {
-      "id": "yr-0301",
+      "id": "yr-0301", "status": "verified",
       "input": "Japanese, Meiji era, late 19th to early 20th century",
       "tags": [
         "range",
@@ -4482,14 +4468,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1875,
-          "end": 1924
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 19/period:meiji","edtf":"1875/1912","timespan":{"begin_of_the_begin":"1875-01-01T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1875..1924", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1875..1924."
     },
     {
       "id": "yr-0302",
@@ -7342,21 +7321,14 @@
       }
     },
     {
-      "id": "yr-0508",
+      "id": "yr-0508", "status": "verified",
       "input": "Meiji/early 20th century",
       "tags": [
         "range",
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji/early century 20","edtf":"1868/1924","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924."
     },
     {
       "id": "yr-0509",
@@ -7416,20 +7388,13 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0514",
+      "id": "yr-0514", "status": "verified",
       "input": "Late Edo - Meiji period.",
       "tags": [
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late period:edo/period:meiji","edtf":"1802/1912","timespan":{"begin_of_the_begin":"1802-01-01T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868."
     },
     {
       "id": "yr-0515",
@@ -10101,20 +10066,13 @@
       }
     },
     {
-      "id": "yr-0706",
+      "id": "yr-0706", "status": "verified",
       "input": "Late Meiji Period",
       "tags": [
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late period:meiji","edtf":"1899/1912","timespan":{"begin_of_the_begin":"1899-01-01T00:00:00Z","end_of_the_end":"1912-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1868..1912", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1868..1912."
     },
     {
       "id": "yr-0707",
@@ -10171,37 +10129,23 @@
       "expect": {"status":"parsed","kind":"single","canonical":"1928/1945","edtf":"1928/1945","timespan":{"begin_of_the_begin":"1928-01-01T00:00:00Z","end_of_the_end":"1945-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1928..1928", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1928..1928."
     },
     {
-      "id": "yr-0711",
+      "id": "yr-0711", "status": "verified",
       "input": "Meiji/Taisho Period",
       "tags": [
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji/period:taisho","edtf":"1868/1926","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1868..1912", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1868..1912."
     },
     {
-      "id": "yr-0712",
+      "id": "yr-0712", "status": "verified",
       "input": "Late Meiji to Taisho Period",
       "tags": [
         "range",
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late period:meiji/period:taisho","edtf":"1899/1926","timespan":{"begin_of_the_begin":"1899-01-01T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1868..1912", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1868..1912."
     },
     {
       "id": "yr-0713",
@@ -12349,13 +12293,13 @@
       }
     },
     {
-      "id": "yr-0883",
+      "id": "yr-0883", "status": "verified",
       "input": "17thC-18thC (1747)",
       "tags": [
         "century",
         "bracketed"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1699}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"1747","edtf":"1747","timespan":{"begin_of_the_begin":"1747-01-01T00:00:00Z","end_of_the_end":"1747-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1600..1699", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1600..1699."
     },
     {
       "id": "yr-0884",
@@ -12577,7 +12521,7 @@
       }
     },
     {
-      "id": "yr-0899",
+      "id": "yr-0899", "status": "verified",
       "input": "Edo period (1615-1868), c. 1705-1715",
       "tags": [
         "circa",
@@ -12585,17 +12529,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1615,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1705~/1715","edtf":"1705~/1715","timespan":{"begin_of_the_begin":"1705-01-01T00:00:00Z","end_of_the_end":"1715-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1615..1868; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1615..1868; flags Approximate."
     },
     {
       "id": "yr-0900", "status": "verified",
@@ -12774,13 +12708,13 @@
       }
     },
     {
-      "id": "yr-0915",
+      "id": "yr-0915", "status": "verified",
       "input": "Probably in late Meiji period.",
       "tags": [
         "band",
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"late period:meiji?","edtf":"1899/1912","timespan":{"begin_of_the_begin":"1899-01-01T00:00:00Z","end_of_the_end":"1912-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1868..1912", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1868..1912."
     },
     {
       "id": "yr-0916", "status": "verified",
@@ -12845,7 +12779,7 @@
       }
     },
     {
-      "id": "yr-0921",
+      "id": "yr-0921", "status": "verified",
       "input": "c. 1780s (1782?)",
       "tags": [
         "circa",
@@ -12853,17 +12787,7 @@
         "decade",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1780,
-          "end": 1789
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1782?","edtf":"1782?","timespan":{"begin_of_the_begin":"1782-01-01T00:00:00Z","end_of_the_end":"1782-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1780..1789; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1780..1789; flags Approximate."
     },
     {
       "id": "yr-0922",
@@ -13084,21 +13008,14 @@
       }
     },
     {
-      "id": "yr-0937",
+      "id": "yr-0937", "status": "verified",
       "input": "1800-1900 (Bunsei 10, autumn (1827))",
       "tags": [
         "range",
         "bracketed",
         "season"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1900
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1827-23","edtf":"1827-23","timespan":{"begin_of_the_begin":"1827-09-01T00:00:00Z","end_of_the_end":"1827-11-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1900", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1900."
     },
     {
       "id": "yr-0938",
@@ -15154,24 +15071,14 @@
       "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1830..1842; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1830..1842; flags Approximate."
     },
     {
-      "id": "yr-1082",
+      "id": "yr-1082", "status": "verified",
       "input": "c. 1810/20 (Meiji Facsimilie)",
       "tags": [
         "circa",
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1810,
-          "end": 1820
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1810..1820; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1810..1820; flags Approximate."
     },
     {
       "id": "yr-1083",
@@ -18493,19 +18400,12 @@
       }
     },
     {
-      "id": "yr-1322",
+      "id": "yr-1322", "status": "verified",
       "input": "Early Meiji.",
       "tags": [
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early period:meiji","edtf":"1868/1880","timespan":{"begin_of_the_begin":"1868-01-01T00:00:00Z","end_of_the_end":"1880-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1868..1912", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1868..1912."
     },
     {
       "id": "yr-1323", "status": "verified",
@@ -18970,23 +18870,13 @@
       "expect": {"status": "parsed", "years": {"start": 1800, "end": 1824}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1354",
+      "id": "yr-1354", "status": "verified",
       "input": "Ca. later Edo era.",
       "tags": [
         "circa",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late period:edo~","edtf":"1802/1868","timespan":{"begin_of_the_begin":"1802-01-01T00:00:00Z","end_of_the_end":"1868-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1868; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1868; flags Approximate."
     },
     {
       "id": "yr-1355", "status": "verified",
@@ -21126,19 +21016,12 @@
       }
     },
     {
-      "id": "yr-1512",
+      "id": "yr-1512", "status": "verified",
       "input": "Japanese, Taish\u00F4 era\u2013Sh\u00F4wa era",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1926,
-          "end": 1989
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:taisho/period:showa","edtf":"1912/1989","timespan":{"begin_of_the_begin":"1912-07-30T00:00:00Z","end_of_the_end":"1989-01-07T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1926..1989", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1926..1989."
     },
     {
       "id": "yr-1513",
@@ -21361,13 +21244,13 @@
       "expect": {"status":"parsed","kind":"single","canonical":"193X?","edtf":"193X?","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1939-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1829..1833; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1829..1833; flags Approximate."
     },
     {
-      "id": "yr-1529",
+      "id": "yr-1529", "status": "verified",
       "input": "Japanese, Meiji era, Meiji 27?",
       "tags": [
         "uncertain",
         "named-period"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji-27?","edtf":"1894","timespan":{"begin_of_the_begin":"1894-01-01T00:00:00Z","end_of_the_end":"1894-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1868..1912", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1868..1912."
     },
     {
       "id": "yr-1530",
@@ -21522,21 +21405,14 @@
       }
     },
     {
-      "id": "yr-1540",
+      "id": "yr-1540", "status": "verified",
       "input": "Japanese, Meiji era, 19th\u2013early 20th century",
       "tags": [
         "century",
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1924
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1924", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1924."
     },
     {
       "id": "yr-1541",
@@ -21549,35 +21425,21 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1542",
+      "id": "yr-1542", "status": "verified",
       "input": "Japanese, Edo period, 17th\u201318th century",
       "tags": [
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1799
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:edo/century 18","edtf":"1603/1799","timespan":{"begin_of_the_begin":"1603-01-01T00:00:00Z","end_of_the_end":"1799-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1600..1799", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1600..1799."
     },
     {
-      "id": "yr-1543",
+      "id": "yr-1543", "status": "verified",
       "input": "Japanese, Meiji era\u2013Taish\u00F4 era",
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"period:meiji/period:taisho","edtf":"1868/1926","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1926-12-25T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1868..1912", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1868..1912."
     },
     {
       "id": "yr-1544",

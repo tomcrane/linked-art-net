@@ -1,8 +1,8 @@
 # Corpus run
 
-Generated 2026-10-14 16:22 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 16:25 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
-## verified: 572/572 pass (100.0%), calibration error 0.127
+## verified: 593/593 pass (100.0%), calibration error 0.131
 
 - authored/bce-and-deep-time.json: 20/20
 - authored/canonical-forms.json: 18/18
@@ -11,21 +11,21 @@ Generated 2026-10-14 16:22 UTC by `dotnet run --project tools/Corpus -- run --al
 - authored/multilingual.json: 44/44
 - authored/named-periods.json: 30/30
 - authored/open-ended-and-relations.json: 36/36
-- imported/yearrange.json: 242/242
+- imported/yearrange.json: 263/263
 - seed/pmc-outputs.json: 91/91
 - seed/py-datetime.json: 37/37
 
-Status (expected->actual): parsed->parsed 556, partial->partial 2, undated->undated 8, unparsed->unparsed 6
+Status (expected->actual): parsed->parsed 577, partial->partial 2, undated->undated 8, unparsed->unparsed 6
 
-## proposed: 1656/1738 pass (95.3%), calibration error 0.116
+## proposed: 1656/1717 pass (96.4%), calibration error 0.127
 
 - imported/edtf-spec.json: 61/61
 - imported/getty.json: 180/180
 - imported/timetwister.json: 79/91
-- imported/yearrange.json: 1336/1406
+- imported/yearrange.json: 1336/1385
 
-Status (expected->actual): parsed->parsed 1731, parsed->undated 1, parsed->unparsed 2, unparsed->unparsed 4
-Weakest tags: single 26/37, timetwister 79/91, archival 79/91, season 29/32, circa 233/252, named-period 275/297, decade 169/180, band 275/292, month 181/192, yearrange 1336/1406, imported 1656/1738, range 434/453, uncertain 50/52, bracketed 457/474, century 306/317
+Status (expected->actual): parsed->parsed 1710, parsed->undated 1, parsed->unparsed 2, unparsed->unparsed 4
+Weakest tags: single 26/37, timetwister 79/91, archival 79/91, season 29/31, circa 233/248, month 181/192, decade 169/179, imported 1656/1717, yearrange 1336/1385, band 275/284, range 434/446, bracketed 457/469, named-period 275/282, undated 42/43, century 306/312
 
 ## disputed: 0/2 pass (0.0%), calibration error 0.675
 
@@ -34,11 +34,11 @@ Weakest tags: single 26/37, timetwister 79/91, archival 79/91, season 29/32, cir
 Status (expected->actual): parsed->parsed 2
 Weakest tags: yearrange 0/2, imported 0/2, range 0/1, band 0/1, named-period 0/2
 
-Since the last run: 0 newly passing, 0 newly failing.
+Since the last run: 21 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 3, bounds differ 77, flags only 4.
+By cause: not parsed 3, bounds differ 56, flags only 4.
 
 ### Not parsed (3)
 
@@ -60,7 +60,7 @@ The source has a date and the parser found none: grammar gaps, or strings the so
   - years.start: expected 1000, got (none)
   - years.end: expected 1000, got (none)
 
-### Bounds differ (77)
+### Bounds differ (56)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
@@ -115,9 +115,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
 - `yr-0087` (proposed) "1936 or earlier." -> not-after 1936
   - expected: status parsed; years 1936..1936
   - years.start: expected 1936, got (none)
-- `yr-0138` (proposed) "江戸時代＿19ｃ" -> century 19/period:edo
-  - expected: status parsed; years 1800..1899
-  - years.end: expected 1899, got 1868
 - `yr-0153` (disputed) "Edo period, Late to early Meiji period" -> late period:edo/early period:meiji
   - expected: status parsed; years 1603..1868
   - years.start: expected 1603, got 1802
@@ -128,9 +125,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
 - `yr-0173` (proposed) "1932 1980s)" -> 1932/198X
   - expected: status parsed; years 1980..1989
   - years.start: expected 1980, got 1932
-- `yr-0228` (proposed) "Japanese, Edo period–Meiji era" -> period:edo/period:meiji
-  - expected: status parsed; years 1603..1868
-  - years.end: expected 1868, got 1912
 - `yr-0286` (proposed) "Ca. 1936 or earlier." -> not-after 1936~
   - expected: status parsed; years 1936..1936; flags Approximate
   - years.start: expected 1936, got (none)
@@ -138,19 +132,9 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 1969..1969
   - years.start: expected 1969, got 150
   - years.end: expected 1969, got 150
-- `yr-0301` (proposed) "Japanese, Meiji era, late 19th to early 20th century" -> late century 19/period:meiji
-  - expected: status parsed; years 1875..1924
-  - years.end: expected 1924, got 1912
 - `yr-0504` (proposed) "1806 or early 1801-02" -> [1806,early 1801/1802]
   - expected: status parsed; years 1801..1802
   - years.end: expected 1802, got 1806
-- `yr-0508` (proposed) "Meiji/early 20th century" -> period:meiji/early century 20
-  - expected: status parsed; years 1900..1924
-  - years.start: expected 1900, got 1868
-- `yr-0514` (proposed) "Late Edo - Meiji period." -> late period:edo/period:meiji
-  - expected: status parsed; years 1603..1868
-  - years.start: expected 1603, got 1802
-  - years.end: expected 1868, got 1912
 - `yr-0521` (proposed) "19881" -> Y19881
   - expected: status parsed; years 1988..1988
   - years.start: expected 1988, got 19881
@@ -186,40 +170,10 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 1800..1899
   - years.start: expected 1800, got 1700
   - years.end: expected 1899, got 1868
-- `yr-0706` (proposed) "Late Meiji Period" -> late period:meiji
-  - expected: status parsed; years 1868..1912
-  - years.start: expected 1868, got 1899
-- `yr-0711` (proposed) "Meiji/Taisho Period" -> period:meiji/period:taisho
-  - expected: status parsed; years 1868..1912
-  - years.end: expected 1912, got 1926
-- `yr-0712` (proposed) "Late Meiji to Taisho Period" -> late period:meiji/period:taisho
-  - expected: status parsed; years 1868..1912
-  - years.start: expected 1868, got 1899
-  - years.end: expected 1912, got 1926
 - `yr-0776` (proposed) "江戸時代＿17･18c" -> period:edo
   - expected: status parsed; years 1700..1799
   - years.start: expected 1700, got 1603
   - years.end: expected 1799, got 1868
-- `yr-0883` (proposed) "17thC-18thC (1747)" -> 1747
-  - expected: status parsed; years 1600..1699
-  - years.start: expected 1600, got 1747
-  - years.end: expected 1699, got 1747
-- `yr-0899` (proposed) "Edo period (1615-1868), c. 1705-1715" -> 1705~/1715
-  - expected: status parsed; years 1615..1868; flags Approximate
-  - years.start: expected 1615, got 1705
-  - years.end: expected 1868, got 1715
-- `yr-0915` (proposed) "Probably in late Meiji period." -> late period:meiji?
-  - expected: status parsed; years 1868..1912
-  - years.start: expected 1868, got 1899
-- `yr-0921` (proposed) "c. 1780s (1782?)" -> 1782?
-  - expected: status parsed; years 1780..1789; flags Approximate
-  - years.start: expected 1780, got 1782
-  - years.end: expected 1789, got 1782
-  - flag Approximate missing (flags: Uncertain)
-- `yr-0937` (proposed) "1800-1900 (Bunsei 10, autumn (1827))" -> 1827-23
-  - expected: status parsed; years 1800..1900
-  - years.start: expected 1800, got 1827
-  - years.end: expected 1900, got 1827
 - `yr-1022` (proposed) "Heisei period, 1989-present" -> 1989/..
   - expected: status parsed; years 1989..2024
   - years.end: expected 2024, got (none)
@@ -240,11 +194,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
 - `yr-1062` (proposed) "1730âs early" -> 1730
   - expected: status parsed; years 1730..1732
   - years.end: expected 1732, got 1730
-- `yr-1082` (proposed) "c. 1810/20 (Meiji Facsimilie)" -> period:meiji
-  - expected: status parsed; years 1810..1820; flags Approximate
-  - years.start: expected 1810, got 1868
-  - years.end: expected 1820, got 1912
-  - flag Approximate missing (flags: NamedPeriod, SecondaryDate)
 - `yr-1170` (proposed) "1843-45 (Kunisada changed his name to Toyokuni in 1844)." -> 1844
   - expected: status parsed; years 1843..1845
   - years.start: expected 1843, got 1844
@@ -276,9 +225,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
 - `yr-1321` (proposed) "1842 or 1854 or 1866" -> [1842,1854,1866]
   - expected: status parsed; years 1842..1854
   - years.end: expected 1854, got 1866
-- `yr-1322` (proposed) "Early Meiji." -> early period:meiji
-  - expected: status parsed; years 1868..1912
-  - years.end: expected 1912, got 1880
 - `yr-1352` (proposed) "Sheet 1; 1964. Sheet 2 and 3; ca. 1930s." -> 1964
   - expected: status parsed; years 1930..1939; flags Approximate
   - years.start: expected 1930, got 1964
@@ -288,9 +234,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 1800..1824
   - years.start: expected 1800, got 1912
   - years.end: expected 1824, got 1926
-- `yr-1354` (proposed) "Ca. later Edo era." -> late period:edo~
-  - expected: status parsed; years 1603..1868; flags Approximate
-  - years.start: expected 1603, got 1802
 - `yr-1430` (proposed) "Spring: July 2005; Summer: May - July 2003; Autumn: Dec 2003 - July 2004; Winter: Sept - Nov 2003." -> 2005-07
   - expected: status parsed; years 2003..2004
   - years.start: expected 2003, got 2005
@@ -305,23 +248,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - years.start: expected 1960, got 1972
   - years.end: expected 1969, got 1972
   - flag Approximate missing (flags: Unconsumed)
-- `yr-1512` (proposed) "Japanese, Taishô era–Shôwa era" -> period:taisho/period:showa
-  - expected: status parsed; years 1926..1989
-  - years.start: expected 1926, got 1912
-- `yr-1529` (proposed) "Japanese, Meiji era, Meiji 27?" -> period:meiji-27?
-  - expected: status parsed; years 1868..1912
-  - years.start: expected 1868, got 1894
-  - years.end: expected 1912, got 1894
-- `yr-1540` (proposed) "Japanese, Meiji era, 19th–early 20th century" -> period:meiji
-  - expected: status parsed; years 1800..1924
-  - years.start: expected 1800, got 1868
-  - years.end: expected 1924, got 1912
-- `yr-1542` (proposed) "Japanese, Edo period, 17th–18th century" -> period:edo/century 18
-  - expected: status parsed; years 1600..1799
-  - years.start: expected 1600, got 1603
-- `yr-1543` (proposed) "Japanese, Meiji era–Taishô era" -> period:meiji/period:taisho
-  - expected: status parsed; years 1868..1912
-  - years.end: expected 1912, got 1926
 - `yr-1595` (proposed) "Second century 17th century." -> century 2/century 17
   - expected: status parsed; years 1600..1699
   - years.start: expected 1600, got 100

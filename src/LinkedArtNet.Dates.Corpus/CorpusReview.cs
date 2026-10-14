@@ -88,7 +88,8 @@ public static class CorpusReview
     private static string Expected(CorpusEntry e)
     {
         var x = e.Expect;
-        var detail = x.Canonical ?? x.Edtf ?? (x.Years is { } y ? $"{y.Start?.ToString() ?? "?"}..{y.End?.ToString() ?? "?"}" : null);
+        var detail = x.Canonical ?? x.Edtf ?? (x.Years is { } y ? $"{y.Start?.ToString() ?? ".."}..{y.End?.ToString() ?? ".."}" : null)
+            ?? ((x.TimeSpan ?? x.Begin) is { } ts || (x.End) is { } ? $"{Date((x.TimeSpan ?? x.Begin)?.BeginOfTheBegin)}..{Date((x.TimeSpan ?? x.End)?.EndOfTheEnd)}" : null);
         return (x.Status ?? "parsed") + (detail is null ? "" : " " + Code(detail));
     }
 
@@ -103,6 +104,9 @@ public static class CorpusReview
         if (start is null && end is null) return "";
         return $" {(start is { } s ? Edge(s, true) : "")}..{(end is { } e ? Edge(e, false) : "")}";
     }
+
+    /// <summary>"1776-07-04T00:00:00Z" -> "1776-07-04"; a whole-year edge -> the year; null -> "".</summary>
+    private static string Date(string? iso) => iso is null ? "" : iso.Length >= 10 && iso[5..10] is "01-01" or "12-31" ? iso[..4].TrimStart('0') is { Length: > 0 } y ? y : "0" : iso.Length >= 10 ? iso[..10] : iso;
 
     private static string Edge(LinkedArtDate d, bool start) =>
         (start ? d.Month == 1 && d.Day == 1 : d.Month == 12 && d.Day == 31) ? d.Year.ToString() : $"{d.Year:0000}-{d.Month:00}-{d.Day:00}";

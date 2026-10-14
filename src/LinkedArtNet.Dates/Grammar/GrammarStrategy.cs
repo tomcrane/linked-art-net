@@ -203,7 +203,7 @@ internal sealed class DateParser
                 continue;
             }
             if (t is { Kind: TokenKind.Number } a && !a.HasDecimal && a.Digits <= 3 && i + 2 < tokens.Count && tokens[i + 1].Kind == TokenKind.Slash
-                && tokens[i + 2] is { Kind: TokenKind.Number } b && !b.HasDecimal && b.Digits <= 4 && a.Number <= b.Number && b.Number % 25 == 0 && Follows(i + 3))
+                && tokens[i + 2] is { Kind: TokenKind.Number } b && !b.HasDecimal && b.Digits <= 4 && a.Number <= b.Number && (b.Number < 1000 ? b.Number >= 10 : b.Number % 25 == 0) && Follows(i + 3))
             {
                 _notes.Add($"The edition number {a.Text}/{b.Text} was ignored.");
                 i += 2;
@@ -1006,6 +1006,13 @@ internal sealed class DateParser
             if (t.Digits <= 2 && TryWindowYear(t, out var windowed))
             {
                 _p++;
+                // "69-10": a two-digit year followed by a month
+                if (Peek(0) is { Kind: TokenKind.Dash } && Peek(1) is { Kind: TokenKind.Number } mm && mm.Digits == 2 && mm.Number is >= 1 and <= 12 && Peek(2) is not { Kind: TokenKind.Dash or TokenKind.Number })
+                {
+                    _p += 2;
+                    _notes.Add($"'{t.Text}-{mm.Text}' is a two-digit year and a month.");
+                    return piece with { Core = new MonthPoint(windowed, (int)mm.Number) };
+                }
                 return piece with { Core = new YearPoint(windowed) };
             }
             // a bare day, completed from the other bound ("4-10 July 1776", "1776 July 4-10")

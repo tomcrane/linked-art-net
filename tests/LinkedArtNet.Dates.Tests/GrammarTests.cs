@@ -139,6 +139,7 @@ public class GrammarTests
     // edition numbers and spaced suffixes
     [InlineData("62/200, 1983", "1983")]
     [InlineData("Edition of 100, 1980", "1980")]
+    [InlineData("72/127, 2005", "2005")]
     [InlineData("1500 s c. early", "early 15XX~")]
     [InlineData("1720 s late", "late 172X")]
     [InlineData("178-, printed later", "178X")]

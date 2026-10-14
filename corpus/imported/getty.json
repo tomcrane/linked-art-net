@@ -8,7 +8,7 @@
     "notes": "Biography descriptions are prose (\u0027Chinese calligrapher, active ca. 1023-1056\u0027), so the date must be found inside running text: these entries measure the salvage path. The expected years are ULAN\u0027s estStart/estEnd, which are deliberately padded estimates (an active period is widened to plausible lifetime bounds), so since 2026-10-14 the expected years are read from the string itself and the estimate is kept in sourceExpectation. Sixty biographies from each of six bands of estimated start year (before 1400, then by century to 1900 and after)."
   },
   "defaults": {
-    "intent": "single",
+    "intent": "auto",
     "profile": "default",
     "status": "proposed",
     "tags": [
@@ -282,7 +282,7 @@
       "tags": [
         "month"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1426, "end": 1451}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1451", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
+      "expect": {"status":"parsed","kind":"birthDeath","canonical":"born before 1426/died before 1451-06","edtf":"../1451","begin":{"end_of_the_end":"1425-12-31T23:59:59Z"},"end":{"end_of_the_end":"1451-05-31T23:59:59Z"}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1451", "notes": "Expected years come from the string itself (2026-10-14); ULAN\u2019s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation. Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1426..1451."
     },
     {
       "id": "ulan-033",

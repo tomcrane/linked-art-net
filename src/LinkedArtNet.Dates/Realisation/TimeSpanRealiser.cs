@@ -70,6 +70,16 @@ public sealed class TimeSpanRealiser
                     }
                     break;
                 }
+                case ResultKind.Single when core is Interval { Start: Lifecycle } or Interval { End: Lifecycle }:
+                {
+                    // A lifecycle pair asked for as one span: the birth and death windows become the inner bounds, so
+                    // "born before 1426, died before June 1451" keeps both facts in one TimeSpan.
+                    var (first, second) = SplitPair(core, flags, notes);
+                    whole = new RealisedSpan(first?.Start, second?.End) { InnerStart = first?.End, InnerEnd = second?.Start };
+                    notes.Add("The pair is given as one span: the birth window ends at end_of_the_begin and the death window starts at begin_of_the_end.");
+                    timeSpan = ToTimeSpan(whole, input);
+                    break;
+                }
                 default:
                     whole = Realise(core, flags, notes, alternatives);
                     timeSpan = ToTimeSpan(whole, input);

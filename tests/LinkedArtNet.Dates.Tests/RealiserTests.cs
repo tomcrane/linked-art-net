@@ -348,6 +348,26 @@ public class RealiserTests
     }
 
     [Fact]
+    public void A_lifecycle_pair_as_one_span_keeps_both_windows_as_inner_bounds()
+    {
+        var life = Realise("born 1606/died 1669", intent: Intent.Single).TimeSpan!;
+        Assert.Equal(("1606-01-01T00:00:00Z", "1606-12-31T23:59:59Z", "1669-01-01T00:00:00Z", "1669-12-31T23:59:59Z"),
+            (life.BeginOfTheBegin!.ToString()!, life.EndOfTheBegin!.ToString()!, life.BeginOfTheEnd!.ToString()!, life.EndOfTheEnd!.ToString()!));
+
+        var open = Realise("born before 1426/died before 1451-06", intent: Intent.Single).TimeSpan!;
+        Assert.Null(open.BeginOfTheBegin);
+        Assert.Equal("1425-12-31T23:59:59Z", open.EndOfTheBegin!.ToString());
+        Assert.Null(open.BeginOfTheEnd);
+        Assert.Equal("1451-05-31T23:59:59Z", open.EndOfTheEnd!.ToString());
+
+        // asked for as a pair, the two events are separate spans and the whole is not given
+        var pair = Realise("born before 1426/died before 1451-06", intent: Intent.Pair);
+        Assert.Null(pair.TimeSpan);
+        Assert.Equal("1425-12-31T23:59:59Z", pair.Begin!.EndOfTheEnd!.ToString());
+        Assert.Equal("1451-05-31T23:59:59Z", pair.End!.EndOfTheEnd!.ToString());
+    }
+
+    [Fact]
     public void Astronomical_seasons_run_equinox_to_solstice_and_winter_follows_the_profile()
     {
         var astronomical = ParseProfile.Default with { Name = "astro", SeasonDates = SeasonDates.Astronomical };

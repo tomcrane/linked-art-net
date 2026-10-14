@@ -1,6 +1,6 @@
 # Corpus run
 
-Generated 2026-10-14 13:47 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 13:57 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
 ## verified: 543/543 pass (100.0%), calibration error 0.130
 
@@ -17,15 +17,15 @@ Generated 2026-10-14 13:47 UTC by `dotnet run --project tools/Corpus -- run --al
 
 Status (expected->actual): parsed->parsed 527, partial->partial 2, undated->undated 8, unparsed->unparsed 6
 
-## proposed: 1625/1767 pass (92.0%), calibration error 0.109
+## proposed: 1627/1767 pass (92.1%), calibration error 0.110
 
 - imported/edtf-spec.json: 61/61
-- imported/getty.json: 168/180
+- imported/getty.json: 170/180
 - imported/timetwister.json: 79/91
 - imported/yearrange.json: 1317/1435
 
 Status (expected->actual): parsed->parsed 1756, parsed->undated 1, parsed->unparsed 6, unparsed->unparsed 4
-Weakest tags: single 26/37, band 265/312, timetwister 79/91, archival 79/91, century 294/337, circa 228/257, lifecycle 26/29, season 29/32, named-period 270/297, decade 166/182, yearrange 1317/1435, imported 1625/1767, uncertain 50/54, ulan 168/180, prose 168/180
+Weakest tags: single 26/37, band 266/312, timetwister 79/91, archival 79/91, century 295/337, circa 228/257, lifecycle 26/29, season 29/32, named-period 270/297, decade 166/182, yearrange 1317/1435, imported 1627/1767, uncertain 50/54, bracketed 454/486, month 181/192
 
 ## disputed: 0/2 pass (0.0%), calibration error 0.675
 
@@ -38,7 +38,7 @@ Since the last run: 0 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 7, reading differs 1, bounds differ 129, flags only 7.
+By cause: not parsed 7, bounds differ 128, flags only 7.
 
 ### Not parsed (7)
 
@@ -75,14 +75,7 @@ The source has a date and the parser found none: grammar gaps, or strings the so
   - years.start: expected 1000, got (none)
   - years.end: expected 1000, got (none)
 
-### Reading differs (1)
-
-A different canonical form or kind for the same string: a parser bug, or a convention the profile should set.
-
-- `ulan-072` (proposed) "Scottish gentleman, born early 17th century" -> born early century 17
-  - kind: expected birthDeath, got Single
-
-### Bounds differ (129)
+### Bounds differ (128)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
@@ -90,8 +83,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - years.start: expected 1499, got 1400
 - `ulan-017` (proposed) "German artist, op.1430-m.1462" -> fl 1430
   - years.end: expected 1462, got 1430
-- `ulan-032` (proposed) "Italian painter, born before 1426, died before June 1451" -> born before 1426/died before 1451-06
-  - years.start: expected 1426, got (none)
 - `ulan-046` (proposed) "Dutch artist, c.1610-p.1635" -> 1610~
   - years.end: expected 1635, got 1610
 - `ulan-055` (proposed) "Italian painter, born 1600 or 1604, died 1687" -> [1600,1604]

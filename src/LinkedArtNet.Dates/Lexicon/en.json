@@ -31,7 +31,7 @@
     "before": "Before", "ante": "Before", "pre": "Before", "prior to": "Before", "earlier than": "Before",
     "after": "After", "post": "After", "later than": "After",
     "by": "By", "until": "Until", "till": "Until", "up to": "Until", "to": "Until",
-    "since": "NotBefore", "from": "NotBefore", "not before": "NotBefore", "no earlier than": "NotBefore", "at the earliest": "NotBefore",
+    "since": "NotBefore", "from": "NotBefore", "not before": "NotBefore", "no earlier than": "NotBefore", "not earlier than": "NotBefore", "not later than": "NotAfter", "at the earliest": "NotBefore",
     "not after": "NotAfter", "no later than": "NotAfter", "at the latest": "NotAfter"
   },
   "openEnd": ["present", "present day", "onwards", "onward", "ongoing", "now", "today", "date", "current", "continuing"],

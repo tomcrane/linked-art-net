@@ -164,6 +164,10 @@ public class GrammarTests
     [InlineData("Original circa 1830's, reproduction 1930's", "193X")]
     [InlineData("Original album was printed in 1914. This is the later edition printed in 1972.", "1972")]
     [InlineData("19th century, late to early 20th century", "late century 19/early century 20")]
+    // negated relations keep their direction
+    [InlineData("not earlier than 1450", "not-before 1450")]
+    [InlineData("not later than 1450", "not-after 1450")]
+    [InlineData("no earlier than 1450", "not-before 1450")]
     [InlineData("Cut as a jigsaw print in 1997 and printed in January 2005.", "2005-01")]
     [InlineData("Originally 1858, this re-carved edition was published probably in early 20th century.", "early century 20?")]
     [InlineData("1940s(early)", "early 194X")]

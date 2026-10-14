@@ -15,7 +15,7 @@ produce. Design: [docs/06-corpus-and-testing.md](../docs/06-corpus-and-testing.m
 How entries get here and how they become `verified`: [docs/08-corpus-contributions.md](../docs/08-corpus-contributions.md).
 
 Status: `verified` entries gate CI (`CorpusTests.Verified_entry_passes`); `proposed` and `disputed` are reported.
-The seed PMC strings are `proposed` pending the owner's review of the hand-derived expectations.
+Both seed files are fully `verified` (reviewed 2026-10-14); the imported corpora stay `proposed` until reviewed.
 
 Tooling:
 

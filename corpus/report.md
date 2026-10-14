@@ -1,8 +1,8 @@
 # Corpus run
 
-Generated 2026-10-14 16:48 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 16:50 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
-## verified: 614/614 pass (100.0%), calibration error 0.129
+## verified: 622/622 pass (100.0%), calibration error 0.130
 
 - authored/bce-and-deep-time.json: 20/20
 - authored/canonical-forms.json: 18/18
@@ -11,21 +11,22 @@ Generated 2026-10-14 16:48 UTC by `dotnet run --project tools/Corpus -- run --al
 - authored/multilingual.json: 44/44
 - authored/named-periods.json: 30/30
 - authored/open-ended-and-relations.json: 36/36
+- imported/timetwister.json: 8/8
 - imported/yearrange.json: 284/284
 - seed/pmc-outputs.json: 91/91
 - seed/py-datetime.json: 37/37
 
-Status (expected->actual): parsed->parsed 598, partial->partial 2, undated->undated 8, unparsed->unparsed 6
+Status (expected->actual): parsed->parsed 606, partial->partial 2, undated->undated 8, unparsed->unparsed 6
 
-## proposed: 1656/1696 pass (97.6%), calibration error 0.139
+## proposed: 1656/1688 pass (98.1%), calibration error 0.143
 
 - imported/edtf-spec.json: 61/61
 - imported/getty.json: 180/180
-- imported/timetwister.json: 79/91
+- imported/timetwister.json: 79/83
 - imported/yearrange.json: 1336/1364
 
-Status (expected->actual): parsed->parsed 1689, parsed->undated 1, parsed->unparsed 2, unparsed->unparsed 4
-Weakest tags: single 26/37, timetwister 79/91, archival 79/91, month 181/190, decade 169/176, season 29/30, circa 233/241, imported 1656/1696, undated 42/43, yearrange 1336/1364, range 434/442, band 275/280, named-period 275/280, century 306/311, bracketed 457/463
+Status (expected->actual): parsed->parsed 1681, parsed->undated 1, parsed->unparsed 2, unparsed->unparsed 4
+Weakest tags: single 26/30, timetwister 79/83, archival 79/83, decade 169/176, season 29/30, circa 233/240, undated 42/43, yearrange 1336/1364, imported 1656/1688, named-period 275/280, month 181/184, range 434/441, band 275/279, bracketed 457/463, century 306/310
 
 ## disputed: 0/2 pass (0.0%), calibration error 0.675
 
@@ -34,11 +35,11 @@ Weakest tags: single 26/37, timetwister 79/91, archival 79/91, month 181/190, de
 Status (expected->actual): parsed->parsed 2
 Weakest tags: yearrange 0/2, imported 0/2, range 0/1, band 0/1, named-period 0/2
 
-Since the last run: 0 newly passing, 0 newly failing.
+Since the last run: 8 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 3, bounds differ 39.
+By cause: not parsed 3, bounds differ 31.
 
 ### Not parsed (3)
 
@@ -60,16 +61,10 @@ The source has a date and the parser found none: grammar gaps, or strings the so
   - years.start: expected 1000, got (none)
   - years.end: expected 1000, got (none)
 
-### Bounds differ (39)
+### Bounds differ (31)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
-- `tt-074` (proposed) "1776, 1789, 1812" -> 1776/1812
-  - expected: status parsed; timespan 1776-01-01T00:00:00Z..1776-12-31T23:59:59Z
-  - timespan.end_of_the_end: expected 1776-12-31T23:59:59Z, got 1812-12-31T23:59:59Z
-- `tt-076` (proposed) "July 1776 - August 1789, 1812 - 1820, 1900" -> 1776-07/1900
-  - expected: status parsed; timespan 1776-07-01T00:00:00Z..1789-08-31T23:59:59Z
-  - timespan.end_of_the_end: expected 1789-08-31T23:59:59Z, got 1900-12-31T23:59:59Z
 - `tt-078` (proposed) "July twenty-first 1776" -> 1776
   - expected: status parsed; timespan 1776-07-21T00:00:00Z..1776-07-21T23:59:59Z
   - timespan.begin_of_the_begin: expected 1776-07-21T00:00:00Z, got 1776-01-01T00:00:00Z
@@ -86,25 +81,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; timespan 1776-08-04T00:00:00Z..1776-08-04T23:59:59Z
   - timespan.begin_of_the_begin: expected 1776-08-04T00:00:00Z, got 1776-01-01T00:00:00Z
   - timespan.end_of_the_end: expected 1776-08-04T23:59:59Z, got 1776-12-31T23:59:59Z
-- `tt-085` (proposed) "july 4 and 5 1776" -> 1776-07-04/1776-07-05
-  - expected: status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z
-  - timespan.end_of_the_end: expected 1776-07-04T23:59:59Z, got 1776-07-05T23:59:59Z
-- `tt-086` (proposed) "4 & 5 july 1776" -> 1776-07-04/1776-07-05
-  - expected: status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z
-  - timespan.end_of_the_end: expected 1776-07-04T23:59:59Z, got 1776-07-05T23:59:59Z
-- `tt-087` (proposed) "1776 july 4 and 5" -> 1776-07-04/1776-07-05
-  - expected: status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z
-  - timespan.end_of_the_end: expected 1776-07-04T23:59:59Z, got 1776-07-05T23:59:59Z
-- `tt-088` (proposed) "july and august 1776" -> 1776-07/1776-08
-  - expected: status parsed; timespan 1776-07-01T00:00:00Z..1776-07-31T23:59:59Z
-  - timespan.end_of_the_end: expected 1776-07-31T23:59:59Z, got 1776-08-31T23:59:59Z
-- `tt-089` (proposed) "1776 july and august" -> 1776-07/1776-08
-  - expected: status parsed; timespan 1776-07-01T00:00:00Z..1776-07-31T23:59:59Z
-  - timespan.end_of_the_end: expected 1776-07-31T23:59:59Z, got 1776-08-31T23:59:59Z
-- `tt-090` (proposed) "ca. mid 19th century" -> mid century 19~
-  - expected: status parsed; timespan 1830-01-01T00:00:00Z..1880-12-31T23:59:59Z
-  - timespan.begin_of_the_begin: expected 1830-01-01T00:00:00Z, got 1834-01-01T00:00:00Z
-  - timespan.end_of_the_end: expected 1880-12-31T23:59:59Z, got 1866-12-31T23:59:59Z
 - `yr-0034` (proposed) "62/200, 69-10" -> 0200
   - expected: status parsed; years 1969..1969
   - years.start: expected 1969, got 200

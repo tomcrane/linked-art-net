@@ -1179,19 +1179,12 @@
       }
     },
     {
-      "id": "tt-074",
+      "id": "tt-074", "status": "verified",
       "input": "1776, 1789, 1812",
       "tags": [
         "single"
       ],
-      "expect": {
-        "status": "parsed",
-        "timespan": {
-          "begin_of_the_begin": "1776-01-01T00:00:00Z",
-          "end_of_the_end": "1776-12-31T23:59:59Z"
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1776/1812","edtf":"1776/1812","timespan":{"begin_of_the_begin":"1776-01-01T00:00:00Z","end_of_the_end":"1812-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; timespan 1776-01-01T00:00:00Z..1776-12-31T23:59:59Z", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; timespan 1776-01-01T00:00:00Z..1776-12-31T23:59:59Z."
     },
     {
       "id": "tt-075",
@@ -1210,20 +1203,13 @@
       }
     },
     {
-      "id": "tt-076",
+      "id": "tt-076", "status": "verified",
       "input": "July 1776 - August 1789, 1812 - 1820, 1900",
       "tags": [
         "range",
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "timespan": {
-          "begin_of_the_begin": "1776-07-01T00:00:00Z",
-          "end_of_the_end": "1789-08-31T23:59:59Z"
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1776-07/1900","edtf":"1776-07/1900","timespan":{"begin_of_the_begin":"1776-07-01T00:00:00Z","end_of_the_end":"1900-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; timespan 1776-07-01T00:00:00Z..1789-08-31T23:59:59Z", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; timespan 1776-07-01T00:00:00Z..1789-08-31T23:59:59Z."
     },
     {
       "id": "tt-077",
@@ -1352,87 +1338,52 @@
       }
     },
     {
-      "id": "tt-085",
+      "id": "tt-085", "status": "verified",
       "input": "july 4 and 5 1776",
       "tags": [
         "month",
         "single"
       ],
-      "expect": {
-        "status": "parsed",
-        "timespan": {
-          "begin_of_the_begin": "1776-07-04T00:00:00Z",
-          "end_of_the_end": "1776-07-04T23:59:59Z"
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1776-07-04/1776-07-05","edtf":"1776-07-04/1776-07-05","timespan":{"begin_of_the_begin":"1776-07-04T00:00:00Z","end_of_the_end":"1776-07-05T23:59:59Z"}}, "sourceExpectation": "status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z."
     },
     {
-      "id": "tt-086",
+      "id": "tt-086", "status": "verified",
       "input": "4 \u0026 5 july 1776",
       "tags": [
         "month",
         "single"
       ],
-      "expect": {
-        "status": "parsed",
-        "timespan": {
-          "begin_of_the_begin": "1776-07-04T00:00:00Z",
-          "end_of_the_end": "1776-07-04T23:59:59Z"
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1776-07-04/1776-07-05","edtf":"1776-07-04/1776-07-05","timespan":{"begin_of_the_begin":"1776-07-04T00:00:00Z","end_of_the_end":"1776-07-05T23:59:59Z"}}, "sourceExpectation": "status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z."
     },
     {
-      "id": "tt-087",
+      "id": "tt-087", "status": "verified",
       "input": "1776 july 4 and 5",
       "tags": [
         "month",
         "single"
       ],
-      "expect": {
-        "status": "parsed",
-        "timespan": {
-          "begin_of_the_begin": "1776-07-04T00:00:00Z",
-          "end_of_the_end": "1776-07-04T23:59:59Z"
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1776-07-04/1776-07-05","edtf":"1776-07-04/1776-07-05","timespan":{"begin_of_the_begin":"1776-07-04T00:00:00Z","end_of_the_end":"1776-07-05T23:59:59Z"}}, "sourceExpectation": "status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; timespan 1776-07-04T00:00:00Z..1776-07-04T23:59:59Z."
     },
     {
-      "id": "tt-088",
+      "id": "tt-088", "status": "verified",
       "input": "july and august 1776",
       "tags": [
         "month",
         "single"
       ],
-      "expect": {
-        "status": "parsed",
-        "timespan": {
-          "begin_of_the_begin": "1776-07-01T00:00:00Z",
-          "end_of_the_end": "1776-07-31T23:59:59Z"
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1776-07/1776-08","edtf":"1776-07/1776-08","timespan":{"begin_of_the_begin":"1776-07-01T00:00:00Z","end_of_the_end":"1776-08-31T23:59:59Z"}}, "sourceExpectation": "status parsed; timespan 1776-07-01T00:00:00Z..1776-07-31T23:59:59Z", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; timespan 1776-07-01T00:00:00Z..1776-07-31T23:59:59Z."
     },
     {
-      "id": "tt-089",
+      "id": "tt-089", "status": "verified",
       "input": "1776 july and august",
       "tags": [
         "month",
         "single"
       ],
-      "expect": {
-        "status": "parsed",
-        "timespan": {
-          "begin_of_the_begin": "1776-07-01T00:00:00Z",
-          "end_of_the_end": "1776-07-31T23:59:59Z"
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1776-07/1776-08","edtf":"1776-07/1776-08","timespan":{"begin_of_the_begin":"1776-07-01T00:00:00Z","end_of_the_end":"1776-08-31T23:59:59Z"}}, "sourceExpectation": "status parsed; timespan 1776-07-01T00:00:00Z..1776-07-31T23:59:59Z", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; timespan 1776-07-01T00:00:00Z..1776-07-31T23:59:59Z."
     },
     {
-      "id": "tt-090",
+      "id": "tt-090", "status": "verified",
       "input": "ca. mid 19th century",
       "tags": [
         "circa",
@@ -1440,14 +1391,7 @@
         "band",
         "single"
       ],
-      "expect": {
-        "status": "parsed",
-        "timespan": {
-          "begin_of_the_begin": "1830-01-01T00:00:00Z",
-          "end_of_the_end": "1880-12-31T23:59:59Z"
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 19~","edtf":"1834/1866","timespan":{"begin_of_the_begin":"1834-01-01T00:00:00Z","end_of_the_end":"1866-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; timespan 1830-01-01T00:00:00Z..1880-12-31T23:59:59Z", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; timespan 1830-01-01T00:00:00Z..1880-12-31T23:59:59Z."
     },
     {
       "id": "tt-091",

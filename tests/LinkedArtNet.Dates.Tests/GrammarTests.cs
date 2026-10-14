@@ -176,6 +176,10 @@ public class GrammarTests
     [InlineData("c.1610-p.1635", "1610~/1635")]
     [InlineData("op.1730-, d.1772", "fl 1730/died 1772")]
     [InlineData("A.P., 2005", "2005")]
+    // a band on a round year is the decade with its "s" dropped; a band on another year is a band of that year
+    [InlineData("mid 1740", "mid 174X")]
+    [InlineData("early to mid 1830", "early 183X/mid 183X")]
+    [InlineData("early 1945", "early 1945")]
     // yearrange leftovers: hedged band ranges, postfix relations, month over year, cardinal century pairs, slips in "century"
     [InlineData("Ca. early-mid 20th century.", "early century 20~/mid century 20")]
     [InlineData("Ca. 1936 or earlier.", "not-after 1936~")]

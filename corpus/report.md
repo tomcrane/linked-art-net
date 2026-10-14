@@ -1,6 +1,6 @@
 # Corpus run
 
-Generated 2026-10-14 15:06 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 16:04 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
 ## verified: 543/543 pass (100.0%), calibration error 0.130
 
@@ -17,15 +17,15 @@ Generated 2026-10-14 15:06 UTC by `dotnet run --project tools/Corpus -- run --al
 
 Status (expected->actual): parsed->parsed 527, partial->partial 2, undated->undated 8, unparsed->unparsed 6
 
-## proposed: 1655/1767 pass (93.7%), calibration error 0.119
+## proposed: 1657/1767 pass (93.8%), calibration error 0.120
 
 - imported/edtf-spec.json: 61/61
 - imported/getty.json: 180/180
 - imported/timetwister.json: 79/91
-- imported/yearrange.json: 1335/1435
+- imported/yearrange.json: 1337/1435
 
 Status (expected->actual): parsed->parsed 1760, parsed->undated 1, parsed->unparsed 2, unparsed->unparsed 4
-Weakest tags: single 26/37, timetwister 79/91, archival 79/91, band 274/312, season 29/32, circa 233/257, century 306/337, decade 168/182, uncertain 50/54, named-period 275/297, yearrange 1335/1435, imported 1655/1767, bracketed 457/486, month 181/192, range 435/455
+Weakest tags: single 26/37, timetwister 79/91, archival 79/91, band 276/312, season 29/32, circa 233/257, century 306/337, uncertain 50/54, named-period 275/297, decade 169/182, yearrange 1337/1435, imported 1657/1767, bracketed 457/486, month 181/192, range 435/455
 
 ## disputed: 0/2 pass (0.0%), calibration error 0.675
 
@@ -34,11 +34,11 @@ Weakest tags: single 26/37, timetwister 79/91, archival 79/91, band 274/312, sea
 Status (expected->actual): parsed->parsed 2
 Weakest tags: yearrange 0/2, imported 0/2, range 0/1, band 0/1, named-period 0/2
 
-Since the last run: 1 newly passing, 0 newly failing.
+Since the last run: 3 newly passing, 1 newly failing: yr-0640
 
 ## Failures
 
-By cause: not parsed 3, bounds differ 107, flags only 4.
+By cause: not parsed 3, bounds differ 105, flags only 4.
 
 ### Not parsed (3)
 
@@ -60,7 +60,7 @@ The source has a date and the parser found none: grammar gaps, or strings the so
   - years.start: expected 1000, got (none)
   - years.end: expected 1000, got (none)
 
-### Bounds differ (107)
+### Bounds differ (105)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
@@ -206,13 +206,12 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 1000..1000
   - years.start: expected 1000, got 1983
   - years.end: expected 1000, got 1983
+- `yr-0640` (proposed) "Late 1830 - 1840." -> late 183X/1840
+  - expected: status parsed; years 1830..1840
+  - years.start: expected 1830, got 1837
 - `yr-0649` (proposed) "1300 s - 1400 s c." -> 13XX/14XX~
   - expected: status parsed; years 1300..1409
   - years.end: expected 1409, got 1499
-- `yr-0657` (proposed) "late 1720âs" -> late 1720
-  - expected: status parsed; years 1727..1729
-  - years.start: expected 1727, got 1720
-  - years.end: expected 1729, got 1720
 - `yr-0664` (proposed) "Early 20 century." -> early century 20
   - expected: status parsed; years 1900..1999
   - years.end: expected 1999, got 1924
@@ -303,13 +302,9 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 1744..1746
   - years.start: expected 1744, got 1740
   - years.end: expected 1746, got 1740
-- `yr-1044` (proposed) "late 1750âs - early 1760âs" -> late 1750
+- `yr-1044` (proposed) "late 1750âs - early 1760âs" -> late 175X
   - expected: status parsed; years 1757..1762
-  - years.start: expected 1757, got 1750
-  - years.end: expected 1762, got 1750
-- `yr-1045` (proposed) "Late 1750s - early 1760âs" -> late 175X/early 1760
-  - expected: status parsed; years 1757..1762
-  - years.end: expected 1762, got 1760
+  - years.end: expected 1762, got 1759
 - `yr-1047` (proposed) "1680s or 1690s" -> [168X,169X]
   - expected: status parsed; years 1680..1689
   - years.end: expected 1689, got 1699
@@ -319,9 +314,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
 - `yr-1052` (proposed) "1300 s- 1400 s c. late" -> 13XX/late 14XX~
   - expected: status parsed; years 1300..1409
   - years.end: expected 1409, got 1499
-- `yr-1056` (proposed) "early to mid 1830" -> early 1830/mid 1830
-  - expected: status parsed; years 1830..1836
-  - years.end: expected 1836, got 1830
 - `yr-1060` (proposed) "c. 18011" -> Y18011~
   - expected: status parsed; years 1801..1801; flags Approximate
   - years.start: expected 1801, got 18011

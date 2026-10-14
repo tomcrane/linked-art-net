@@ -710,6 +710,12 @@ internal sealed class DateParser
             return null;
         }
         piece = core;
+        // "mid 1740", "early 1830": a band on a round year means the decade; the dropped "s" is the usual slip. "early 1945" keeps the year.
+        if (piece.Band is not null && piece.Core is YearPoint { Year: var ry } && ry % 10 == 0 && ry >= 1000)
+        {
+            piece = piece with { Core = new Decade(ry) };
+            Penalise(0.1, $"{ry} with a band is read as the decade {ry}s; the band of the single year is the other reading.");
+        }
 
         // suffixes
         while (_p < _t.Count)

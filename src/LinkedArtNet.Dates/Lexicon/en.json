@@ -27,7 +27,7 @@
     "probably": "Uncertain", "perhaps": "Uncertain", "possibly": "Uncertain", "uncertain": "Uncertain", "maybe": "Uncertain", "prob": "Uncertain"
   },
   "eras": { "bc": "Bce", "bce": "Bce", "bp": "Bp", "ad": "Ce", "ce": "Ce", "a.d": "Ce", "anno domini": "Ce" },
-  "relations": { "aft": "After", "aft.": "After",
+  "relations": { "p": "After", "p.": "After", "aft": "After", "aft.": "After",
     "before": "Before", "ante": "Before", "pre": "Before", "prior to": "Before", "earlier than": "Before",
     "after": "After", "post": "After", "later than": "After",
     "by": "By", "until": "Until", "till": "Until", "up to": "Until", "to": "Until",
@@ -38,8 +38,8 @@
   "rangeWords": ["to", "through", "thru", "and"],
   "between": ["between", "from"],
   "or": ["or"],
-  "floruit": ["fl", "flourished", "floruit", "active", "act", "flor", "op", "worked", "working"],
-  "lifecycle": {
+  "floruit": ["op.", "fl", "flourished", "floruit", "active", "act", "flor", "op", "worked", "working"],
+  "lifecycle": { "m.": "Died",
     "b": "Born", "born": "Born", "birth": "Born", "n": "Born", "né": "Born", "née": "Born", "*": "Born",
     "bapt": "Baptised", "baptised": "Baptised", "baptized": "Baptised", "bp": "Baptised", "christened": "Baptised",
     "d": "Died", "died": "Died", "death": "Died", "ob": "Died", "m": "Died", "†": "Died", "+": "Died",

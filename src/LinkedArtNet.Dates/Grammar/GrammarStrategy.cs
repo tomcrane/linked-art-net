@@ -350,9 +350,11 @@ internal sealed class DateParser
 
         if (inner is not Interval)
         {
-            // "active 1430, died 1462", "born 1700, died after 1776": the second marker may follow a comma.
+            // "active 1430, died 1462", "born 1700, died after 1776", "op.1430-m.1462": the second marker may follow a comma or a dash.
             var beforeSecond = _p;
             SkipNoise();
+            if (_p < _t.Count && _t[_p].Kind == TokenKind.Dash && Peek(1) is { Kind: TokenKind.Lifecycle or TokenKind.Floruit }) { _p++; SkipNoise(); }
+            if (_p < _t.Count && _t[_p].Kind == TokenKind.Dash && Peek(1) is { Kind: TokenKind.Comma } && Peek(2) is { Kind: TokenKind.Lifecycle or TokenKind.Floruit }) { _p += 2; SkipNoise(); }
             if (TryLifecycleMarker(out var second))
             {
                 _p++;
@@ -673,6 +675,8 @@ internal sealed class DateParser
                 SkipNoise();
                 continue;
             }
+            // "p." is post only in the ULAN shape "c.1610-p.1635"; "A.P., 2005" and "P 1957" are print marks.
+            if (t.Kind == TokenKind.Relation && Lexicon.Normalise(t.Text) == "p" && !(_p > 0 && _t[_p - 1].Kind == TokenKind.Dash && Peek(1) is { Kind: TokenKind.Number } glued && glued.Start == t.End)) break;
             if (t.Kind == TokenKind.Relation) { piece = piece with { Relation = (Relation)t.Value! }; _p++; SkipJoiner(); SkipNoise(); continue; }
             if (t.Kind == TokenKind.Era && eraFirst is null) { eraFirst = (Era)t.Value!; _p++; continue; }
             break;

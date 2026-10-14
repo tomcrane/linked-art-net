@@ -171,6 +171,12 @@ public class GrammarTests
     [InlineData("94/300 (accually 94/3000), not dated (1978)", "1978")]
     [InlineData("between 1783 or 1784", "[1783,1784]")]
     [InlineData("After 1580, probably 1584.", "1584?")]
+    // ULAN abbreviations: op. (active), m. (died), p. (post)
+    [InlineData("op.1430-m.1462", "fl 1430/died 1462")]
+    [InlineData("c.1610-p.1635", "1610~/1635")]
+    [InlineData("op.1730-, d.1772", "fl 1730/died 1772")]
+    [InlineData("A.P., 2005", "2005")]
+    [InlineData("P 1957", "1957")]
     // negated relations keep their direction
     [InlineData("not earlier than 1450", "not-before 1450")]
     [InlineData("not later than 1450", "not-after 1450")]

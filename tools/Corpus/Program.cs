@@ -5,6 +5,8 @@
 //   dotnet run --project tools/Corpus -- stats               counts by file, status and tag
 //   dotnet run --project tools/Corpus -- promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]
 //                                                           set entry statuses in place (whole file when no ids); verified refuses failing entries; refreshes the report
+//   dotnet run --project tools/Corpus -- review <file ...> [--out <markdown>]
+//                                                           Markdown review of the files for a pull request (corpus-review.yml posts it)
 //   dotnet run --project tools/Corpus -- import yearrange <date-tests.json> | import timetwister <dates_spec.rb> | import getty <dir of ulan-*.json>
 //                                                           write corpus/imported/<source>.json (proposed; see THIRD-PARTY-NOTICES.md)
 //
@@ -25,6 +27,7 @@ if (command == "tokens") return Tokens(args.Length > 2 ? args[1] : "default", ar
 if (command == "advise") return Advise(args.Length > 1 ? args[1] : throw new ArgumentException("advise needs a file of strings, one per line"));
 if (command == "import") return await Importers.Run(args.Length > 1 ? args[1] : "", args.Length > 2 ? args[2] : null, corpusRoot);
 if (command == "promote") return Promote(args.Skip(1).ToArray());
+if (command == "review") return Review(args.Skip(1).ToArray());
 
 return command switch
 {
@@ -36,7 +39,7 @@ return command switch
 
 static int Usage()
 {
-    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
+    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run] | review <file ...> [--out <markdown>] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
     return 2;
 }
 
@@ -106,6 +109,37 @@ int Run(EntryStatus? status, bool write)
     return results.Any(r => !r.Passed && r.Entry.Status == EntryStatus.Verified) ? 1 : 0;
 }
 
+string? ResolveCorpusPath(string given) => new[] { given, Path.Combine(corpusRoot, given), Path.Combine(repoRoot, given) }.FirstOrDefault(File.Exists);
+
+int Review(string[] rest)
+{
+    string? outPath = null;
+    var files = new List<string>();
+    for (var i = 0; i < rest.Length; i++)
+    {
+        if (rest[i] == "--out" && i + 1 < rest.Length) outPath = rest[++i];
+        else if (rest[i].StartsWith("--")) { Console.Error.WriteLine($"review: unknown option {rest[i]}"); return 2; }
+        else files.Add(rest[i]);
+    }
+    if (files.Count == 0) { Console.Error.WriteLine("review needs one or more corpus files: review <file ...> [--out <markdown>]"); return 2; }
+    var loaded = new List<CorpusFile>();
+    foreach (var given in files)
+    {
+        var path = ResolveCorpusPath(given);
+        if (path is null) { Console.Error.WriteLine($"No such corpus file: {given}"); return 2; }
+        loaded.Add(CorpusFile.Load(path, corpusRoot));
+    }
+    var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
+    var markdown = CorpusReview.Markdown(loaded, new CorpusEvaluator(catalog.Get), TimeSpanParser.Version);
+    if (outPath is null) Console.Write(markdown);
+    else
+    {
+        File.WriteAllText(outPath, markdown, new UTF8Encoding(false));
+        Console.WriteLine($"-> {outPath}");
+    }
+    return 0;
+}
+
 int Promote(string[] rest)
 {
     if (rest.Length == 0 || rest[0].StartsWith("--")) { Console.Error.WriteLine("promote needs a corpus file: promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]"); return 2; }
@@ -115,7 +149,7 @@ int Promote(string[] rest)
     var dryRun = rest.Contains("--dry-run");
     var ids = rest.Skip(1).Where((a, i) => !a.StartsWith("--") && i + 1 != toIndex + 1).ToList();
     var given = rest[0];
-    var path = new[] { given, Path.Combine(corpusRoot, given), Path.Combine(repoRoot, given) }.FirstOrDefault(File.Exists);
+    var path = ResolveCorpusPath(given);
     if (path is null) { Console.Error.WriteLine($"No such corpus file: {given}"); return 2; }
 
     var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));

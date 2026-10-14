@@ -1,0 +1,69 @@
+# Evaluates the corpus files a pull request adds or changes and posts the result where the maintainer reads the
+# pull request: the job summary always, and a comment (updated in place on later pushes) when the branch is in this
+# repository. Pull requests from forks get the summary only, because their token cannot write comments.
+# The trainer opens its pull requests from a branch in this repository, so they get the comment.
+#
+# The `verified` gate is the CI workflow's test job; this one is informative and never fails the pull request.
+name: Corpus review
+
+on:
+  pull_request:
+    paths: ['corpus/**']
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Find changed corpus files
+        id: changed
+        run: |
+          files=$(git diff --name-only --diff-filter=AMR "origin/${{ github.base_ref }}...HEAD" -- 'corpus/*.json' 'corpus/**/*.json' \
+            | grep -v '^corpus/schema/' | grep -v '^corpus/report' || true)
+          echo "Changed: ${files:-none}"
+          {
+            echo 'files<<EOF'
+            echo "$files"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Evaluate
+        if: steps.changed.outputs.files != ''
+        env:
+          FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          echo "$FILES" | xargs dotnet run --project tools/Corpus --configuration Release -- review --out corpus-review.md
+          cat corpus-review.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on the pull request
+        if: steps.changed.outputs.files != '' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- corpus-review -->';
+            let body = fs.readFileSync('corpus-review.md', 'utf8');
+            const limit = 60000;
+            if (body.length > limit) {
+              body = body.slice(0, limit) + '\n\n_Truncated; the full review is in the job summary._\n';
+            }
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo, issue_number: context.issue.number, per_page: 100,
+            });
+            const existing = comments.find(c => c.body && c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }

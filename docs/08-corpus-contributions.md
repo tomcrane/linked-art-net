@@ -101,9 +101,15 @@ and that bounds are in order. `promote --dry-run` evaluates every entry in the f
 change, or prints each failing entry with the reason and stops. New trainer entries should all pass, because
 they pin the parser's own realisation, unless the parser changed between the review and the merge.
 
+The same evaluation is posted on the pull request itself: the `Corpus review` workflow
+(`.github/workflows/corpus-review.yml`) runs on every pull request that touches `corpus/`, evaluates the added or
+changed files with `tools/Corpus review`, writes the result to the job summary, and keeps one comment on the pull
+request up to date with it (pull requests from forks get the summary only). The comment lists every entry with
+what the reviewer expected and what the parser says, failures with their reasons, and the exact `promote` commands
+for the branch. So the dry run is optional; the comment has already done it.
+
 Passing only means the parser agrees with the reviewer. The maintainer's question is whether the reviewer
-was right, and the entry's note and tags are there to answer it. GitHub's review shows the diff, not the
-evaluation, so this step is local.
+was right, and the entry's note and tags are there to answer it.
 
 Then:
 
@@ -150,9 +156,9 @@ regardless of status.
 
 ## 7. What is not built yet
 
-- **No review in the GitHub UI.** The pull request shows the diff, not the evaluation, so the maintainer
-  runs `promote --dry-run` locally. A CI check that evaluates new proposed files and comments the result on
-  the pull request would remove that step.
+- **Promotion is still a local step.** The pull request comment shows the evaluation and the commands, but the
+  maintainer runs `promote` on a checkout and pushes. A "verify" button on the comment would need a workflow that
+  commits to the branch, which is a bigger trust decision than a comment.
 - **No "review import" mode.** The imported corpora (yearrange, timetwister, Getty, EDTF spec) are
   `proposed` and are reviewed by editing their files directly, not through the trainer. `promote` with ids
   works on them too.

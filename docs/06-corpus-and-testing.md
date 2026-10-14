@@ -83,7 +83,8 @@ Described in [05-examples-site.md](05-examples-site.md) §1. Key behaviours: sho
 current answer and alternatives; reviewer edits the **canonical expression**, not datetimes, and sees
 the re-realised spans instantly; tags are suggested from flags; submissions open a PR with the new
 `proposed/*.json` entries. The CLI (`tools/Corpus import|validate|run|promote|stats`) covers the same operations
-headlessly; `promote` flips statuses in place and refuses a failing entry (see
+headlessly; `promote` flips statuses in place and refuses a failing entry, and `review` writes the Markdown that
+`.github/workflows/corpus-review.yml` posts on pull requests (see
 [08-corpus-contributions.md](08-corpus-contributions.md) §5).
 
 ## 2. Testing strategy (whole repo)

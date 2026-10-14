@@ -24,6 +24,7 @@ dotnet run --project tools/Corpus -- validate          schema, ids, canonical st
 dotnet run --project tools/Corpus -- run --all --write  evaluate everything; write report.md / report.json
 dotnet run --project tools/Corpus -- stats
 dotnet run --project tools/Corpus -- promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]   set statuses in place; verified refuses failing entries
+dotnet run --project tools/Corpus -- review <file ...> [--out <markdown>]      pull request review of the files (posted by corpus-review.yml)
 dotnet run --project tools/Corpus -- import yearrange <date-tests.json> | import timetwister <dates_spec.rb> | import getty <dir of ulan-*.json>
 dotnet run --project tools/Corpus -- advise <strings.txt>                 profile advice for a dataset
 dotnet run --project tools/Corpus -- tokens <profile> "<text>"            how a string tokenizes and parses

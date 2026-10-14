@@ -115,6 +115,14 @@ internal sealed class DateParser
                 expression = new Interval(expression is Interval { Start: { } s } ? s : expression, end);
                 continue;
             }
+            if (expression is NamedPeriod && IsConcrete(secondary)) { _notes.Add($"The dates in parentheses define the period as this cataloguer has it: {secondary.Canonical}."); expression = secondary; continue; }
+            if (Narrow(expression, secondary) is { } narrowed)
+            {
+                // "Edo period (1615-1868), c. 1705-1715", "c. 1780s (1782?)": a parenthesised date within the span narrows it.
+                _notes.Add($"The parenthesised date {secondary.Canonical} lies within {expression.Canonical}; the span is their overlap, {narrowed.Canonical}.");
+                expression = narrowed;
+                continue;
+            }
             _flags.Add(DateFlag.SecondaryDate);
             Penalise(0.1, $"A second date in parentheses, {secondary.Canonical}, widens the span.");
             expression = Hull(expression, secondary);
@@ -292,6 +300,15 @@ internal sealed class DateParser
             var next = ParseSetOrRange();
             if (next is null) { _p = save; break; }
             if (next == expression || IsRestatement(expression, next)) { _notes.Add("The same date is given twice."); continue; }
+            // "Momoyama period, 1568-1615": explicit years after a period name date the period as this cataloguer does.
+            if (expression is NamedPeriod && IsConcrete(next)) { _notes.Add($"The explicit dates after the period name are taken: {next.Canonical}."); expression = next; continue; }
+            // "Taisho era-Showa era, early 20th century", "Kansei 6 (1794)": a following date that overlaps clarifies; the span is the overlap.
+            if (Narrow(expression, next) is { } narrowed)
+            {
+                Penalise(0.05, $"{next.Canonical} clarifies {expression.Canonical}; the span is their overlap, {narrowed.Canonical}.");
+                expression = narrowed;
+                continue;
+            }
             if (IsPeriod(expression) && !IsPeriod(next)) { _notes.Add($"The explicit dates after the period name are taken: {next.Canonical}."); expression = next; continue; }
             Penalise(0.25, $"Two dates with nothing joining them, {expression.Canonical} and {next.Canonical}; the span covers both.");
             expression = Hull(expression, next);
@@ -1074,6 +1091,96 @@ internal sealed class DateParser
     private static bool IsRestatement(DateExpression main, DateExpression other) =>
         main is NamedPeriod { Resolved: { } r } && (r == other || (r is Interval { Start: { } s, End: { } e } && other is Interval { Start: { } os, End: { } oe } && s == os && e == oe));
 
+    /// <summary>
+    /// The overlap of two expressions when they overlap and both have plain bounds; null otherwise. Bounds are chosen,
+    /// not computed: the later start and the earlier end are taken from whichever expression supplies them, so the
+    /// realiser still does the arithmetic. Years are approximated with the profile's band tables only to decide which.
+    /// </summary>
+    private DateExpression? Narrow(DateExpression a, DateExpression b)
+    {
+        if (!IsPlain(a) || !IsPlain(b)) return null;
+        var (sa, ea, sb, eb) = (StartYear(a), EndYear(a), StartYear(b), EndYear(b));
+        if (sa is null || ea is null || sb is null || eb is null) return null;
+        if (sa > eb || sb > ea) return null;
+        var start = sa >= sb ? StartOf(a) : StartOf(b);
+        var end = ea <= eb ? EndOf(a) : EndOf(b);
+        if (start is null || end is null) return null;
+        if (start == StartOf(a) && end == EndOf(a)) return a;
+        if (start == StartOf(b) && end == EndOf(b)) return b;
+        return new Interval(start, end);
+
+        static DateExpression? StartOf(DateExpression e) => e is Interval i ? i.Start : e;
+        static DateExpression? EndOf(DateExpression e) => e is Interval i ? i.End : e;
+        static bool IsPlain(DateExpression e) => e switch
+        {
+            Interval i => (i.Start is null || IsPlainBound(i.Start)) && (i.End is null || IsPlainBound(i.End)),
+            _ => IsPlainBound(e),
+        };
+        static bool IsPlainBound(DateExpression e) => e switch
+        {
+            Qualified q => IsPlainBound(q.Inner),
+            Banded bd => IsPlainBound(bd.Inner),
+            DatePoint => true,
+            _ => false,
+        };
+    }
+
+    /// <summary>Years, months or days, possibly hedged, alone or as the bounds of an interval: a date given outright rather than by a name or a band.</summary>
+    private static bool IsConcrete(DateExpression e) => e switch
+    {
+        YearPoint or MonthPoint or DayPoint => true,
+        Qualified q => IsConcrete(q.Inner),
+        Interval { Start: { } s, End: { } en } => IsConcrete(s) && IsConcrete(en),
+        _ => false,
+    };
+
+    private long? StartYear(DateExpression e) => e switch
+    {
+        YearPoint y => y.Year, MonthPoint m => m.Year, DayPoint d => d.Year, SeasonPoint s => s.Year,
+        Decade d => d.FirstYear, Century c => Order(c), Millennium m => m.Era == Era.Bce ? -1000L * m.Number + 1 : 1000L * (m.Number - 1),
+        UnspecifiedDigits u => u.Minimum,
+        NamedPeriod { Resolved: { } r } => StartYear(r),
+        Banded bd => BandYears(bd) is { } span ? span.Start : null,
+        Qualified q => StartYear(q.Inner),
+        Interval { Start: { } s } => StartYear(s),
+        _ => null,
+    };
+
+    private long? EndYear(DateExpression e) => e switch
+    {
+        YearPoint y => y.Year, MonthPoint m => m.Year, DayPoint d => d.Year, SeasonPoint s => s.Year,
+        Decade d => d.LastYear, Century c => Order(c) + 99, Millennium m => StartYear(m) + 999,
+        UnspecifiedDigits u => long.Parse(u.Pattern.Replace('X', '9')),
+        NamedPeriod { Resolved: { } r } => EndYear(r),
+        Banded bd => BandYears(bd) is { } span ? span.End : null,
+        Qualified q => EndYear(q.Inner),
+        Interval { End: { } en } => EndYear(en),
+        _ => null,
+    };
+
+    /// <summary>Where a band falls, in years, under the profile: exact for centuries and decades, proportional for periods.</summary>
+    private (long Start, long End)? BandYears(Banded banded)
+    {
+        var start = StartYear(banded.Inner);
+        var end = EndYear(banded.Inner);
+        if (start is null || end is null) return null;
+        var length = end.Value - start.Value + 1;
+        var table = banded.Inner is Decade ? _profile.DecadeBands : _profile.CenturyBands;
+        var range = banded.Band switch
+        {
+            Band.Early => table.Early, Band.Mid => table.Mid, Band.Late => table.Late,
+            Band.BeginningOf => table.BeginningOf, Band.EndOf => table.EndOf,
+            Band.FirstHalf => new BandRange(0, table.Length / 2 - 1), Band.SecondHalf => new BandRange(table.Length / 2, table.Length - 1),
+            Band.FirstQuarter => new BandRange(0, table.Length / 4 - 1), Band.SecondQuarter => new BandRange(table.Length / 4, table.Length / 2 - 1),
+            Band.ThirdQuarter => new BandRange(table.Length / 2, 3 * table.Length / 4 - 1), Band.FourthQuarter => new BandRange(3 * table.Length / 4, table.Length - 1),
+            _ => new BandRange(0, table.Length - 1),
+        };
+        // scale the table's positions to the span's length (a period is not 100 years long)
+        var from = start.Value + (long)Math.Round(length * range.Start / (double)table.Length);
+        var to = start.Value + (long)Math.Round(length * (range.End + 1) / (double)table.Length) - 1;
+        return (from, Math.Max(from, to));
+    }
+
     private static DateExpression Hull(DateExpression a, DateExpression b)
     {
         DateExpression Start(DateExpression e) => e is Interval { Start: { } s } ? s : e;
@@ -1088,6 +1195,7 @@ internal sealed class DateParser
         YearPoint y => y.Year, MonthPoint m => m.Year, DayPoint d => d.Year, Decade d => d.FirstYear,
         Century c => c.Era == Era.Bce ? -100L * c.Number : 100L * (c.Number - 1), UnspecifiedDigits u => u.Minimum,
         Qualified q => Order(q.Inner), Banded b => Order(b.Inner), Relative r => Order(r.Inner), Lifecycle l => Order(l.Inner),
+        NamedPeriod { Resolved: { } r } => Order(r),
         Interval { Start: { } s } => Order(s), _ => long.MinValue,
     };
 }

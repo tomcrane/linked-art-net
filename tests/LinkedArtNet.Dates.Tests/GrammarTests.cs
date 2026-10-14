@@ -261,6 +261,23 @@ public class GrammarTests
     }
 
     [Fact]
+    public void A_following_or_parenthesised_date_that_overlaps_narrows_the_span()
+    {
+        // the era range is primary; the century phrase clarifies it for a reader who does not know the eras
+        Assert.Equal("period:taisho/early century 20", TimeSpanParser.Default.Parse("Japanese, Taishô era–Shôwa era, early 20th century").Canonical);
+        Assert.Equal("period:taisho/period:showa", TimeSpanParser.Default.Parse("Japanese, Taishô era–Shôwa era, 20th century").Canonical);
+        Assert.Equal("early century 20/period:meiji", TimeSpanParser.Default.Parse("Meiji era, early 20th century").Canonical);
+        // a parenthesised date inside the span narrows it; outside, it still widens it
+        Assert.Equal("1705~/1715", TimeSpanParser.Default.Parse("Edo period (1615-1868), c. 1705-1715").Canonical);
+        Assert.Equal("1782?", TimeSpanParser.Default.Parse("c. 1780s (1782?)").Canonical);
+        Assert.Equal("1977/1978", TimeSpanParser.Default.Parse("1977 (1978)").Canonical);
+        Assert.Equal("1886", TimeSpanParser.Default.Parse("明治19年(1886)").Canonical);
+        // explicit years right after a period name date the period as the cataloguer does
+        Assert.Equal("1568/1615", TimeSpanParser.Default.Parse("Momoyama period, 1568-1615").Canonical);
+        Assert.Equal("1867/1912", TimeSpanParser.Default.Parse("Meiji Period (1867-1912)").Canonical);
+    }
+
+    [Fact]
     public void A_band_after_a_comma_belongs_to_the_period_before_it_when_a_range_follows()
     {
         Assert.Equal("late period:edo/early period:meiji", TimeSpanParser.Default.Parse("Edo period, Late to early Meiji period").Canonical);

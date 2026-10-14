@@ -1526,21 +1526,14 @@
       }
     },
     {
-      "id": "yr-0099",
+      "id": "yr-0099", "status": "verified",
       "input": "19thC(late)",
       "tags": [
         "century",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 19","edtf":"1875/1899","timespan":{"begin_of_the_begin":"1875-01-01T00:00:00Z","end_of_the_end":"1899-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899."
     },
     {
       "id": "yr-0100",
@@ -1997,21 +1990,14 @@
       }
     },
     {
-      "id": "yr-0131",
+      "id": "yr-0131", "status": "verified",
       "input": "20thC(early)",
       "tags": [
         "century",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0132",
@@ -2820,21 +2806,14 @@
       }
     },
     {
-      "id": "yr-0187",
+      "id": "yr-0187", "status": "verified",
       "input": "19thC(early) (floruit)",
       "tags": [
         "century",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 19","edtf":"1800/1824","timespan":{"begin_of_the_begin":"1800-01-01T00:00:00Z","end_of_the_end":"1824-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899."
     },
     {
       "id": "yr-0188", "status": "verified",
@@ -2861,21 +2840,14 @@
       }
     },
     {
-      "id": "yr-0190",
+      "id": "yr-0190", "status": "verified",
       "input": "19thC(mid)",
       "tags": [
         "century",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 19","edtf":"1840/1859","timespan":{"begin_of_the_begin":"1840-01-01T00:00:00Z","end_of_the_end":"1859-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899."
     },
     {
       "id": "yr-0191",
@@ -4464,19 +4436,12 @@
       }
     },
     {
-      "id": "yr-0298",
+      "id": "yr-0298", "status": "verified",
       "input": "Later 20th century.",
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0299",
@@ -4996,12 +4961,12 @@
       }
     },
     {
-      "id": "yr-0334",
+      "id": "yr-0334", "status": "verified",
       "input": "Later 20th C.",
       "tags": [
         "century"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1999}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0335",
@@ -6098,20 +6063,13 @@
       }
     },
     {
-      "id": "yr-0412",
+      "id": "yr-0412", "status": "verified",
       "input": "Late 17. century",
       "tags": [
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 17","edtf":"1675/1699","timespan":{"begin_of_the_begin":"1675-01-01T00:00:00Z","end_of_the_end":"1699-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1600..1699", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1600..1699."
     },
     {
       "id": "yr-0413",
@@ -6581,23 +6539,13 @@
       "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0450",
+      "id": "yr-0450", "status": "verified",
       "input": "ca. 19\u201320th century",
       "tags": [
         "circa",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 19~/century 20","edtf":"1800~/1999","timespan":{"begin_of_the_begin":"1800-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999; flags Approximate."
     },
     {
       "id": "yr-0451",
@@ -8396,20 +8344,13 @@
       "expect": {"status":"parsed","kind":"single","canonical":"2005-01","edtf":"2005-01","timespan":{"begin_of_the_begin":"2005-01-01T00:00:00Z","end_of_the_end":"2005-01-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1997..1997", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1997..1997."
     },
     {
-      "id": "yr-0581",
+      "id": "yr-0581", "status": "verified",
       "input": "Second half of the 1850s.",
       "tags": [
         "decade",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1850,
-          "end": 1859
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"h2 185X","edtf":"1855/1859","timespan":{"begin_of_the_begin":"1855-01-01T00:00:00Z","end_of_the_end":"1859-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1850..1859", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1850..1859."
     },
     {
       "id": "yr-0582",
@@ -8572,21 +8513,14 @@
       }
     },
     {
-      "id": "yr-0593",
+      "id": "yr-0593", "status": "verified",
       "input": "18thC(late) (floruit)",
       "tags": [
         "century",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 18","edtf":"1775/1799","timespan":{"begin_of_the_begin":"1775-01-01T00:00:00Z","end_of_the_end":"1799-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1700..1799", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1700..1799."
     },
     {
       "id": "yr-0594",
@@ -9229,20 +9163,13 @@
       }
     },
     {
-      "id": "yr-0640",
+      "id": "yr-0640", "status": "verified",
       "input": "Late 1830 - 1840.",
       "tags": [
         "range",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1830,
-          "end": 1840
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late 183X/1840","edtf":"1837/1840","timespan":{"begin_of_the_begin":"1837-01-01T00:00:00Z","end_of_the_end":"1840-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1830..1840", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1830..1840."
     },
     {
       "id": "yr-0641",
@@ -9343,10 +9270,10 @@
       "expect": {"status": "parsed", "years": {"start": 1500, "end": 1599}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0649",
+      "id": "yr-0649", "status": "verified",
       "input": "1300 s - 1400 s c.",
       "tags": [],
-      "expect": {"status": "parsed", "years": {"start": 1300, "end": 1409}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"13XX/14XX~","edtf":"13XX/14XX~","timespan":{"begin_of_the_begin":"1300-01-01T00:00:00Z","end_of_the_end":"1499-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1300..1409", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1300..1409."
     },
     {
       "id": "yr-0650",
@@ -9563,20 +9490,13 @@
       }
     },
     {
-      "id": "yr-0664",
+      "id": "yr-0664", "status": "verified",
       "input": "Early 20 century.",
       "tags": [
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 20","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
       "id": "yr-0665",
@@ -11300,20 +11220,13 @@
       "expect": {"status":"parsed","kind":"single","canonical":"early century 20?","edtf":"1900/1924","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1924-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1794..1795; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1794..1795; flags Approximate."
     },
     {
-      "id": "yr-0792",
+      "id": "yr-0792", "status": "verified",
       "input": "Early 19. century",
       "tags": [
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"early century 19","edtf":"1800/1824","timespan":{"begin_of_the_begin":"1800-01-01T00:00:00Z","end_of_the_end":"1824-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899."
     },
     {
       "id": "yr-0793",
@@ -11533,19 +11446,12 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1929}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0810",
+      "id": "yr-0810", "status": "verified",
       "input": "9th\u201310th century",
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 900,
-          "end": 999
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 9/century 10","edtf":"0800/0999","timespan":{"begin_of_the_begin":"0800-01-01T00:00:00Z","end_of_the_end":"0999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 900..999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 900..999."
     },
     {
       "id": "yr-0811",
@@ -12299,21 +12205,14 @@
       }
     },
     {
-      "id": "yr-0874",
+      "id": "yr-0874", "status": "verified",
       "input": "19thC(late) (about)",
       "tags": [
         "century",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late century 19~","edtf":"1875/1899","timespan":{"begin_of_the_begin":"1875-01-01T00:00:00Z","end_of_the_end":"1899-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899."
     },
     {
       "id": "yr-0875",
@@ -12783,14 +12682,14 @@
       "expect": {"status":"parsed","kind":"single","canonical":"1964","edtf":"1964","timespan":{"begin_of_the_begin":"1964-01-01T00:00:00Z","end_of_the_end":"1964-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1963..1963", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1963..1963."
     },
     {
-      "id": "yr-0907",
+      "id": "yr-0907", "status": "verified",
       "input": "18thC-19thC (?)",
       "tags": [
         "uncertain",
         "century",
         "bracketed"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1799}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"century 18/century 19?","edtf":"1700/1899?","timespan":{"begin_of_the_begin":"1700-01-01T00:00:00Z","end_of_the_end":"1899-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1700..1799", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1700..1799."
     },
     {
       "id": "yr-0908",
@@ -13387,7 +13286,7 @@
       }
     },
     {
-      "id": "yr-0950",
+      "id": "yr-0950", "status": "verified",
       "input": "19thC(mid) (circa)",
       "tags": [
         "circa",
@@ -13395,17 +13294,7 @@
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 19~","edtf":"1840/1859","timespan":{"begin_of_the_begin":"1840-01-01T00:00:00Z","end_of_the_end":"1859-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899; flags Approximate."
     },
     {
       "id": "yr-0951", "status": "verified",
@@ -13898,22 +13787,15 @@
       }
     },
     {
-      "id": "yr-0987",
+      "id": "yr-0987", "status": "verified",
       "input": "13thC-14thC",
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1200,
-          "end": 1299
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 13/century 14","edtf":"1200/1399","timespan":{"begin_of_the_begin":"1200-01-01T00:00:00Z","end_of_the_end":"1399-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1200..1299", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1200..1299."
     },
     {
-      "id": "yr-0988",
+      "id": "yr-0988", "status": "verified",
       "input": "19thC(mid) (? circa floruit)",
       "tags": [
         "circa",
@@ -13922,17 +13804,7 @@
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 19","edtf":"1840/1859","timespan":{"begin_of_the_begin":"1840-01-01T00:00:00Z","end_of_the_end":"1859-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899; flags Approximate."
     },
     {
       "id": "yr-0989",
@@ -13951,24 +13823,14 @@
       }
     },
     {
-      "id": "yr-0990",
+      "id": "yr-0990", "status": "verified",
       "input": "15thC-16thC (circa)",
       "tags": [
         "circa",
         "century",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1499
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 15/century 16~","edtf":"1400/1599~","timespan":{"begin_of_the_begin":"1400-01-01T00:00:00Z","end_of_the_end":"1599-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1400..1499; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1400..1499; flags Approximate."
     },
     {
       "id": "yr-0991",
@@ -14159,21 +14021,14 @@
       }
     },
     {
-      "id": "yr-1003",
+      "id": "yr-1003", "status": "verified",
       "input": "18thC(mid) (floruit)",
       "tags": [
         "century",
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 18","edtf":"1740/1759","timespan":{"begin_of_the_begin":"1740-01-01T00:00:00Z","end_of_the_end":"1759-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1700..1799", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1700..1799."
     },
     {
       "id": "yr-1004",
@@ -14825,12 +14680,12 @@
       }
     },
     {
-      "id": "yr-1050",
+      "id": "yr-1050", "status": "verified",
       "input": "1600 s c. early",
       "tags": [
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1699}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"early 16XX~","edtf":"1600/1624","timespan":{"begin_of_the_begin":"1600-01-01T00:00:00Z","end_of_the_end":"1624-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1600..1699", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1600..1699."
     },
     {
       "id": "yr-1051", "status": "verified",
@@ -14841,12 +14696,12 @@
       "expect": {"status":"parsed","kind":"single","canonical":"1910?/1915?","edtf":"1910?/1915?","timespan":{"begin_of_the_begin":"1910-01-01T00:00:00Z","end_of_the_end":"1915-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1856..1858", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1856..1858."
     },
     {
-      "id": "yr-1052",
+      "id": "yr-1052", "status": "verified",
       "input": "1300 s- 1400 s c. late",
       "tags": [
         "band"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1300, "end": 1409}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"13XX/late 14XX~","edtf":"13XX/1499~","timespan":{"begin_of_the_begin":"1300-01-01T00:00:00Z","end_of_the_end":"1499-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1300..1409", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1300..1409."
     },
     {
       "id": "yr-1053",
@@ -17030,19 +16885,12 @@
       }
     },
     {
-      "id": "yr-1207",
+      "id": "yr-1207", "status": "verified",
       "input": "Middle 18. century",
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 18","edtf":"1740/1759","timespan":{"begin_of_the_begin":"1740-01-01T00:00:00Z","end_of_the_end":"1759-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1700..1799", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1700..1799."
     },
     {
       "id": "yr-1208",
@@ -18080,24 +17928,14 @@
       }
     },
     {
-      "id": "yr-1280",
+      "id": "yr-1280", "status": "verified",
       "input": "Ca. late 1740s - 1750s.",
       "tags": [
         "circa",
         "decade",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1740,
-          "end": 1759
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"late 174X~/175X","edtf":"1747~/175X","timespan":{"begin_of_the_begin":"1747-01-01T00:00:00Z","end_of_the_end":"1759-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1740..1759; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1740..1759; flags Approximate."
     },
     {
       "id": "yr-1281",
@@ -19989,20 +19827,13 @@
       }
     },
     {
-      "id": "yr-1420",
+      "id": "yr-1420", "status": "verified",
       "input": "1890 (early state, not later album format)",
       "tags": [
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1892
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"1890","edtf":"1890","timespan":{"begin_of_the_begin":"1890-01-01T00:00:00Z","end_of_the_end":"1890-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1890..1892", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1890..1892."
     },
     {
       "id": "yr-1421",

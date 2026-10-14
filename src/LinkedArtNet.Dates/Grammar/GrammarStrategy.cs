@@ -377,8 +377,8 @@ internal sealed class DateParser
         if (a.Core is null && a.Band is not null && b.Core is not null) a = a with { Core = b.Core is Banded bb ? bb.Inner : b.Core };
         if (a.Core is PendingMonth pm && b.Core is MonthPoint mp) a = a with { Core = new MonthPoint(mp.Year, pm.Month) };
         if (a.Core is PendingMonth pm2 && b.Core is DayPoint dp) a = a with { Core = new MonthPoint(dp.Year, pm2.Month) };
-        if (a.Core is UnspecifiedDigits ua && a.AmbiguousDecade is { } ad && b.Core is Decade) a = a with { Core = new Decade(ad) };
-        if (b.Core is UnspecifiedDigits ub && b.AmbiguousDecade is { } bd && a.Core is Decade) b = b with { Core = new Decade(bd) };
+        if (a.Core is UnspecifiedDigits && a.AmbiguousDecade is { } ad && b.Core is Decade) { a = a with { Core = new Decade(ad) }; ResolvedAsDecade(ad); }
+        if (b.Core is UnspecifiedDigits && b.AmbiguousDecade is { } bd && a.Core is Decade) { b = b with { Core = new Decade(bd) }; ResolvedAsDecade(bd); }
         // Days and months that borrow the rest of the date from the other bound: "4-10 July 1776", "1776 July 4-10",
         // "May 4 - July 10 1776", "1776 May 4 - July 10", "1776 July-September".
         if (a.Core is PendingDay pdA && b.Core is DayPoint dB) a = a with { Core = new DayPoint(dB.Year, dB.Month, pdA.Day) };
@@ -820,6 +820,13 @@ internal sealed class DateParser
     {
         if (_p < _t.Count && _p > 0 && _t[_p].Kind == TokenKind.Dash && _p + 1 < _t.Count && _t[_p + 1].Kind != TokenKind.Dash
             && _t[_p].Start == _t[_p - 1].End && _t[_p + 1].Start == _t[_p].End) _p++;
+    }
+
+    /// <summary>A bare "2000s" was read as a century, with a note; the other end of the range has settled it as a decade.</summary>
+    private void ResolvedAsDecade(long decade)
+    {
+        _notes.RemoveAll(n => n.Contains($"century {decade}-{decade + 99}", StringComparison.Ordinal));
+        _notes.Add($"'{decade}s' is read as the decade {decade}-{decade + 9} because the other end of the range is a decade.");
     }
 
     private void Penalise(double amount, string? note)

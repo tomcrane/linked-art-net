@@ -198,4 +198,18 @@ public class GrammarTests
         Assert.Equal("fl 1451/1473", prose.Canonical);
         Assert.True(prose.Confidence < 0.95);
     }
+
+    [Fact]
+    public void A_bare_2000s_is_a_century_alone_but_a_decade_when_the_other_end_of_the_range_is_one()
+    {
+        var alone = TimeSpanParser.Default.Parse("2000s");
+        Assert.Equal("20XX", alone.Canonical);
+        Assert.Contains(alone.Notes, n => n.Contains("read as the century 2000-2099"));
+
+        var ranged = TimeSpanParser.Default.Parse("[1950s-2000s]");
+        Assert.Equal("195X/200X", ranged.Canonical);
+        Assert.Equal("2009-12-31T23:59:59Z", ranged.TimeSpan!.EndOfTheEnd!.ToString());
+        Assert.DoesNotContain(ranged.Notes, n => n.Contains("century"));
+        Assert.Contains(ranged.Notes, n => n.Contains("read as the decade 2000-2009"));
+    }
 }

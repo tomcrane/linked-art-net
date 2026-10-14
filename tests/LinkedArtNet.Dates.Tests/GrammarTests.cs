@@ -178,6 +178,9 @@ public class GrammarTests
     [InlineData("A.P., 2005", "2005")]
     // a band on a round year is the decade with its "s" dropped; a band on another year is a band of that year
     [InlineData("mid 1740", "mid 174X")]
+    // a hedge inside a remark that names no year applies to the date outside it
+    [InlineData("1788 (artist;circa)", "1788~")]
+    [InlineData("1795 (c. 11th month)", "1795~")]
     [InlineData("early to mid 1830", "early 183X/mid 183X")]
     [InlineData("early 1945", "early 1945")]
     // yearrange leftovers: hedged band ranges, postfix relations, month over year, cardinal century pairs, slips in "century"

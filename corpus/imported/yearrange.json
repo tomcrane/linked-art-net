@@ -1363,17 +1363,10 @@
       }
     },
     {
-      "id": "yr-0087",
+      "id": "yr-0087", "status": "verified",
       "input": "1936 or earlier.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1936,
-          "end": 1936
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"not-after 1936","edtf":"../1936","timespan":{"end_of_the_end":"1936-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1936..1936", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1936..1936."
     },
     {
       "id": "yr-0088",
@@ -4244,22 +4237,12 @@
       }
     },
     {
-      "id": "yr-0286",
+      "id": "yr-0286", "status": "verified",
       "input": "Ca. 1936 or earlier.",
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1936,
-          "end": 1936
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"not-after 1936~","edtf":"../1936","timespan":{"end_of_the_end":"1936-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1936..1936; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1936..1936; flags Approximate."
     },
     {
       "id": "yr-0287",
@@ -7742,7 +7725,7 @@
       }
     },
     {
-      "id": "yr-0541",
+      "id": "yr-0541", "status": "verified",
       "input": "1795 (c. 11th month)",
       "tags": [
         "circa",
@@ -13934,7 +13917,7 @@
       }
     },
     {
-      "id": "yr-1006",
+      "id": "yr-1006", "status": "verified",
       "input": "1788 (artist;circa)",
       "tags": [
         "circa",
@@ -17062,22 +17045,12 @@
       }
     },
     {
-      "id": "yr-1230",
+      "id": "yr-1230", "status": "verified",
       "input": "ca. 1910 or later",
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1910,
-          "end": 1910
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"not-before 1910~","edtf":"1910/..","timespan":{"begin_of_the_begin":"1910-01-01T00:00:00Z"}}, "sourceExpectation": "status parsed; years 1910..1910; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1910..1910; flags Approximate."
     },
     {
       "id": "yr-1231",
@@ -22523,23 +22496,13 @@
       }
     },
     {
-      "id": "yr-1620",
+      "id": "yr-1620", "status": "verified",
       "input": "18th century. Copy of a mosaic of c.800.",
       "tags": [
         "circa",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"century 18","edtf":"1700/1799","timespan":{"begin_of_the_begin":"1700-01-01T00:00:00Z","end_of_the_end":"1799-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1700..1799; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1700..1799; flags Approximate."
     },
     {
       "id": "yr-1621",

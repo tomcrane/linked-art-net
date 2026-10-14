@@ -263,6 +263,14 @@ internal sealed class DateParser
                 main.Add(inner.First(x => x.Kind == TokenKind.Hedge));
                 continue;
             }
+            // "1788 (artist;circa)", "1795 (c. 11th month)": a hedge in a remark that names no year applies to the main date.
+            if (inner.Any(x => x.Kind == TokenKind.Hedge)
+                && !inner.Any(x => (x.Kind == TokenKind.Number && x.Digits >= 3) || x.Kind == TokenKind.Unspecified || (x.Kind == TokenKind.Roman && x.Number >= 1000))
+                && !inner.Any(x => x.Kind == TokenKind.Word && _periods is not null && _periods.TryResolve(x.Text, out _)))
+            {
+                main.Add(inner.First(x => x.Kind == TokenKind.Hedge));
+                continue;
+            }
             if (!inner.Any(x => x.Kind is TokenKind.Number or TokenKind.Ordinal or TokenKind.Roman or TokenKind.Unspecified))
             {
                 // "1830s (mid.)", "1950's (early printing)": a band alone qualifies the main date. "(Meiji Period)" may name a

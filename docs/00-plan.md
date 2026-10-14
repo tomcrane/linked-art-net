@@ -280,6 +280,16 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     including one that renders all 183 example pages. Dockerfile; the GHCR workflow now builds both images.
     Not done: the trainer (`/dates/train`, step 3) and the axe accessibility lint.
 
-Next: Phase 3 step 3 (trainer, capture review, PR submissions); hosting and domains are the owner's. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
+20. ~~Phase 3 step 3: the trainer.~~ Done 2026-10-14. `/dates/train` in the examples site: GitHub OAuth (generic OAuth
+    handler, no extra package) with an allow-list `Trainer:Reviewers`, or `Trainer:AllowLocalReviewer` for
+    development; queue from pasted or uploaded lists and from the service's capture JSONL (`Trainer:CapturePath`);
+    review page shows the parser's answer and takes accept / correct (canonical expression with live re-realisation,
+    status, intent, profile, tags, notes) / skip; submissions become `proposed` entries with the realised bounds
+    pinned; export as a downloadable corpus file or a pull request under `corpus/proposed/` through the GitHub REST
+    API (`Trainer:Submission:Repo`, `:Token`, `:BaseBranch`). Store is two JSON files in `Trainer:DataDirectory`
+    (gitignored; mount a volume in a container). 5 tests incl. a round trip against a fake GitHub.
+
+Next: Phase 3 is complete apart from hosting, which is the owner's. Candidates: the open Phase 2 items (PeriodO period
+source, `IDateInterpreter` LLM interpreter, benchmarks), the axe lint, or the owner's review items. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
 so the "NuGet ... preview" acceptance items are not gates between phases.

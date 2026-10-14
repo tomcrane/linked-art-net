@@ -1,7 +1,10 @@
 # Design: Examples site (`LinkedArtNet.ExamplesSite`)
 
-Status (2026-10-14): implemented in `src/LinkedArtNet.ExamplesSite` except the trainer (`/dates/train`, Phase 3 step 3)
-and the axe lint. The C# is extracted by `tools/ExampleSourceExtractor` into `examples/source.json` rather than an MSBuild
+Status (2026-10-14): implemented in `src/LinkedArtNet.ExamplesSite`, including the trainer; the axe lint is not wired in.
+Trainer configuration: `Trainer:GitHub:ClientId`/`ClientSecret` (OAuth app callback `/dates/train/signin-github`),
+`Trainer:Reviewers` (GitHub logins), `Trainer:Submission:Repo`/`Token`/`BaseBranch` for pull requests,
+`Trainer:CapturePath` for the service's capture file, `Trainer:DataDirectory` for the queue and submissions
+(two JSON files; persist it). `Trainer:AllowLocalReviewer` signs anyone in as "local" and is for development only. The C# is extracted by `tools/ExampleSourceExtractor` into `examples/source.json` rather than an MSBuild
 task; run it after editing an example (a test fails otherwise). The playground parses in-process unless
 `TimeSpanService:BaseUrl` is set. Run locally with `dotnet run --project src/LinkedArtNet.ExamplesSite`.
 

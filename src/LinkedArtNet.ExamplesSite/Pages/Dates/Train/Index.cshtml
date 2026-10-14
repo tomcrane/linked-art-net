@@ -1,0 +1,98 @@
+@page "/dates/train"
+@model LinkedArtNet.ExamplesSite.Pages.Dates.Train.IndexModel
+@{
+    ViewData["Title"] = "Corpus trainer";
+}
+<h1>Corpus trainer</h1>
+<p class="lede">
+    Review date strings the parser is unsure about and turn each one into a proposed corpus entry. Signed in as
+    <strong>@User.Identity?.Name</strong>.
+</p>
+<form method="post" action="/dates/train/logout" class="inline-form"><button type="submit" class="link">Sign out</button></form>
+
+@if (Model.Message is not null)
+{
+    <aside class="notice">@Html.Raw(Model.Message)</aside>
+}
+
+<section class="stats" aria-label="Queue">
+    <div><strong>@Model.Pending</strong><span>waiting for review</span></div>
+    <div><strong>@Model.Done</strong><span>reviewed</span></div>
+    <div><strong>@Model.Skipped</strong><span>skipped</span></div>
+    <div><strong>@Model.Unexported.Count</strong><span>entries not yet exported</span></div>
+</section>
+
+@if (Model.Pending > 0)
+{
+    <p><a class="button" href="/dates/train/review">Review the next input</a></p>
+}
+
+<h2>Add inputs</h2>
+<form method="post" asp-page-handler="Add" enctype="multipart/form-data" class="stack">
+    <label>One date string per line
+        <textarea name="inputs" rows="6" placeholder="circa 1850&#10;fl. 1480-1510&#10;Edo period"></textarea>
+    </label>
+    <label>Or a text file, one per line <input type="file" name="file" accept=".txt,.csv,.jsonl" /></label>
+    <div class="row">
+        <label>Profile
+            <select name="profile">@foreach (var p in Model.Profiles) { <option value="@p">@p</option> }</select>
+        </label>
+        <label>Intent
+            <select name="intent"><option value="auto">auto</option><option value="single">single</option><option value="pair">pair</option></select>
+        </label>
+        <button type="submit">Add to queue</button>
+    </div>
+</form>
+
+@if (Model.CaptureAvailable)
+{
+    <form method="post" asp-page-handler="ImportCapture">
+        <p>The dates service has captured low-confidence inputs. <button type="submit">Import captured inputs</button></p>
+    </form>
+}
+
+<h2>Export</h2>
+@if (Model.Unexported.Count == 0)
+{
+    <p class="muted">Nothing to export. Review some inputs first.</p>
+}
+else
+{
+    <p>@Model.Unexported.Count reviewed entr@(Model.Unexported.Count == 1 ? "y" : "ies") will go into one corpus file under <code>corpus/proposed/</code>.</p>
+    <div class="row">
+        <form method="post" asp-page-handler="Download"><button type="submit">Download the corpus file</button></form>
+        @if (Model.PullRequestsConfigured)
+        {
+            <form method="post" asp-page-handler="PullRequest"><button type="submit">Open a pull request</button></form>
+        }
+        else
+        {
+            <span class="muted">Pull requests are not configured on this server; download the file and commit it.</span>
+        }
+    </div>
+    <table class="examples">
+        <thead><tr><th>Input</th><th>Expectation</th><th>Reviewer</th><th>When</th></tr></thead>
+        <tbody>
+        @foreach (var s in Model.Unexported)
+        {
+            <tr>
+                <td>@s.Entry.Input<br /><small class="muted">@s.Entry.Id · @s.Entry.Profile · @s.Entry.Intent</small></td>
+                <td>@s.Entry.Expect.Status @if (s.Entry.Expect.Canonical is not null) { <code>@s.Entry.Expect.Canonical</code> } @if (s.Entry.Expect.Edtf is not null) { <small>@s.Entry.Expect.Edtf</small> }</td>
+                <td>@s.Reviewer</td>
+                <td>@s.At.ToString("yyyy-MM-dd HH:mm")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (Model.Exported.Count > 0)
+{
+    <h2>Exported</h2>
+    <ul>
+        @foreach (var g in Model.Exported)
+        {
+            <li>@g.Count entr@(g.Count == 1 ? "y" : "ies") → @if (g.Target.StartsWith("http")) { <a href="@g.Target">@g.Target</a> } else { @g.Target }</li>
+        }
+    </ul>
+}

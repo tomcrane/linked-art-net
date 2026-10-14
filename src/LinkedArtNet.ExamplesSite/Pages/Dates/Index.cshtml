@@ -68,7 +68,7 @@
             <h3>Other readings</h3>
             <ul>@foreach (var a in r.Alternatives) { <li><code>@a.Canonical</code> (@a.Confidence.ToString("0.00")): @a.Note</li> }</ul>
         }
-        <p class="muted">Source: @r.Source. Wrong? The corpus trainer (coming next) will take a correction; for now
+        <p class="muted">Source: @r.Source. Wrong? Reviewers can <a href="/dates/train">correct it in the trainer</a>; anyone can
             <a href="https://github.com/tomcrane/linked-art-net/issues/new?title=@Uri.EscapeDataString("Date parse: " + r.Input)">open an issue</a> with the input and what it should mean.</p>
     </section>
 }

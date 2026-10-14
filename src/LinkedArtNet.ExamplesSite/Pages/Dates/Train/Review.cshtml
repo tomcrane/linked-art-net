@@ -1,0 +1,83 @@
+@page "/dates/train/review/{id?}"
+@model LinkedArtNet.ExamplesSite.Pages.Dates.Train.ReviewModel
+@{
+    ViewData["Title"] = "Review";
+}
+<nav class="crumbs"><a href="/dates/train">Trainer</a> › Review</nav>
+@if (Model.Item is null)
+{
+    <h1>Nothing to review</h1>
+    <p>The queue is empty. <a href="/dates/train">Add inputs</a> or import captured ones.</p>
+}
+else
+{
+    <h1>Review <q>@Model.Item.Input</q></h1>
+    <p class="meta">@Model.Pending waiting · from @Model.Item.Source · queued @Model.Item.AddedAt.ToString("yyyy-MM-dd")</p>
+
+    @if (Model.Error is not null)
+    {
+        <aside class="notice">@Model.Error</aside>
+    }
+
+    <section class="result">
+        <h2>What the parser says <span class="status status-@Model.Parsed.Status.ToString().ToLowerInvariant()">@Model.Parsed.Status.ToString().ToLowerInvariant()</span>
+            <span class="muted">@ReviewModel.Kind(Model.Parsed) · confidence @Model.Parsed.Confidence.ToString("0.00") · @Model.Parsed.Strategy · profile @Model.Parsed.Profile</span></h2>
+        <dl class="kv">
+            @if (Model.Parsed.Canonical is not null) { <dt>Canonical</dt><dd><code>@Model.Parsed.Canonical</code></dd> }
+            @if (Model.Parsed.Edtf is not null) { <dt>EDTF</dt><dd><code>@Model.Parsed.Edtf</code></dd> }
+            @if (Model.Parsed.UnconsumedText is not null) { <dt>Not understood</dt><dd><q>@Model.Parsed.UnconsumedText</q></dd> }
+            @if (Model.Parsed.Alternatives.Count > 0) { <dt>Other readings</dt><dd>@foreach (var a in Model.Parsed.Alternatives) { <code>@a.Canonical</code> <small class="muted">(@a.Confidence.ToString("0.00"), @a.Note)</small><br /> }</dd> }
+        </dl>
+        @if (Model.Parsed.Notes.Count > 0) { <ul class="notes">@foreach (var n in Model.Parsed.Notes) { <li>@n</li> }</ul> }
+        <div class="json-pair">
+            @foreach (var (label, json) in ReviewModel.Spans(Model.Parsed)) { <div><h3>@label</h3><pre><code class="language-json">@json</code></pre></div> }
+        </div>
+    </section>
+
+    <form method="post" class="stack review-form" id="review">
+        <input type="hidden" name="id" value="@Model.Item.Id" />
+        <div class="row">
+            <button type="submit" asp-page-handler="Accept" class="primary" title="The parser's answer is right">Accept as is</button>
+            <button type="submit" asp-page-handler="Skip" title="Leave it for someone else">Skip</button>
+        </div>
+        <h2>Or correct it</h2>
+        <div class="row">
+            <label>Expected status
+                <select name="expectedStatus" id="expectedStatus">
+                    @foreach (var s in new[] { "parsed", "undated", "unparsed" }) { <option value="@s" selected="@(Model.ExpectedStatus == s)">@s</option> }
+                </select>
+            </label>
+            <label>Intent
+                <select name="intent" id="intent">@foreach (var i in new[] { "auto", "single", "pair" }) { <option value="@i" selected="@(Model.Intent == i)">@i</option> }</select>
+            </label>
+            <label>Profile
+                <select name="profile" id="profile">@foreach (var p in Model.Profiles) { <option value="@p" selected="@(Model.Profile == p)">@p</option> }</select>
+            </label>
+        </div>
+        <label>Canonical expression <a class="muted" href="/about#canonical" target="_blank">(reference)</a>
+            <input type="text" name="canonical" id="canonical" value="@Model.Canonical" autocomplete="off" spellcheck="false" placeholder="e.g. late 195X, century 19, born 1606/died 1669, period:edo" />
+        </label>
+        <div id="preview" class="preview" aria-live="polite">
+            @if (Model.Preview is { } pv)
+            {
+                <p><strong>Preview:</strong> <code>@pv.Canonical</code> @if (pv.Edtf is not null) { <text>· EDTF <code>@pv.Edtf</code></text> } · @ReviewModel.Kind(pv)</p>
+                <div class="json-pair">@foreach (var (label, json) in ReviewModel.Spans(pv)) { <div><h3>@label</h3><pre><code>@json</code></pre></div> }</div>
+            }
+            else if (Model.PreviewError is not null)
+            {
+                <p class="diff">@Model.PreviewError</p>
+            }
+        </div>
+        <div class="row">
+            <label>Tags (comma separated) <input type="text" name="tags" value="@Model.Tags" placeholder="century, band" /></label>
+            <label class="grow">Notes <input type="text" name="notes" value="@Model.Notes" placeholder="why this reading" /></label>
+        </div>
+        <div class="row">
+            <button type="submit" asp-page-handler="Preview">Preview</button>
+            <button type="submit" asp-page-handler="Save" class="primary">Save correction</button>
+        </div>
+    </form>
+}
+@section Scripts {
+    <script src="~/train.js" asp-append-version="true"></script>
+}

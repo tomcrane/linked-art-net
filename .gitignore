@@ -402,3 +402,7 @@ exclude/
 
 # JetBrains Rider / IntelliJ
 .idea/
+
+# Examples-site trainer data (queue and submissions) and service capture files
+trainer-data/
+src/LinkedArtNet.Dates.Service/capture/

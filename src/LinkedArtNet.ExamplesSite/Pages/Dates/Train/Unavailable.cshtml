@@ -1,0 +1,25 @@
+@page "/dates/train/unavailable"
+@using Microsoft.Extensions.Options
+@inject IOptions<TrainerOptions> Options
+@{
+    ViewData["Title"] = "Trainer unavailable";
+    var signedIn = User.Identity?.IsAuthenticated == true;
+}
+<h1>Corpus trainer</h1>
+@if (!Options.Value.Available)
+{
+    <p>The trainer is not enabled on this server. It needs GitHub sign-in (<code>Trainer:GitHub:ClientId</code> and
+        <code>ClientSecret</code>) with an allow-list of reviewers (<code>Trainer:Reviewers</code>), or
+        <code>Trainer:AllowLocalReviewer</code> for local development.</p>
+}
+else if (signedIn)
+{
+    <p>You are signed in as <strong>@User.Identity?.Name</strong>, but that login is not on the reviewer list for this server.
+        Ask the maintainer to add it to <code>Trainer:Reviewers</code>.</p>
+    <form method="post" action="/dates/train/logout"><button type="submit">Sign out</button></form>
+}
+else
+{
+    <p><a class="button" href="/dates/train/login">Sign in to review</a></p>
+}
+<p>Until then, the <a href="/dates">playground</a> works without signing in.</p>

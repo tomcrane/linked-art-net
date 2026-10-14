@@ -176,6 +176,11 @@ public class GrammarTests
     [InlineData("c.1610-p.1635", "1610~/1635")]
     [InlineData("op.1730-, d.1772", "fl 1730/died 1772")]
     [InlineData("A.P., 2005", "2005")]
+    // prose biographies: an alternative birth year, a repeated marker, a place before the date
+    [InlineData("born 1600 or 1604, died 1687", "born [1600,1604]/died 1687")]
+    [InlineData("active 1730, died d1772", "fl 1730/died 1772")]
+    [InlineData("born Rome (Italy), 1700; died Rome (Italy), 1773", "born 1700/died 1773")]
+    [InlineData("born 1600 or 1604", "born [1600,1604]")]
     [InlineData("P 1957", "1957")]
     // negated relations keep their direction
     [InlineData("not earlier than 1450", "not-before 1450")]

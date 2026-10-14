@@ -360,6 +360,13 @@ public class RealiserTests
         Assert.Null(open.BeginOfTheEnd);
         Assert.Equal("1451-05-31T23:59:59Z", open.EndOfTheEnd!.ToString());
 
+        // both outer bounds open is still a pair, because each event has a bound of its own
+        var bothOpen = Realise("born before 1610/died after 1640", intent: Intent.Pair);
+        Assert.Equal(ParseStatus.Parsed, bothOpen.Status);
+        Assert.Equal(ResultKind.BirthDeath, bothOpen.Kind);
+        Assert.Equal("1609-12-31T23:59:59Z", bothOpen.Begin!.EndOfTheEnd!.ToString());
+        Assert.Equal("1641-01-01T00:00:00Z", bothOpen.End!.BeginOfTheBegin!.ToString());
+        Assert.Equal("born [1600,1604]/died 1687", DateExpression.Parse("born [1600,1604]/died 1687").Canonical);
         // asked for as a pair, the two events are separate spans and the whole is not given
         var pair = Realise("born before 1426/died before 1451-06", intent: Intent.Pair);
         Assert.Null(pair.TimeSpan);

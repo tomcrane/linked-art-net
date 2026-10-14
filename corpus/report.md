@@ -1,6 +1,6 @@
 # Corpus run
 
-Generated 2026-10-14 14:35 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 14:38 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
 ## verified: 543/543 pass (100.0%), calibration error 0.130
 
@@ -17,15 +17,15 @@ Generated 2026-10-14 14:35 UTC by `dotnet run --project tools/Corpus -- run --al
 
 Status (expected->actual): parsed->parsed 527, partial->partial 2, undated->undated 8, unparsed->unparsed 6
 
-## proposed: 1631/1767 pass (92.3%), calibration error 0.112
+## proposed: 1637/1767 pass (92.6%), calibration error 0.115
 
 - imported/edtf-spec.json: 61/61
-- imported/getty.json: 174/180
+- imported/getty.json: 180/180
 - imported/timetwister.json: 79/91
 - imported/yearrange.json: 1317/1435
 
-Status (expected->actual): parsed->parsed 1756, parsed->undated 1, parsed->unparsed 6, unparsed->unparsed 4
-Weakest tags: single 26/37, band 266/312, timetwister 79/91, archival 79/91, century 296/337, circa 229/257, season 29/32, named-period 270/297, decade 166/182, yearrange 1317/1435, imported 1631/1767, uncertain 50/54, lifecycle 27/29, bracketed 454/486, month 181/192
+Status (expected->actual): parsed->parsed 1757, parsed->undated 1, parsed->unparsed 5, unparsed->unparsed 4
+Weakest tags: single 26/37, band 266/312, timetwister 79/91, archival 79/91, century 296/337, circa 229/257, season 29/32, named-period 270/297, decade 166/182, yearrange 1317/1435, uncertain 50/54, imported 1637/1767, bracketed 455/486, month 181/192, range 430/455
 
 ## disputed: 0/2 pass (0.0%), calibration error 0.675
 
@@ -34,21 +34,16 @@ Weakest tags: single 26/37, band 266/312, timetwister 79/91, archival 79/91, cen
 Status (expected->actual): parsed->parsed 2
 Weakest tags: yearrange 0/2, imported 0/2, range 0/1, band 0/1, named-period 0/2
 
-Since the last run: 2 newly passing, 0 newly failing.
+Since the last run: 3 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 7, bounds differ 124, flags only 7.
+By cause: not parsed 6, bounds differ 119, flags only 7.
 
-### Not parsed (7)
+### Not parsed (6)
 
 The source has a date and the parser found none: grammar gaps, or strings the source read generously.
 
-- `ulan-061` (proposed) "Flemish or Dutch painter, born before 1610, died after 1640" -> born before 1610/died after 1640
-  - expected: status parsed; years 1610..1640
-  - status: expected parsed, got Unparsed
-  - years.start: expected 1610, got (none)
-  - years.end: expected 1640, got (none)
 - `yr-0175` (proposed) "・07・25" -> Unparsed
   - expected: status parsed; years 1925..1925
   - status: expected parsed, got Unparsed
@@ -82,25 +77,10 @@ The source has a date and the parser found none: grammar gaps, or strings the so
   - years.start: expected 1000, got (none)
   - years.end: expected 1000, got (none)
 
-### Bounds differ (124)
+### Bounds differ (119)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
-- `ulan-055` (proposed) "Italian painter, born 1600 or 1604, died 1687" -> [1600,1604]
-  - expected: status parsed; years 1600..1687
-  - years.end: expected 1687, got 1604
-- `ulan-086` (proposed) "Dutch painter, born 1700, died after 1776" -> born 1700/died after 1776
-  - expected: status parsed; years 1700..1776
-  - years.end: expected 1776, got (none)
-- `ulan-097` (proposed) "French menuisier, died before 1774" -> died before 1774
-  - expected: status parsed; years ....1774
-  - years.end: expected 1774, got 1773
-- `ulan-102` (proposed) "British artist, active 1730, died d1772" -> fl 1730
-  - expected: status parsed; years 1730..1772
-  - years.end: expected 1772, got 1730
-- `ulan-104` (proposed) "Italian sculptor; born Rome (Italy), 1700; died Rome (Italy), 1773" -> 1700
-  - expected: status parsed; years 1700..1773
-  - years.end: expected 1773, got 1700
 - `tt-074` (proposed) "1776, 1789, 1812" -> 1776/1812
   - expected: status parsed; timespan 1776-01-01T00:00:00Z..1776-12-31T23:59:59Z
   - timespan.end_of_the_end: expected 1776-12-31T23:59:59Z, got 1812-12-31T23:59:59Z

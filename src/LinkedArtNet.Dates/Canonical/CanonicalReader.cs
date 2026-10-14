@@ -114,8 +114,9 @@ public static partial class CanonicalReader
         if (space > 0 && Keywords.Lifecycle.TryGetValue(text[..space], out var marker))
         {
             // "born before 1426/died before 1451-06": each half of a lifecycle pair is its own event and may be open on one side.
-            var inner = ParsePrefixed(text[(space + 1)..].TrimStart());
-            return inner is Interval or OneOf or Undated ? throw new FormatException($"'{text}' cannot be an interval bound.") : new Lifecycle(marker, inner);
+            var rest = text[(space + 1)..].TrimStart();
+            var inner = rest.StartsWith('[') ? ParseExpression(rest) : ParsePrefixed(rest);
+            return inner is Interval or Undated ? throw new FormatException($"'{text}' cannot be an interval bound.") : new Lifecycle(marker, inner);
         }
         var bound = ParsePrefixed(text);
         return bound is Interval or OneOf or Undated or Relative ? throw new FormatException($"'{text}' cannot be an interval bound.") : bound;

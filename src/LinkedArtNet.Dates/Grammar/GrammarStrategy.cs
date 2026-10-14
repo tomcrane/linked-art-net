@@ -342,25 +342,24 @@ internal sealed class DateParser
     {
         if (!TryLifecycleMarker(out var marker)) return null;
         var save = _p;
-        _p++;
-        SkipJoiner();
+        AfterMarker(marker);
         var inner = ParseSetOrRange();
         if (inner is null) { _p = save; return null; }
-        if (inner is OneOf) { _p = save; return null; }
 
         if (inner is not Interval)
         {
-            // "active 1430, died 1462", "born 1700, died after 1776", "op.1430-m.1462": the second marker may follow a comma or a dash.
+            // "active 1430, died 1462", "born 1700, died after 1776", "op.1430-m.1462", "born Rome (Italy), 1700; died Rome (Italy), 1773":
+            // the second marker may follow a comma, a dash or a semicolon.
             var beforeSecond = _p;
             SkipNoise();
+            if (_p < _t.Count && _t[_p] is { Kind: TokenKind.Other, Text: ";" or "." } && Peek(1) is { Kind: TokenKind.Lifecycle or TokenKind.Floruit }) { _p++; SkipNoise(); }
             if (_p < _t.Count && _t[_p].Kind == TokenKind.Dash && Peek(1) is { Kind: TokenKind.Lifecycle or TokenKind.Floruit }) { _p++; SkipNoise(); }
             if (_p < _t.Count && _t[_p].Kind == TokenKind.Dash && Peek(1) is { Kind: TokenKind.Comma } && Peek(2) is { Kind: TokenKind.Lifecycle or TokenKind.Floruit }) { _p += 2; SkipNoise(); }
             if (TryLifecycleMarker(out var second))
             {
-                _p++;
-                SkipJoiner();
-                var secondInner = ParseSingleComplete();
-                if (secondInner is not null)
+                AfterMarker(second);
+                var secondInner = ParseSetOrRange();
+                if (secondInner is not null and not Interval)
                 {
                     _notes.Add("Two lifecycle markers give an explicit pair.");
                     return new Interval(new Lifecycle(marker, inner), new Lifecycle(second, secondInner));
@@ -370,6 +369,27 @@ internal sealed class DateParser
         }
         if (inner is Interval { HasMarkedBounds: true }) return inner;
         return new Lifecycle(marker, inner);
+    }
+
+    /// <summary>
+    /// Past a lifecycle marker: a joining dash, a repeated marker ("died d1772"), and a place before the date
+    /// ("born Rome (Italy), 1700") when a date follows it.
+    /// </summary>
+    private void AfterMarker(LifecycleMarker marker)
+    {
+        _p++;
+        SkipJoiner();
+        while (TryLifecycleMarker(out var again) && again == marker) { _p++; SkipJoiner(); }
+        var save = _p;
+        var words = 0;
+        while (_p < _t.Count && _t[_p].Kind == TokenKind.Word && words < 3) { _p++; words++; }
+        if (words > 0)
+        {
+            if (_p < _t.Count && _t[_p].Kind == TokenKind.Comma) _p++;
+            if (_p < _t.Count && _t[_p].Kind is TokenKind.Number or TokenKind.Month or TokenKind.Season or TokenKind.Hedge or TokenKind.Relation or TokenKind.Band or TokenKind.Ordinal)
+                _notes.Add($"The place after '{Canonical.CanonicalWriter.LifecycleKeyword(marker)}' was skipped.");
+            else _p = save;
+        }
     }
 
     private bool TryLifecycleMarker(out LifecycleMarker marker)

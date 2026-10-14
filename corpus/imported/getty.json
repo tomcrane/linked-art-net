@@ -518,7 +518,7 @@
       "id": "ulan-061",
       "input": "Flemish or Dutch painter, born before 1610, died after 1640",
       "tags": [],
-      "expect": {"status": "parsed", "years": {"start": 1610, "end": 1640}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1650", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
+      "expect": {"status":"parsed","kind":"birthDeath","canonical":"born before 1610/died after 1640","edtf":"../..","begin":{"end_of_the_end":"1609-12-31T23:59:59Z"},"end":{"begin_of_the_begin":"1641-01-01T00:00:00Z"}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1650", "notes": "Expected years come from the string itself (2026-10-14); ULAN\u2019s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation. Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1610..1640."
     },
     {
       "id": "ulan-062",
@@ -732,7 +732,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1776}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1776", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
+      "expect": {"status":"parsed","kind":"birthDeath","canonical":"born 1700/died after 1776","edtf":"1700/..","begin":{"begin_of_the_begin":"1700-01-01T00:00:00Z","end_of_the_end":"1700-12-31T23:59:59Z"},"end":{"begin_of_the_begin":"1777-01-01T00:00:00Z"}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1776", "notes": "Expected years come from the string itself (2026-10-14); ULAN\u2019s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation. Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1700..1776."
     },
     {
       "id": "ulan-087",
@@ -821,7 +821,7 @@
       "id": "ulan-097",
       "input": "French menuisier, died before 1774",
       "tags": [],
-      "expect": {"status": "parsed", "years": {"end": 1774}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1774", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
+      "expect": {"status":"parsed","kind":"birthDeath","canonical":"died before 1774","edtf":"../1773","end":{"end_of_the_end":"1773-12-31T23:59:59Z"}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1774", "notes": "Expected years come from the string itself (2026-10-14); ULAN\u2019s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation. Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years ....1774."
     },
     {
       "id": "ulan-098",

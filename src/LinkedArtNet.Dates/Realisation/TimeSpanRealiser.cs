@@ -104,7 +104,8 @@ public sealed class TimeSpanRealiser
             status = ParseStatus.Partial;
             notes.Add("A pair was asked for but the text gives one date; it is returned as a single span.");
         }
-        if (whole.IsEmpty)
+        // "born before 1610, died after 1640": the whole life has no closed bound, but each event has one.
+        if (whole.IsEmpty && begin is null && end is null)
         {
             notes.Add("The readings leave both ends open, so no span can be given.");
             return new TimeSpanParseResult

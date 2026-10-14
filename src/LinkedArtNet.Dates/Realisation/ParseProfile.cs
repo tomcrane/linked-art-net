@@ -32,6 +32,9 @@ public enum Hemisphere { North, South }
 /// <summary>Which year "Winter 1776" belongs to: December 1776 to February 1777 (the meteorological season), or January to March 1776 as US archival practice has it.</summary>
 public enum WinterPolicy { CrossesYearEnd, StartOfYear }
 
+/// <summary>Where the seasons fall: whole months (spring = March to May), or the equinoxes and solstices as US archival practice (timetwister) has them (spring = 20 March to 21 June).</summary>
+public enum SeasonDates { Months, Astronomical }
+
 public enum DayMonthOrder { DayFirst, MonthFirst }
 
 /// <summary>How the input string is recorded on the TimeSpan.</summary>
@@ -89,6 +92,8 @@ public sealed record ParseProfile
     public Hemisphere Hemisphere { get; init; } = Hemisphere.North;
 
     public WinterPolicy Winter { get; init; } = WinterPolicy.CrossesYearEnd;
+
+    public SeasonDates SeasonDates { get; init; } = SeasonDates.Months;
 
     /// <summary>Era assumed for bare years when the text gives none.</summary>
     public Era DefaultEra { get; init; } = Era.Ce;

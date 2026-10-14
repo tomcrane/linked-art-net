@@ -123,6 +123,49 @@ public class GrammarTests
     [InlineData("n.d.", "undated")]
     [InlineData("no date", "undated")]
     [InlineData("undated", "undated")]
+    // abbreviated ends within the decade, ISO fragments, open ends written with a slash
+    [InlineData("1843-5", "1843/1845")]
+    [InlineData("c. 1797-8", "1797~/1798~")]
+    [InlineData("c. 1767/8", "1767~/1768~")]
+    [InlineData("1985-04-12T23:20:30", "1985-04-12")]
+    [InlineData("1985-04-12/", "1985-04-12/..")]
+    [InlineData("/1985", "../1985")]
+    [InlineData("2004?-06-11", "2004?")]
+    [InlineData("156X-12-25", "156X")]
+    [InlineData("1984-1X", "1984")]
+    // shared-suffix century ranges, joined band ranges
+    [InlineData("18-19th century", "century 18/century 19")]
+    [InlineData("mid-late 20th century", "mid century 20/late century 20")]
+    // edition numbers and spaced suffixes
+    [InlineData("62/200, 1983", "1983")]
+    [InlineData("Edition of 100, 1980", "1980")]
+    [InlineData("1500 s c. early", "early 15XX~")]
+    [InlineData("1720 s late", "late 172X")]
+    [InlineData("178-, printed later", "178X")]
+    // year-first archival forms and seasons
+    [InlineData("1776 4-10 July", "1776-07-04/1776-07-10")]
+    [InlineData("1776 Spring", "1776-21")]
+    [InlineData("July 4?, 1776", "1776-07-04?")]
+    [InlineData("Spring - July 2005", "2005-21/2005-07")]
+    [InlineData("1777 Spring - 1778 Summer", "1777-21/1778-22")]
+    [InlineData("1776 Summ", "1776-22")]
+    [InlineData("July 21st, 1776", "1776-07-21")]
+    [InlineData("July 21st 1776", "1776-07-21")]
+    [InlineData("ca.1610-aft.1635", "1610~/1635")]
+    // parentheticals: bounds, bands, editions
+    [InlineData("Early 20th century (before 1923)", "early century 20/1922")]
+    [InlineData("1932 (printed between 1963 and 1981)", "1963/1981")]
+    [InlineData("1877 (1890's reproduction in reduced size)", "189X")]
+    [InlineData("1830s (mid.)", "mid 183X")]
+    [InlineData("1950's (early printing)", "195X")]
+    [InlineData("18th century (later reproduction)", "century 18")]
+    [InlineData("19thC(late)", "late century 19")]
+    [InlineData("c. 1801-02", "1801~/1802~")]
+    [InlineData("Original circa 1830's, reproduction 1930's", "193X")]
+    [InlineData("1940s(early)", "early 194X")]
+    // a second lifecycle marker after a comma
+    [InlineData("active 1430, died 1462", "fl 1430/died 1462")]
+    [InlineData("born 1700, died after 1776", "born 1700/died after 1776")]
     public void Reads_free_text(string text, string canonical)
     {
         Assert.Equal(canonical, Canonical(text));

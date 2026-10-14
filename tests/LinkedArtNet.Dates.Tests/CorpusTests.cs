@@ -43,8 +43,8 @@ public class CorpusTests(ITestOutputHelper output)
             if (e.Expect.Canonical is { } c && !DateExpression.TryParse(c, out _)) problems.Add($"{e.Id}: canonical '{c}' does not parse");
             foreach (var flag in (e.Expect.Flags ?? []).Concat(e.Expect.NotFlags ?? []))
                 if (!Enum.TryParse<DateFlag>(flag, true, out _)) problems.Add($"{e.Id}: unknown flag '{flag}'");
-            if (e.Expect.Status is "parsed" or "partial" && e.Expect.TimeSpan is null && e.Expect.Begin is null && e.Expect.End is null && e.Expect.Years is null && e.Expect.Canonical is null)
-                problems.Add($"{e.Id}: a parsed expectation needs a canonical, a span or years");
+            if (e.Expect.Status is "parsed" or "partial" && e.Expect.TimeSpan is null && e.Expect.Begin is null && e.Expect.End is null && e.Expect.Years is null && e.Expect.Canonical is null && e.Expect.Kind is null)
+                problems.Add($"{e.Id}: a parsed expectation needs a canonical, a span, years or a kind");
         }
         Assert.True(problems.Count == 0, string.Join("\n", problems));
     }

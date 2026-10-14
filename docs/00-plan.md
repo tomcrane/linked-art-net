@@ -296,6 +296,18 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     `.github/workflows/corpus-review.yml` posts on every pull request touching `corpus/` (job summary always, an
     updated comment for in-repo branches). 17 tests.
 
+22. ~~Corpus failure triage.~~ Done 2026-10-14. The report groups failures by cause. Parser fixes from the imported
+    corpora: single-digit abbreviated ends (`1843-5`), ISO fragments (`1985-04-12T23:20:30`, `1985-04-12/`, `/1985`),
+    shared-suffix century ranges (`18-19th century`), joined band ranges (`mid-late`), edition numbers (`62/200`,
+    `Edition of 100`), spaced decade suffixes (`1500 s c.`), year-first archival forms (`1776 4-10 July`, `1776 Spring`,
+    `July 4?, 1776`, `July 21st, 1776`), a second lifecycle marker after a comma, EDTF level 2 sets in the canonical
+    reader, and the edition rule: an edition, printing or reproduction clause dates the object, the first date is the
+    original (owner's decision). Profiles: `archive-us` seasons by equinox and solstice (`seasonDates`) and
+    timetwister's overlapping decade halves; `catalogue-quarters` mid = the middle fifth. Imports: yearrange expects
+    Approximate only where the text has circa wording; ULAN expectations come from the string, with the padded
+    estimate in `sourceExpectation`; EDTF examples we do not support expect the partial reading. Proposed pass rate
+    60.3% -> 79.8% (EDTF 61/61, ULAN 168/180, timetwister 78/91, yearrange 1275/1650).
+
 Next: Phase 3 is complete apart from hosting, which is the owner's. Candidates: the open Phase 2 items (PeriodO period
 source, `IDateInterpreter` LLM interpreter, benchmarks), the axe lint, or the owner's review items. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),

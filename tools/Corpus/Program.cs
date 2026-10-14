@@ -74,8 +74,8 @@ int Validate()
                 for (var k = 1; k < bounds.Count; k++)
                     if (bounds[k] < bounds[k - 1]) problems.Add($"{relative} {e.Id}: {name} bounds are not in order");
             }
-            if (e.Expect.Status is "parsed" or "partial" && e.Expect.TimeSpan is null && e.Expect.Begin is null && e.Expect.End is null && e.Expect.Years is null && e.Expect.Canonical is null)
-                problems.Add($"{relative} {e.Id}: a parsed expectation needs a canonical, a span or years");
+            if (e.Expect.Status is "parsed" or "partial" && e.Expect.TimeSpan is null && e.Expect.Begin is null && e.Expect.End is null && e.Expect.Years is null && e.Expect.Canonical is null && e.Expect.Kind is null)
+                problems.Add($"{relative} {e.Id}: a parsed expectation needs a canonical, a span, years or a kind");
         }
         Console.WriteLine($"{relative}: {file.Entries.Count} entries");
     }

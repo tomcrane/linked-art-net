@@ -289,16 +289,32 @@ public sealed class TimeSpanRealiser
 
     private RealisedSpan SeasonSpan(SeasonPoint s, List<string> notes)
     {
-        // Northern meteorological seasons; the south is shifted by six months. Winter runs into the next year.
+        // Northern seasons; the south is shifted by six months. Winter runs into the next year unless the profile puts it at the start.
         var south = _profile.Hemisphere == Hemisphere.South;
-        var (startMonth, endMonth) = s.Season switch
+        var season = south ? s.Season switch { Season.Spring => Season.Autumn, Season.Summer => Season.Winter, Season.Autumn => Season.Spring, _ => Season.Summer } : s.Season;
+        var winterAtStart = _profile.Winter == WinterPolicy.StartOfYear && !south;
+        if (_profile.SeasonDates == SeasonDates.Astronomical)
         {
-            Season.Spring => south ? (9, 11) : (3, 5),
-            Season.Summer => south ? (12, 2) : (6, 8),
-            Season.Autumn => south ? (3, 5) : (9, 11),
-            _ => south ? (6, 8) : (12, 2),
+            // Equinox and solstice dates as US archival practice (timetwister) uses them; the boundary day belongs to both seasons,
+            // and when winter opens the year autumn runs to its end.
+            var (start, end) = season switch
+            {
+                Season.Spring => (new LinkedArtDate(s.Year, 3, 20), new LinkedArtDate(s.Year, 6, 21, 23, 59, 59)),
+                Season.Summer => (new LinkedArtDate(s.Year, 6, 21), new LinkedArtDate(s.Year, 9, 23, 23, 59, 59)),
+                Season.Autumn => (new LinkedArtDate(s.Year, 9, 23), winterAtStart ? LinkedArtDate.EndOfYear(s.Year) : new LinkedArtDate(s.Year, 12, 21, 23, 59, 59)),
+                _ => winterAtStart ? (LinkedArtDate.StartOfYear(s.Year), new LinkedArtDate(s.Year, 3, 20, 23, 59, 59)) : (new LinkedArtDate(s.Year, 12, 21), new LinkedArtDate(s.Year + 1, 3, 20, 23, 59, 59)),
+            };
+            notes.Add($"{s.Season} {CanonicalWriter.Year(s.Year)} = {start} to {end} (equinox and solstice dates, {_profile.Hemisphere}ern hemisphere).");
+            return new(start, end);
+        }
+        var (startMonth, endMonth) = season switch
+        {
+            Season.Spring => (3, 5),
+            Season.Summer => (6, 8),
+            Season.Autumn => (9, 11),
+            _ => (12, 2),
         };
-        if (s.Season == Season.Winter && !south && _profile.Winter == WinterPolicy.StartOfYear)
+        if (s.Season == Season.Winter && winterAtStart)
         {
             notes.Add($"Winter {CanonicalWriter.Year(s.Year)} = January to March of that year (profile policy).");
             return new(LinkedArtDate.StartOfMonth(s.Year, 1), LinkedArtDate.EndOfMonth(s.Year, 3));

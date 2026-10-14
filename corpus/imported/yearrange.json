@@ -5,7 +5,7 @@
     "licence": "MIT",
     "url": "https://github.com/jeresig/node-yearrange/blob/master/test/date-tests.json",
     "attribution": "Copyright (c) 2013 John Resig. Licensed under the MIT License; see THIRD-PARTY-NOTICES.md.",
-    "notes": "The strings are museum catalogue dates (largely Japanese print collections). The source knows only start and end years and a circa flag, so expectations are coarse (years) and reflect yearrange\u0027s own conventions, e.g. \u0027late\u0027 = the last quarter of a century and \u0027circa\u0027 does not widen. Where they differ from our default profile the entry fails and should be reviewed, not copied."
+    "notes": "The strings are museum catalogue dates (largely Japanese print collections). The source knows only start and end years and a circa flag, so expectations are coarse (years) and reflect yearrange\u0027s own conventions, e.g. \u0027late\u0027 = the last quarter of a century, \u0027mid\u0027 = the middle fifth, and \u0027circa\u0027 does not widen (the catalogue-quarters profile). yearrange\u0027s circa flag also covered \u0027probably\u0027 and \u0027?\u0027, which we flag Uncertain, so the Approximate flag is expected only where the text has circa wording (2026-10-14). Where an original and a later edition are both dated, we date the object by the edition (owner\u0027s decision, 2026-10-14) while yearrange is inconsistent, so those entries fail by design. Other differences should be reviewed, not copied."
   },
   "defaults": {
     "intent": "single",
@@ -618,17 +618,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0038",
@@ -751,17 +741,7 @@
       "id": "yr-0045",
       "input": "1940 c",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1940
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1940}, "toleranceYears": 0}
     },
     {
       "id": "yr-0046",
@@ -856,17 +836,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1967,
-          "end": 1967
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1967, "end": 1967}, "toleranceYears": 0}
     },
     {
       "id": "yr-0052",
@@ -934,17 +904,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1788,
-          "end": 1789
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1788, "end": 1789}, "toleranceYears": 0}
     },
     {
       "id": "yr-0057",
@@ -1026,17 +986,7 @@
       "id": "yr-0062",
       "input": "probably 1773",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1773,
-          "end": 1773
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1773, "end": 1773}, "toleranceYears": 0}
     },
     {
       "id": "yr-0063",
@@ -1044,17 +994,7 @@
       "tags": [
         "uncertain"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1876,
-          "end": 1876
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1876, "end": 1876}, "toleranceYears": 0}
     },
     {
       "id": "yr-0064",
@@ -1346,17 +1286,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0082",
@@ -1489,17 +1419,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0091",
@@ -1545,17 +1465,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0094",
@@ -1803,17 +1713,7 @@
         "uncertain",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
       "id": "yr-0110",
@@ -1836,17 +1736,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1780,
-          "end": 1850
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1780, "end": 1850}, "toleranceYears": 0}
     },
     {
       "id": "yr-0112",
@@ -1979,17 +1869,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1930, "end": 1939}, "toleranceYears": 0}
     },
     {
       "id": "yr-0121",
@@ -2000,17 +1880,7 @@
         "bracketed",
         "undated"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0122",
@@ -2438,17 +2308,7 @@
         "range",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1833,
-          "end": 1834
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1833, "end": 1834}, "toleranceYears": 0}
     },
     {
       "id": "yr-0148",
@@ -2525,17 +2385,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0153",
@@ -2595,17 +2445,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0157",
@@ -2857,17 +2697,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0173",
@@ -2921,17 +2751,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0177",
@@ -3012,17 +2832,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0182",
@@ -3265,17 +3075,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0198",
@@ -3315,17 +3115,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1827,
-          "end": 1830
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1827, "end": 1830}, "toleranceYears": 0}
     },
     {
       "id": "yr-0201",
@@ -3544,17 +3334,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1786,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1786, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-0215",
@@ -3712,17 +3492,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0225",
@@ -3929,17 +3699,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0238",
@@ -3965,17 +3725,7 @@
         "bracketed",
         "undated"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0240",
@@ -4381,17 +4131,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1854,
-          "end": 1857
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1854, "end": 1857}, "toleranceYears": 0}
     },
     {
       "id": "yr-0265",
@@ -4435,17 +4175,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-0268",
@@ -4557,17 +4287,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0275",
@@ -4888,17 +4608,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0295",
@@ -5065,17 +4775,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0306",
@@ -5084,17 +4784,7 @@
         "decade",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1840,
-          "end": 1842
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1840, "end": 1842}, "toleranceYears": 0}
     },
     {
       "id": "yr-0307",
@@ -5283,17 +4973,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0319",
@@ -5456,17 +5136,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-0330",
@@ -5494,17 +5164,7 @@
         "century",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-0332",
@@ -5540,17 +5200,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0335",
@@ -5626,17 +5276,7 @@
         "century",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-0340",
@@ -5986,17 +5626,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
       "id": "yr-0361",
@@ -6020,17 +5650,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1833,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1833, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0363",
@@ -6603,17 +6223,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0400",
@@ -6623,17 +6233,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0401",
@@ -6659,17 +6259,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1829
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1829}, "toleranceYears": 0}
     },
     {
       "id": "yr-0403",
@@ -6743,17 +6333,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-0408",
@@ -6762,17 +6342,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0409",
@@ -6894,17 +6464,7 @@
         "bracketed",
         "season"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1859,
-          "end": 1859
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1859, "end": 1859}, "toleranceYears": 0}
     },
     {
       "id": "yr-0417",
@@ -6976,17 +6536,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0422",
@@ -6995,17 +6545,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0423",
@@ -7028,17 +6568,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0425",
@@ -7061,17 +6591,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1920
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
       "id": "yr-0427",
@@ -7081,17 +6601,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0428",
@@ -7101,17 +6611,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1835,
-          "end": 1836
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1835, "end": 1836}, "toleranceYears": 0}
     },
     {
       "id": "yr-0429",
@@ -7134,17 +6634,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1860,
-          "end": 1869
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1860, "end": 1869}, "toleranceYears": 0}
     },
     {
       "id": "yr-0431",
@@ -7154,17 +6644,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1780,
-          "end": 1850
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1780, "end": 1850}, "toleranceYears": 0}
     },
     {
       "id": "yr-0432",
@@ -7172,17 +6652,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0433",
@@ -7208,17 +6678,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
     },
     {
       "id": "yr-0435",
@@ -7260,17 +6720,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1990,
-          "end": 2000
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1990, "end": 2000}, "toleranceYears": 0}
     },
     {
       "id": "yr-0438",
@@ -7389,17 +6839,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0446",
@@ -7426,17 +6866,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1724,
-          "end": 1770
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1724, "end": 1770}, "toleranceYears": 0}
     },
     {
       "id": "yr-0448",
@@ -7459,17 +6889,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0450",
@@ -7544,17 +6964,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0455",
@@ -7564,17 +6974,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1839
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1839}, "toleranceYears": 0}
     },
     {
       "id": "yr-0456",
@@ -7642,17 +7042,7 @@
       "tags": [
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 2003,
-          "end": 2004
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 2003, "end": 2004}, "toleranceYears": 0}
     },
     {
       "id": "yr-0461",
@@ -7974,17 +7364,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1930, "end": 1939}, "toleranceYears": 0}
     },
     {
       "id": "yr-0482",
@@ -8015,17 +7395,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0484",
@@ -8035,17 +7405,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0485",
@@ -8068,17 +7428,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
       "id": "yr-0487",
@@ -8178,17 +7528,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1849,
-          "end": 1853
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1849, "end": 1853}, "toleranceYears": 0}
     },
     {
       "id": "yr-0493",
@@ -8260,17 +7600,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-0498",
@@ -8368,17 +7698,7 @@
         "decade",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1757,
-          "end": 1759
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1757, "end": 1759}, "toleranceYears": 0}
     },
     {
       "id": "yr-0504",
@@ -8499,17 +7819,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-0512",
@@ -8537,17 +7847,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0514",
@@ -8760,17 +8060,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1920,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1920, "end": 1939}, "toleranceYears": 0}
     },
     {
       "id": "yr-0528",
@@ -8795,17 +8085,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0530",
@@ -8861,17 +8141,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1930, "end": 1939}, "toleranceYears": 0}
     },
     {
       "id": "yr-0534",
@@ -8914,17 +8184,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-0537",
@@ -8948,17 +8208,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1920
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
       "id": "yr-0539",
@@ -9289,17 +8539,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1920
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
       "id": "yr-0560",
@@ -9323,17 +8563,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1920
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
       "id": "yr-0562",
@@ -9342,17 +8572,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1920
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
       "id": "yr-0563",
@@ -9377,17 +8597,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0565",
@@ -9520,17 +8730,7 @@
       "tags": [
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1779,
-          "end": 1779
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1779, "end": 1779}, "toleranceYears": 0}
     },
     {
       "id": "yr-0574",
@@ -9672,17 +8872,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0584",
@@ -9808,17 +8998,7 @@
         "decade",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1770,
-          "end": 1779
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1770, "end": 1779}, "toleranceYears": 0}
     },
     {
       "id": "yr-0592",
@@ -9875,17 +9055,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0596",
@@ -10036,17 +9206,7 @@
         "band",
         "undated"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0605",
@@ -10056,17 +9216,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
     },
     {
       "id": "yr-0606",
@@ -10075,17 +9225,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0607",
@@ -10115,17 +9255,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0609",
@@ -10181,17 +9311,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0613",
@@ -10368,17 +9488,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0624",
@@ -10388,17 +9498,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0625",
@@ -10455,17 +9555,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-0629",
@@ -10475,17 +9565,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0630",
@@ -10562,17 +9642,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0635",
@@ -10595,17 +9665,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1797,
-          "end": 1797
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1797, "end": 1797}, "toleranceYears": 0}
     },
     {
       "id": "yr-0637",
@@ -10718,17 +9778,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0645",
@@ -10738,17 +9788,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0646",
@@ -10772,49 +9812,19 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0648",
       "input": "1500 s c.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1500,
-          "end": 1599
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1500, "end": 1599}, "toleranceYears": 0}
     },
     {
       "id": "yr-0649",
       "input": "1300 s - 1400 s c.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1300,
-          "end": 1409
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1300, "end": 1409}, "toleranceYears": 0}
     },
     {
       "id": "yr-0650",
@@ -10862,17 +9872,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0653",
@@ -11014,17 +10014,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-0662",
@@ -11033,17 +10023,7 @@
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0663",
@@ -11134,17 +10114,7 @@
         "range",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-0669",
@@ -11192,17 +10162,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-0672",
@@ -11296,17 +10256,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0678",
@@ -11316,17 +10266,7 @@
         "decade",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1780,
-          "end": 1789
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1780, "end": 1789}, "toleranceYears": 0}
     },
     {
       "id": "yr-0679",
@@ -11356,17 +10296,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-0681",
@@ -11652,17 +10582,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0699",
@@ -11735,17 +10655,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0704",
@@ -11938,17 +10848,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0716",
@@ -11958,17 +10858,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1750,
-          "end": 1810
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1750, "end": 1810}, "toleranceYears": 0}
     },
     {
       "id": "yr-0717",
@@ -12056,17 +10946,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0723",
@@ -12105,17 +10985,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-0726",
@@ -12291,17 +11161,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1920
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
       "id": "yr-0738",
@@ -12403,17 +11263,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0744",
@@ -12551,17 +11401,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0752",
@@ -12571,17 +11411,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0753",
@@ -12590,17 +11420,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0754",
@@ -12610,17 +11430,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0755",
@@ -12630,17 +11440,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0756",
@@ -12755,17 +11555,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1892
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1892}, "toleranceYears": 0}
     },
     {
       "id": "yr-0763",
@@ -12880,17 +11670,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1900
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1900}, "toleranceYears": 0}
     },
     {
       "id": "yr-0771",
@@ -12912,17 +11692,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0773",
@@ -12998,17 +11768,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0778",
@@ -13037,17 +11797,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1835,
-          "end": 1836
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1835, "end": 1836}, "toleranceYears": 0}
     },
     {
       "id": "yr-0780",
@@ -13057,17 +11807,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0781",
@@ -13076,17 +11816,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1910
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1910}, "toleranceYears": 0}
     },
     {
       "id": "yr-0782",
@@ -13096,17 +11826,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0783",
@@ -13131,17 +11851,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0785",
@@ -13149,33 +11859,13 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0786",
       "input": "Originally in 1925. This one is probably later printing.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1925,
-          "end": 1925
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1925, "end": 1925}, "toleranceYears": 0}
     },
     {
       "id": "yr-0787",
@@ -13184,17 +11874,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0788",
@@ -13204,17 +11884,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0789",
@@ -13340,17 +12010,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1724
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1724}, "toleranceYears": 0}
     },
     {
       "id": "yr-0797",
@@ -13396,17 +12056,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0800",
@@ -13435,17 +12085,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
     },
     {
       "id": "yr-0802",
@@ -13542,17 +12182,7 @@
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0808",
@@ -13560,17 +12190,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1831,
-          "end": 1834
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1831, "end": 1834}, "toleranceYears": 0}
     },
     {
       "id": "yr-0809",
@@ -13579,17 +12199,7 @@
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1929
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1929}, "toleranceYears": 0}
     },
     {
       "id": "yr-0810",
@@ -13613,17 +12223,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0812",
@@ -13632,17 +12232,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1930, "end": 1939}, "toleranceYears": 0}
     },
     {
       "id": "yr-0813",
@@ -13664,17 +12254,7 @@
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1832,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1832, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0815",
@@ -13718,17 +12298,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0818",
@@ -13737,17 +12307,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0819",
@@ -13825,17 +12385,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0824",
@@ -13843,17 +12393,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1969
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1969}, "toleranceYears": 0}
     },
     {
       "id": "yr-0825",
@@ -13893,33 +12433,13 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0828",
       "input": "probably 1878 edition",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1878,
-          "end": 1878
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1878, "end": 1878}, "toleranceYears": 0}
     },
     {
       "id": "yr-0829",
@@ -13998,17 +12518,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1847,
-          "end": 1849
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1847, "end": 1849}, "toleranceYears": 0}
     },
     {
       "id": "yr-0834",
@@ -14099,17 +12609,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1886,
-          "end": 1886
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1886, "end": 1886}, "toleranceYears": 0}
     },
     {
       "id": "yr-0840",
@@ -14134,17 +12634,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
       "id": "yr-0842",
@@ -14153,17 +12643,7 @@
         "uncertain",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1896,
-          "end": 1897
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1896, "end": 1897}, "toleranceYears": 0}
     },
     {
       "id": "yr-0843",
@@ -14217,17 +12697,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0847",
@@ -14283,17 +12753,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0851",
@@ -14303,17 +12763,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0852",
@@ -14406,17 +12856,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-0858",
@@ -14425,17 +12865,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0859",
@@ -14473,17 +12903,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0862",
@@ -14493,17 +12913,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0863",
@@ -14513,17 +12923,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-0864",
@@ -14547,17 +12947,7 @@
         "range",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0866",
@@ -14580,17 +12970,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-0868",
@@ -14615,17 +12995,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-0870",
@@ -14847,17 +13217,7 @@
         "century",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1699}, "toleranceYears": 0}
     },
     {
       "id": "yr-0884",
@@ -14944,17 +13304,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1920
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
       "id": "yr-0890",
@@ -15166,17 +13516,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1793,
-          "end": 1797
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1793, "end": 1797}, "toleranceYears": 0}
     },
     {
       "id": "yr-0904",
@@ -15205,17 +13545,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0906",
@@ -15238,17 +13568,7 @@
         "century",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1799}, "toleranceYears": 0}
     },
     {
       "id": "yr-0908",
@@ -15339,17 +13659,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1852,
-          "end": 1852
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1852, "end": 1852}, "toleranceYears": 0}
     },
     {
       "id": "yr-0914",
@@ -15373,17 +13683,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
       "id": "yr-0916",
@@ -15393,17 +13693,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1829,
-          "end": 1833
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1829, "end": 1833}, "toleranceYears": 0}
     },
     {
       "id": "yr-0917",
@@ -15440,17 +13730,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1852,
-          "end": 1852
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1852, "end": 1852}, "toleranceYears": 0}
     },
     {
       "id": "yr-0920",
@@ -15585,17 +13865,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1745,
-          "end": 1745
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1745, "end": 1745}, "toleranceYears": 0}
     },
     {
       "id": "yr-0929",
@@ -15812,17 +14082,7 @@
         "bracketed",
         "season"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1831,
-          "end": 1831
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1831, "end": 1831}, "toleranceYears": 0}
     },
     {
       "id": "yr-0943",
@@ -15962,17 +14222,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-0952",
@@ -16085,17 +14335,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1786,
-          "end": 1786
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1786, "end": 1786}, "toleranceYears": 0}
     },
     {
       "id": "yr-0959",
@@ -16105,17 +14345,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
     },
     {
       "id": "yr-0960",
@@ -16156,17 +14386,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1842
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1834, "end": 1842}, "toleranceYears": 0}
     },
     {
       "id": "yr-0963",
@@ -16206,17 +14426,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1800
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1800}, "toleranceYears": 0}
     },
     {
       "id": "yr-0966",
@@ -16301,17 +14511,7 @@
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1835,
-          "end": 1835
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1835, "end": 1835}, "toleranceYears": 0}
     },
     {
       "id": "yr-0972",
@@ -16428,17 +14628,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-0980",
@@ -16461,17 +14651,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-0982",
@@ -16526,17 +14706,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1866,
-          "end": 1866
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1866, "end": 1866}, "toleranceYears": 0}
     },
     {
       "id": "yr-0986",
@@ -16707,17 +14877,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1831,
-          "end": 1832
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1831, "end": 1832}, "toleranceYears": 0}
     },
     {
       "id": "yr-0996",
@@ -16929,17 +15089,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-1010",
@@ -17011,17 +15161,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1975,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1975, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-1015",
@@ -17045,17 +15185,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1760,
-          "end": 1760
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1760, "end": 1760}, "toleranceYears": 0}
     },
     {
       "id": "yr-1017",
@@ -17207,17 +15337,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1027",
@@ -17242,17 +15362,7 @@
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1029",
@@ -17278,17 +15388,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1031",
@@ -17298,17 +15398,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1032",
@@ -17594,17 +15684,7 @@
       "tags": [
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1699}, "toleranceYears": 0}
     },
     {
       "id": "yr-1051",
@@ -17612,17 +15692,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-1052",
@@ -17630,17 +15700,7 @@
       "tags": [
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1300,
-          "end": 1409
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1300, "end": 1409}, "toleranceYears": 0}
     },
     {
       "id": "yr-1053",
@@ -17737,17 +15797,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1059",
@@ -18062,17 +16112,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1079",
@@ -18185,17 +16225,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1970,
-          "end": 1979
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1970, "end": 1979}, "toleranceYears": 0}
     },
     {
       "id": "yr-1086",
@@ -18267,17 +16297,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1091",
@@ -18410,17 +16430,7 @@
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1100",
@@ -18633,33 +16643,13 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1850,
-          "end": 1900
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1850, "end": 1900}, "toleranceYears": 0}
     },
     {
       "id": "yr-1114",
       "input": "Originally in 1925. This one probably later printing.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1925,
-          "end": 1925
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1925, "end": 1925}, "toleranceYears": 0}
     },
     {
       "id": "yr-1115",
@@ -18739,17 +16729,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-1120",
@@ -19156,17 +17136,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1861,
-          "end": 1861
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1861, "end": 1861}, "toleranceYears": 0}
     },
     {
       "id": "yr-1146",
@@ -19219,17 +17189,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1150",
@@ -19367,17 +17327,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1863,
-          "end": 1863
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1863, "end": 1863}, "toleranceYears": 0}
     },
     {
       "id": "yr-1160",
@@ -19430,17 +17380,7 @@
       "tags": [
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1897,
-          "end": 1897
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1897, "end": 1897}, "toleranceYears": 0}
     },
     {
       "id": "yr-1164",
@@ -19448,17 +17388,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1833,
-          "end": 1834
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1833, "end": 1834}, "toleranceYears": 0}
     },
     {
       "id": "yr-1165",
@@ -19467,17 +17397,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1864,
-          "end": 1864
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1864, "end": 1864}, "toleranceYears": 0}
     },
     {
       "id": "yr-1166",
@@ -19586,17 +17506,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1174",
@@ -19640,17 +17550,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1801,
-          "end": 1803
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1801, "end": 1803}, "toleranceYears": 0}
     },
     {
       "id": "yr-1177",
@@ -19674,17 +17574,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1866,
-          "end": 1866
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1866, "end": 1866}, "toleranceYears": 0}
     },
     {
       "id": "yr-1179",
@@ -19952,17 +17842,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1837,
-          "end": 1838
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1837, "end": 1838}, "toleranceYears": 0}
     },
     {
       "id": "yr-1197",
@@ -20039,17 +17919,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1867
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1867}, "toleranceYears": 0}
     },
     {
       "id": "yr-1202",
@@ -20111,17 +17981,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1867
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1867}, "toleranceYears": 0}
     },
     {
       "id": "yr-1206",
@@ -20376,17 +18236,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1861,
-          "end": 1861
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1861, "end": 1861}, "toleranceYears": 0}
     },
     {
       "id": "yr-1222",
@@ -20439,17 +18289,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1226",
@@ -20646,17 +18486,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1239",
@@ -20755,33 +18585,13 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1877,
-          "end": 1877
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1877, "end": 1877}, "toleranceYears": 0}
     },
     {
       "id": "yr-1246",
       "input": "probably 1850\u201362",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1850,
-          "end": 1862
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1850, "end": 1862}, "toleranceYears": 0}
     },
     {
       "id": "yr-1247",
@@ -20805,17 +18615,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1875,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1875, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-1249",
@@ -20866,17 +18666,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-1253",
@@ -20960,17 +18750,7 @@
       "tags": [
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1749,
-          "end": 1749
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1749, "end": 1749}, "toleranceYears": 0}
     },
     {
       "id": "yr-1258",
@@ -21049,17 +18829,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1264",
@@ -21330,17 +19100,7 @@
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1282",
@@ -21525,17 +19285,7 @@
       "id": "yr-1294",
       "input": "Year of the Dragon, probably 1832",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1832,
-          "end": 1832
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1832, "end": 1832}, "toleranceYears": 0}
     },
     {
       "id": "yr-1295",
@@ -21681,17 +19431,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-1304",
@@ -21731,17 +19471,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
       "id": "yr-1307",
@@ -21751,17 +19481,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1909
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1890, "end": 1909}, "toleranceYears": 0}
     },
     {
       "id": "yr-1308",
@@ -21889,17 +19609,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1930, "end": 1939}, "toleranceYears": 0}
     },
     {
       "id": "yr-1316",
@@ -21908,17 +19618,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1317",
@@ -21948,17 +19648,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1319",
@@ -22110,17 +19800,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-1329",
@@ -22130,17 +19810,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1834,
-          "end": 1842
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1834, "end": 1842}, "toleranceYears": 0}
     },
     {
       "id": "yr-1330",
@@ -22150,17 +19820,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1331",
@@ -22183,17 +19843,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1333",
@@ -22222,17 +19872,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1335",
@@ -22564,17 +20204,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1824
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1824}, "toleranceYears": 0}
     },
     {
       "id": "yr-1354",
@@ -22644,17 +20274,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1358",
@@ -22677,17 +20297,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1360",
@@ -22696,17 +20306,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1361",
@@ -22714,17 +20314,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1980,
-          "end": 1989
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1980, "end": 1989}, "toleranceYears": 0}
     },
     {
       "id": "yr-1362",
@@ -22822,17 +20412,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1369",
@@ -22855,17 +20435,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-1371",
@@ -22966,17 +20536,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1378",
@@ -23001,17 +20561,7 @@
         "named-period",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1912,
-          "end": 1925
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1912, "end": 1925}, "toleranceYears": 0}
     },
     {
       "id": "yr-1380",
@@ -23020,17 +20570,7 @@
         "uncertain",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1933,
-          "end": 1933
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1933, "end": 1933}, "toleranceYears": 0}
     },
     {
       "id": "yr-1381",
@@ -23039,17 +20579,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1382",
@@ -23058,17 +20588,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1383",
@@ -23078,17 +20598,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1384",
@@ -23096,17 +20606,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1950,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1950, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1385",
@@ -23337,17 +20837,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1400",
@@ -23391,17 +20881,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1833,
-          "end": 1834
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1833, "end": 1834}, "toleranceYears": 0}
     },
     {
       "id": "yr-1403",
@@ -23478,17 +20958,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1920,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1920, "end": 1939}, "toleranceYears": 0}
     },
     {
       "id": "yr-1408",
@@ -23540,17 +21010,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1833,
-          "end": 1834
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1833, "end": 1834}, "toleranceYears": 0}
     },
     {
       "id": "yr-1411",
@@ -23560,17 +21020,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1412",
@@ -23611,17 +21061,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1415",
@@ -23666,17 +21106,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1856,
-          "end": 1858
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1856, "end": 1858}, "toleranceYears": 0}
     },
     {
       "id": "yr-1418",
@@ -23684,17 +21114,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-1419",
@@ -23748,17 +21168,7 @@
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1933,
-          "end": 1933
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1933, "end": 1933}, "toleranceYears": 0}
     },
     {
       "id": "yr-1423",
@@ -23814,17 +21224,7 @@
         "range",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1920
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1920}, "toleranceYears": 0}
     },
     {
       "id": "yr-1427",
@@ -23849,17 +21249,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1429",
@@ -23886,17 +21276,7 @@
         "month",
         "season"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 2003,
-          "end": 2004
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 2003, "end": 2004}, "toleranceYears": 0}
     },
     {
       "id": "yr-1431",
@@ -24083,17 +21463,7 @@
       "tags": [
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1603,
-          "end": 1868
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1603, "end": 1868}, "toleranceYears": 0}
     },
     {
       "id": "yr-1443",
@@ -24102,17 +21472,7 @@
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1940,
-          "end": 1959
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1940, "end": 1959}, "toleranceYears": 0}
     },
     {
       "id": "yr-1444",
@@ -24311,17 +21671,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1457",
@@ -24766,17 +22116,7 @@
         "band",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1923,
-          "end": 1932
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1923, "end": 1932}, "toleranceYears": 0}
     },
     {
       "id": "yr-1484",
@@ -25055,17 +22395,7 @@
         "century",
         "undated"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-1502",
@@ -25260,17 +22590,7 @@
         "uncertain",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1926,
-          "end": 1989
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1926, "end": 1989}, "toleranceYears": 0}
     },
     {
       "id": "yr-1514",
@@ -25407,17 +22727,7 @@
         "uncertain",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
       "id": "yr-1523",
@@ -25458,17 +22768,7 @@
         "century",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1999
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1999}, "toleranceYears": 0}
     },
     {
       "id": "yr-1526",
@@ -25498,17 +22798,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1824
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1824}, "toleranceYears": 0}
     },
     {
       "id": "yr-1528",
@@ -25537,17 +22827,7 @@
         "uncertain",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1868,
-          "end": 1912
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1868, "end": 1912}, "toleranceYears": 0}
     },
     {
       "id": "yr-1530",
@@ -25607,17 +22887,7 @@
         "decade",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1930, "end": 1939}, "toleranceYears": 0}
     },
     {
       "id": "yr-1534",
@@ -25753,17 +23023,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1900,
-          "end": 1924
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
       "id": "yr-1542",
@@ -25805,17 +23065,7 @@
         "band",
         "named-period"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1875,
-          "end": 1899
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1875, "end": 1899}, "toleranceYears": 0}
     },
     {
       "id": "yr-1545",
@@ -26159,17 +23409,7 @@
       "tags": [
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1530,
-          "end": 1539
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1530, "end": 1539}, "toleranceYears": 0}
     },
     {
       "id": "yr-1567",
@@ -26670,17 +23910,7 @@
       "tags": [
         "uncertain"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1669,
-          "end": 1669
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1669, "end": 1669}, "toleranceYears": 0}
     },
     {
       "id": "yr-1599",
@@ -27081,17 +24311,7 @@
       "id": "yr-1624",
       "input": "c.y 1650.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1650,
-          "end": 1650
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1650, "end": 1650}, "toleranceYears": 0}
     },
     {
       "id": "yr-1625",
@@ -27198,33 +24418,13 @@
       "id": "yr-1632",
       "input": "Probably before 1425.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1425,
-          "end": 1425
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1425, "end": 1425}, "toleranceYears": 0}
     },
     {
       "id": "yr-1633",
       "input": "After 1580, probably 1584.",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1580,
-          "end": 1580
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1580, "end": 1580}, "toleranceYears": 0}
     },
     {
       "id": "yr-1634",
@@ -27376,17 +24576,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1525,
-          "end": 1530
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status": "parsed", "years": {"start": 1525, "end": 1530}, "toleranceYears": 0}
     },
     {
       "id": "yr-1644",

@@ -101,7 +101,12 @@ qualifiers   := HEDGE | BAND | FLORUIT | LIFECYCLE | RELATION
 Error recovery: when the grammar cannot consume the whole string, it returns the best prefix/infix
 parse with `UnconsumedText` and a confidence penalty, rather than failing. Parentheticals that
 contain no date tokens are skipped (`1493 (first edition published)`); those that contain dates are
-parsed as secondary expressions (`1977 (1978)`, `1962 (i.e. 1967)` -> `Corrected`).
+parsed as secondary expressions (`1977 (1978)`, `1962 (i.e. 1967)` -> `Corrected`). A clause about an
+edition, printing or reproduction dates the object and the first date is the original: `Originally in Edo
+era. This edition was made in the early 20th century.` -> `early century 20`, `1932 (printed between 1963
+and 1981)` -> `1963/1981`; but `Meiji era reprint of Edo period design` -> `period:meiji`, because the date
+after "reprint of" is the original. A parenthesised bound narrows rather than widens: `Early 20th century
+(before 1923)` -> `early century 20/1922`.
 
 Abbreviated second bounds are expanded contextually: `1847-48` -> 1848; `c.1928 - 32` -> 1932;
 `1900-10s` -> 1910s. Two-digit years alone are refused unless the profile sets a `TwoDigitYearWindow`.

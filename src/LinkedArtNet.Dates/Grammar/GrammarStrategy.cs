@@ -51,7 +51,7 @@ internal sealed class DateParser
     {
         var (main, corrections, secondaries) = SplitGroups(_t);
         _t.Clear();
-        _t.AddRange(main);
+        _t.AddRange(RemoveEditionNumbers(main));
         _p = 0;
 
         DateExpression? expression = null;
@@ -96,14 +96,48 @@ internal sealed class DateParser
         foreach (var group in secondaries)
         {
             var secondary = ParseGroup(group);
-            if (secondary is null) continue;
+            if (secondary is null) { _notes.Add("A parenthetical remark with no date in it was ignored."); continue; }
             if (secondary == expression || IsRestatement(expression, secondary)) { _notes.Add("The same date is given twice."); continue; }
+            if (IsEditionClause(group))
+            {
+                // "1932 (printed between 1963 and 1981)", "1877 (1890's reproduction)": the printing or edition is the object's date.
+                _flags.Add(DateFlag.SecondaryDate);
+                Penalise(0.05, $"The edition or printing date {secondary.Canonical} is the object's date; {expression.Canonical} is the original.");
+                expression = secondary;
+                continue;
+            }
+            if (secondary is Relative { Relation: Relation.Before or Relation.NotAfter } bound)
+            {
+                // "Early 20th century (before 1923)": a bound in parentheses narrows the span rather than widening it.
+                var end = bound.Relation == Relation.Before && bound.Inner is YearPoint by ? new YearPoint(by.Year - 1) : bound.Inner;
+                _notes.Add($"The parenthesised bound, {secondary.Canonical}, closes the span.");
+                expression = new Interval(expression is Interval { Start: { } s } ? s : expression, end);
+                continue;
+            }
             _flags.Add(DateFlag.SecondaryDate);
             Penalise(0.1, $"A second date in parentheses, {secondary.Canonical}, widens the span.");
             expression = Hull(expression, secondary);
         }
 
+        // "Originally in Edo era. This edition was made probably in the early 20th century.": a later clause about the
+        // edition, printing or reproduction dates the object; the first date is the original it reproduces.
+        var tail = _p;
         SkipNoise();
+        if (_p < _t.Count && IsEditionClause(_t.Skip(tail).ToList()))
+        {
+            var inner = new DateParser(_t.Skip(tail).ToList(), _text, _profile, _lexicon, _periods);
+            var later = inner.Parse();
+            if (later is not null && later.Expression is not Undated)
+            {
+                _notes.AddRange(inner._notes);
+                foreach (var f in inner._flags) _flags.Add(f);
+                _flags.Add(DateFlag.SecondaryDate);
+                Penalise(0.05, $"The edition or printing date {later.Expression.Canonical} is the object's date; {expression.Canonical} is the original.");
+                if (later.UnconsumedText is not null) Penalise(0.15, $"Could not read \"{later.UnconsumedText}\".");
+                return new Candidate(later.Expression, _confidence, "grammar", later.UnconsumedText, _notes, _flags);
+            }
+        }
+
         if (_p < _t.Count)
         {
             var unconsumed = _text[_t[_p].Start..].Trim();
@@ -111,6 +145,50 @@ internal sealed class DateParser
             return new Candidate(expression, _confidence, "grammar", unconsumed, _notes, _flags);
         }
         return new Candidate(expression, _confidence, "grammar", null, _notes, _flags);
+    }
+
+    private static bool IsEditionWord(Token t) => t.Kind == TokenKind.Noise && t.Value is string marker && marker == Token.EditionMarker;
+
+    /// <summary>
+    /// Tokens that talk about an edition, printing or reproduction and so date the object rather than the design,
+    /// unless the edition word introduces the original ("reprint of Edo period design").
+    /// </summary>
+    private static bool IsEditionClause(List<Token> tokens)
+    {
+        var at = tokens.FindIndex(IsEditionWord);
+        if (at < 0) return false;
+        var next = at + 1 < tokens.Count ? tokens[at + 1] : null;
+        return next is null || Lexicon.Normalise(next.Text) is not ("of" or "from" or "after");
+    }
+
+    /// <summary>"62/200, 1983", "Edition of 100, 1980": a print-run fraction or count is not a date.</summary>
+    private List<Token> RemoveEditionNumbers(List<Token> tokens)
+    {
+        var result = new List<Token>(tokens.Count);
+        for (var i = 0; i < tokens.Count; i++)
+        {
+            var t = tokens[i];
+            bool Follows(int k) => k >= tokens.Count || tokens[k].Kind is TokenKind.Comma or TokenKind.Noise or TokenKind.Other or TokenKind.Word;
+            if (t is { Kind: TokenKind.Number } a && !a.HasDecimal && a.Digits <= 3 && i + 2 < tokens.Count && tokens[i + 1].Kind == TokenKind.Slash
+                && tokens[i + 2] is { Kind: TokenKind.Number } b && !b.HasDecimal && b.Digits <= 4 && a.Number <= b.Number && b.Number % 25 == 0 && Follows(i + 3))
+            {
+                _notes.Add($"The edition number {a.Text}/{b.Text} was ignored.");
+                i += 2;
+                if (i + 1 < tokens.Count && tokens[i + 1].Kind == TokenKind.Comma) i++;
+                continue;
+            }
+            if (IsEditionWord(t) && i + 2 < tokens.Count && tokens[i + 1] is { Kind: TokenKind.Noise } of && Lexicon.Normalise(of.Text) == "of"
+                && tokens[i + 2] is { Kind: TokenKind.Number } n && !n.HasDecimal && n.Digits <= 4 && Follows(i + 3))
+            {
+                _notes.Add($"The edition size '{t.Text} of {n.Text}' was ignored.");
+                result.Add(t);
+                i += 2;
+                if (i + 1 < tokens.Count && tokens[i + 1].Kind == TokenKind.Comma) i++;
+                continue;
+            }
+            result.Add(t);
+        }
+        return result;
     }
 
     private DateExpression? ParseGroup(List<Token> group)
@@ -154,6 +232,14 @@ internal sealed class DateParser
             }
             if (!inner.Any(x => x.Kind is TokenKind.Number or TokenKind.Ordinal or TokenKind.Roman or TokenKind.Unspecified))
             {
+                // "1830s (mid.)", "1950's (early printing)": a band alone qualifies the main date. "(Meiji Period)" may name a
+                // period, so it is kept as a secondary and read like any other group; other prose is ignored.
+                if (inner.Any(x => x.Kind == TokenKind.Band) && !inner.Any(IsEditionWord) && inner.All(x => x.Kind is TokenKind.Band or TokenKind.Noise or TokenKind.Other or TokenKind.Hedge))
+                {
+                    main.Add(inner.First(x => x.Kind == TokenKind.Band));
+                    continue;
+                }
+                if (_periods is not null && inner.Any(x => x.Kind == TokenKind.Word)) { secondaries.Add(inner); continue; }
                 _notes.Add("A parenthetical remark with no date in it was ignored.");
                 continue;
             }
@@ -184,6 +270,21 @@ internal sealed class DateParser
             var save = _p;
             SkipNoise();
             if (_p >= _t.Count) break;
+            // "Meiji era reprint of Edo period design": the date after "reprint of" is the original, not the object's.
+            var skipped = _t.Skip(save).Take(_p - save).ToList();
+            var editionAt = skipped.FindIndex(IsEditionWord);
+            if (editionAt >= 0)
+            {
+                var follower = editionAt + 1 < skipped.Count ? skipped[editionAt + 1] : _t[_p];
+                if (Lexicon.Normalise(follower.Text) is "of" or "from" or "after")
+                {
+                    var original = ParseSetOrRange();
+                    if (original is not null) { _notes.Add($"'{skipped[editionAt].Text} {Lexicon.Normalise(follower.Text)} {original.Canonical}' names the original; the object is dated by {expression.Canonical}."); continue; }
+                }
+                // "Original circa 1830's, reproduction 1930's": the edition clause is read after the main date, by Parse.
+                _p = save;
+                break;
+            }
             var next = ParseSetOrRange();
             if (next is null) { _p = save; break; }
             if (next == expression || IsRestatement(expression, next)) { _notes.Add("The same date is given twice."); continue; }
@@ -205,16 +306,23 @@ internal sealed class DateParser
         if (inner is null) { _p = save; return null; }
         if (inner is OneOf) { _p = save; return null; }
 
-        if (inner is not Interval && TryLifecycleMarker(out var second))
+        if (inner is not Interval)
         {
-            _p++;
-            SkipJoiner();
-            var secondInner = ParseSingleComplete();
-            if (secondInner is not null)
+            // "active 1430, died 1462", "born 1700, died after 1776": the second marker may follow a comma.
+            var beforeSecond = _p;
+            SkipNoise();
+            if (TryLifecycleMarker(out var second))
             {
-                _notes.Add("Two lifecycle markers give an explicit pair.");
-                return new Interval(new Lifecycle(marker, inner), new Lifecycle(second, secondInner));
+                _p++;
+                SkipJoiner();
+                var secondInner = ParseSingleComplete();
+                if (secondInner is not null)
+                {
+                    _notes.Add("Two lifecycle markers give an explicit pair.");
+                    return new Interval(new Lifecycle(marker, inner), new Lifecycle(second, secondInner));
+                }
             }
+            _p = beforeSecond;
         }
         if (inner is Interval { HasMarkedBounds: true }) return inner;
         return new Lifecycle(marker, inner);
@@ -306,17 +414,27 @@ internal sealed class DateParser
             _p = save;
         }
 
-        if (_t[_p].Kind == TokenKind.Dash)
+        if (_t[_p].Kind is TokenKind.Dash or TokenKind.Slash or TokenKind.OpenEnd)
         {
             var save = _p;
+            var opener = _t[_p];
             _p++;
             var b = ParseSingle();
             if (b is not null && Finish(b) is { } end)
             {
-                _notes.Add("A leading dash means the start is unknown.");
+                _notes.Add(opener.Kind == TokenKind.Dash ? "A leading dash means the start is unknown." : $"A leading '{opener.Text}' means the start is unknown.");
                 return new Interval(null, end);
             }
             _p = save;
+        }
+
+        // "1776 4-10 July": the year first, then a day range and its month.
+        if (IsYearShaped(_t[_p]) && Peek(1) is { Kind: TokenKind.Number } d1 && d1.Digits <= 2 && d1.Number is >= 1 and <= 31 && Peek(2) is { Kind: TokenKind.Dash }
+            && Peek(3) is { Kind: TokenKind.Number } d2 && d2.Digits <= 2 && d2.Number is >= 1 and <= 31 && Peek(4) is { Kind: TokenKind.Month } dayRangeMonth)
+        {
+            var year = _t[_p].Number;
+            _p += 5;
+            return new Interval(Day(year, (int)dayRangeMonth.Value!, (int)d1.Number), Day(year, (int)dayRangeMonth.Value!, (int)d2.Number));
         }
 
         var start = ParseSingle();
@@ -336,7 +454,7 @@ internal sealed class DateParser
             SkipNoise();
             if (_p >= _t.Count)
             {
-                if (connector.Kind == TokenKind.Dash && Finish(start) is { } open) { _notes.Add("A trailing dash means the end is open."); return new Interval(open, null); }
+                if (connector.Kind is TokenKind.Dash or TokenKind.Slash && Finish(start) is { } open) { _notes.Add($"A trailing '{connector.Text}' means the end is open."); return new Interval(open, null); }
                 _p = save;
             }
             else if (_t[_p].Kind == TokenKind.OpenEnd)
@@ -389,6 +507,8 @@ internal sealed class DateParser
         if (b.Core is PendingDayMonth pdmB2 && a.Core is MonthPoint mA) b = b with { Core = new DayPoint(mA.Year, pdmB2.Month, pdmB2.Day) };
         if (b.Core is PendingMonth pmB && a.Core is MonthPoint mA2) b = b with { Core = new MonthPoint(mA2.Year, pmB.Month) };
         if (b.Core is PendingMonth pmB2 && a.Core is DayPoint dA3) b = b with { Core = new MonthPoint(dA3.Year, pmB2.Month) };
+        if (a.Core is PendingSeason psA && YearOfCore(b.Core) is { } yearB) a = a with { Core = new SeasonPoint(yearB, psA.Season) };
+        if (b.Core is PendingSeason psB && YearOfCore(a.Core) is { } yearA) b = b with { Core = new SeasonPoint(yearA, psB.Season) };
 
         var sa = Finish(a);
         var sb = Finish(b);
@@ -427,13 +547,22 @@ internal sealed class DateParser
     /// <summary>A day and month with no year yet ("May 4 - July 10 1776").</summary>
     private sealed record PendingDayMonth(int Day, int Month) : DatePoint;
 
-    private static bool NeedsYear(DateExpression? core) => core is PendingMonth or PendingDay or PendingDayMonth;
+    /// <summary>A season with no year yet ("Spring - July 2005").</summary>
+    private sealed record PendingSeason(Season Season) : DatePoint;
+
+    private static bool NeedsYear(DateExpression? core) => core is PendingMonth or PendingDay or PendingDayMonth or PendingSeason;
 
     private static Piece WithYear(Piece piece, long year) => piece.Core switch
     {
         PendingMonth pm => piece with { Core = new MonthPoint(year, pm.Month) },
         PendingDayMonth pdm => piece with { Core = new DayPoint(year, pdm.Month, pdm.Day) },
+        PendingSeason ps => piece with { Core = new SeasonPoint(year, ps.Season) },
         _ => piece,
+    };
+
+    private static long? YearOfCore(DateExpression? core) => core switch
+    {
+        YearPoint y => y.Year, MonthPoint m => m.Year, DayPoint d => d.Year, SeasonPoint s => s.Year, _ => null,
     };
 
     private DateExpression? ParseSingleComplete()
@@ -445,7 +574,7 @@ internal sealed class DateParser
     private DateExpression? Finish(Piece piece)
     {
         var core = piece.Core;
-        if (core is null or PendingOrdinal or PendingMonth or PendingDay or PendingDayMonth) return null;
+        if (core is null or PendingOrdinal or PendingMonth or PendingDay or PendingDayMonth or PendingSeason) return null;
         DateExpression e = core;
         if (piece.Band is { } band)
         {
@@ -473,7 +602,15 @@ internal sealed class DateParser
                 piece = piece with { Hedge = Merge(piece.Hedge, (Qualification)t.Value!) };
                 _p++; SkipJoiner(); continue;
             }
-            if (t.Kind == TokenKind.Band && piece.Band is null) { piece = piece with { Band = (Band)t.Value! }; _p++; SkipJoiner(); SkipNoise(); continue; }
+            if (t.Kind == TokenKind.Band && piece.Band is null)
+            {
+                piece = piece with { Band = (Band)t.Value! };
+                _p++;
+                // "mid-late 20th century" is a range of bands, not a joined word.
+                if (!(Peek(0) is { Kind: TokenKind.Dash } && Peek(1) is { Kind: TokenKind.Band })) SkipJoiner();
+                SkipNoise();
+                continue;
+            }
             if (t.Kind == TokenKind.Relation) { piece = piece with { Relation = (Relation)t.Value! }; _p++; SkipJoiner(); continue; }
             if (t.Kind == TokenKind.Era && eraFirst is null) { eraFirst = (Era)t.Value!; _p++; continue; }
             break;
@@ -494,8 +631,14 @@ internal sealed class DateParser
             var t = _t[_p];
             if (t.Kind == TokenKind.Question) { piece = piece with { Hedge = Merge(piece.Hedge, Qualification.Uncertain) }; _p++; continue; }
             // postfix band words: "saec. XIV ex.", "s. xiv med."
-            if (t.Kind == TokenKind.Band && piece.Band is null && piece.Core is Century or Decade or Millennium) { piece = piece with { Band = (Band)t.Value! }; _p++; continue; }
-            if (t.Kind == TokenKind.Hedge && (!IsCenturyLetter(t) || _p + 1 >= _t.Count)) { piece = piece with { Hedge = Merge(piece.Hedge, (Qualification)t.Value!) }; _p++; continue; }
+            if (t.Kind == TokenKind.Band && piece.Band is null && piece.Core is Century or Decade or Millennium or UnspecifiedDigits) { piece = piece with { Band = (Band)t.Value! }; _p++; continue; }
+            // "1500 s c. early": after a complete core the letter c is circa, unless it opens the next date ("1898 ... c.1900").
+            if (t.Kind == TokenKind.Hedge && (!IsCenturyLetter(t) || Peek(1) is null or { Kind: TokenKind.Band or TokenKind.Comma or TokenKind.CloseParen or TokenKind.CloseBracket or TokenKind.Other or TokenKind.Noise or TokenKind.Question }))
+            {
+                piece = piece with { Hedge = Merge(piece.Hedge, (Qualification)t.Value!) };
+                _p++;
+                continue;
+            }
             break;
         }
         return piece;
@@ -509,11 +652,16 @@ internal sealed class DateParser
         // deep time: 4.5 billion years ago | 10,000 BP | 10 ka BP
         if (t.Kind == TokenKind.Number && TryDeepTime(out var deep)) return piece with { Core = deep };
 
-        // season year
+        // season year | year season ("1776 Spring", archival)
         if (t.Kind == TokenKind.Season && Peek(1) is { Kind: TokenKind.Number } sy && IsYearShaped(sy))
         {
             _p += 2;
             return piece with { Core = new SeasonPoint(YearOf(sy, eraFirst, out _), (Season)t.Value!) };
+        }
+        if (t.Kind == TokenKind.Number && IsYearShaped(t) && Peek(1) is { Kind: TokenKind.Season } ys)
+        {
+            _p += 2;
+            return piece with { Core = new SeasonPoint(YearOf(t, eraFirst, out _), (Season)ys.Value!) };
         }
 
         // months: 8 May 1944 | May 8, 1944 | 1902 October 27 | July 2010 | Apr (pending year)
@@ -531,15 +679,37 @@ internal sealed class DateParser
         if (t.Kind == TokenKind.Month)
         {
             // "July 4" with the year elsewhere in the range ("July 4-10, 1776", "May 4 - July 10 1776")
-            if (Peek(1) is { Kind: TokenKind.Number } dOnly && dOnly.Digits <= 2 && dOnly.Number is >= 1 and <= 31 && Peek(2) is not { Kind: TokenKind.Number } && !(Peek(2) is { Kind: TokenKind.Comma } && Peek(3) is { Kind: TokenKind.Number } yc && IsYearShaped(yc)))
+            // "July 21st, 1776": an ordinal day reads like a cardinal one.
+            if (Peek(1) is { Kind: TokenKind.Ordinal } od && od.Number is >= 1 and <= 31)
+            {
+                var comma = Peek(2) is { Kind: TokenKind.Comma } ? 1 : 0;
+                if (Peek(2 + comma) is { Kind: TokenKind.Number } oy && IsYearShaped(oy))
+                {
+                    _p += 3 + comma;
+                    return piece with { Core = Day(YearOf(oy, eraFirst, out _), (int)t.Value!, (int)od.Number) };
+                }
+                if (Peek(2) is not { Kind: TokenKind.Number })
+                {
+                    _p += 2;
+                    return piece with { Core = new PendingDayMonth((int)od.Number, (int)t.Value!) };
+                }
+            }
+            // "July 4, 1776", "July 4?, 1776": a day, an optional question mark and comma, then the year.
+            if (Peek(1) is { Kind: TokenKind.Number } d2 && d2.Digits <= 2 && d2.Number is >= 1 and <= 31)
+            {
+                var question = Peek(2) is { Kind: TokenKind.Question } ? 1 : 0;
+                var comma = Peek(2 + question) is { Kind: TokenKind.Comma } ? 1 : 0;
+                if (Peek(2 + question + comma) is { Kind: TokenKind.Number } y2 && IsYearShaped(y2))
+                {
+                    _p += 3 + question + comma;
+                    if (question == 1) piece = piece with { Hedge = Merge(piece.Hedge, Qualification.Uncertain) };
+                    return piece with { Core = Day(YearOf(y2, eraFirst, out _), (int)t.Value!, (int)d2.Number) };
+                }
+            }
+            if (Peek(1) is { Kind: TokenKind.Number } dOnly && dOnly.Digits <= 2 && dOnly.Number is >= 1 and <= 31 && Peek(2) is not { Kind: TokenKind.Number })
             {
                 _p += 2;
                 return piece with { Core = new PendingDayMonth((int)dOnly.Number, (int)t.Value!) };
-            }
-            if (Peek(1) is { Kind: TokenKind.Number } d2 && d2.Digits <= 2 && (Peek(2) is { Kind: TokenKind.Comma } ? Peek(3) : Peek(2)) is { Kind: TokenKind.Number } y2 && IsYearShaped(y2))
-            {
-                _p += Peek(2) is { Kind: TokenKind.Comma } ? 4 : 3;
-                return piece with { Core = Day(YearOf(y2, eraFirst, out _), (int)t.Value!, (int)d2.Number) };
             }
             if (Peek(1) is { Kind: TokenKind.Number } y3 && IsYearShaped(y3))
             {
@@ -587,12 +757,12 @@ internal sealed class DateParser
             long value = t.Number;
             if (t.Digits <= 2 && context?.Core is YearPoint or Decade or UnspecifiedDigits && context is not null)
             {
-                value = Expand(context, value);
+                value = Expand(context, value, t.Digits);
                 piece = piece with { Hedge = piece.Hedge ?? context.Hedge };
                 Penalise(0.03, $"'{t.Text}s' was expanded to the {value}s from the start of the range.");
             }
             else if (t.Digits < 3) return null;
-            if (value % 10 != 0) return null;
+            if (value % 10 != 0 || value > _profile.PlausibleYearMax || value < _profile.PlausibleYearMin) return null;
             _p += 2;
             if (value % 100 == 0)
             {
@@ -605,10 +775,19 @@ internal sealed class DateParser
         // unspecified digits: 17_, 18--, 19XX, 19??
         if (t.Kind == TokenKind.Unspecified)
         {
-            _p++;
             var pattern = (string)t.Value!;
+            // "1984-1X": one or two digits with an X is a month or day pattern, never a year.
+            if (pattern.Length <= 2) return null;
+            _p++;
             if (pattern.Length < 4) pattern = pattern.PadRight(4, 'X');
             var digits = pattern.TrimEnd('X');
+            // "156X-12-25": a month and day cannot be kept on an unspecified year; they are read and dropped.
+            if (Peek(0) is { Kind: TokenKind.Dash } && Peek(1) is { Kind: TokenKind.Number } um && um.Digits == 2 && um.Number is >= 1 and <= 12)
+            {
+                _p += 2;
+                if (Peek(0) is { Kind: TokenKind.Dash } && Peek(1) is { Kind: TokenKind.Number } ud && ud.Digits == 2 && ud.Number is >= 1 and <= 31) _p += 2;
+                Penalise(0.05, "A month and day on a year with unspecified digits cannot be kept; the year pattern alone is used.");
+            }
             return piece with { Core = pattern.Length - digits.Length == 1 ? new Decade(long.Parse(pattern.Replace('X', '0'))) : new UnspecifiedDigits(pattern) };
         }
 
@@ -623,6 +802,13 @@ internal sealed class DateParser
 
         // ordinal with no century word: completed from the other bound ("late 13th - early 14th century", "18th or 19th century")
         if (t.Kind == TokenKind.Ordinal && t.Number is >= 1 and <= 30)
+        {
+            _p++;
+            return piece with { Core = new PendingOrdinal(t.Number) };
+        }
+        // "18-19th century": a cardinal before a dash and an ordinal century is the first century of the range
+        if (t.Kind == TokenKind.Number && t.Digits <= 2 && !t.HasDecimal && t.Number is >= 1 and <= 30 && Peek(1) is { Kind: TokenKind.Dash }
+            && Peek(2) is { Kind: TokenKind.Ordinal } && (Peek(3) is { Kind: TokenKind.CenturyWord } || (Peek(3) is { } cl && IsCenturyLetter(cl))))
         {
             _p++;
             return piece with { Core = new PendingOrdinal(t.Number) };
@@ -647,19 +833,50 @@ internal sealed class DateParser
             }
         }
 
+        // a season with its year elsewhere in the range: "Spring - July 2005"
+        if (t.Kind == TokenKind.Season)
+        {
+            _p++;
+            return piece with { Core = new PendingSeason((Season)t.Value!) };
+        }
+
         // a year, with its era before or after
         if (t.Kind == TokenKind.Number && !t.HasDecimal)
         {
+            // "178-", "[178-, printed later]": three digits and a dash with nothing to pair are a decade with the last digit unknown.
+            if (t.Digits == 3 && Peek(1) is { Kind: TokenKind.Dash } && (Peek(2) is null || Peek(2)!.Kind is TokenKind.Comma or TokenKind.CloseParen or TokenKind.CloseBracket or TokenKind.Noise or TokenKind.Other))
+            {
+                _p += 2;
+                _notes.Add($"'{t.Text}-' is the decade {t.Number * 10}s with the last digit unknown.");
+                return piece with { Core = new Decade(t.Number * 10) };
+            }
             if (IsYearShaped(t) || eraFirst is not null || Peek(1) is { Kind: TokenKind.Era })
             {
+                // ISO "1985-04-12T23:20:30", "1985-04-12/": a hyphenated month and day belong to the year, not to a range.
+                if (t.Digits == 4 && Peek(1) is { Kind: TokenKind.Dash } isoDash && Peek(2) is { Kind: TokenKind.Number } isoMonth && isoMonth.Digits == 2 && isoMonth.Number is >= 1 and <= 12
+                    && isoDash.Start == t.End && isoMonth.Start == isoDash.End
+                    && ((Peek(3) is { Kind: TokenKind.Dash } && Peek(4) is { Kind: TokenKind.Number } dd0 && dd0.Digits == 2 && dd0.Number is >= 1 and <= 31)
+                        // "1985-04/", "/1985-04": a month alone is ISO only beside a slash; "c. 1801-02" is the catalogue abbreviation for 1802.
+                        || (isoMonth.Text[0] == '0' && (Peek(3) is { Kind: TokenKind.Slash or TokenKind.OpenEnd } || (_p > 0 && _t[_p - 1].Kind is TokenKind.Slash or TokenKind.OpenEnd)))))
+                {
+                    if (Peek(3) is { Kind: TokenKind.Dash } dayDash && Peek(4) is { Kind: TokenKind.Number } isoDay && isoDay.Digits == 2 && isoDay.Number is >= 1 and <= 31
+                        && dayDash.Start == isoMonth.End && isoDay.Start == dayDash.End)
+                    {
+                        _p += 5;
+                        return piece with { Core = Day(t.Number, (int)isoMonth.Number, (int)isoDay.Number) };
+                    }
+                    _p += 3;
+                    return piece with { Core = new MonthPoint(t.Number, (int)isoMonth.Number) };
+                }
                 _p++;
                 var year = YearOf(t, eraFirst, out var era);
                 return piece with { Core = new YearPoint(year), Era = era, EraExplicit = era is not null };
             }
-            if (t.Digits <= 2 && context?.Core is YearPoint && context is not null)
+            // "1945-53" and "c. 1801-02", but not "2004?-06-11" or "2004-06~-11": a leading zero followed by more date is a month, not an abbreviated year.
+            if (t.Digits <= 2 && context?.Core is YearPoint && context is not null && !(t.Digits == 2 && t.Text[0] == '0' && Peek(1) is not (null or { Kind: TokenKind.Comma or TokenKind.Noise or TokenKind.CloseParen or TokenKind.CloseBracket or TokenKind.Other })))
             {
                 _p++;
-                var year = Expand(context, t.Number);
+                var year = Expand(context, t.Number, t.Digits);
                 Penalise(0.03, $"'{t.Text}' was expanded to {year} from the start of the range.");
                 return piece with { Core = new YearPoint(year), Hedge = piece.Hedge ?? context.Hedge, Era = context.Era };
             }
@@ -786,12 +1003,13 @@ internal sealed class DateParser
 
     private static long ApplyEra(long value, Era era) => era == Era.Bce ? 1 - value : value;
 
-    private static long Expand(Piece context, long twoDigits)
+    /// <summary>"1945-53" completes within the century, "1843-5" within the decade; never before the start.</summary>
+    private static long Expand(Piece context, long value, int digits)
     {
         var start = context.Core switch { YearPoint y => y.Year, Decade d => d.Base, UnspecifiedDigits u => u.Minimum, _ => 0 };
-        var century = start - start % 100;
-        var candidate = century + twoDigits;
-        return candidate >= start ? candidate : candidate + 100;
+        var unit = digits <= 1 ? 10 : 100;
+        var candidate = start - start % unit + value;
+        return candidate >= start ? candidate : candidate + unit;
     }
 
     private bool TryWindowYear(Token t, out long year)

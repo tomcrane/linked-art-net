@@ -18,6 +18,9 @@ public enum TokenKind
 /// </summary>
 public sealed record Token(TokenKind Kind, string Text, int Start, object? Value = null)
 {
+    /// <summary>The <see cref="Value"/> of a <see cref="TokenKind.Noise"/> token that names an edition, printing or reproduction.</summary>
+    public const string EditionMarker = "edition";
+
     public int End => Start + Text.Length;
     public long Number => Value is long n ? n : throw new InvalidOperationException($"{Kind} '{Text}' is not a number.");
     /// <summary>Digits in a numeric token, for the "is this a year" rules.</summary>
@@ -47,6 +50,13 @@ public sealed partial class Tokenizer(Lexicon lexicon)
             if (tokens[i].Kind == TokenKind.Noise && tokens[i - 1].Kind is TokenKind.Number or TokenKind.Month && tokens[i + 1].Kind is TokenKind.Number or TokenKind.Month
                 && (tokens[i - 1].Kind == TokenKind.Month || tokens[i + 1].Kind == TokenKind.Month))
                 tokens.RemoveAt(i);
+        }
+        // "1500 s", "1720 s late": a lone "s" after a number is a decade suffix that lost its apostrophe or its spacing.
+        for (var i = 1; i < tokens.Count; i++)
+        {
+            if (tokens[i] is { Kind: TokenKind.Word } s && s.Text.TrimEnd('.').Equals("s", StringComparison.OrdinalIgnoreCase)
+                && tokens[i - 1] is { Kind: TokenKind.Number } n && n.Digits >= 3 && !n.HasDecimal)
+                tokens[i] = new Token(TokenKind.DecadeSuffix, s.Text, s.Start);
         }
         return tokens;
     }
@@ -203,6 +213,7 @@ public sealed partial class Tokenizer(Lexicon lexicon)
         if (Lexicon.Relations.TryGetValue(key, out var relation)) return new Token(TokenKind.Relation, text, start, relation);
         if (Lexicon.Corrections.Contains(key)) return new Token(TokenKind.Correction, text, start);
         if (Lexicon.OrdinalWords.TryGetValue(key, out var ordinalWord)) return new Token(TokenKind.Ordinal, text, start, (long)ordinalWord);
+        if (Lexicon.Edition.Contains(key)) return new Token(TokenKind.Noise, text, start, Token.EditionMarker);
         if (Lexicon.Noise.Contains(key)) return new Token(TokenKind.Noise, text, start);
         return null;
     }
@@ -231,7 +242,7 @@ public sealed partial class Tokenizer(Lexicon lexicon)
 
     // 10,000 | 4.5 | 1950 | 14th | 1950s / 1950's | 17_ / 18-- / 19XX / 19?? (unspecified digits)
     // "19thC" keeps its ordinal before a century letter; "187-" at the end of a MARC field is the decade 187X.
-    [GeneratedRegex(@"(?<num>\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)(?:(?<ord>st|nd|rd|th|e|º|°)(?![A-Za-z])|(?<ord>st|nd|rd|th)(?=[Cc](?![A-Za-z]))|(?<decade>'?s)(?![A-Za-z])|(?<unspec>_{1,3}|--|xx|XX|\?\?|(?<=(?<!\d)\d{3})-(?=\s*[\]\)]*\s*$)))?", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"(?<num>\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)(?:(?<ord>st|nd|rd|th|e|º|°)(?![A-Za-z])|(?<ord>st|nd|rd|th)(?=[Cc](?![A-Za-z]))|(?<decade>'?s)(?![A-Za-z])|(?<unspec>_{1,3}|--|xx|XX|[xX](?![A-Za-z0-9])|\?\?|(?<=(?<!\d)\d{3})-(?=\s*[\]\)]*\s*$)))?", RegexOptions.CultureInvariant)]
     private static partial Regex NumberPattern();
 
     [GeneratedRegex(@"[\p{L}][\p{L}'’]*(?:\.[\p{L}]+)*\.?|[*†©~+]", RegexOptions.CultureInvariant)]

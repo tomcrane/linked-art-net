@@ -32,6 +32,8 @@ public sealed record Lexicon
     public IReadOnlySet<string> Bp { get; private init; } = new HashSet<string>();
     public IReadOnlySet<string> Corrections { get; private init; } = new HashSet<string>();
     public IReadOnlySet<string> Noise { get; private init; } = new HashSet<string>();
+    /// <summary>Words marking an edition, printing or reproduction clause ("printed", "this edition"); tokenized as noise carrying the value "edition".</summary>
+    public IReadOnlySet<string> Edition { get; private init; } = new HashSet<string>();
     public IReadOnlyDictionary<string, int> OrdinalWords { get; private init; } = new Dictionary<string, int>();
 
     /// <summary>The longest phrase (in words) in any table, so the tokenizer knows how far to look ahead.</summary>
@@ -81,6 +83,7 @@ public sealed record Lexicon
             Bp = Set(root, "bp"),
             Corrections = Set(root, "corrections"),
             Noise = Set(root, "noise"),
+            Edition = Set(root, "edition"),
             OrdinalWords = Map(root, "ordinalWords", e => e.GetInt32()),
         };
         return lexicon with { MaxPhraseWords = lexicon.AllKeys().Max(k => k.Count(c => c == ' ') + 1) };
@@ -121,7 +124,7 @@ public sealed record Lexicon
             Between = MergeSets(l => l.Between), Or = MergeSets(l => l.Or), Floruit = MergeSets(l => l.Floruit),
             Lifecycle = MergeMaps(l => l.Lifecycle), Undated = MergeSets(l => l.Undated), Magnitudes = MergeMaps(l => l.Magnitudes),
             Ago = MergeSets(l => l.Ago), Bp = MergeSets(l => l.Bp), Corrections = MergeSets(l => l.Corrections),
-            Noise = MergeSets(l => l.Noise), OrdinalWords = MergeMaps(l => l.OrdinalWords),
+            Noise = MergeSets(l => l.Noise), Edition = MergeSets(l => l.Edition), OrdinalWords = MergeMaps(l => l.OrdinalWords),
         };
         return merged with { MaxPhraseWords = list.Max(l => l.MaxPhraseWords) };
     }
@@ -131,7 +134,7 @@ public sealed record Lexicon
     private IEnumerable<string> AllKeys() => Months.Keys.Concat(Seasons.Keys).Concat(CenturyWords).Concat(MillenniumWords).Concat(Bands.Keys)
         .Concat(Hedges.Keys).Concat(Eras.Keys).Concat(Relations.Keys).Concat(OpenEnd).Concat(RangeWords).Concat(Between).Concat(Or)
         .Concat(Floruit).Concat(Lifecycle.Keys).Concat(Undated).Concat(Magnitudes.Keys).Concat(Ago).Concat(Bp).Concat(Corrections)
-        .Concat(Noise).Concat(OrdinalWords.Keys);
+        .Concat(Noise).Concat(Edition).Concat(OrdinalWords.Keys);
 
     private static Dictionary<string, T> Map<T>(JsonElement root, string name, Func<JsonElement, T> convert)
     {

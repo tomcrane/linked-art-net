@@ -1,15 +1,31 @@
 {
   "inherits": "default",
   "name": "archive-us",
-  "description": "US archival practice (DACS/EAD): numeric dates are month-first, 'Winter 1776' is January to March 1776, decade bands in thirds as timetwister reads them (early 0-3, mid 4-6, late 7-9).",
+  "description": "US archival practice (DACS/EAD) as timetwister reads it: numeric dates are month-first, seasons run equinox to solstice (spring 1776 = 20 March to 21 June) with winter at the start of the year (January to 20 March), and decade bands overlap as halves (early 0-5, mid 3-8, late 5-9).",
   "dayMonthOrder": "monthFirst",
   "winter": "startOfYear",
   "decadeBands": {
     "length": 10,
-    "early": { "start": 0, "end": 3 },
-    "mid": { "start": 4, "end": 6 },
-    "late": { "start": 7, "end": 9 },
-    "beginningOf": { "start": 0, "end": 0 },
-    "endOf": { "start": 9, "end": 9 }
-  }
+    "early": {
+      "start": 0,
+      "end": 5
+    },
+    "mid": {
+      "start": 3,
+      "end": 8
+    },
+    "late": {
+      "start": 5,
+      "end": 9
+    },
+    "beginningOf": {
+      "start": 0,
+      "end": 0
+    },
+    "endOf": {
+      "start": 9,
+      "end": 9
+    }
+  },
+  "seasonDates": "astronomical"
 }

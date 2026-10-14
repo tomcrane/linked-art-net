@@ -5,7 +5,7 @@
     "june": 6, "jun": 6, "july": 7, "jul": 7, "august": 8, "aug": 8, "september": 9, "sep": 9, "sept": 9,
     "october": 10, "oct": 10, "november": 11, "nov": 11, "december": 12, "dec": 12
   },
-  "seasons": { "spring": "Spring", "spr": "Spring", "summer": "Summer", "sum": "Summer", "autumn": "Autumn", "aut": "Autumn", "fall": "Autumn", "winter": "Winter", "win": "Winter", "wint": "Winter" },
+  "seasons": { "summ": "Summer", "spring": "Spring", "spr": "Spring", "summer": "Summer", "sum": "Summer", "autumn": "Autumn", "aut": "Autumn", "fall": "Autumn", "winter": "Winter", "win": "Winter", "wint": "Winter" },
   "centuryWords": ["century", "centuries", "cent", "cents", "siecle", "siècle", "jahrhundert", "jh", "secolo", "siglo"],
   "millenniumWords": ["millennium", "millennia", "millenium"],
   "bands": {
@@ -27,7 +27,7 @@
     "probably": "Uncertain", "perhaps": "Uncertain", "possibly": "Uncertain", "uncertain": "Uncertain", "maybe": "Uncertain", "prob": "Uncertain"
   },
   "eras": { "bc": "Bce", "bce": "Bce", "bp": "Bp", "ad": "Ce", "ce": "Ce", "a.d": "Ce", "anno domini": "Ce" },
-  "relations": {
+  "relations": { "aft": "After", "aft.": "After",
     "before": "Before", "ante": "Before", "pre": "Before", "prior to": "Before", "earlier than": "Before",
     "after": "After", "post": "After", "later than": "After",
     "by": "By", "until": "Until", "till": "Until", "up to": "Until", "to": "Until",
@@ -50,6 +50,7 @@
   "ago": ["ago", "years ago", "yrs ago", "year ago", "before present", "before the present"],
   "bp": ["bp", "b p", "ybp", "cal bp"],
   "corrections": ["ie", "i e", "that is", "recte", "rectius", "really", "actually", "corrected to", "sic for"],
+  "edition": ["edition", "editions", "printing", "printings", "printed", "reprint", "reprinted", "reprinting", "reproduction", "reproduced", "recarved", "re-carved", "recut", "re-cut", "impression", "impressions", "published", "publication", "posthumous", "posthumously", "restrike", "restruck", "reissue", "reissued", "re-issued"],
   "noise": ["the", "of", "in", "on", "at", "a", "an", "circa", "©", "cop", "copyright", "sic", "printed", "published", "dated", "made", "issued", "year", "years", "yr", "yrs", "c", "ca", "cir", "ie", "dates", "date", "approximate", "approx", "probable", "est", "estimated"],
   "ordinalWords": {
     "first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10,

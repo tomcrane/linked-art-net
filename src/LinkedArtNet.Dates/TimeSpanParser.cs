@@ -94,6 +94,11 @@ public sealed partial class TimeSpanParser
         // Fast path: a bare ISO year, month or day ("1984", "2024-04-27") needs no normaliser and no strategy chain.
         if (original.Length is >= 4 and <= 12 && IsoShape().IsMatch(original) && CanonicalReader.TryParse(original.Trim(), out var iso))
             return new TimeSpanRealiser(profile, _currentYear).Realise(iso!, original, options.Intent, 1.0, "canonical");
+        // EDTF sets ("[1667,1668,1670..1672]", "{..1984}") keep their brackets, which the normaliser would otherwise read as inferred-date marks.
+        var trimmed = original.Trim();
+        if (trimmed.Length >= 3 && trimmed[0] is (char)91 or (char)123 && trimmed[^1] is (char)93 or (char)125 && (trimmed.Contains((char)44) || trimmed.Contains("..", StringComparison.Ordinal))
+            && CanonicalReader.TryParse(trimmed, out var set, out _, _periods))
+            return new TimeSpanRealiser(profile, _currentYear).Realise(set!, original, options.Intent, 1.0, "canonical");
 
         var normalised = Normaliser.Normalise(original);
         if (normalised.Text.Length == 0) return Unparsed(original, profile, "Empty input.", normalised);

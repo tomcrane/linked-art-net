@@ -145,12 +145,65 @@ public sealed class CorpusEvaluator
         {
             sb.AppendLine("## Failures");
             sb.AppendLine();
-            foreach (var f in failures)
+            var groups = failures.GroupBy(Cause).OrderBy(g => g.Key).ToList();
+            sb.AppendLine("By cause: " + string.Join(", ", groups.Select(g => $"{Label(g.Key).ToLowerInvariant()} {g.Count()}")) + ".");
+            sb.AppendLine();
+            foreach (var g in groups)
             {
-                sb.AppendLine($"- `{f.Entry.Id}` ({f.Entry.Status.ToString().ToLowerInvariant()}) \"{f.Entry.Input}\" -> {f.Result.Canonical ?? f.Result.Status.ToString()}");
-                foreach (var reason in f.Failures) sb.AppendLine($"  - {reason}");
+                sb.AppendLine($"### {Label(g.Key)} ({g.Count()})");
+                sb.AppendLine();
+                sb.AppendLine(Explanation(g.Key));
+                sb.AppendLine();
+                foreach (var f in g)
+                {
+                    sb.AppendLine($"- `{f.Entry.Id}` ({f.Entry.Status.ToString().ToLowerInvariant()}) \"{f.Entry.Input}\" -> {f.Result.Canonical ?? f.Result.Status.ToString()}");
+                    foreach (var reason in f.Failures) sb.AppendLine($"  - {reason}");
+                }
+                sb.AppendLine();
             }
         }
         return sb.ToString();
     }
+
+    /// <summary>Why an entry failed, coarsely, so a reader can tell parser gaps from flag mapping and convention differences.</summary>
+    public enum FailureCause { NotParsed, ParsedUnexpectedly, StatusDiffers, ReadingDiffers, BoundsDiffer, FlagsOnly, Other }
+
+    public static FailureCause Cause(EntryResult r)
+    {
+        var reasons = r.Failures;
+        if (reasons.Any(x => x.StartsWith("status:", StringComparison.Ordinal)))
+        {
+            var parsed = r.Result.Status is ParseStatus.Parsed or ParseStatus.Partial;
+            var expectedParsed = r.Entry.Expect.Status is "parsed" or "partial";
+            if (!parsed && expectedParsed) return FailureCause.NotParsed;
+            if (parsed && !expectedParsed) return FailureCause.ParsedUnexpectedly;
+            return FailureCause.StatusDiffers;
+        }
+        if (reasons.Any(x => x.StartsWith("canonical:", StringComparison.Ordinal) || x.StartsWith("edtf:", StringComparison.Ordinal) || x.StartsWith("kind:", StringComparison.Ordinal))) return FailureCause.ReadingDiffers;
+        if (reasons.Any(x => x.StartsWith("years.", StringComparison.Ordinal) || x.StartsWith("timespan.", StringComparison.Ordinal) || x.StartsWith("begin.", StringComparison.Ordinal) || x.StartsWith("end.", StringComparison.Ordinal))) return FailureCause.BoundsDiffer;
+        if (reasons.Count > 0 && reasons.All(x => x.StartsWith("flag ", StringComparison.Ordinal))) return FailureCause.FlagsOnly;
+        return FailureCause.Other;
+    }
+
+    public static string Label(FailureCause cause) => cause switch
+    {
+        FailureCause.NotParsed => "Not parsed",
+        FailureCause.ParsedUnexpectedly => "Parsed unexpectedly",
+        FailureCause.StatusDiffers => "Status differs",
+        FailureCause.ReadingDiffers => "Reading differs",
+        FailureCause.BoundsDiffer => "Bounds differ",
+        FailureCause.FlagsOnly => "Flags only",
+        _ => "Other",
+    };
+
+    private static string Explanation(FailureCause cause) => cause switch
+    {
+        FailureCause.NotParsed => "The source has a date and the parser found none: grammar gaps, or strings the source read generously.",
+        FailureCause.ParsedUnexpectedly => "The source says no date, or a feature we do not support, and the parser read something anyway: a false positive, or an expectation to update with the reading.",
+        FailureCause.StatusDiffers => "Parsed one way, expected another (for example partial against parsed).",
+        FailureCause.ReadingDiffers => "A different canonical form or kind for the same string: a parser bug, or a convention the profile should set.",
+        FailureCause.BoundsDiffer => "The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.",
+        FailureCause.FlagsOnly => "The bounds agree and only a hedge flag differs: usually how the importer mapped the source's flag.",
+        _ => "Confidence or another check.",
+    };
 }

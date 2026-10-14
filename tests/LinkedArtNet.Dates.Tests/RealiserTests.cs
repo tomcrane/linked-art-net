@@ -346,4 +346,25 @@ public class RealiserTests
         Assert.Equal("1867/1899", result.Edtf);
         Assert.Equal("default", result.Profile);
     }
+
+    [Fact]
+    public void Astronomical_seasons_run_equinox_to_solstice_and_winter_follows_the_profile()
+    {
+        var astronomical = ParseProfile.Default with { Name = "astro", SeasonDates = SeasonDates.Astronomical };
+        var winterFirst = astronomical with { Name = "astro-us", Winter = WinterPolicy.StartOfYear };
+        Assert.Equal(("1776-03-20T00:00:00Z", "1776-06-21T23:59:59Z"), Bounds("1776-21", astronomical));
+        Assert.Equal(("1776-06-21T00:00:00Z", "1776-09-23T23:59:59Z"), Bounds("1776-22", astronomical));
+        Assert.Equal(("1776-09-23T00:00:00Z", "1776-12-21T23:59:59Z"), Bounds("1776-23", astronomical));
+        Assert.Equal(("1776-12-21T00:00:00Z", "1777-03-20T23:59:59Z"), Bounds("1776-24", astronomical));
+        Assert.Equal(("1776-09-23T00:00:00Z", "1776-12-31T23:59:59Z"), Bounds("1776-23", winterFirst));
+        Assert.Equal(("1776-01-01T00:00:00Z", "1776-03-20T23:59:59Z"), Bounds("1776-24", winterFirst));
+        // The south swaps the seasons: spring there is the northern autumn's dates.
+        Assert.Equal(("1776-09-23T00:00:00Z", "1776-12-21T23:59:59Z"), Bounds("1776-21", astronomical with { Hemisphere = Hemisphere.South }));
+    }
+
+    private static (string, string) Bounds(string canonical, ParseProfile profile)
+    {
+        var span = Realise(canonical, profile).TimeSpan!;
+        return (span.BeginOfTheBegin!.ToString()!, span.EndOfTheEnd!.ToString()!);
+    }
 }

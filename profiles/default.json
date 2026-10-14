@@ -78,6 +78,7 @@
   "emitInnerBounds": false,
   "hemisphere": "north",
   "winter": "crossesYearEnd",
+  "seasonDates": "months",
   "defaultEra": "ce",
   "minYearDigits": 3,
   "dayMonthOrder": "dayFirst",

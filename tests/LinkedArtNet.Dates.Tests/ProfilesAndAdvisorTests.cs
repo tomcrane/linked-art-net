@@ -42,8 +42,21 @@ public class ProfilesAndAdvisorTests
     [Fact]
     public void Profiles_change_the_realisation()
     {
+        // archive-us: timetwister's conventions. Winter opens the year and ends at the equinox; autumn runs to the year's end;
+        // decade bands overlap as halves.
         Assert.Equal("1776-01-01T00:00:00Z", new TimeSpanParser(Catalog["archive-us"]).Parse("Winter 1776").TimeSpan!.BeginOfTheBegin?.ToString());
-        Assert.Equal("1776-03-31T23:59:59Z", new TimeSpanParser(Catalog["archive-us"]).Parse("Winter 1776").TimeSpan!.EndOfTheEnd?.ToString());
+        Assert.Equal("1776-03-20T23:59:59Z", new TimeSpanParser(Catalog["archive-us"]).Parse("Winter 1776").TimeSpan!.EndOfTheEnd?.ToString());
+        Assert.Equal("1776-03-20T00:00:00Z", new TimeSpanParser(Catalog["archive-us"]).Parse("1776 Spring").TimeSpan!.BeginOfTheBegin?.ToString());
+        Assert.Equal("1776-06-21T23:59:59Z", new TimeSpanParser(Catalog["archive-us"]).Parse("1776 Spring").TimeSpan!.EndOfTheEnd?.ToString());
+        Assert.Equal("1776-09-23T00:00:00Z", new TimeSpanParser(Catalog["archive-us"]).Parse("Fall 1776").TimeSpan!.BeginOfTheBegin?.ToString());
+        Assert.Equal("1776-12-31T23:59:59Z", new TimeSpanParser(Catalog["archive-us"]).Parse("Fall 1776").TimeSpan!.EndOfTheEnd?.ToString());
+        Assert.Equal("1775-12-31T23:59:59Z", new TimeSpanParser(Catalog["archive-us"]).Parse("early 1770's").TimeSpan!.EndOfTheEnd?.ToString());
+        Assert.Equal("1775-01-01T00:00:00Z", new TimeSpanParser(Catalog["archive-us"]).Parse("late 1770's").TimeSpan!.BeginOfTheBegin?.ToString());
+        // catalogue-quarters: yearrange's conventions. 'mid' is the middle fifth of a century and the middle three years of a decade.
+        Assert.Equal("1940-01-01T00:00:00Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("mid 20th century").TimeSpan!.BeginOfTheBegin?.ToString());
+        Assert.Equal("1959-12-31T23:59:59Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("mid 20th century").TimeSpan!.EndOfTheEnd?.ToString());
+        Assert.Equal("1834-01-01T00:00:00Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("mid 1830s").TimeSpan!.BeginOfTheBegin?.ToString());
+        Assert.Equal("1836-12-31T23:59:59Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("mid 1830s").TimeSpan!.EndOfTheEnd?.ToString());
         Assert.Equal("1975-01-01T00:00:00Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("late 20th century").TimeSpan!.BeginOfTheBegin?.ToString());
         Assert.Equal("1790-01-01T00:00:00Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("early 1790s").TimeSpan!.BeginOfTheBegin?.ToString());
         Assert.Equal("1792-12-31T23:59:59Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("early 1790s").TimeSpan!.EndOfTheEnd?.ToString());

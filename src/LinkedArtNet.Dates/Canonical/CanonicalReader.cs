@@ -46,8 +46,22 @@ public static partial class CanonicalReader
         var space = text.IndexOf(' ');
         if (space > 0 && Keywords.Lifecycle.TryGetValue(text[..space], out var marker) && !HasMarkedBounds(text))
             return new Lifecycle(marker, ParseExpression(text[(space + 1)..].TrimStart()));
+        // EDTF level 2 sets: "[1667,1668,1670..1672]" is one of the members, "{1960,1961-12}" is all of them (read as the hull);
+        // a member "..1984" or "1760-12.." is open on one side.
         if (text.StartsWith('[') && text.EndsWith(']'))
-            return new OneOf(SplitTopLevel(text[1..^1], ',').Select(ParseExpression));
+        {
+            var members = SplitTopLevel(text[1..^1], ',').Select(ParseSetMember).ToList();
+            if (members.Count == 0) throw new FormatException("An empty set.");
+            if (members.Count == 1 && !text.Contains("..", StringComparison.Ordinal)) throw new FormatException("A set with one member is not an alternative; write the member alone.");
+            return members.Count == 1 ? members[0] : new OneOf(members);
+        }
+        if (text.StartsWith('{') && text.EndsWith('}'))
+        {
+            var members = SplitTopLevel(text[1..^1], ',').Select(ParseSetMember).ToList();
+            if (members.Count == 0) throw new FormatException("An empty set.");
+            var first = members[0]; var last = members[^1];
+            return new Interval(first is Interval fi ? fi.Start : first, last is Interval li ? li.End : last);
+        }
 
         var slash = IndexOfTopLevel(text, '/');
         if (slash >= 0)
@@ -57,6 +71,17 @@ public static partial class CanonicalReader
             return new Interval(left == ".." ? null : ParseBound(left), right == ".." ? null : ParseBound(right));
         }
         return ParsePrefixed(text);
+    }
+
+    // set member := expression | bound '..' bound | '..' bound | bound '..'
+    private static DateExpression ParseSetMember(string text)
+    {
+        var dots = text.IndexOf("..", StringComparison.Ordinal);
+        if (dots < 0 || text.Contains('/')) return ParseExpression(text);
+        var left = text[..dots].Trim();
+        var right = text[(dots + 2)..].Trim();
+        if (left.Length == 0 && right.Length == 0) throw new FormatException("'..' alone is not a set member.");
+        return new Interval(left.Length == 0 ? null : ParseBound(left), right.Length == 0 ? null : ParseBound(right));
     }
 
     /// <summary>Fills in <c>period:key</c> nodes from a source, anywhere in the tree; unknown keys stay unresolved.</summary>

@@ -76,6 +76,9 @@ The end-to-end operating guide is [08-corpus-contributions.md](08-corpus-contrib
 - Confidence calibration: expected calibration error over 10 bins; a report plot in CI artefacts.
 - Per-tag and per-source accuracy, and a list of newly failing or newly passing entries versus the
   previous run (regressions block CI on `verified`; `proposed` is informative).
+- Failures grouped by cause, likely parser gaps first: not parsed, parsed unexpectedly, status differs,
+  reading differs (canonical or kind), bounds differ (usually a band, season or open-bound convention, or
+  the source's own estimate), flags only (usually the importer's mapping of a source flag).
 
 ### 1.6 Trainer
 

@@ -5,7 +5,7 @@
     "licence": "ODC-By-1.0",
     "url": "https://vocab.getty.edu/sparql",
     "attribution": "This file contains information from the Getty Union List of Artist Names (ULAN), made available by the J. Paul Getty Trust under the Open Data Commons Attribution License (ODC-By) 1.0, http://opendatacommons.org/licenses/by/1.0/. See THIRD-PARTY-NOTICES.md.",
-    "notes": "Biography descriptions are prose (\u0027Chinese calligrapher, active ca. 1023-1056\u0027), so the date must be found inside running text: these entries measure the salvage path. The expected years are ULAN\u0027s estStart/estEnd, which are deliberately padded estimates (an active period is widened to plausible lifetime bounds), hence toleranceYears 25. Sixty biographies from each of six bands of estimated start year (before 1400, then by century to 1900 and after)."
+    "notes": "Biography descriptions are prose (\u0027Chinese calligrapher, active ca. 1023-1056\u0027), so the date must be found inside running text: these entries measure the salvage path. The expected years are ULAN\u0027s estStart/estEnd, which are deliberately padded estimates (an active period is widened to plausible lifetime bounds), so since 2026-10-14 the expected years are read from the string itself and the estimate is kept in sourceExpectation. Sixty biographies from each of six bands of estimated start year (before 1400, then by century to 1900 and after)."
   },
   "defaults": {
     "intent": "single",
@@ -24,14 +24,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1499
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-002",
@@ -39,14 +32,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1499
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-003",
@@ -55,14 +41,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1490
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1451, "end": 1473}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1490", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-004",
@@ -71,14 +50,7 @@
         "range",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1599
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1599", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-005",
@@ -88,14 +60,7 @@
         "band",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1499
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "floruit"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-006",
@@ -104,14 +69,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1499
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "floruit"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-007",
@@ -119,14 +77,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1499
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-008",
@@ -134,14 +85,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1499
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-009",
@@ -150,14 +94,7 @@
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1467
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1467}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1467", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-010",
@@ -165,14 +102,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1467
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1467}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1467", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-011",
@@ -180,14 +110,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1467
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1467", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-012",
@@ -195,14 +118,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1467
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1467}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1467", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-013",
@@ -210,14 +126,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1499
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1499, "end": 1499}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-014",
@@ -225,14 +134,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1445
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1445}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1445", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-015",
@@ -240,14 +142,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1447
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1447}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1447", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-016",
@@ -255,27 +150,13 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1540
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1440, "end": 1470}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1540", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-017",
       "input": "German artist, op.1430-m.1462",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1462
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1430, "end": 1462}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1462", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-018",
@@ -284,14 +165,7 @@
         "floruit",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1462
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1430, "end": 1462}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1462", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-019",
@@ -300,14 +174,7 @@
         "floruit",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1462
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1430, "end": 1462}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1462", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-020",
@@ -315,14 +182,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1473
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1473}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1473", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-021",
@@ -330,14 +190,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1473
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1473}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1473", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-022",
@@ -345,14 +198,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1700
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1700", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-023",
@@ -362,14 +208,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1500
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1440, "end": 1460}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1500", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-024",
@@ -378,14 +217,7 @@
         "range",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1599
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1599", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-025",
@@ -393,27 +225,13 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1599
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1599", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-026",
       "input": "Italian artist, -1500",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1500
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"end": 1500}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1500", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-027",
@@ -421,14 +239,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1500
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"end": 1500}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1500", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-028",
@@ -437,14 +248,7 @@
         "century",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1500
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1500, "end": 1500}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1500", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-029",
@@ -452,14 +256,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1500
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1449, "end": 1487}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1500", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-030",
@@ -468,14 +265,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1497
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1430, "end": 1467}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1497", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-031",
@@ -484,14 +274,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1500
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1450, "end": 1474}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1500", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-032",
@@ -499,14 +282,7 @@
       "tags": [
         "month"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1451
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1426, "end": 1451}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1451", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-033",
@@ -514,14 +290,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1600
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1400, estEnd 1600", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-034",
@@ -530,14 +299,7 @@
         "circa",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1480
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1447, "end": 1470}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1480", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-035",
@@ -545,14 +307,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1467
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1464}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1467", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-036",
@@ -560,14 +315,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1400,
-          "end": 1464
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1400, "end": 1464}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1464", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-037",
@@ -575,14 +323,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1699", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-038",
@@ -590,14 +331,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1699", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-039",
@@ -606,14 +340,7 @@
         "century",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1665
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1665, "end": 1665}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1665", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-040",
@@ -621,14 +348,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1655
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1605, "end": 1650}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1655", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-041",
@@ -636,14 +356,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1699", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-042",
@@ -651,14 +364,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1699", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-043",
@@ -668,14 +374,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1686
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1642, "end": 1686}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1686", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-044",
@@ -683,14 +382,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1635
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1610, "end": 1635}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1635", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-045",
@@ -698,14 +390,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1635
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1610, "end": 1635}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1635", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-046",
@@ -713,14 +398,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1635
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1610, "end": 1635}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1635", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-047",
@@ -728,14 +406,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1720
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1610}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1720", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-048",
@@ -743,14 +414,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1635
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1610, "end": 1635}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1635", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-049",
@@ -758,14 +422,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1668
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1668}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1668", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-050",
@@ -774,14 +431,7 @@
         "century",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1661
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1661, "end": 1661}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1661", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-051",
@@ -789,14 +439,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1650
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1610, "end": 1650}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1650", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-052",
@@ -804,14 +447,7 @@
       "tags": [
         "circa"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1650
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1610, "end": 1650}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1650", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-053",
@@ -819,14 +455,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1799
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1799", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-054",
@@ -834,14 +463,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1699", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-055",
@@ -849,14 +471,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1687
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1687}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1687", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-056",
@@ -864,14 +479,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1687
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1687}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1687", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-057",
@@ -879,14 +487,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1699", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-058",
@@ -894,14 +495,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1699
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1699", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-059",
@@ -910,14 +504,7 @@
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1677
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1605, "end": 1677}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1677", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-060",
@@ -925,27 +512,13 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 2090
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"end": 1828}}, "sourceExpectation": "ULAN estStart 1600, estEnd 2090", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-061",
       "input": "Flemish or Dutch painter, born before 1610, died after 1640",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1650
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1610, "end": 1640}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1650", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-062",
@@ -953,14 +526,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1640
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1640}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1640", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-063",
@@ -969,14 +535,7 @@
         "century",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1638
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1638, "end": 1638}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1638", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-064",
@@ -984,14 +543,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1688
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1688}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1688", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-065",
@@ -999,14 +551,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1653
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1653}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1653", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-066",
@@ -1014,14 +559,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1653
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1653}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1653", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-067",
@@ -1030,14 +568,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1682
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1608, "end": 1682}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1682", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-068",
@@ -1045,14 +576,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1636
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1636}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1636", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-069",
@@ -1061,14 +585,7 @@
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1661
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1605, "end": 1661}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1661", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-070",
@@ -1078,14 +595,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1690
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1640, "end": 1660}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1690", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-071",
@@ -1094,14 +604,7 @@
         "century",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1626
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1626, "end": 1626}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1626", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-072",
@@ -1110,14 +613,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1700
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "birthDeath"}, "sourceExpectation": "ULAN estStart 1600, estEnd 1700", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-073",
@@ -1125,14 +621,7 @@
       "tags": [
         "uncertain"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1660
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1660}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1660", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-074",
@@ -1141,14 +630,7 @@
         "range",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1660
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1660}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1660", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-075",
@@ -1157,14 +639,7 @@
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1710
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1640, "end": 1680}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1710", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-076",
@@ -1172,14 +647,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1600,
-          "end": 1651
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1600, "end": 1651}}, "sourceExpectation": "ULAN estStart 1600, estEnd 1651", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-077",
@@ -1188,14 +656,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1786
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1730, "end": 1765}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1786", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-078",
@@ -1204,14 +665,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1850
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1735, "end": 1775}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1850", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-079",
@@ -1220,14 +674,7 @@
         "uncertain",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1799", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-080",
@@ -1235,14 +682,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1733
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1733}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1733", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-081",
@@ -1250,14 +690,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1799", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-082",
@@ -1266,14 +699,7 @@
         "floruit",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1762
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1737, "end": 1762}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1762", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-083",
@@ -1282,14 +708,7 @@
         "century",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1762
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1762, "end": 1762}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1762", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-084",
@@ -1297,14 +716,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1799", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-085",
@@ -1312,14 +724,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1799", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-086",
@@ -1327,14 +732,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1776
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1776}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1776", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-087",
@@ -1343,14 +741,7 @@
         "floruit",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1850
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1776}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1850", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-088",
@@ -1358,14 +749,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1777
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1777}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1777", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-089",
@@ -1373,14 +757,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1780
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1780}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1780", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-090",
@@ -1388,14 +765,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1780
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1780}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1780", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-091",
@@ -1403,14 +773,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1780
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1780}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1780", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-092",
@@ -1418,14 +781,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1771
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"end": 1771}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1771", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-093",
@@ -1434,14 +790,7 @@
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1771
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1710, "end": 1771}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1771", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-094",
@@ -1449,14 +798,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1771
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"end": 1771}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1771", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-095",
@@ -1465,14 +807,7 @@
         "century",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1809
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1809, "end": 1809}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1809", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-096",
@@ -1480,27 +815,13 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1820
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1820", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-097",
       "input": "French menuisier, died before 1774",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1774
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"end": 1774}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1774", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-098",
@@ -1509,14 +830,7 @@
         "century",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1730
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "floruit"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1730", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-099",
@@ -1524,14 +838,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1799", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-100",
@@ -1539,14 +846,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1772
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1730, "end": 1772}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1772", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-101",
@@ -1555,14 +855,7 @@
         "floruit",
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1772
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1730, "end": 1772}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1772", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-102",
@@ -1570,14 +863,7 @@
       "tags": [
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1772
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1730, "end": 1772}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1772", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-103",
@@ -1585,14 +871,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1773
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1773}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1773", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-104",
@@ -1600,14 +879,7 @@
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1773
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1773}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1773", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-105",
@@ -1615,14 +887,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1773
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1773}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1773", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-106",
@@ -1630,14 +895,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1773
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1773}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1773", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-107",
@@ -1646,14 +904,7 @@
         "uncertain",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1799", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-108",
@@ -1662,14 +913,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1810
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1750, "end": 1774}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1810", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-109",
@@ -1678,14 +922,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1775
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1730, "end": 1745}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1775", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-110",
@@ -1694,14 +931,7 @@
         "circa",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1779
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"end": 1769}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1779", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-111",
@@ -1709,14 +939,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1767
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1730, "end": 1767}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1767", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-112",
@@ -1725,14 +948,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1802
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1750, "end": 1774}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1802", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-113",
@@ -1740,14 +956,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1765
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1765}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1765", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-114",
@@ -1755,14 +964,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1765
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1765}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1765", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-115",
@@ -1771,14 +973,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1765
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1765}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1765", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-116",
@@ -1786,14 +981,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1767
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1767}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1767", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-117",
@@ -1801,14 +989,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1767
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1700, "end": 1767}}, "sourceExpectation": "ULAN estStart 1700, estEnd 1767", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-118",
@@ -1816,14 +997,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1799
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1799", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-119",
@@ -1831,14 +1005,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1700,
-          "end": 1899
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1700, estEnd 1899", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-120",
@@ -1847,14 +1014,7 @@
         "century",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 2100
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "floruit"}, "sourceExpectation": "ULAN estStart 1800, estEnd 2100", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-121",
@@ -1862,14 +1022,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1800, estEnd 1899", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-122",
@@ -1877,14 +1030,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1887
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1887}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1887", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-123",
@@ -1892,14 +1038,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1887
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1887}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1887", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-124",
@@ -1907,14 +1046,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1862
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1862}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1862", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-125",
@@ -1922,14 +1054,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1862
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1862}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1862", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-126",
@@ -1937,14 +1062,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1862
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1862}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1862", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-127",
@@ -1952,14 +1070,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1870
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1870}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1870", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-128",
@@ -1967,14 +1078,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1862
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1862}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1862", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-129",
@@ -1982,14 +1086,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1862
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1800, "end": 1862}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1862", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-130",
@@ -1998,14 +1095,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1950
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1830, "end": 1840}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1950", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-131",
@@ -2013,14 +1103,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1800, estEnd 1899", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-132",
@@ -2029,14 +1112,7 @@
         "century",
         "band"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1900
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1800, estEnd 1900", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-133",
@@ -2044,14 +1120,7 @@
       "tags": [
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1899
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "kind": "single"}, "sourceExpectation": "ULAN estStart 1800, estEnd 1899", "notes": "No explicit year in the string, so only parsing is expected (2026-10-14); ULAN’s padded estimate is kept in sourceExpectation."
     },
     {
       "id": "ulan-134",
@@ -2060,14 +1129,7 @@
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1905
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1828, "end": 1905}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1905", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-135",
@@ -2076,14 +1138,7 @@
         "range",
         "floruit"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1800,
-          "end": 1880
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1830, "end": 1850}}, "sourceExpectation": "ULAN estStart 1800, estEnd 1880", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-136",
@@ -2091,14 +1146,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2001
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 2001}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2001", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-137",
@@ -2106,27 +1154,13 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2039
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2039", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-138",
       "input": "French painter, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2080
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2080", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-139",
@@ -2134,14 +1168,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2008
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 2008}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2008", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-140",
@@ -2149,27 +1176,13 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1970
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1970}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1970", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-141",
       "input": "British artist, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2019
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2019", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-142",
@@ -2177,14 +1190,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1970
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1970}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1970", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-143",
@@ -2192,14 +1198,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1970
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1970}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1970", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-144",
@@ -2207,14 +1206,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1970
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1970}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1970", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-145",
@@ -2222,14 +1214,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1995
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1995}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1995", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-146",
@@ -2237,27 +1222,13 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1995
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1995}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1995", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-147",
       "input": "New Zealand artist, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2080
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2080", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-148",
@@ -2265,14 +1236,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2006
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 2006}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2006", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-149",
@@ -2280,27 +1244,13 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2006
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 2006}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2006", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-150",
       "input": "American painter, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2080
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2080", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-151",
@@ -2308,14 +1258,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2019
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2019", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-152",
@@ -2323,14 +1266,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2039
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2039", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-153",
@@ -2338,27 +1274,13 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2014
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 2014}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2014", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-154",
       "input": "English artist, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2080
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2080", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-155",
@@ -2366,27 +1288,13 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1980
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1980}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1980", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-156",
       "input": "Dutch artist, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2019
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2019", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-157",
@@ -2394,14 +1302,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1980
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1980}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1980", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-158",
@@ -2409,14 +1310,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1980
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1980}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1980", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-159",
@@ -2424,14 +1318,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1980
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1980}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1980", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-160",
@@ -2439,14 +1326,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1980
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1980}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1980", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-161",
@@ -2454,14 +1334,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1982
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1982}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1982", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-162",
@@ -2469,14 +1342,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2039
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2039", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-163",
@@ -2484,14 +1350,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1987
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1987}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1987", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-164",
@@ -2499,27 +1358,13 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2019
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 2019}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2019", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-165",
       "input": "English painter, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2080
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2080", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-166",
@@ -2527,27 +1372,13 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2013
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2013", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-167",
       "input": "Canadian artist, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2019
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2019", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-168",
@@ -2555,14 +1386,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2013
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 2013}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2013", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-169",
@@ -2570,27 +1394,13 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2039
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2039", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-170",
       "input": "Canadian painter, 1919-",
       "tags": [],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2080
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2080", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-171",
@@ -2598,14 +1408,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1987
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1987}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1987", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-172",
@@ -2613,14 +1416,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1987
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1987}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1987", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-173",
@@ -2628,14 +1424,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1987
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1987}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1987", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-174",
@@ -2643,14 +1432,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1998
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1998}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1998", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-175",
@@ -2658,14 +1440,7 @@
       "tags": [
         "lifecycle"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 2039
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919}}, "sourceExpectation": "ULAN estStart 1919, estEnd 2039", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-176",
@@ -2673,14 +1448,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1998
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1998}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1998", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-177",
@@ -2688,14 +1456,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1998
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1998}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1998", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-178",
@@ -2703,14 +1464,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1945
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1945}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1945", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-179",
@@ -2718,14 +1472,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1945
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1945}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1945", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     },
     {
       "id": "ulan-180",
@@ -2733,14 +1480,7 @@
       "tags": [
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1919,
-          "end": 1945
-        },
-        "toleranceYears": 25
-      }
+      "expect": {"status": "parsed", "years": {"start": 1919, "end": 1945}}, "sourceExpectation": "ULAN estStart 1919, estEnd 1945", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
     }
   ]
 }

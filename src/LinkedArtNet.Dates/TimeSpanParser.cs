@@ -35,7 +35,23 @@ public sealed class CanonicalStrategy(INamedPeriodSource? periods = null) : IPar
     public bool UsesRawText => true;
 
     public Candidate? TryParse(string text, ParseProfile profile) =>
-        CanonicalReader.TryParse(text, out var expression, out _, periods) ? new Candidate(expression!, 1.0, Name) : null;
+        CanonicalReader.TryParse(text, out var expression, out _, periods)
+            ? HasBandOnRoundYear(expression!)
+                ? new Candidate(expression!, 0.7, Name, Notes: ["In free text a band on a round year usually means the decade with its \"s\" dropped, so the grammar's reading is preferred and this one is kept as an alternative."])
+                : new Candidate(expression!, 1.0, Name)
+            : null;
+
+    /// <summary>"mid 1740" is canonical for the middle of the year 1740, but written by a person it almost always means the mid 1740s.</summary>
+    private static bool HasBandOnRoundYear(DateExpression e) => e switch
+    {
+        Banded { Inner: YearPoint y } => y.Year % 10 == 0 && y.Year >= 1000,
+        Banded b => HasBandOnRoundYear(b.Inner),
+        Qualified q => HasBandOnRoundYear(q.Inner),
+        Relative r => HasBandOnRoundYear(r.Inner),
+        Lifecycle l => HasBandOnRoundYear(l.Inner),
+        Interval i => (i.Start is not null && HasBandOnRoundYear(i.Start)) || (i.End is not null && HasBandOnRoundYear(i.End)),
+        _ => false,
+    };
 }
 
 /// <summary>

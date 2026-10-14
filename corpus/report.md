@@ -1,8 +1,8 @@
 # Corpus run
 
-Generated 2026-10-14 16:04 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 16:06 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
-## verified: 543/543 pass (100.0%), calibration error 0.130
+## verified: 545/545 pass (100.0%), calibration error 0.131
 
 - authored/bce-and-deep-time.json: 20/20
 - authored/canonical-forms.json: 18/18
@@ -11,21 +11,21 @@ Generated 2026-10-14 16:04 UTC by `dotnet run --project tools/Corpus -- run --al
 - authored/multilingual.json: 44/44
 - authored/named-periods.json: 30/30
 - authored/open-ended-and-relations.json: 36/36
-- imported/yearrange.json: 213/213
+- imported/yearrange.json: 215/215
 - seed/pmc-outputs.json: 91/91
 - seed/py-datetime.json: 37/37
 
-Status (expected->actual): parsed->parsed 527, partial->partial 2, undated->undated 8, unparsed->unparsed 6
+Status (expected->actual): parsed->parsed 529, partial->partial 2, undated->undated 8, unparsed->unparsed 6
 
-## proposed: 1657/1767 pass (93.8%), calibration error 0.120
+## proposed: 1656/1765 pass (93.8%), calibration error 0.119
 
 - imported/edtf-spec.json: 61/61
 - imported/getty.json: 180/180
 - imported/timetwister.json: 79/91
-- imported/yearrange.json: 1337/1435
+- imported/yearrange.json: 1336/1433
 
-Status (expected->actual): parsed->parsed 1760, parsed->undated 1, parsed->unparsed 2, unparsed->unparsed 4
-Weakest tags: single 26/37, timetwister 79/91, archival 79/91, band 276/312, season 29/32, circa 233/257, century 306/337, uncertain 50/54, named-period 275/297, decade 169/182, yearrange 1337/1435, imported 1657/1767, bracketed 457/486, month 181/192, range 435/455
+Status (expected->actual): parsed->parsed 1758, parsed->undated 1, parsed->unparsed 2, unparsed->unparsed 4
+Weakest tags: single 26/37, timetwister 79/91, archival 79/91, band 275/310, season 29/32, circa 233/257, century 306/337, uncertain 50/54, named-period 275/297, decade 169/182, yearrange 1336/1433, imported 1656/1765, bracketed 457/486, month 181/192, range 434/454
 
 ## disputed: 0/2 pass (0.0%), calibration error 0.675
 
@@ -34,11 +34,11 @@ Weakest tags: single 26/37, timetwister 79/91, archival 79/91, band 276/312, sea
 Status (expected->actual): parsed->parsed 2
 Weakest tags: yearrange 0/2, imported 0/2, range 0/1, band 0/1, named-period 0/2
 
-Since the last run: 3 newly passing, 1 newly failing: yr-0640
+Since the last run: 0 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 3, bounds differ 105, flags only 4.
+By cause: not parsed 3, bounds differ 104, flags only 4.
 
 ### Not parsed (3)
 
@@ -60,7 +60,7 @@ The source has a date and the parser found none: grammar gaps, or strings the so
   - years.start: expected 1000, got (none)
   - years.end: expected 1000, got (none)
 
-### Bounds differ (105)
+### Bounds differ (104)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
@@ -298,10 +298,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 1950..1959
   - years.start: expected 1950, got 1603
   - years.end: expected 1959, got 1868
-- `yr-1039` (proposed) "mid 1740" -> mid 1740
-  - expected: status parsed; years 1744..1746
-  - years.start: expected 1744, got 1740
-  - years.end: expected 1746, got 1740
 - `yr-1044` (proposed) "late 1750âs - early 1760âs" -> late 175X
   - expected: status parsed; years 1757..1762
   - years.end: expected 1762, got 1759

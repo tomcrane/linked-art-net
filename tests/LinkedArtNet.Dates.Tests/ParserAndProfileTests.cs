@@ -80,4 +80,14 @@ public class ParserAndProfileTests
     }
 
     private static string Normalise(string json) => json.Replace("\r\n", "\n").TrimEnd();
+
+    [Fact]
+    public void A_band_on_a_round_year_reads_as_the_decade_even_when_the_text_is_canonical()
+    {
+        var decade = TimeSpanParser.Default.Parse("mid 1740");
+        Assert.Equal("mid 174X", decade.Canonical);
+        Assert.Contains(decade.Alternatives, a => a.Canonical == "mid 1740");
+        Assert.Equal("early 1945", TimeSpanParser.Default.Parse("early 1945").Canonical);
+        Assert.Equal(1.0, TimeSpanParser.Default.Parse("early 1945").Confidence);
+    }
 }

@@ -54,7 +54,7 @@ public sealed class CorpusReviewTests : IDisposable
         Assert.StartsWith("| **fail** | tr-002 | `a \\| b` |", firstRow);
         Assert.Contains("- **tr-002** `a \\| b` (pipes in the input)", md);
         Assert.Contains("  - canonical: expected '1985', got '", md);
-        Assert.Contains("| pass | tr-001 | `1984` | parsed `1984` | parsed `1984` |", md);
+        Assert.Contains("| pass | tr-001 | `1984` | parsed `1984` | parsed `1984` 1984..1984 |", md);
     }
 
     [Fact]

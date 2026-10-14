@@ -93,7 +93,19 @@ public static class CorpusReview
     }
 
     private static string Actual(EntryResult r) =>
-        r.Result.Status.ToString().ToLowerInvariant() + (r.Result.Canonical is { } c ? " " + Code(c) : "");
+        r.Result.Status.ToString().ToLowerInvariant() + (r.Result.Canonical is { } c ? " " + Code(c) : "") + Years(r.Result);
+
+    /// <summary>The realised outer bounds as years, or as dates when a bound is not a whole year: " 1875..1899", " 1776-03-20..1776-06-21", " ..1935", " 1941..".</summary>
+    private static string Years(TimeSpanParseResult result)
+    {
+        var start = (result.TimeSpan ?? result.Begin)?.BeginOfTheBegin;
+        var end = (result.TimeSpan ?? result.End)?.EndOfTheEnd;
+        if (start is null && end is null) return "";
+        return $" {(start is { } s ? Edge(s, true) : "")}..{(end is { } e ? Edge(e, false) : "")}";
+    }
+
+    private static string Edge(LinkedArtDate d, bool start) =>
+        (start ? d.Month == 1 && d.Day == 1 : d.Month == 12 && d.Day == 31) ? d.Year.ToString() : $"{d.Year:0000}-{d.Month:00}-{d.Day:00}";
 
     /// <summary>A code span safe inside a table cell: pipes escaped, a longer fence when the text contains backticks.</summary>
     private static string Code(string text)

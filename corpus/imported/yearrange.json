@@ -2593,7 +2593,7 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0173",
+      "id": "yr-0173", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "1932 1980s)",
       "tags": [
         "decade"
@@ -2625,7 +2625,7 @@
       }
     },
     {
-      "id": "yr-0175",
+      "id": "yr-0175", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Not a date string a reader could fix either: middle dots, eight digits, five-digit years, \u00271640 century\u0027.",
       "input": "\u30FB07\u30FB25",
       "tags": [],
       "expect": {
@@ -5330,7 +5330,7 @@
       "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1833..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1833..1833."
     },
     {
-      "id": "yr-0363",
+      "id": "yr-0363", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Not a date string a reader could fix either: middle dots, eight digits, five-digit years, \u00271640 century\u0027.",
       "input": "18690000",
       "tags": [],
       "expect": {
@@ -7460,7 +7460,7 @@
       }
     },
     {
-      "id": "yr-0521",
+      "id": "yr-0521", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Not a date string a reader could fix either: middle dots, eight digits, five-digit years, \u00271640 century\u0027.",
       "input": "19881",
       "tags": [],
       "expect": {
@@ -7912,7 +7912,7 @@
       }
     },
     {
-      "id": "yr-0553",
+      "id": "yr-0553", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "\u0022lamp\u0022 made in 1956. Others ca. 1970s.",
       "tags": [
         "circa",
@@ -14252,7 +14252,7 @@
       }
     },
     {
-      "id": "yr-1030",
+      "id": "yr-1030", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): \u0027in11950s\u0027 is a typo for \u0027in 1950s\u0027; the typo defeats the edition clause and the parser falls back to the Edo original.",
       "input": "Originally in Edo era, this re-carved edition was made probably in11950s.",
       "tags": [
         "decade",
@@ -14426,7 +14426,7 @@
       }
     },
     {
-      "id": "yr-1044",
+      "id": "yr-1044", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Mojibake apostrophes (\u00271720\u00E2s\u0027); the data is corrupt, not the reading.",
       "input": "late 1750\u00E2\u0080\u0099s - early 1760\u00E2\u0080\u0099s",
       "tags": [
         "band"
@@ -14651,7 +14651,7 @@
       }
     },
     {
-      "id": "yr-1060",
+      "id": "yr-1060", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Not a date string a reader could fix either: middle dots, eight digits, five-digit years, \u00271640 century\u0027.",
       "input": "c. 18011",
       "tags": [
         "circa"
@@ -14684,7 +14684,7 @@
       }
     },
     {
-      "id": "yr-1062",
+      "id": "yr-1062", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Mojibake apostrophes (\u00271720\u00E2s\u0027); the data is corrupt, not the reading.",
       "input": "1730\u00E2\u0080\u0099s early",
       "tags": [
         "band"
@@ -16693,7 +16693,7 @@
       "expect": {"status":"parsed","kind":"single","canonical":"century 20","edtf":"1900/1999","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1603..1867", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1603..1867."
     },
     {
-      "id": "yr-1206",
+      "id": "yr-1206", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): \u0027this edition was made in unknown date\u0027: the object is undated and only the original is dated.",
       "input": "Originally in early Edo era, this edition was made in unknown date.",
       "tags": [
         "band",
@@ -17007,7 +17007,7 @@
       }
     },
     {
-      "id": "yr-1228",
+      "id": "yr-1228", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): \u0027this edition was made in unknown date\u0027: the object is undated and only the original is dated.",
       "input": "Originally in late Edo era, this re-carved edition was made in unknown date.",
       "tags": [
         "band",
@@ -17125,7 +17125,7 @@
       }
     },
     {
-      "id": "yr-1236",
+      "id": "yr-1236", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): The regnal year and the western year disagree (Meiji 3 is 1870, not 1879).",
       "input": "1879 (Meiji 3, 2nd month)",
       "tags": [
         "bracketed"
@@ -17239,7 +17239,7 @@
       }
     },
     {
-      "id": "yr-1244",
+      "id": "yr-1244", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): The regnal year and the western year disagree (Meiji 3 is 1870, not 1879).",
       "input": "1867 (Meiji 1, 6th month)",
       "tags": [
         "bracketed"
@@ -17344,7 +17344,7 @@
       "expect": {"status": "parsed", "years": {"start": 1800, "end": 1899}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1253",
+      "id": "yr-1253", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "(1) 1980, (2) 1977, (3) ca. 1970s.",
       "tags": [
         "circa",
@@ -17364,7 +17364,7 @@
       }
     },
     {
-      "id": "yr-1254",
+      "id": "yr-1254", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "(1) and (2) ca. 1970s, (3) 1982.",
       "tags": [
         "circa",
@@ -18723,7 +18723,7 @@
       }
     },
     {
-      "id": "yr-1352",
+      "id": "yr-1352", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "Sheet 1; 1964. Sheet 2 and 3; ca. 1930s.",
       "tags": [
         "circa",
@@ -19724,7 +19724,7 @@
       }
     },
     {
-      "id": "yr-1430",
+      "id": "yr-1430", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "Spring: July 2005; Summer: May - July 2003; Autumn: Dec 2003 - July 2004; Winter: Sept - Nov 2003.",
       "tags": [
         "month",
@@ -19871,7 +19871,7 @@
       "expect": {"status":"parsed","kind":"single","canonical":"1948","edtf":"1948","timespan":{"begin_of_the_begin":"1948-01-01T00:00:00Z","end_of_the_end":"1948-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1928..1943", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1928..1943."
     },
     {
-      "id": "yr-1441",
+      "id": "yr-1441", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "(1)1909. (2) Ca. 1900-10s.",
       "tags": [
         "circa",
@@ -20099,20 +20099,13 @@
       }
     },
     {
-      "id": "yr-1458",
+      "id": "yr-1458", "status": "verified",
       "input": "730/1000, not dated",
       "tags": [
         "range",
         "undated"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1000,
-          "end": 1000
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"undated"}, "sourceExpectation": "status parsed; years 1000..1000", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1000..1000."
     },
     {
       "id": "yr-1459", "status": "verified",
@@ -20399,7 +20392,7 @@
       }
     },
     {
-      "id": "yr-1478",
+      "id": "yr-1478", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "\u0022Flower\u0022 in 1972. \u0022Lake in Forest\u0022 in 1969. \u0022Volcano Lake\u0022 ca. 1960s.",
       "tags": [
         "circa",
@@ -22113,7 +22106,7 @@
       }
     },
     {
-      "id": "yr-1595",
+      "id": "yr-1595", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Not a date string a reader could fix either: middle dots, eight digits, five-digit years, \u00271640 century\u0027.",
       "input": "Second century 17th century.",
       "tags": [
         "century"
@@ -22458,7 +22451,7 @@
       }
     },
     {
-      "id": "yr-1618",
+      "id": "yr-1618", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
       "input": "Virgin, end of 5th century; Annunciation, 533-535; Saints, 705.",
       "tags": [
         "range",
@@ -22551,7 +22544,7 @@
       "expect": {"status": "parsed", "years": {"start": 1650, "end": 1650}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1625",
+      "id": "yr-1625", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Not a date string a reader could fix either: middle dots, eight digits, five-digit years, \u00271640 century\u0027.",
       "input": "1640 century.",
       "tags": [
         "century"

@@ -154,7 +154,7 @@
         "flags": ["Band"] }
     },
     {
-      "id": "pyd-027", "input": "13/11/08", "tags": ["numeric-date", "two-digit-year", "ambiguous"], "status": "proposed",
+      "id": "pyd-027", "input": "13/11/08", "tags": ["numeric-date", "two-digit-year", "ambiguous"], "status": "verified",
       "expect": { "status": "parsed", "canonical": "1908-11-13", "edtf": "1908-11-13",
         "timespan": { "begin_of_the_begin": "1908-11-13T00:00:00Z", "end_of_the_end": "1908-11-13T23:59:59Z" } },
       "sourceExpectation": "2008-11-13 (dateutil)",
@@ -194,7 +194,7 @@
         "timespan": { "begin_of_the_begin": "1980-01-01T00:00:00Z", "end_of_the_end": "1980-12-31T23:59:59Z" } }
     },
     {
-      "id": "pyd-034", "input": "1977 (1978)", "tags": ["year", "secondary-date", "parenthesised"], "status": "proposed",
+      "id": "pyd-034", "input": "1977 (1978)", "tags": ["year", "secondary-date", "parenthesised"], "status": "verified",
       "expect": { "status": "parsed", "canonical": "1977/1978", "edtf": "1977/1978",
         "timespan": { "begin_of_the_begin": "1977-01-01T00:00:00Z", "end_of_the_end": "1978-12-31T23:59:59Z" },
         "flags": ["SecondaryDate"] },
@@ -202,7 +202,7 @@
       "notes": "A parenthesised second date is treated as a secondary date and the hull is returned. Alternative reading: 1977 only."
     },
     {
-      "id": "pyd-035", "input": "1962, (i. e. 1967)", "tags": ["year", "correction", "parenthesised"], "status": "proposed",
+      "id": "pyd-035", "input": "1962, (i. e. 1967)", "tags": ["year", "correction", "parenthesised"], "status": "verified",
       "expect": { "status": "parsed", "canonical": "1967", "edtf": "1967",
         "timespan": { "begin_of_the_begin": "1967-01-01T00:00:00Z", "end_of_the_end": "1967-12-31T23:59:59Z" },
         "flags": ["Corrected"] },
@@ -210,13 +210,13 @@
       "notes": "The prototype's own comment says its expectation 'doesn't make sense'. 'i.e.' is a cataloguer's correction, so the corrected year wins."
     },
     {
-      "id": "pyd-036", "input": "July 2010", "tags": ["month"], "status": "proposed",
+      "id": "pyd-036", "input": "July 2010", "tags": ["month"], "status": "verified",
       "expect": { "status": "parsed", "canonical": "2010-07", "edtf": "2010-07",
         "timespan": { "begin_of_the_begin": "2010-07-01T00:00:00Z", "end_of_the_end": "2010-07-31T23:59:59Z" } },
       "notes": "Was a 'still to do' case asking what to do with just a month. Answer: the whole month."
     },
     {
-      "id": "pyd-037", "input": "1898 (original drawing by Lethaby) c.1900 (traced by John Brandon-Jones)", "tags": ["range", "circa", "trailing-prose", "multiple-dates"], "status": "proposed",
+      "id": "pyd-037", "input": "1898 (original drawing by Lethaby) c.1900 (traced by John Brandon-Jones)", "tags": ["range", "circa", "trailing-prose", "multiple-dates"], "status": "verified",
       "expect": { "status": "parsed", "canonical": "1898/1900~", "edtf": "1898/1900~",
         "timespan": { "begin_of_the_begin": "1898-01-01T00:00:00Z", "end_of_the_end": "1900-12-31T23:59:59Z" },
         "flags": ["Approximate"], "maxConfidence": 0.7 },

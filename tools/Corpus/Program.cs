@@ -3,7 +3,7 @@
 //   dotnet run --project tools/Corpus -- validate            schema, unique ids, parseable canonical strings, ordered bounds, known flags
 //   dotnet run --project tools/Corpus -- run [--all|--status verified|proposed] [--write]   evaluate; --write updates corpus/report.md and report.json
 //   dotnet run --project tools/Corpus -- stats               counts by file, status and tag
-//   dotnet run --project tools/Corpus -- promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]
+//   dotnet run --project tools/Corpus -- promote <file> [id ...] [--to verified|disputed|proposed] [--note <text>] [--dry-run]
 //                                                           set entry statuses in place (whole file when no ids); verified refuses failing entries; refreshes the report
 //   dotnet run --project tools/Corpus -- review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>]
 //                                                           Markdown review of the files (or the entries a filter selects); corpus-review.yml posts it
@@ -42,7 +42,7 @@ return command switch
 
 static int Usage()
 {
-    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run] | review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>] | accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
+    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--note <text>] [--dry-run] | review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>] | accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
     return 2;
 }
 
@@ -195,18 +195,29 @@ Func<CorpusEntry, bool>? EntryFilter(string? match, string? tag, bool failingOnl
 
 int Promote(string[] rest)
 {
-    if (rest.Length == 0 || rest[0].StartsWith("--")) { Console.Error.WriteLine("promote needs a corpus file: promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]"); return 2; }
+    if (rest.Length == 0 || rest[0].StartsWith("--")) { Console.Error.WriteLine("promote needs a corpus file: promote <file> [id ...] [--to verified|disputed|proposed] [--note <text>] [--dry-run]"); return 2; }
     var to = EntryStatus.Verified;
-    var toIndex = Array.IndexOf(rest, "--to");
-    if (toIndex >= 0 && !(toIndex + 1 < rest.Length && Enum.TryParse(rest[toIndex + 1], true, out to))) { Console.Error.WriteLine("--to needs verified, disputed or proposed"); return 2; }
-    var dryRun = rest.Contains("--dry-run");
-    var ids = rest.Skip(1).Where((a, i) => !a.StartsWith("--") && i + 1 != toIndex + 1).ToList();
+    string? note = null;
+    var dryRun = false;
+    var ids = new List<string>();
+    for (var i = 1; i < rest.Length; i++)
+    {
+        switch (rest[i])
+        {
+            case "--to" when i + 1 < rest.Length && Enum.TryParse(rest[i + 1], true, out EntryStatus parsed): to = parsed; i++; break;
+            case "--to": Console.Error.WriteLine("--to needs verified, disputed or proposed"); return 2;
+            case "--note" when i + 1 < rest.Length: note = rest[++i]; break;
+            case "--dry-run": dryRun = true; break;
+            case var o when o.StartsWith("--"): Console.Error.WriteLine($"promote: unknown option {o}"); return 2;
+            default: ids.Add(rest[i]); break;
+        }
+    }
     var given = rest[0];
     var path = ResolveCorpusPath(given);
     if (path is null) { Console.Error.WriteLine($"No such corpus file: {given}"); return 2; }
 
     var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
-    var outcome = CorpusPromotion.Promote(path, ids.Count == 0 ? null : ids, to, new CorpusEvaluator(catalog.Get), dryRun);
+    var outcome = CorpusPromotion.Promote(path, ids.Count == 0 ? null : ids, to, new CorpusEvaluator(catalog.Get), dryRun, note);
     var relative = Path.GetRelativePath(corpusRoot, path).Replace(Path.DirectorySeparatorChar, '/');
     foreach (var f in outcome.Failures)
     {

@@ -162,4 +162,18 @@ public sealed class CorpusPromotionTests : IDisposable
         Assert.Equal([0xEF, 0xBB, 0xBF], bytes[..3]);
         Assert.Equal(EntryStatus.Verified, Statuses(path)["tr-002"]);
     }
+
+    [Fact]
+    public void A_note_travels_with_the_status_change()
+    {
+        var withNotes = TrainerFile.Replace("\"tags\": [\"circa\"], \"expect\"", "\"tags\": [\"circa\"], \"notes\": \"Seen before.\", \"expect\"");
+        var path = Write("trainer.json", withNotes);
+        CorpusPromotion.Promote(path, ["tr-001", "tr-002"], EntryStatus.Disputed, _evaluator, note: "Unclear wording.");
+
+        var entries = CorpusFile.Load(path).Entries.ToDictionary(e => e.Id);
+        Assert.Equal(EntryStatus.Disputed, entries["tr-001"].Status);
+        Assert.Equal("Unclear wording.", entries["tr-001"].Notes);
+        Assert.Equal("Seen before. Unclear wording.", entries["tr-002"].Notes);
+        Assert.Null(entries["tr-003"].Notes);
+    }
 }

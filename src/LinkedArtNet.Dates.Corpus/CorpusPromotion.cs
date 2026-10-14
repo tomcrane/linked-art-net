@@ -26,7 +26,7 @@ public static class CorpusPromotion
     /// left alone if any fail. With <paramref name="dryRun"/> the file is never written.
     /// </summary>
     /// <exception cref="ArgumentException">An id is not in the file.</exception>
-    public static Outcome Promote(string path, IReadOnlyCollection<string>? ids, EntryStatus to, CorpusEvaluator evaluator, bool dryRun = false)
+    public static Outcome Promote(string path, IReadOnlyCollection<string>? ids, EntryStatus to, CorpusEvaluator evaluator, bool dryRun = false, string? note = null)
     {
         var file = CorpusFile.Load(path);
         var known = file.Entries.Select(e => e.Id).ToHashSet(StringComparer.Ordinal);
@@ -45,7 +45,7 @@ public static class CorpusPromotion
             : [];
         if (failures.Count > 0 || changed.Count == 0) return new Outcome(path, failures.Count > 0 ? [] : changed, unchanged, failures);
 
-        var edited = Edit(File.ReadAllBytes(path), ids is null, changed.ToHashSet(StringComparer.Ordinal), to);
+        var edited = Edit(File.ReadAllBytes(path), ids is null, changed.ToHashSet(StringComparer.Ordinal), to, note);
         if (!dryRun)
         {
             File.WriteAllBytes(path, edited);
@@ -62,7 +62,7 @@ public static class CorpusPromotion
     /// Rewrites status tokens. Whole-file promotions set <c>defaults.status</c> (adding it when the defaults object
     /// exists without one) and every explicit entry status; partial promotions set or insert a status on each named entry.
     /// </summary>
-    internal static byte[] Edit(byte[] bytes, bool wholeFile, IReadOnlySet<string> ids, EntryStatus to)
+    internal static byte[] Edit(byte[] bytes, bool wholeFile, IReadOnlySet<string> ids, EntryStatus to, string? note = null)
     {
         var bom = bytes is [0xEF, 0xBB, 0xBF, ..] ? 3 : 0;
         var value = $"\"{JsonNamingPolicy.CamelCase.ConvertName(to.ToString())}\"";
@@ -76,7 +76,7 @@ public static class CorpusPromotion
         var defaultsHasStatus = false;
         var defaultsHasProperties = false;
         // Per entry: the id, the id value's end position (for inserting a status), and the status value span if present.
-        string? entryId = null; long entryIdEnd = -1; Replacement? entryStatus = null;
+        string? entryId = null; long entryIdEnd = -1; Replacement? entryStatus = null; Replacement? entryNotes = null; string? entryNotesText = null;
 
         while (reader.Read())
         {
@@ -96,12 +96,18 @@ public static class CorpusPromotion
                 case JsonTokenType.EndArray when inEntries && depth == 1:
                     inEntries = false; break;
                 case JsonTokenType.StartObject when inEntries && depth == 2:
-                    entryId = null; entryIdEnd = -1; entryStatus = null; break;
+                    entryId = null; entryIdEnd = -1; entryStatus = null; entryNotes = null; entryNotesText = null; break;
                 case JsonTokenType.EndObject when inEntries && depth == 2:
                     if (entryId is not null && ids.Contains(entryId))
                     {
                         if (entryStatus is not null) edits.Add(entryStatus);
                         else if (!wholeFile) edits.Add(new Replacement(entryIdEnd, entryIdEnd, $", \"status\": {value}"));
+                        if (note is not null)
+                        {
+                            // The reviewer's reason travels with the status: appended to existing notes, or a new notes property after the id.
+                            if (entryNotes is { } existing) edits.Add(existing with { Text = JsonSerializer.Serialize(entryNotesText + " " + note) });
+                            else edits.Add(new Replacement(entryIdEnd, entryIdEnd, $", \"notes\": {JsonSerializer.Serialize(note)}"));
+                        }
                     }
                     break;
                 case JsonTokenType.String when inDefaults && depth == 2 && property == "status":
@@ -112,6 +118,8 @@ public static class CorpusPromotion
                     entryId = reader.GetString(); entryIdEnd = bom + reader.BytesConsumed; break;
                 case JsonTokenType.String when inEntries && depth == 3 && property == "status":
                     entryStatus = new Replacement(bom + reader.TokenStartIndex, bom + reader.BytesConsumed, value); break;
+                case JsonTokenType.String when inEntries && depth == 3 && property == "notes":
+                    entryNotesText = reader.GetString(); entryNotes = new Replacement(bom + reader.TokenStartIndex, bom + reader.BytesConsumed, ""); break;
             }
         }
 

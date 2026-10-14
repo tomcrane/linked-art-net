@@ -640,6 +640,14 @@ internal sealed class DateParser
             if (t.Kind == TokenKind.Question) { piece = piece with { Hedge = Merge(piece.Hedge, Qualification.Uncertain) }; _p++; continue; }
             // postfix band words: "saec. XIV ex.", "s. xiv med."
             if (t.Kind == TokenKind.Band && piece.Band is null && piece.Core is Century or Decade or Millennium or UnspecifiedDigits) { piece = piece with { Band = (Band)t.Value! }; _p++; continue; }
+            // "Edo period, late to early Meiji period": a band after a comma belongs to the date before it when a range follows.
+            if (t.Kind == TokenKind.Comma && piece.Band is null && Peek(1) is { Kind: TokenKind.Band } postfix && Peek(2) is { Kind: TokenKind.RangeWord or TokenKind.Dash }
+                && piece.Core is NamedPeriod or Century or Decade or Millennium or UnspecifiedDigits)
+            {
+                piece = piece with { Band = (Band)postfix.Value! };
+                _p += 2;
+                continue;
+            }
             // "1500 s c. early": after a complete core the letter c is circa, unless it opens the next date ("1898 ... c.1900").
             if (t.Kind == TokenKind.Hedge && (!IsCenturyLetter(t) || Peek(1) is null or { Kind: TokenKind.Band or TokenKind.Comma or TokenKind.CloseParen or TokenKind.CloseBracket or TokenKind.Other or TokenKind.Noise or TokenKind.Question }))
             {

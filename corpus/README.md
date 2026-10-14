@@ -23,7 +23,7 @@ Tooling:
 dotnet run --project tools/Corpus -- validate          schema, ids, canonical strings, bound order, flags
 dotnet run --project tools/Corpus -- run --all --write  evaluate everything; write report.md / report.json
 dotnet run --project tools/Corpus -- stats
-dotnet run --project tools/Corpus -- promote <file> [id ...] [--to verified|disputed|proposed] [--dry-run]   set statuses in place; verified refuses failing entries
+dotnet run --project tools/Corpus -- promote <file> [id ...] [--to verified|disputed|proposed] [--note <text>] [--dry-run]   set statuses in place; verified refuses failing entries
 dotnet run --project tools/Corpus -- review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>]   review table (posted on pull requests by corpus-review.yml)
 dotnet run --project tools/Corpus -- accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run]       the parser is right: make its reading the expectation, keep the source in sourceExpectation
 dotnet run --project tools/Corpus -- import yearrange <date-tests.json> | import timetwister <dates_spec.rb> | import getty <dir of ulan-*.json>

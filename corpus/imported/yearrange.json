@@ -2354,7 +2354,7 @@
       "expect": {"status": "parsed", "years": {"start": 1900, "end": 1924}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0153",
+      "id": "yr-0153", "status": "disputed", "notes": "Owner, 2026-10-14: the wording is unclear; forced to read it, late Edo to early Meiji. yearrange took the whole Edo period.",
       "input": "Edo period, Late to early Meiji period",
       "tags": [
         "range",

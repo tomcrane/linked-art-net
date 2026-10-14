@@ -163,6 +163,7 @@ public class GrammarTests
     [InlineData("c. 1801-02", "1801~/1802~")]
     [InlineData("Original circa 1830's, reproduction 1930's", "193X")]
     [InlineData("Original album was printed in 1914. This is the later edition printed in 1972.", "1972")]
+    [InlineData("19th century, late to early 20th century", "late century 19/early century 20")]
     [InlineData("Cut as a jigsaw print in 1997 and printed in January 2005.", "2005-01")]
     [InlineData("Originally 1858, this re-carved edition was published probably in early 20th century.", "early century 20?")]
     [InlineData("1940s(early)", "early 194X")]
@@ -257,5 +258,12 @@ public class GrammarTests
         Assert.Equal("2009-12-31T23:59:59Z", ranged.TimeSpan!.EndOfTheEnd!.ToString());
         Assert.DoesNotContain(ranged.Notes, n => n.Contains("century"));
         Assert.Contains(ranged.Notes, n => n.Contains("read as the decade 2000-2009"));
+    }
+
+    [Fact]
+    public void A_band_after_a_comma_belongs_to_the_period_before_it_when_a_range_follows()
+    {
+        Assert.Equal("late period:edo/early period:meiji", TimeSpanParser.Default.Parse("Edo period, Late to early Meiji period").Canonical);
+        Assert.Equal("beginning century 20", TimeSpanParser.Default.Parse("Japanese, Meiji era, beginning of 20th century").Canonical);
     }
 }

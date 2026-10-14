@@ -149,7 +149,7 @@ for `proposed` entries is therefore a list of decisions, and each entry takes on
 |---|---|---|
 | The parser is right | `accept <file> <ids or --match/--tag> [--verify]` | The parser's reading becomes the expectation; the source's moves to `sourceExpectation`; a dated note says so. With `--verify` the entry gates CI from then on. |
 | The source is right | nothing, or a `parser-gap` tag | The entry stays failing: the failures list is the parser backlog. |
-| Neither, or it depends | `promote <file> <ids> --to disputed` | Reported separately, never enforced. |
+| Neither, or it depends | `promote <file> <ids> --to disputed --note "<why>"` | Reported separately, never enforced; the note records the reasoning. |
 
 Work by cluster, not by entry. `review <file> --failing --match "<regex>"` shows one cluster; `accept` takes the same
 filter, so one decision covers the whole cluster. `accept --dry-run` prints each entry's old and new expectation first.

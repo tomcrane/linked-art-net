@@ -3980,7 +3980,7 @@
         "century",
         "named-period"
       ],
-      "expect": {"status":"parsed","kind":"single","canonical":"beginning century 20","edtf":"1900/1909","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1909-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924."
+      "expect": {"status":"parsed","kind":"single","canonical":"beginning century 20/period:meiji","edtf":"1900/1912","timespan":{"begin_of_the_begin":"1900-01-01T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1924", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1924. Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; kind single; canonical beginning century 20; edtf 1900/1909; timespan 1900-01-01T00:00:00Z..1909-12-31T23:59:59Z."
     },
     {
       "id": "yr-0264", "status": "verified",

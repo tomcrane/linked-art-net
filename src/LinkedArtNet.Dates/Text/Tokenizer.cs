@@ -180,6 +180,8 @@ public sealed partial class Tokenizer(Lexicon lexicon)
                     result.Add(new Token(ordinal ? TokenKind.Ordinal : TokenKind.Roman, t.Text, t.Start, roman));
                 else if (t.Text.Length == 1 && t.Text[0] is '*' or '+')
                     result.Add(t with { Kind = TokenKind.Lifecycle, Value = LifecycleMarker.Born });
+                else if (IsCenturyTypo(word))
+                    result.Add(new Token(TokenKind.CenturyWord, t.Text, t.Start));
                 else
                     result.Add(t);
             }
@@ -218,6 +220,24 @@ public sealed partial class Tokenizer(Lexicon lexicon)
         return null;
     }
 
+    /// <summary>"centurry", "centruy", "centuly": one letter added, dropped, changed or swapped in "century" still means the century.</summary>
+    private static bool IsCenturyTypo(string word)
+    {
+        var w = word.ToLowerInvariant();
+        if (w.Length is < 6 or > 8 || w == "century") return false;
+        const string target = "century";
+        if (w.Length == target.Length)
+        {
+            var diffs = new List<int>();
+            for (var i = 0; i < w.Length; i++) if (w[i] != target[i]) diffs.Add(i);
+            return diffs.Count == 1 || (diffs.Count == 2 && diffs[1] == diffs[0] + 1 && w[diffs[0]] == target[diffs[1]] && w[diffs[1]] == target[diffs[0]]);
+        }
+        var (longer, shorter) = w.Length > target.Length ? (w, target) : (target, w);
+        for (var i = 0; i < longer.Length; i++)
+            if (string.Concat(longer.AsSpan(0, i), longer.AsSpan(i + 1)) == shorter) return true;
+        return false;
+    }
+
     /// <summary>"MDCCLXXV" -> 1775; "XIXth" / "XIXe" -> 19 as an ordinal. Single letters other than C, V and X are not numerals.</summary>
     public static bool TryRoman(string word, out long value, out bool ordinal)
     {
@@ -245,7 +265,7 @@ public sealed partial class Tokenizer(Lexicon lexicon)
     [GeneratedRegex(@"(?<num>\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)(?:(?<ord>st|nd|rd|th|e|º|°)(?![A-Za-z])|(?<ord>st|nd|rd|th)(?=[Cc](?![A-Za-z]))|(?<decade>'?s)(?![A-Za-z])|(?<unspec>_{1,3}|--|xx|XX|[xX](?![A-Za-z0-9])|\?\?|(?<=(?<!\d)\d{3})-(?=\s*[\]\)]*\s*$)))?", RegexOptions.CultureInvariant)]
     private static partial Regex NumberPattern();
 
-    [GeneratedRegex(@"[\p{L}][\p{L}'’]*(?:\.[\p{L}]+)*\.?|[*†©~+]", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"[\p{L}][\p{L}'’]*(?:\.[\p{L}]+)*\.?|[*†©~+&]", RegexOptions.CultureInvariant)]
     private static partial Regex WordPattern();
 
     [GeneratedRegex(@"^(?<r>M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3}))(?<suffix>th|st|nd|rd|e|è|ème|º|°)?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]

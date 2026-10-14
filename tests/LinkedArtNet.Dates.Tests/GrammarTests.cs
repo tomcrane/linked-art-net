@@ -176,6 +176,18 @@ public class GrammarTests
     [InlineData("c.1610-p.1635", "1610~/1635")]
     [InlineData("op.1730-, d.1772", "fl 1730/died 1772")]
     [InlineData("A.P., 2005", "2005")]
+    // yearrange leftovers: hedged band ranges, postfix relations, month over year, cardinal century pairs, slips in "century"
+    [InlineData("Ca. early-mid 20th century.", "early century 20~/mid century 20")]
+    [InlineData("Ca. 1936 or earlier.", "not-after 1936~")]
+    [InlineData("ca. 1910 or later", "not-before 1910~")]
+    [InlineData("4 & 5 july 1776", "1776-07-04/1776-07-05")]
+    [InlineData("10/1890", "1890-10")]
+    [InlineData("18-19c", "century 18/century 19")]
+    [InlineData("Late 20th centuly.", "late century 20")]
+    [InlineData("Ca. mid 20th centurry.", "mid century 20~")]
+    [InlineData("Ca. early 20th centruy.", "early century 20~")]
+    [InlineData("probably in 1890 - 1900s", "1890?/190X")]
+    [InlineData("c. 1953 (this item: 1970s/80s)", "197X/198X")]
     // prose biographies: an alternative birth year, a repeated marker, a place before the date
     [InlineData("born 1600 or 1604, died 1687", "born [1600,1604]/died 1687")]
     [InlineData("active 1730, died d1772", "fl 1730/died 1772")]
@@ -297,6 +309,8 @@ public class GrammarTests
         // explicit years right after a period name date the period as the cataloguer does
         Assert.Equal("1568/1615", TimeSpanParser.Default.Parse("Momoyama period, 1568-1615").Canonical);
         Assert.Equal("1867/1912", TimeSpanParser.Default.Parse("Meiji Period (1867-1912)").Canonical);
+        Assert.Equal("1886/1912", TimeSpanParser.Default.Parse("Late Meiji Period (1886-1912)").Canonical);
+        Assert.Equal("1890/191X", TimeSpanParser.Default.Parse("Later Meiji period (1890 - 1910s).").Canonical);
         // "made after a painting in ..." names the source; the later clause dates the copy
         Assert.Equal("193X~", TimeSpanParser.Default.Parse("Made after a painting in Edo era. Ca. 1930s.").Canonical);
     }

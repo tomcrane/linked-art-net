@@ -58,6 +58,8 @@ public class ProfilesAndAdvisorTests
         Assert.Equal("1834-01-01T00:00:00Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("mid 1830s").TimeSpan!.BeginOfTheBegin?.ToString());
         Assert.Equal("1836-12-31T23:59:59Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("mid 1830s").TimeSpan!.EndOfTheEnd?.ToString());
         Assert.Equal("1975-01-01T00:00:00Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("late 20th century").TimeSpan!.BeginOfTheBegin?.ToString());
+        Assert.Equal("1524-12-31T23:59:59Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("beginning of 16th century").TimeSpan!.EndOfTheEnd?.ToString());
+        Assert.Equal("1475-01-01T00:00:00Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("end of the 15th century").TimeSpan!.BeginOfTheBegin?.ToString());
         Assert.Equal("1790-01-01T00:00:00Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("early 1790s").TimeSpan!.BeginOfTheBegin?.ToString());
         Assert.Equal("1792-12-31T23:59:59Z", new TimeSpanParser(Catalog["catalogue-quarters"]).Parse("early 1790s").TimeSpan!.EndOfTheEnd?.ToString());
         Assert.Equal("1301-01-01T00:00:00Z", new TimeSpanParser(Catalog["medieval-manuscripts"]).Parse("saec. XIV").TimeSpan!.BeginOfTheBegin?.ToString());

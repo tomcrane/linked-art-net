@@ -116,7 +116,7 @@ internal sealed class DateParser
                 expression = new Interval(expression is Interval { Start: { } s } ? s : expression, end);
                 continue;
             }
-            if (expression is NamedPeriod && IsConcrete(secondary)) { _notes.Add($"The dates in parentheses define the period as this cataloguer has it: {secondary.Canonical}."); expression = secondary; continue; }
+            if (expression is NamedPeriod or Banded { Inner: NamedPeriod } && IsConcrete(secondary)) { _notes.Add($"The dates in parentheses define the period as this cataloguer has it: {secondary.Canonical}."); expression = secondary; continue; }
             if (Narrow(expression, secondary) is { } narrowed)
             {
                 // "Edo period (1615-1868), c. 1705-1715", "c. 1780s (1782?)": a parenthesised date within the span narrows it.
@@ -322,7 +322,7 @@ internal sealed class DateParser
             if (next is null) { _p = save; break; }
             if (next == expression || IsRestatement(expression, next)) { _notes.Add("The same date is given twice."); continue; }
             // "Momoyama period, 1568-1615": explicit years after a period name date the period as this cataloguer does.
-            if (expression is NamedPeriod && IsConcrete(next)) { _notes.Add($"The explicit dates after the period name are taken: {next.Canonical}."); expression = next; continue; }
+            if (expression is NamedPeriod or Banded { Inner: NamedPeriod } && IsConcrete(next)) { _notes.Add($"The explicit dates after the period name are taken: {next.Canonical}."); expression = next; continue; }
             // "Taisho era-Showa era, early 20th century", "Kansei 6 (1794)": a following date that overlaps clarifies; the span is the overlap.
             if (Narrow(expression, next) is { } narrowed)
             {
@@ -577,8 +577,8 @@ internal sealed class DateParser
         if (a.Core is null && a.Band is not null && b.Core is not null) a = a with { Core = b.Core is Banded bb ? bb.Inner : b.Core };
         if (a.Core is PendingMonth pm && b.Core is MonthPoint mp) a = a with { Core = new MonthPoint(mp.Year, pm.Month) };
         if (a.Core is PendingMonth pm2 && b.Core is DayPoint dp) a = a with { Core = new MonthPoint(dp.Year, pm2.Month) };
-        if (a.Core is UnspecifiedDigits && a.AmbiguousDecade is { } ad && b.Core is Decade) { a = a with { Core = new Decade(ad) }; ResolvedAsDecade(ad); }
-        if (b.Core is UnspecifiedDigits && b.AmbiguousDecade is { } bd && a.Core is Decade) { b = b with { Core = new Decade(bd) }; ResolvedAsDecade(bd); }
+        if (a.Core is UnspecifiedDigits && a.AmbiguousDecade is { } ad && (b.Core is Decade || (b.Core is YearPoint yb && yb.Year >= ad && yb.Year < ad + 100))) { a = a with { Core = new Decade(ad) }; ResolvedAsDecade(ad); }
+        if (b.Core is UnspecifiedDigits && b.AmbiguousDecade is { } bd && (a.Core is Decade || (a.Core is YearPoint ya2 && ya2.Year > bd - 100 && ya2.Year <= bd + 9))) { b = b with { Core = new Decade(bd) }; ResolvedAsDecade(bd); }
         // Days and months that borrow the rest of the date from the other bound: "4-10 July 1776", "1776 July 4-10",
         // "May 4 - July 10 1776", "1776 May 4 - July 10", "1776 July-September".
         if (a.Core is PendingDay pdA && b.Core is DayPoint dB) a = a with { Core = new DayPoint(dB.Year, dB.Month, pdA.Day) };
@@ -705,7 +705,7 @@ internal sealed class DateParser
         var core = ParseCore(piece, eraFirst, abbreviationContext);
         if (core is null)
         {
-            if (piece.Band is not null && piece.Hedge is null && piece.Relation is null) return piece; // "early - mid 13th century"
+            if (piece.Band is not null && piece.Relation is null) return piece; // "early - mid 13th century", "ca. early-mid 20th century"
             _p = save;
             return null;
         }
@@ -716,6 +716,8 @@ internal sealed class DateParser
         {
             var t = _t[_p];
             if (t.Kind == TokenKind.Question) { piece = piece with { Hedge = Merge(piece.Hedge, Qualification.Uncertain) }; _p++; continue; }
+            // "1936 or earlier", "1910 or later": a relation after the date
+            if (t.Kind == TokenKind.Relation && piece.Relation is null && Lexicon.Normalise(t.Text).StartsWith("or ", StringComparison.Ordinal)) { piece = piece with { Relation = (Relation)t.Value! }; _p++; continue; }
             // postfix band words: "saec. XIV ex.", "s. xiv med."
             if (t.Kind == TokenKind.Band && piece.Band is null && piece.Core is Century or Decade or Millennium or UnspecifiedDigits) { piece = piece with { Band = (Band)t.Value! }; _p++; continue; }
             // "Edo period, late to early Meiji period": a band after a comma belongs to the date before it when a range follows.
@@ -830,6 +832,12 @@ internal sealed class DateParser
             return piece with { Core = Day(YearOf(t, eraFirst, out _), (int)m5.Value!, (int)d5.Number) };
         }
 
+        // "10/1890": a month over a year
+        if (t.Kind == TokenKind.Number && t.Digits <= 2 && t.Number is >= 1 and <= 12 && Peek(1) is { Kind: TokenKind.Slash } && Peek(2) is { Kind: TokenKind.Number } my && my.Digits == 4 && Peek(3) is not { Kind: TokenKind.Slash })
+        {
+            _p += 3;
+            return piece with { Core = new MonthPoint(my.Number, (int)t.Number) };
+        }
         // numeric date 13/11/2008 (day-month order from the profile)
         if (t.Kind == TokenKind.Number && t.Digits <= 2 && Peek(1) is { Kind: TokenKind.Slash } && Peek(2) is { Kind: TokenKind.Number } n2 && n2.Digits <= 2 && Peek(3) is { Kind: TokenKind.Slash } && Peek(4) is { Kind: TokenKind.Number } n3)
         {
@@ -902,7 +910,8 @@ internal sealed class DateParser
         }
         // "18-19th century": a cardinal before a dash and an ordinal century is the first century of the range
         if (t.Kind == TokenKind.Number && t.Digits <= 2 && !t.HasDecimal && t.Number is >= 1 and <= 30 && Peek(1) is { Kind: TokenKind.Dash }
-            && Peek(2) is { Kind: TokenKind.Ordinal } && (Peek(3) is { Kind: TokenKind.CenturyWord } || (Peek(3) is { } cl && IsCenturyLetter(cl))))
+            && Peek(2) is { Kind: TokenKind.Ordinal or TokenKind.Number } second && second.Digits <= 2 && !second.HasDecimal && second.Number is >= 1 and <= 30
+            && (Peek(3) is { Kind: TokenKind.CenturyWord } || (Peek(3) is { } cl && IsCenturyLetter(cl))))
         {
             _p++;
             return piece with { Core = new PendingOrdinal(t.Number) };
@@ -1191,7 +1200,7 @@ internal sealed class DateParser
     /// <summary>Years, months or days, possibly hedged, alone or as the bounds of an interval: a date given outright rather than by a name or a band.</summary>
     private static bool IsConcrete(DateExpression e) => e switch
     {
-        YearPoint or MonthPoint or DayPoint => true,
+        YearPoint or MonthPoint or DayPoint or Decade => true,
         Qualified q => IsConcrete(q.Inner),
         Interval { Start: { } s, End: { } en } => IsConcrete(s) && IsConcrete(en),
         _ => false,

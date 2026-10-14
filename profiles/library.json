@@ -1,7 +1,23 @@
 {
   "inherits": "default",
   "name": "library",
-  "description": "Library catalogue records (MARC 260/264): bracketed inferred dates, '[17_]' patterns, copyright and 'cop.' noise, and two-digit years read within 1900-1999 ('08 = 1908 unless it would be in the future).",
+  "description": "Library catalogue records (MARC 260/264): bracketed inferred dates, '[17_]' patterns, copyright and 'cop.' noise, two-digit years read within 1900-1999 ('08 = 1908 unless it would be in the future), and 'early'/'late' as halves: early 15th century = 1400-1449, late = 1450-1499, mid = the middle half (1425-1474); early 1950s = 1950-1954, late = 1955-1959, mid = 1952-1957.",
   "twoDigitYearWindow": 1900,
-  "labelPolicy": "label"
+  "labelPolicy": "label",
+  "centuryBands": {
+    "length": 100,
+    "early": { "start": 0, "end": 49 },
+    "mid": { "start": 25, "end": 74 },
+    "late": { "start": 50, "end": 99 },
+    "beginningOf": { "start": 0, "end": 9 },
+    "endOf": { "start": 90, "end": 99 }
+  },
+  "decadeBands": {
+    "length": 10,
+    "early": { "start": 0, "end": 4 },
+    "mid": { "start": 2, "end": 7 },
+    "late": { "start": 5, "end": 9 },
+    "beginningOf": { "start": 0, "end": 0 },
+    "endOf": { "start": 9, "end": 9 }
+  }
 }

@@ -10,7 +10,7 @@ A file may say `"inherits": "default"` and state only what it changes. The file 
 | Profile | For | Changes from `default` |
 |---|---|---|
 | `default` | general cultural-heritage text, British English | popular centuries (19th = 1800-1899), thirds for early/mid/late, hedges as flags only, open bounds omitted, day-first numeric dates, no two-digit years |
-| `library` | MARC-style library records | two-digit years read within 1900-1999 |
+| `library` | MARC-style library records | two-digit years read within 1900-1999; early/late as halves of a century or decade |
 | `archive-us` | US archival (DACS/EAD) | month-first numeric dates, "Winter 1776" = Jan-Mar 1776, decade thirds 0-3 / 4-6 / 7-9 |
 | `catalogue-quarters` | museum catalogues that read early/late as quarters | early 0-24, mid 25-74, late 75-99; early 1790s = 1790-1792 |
 | `medieval-manuscripts` | manuscript cataloguing with Latin | Latin lexicon, strict centuries (1301-1400), hedges widened 10 years, plausible years 400-1600 |

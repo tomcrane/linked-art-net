@@ -264,11 +264,12 @@ internal sealed class DateParser
                 continue;
             }
             // "1788 (artist;circa)", "1795 (c. 11th month)": a hedge in a remark that names no year applies to the main date.
-            if (inner.Any(x => x.Kind == TokenKind.Hedge)
+            if (inner.Any(x => x.Kind == TokenKind.Hedge && !IsCenturyLetter(x))
                 && !inner.Any(x => (x.Kind == TokenKind.Number && x.Digits >= 3) || x.Kind == TokenKind.Unspecified || (x.Kind == TokenKind.Roman && x.Number >= 1000))
+                && !inner.Where((x, k) => x.Kind == TokenKind.Ordinal && k + 1 < inner.Count && (inner[k + 1].Kind == TokenKind.CenturyWord || IsCenturyLetter(inner[k + 1]))).Any()
                 && !inner.Any(x => x.Kind == TokenKind.Word && _periods is not null && _periods.TryResolve(x.Text, out _)))
             {
-                main.Add(inner.First(x => x.Kind == TokenKind.Hedge));
+                main.Add(inner.First(x => x.Kind == TokenKind.Hedge && !IsCenturyLetter(x)));
                 continue;
             }
             if (!inner.Any(x => x.Kind is TokenKind.Number or TokenKind.Ordinal or TokenKind.Roman or TokenKind.Unspecified))

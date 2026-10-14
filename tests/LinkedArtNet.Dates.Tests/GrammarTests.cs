@@ -181,6 +181,8 @@ public class GrammarTests
     // a hedge inside a remark that names no year applies to the date outside it
     [InlineData("1788 (artist;circa)", "1788~")]
     [InlineData("1795 (c. 11th month)", "1795~")]
+    [InlineData("Not dated (early 20th C.)", "early century 20")]
+    [InlineData("19thC(mid) (? circa floruit)", "mid century 19~")]
     [InlineData("early to mid 1830", "early 183X/mid 183X")]
     [InlineData("early 1945", "early 1945")]
     // yearrange leftovers: hedged band ranges, postfix relations, month over year, cardinal century pairs, slips in "century"

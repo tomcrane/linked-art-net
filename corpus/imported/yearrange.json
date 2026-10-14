@@ -13659,7 +13659,7 @@
         "band",
         "bracketed"
       ],
-      "expect": {"status":"parsed","kind":"single","canonical":"mid century 19","edtf":"1840/1859","timespan":{"begin_of_the_begin":"1840-01-01T00:00:00Z","end_of_the_end":"1859-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899; flags Approximate."
+      "expect": {"status":"parsed","kind":"single","canonical":"mid century 19~","edtf":"1840/1859","timespan":{"begin_of_the_begin":"1840-01-01T00:00:00Z","end_of_the_end":"1859-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1800..1899; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1800..1899; flags Approximate. Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; kind single; canonical mid century 19; edtf 1840/1859; timespan 1840-01-01T00:00:00Z..1859-12-31T23:59:59Z."
     },
     {
       "id": "yr-0989",

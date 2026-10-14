@@ -1,6 +1,6 @@
 # Corpus run
 
-Generated 2026-10-14 16:42 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 16:43 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
 ## verified: 611/612 pass (99.8%), calibration error 0.128
 
@@ -16,17 +16,17 @@ Generated 2026-10-14 16:42 UTC by `dotnet run --project tools/Corpus -- run --al
 - seed/py-datetime.json: 37/37
 
 Status (expected->actual): parsed->parsed 596, partial->partial 2, undated->undated 8, unparsed->unparsed 6
-Weakest tags: uncertain 13/14, bracketed 83/84, circa 117/118, band 152/153, century 179/180, yearrange 281/282, imported 281/282
+Weakest tags: bracketed 83/84, circa 117/118, yearrange 281/282, imported 281/282
 
-## proposed: 1653/1698 pass (97.3%), calibration error 0.138
+## proposed: 1656/1698 pass (97.5%), calibration error 0.139
 
 - imported/edtf-spec.json: 61/61
 - imported/getty.json: 180/180
 - imported/timetwister.json: 79/91
-- imported/yearrange.json: 1333/1366
+- imported/yearrange.json: 1336/1366
 
-Status (expected->actual): parsed->parsed 1688, parsed->undated 1, parsed->unparsed 5, unparsed->unparsed 4
-Weakest tags: single 26/37, timetwister 79/91, archival 79/91, undated 39/43, month 181/190, decade 169/176, circa 232/241, season 29/30, band 272/280, imported 1653/1698, century 303/311, yearrange 1333/1366, range 434/444, bracketed 454/463, named-period 275/280
+Status (expected->actual): parsed->parsed 1691, parsed->undated 1, parsed->unparsed 2, unparsed->unparsed 4
+Weakest tags: single 26/37, timetwister 79/91, archival 79/91, month 181/190, decade 169/176, season 29/30, circa 233/241, imported 1656/1698, undated 42/43, range 434/444, yearrange 1336/1366, band 275/280, named-period 275/280, century 306/311, bracketed 457/463
 
 ## disputed: 0/2 pass (0.0%), calibration error 0.675
 
@@ -35,55 +35,31 @@ Weakest tags: single 26/37, timetwister 79/91, archival 79/91, undated 39/43, mo
 Status (expected->actual): parsed->parsed 2
 Weakest tags: yearrange 0/2, imported 0/2, range 0/1, band 0/1, named-period 0/2
 
-Since the last run: 0 newly passing, 0 newly failing.
+Since the last run: 4 newly passing, 1 newly failing: yr-0541
 
 ## Failures
 
-By cause: not parsed 6, reading differs 1, bounds differ 41.
+By cause: not parsed 3, bounds differ 41, flags only 1.
 
-### Not parsed (6)
+### Not parsed (3)
 
 The source has a date and the parser found none: grammar gaps, or strings the source read generously.
 
-- `yr-0121` (proposed) "Not dated (early 20th C.)." -> Unparsed
-  - expected: status parsed; years 1900..1924
-  - status: expected parsed, got Unparsed
-  - years.start: expected 1900, got (none)
-  - years.end: expected 1924, got (none)
 - `yr-0175` (proposed) "・07・25" -> Unparsed
   - expected: status parsed; years 1925..1925
   - status: expected parsed, got Unparsed
   - years.start: expected 1925, got (none)
   - years.end: expected 1925, got (none)
-- `yr-0239` (proposed) "Not dated ( early 20th C.)." -> Unparsed
-  - expected: status parsed; years 1900..1924
-  - status: expected parsed, got Unparsed
-  - years.start: expected 1900, got (none)
-  - years.end: expected 1924, got (none)
 - `yr-0363` (proposed) "18690000" -> Unparsed
   - expected: status parsed; years 1869..1869
   - status: expected parsed, got Unparsed
   - years.start: expected 1869, got (none)
   - years.end: expected 1869, got (none)
-- `yr-0993` (proposed) "Not dated (ca. early 20th C.)." -> Unparsed
-  - expected: status parsed; years 1900..1924; flags Approximate
-  - status: expected parsed, got Unparsed
-  - years.start: expected 1900, got (none)
-  - years.end: expected 1924, got (none)
-  - flag Approximate missing (flags: )
 - `yr-1458` (proposed) "730/1000, not dated" -> undated
   - expected: status parsed; years 1000..1000
   - status: expected parsed, got Undated
   - years.start: expected 1000, got (none)
   - years.end: expected 1000, got (none)
-
-### Reading differs (1)
-
-A different canonical form or kind for the same string: a parser bug, or a convention the profile should set.
-
-- `yr-0988` (verified) "19thC(mid) (? circa floruit)" -> mid century 19~
-  - expected: status parsed; kind single; canonical mid century 19; edtf 1840/1859; timespan 1840-01-01T00:00:00Z..1859-12-31T23:59:59Z
-  - canonical: expected 'mid century 19', got 'mid century 19~'
 
 ### Bounds differ (41)
 
@@ -238,4 +214,12 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 3900..3999
   - years.start: expected 3900, got 1640
   - years.end: expected 3999, got 1640
+
+### Flags only (1)
+
+The bounds agree and only a hedge flag differs: usually how the importer mapped the source's flag.
+
+- `yr-0541` (verified) "1795 (c. 11th month)" -> 1795
+  - expected: status parsed; years 1795..1795; flags Approximate
+  - flag Approximate missing (flags: )
 

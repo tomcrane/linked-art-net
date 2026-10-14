@@ -7791,7 +7791,7 @@
       "expect": {"status": "parsed", "years": {"start": 1890, "end": 1899}, "toleranceYears": 0}
     },
     {
-      "id": "yr-0537",
+      "id": "yr-0537", "status": "disputed", "notes": "no date other than \u0027modern\u0027 is parseable here",
       "input": "Japanese, Modern impression from Edo-period block",
       "tags": [
         "named-period"

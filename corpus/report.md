@@ -1,6 +1,6 @@
 # Corpus run
 
-Generated 2026-10-14 16:14 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-14 16:22 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
 ## verified: 572/572 pass (100.0%), calibration error 0.127
 
@@ -34,7 +34,7 @@ Weakest tags: single 26/37, timetwister 79/91, archival 79/91, season 29/32, cir
 Status (expected->actual): parsed->parsed 2
 Weakest tags: yearrange 0/2, imported 0/2, range 0/1, band 0/1, named-period 0/2
 
-Since the last run: 27 newly passing, 0 newly failing.
+Since the last run: 0 newly passing, 0 newly failing.
 
 ## Failures
 
@@ -240,9 +240,11 @@ The same reading realised to different datetimes: usually a band, season, circa 
 - `yr-1062` (proposed) "1730âs early" -> 1730
   - expected: status parsed; years 1730..1732
   - years.end: expected 1732, got 1730
-- `yr-1082` (proposed) "c. 1810/20 (Meiji Facsimilie)" -> 1810~/period:meiji
+- `yr-1082` (proposed) "c. 1810/20 (Meiji Facsimilie)" -> period:meiji
   - expected: status parsed; years 1810..1820; flags Approximate
+  - years.start: expected 1810, got 1868
   - years.end: expected 1820, got 1912
+  - flag Approximate missing (flags: NamedPeriod, SecondaryDate)
 - `yr-1170` (proposed) "1843-45 (Kunisada changed his name to Toyokuni in 1844)." -> 1844
   - expected: status parsed; years 1843..1845
   - years.start: expected 1843, got 1844

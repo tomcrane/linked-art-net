@@ -157,6 +157,7 @@ public sealed class CorpusEvaluator
                 foreach (var f in g)
                 {
                     sb.AppendLine($"- `{f.Entry.Id}` ({f.Entry.Status.ToString().ToLowerInvariant()}) \"{f.Entry.Input}\" -> {f.Result.Canonical ?? f.Result.Status.ToString()}");
+                    sb.AppendLine($"  - expected: {CorpusAcceptance.Describe(f.Entry.Expect)}");
                     foreach (var reason in f.Failures) sb.AppendLine($"  - {reason}");
                 }
                 sb.AppendLine();

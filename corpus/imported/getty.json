@@ -126,7 +126,7 @@
       "tags": [
         "century"
       ],
-      "expect": {"status": "parsed", "years": {"start": 1499, "end": 1499}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "Expected years come from the string itself (2026-10-14); ULAN’s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation."
+      "expect": {"status":"parsed","kind":"single","canonical":"century 15/1499","edtf":"1400/1499","timespan":{"begin_of_the_begin":"1400-01-01T00:00:00Z","end_of_the_end":"1499-12-31T23:59:59Z"}}, "sourceExpectation": "ULAN estStart 1400, estEnd 1499", "notes": "Expected years come from the string itself (2026-10-14); ULAN\u2019s estStart/estEnd are padded lifetime estimates and are kept in sourceExpectation. Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1499..1499."
     },
     {
       "id": "ulan-014",

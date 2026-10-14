@@ -39,6 +39,7 @@ public class CorpusReportTests
         Assert.Contains("### Flags only (2)", report);
         Assert.Contains("### Bounds differ (1)", report);
         Assert.DoesNotContain("`ok`", report);
+        Assert.Contains("  - expected: canonical 1985\n", report.Replace("\r\n", "\n"));
         // Flag-only failures are listed after the reading and bounds ones, so the likely parser bugs come first.
         Assert.True(report.IndexOf("### Reading differs", StringComparison.Ordinal) < report.IndexOf("### Flags only", StringComparison.Ordinal));
     }

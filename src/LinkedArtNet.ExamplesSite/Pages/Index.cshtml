@@ -3,13 +3,15 @@
 @{
     ViewData["Title"] = "Coverage";
 }
-<h1>Linked Art, written in C#</h1>
-<p class="lede">
-    Every example published on <a href="https://linked.art/model/">linked.art</a>, rebuilt with the
-    <a href="https://github.com/tomcrane/linked-art-net">LinkedArtNet</a> library. Each page shows the C# that produces an
-    example, the JSON it generates, and the JSON the site publishes, so you can learn the model by reading code that is
-    checked against the real thing.
-</p>
+<div class="hero">
+    <h1>Linked Art,<br />written in C#</h1>
+    <p class="lede">
+        Every example published on <a href="https://linked.art/model/">linked.art</a>, rebuilt with the
+        <a href="https://github.com/tomcrane/linked-art-net">LinkedArtNet</a> library. Each page shows the C# that produces an
+        example, the JSON it generates, and the JSON the site publishes, so you can learn the model by reading code that is
+        checked against the real thing.
+    </p>
+</div>
 
 <section class="stats" aria-label="Coverage">
     <div><strong>@Index.Total</strong><span>examples on linked.art</span></div>
@@ -18,11 +20,12 @@
     <div><strong>@Index.Blocked</strong><span>blocked by a site issue</span></div>
 </section>
 
-<h2>Sections</h2>
+<h2>Sections of the model</h2>
 <ul class="sections">
     @foreach (var s in Index.Sections)
     {
         <li>
+            <span class="label">model/@s.Path</span>
             <a href="/examples/@s.Slug">@s.Title</a>
             <span class="count">@s.Implemented / @s.Examples.Count</span>
             <span class="meter"><span style="width:@(s.Examples.Count == 0 ? 0 : 100 * s.Implemented / s.Examples.Count)%"></span></span>

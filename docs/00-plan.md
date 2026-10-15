@@ -308,6 +308,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     estimate in `sourceExpectation`; EDTF examples we do not support expect the partial reading. Proposed pass rate
     60.3% -> 79.8% (EDTF 61/61, ULAN 168/180, timetwister 78/91, yearrange 1275/1650).
 
+Hosting (2026-10-15): linkedart.net registered at Mythic Beasts; deployment files in deploy/ and the runbook in
+[09-hosting.md](09-hosting.md); server not yet bought.
+
 Next: Phase 3 is complete apart from hosting, which is the owner's. Candidates: the open Phase 2 items (PeriodO period
 source, `IDateInterpreter` LLM interpreter, benchmarks), the axe lint, or the owner's review items. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
 their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),

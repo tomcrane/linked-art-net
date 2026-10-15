@@ -7,7 +7,15 @@ on a Docker network called `web`, so further apps can be added later as their ow
 these. The domain `linkedart.net` is registered with Mythic Beasts
 (2026-10-15), which also hosts its DNS.
 
-Status (2026-10-15): files written; no server yet.
+Status (2026-10-15): the server exists. Mythic Beasts VPS 2 named `linkedartbox`, London (THS), Ubuntu 24.04:
+
+| | |
+|---|---|
+| IPv4 | 176.126.242.29 |
+| IPv6 | 2a00:1098:67d::1 |
+| spec | 1 core, 2 GB, 20 GB SSD, 1 TB/month |
+
+DNS, images, GitHub app and first start still to do (sections 3 to 6).
 
 ## 1. Hosts
 

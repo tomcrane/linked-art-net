@@ -1,8 +1,8 @@
 # Corpus run
 
-Generated 2026-10-15 09:04 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-15 09:08 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
-## verified: 623/623 pass (100.0%), calibration error 0.130
+## verified: 688/688 pass (100.0%), calibration error 0.145
 
 - authored/bce-and-deep-time.json: 20/20
 - authored/canonical-forms.json: 18/18
@@ -12,378 +12,51 @@ Generated 2026-10-15 09:04 UTC by `dotnet run --project tools/Corpus -- run --al
 - authored/named-periods.json: 30/30
 - authored/open-ended-and-relations.json: 36/36
 - imported/timetwister.json: 8/8
-- imported/yearrange.json: 285/285
+- imported/yearrange.json: 350/350
 - seed/pmc-outputs.json: 91/91
 - seed/py-datetime.json: 37/37
 
-Status (expected->actual): parsed->parsed 606, partial->partial 2, undated->undated 9, unparsed->unparsed 6
+Status (expected->actual): parsed->parsed 608, partial->partial 2, undated->undated 72, unparsed->unparsed 6
 
-## proposed: 1600/1665 pass (96.1%), calibration error 0.118
+## proposed: 1600/1602 pass (99.9%), calibration error 0.150
 
 - imported/edtf-spec.json: 61/61
 - imported/getty.json: 180/180
 - imported/timetwister.json: 83/83
-- imported/yearrange.json: 1276/1341
+- imported/yearrange.json: 1276/1278
 
-Status (expected->actual): parsed->parsed 1600, parsed->undated 61, unparsed->unparsed 4
-Weakest tags: named-period 252/277, circa 221/233, yearrange 1276/1341, range 420/438, imported 1600/1665, decade 168/169, century 306/307
+Status (expected->actual): parsed->parsed 1598, unparsed->unparsed 4
+Weakest tags: range 420/422, yearrange 1276/1278, imported 1600/1602
 
-## disputed: 0/24 pass (0.0%), calibration error 0.658
+## disputed: 0/22 pass (0.0%), calibration error 0.659
 
-- imported/yearrange.json: 0/24
+- imported/yearrange.json: 0/22
 
-Status (expected->actual): parsed->parsed 20, parsed->undated 2, parsed->unparsed 2
-Weakest tags: yearrange 0/24, imported 0/24, range 0/3, band 0/5, named-period 0/5, decade 0/7, circa 0/7, bracketed 0/5, month 0/1, season 0/1, century 0/3
+Status (expected->actual): parsed->parsed 20, parsed->unparsed 2
+Weakest tags: yearrange 0/22, imported 0/22, range 0/3, band 0/3, named-period 0/3, decade 0/7, circa 0/7, bracketed 0/5, month 0/1, season 0/1, century 0/3
 
-Since the last run: 5 newly passing, 61 newly failing: yr-0065, yr-0133, yr-0149, yr-0194, yr-0202, yr-0238, yr-0265, yr-0268, yr-0277, yr-0288, yr-0328, yr-0332, yr-0333, yr-0340, yr-0384, yr-0394, yr-0435, yr-0470, yr-0488, yr-0489, yr-0493, yr-0546, yr-0549, yr-0550, yr-0582, yr-0584, yr-0599, yr-0602, yr-0702, yr-0744, yr-0760, yr-0826, yr-0867, yr-0886, yr-0887, yr-0891, yr-0914, yr-0917, yr-0923, yr-0925, yr-0996, yr-0997, yr-0998, yr-1011, yr-1012, yr-1061, yr-1092, yr-1209, yr-1212, yr-1213, yr-1215, yr-1243, yr-1286, yr-1295, yr-1300, yr-1337, yr-1413, yr-1451, yr-1467, yr-1502, yr-1530
+Since the last run: 2 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 65, bounds differ 24.
+By cause: not parsed 2, bounds differ 22.
 
-### Not parsed (65)
+### Not parsed (2)
 
 The source has a date and the parser found none: grammar gaps, or strings the source read generously.
 
-- `yr-0065` (proposed) "Originally in Edo era, this re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0133` (proposed) "Originally in Edo era, this one is a re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0149` (proposed) "Originally in ca. 1833. This re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1833..1833; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1833, got (none)
-  - years.end: expected 1833, got (none)
-  - flag Approximate missing (flags: )
 - `yr-0175` (disputed) "・07・25" -> Unparsed
   - expected: status parsed; years 1925..1925
   - status: expected parsed, got Unparsed
   - years.start: expected 1925, got (none)
   - years.end: expected 1925, got (none)
-- `yr-0194` (proposed) "Originally in Edo era, this one is re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0202` (proposed) "Originally ca. 1829-33, this edition was made in unknown date." -> undated
-  - expected: status parsed; years 1829..1833; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-  - flag Approximate missing (flags: )
-- `yr-0238` (proposed) "Originally in Edo era, this is a re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0265` (proposed) "Originally in Edo era, this edition was made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0268` (proposed) "Originally in 1857, this re-carved edition was published in unknown date." -> undated
-  - expected: status parsed; years 1857..1857
-  - status: expected parsed, got Undated
-  - years.start: expected 1857, got (none)
-  - years.end: expected 1857, got (none)
-- `yr-0277` (proposed) "Originally ca. 1829-33, this re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1829..1833; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-  - flag Approximate missing (flags: )
-- `yr-0288` (proposed) "Originally in 1855, this re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1855..1855
-  - status: expected parsed, got Undated
-  - years.start: expected 1855, got (none)
-  - years.end: expected 1855, got (none)
-- `yr-0328` (proposed) "Originally in 1829-33, this re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1829..1833
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-- `yr-0332` (proposed) "Originally in 1858, this was a re-carved edition published in unknown date." -> undated
-  - expected: status parsed; years 1858..1858
-  - status: expected parsed, got Undated
-  - years.start: expected 1858, got (none)
-  - years.end: expected 1858, got (none)
-- `yr-0333` (proposed) "Originally in Edo era, this one is re-carved edition on unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0340` (proposed) "Originally in Edo era, this re-carved edition was published in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
 - `yr-0363` (disputed) "18690000" -> Unparsed
   - expected: status parsed; years 1869..1869
   - status: expected parsed, got Unparsed
   - years.start: expected 1869, got (none)
   - years.end: expected 1869, got (none)
-- `yr-0384` (proposed) "Originally in 1829-33. This one is re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1829..1833
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-- `yr-0394` (proposed) "Originally published in 1928. This re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1928..1928
-  - status: expected parsed, got Undated
-  - years.start: expected 1928, got (none)
-  - years.end: expected 1928, got (none)
-- `yr-0435` (proposed) "Originally 1832-33, this re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1832..1833
-  - status: expected parsed, got Undated
-  - years.start: expected 1832, got (none)
-  - years.end: expected 1833, got (none)
-- `yr-0470` (proposed) "Originally in 1829-33, this one is re-carved edition in unknown date." -> undated
-  - expected: status parsed; years 1829..1833
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-- `yr-0488` (proposed) "Originally in Edo era, this one is re-carved edition in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0489` (proposed) "Originally in 1885, this one is re-carved edition in unknown date." -> undated
-  - expected: status parsed; years 1885..1885
-  - status: expected parsed, got Undated
-  - years.start: expected 1885, got (none)
-  - years.end: expected 1885, got (none)
-- `yr-0493` (proposed) "Originally in Edo, this one is re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0546` (proposed) "Originally made in 1915. This re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1915..1915
-  - status: expected parsed, got Undated
-  - years.start: expected 1915, got (none)
-  - years.end: expected 1915, got (none)
-- `yr-0549` (proposed) "Originally published in Edo era. This is a re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0550` (proposed) "Originally in 1857. This edition was published in unknown date." -> undated
-  - expected: status parsed; years 1857..1857
-  - status: expected parsed, got Undated
-  - years.start: expected 1857, got (none)
-  - years.end: expected 1857, got (none)
-- `yr-0582` (proposed) "Originally ca. 1835-6, this re-carved edition was published in unknown date." -> undated
-  - expected: status parsed; years 1835..1836; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1835, got (none)
-  - years.end: expected 1836, got (none)
-  - flag Approximate missing (flags: )
-- `yr-0584` (proposed) "Originally ca. 1850. This re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1850..1850; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1850, got (none)
-  - years.end: expected 1850, got (none)
-  - flag Approximate missing (flags: )
-- `yr-0599` (proposed) "Originally in 1856-58, this is re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1856..1858
-  - status: expected parsed, got Undated
-  - years.start: expected 1856, got (none)
-  - years.end: expected 1858, got (none)
-- `yr-0602` (proposed) "Originally published in Edo era. This is a re-carved edition published in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0702` (proposed) "Originally 1896. This re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1896..1896
-  - status: expected parsed, got Undated
-  - years.start: expected 1896, got (none)
-  - years.end: expected 1896, got (none)
-- `yr-0744` (proposed) "Originally in Meiji era. This re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1868..1912
-  - status: expected parsed, got Undated
-  - years.start: expected 1868, got (none)
-  - years.end: expected 1912, got (none)
-- `yr-0760` (proposed) "Originally published in Edo era, 1857. This re-carved edition was published in unknown date." -> undated
-  - expected: status parsed; years 1857..1857
-  - status: expected parsed, got Undated
-  - years.start: expected 1857, got (none)
-  - years.end: expected 1857, got (none)
-- `yr-0826` (proposed) "Originally in Edo era, this one is re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0867` (proposed) "Originally in Edo era. This edition was made probably in the unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0886` (proposed) "Originally ca. 1834, this is a re-carved edition published on unknown date." -> undated
-  - expected: status parsed; years 1834..1834; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1834, got (none)
-  - years.end: expected 1834, got (none)
-  - flag Approximate missing (flags: )
-- `yr-0887` (proposed) "Originally in Edo era, this is a re-carved edition made on unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0891` (proposed) "Originally in Edo era, this re-carved edition was made on unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0914` (proposed) "Originally in Edo era, this one was re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0917` (proposed) "Original published in 1857, this one is a re-carved edition published in unknown date." -> undated
-  - expected: status parsed; years 1857..1857
-  - status: expected parsed, got Undated
-  - years.start: expected 1857, got (none)
-  - years.end: expected 1857, got (none)
-- `yr-0923` (proposed) "Originally in Edo era, this re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-0925` (proposed) "Originally in 1837-38, this is a re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1837..1838
-  - status: expected parsed, got Undated
-  - years.start: expected 1837, got (none)
-  - years.end: expected 1838, got (none)
-- `yr-0996` (proposed) "Originally ca. 1790, this is a re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1790..1790; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1790, got (none)
-  - years.end: expected 1790, got (none)
-  - flag Approximate missing (flags: )
-- `yr-0997` (proposed) "Originally in 1798, this is a re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1798..1798
-  - status: expected parsed, got Undated
-  - years.start: expected 1798, got (none)
-  - years.end: expected 1798, got (none)
-- `yr-0998` (proposed) "Originally in 1855, this one is re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1855..1855
-  - status: expected parsed, got Undated
-  - years.start: expected 1855, got (none)
-  - years.end: expected 1855, got (none)
-- `yr-1011` (proposed) "Originally published in 1829 - 33. This re-carved edition was published in unknown date." -> undated
-  - expected: status parsed; years 1829..1833
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-- `yr-1012` (proposed) "Originally published in 1833. This edition was published in unknown date." -> undated
-  - expected: status parsed; years 1833..1833
-  - status: expected parsed, got Undated
-  - years.start: expected 1833, got (none)
-  - years.end: expected 1833, got (none)
-- `yr-1061` (proposed) "Originally in Edo era, thisre-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-1092` (proposed) "Originally published in 1857, this one is re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1857..1857
-  - status: expected parsed, got Undated
-  - years.start: expected 1857, got (none)
-  - years.end: expected 1857, got (none)
-- `yr-1206` (disputed) "Originally in early Edo era, this edition was made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-1209` (proposed) "Originally ca. 1829-33, this one was re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1829..1833; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-  - flag Approximate missing (flags: )
-- `yr-1212` (proposed) "Originally ca. 1829-33, this recarved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1829..1833; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-  - flag Approximate missing (flags: )
-- `yr-1213` (proposed) "Originally published in 1829 - 33, this edition was made in unknown date." -> undated
-  - expected: status parsed; years 1829..1833
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-- `yr-1215` (proposed) "Originally in Edo period. This is a re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-1228` (disputed) "Originally in late Edo era, this re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-1243` (proposed) "Originally in 1860s. This re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1860..1869
-  - status: expected parsed, got Undated
-  - years.start: expected 1860, got (none)
-  - years.end: expected 1869, got (none)
-- `yr-1286` (proposed) "Originally published in 1829 - 33, this re-carved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1829..1833
-  - status: expected parsed, got Undated
-  - years.start: expected 1829, got (none)
-  - years.end: expected 1833, got (none)
-- `yr-1295` (proposed) "Originally ca. 1834, this is a re-carved edition in unknown date." -> undated
-  - expected: status parsed; years 1834..1834; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1834, got (none)
-  - years.end: expected 1834, got (none)
-  - flag Approximate missing (flags: )
-- `yr-1300` (proposed) "Originally in 1798, this is a re-carved edition in unknown date." -> undated
-  - expected: status parsed; years 1798..1798
-  - status: expected parsed, got Undated
-  - years.start: expected 1798, got (none)
-  - years.end: expected 1798, got (none)
-- `yr-1337` (proposed) "Originally in Edo era. This recarved edition was made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-1413` (proposed) "Originally in Edo era, this re-carved edition was printed in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-1451` (proposed) "Originally in 1858. This re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1858..1858
-  - status: expected parsed, got Undated
-  - years.start: expected 1858, got (none)
-  - years.end: expected 1858, got (none)
-- `yr-1467` (proposed) "Original prints were published in Edo era. This edition was made in unknown date." -> undated
-  - expected: status parsed; years 1603..1868
-  - status: expected parsed, got Undated
-  - years.start: expected 1603, got (none)
-  - years.end: expected 1868, got (none)
-- `yr-1502` (proposed) "Originally in ca. 1832, this one is a re-carved edition probably made in unknown date." -> undated
-  - expected: status parsed; years 1832..1832; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1832, got (none)
-  - years.end: expected 1832, got (none)
-  - flag Approximate missing (flags: )
-- `yr-1530` (proposed) "Originally ca. 1794-95, this one is a re-carved edition made in unknown date." -> undated
-  - expected: status parsed; years 1794..1795; flags Approximate
-  - status: expected parsed, got Undated
-  - years.start: expected 1794, got (none)
-  - years.end: expected 1795, got (none)
-  - flag Approximate missing (flags: )
 
-### Bounds differ (24)
+### Bounds differ (22)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
@@ -414,13 +87,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - years.start: expected 1970, got 1956
   - years.end: expected 1979, got 1956
   - flag Approximate missing (flags: Unconsumed)
-- `yr-0689` (proposed) "江戸時代＿18-19ｃ" -> century 18/period:edo
-  - expected: status parsed; years 1800..1899
-  - years.start: expected 1800, got 1700
-  - years.end: expected 1899, got 1868
-- `yr-0776` (proposed) "江戸時代＿17･18c" -> period:edo/century 18
-  - expected: status parsed; years 1700..1799
-  - years.start: expected 1700, got 1603
 - `yr-1030` (disputed) "Originally in Edo era, this re-carved edition was made probably in11950s." -> period:edo
   - expected: status parsed; years 1950..1959
   - years.start: expected 1950, got 1603

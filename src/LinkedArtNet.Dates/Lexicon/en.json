@@ -52,9 +52,5 @@
   "corrections": ["ie", "i e", "that is", "recte", "rectius", "really", "actually", "corrected to", "sic for"],
   "edition": ["edition", "editions", "printing", "printings", "printed", "reprint", "reprinted", "reprinting", "reproduction", "reproduced", "recarved", "re-carved", "recut", "re-cut", "impression", "impressions", "published", "publication", "posthumous", "posthumously", "restrike", "restruck", "reissue", "reissued", "re-issued", "facsimile", "facsimiles", "facsimilie", "item"],
   "noise": ["the", "of", "in", "on", "at", "a", "an", "circa", "©", "cop", "copyright", "sic", "printed", "published", "dated", "made", "issued", "year", "years", "yr", "yrs", "c", "ca", "cir", "ie", "dates", "date", "approximate", "approx", "probable", "est", "estimated"],
-  "ordinalWords": {
-    "first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10,
-    "eleventh": 11, "twelfth": 12, "thirteenth": 13, "fourteenth": 14, "fifteenth": 15, "sixteenth": 16, "seventeenth": 17,
-    "eighteenth": 18, "nineteenth": 19, "twentieth": 20, "twenty-first": 21, "twentyfirst": 21, "twenty first": 21, "twenty-second": 22, "twenty second": 22
-  }
+  "ordinalWords": {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10, "eleventh": 11, "twelfth": 12, "thirteenth": 13, "fourteenth": 14, "fifteenth": 15, "sixteenth": 16, "seventeenth": 17, "eighteenth": 18, "nineteenth": 19, "twentieth": 20, "twenty-first": 21, "twentyfirst": 21, "twenty first": 21, "twenty-second": 22, "twenty second": 22, "twentysecond": 22, "twenty-third": 23, "twenty third": 23, "twentythird": 23, "twenty-fourth": 24, "twenty fourth": 24, "twentyfourth": 24, "twenty-fifth": 25, "twenty fifth": 25, "twentyfifth": 25, "twenty-sixth": 26, "twenty sixth": 26, "twentysixth": 26, "twenty-seventh": 27, "twenty seventh": 27, "twentyseventh": 27, "twenty-eighth": 28, "twenty eighth": 28, "twentyeighth": 28, "twenty-ninth": 29, "twenty ninth": 29, "twentyninth": 29, "thirty-first": 31, "thirty first": 31, "thirtyfirst": 31, "thirtieth": 30}
 }

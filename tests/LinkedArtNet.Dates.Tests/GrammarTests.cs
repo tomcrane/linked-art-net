@@ -177,6 +177,14 @@ public class GrammarTests
     [InlineData("c.1610-p.1635", "1610~/1635")]
     [InlineData("op.1730-, d.1772", "fl 1730/died 1772")]
     [InlineData("A.P., 2005", "2005")]
+    // the backlog: word ordinals, months from other languages, a middle dot as a dash, prose remarks
+    [InlineData("July twenty-first 1776", "1776-07-21")]
+    [InlineData("July twenty-first, 1776", "1776-07-21")]
+    [InlineData("July thirty-first 1776", "1776-07-31")]
+    [InlineData("août 4 1776", "1776-08-04")]
+    [InlineData("agosto 4 1776", "1776-08-04")]
+    [InlineData("17・18c", "century 17/century 18")]
+    [InlineData("1843-45 (Kunisada changed his name to Toyokuni in 1844).", "1843/1845")]
     // a band on a round year is the decade with its "s" dropped; a band on another year is a band of that year
     [InlineData("mid 1740", "mid 174X")]
     // a hedge inside a remark that names no year applies to the date outside it
@@ -323,6 +331,10 @@ public class GrammarTests
         Assert.Equal("1890/191X", TimeSpanParser.Default.Parse("Later Meiji period (1890 - 1910s).").Canonical);
         // "made after a painting in ..." names the source; the later clause dates the copy
         Assert.Equal("193X~", TimeSpanParser.Default.Parse("Made after a painting in Edo era. Ca. 1930s.").Canonical);
+        // an undated edition makes the object undated
+        var undated = TimeSpanParser.Default.Parse("Originally in early Edo era, this edition was made in unknown date.");
+        Assert.Equal(ParseStatus.Undated, undated.Status);
+        Assert.Contains(undated.Notes, n => n.Contains("early period:edo is the original"));
     }
 
     [Fact]

@@ -139,6 +139,13 @@ internal sealed class DateParser
         {
             var inner = new DateParser(_t.Skip(tail).ToList(), _text, _profile, _lexicon, _periods);
             var later = inner.Parse();
+            if (later is { Expression: Undated } && IsEditionClause(_t.Skip(tail).ToList()))
+            {
+                // "Originally in early Edo era, this edition was made in unknown date.": the object is undated; only the original is dated.
+                _notes.AddRange(inner._notes);
+                _notes.Add($"The edition or printing is undated; {expression.Canonical} is the original, not the object's date.");
+                return new Candidate(Undated.Instance, Math.Max(0.3, _confidence - 0.1), "grammar", null, _notes, _flags);
+            }
             if (later is not null && later.Expression is not Undated)
             {
                 _notes.AddRange(inner._notes);
@@ -288,6 +295,12 @@ internal sealed class DateParser
                 }
                 if (_periods is not null && inner.Any(x => x.Kind == TokenKind.Word)) { secondaries.Add(inner); continue; }
                 _notes.Add("A parenthetical remark with no date in it was ignored.");
+                continue;
+            }
+            // "(Kunisada changed his name to Toyokuni in 1844)": a remark that is mostly prose is commentary, not a date.
+            if (inner.Count(x => x.Kind == TokenKind.Word) >= 4 && !inner.Any(IsEditionWord) && inner[0].Kind != TokenKind.Correction)
+            {
+                _notes.Add("A parenthetical remark that is mostly prose was ignored.");
                 continue;
             }
             if (inner[0].Kind == TokenKind.Correction) corrections.Add(inner.Skip(1).ToList());

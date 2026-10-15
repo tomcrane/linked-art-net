@@ -58,6 +58,16 @@ public sealed partial class Tokenizer(Lexicon lexicon)
                 && tokens[i - 1] is { Kind: TokenKind.Number } n && n.Digits >= 3 && !n.HasDecimal)
                 tokens[i] = new Token(TokenKind.DecadeSuffix, s.Text, s.Start);
         }
+        // "twenty-first": a hyphenated ordinal word the lexicon knows as one key.
+        for (var i = tokens.Count - 3; i >= 0; i--)
+        {
+            if (tokens[i].Kind == TokenKind.Word && tokens[i + 1].Kind == TokenKind.Dash && tokens[i + 2].Kind is TokenKind.Word or TokenKind.Ordinal
+                && Lexicon.OrdinalWords.TryGetValue(Lexicon.Normalise(tokens[i].Text) + "-" + Lexicon.Normalise(tokens[i + 2].Text), out var ordinal))
+            {
+                tokens[i] = new Token(TokenKind.Ordinal, text[tokens[i].Start..tokens[i + 2].End], tokens[i].Start, (long)ordinal);
+                tokens.RemoveRange(i + 1, 2);
+            }
+        }
         return tokens;
     }
 
@@ -108,7 +118,7 @@ public sealed partial class Tokenizer(Lexicon lexicon)
 
             var kind = c switch
             {
-                '-' => TokenKind.Dash, '/' => TokenKind.Slash, ',' => TokenKind.Comma, '?' => TokenKind.Question,
+                '-' or '・' or '·' => TokenKind.Dash, '/' => TokenKind.Slash, ',' => TokenKind.Comma, '?' => TokenKind.Question,
                 '(' => TokenKind.OpenParen, ')' => TokenKind.CloseParen, '[' => TokenKind.OpenBracket, ']' => TokenKind.CloseBracket,
                 _ => TokenKind.Other,
             };
@@ -182,6 +192,8 @@ public sealed partial class Tokenizer(Lexicon lexicon)
                     result.Add(t with { Kind = TokenKind.Lifecycle, Value = LifecycleMarker.Born });
                 else if (IsCenturyTypo(word))
                     result.Add(new Token(TokenKind.CenturyWord, t.Text, t.Start));
+                else if (OtherLanguageMonth(word) is { } month)
+                    result.Add(new Token(TokenKind.Month, t.Text, t.Start, month));
                 else
                     result.Add(t);
             }
@@ -219,6 +231,17 @@ public sealed partial class Tokenizer(Lexicon lexicon)
         if (Lexicon.Noise.Contains(key)) return new Token(TokenKind.Noise, text, start);
         return null;
     }
+
+    private static readonly Lazy<IReadOnlyDictionary<string, int>> OtherMonths = new(() =>
+    {
+        var months = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var code in new[] { "fr", "de", "it", "es", "nl", "la" })
+            foreach (var (key, value) in Lexicon.Load(code).Months) months.TryAdd(key, value);
+        return months;
+    });
+
+    /// <summary>"août 4 1776" under an English profile: a month name from another language the active lexicon does not know still reads as a month.</summary>
+    private static int? OtherLanguageMonth(string word) => OtherMonths.Value.TryGetValue(Lexicon.Normalise(word), out var month) ? month : null;
 
     /// <summary>"centurry", "centruy", "centuly": one letter added, dropped, changed or swapped in "century" still means the century.</summary>
     private static bool IsCenturyTypo(string word)

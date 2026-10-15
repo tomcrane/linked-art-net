@@ -81,6 +81,7 @@
   "seasonDates": "months",
   "defaultEra": "ce",
   "minYearDigits": 3,
+  "twoDigitYearsNeedMonth": false,
   "dayMonthOrder": "dayFirst",
   "leadingDashIsOpenStart": true,
   "plausibleYearMin": -10000,

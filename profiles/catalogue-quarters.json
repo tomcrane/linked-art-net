@@ -1,7 +1,9 @@
 {
   "inherits": "default",
   "name": "catalogue-quarters",
-  "description": "Museum catalogues that read 'early' and 'late' as the first and last quarter of a century (early 20th century = 1900-1924, late = 1975-1999), 'mid' as the middle fifth (1940-1959), 'beginning of' and 'end of' as the same quarters, and 'early 1790s' as 1790-1792, 'mid 1790s' as 1794-1796; the conventions of jeresig/node-yearrange.",
+  "description": "Museum catalogues that read 'early' and 'late' as the first and last quarter of a century (early 20th century = 1900-1924, late = 1975-1999), 'mid' as the middle fifth (1940-1959), 'beginning of' and 'end of' as the same quarters, and 'early 1790s' as 1790-1792, 'mid 1790s' as 1794-1796; a two-digit year only when written with a month ('69-10' is October 1969, but 'Bunka 11' is a regnal year); the conventions of jeresig/node-yearrange.",
+  "twoDigitYearWindow": 1900,
+  "twoDigitYearsNeedMonth": true,
   "centuryBands": {
     "length": 100,
     "early": {

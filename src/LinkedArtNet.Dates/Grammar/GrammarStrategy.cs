@@ -1016,7 +1016,10 @@ internal sealed class DateParser
                 Penalise(0.03, $"'{t.Text}' was expanded to {year} from the start of the range.");
                 return piece with { Core = new YearPoint(year), Hedge = piece.Hedge ?? context.Hedge, Era = context.Era };
             }
-            if (t.Digits <= 2 && TryWindowYear(t, out var windowed))
+            // With TwoDigitYearsNeedMonth a bare two-digit number is never a year; "69-10" still is, since nothing else has that shape.
+            var yearMonthShape = t.Number > 31 && Peek(1) is { Kind: TokenKind.Dash } && Peek(2) is { Kind: TokenKind.Number } ymm && ymm.Digits == 2 && ymm.Number is >= 1 and <= 12
+                && Peek(3) is not { Kind: TokenKind.Dash or TokenKind.Number or TokenKind.Month or TokenKind.Season };
+            if (t.Digits <= 2 && (!_profile.TwoDigitYearsNeedMonth || yearMonthShape) && TryWindowYear(t, out var windowed))
             {
                 _p++;
                 // "69-10": a two-digit year followed by a month

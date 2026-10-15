@@ -1,8 +1,8 @@
 # Corpus run
 
-Generated 2026-10-15 09:08 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-15 09:14 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
-## verified: 688/688 pass (100.0%), calibration error 0.145
+## verified: 690/690 pass (100.0%), calibration error 0.145
 
 - authored/bce-and-deep-time.json: 20/20
 - authored/canonical-forms.json: 18/18
@@ -12,21 +12,20 @@ Generated 2026-10-15 09:08 UTC by `dotnet run --project tools/Corpus -- run --al
 - authored/named-periods.json: 30/30
 - authored/open-ended-and-relations.json: 36/36
 - imported/timetwister.json: 8/8
-- imported/yearrange.json: 350/350
+- imported/yearrange.json: 352/352
 - seed/pmc-outputs.json: 91/91
 - seed/py-datetime.json: 37/37
 
-Status (expected->actual): parsed->parsed 608, partial->partial 2, undated->undated 72, unparsed->unparsed 6
+Status (expected->actual): parsed->parsed 610, partial->partial 2, undated->undated 72, unparsed->unparsed 6
 
-## proposed: 1600/1602 pass (99.9%), calibration error 0.150
+## proposed: 1600/1600 pass (100.0%), calibration error 0.151
 
 - imported/edtf-spec.json: 61/61
 - imported/getty.json: 180/180
 - imported/timetwister.json: 83/83
-- imported/yearrange.json: 1276/1278
+- imported/yearrange.json: 1276/1276
 
-Status (expected->actual): parsed->parsed 1598, unparsed->unparsed 4
-Weakest tags: range 420/422, yearrange 1276/1278, imported 1600/1602
+Status (expected->actual): parsed->parsed 1596, unparsed->unparsed 4
 
 ## disputed: 0/22 pass (0.0%), calibration error 0.659
 
@@ -35,11 +34,11 @@ Weakest tags: range 420/422, yearrange 1276/1278, imported 1600/1602
 Status (expected->actual): parsed->parsed 20, parsed->unparsed 2
 Weakest tags: yearrange 0/22, imported 0/22, range 0/3, band 0/3, named-period 0/3, decade 0/7, circa 0/7, bracketed 0/5, month 0/1, season 0/1, century 0/3
 
-Since the last run: 2 newly passing, 0 newly failing.
+Since the last run: 0 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 2, bounds differ 22.
+By cause: not parsed 2, bounds differ 20.
 
 ### Not parsed (2)
 
@@ -56,14 +55,10 @@ The source has a date and the parser found none: grammar gaps, or strings the so
   - years.start: expected 1869, got (none)
   - years.end: expected 1869, got (none)
 
-### Bounds differ (22)
+### Bounds differ (20)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
-- `yr-0034` (proposed) "62/200, 69-10" -> 0200
-  - expected: status parsed; years 1969..1969
-  - years.start: expected 1969, got 200
-  - years.end: expected 1969, got 200
 - `yr-0153` (disputed) "Edo period, Late to early Meiji period" -> late period:edo/early period:meiji
   - expected: status parsed; years 1603..1868
   - years.start: expected 1603, got 1802
@@ -71,10 +66,6 @@ The same reading realised to different datetimes: usually a band, season, circa 
 - `yr-0173` (disputed) "1932 1980s)" -> 1932/198X
   - expected: status parsed; years 1980..1989
   - years.start: expected 1980, got 1932
-- `yr-0299` (proposed) "5/150, 69-12" -> 0150
-  - expected: status parsed; years 1969..1969
-  - years.start: expected 1969, got 150
-  - years.end: expected 1969, got 150
 - `yr-0521` (disputed) "19881" -> Y19881
   - expected: status parsed; years 1988..1988
   - years.start: expected 1988, got 19881

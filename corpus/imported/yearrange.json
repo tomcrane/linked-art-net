@@ -567,7 +567,7 @@
       }
     },
     {
-      "id": "yr-0034",
+      "id": "yr-0034", "status": "verified",
       "input": "62/200, 69-10",
       "tags": [
         "range"
@@ -4327,7 +4327,7 @@
       "expect": {"status":"parsed","kind":"single","canonical":"late century 20","edtf":"1975/1999","timespan":{"begin_of_the_begin":"1975-01-01T00:00:00Z","end_of_the_end":"1999-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1900..1999", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1900..1999."
     },
     {
-      "id": "yr-0299",
+      "id": "yr-0299", "status": "verified",
       "input": "5/150, 69-12",
       "tags": [
         "range"

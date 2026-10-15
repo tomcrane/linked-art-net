@@ -33,6 +33,10 @@ public class ProfilesAndAdvisorTests
     [InlineData("library", "'08", "1908")]
     [InlineData("library", "62/200, 69-10", "1969-10")]
     [InlineData("catalogue-quarters", "1814 (Bunka 11)", "1814")]
+    [InlineData("catalogue-quarters", "62/200, 69-10", "1969-10")]
+    [InlineData("catalogue-quarters", "5/150, 69-12", "1969-12")]
+    [InlineData("catalogue-quarters", "4-10 July 1776", "1776-07-04/1776-07-10")]
+    [InlineData("catalogue-quarters", "1783, 84", "1783")]
     [InlineData("medieval-manuscripts", "saec. XIV", "century 14")]
     [InlineData("medieval-manuscripts", "s. xiv med.", "mid century 14")]
     public void Profiles_change_the_reading(string profile, string text, string canonical)

@@ -104,6 +104,12 @@ public sealed record ParseProfile
     /// <summary>When set, a bare two-digit year is read within the hundred years starting here (1900: '08 = 1908).</summary>
     public int? TwoDigitYearWindow { get; init; }
 
+    /// <summary>
+    /// When true the window applies only to a two-digit year written with a month ("69-10" = October 1969), never to a bare
+    /// two-digit number: for collections where regnal years, volume and edition numbers would otherwise read as years.
+    /// </summary>
+    public bool TwoDigitYearsNeedMonth { get; init; }
+
     public DayMonthOrder DayMonthOrder { get; init; } = DayMonthOrder.DayFirst;
 
     /// <summary>

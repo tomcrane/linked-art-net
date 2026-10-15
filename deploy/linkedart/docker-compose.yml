@@ -1,33 +1,19 @@
-# linkedart.net on one virtual server: Caddy terminates TLS and proxies to the two application containers.
+# linkedart.net: the examples site and the dates service, behind the shared Caddy in deploy/edge.
 # Images come from GHCR (built by .github/workflows/docker.yml on v* tags). Configuration and secrets come from .env
-# (see .env.example); the trainer's data and the service's capture file live in ./data, which must be writable by the
+# (see .env.example). The trainer's data and the service's capture file live in ./data, which must be writable by the
 # application user of the chiseled images (uid 1654): `sudo chown -R 1654:1654 data`.
 #
 #   docker compose pull && docker compose up -d
 #   docker compose logs -f --tail=100
 services:
-  caddy:
-    image: caddy:2
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - site
-      - dates
-
   site:
     image: ghcr.io/tomcrane/linked-art-net/examples-site:${IMAGE_TAG:-latest}
+    container_name: linkedart-site
     restart: unless-stopped
     environment:
       # behind Caddy: trust X-Forwarded-Proto so the trainer builds https:// callback URLs
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-      TimeSpanService__BaseUrl: http://dates:8080
+      TimeSpanService__BaseUrl: http://linkedart-dates:8080
       Trainer__DataDirectory: /data/trainer
       Trainer__CapturePath: /data/capture/unparsed.jsonl
       Trainer__Reviewers__0: ${TRAINER_REVIEWER}
@@ -39,11 +25,14 @@ services:
     volumes:
       - ./data/trainer:/data/trainer
       - ./data/capture:/data/capture:ro
+    networks:
+      - web
     depends_on:
       - dates
 
   dates:
     image: ghcr.io/tomcrane/linked-art-net/dates-service:${IMAGE_TAG:-latest}
+    container_name: linkedart-dates
     restart: unless-stopped
     environment:
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
@@ -51,7 +40,9 @@ services:
       Capture__Path: /data/capture/unparsed.jsonl
     volumes:
       - ./data/capture:/data/capture
+    networks:
+      - web
 
-volumes:
-  caddy_data:
-  caddy_config:
+networks:
+  web:
+    external: true

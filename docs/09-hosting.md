@@ -1,7 +1,10 @@
 # Hosting linkedart.net
 
 One virtual server, three containers: Caddy for TLS and routing, the examples site, the dates service. The
-deployment files are in [deploy/](../deploy/). The domain `linkedart.net` is registered with Mythic Beasts
+deployment files are in [deploy/](../deploy/), in two compose projects: `deploy/edge/` is the shared front door
+(Caddy, one per server, routing every hostname) and `deploy/linkedart/` is this site's two containers. They meet
+on a Docker network called `web`, so further apps can be added later as their own projects without touching
+these. The domain `linkedart.net` is registered with Mythic Beasts
 (2026-10-15), which also hosts its DNS.
 
 Status (2026-10-15): files written; no server yet.
@@ -36,12 +39,13 @@ On the server, once:
 sudo apt update && sudo apt install -y docker.io docker-compose-v2 ufw unattended-upgrades
 sudo usermod -aG docker $USER            # log out and in again
 sudo ufw allow OpenSSH && sudo ufw allow 80 && sudo ufw allow 443 && sudo ufw enable
-sudo mkdir -p /srv/linkedart/data/trainer /srv/linkedart/data/capture
+docker network create web                 # the network the front door and every app share
+sudo mkdir -p /srv/edge /srv/linkedart/data/trainer /srv/linkedart/data/capture
 sudo chown -R 1654:1654 /srv/linkedart/data   # the application user in the chiseled images
 ```
 
-Copy `deploy/docker-compose.yml`, `deploy/Caddyfile` and `deploy/.env.example` (as `.env`) into
-`/srv/linkedart/` and fill in `.env`.
+Copy `deploy/edge/` into `/srv/edge/` and `deploy/linkedart/` into `/srv/linkedart/`; rename `.env.example`
+to `.env` and fill it in.
 
 ## 3. DNS at Mythic Beasts
 
@@ -79,9 +83,8 @@ code is MIT) or `docker login ghcr.io` on the server with a read-only token befo
 ## 6. Run
 
 ```
-cd /srv/linkedart
-docker compose pull
-docker compose up -d
+cd /srv/edge && docker compose up -d                 # Caddy, once; reload after editing sites/
+cd /srv/linkedart && docker compose pull && docker compose up -d
 docker compose logs -f --tail=100
 ```
 
@@ -91,7 +94,8 @@ playground works even if the public `dates` host is misconfigured.
 
 ## 7. Updating
 
-Tag a release, wait for the images workflow, then on the server `docker compose pull && docker compose up -d`.
+Tag a release, wait for the images workflow, then on the server `cd /srv/linkedart && docker compose pull &&
+docker compose up -d`. Caddy is untouched by app updates.
 Pin `IMAGE_TAG` in `.env` to the version if you prefer explicit rollbacks; `latest` follows the newest tag.
 
 ## 8. Data and backups
@@ -113,3 +117,17 @@ and the service's per-IP rate limit would see every request as coming from Caddy
 Fixed: £10.60 a month ex VAT for VPS 2 with 20 GB SSD and IPv4 (£106 a year paid yearly), and the domain at
 £13.50 a year with DNS included. No metered charges: bandwidth is
 included up to the plan's allowance, certificates are free, and there are no logging or load balancer fees.
+
+## 11. Adding another app later
+
+Each app is its own compose project under `/srv/<name>/`, joined to the `web` network, with a `container_name`
+Caddy can address. Three steps, none of which touch linkedart.net:
+
+1. Start the app: a compose file like `deploy/linkedart/docker-compose.yml` with `networks: [web]` and no
+   `ports:` (Caddy reaches it over the network; nothing else needs to).
+2. Route it: a file `/srv/edge/sites/<name>.caddy` naming its hostname(s) and `reverse_proxy <container>:<port>`,
+   then `docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile` in `/srv/edge`.
+3. Point DNS at the server: A and AAAA records for the hostname, at whichever registrar holds that domain.
+
+Caddy fetches a certificate for the new hostname on the first request. A different domain name is no different
+from a subdomain here; Caddy routes on the hostname it is asked for.

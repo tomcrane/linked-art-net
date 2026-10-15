@@ -1,0 +1,30 @@
+# The front door for every app on the server: one Caddy on ports 80 and 443, routing by hostname and fetching
+# certificates itself. Apps live in their own compose projects and join the shared `web` network; each drops a
+# file into ./sites/ naming its hosts. Create the network once: `docker network create web`.
+#
+#   docker compose up -d                 # start or restart Caddy
+#   docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile   # after editing sites/
+services:
+  caddy:
+    image: caddy:2
+    container_name: edge-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./sites:/etc/caddy/sites:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+
+volumes:
+  caddy_data:
+  caddy_config:

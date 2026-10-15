@@ -1,0 +1,16 @@
+# linkedart.net: the examples site, and the dates service on its own host so its any-origin CORS never applies to the site.
+# Container names come from deploy/linkedart/docker-compose.yml.
+
+linkedart.net {
+    encode zstd gzip
+    reverse_proxy linkedart-site:8080
+}
+
+www.linkedart.net {
+    redir https://linkedart.net{uri} permanent
+}
+
+dates.linkedart.net {
+    encode zstd gzip
+    reverse_proxy linkedart-dates:8080
+}

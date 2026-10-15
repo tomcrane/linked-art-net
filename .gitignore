@@ -406,4 +406,4 @@ exclude/
 # Examples-site trainer data (queue and submissions) and service capture files
 trainer-data/
 src/LinkedArtNet.Dates.Service/capture/
-deploy/.env
+deploy/*/.env

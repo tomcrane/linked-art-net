@@ -1,0 +1,2 @@
+# One file per app in sites/; each names its hosts and the container to proxy to on the shared `web` network.
+import sites/*.caddy

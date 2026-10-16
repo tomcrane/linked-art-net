@@ -36,10 +36,27 @@ MarkLogic and QLever. `make_datetime` is memoised and cheap-first (see prior art
 - Composite subject headings (LCSH `Topic--Subdivision--Place--Period`) parsed into components and
   aligned individually; the period subdivision uses the date parser.
 
-## Accommodations to make now
+## Accommodations to make now (reviewed 2026-10-16 against what was built)
 
-- The model library's `Type` registry and `KnownTerm` (uri, label, source) should be the same type
-  the aligner returns, so `classified_as` can be filled from an alignment result directly.
-- The date parser's `INamedPeriodSource` and `IDateInterpreter` should be the same plug-in shapes
-  the toolkit will use for period authorities and LLM assistance.
-- Keep the service and site stateless so a future Postgres is only for alignment.
+- The model library's registry type is `VocabularyTerm(Name, Id, Label, Kind, Notation, AliasOf)`, one per
+  source class (`Aat`, `Tgn`, `Ulan`), and `Aat.Term(id, label)`, `Tgn.Place(id, label)`, `Ulan.Person(id, label)`
+  turn an id and label into model objects. An alignment result that carries source, id and label therefore maps
+  straight onto `classified_as` or a reference; the aligner should return that triple rather than a new type.
+  The curated-mapping loader (`VocabularyMap` over `vocabulary/mappings/`, doc 02 §6) was not built; the
+  toolkit will need it, so build it there or when the examples first need a mapping table.
+- The date parser's `INamedPeriodSource` exists (`JsonNamedPeriodSource`, `CompositePeriodSource`) and is the
+  plug-in shape for period authorities; a PeriodO-backed implementation is the natural first authority source
+  and is still open in Phase 2. `IDateInterpreter` is designed (doc 03, doc 04) but not yet in code; when it is
+  written it should be the same shape the toolkit uses for LLM assistance.
+- Statelessness did not hold, deliberately: the trainer keeps a file-backed queue and submission store and the
+  service writes a capture JSONL, both on a mounted volume (`/srv/linkedart/data`, see 09-hosting.md). A future
+  Postgres is therefore not "only for alignment"; decide then whether the trainer store and capture move into it
+  or stay as files. Either way they need a backup before the toolkit is started.
+
+## What the trainer already proves
+
+The trainer (`/dates/train`, doc 08) is a working prototype of the review loop this toolkit needs: a source
+string with its context, a queue, a reviewer's decision with status, tags and notes, reviewer identity and
+timestamps, and export as a pull request against the corpus. `IAlignmentStore` has the same columns and the
+reviewer UI the same flow (candidates to pick from instead of a parse to confirm), so Phase 5 should start from
+the trainer's store, GitHub login and export code rather than from scratch.

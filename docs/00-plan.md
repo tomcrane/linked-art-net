@@ -1,7 +1,9 @@
 # Plan: linked-art-net
 
-Status: proposal, 2026-10-13. Branch `de-pmc` (becomes `main`). The brief is in `exclude/design.md`
-(gitignored); this plan and the design docs in this folder are the committed record.
+Status: proposal 2026-10-13; Phases 0-3 delivered and live at linkedart.net as v0.1.0 on 2026-10-16 (status
+review in §7). Branch `de-pmc` is the working branch and `main` is what is deployed (README, "Branches and
+releases"). The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this folder are the
+committed record.
 
 ## 1. Objectives (in priority order)
 
@@ -83,9 +85,12 @@ done first in Phase 1.
 
 ### Phase 4: Hardening and release (M)
 
-- 1.0 releases of both packages; CHANGELOG; docs site pages for API usage; perf doc; weekly scheduled
-  jobs (site JSON refresh, Getty label check); submit the parser and service to linked.art/software.
-- Corpus growth from trainer traffic; multilingual coverage; four-point (`EmitInnerBounds`) polish.
+- 1.0 releases of both packages (decoupled: NuGet publishing is deferred, owner 2026-10-13); CHANGELOG;
+  ~~docs site pages for API usage~~ (done 2026-10-16: `/dates/api`); perf doc and benchmarks; weekly scheduled
+  jobs (site JSON refresh, Getty label check; no workflow has a `schedule` trigger yet); a backup of
+  `/srv/linkedart/data` (trainer store and capture file); submit the parser and service to linked.art/software.
+- Corpus growth from trainer traffic (first trainer entry merged 2026-10-16, PR #2); multilingual coverage;
+  four-point (`EmitInnerBounds`) polish.
 
 ### Phase 5 (later): Alignment toolkit
 
@@ -158,8 +163,10 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
    **Response:** agreed.
 3. Should `before X` / `after X` emit only one bound (proposed) or also clamp with a plausible other
    bound (e.g. `OpenEndPolicy.ClampToYear`)? **Response:** one bound. (`ClampToYear` remains an option.)
-4. Label policy default: `_label` only (proposed) or also an `identified_by` Name? *Open.*
-5. Hosting target and domain names for the service and site. *Open.*
+4. Label policy default: `_label` only (proposed) or also an `identified_by` Name? **Settled in practice:** the
+   default is `_label` only, with `labelPolicy=labelAndName|name` per request and per profile.
+5. Hosting target and domain names for the service and site. **Resolved 2026-10-15/16:** linkedart.net,
+   dates.linkedart.net, a Mythic Beasts VPS; see [09-hosting.md](09-hosting.md).
 6. NuGet package ids: `LinkedArtNet` and `LinkedArtNet.Dates` as proposed? **Response:** yes.
 7. May PMC date strings (from the local Postgres) be included in the public corpus? *Open (owner to check).*
 8. Keep the class name `LinkedArtTimeSpan` (avoids `System.TimeSpan` clash) or alias to `TimeSpan`
@@ -308,10 +315,20 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     estimate in `sourceExpectation`; EDTF examples we do not support expect the partial reading. Proposed pass rate
     60.3% -> 79.8% (EDTF 61/61, ULAN 168/180, timetwister 78/91, yearrange 1275/1650).
 
-Hosting (2026-10-15): linkedart.net registered at Mythic Beasts; deployment files in deploy/ and the runbook in
-[09-hosting.md](09-hosting.md); server not yet bought.
+23. ~~Hosting.~~ Done 2026-10-16. linkedart.net registered at Mythic Beasts (2026-10-15); VPS bought and set up by the
+    owner from the runbook in [09-hosting.md](09-hosting.md); v0.1.0 deployed from the GHCR images; trainer verified
+    end to end (PR #2). Release rhythm: tag on `de-pmc`, fast-forward `main`, `docker compose pull && up -d`.
+24. ~~Site polish (2026-10-16).~~ Plain C# form and idiom notes for every example with an `/idioms` catalogue
+    (`Idioms.cs`, detected by the source extractor); the dates API page `/dates/api`; playground snippets for
+    constructing each TimeSpan in C# and from .NET `DateTime`; raw JSON links; About page sample compiled from an
+    embedded source file.
 
-Next: Phase 3 is complete apart from hosting, which is the owner's. Candidates: the open Phase 2 items (PeriodO period
-source, `IDateInterpreter` LLM interpreter, benchmarks), the axe lint, or the owner's review items. The PeriodO-backed period source and the LLM interpreter (`IDateInterpreter`) remain open in Phase 2. Filing the upstream issues (docs/upstream-issues.md) is the owner's, on
-their own schedule; NuGet publishing is deferred until the libraries are further along (owner, 2026-10-13),
-so the "NuGet ... preview" acceptance items are not gates between phases.
+Status review (2026-10-16): Phases 0-3 are complete and live. Remaining, in rough order of value:
+
+- Phase 2 leftovers: the PeriodO-backed `INamedPeriodSource` (also the first authority source doc 07 wants, so it
+  tests the Phase 5 plug-in shape without opening Phase 5), the `IDateInterpreter` LLM interpreter (documented in
+  docs 03 and 04, not yet in code), benchmarks.
+- Phase 4: the items listed above; the backup cron is the most urgent since the trainer now holds reviewer work.
+- Housekeeping: the axe accessibility lint; renaming `de-pmc` to `main` is a deliberate later sweep (19 references
+  across CI, compose, the trainer's base branch, docs and site links).
+- The owner's: filing upstream issues (docs/upstream-issues.md), open question 7 (PMC strings), NuGet when ready.

@@ -239,7 +239,8 @@ Formalise the hard-coded Getty identifiers into a **data-driven registry**:
   `AatType("...", "3000...")`), and an opt-in network test that checks labels against Getty SPARQL.
 - Domain tables that were code in PMC (medium -> AAT, note code -> AAT, role -> AAT + activity type,
   language codes) become JSON under `vocabulary/mappings/` and load through a `VocabularyMap` type.
-  They are inputs to the later toolkit but useful immediately for examples.
+  They are inputs to the later toolkit but useful immediately for examples. (Not built as of 2026-10-16: no example
+  has needed a mapping table; see doc 07.)
 
 ## 7. Example generation and 100% site coverage
 

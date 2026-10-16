@@ -1,6 +1,6 @@
 # Design: Examples site (`LinkedArtNet.ExamplesSite`)
 
-Status (2026-10-14): implemented in `src/LinkedArtNet.ExamplesSite`, including the trainer; the axe lint is not wired in.
+Status (2026-10-14): implemented in `src/LinkedArtNet.ExamplesSite`, including the trainer; the axe lint is not wired in. Live at linkedart.net since 2026-10-16 (v0.1.0); that day added the Plain C# form and idiom notes on every example, the `/idioms` catalogue and the `/dates/api` page (§7 of 00-plan.md, item 24).
 Trainer configuration: `Trainer:GitHub:ClientId`/`ClientSecret` (OAuth app callback `/dates/train/signin-github`),
 `Trainer:Reviewers` (GitHub logins), `Trainer:Submission:Repo`/`Token`/`BaseBranch` for pull requests,
 `Trainer:CapturePath` for the service's capture file, `Trainer:DataDirectory` for the queue and submissions

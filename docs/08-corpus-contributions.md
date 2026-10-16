@@ -5,7 +5,7 @@ the operating guide; the data format and metrics are in [06-corpus-and-testing.m
 the trainer's configuration in [05-examples-site.md](05-examples-site.md), and the canonical expression that
 reviewers edit in [canonical-expression.md](canonical-expression.md).
 
-Status (2026-10-14): implemented and tested end to end; verification is `tools/Corpus promote`. Gaps are in §7.
+Status (2026-10-14): implemented and tested end to end; verification is `tools/Corpus promote`. Gaps are in §7. First live run 2026-10-16: PR #2 from the trainer, reviewed by the corpus-review workflow, promoted and merged.
 
 ## 1. The path at a glance
 

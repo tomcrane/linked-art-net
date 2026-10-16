@@ -1,0 +1,30 @@
+{
+  "$schema": "../schema/corpus-entry.schema.json",
+  "source": {
+    "name": "Trainer submissions",
+    "licence": "CC0-1.0",
+    "notes": "Reviewed in the examples-site trainer by tomcrane. Proposed until a maintainer verifies them."
+  },
+  "defaults": {
+    "status": "proposed",
+    "tags": [
+      "trainer"
+    ]
+  },
+  "entries": [
+    {
+      "id": "tr-20261016-001",
+      "input": "n.d.",
+      "intent": "auto",
+      "profile": "default",
+      "tags": [],
+      "expect": {
+        "status": "undated",
+        "toleranceYears": 0
+      },
+      "status": "proposed",
+      "notes": "Reviewed by tomcrane in the trainer on 2026-10-16.",
+      "sourceExpectation": "trainer"
+    }
+  ]
+}

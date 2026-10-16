@@ -116,8 +116,8 @@ ul.failures { margin: 0.25rem 0 0; padding-left: 1rem; font-size: 0.85rem; color
 .status-mismatch, .status-missing, .status-unparsed { background: var(--bad); }
 h1 .status { font-size: 0.85rem; vertical-align: middle; margin-left: 0.5rem; }
 .tags { line-height: 2.2; }
-.cloud { line-height: 2.6; margin: 1.5rem 0; }
-.cloud .tag { vertical-align: middle; padding: 0.1rem 0.7rem; }
+.cloud { line-height: 2.4; margin: 1.5rem 0; }
+.cloud .tag { font-size: 1.05rem; padding: 0.15rem 0.8rem; margin-right: 0.5rem; }
 .idioms { list-style: none; padding: 0; margin: -0.75rem 0 1.5rem; font-size: 0.9rem; color: var(--muted); }
 .idioms li { margin: 0.35rem 0; }
 .idioms a.term { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); text-decoration: underline dotted; text-decoration-color: var(--muted); text-decoration-thickness: 1px; text-underline-offset: 3px; margin-right: 0.35rem; }

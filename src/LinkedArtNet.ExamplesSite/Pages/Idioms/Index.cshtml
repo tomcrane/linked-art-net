@@ -12,7 +12,7 @@
 <p class="cloud">
     @foreach (var (idiom, examples) in Model.Entries)
     {
-        <a class="tag" href="#@idiom.Key" style="font-size:@Model.Size(examples.Count).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)rem">@idiom.Title <span class="count">@examples.Count</span></a>
+        <a class="tag" href="#@idiom.Key">@idiom.Title <span class="count">@examples.Count</span></a>
     }
 </p>
 

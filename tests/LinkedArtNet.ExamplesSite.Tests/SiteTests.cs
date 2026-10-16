@@ -109,6 +109,8 @@ public class SiteTests(SiteFixture factory) : IClassFixture<SiteFixture>
             Assert.Contains("JSON on linked.art", html);
             if (page.Status != CoverageReport.Status.Missing && (page.Source is null || !html.Contains("language-csharp"))) missingSource.Add(page.Id);
             if (page.Status != CoverageReport.Status.Missing) Assert.Contains("&quot;type&quot;", html); // Razor encodes the JSON for display
+            if (page.Source is not null) Assert.Contains($"/blob/de-pmc/{page.Source.File}#L{page.Source.Line}\"", html); // the GitHub link lands on the method
+            Assert.DoesNotContain("@Model", html); // an @ glued to a letter is left as text by Razor's email heuristic
         }
         Assert.True(missingSource.Count == 0, "No C# shown for: " + string.Join(", ", missingSource) + ". Run tools/ExampleSourceExtractor.");
     }

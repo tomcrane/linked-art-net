@@ -1,8 +1,8 @@
 # Corpus run
 
-Generated 2026-10-15 09:14 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-16 13:38 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
-## verified: 690/690 pass (100.0%), calibration error 0.145
+## verified: 691/691 pass (100.0%), calibration error 0.145
 
 - authored/bce-and-deep-time.json: 20/20
 - authored/canonical-forms.json: 18/18
@@ -13,10 +13,11 @@ Generated 2026-10-15 09:14 UTC by `dotnet run --project tools/Corpus -- run --al
 - authored/open-ended-and-relations.json: 36/36
 - imported/timetwister.json: 8/8
 - imported/yearrange.json: 352/352
+- proposed/trainer-20261016-1334.json: 1/1
 - seed/pmc-outputs.json: 91/91
 - seed/py-datetime.json: 37/37
 
-Status (expected->actual): parsed->parsed 610, partial->partial 2, undated->undated 72, unparsed->unparsed 6
+Status (expected->actual): parsed->parsed 610, partial->partial 2, undated->undated 73, unparsed->unparsed 6
 
 ## proposed: 1600/1600 pass (100.0%), calibration error 0.151
 

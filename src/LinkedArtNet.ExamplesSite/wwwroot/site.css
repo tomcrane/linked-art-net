@@ -168,6 +168,9 @@ form.stack label { display: flex; flex-direction: column; gap: 0.3rem; font-size
 form.stack label.grow { flex: 1; }
 form.stack input[type=text], form.stack textarea, form.stack select { font-size: 1rem; text-transform: none; letter-spacing: 0; font-weight: 400; }
 form.stack .row { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: flex-end; }
+/* A row of actions outside a form, such as the trainer's export buttons: each button is its own small form. */
+.row:not(form.stack .row) { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 1rem 0; }
+.row > form { margin: 0; }
 .preview { min-height: 1.5rem; }
 .preview pre { max-height: 14rem; }
 

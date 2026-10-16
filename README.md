@@ -14,8 +14,24 @@ museums, libraries and archives to describe art and cultural heritage.
 | `tests/` | Test projects. |
 | `docs/` | Plan and design documents, starting with [docs/00-plan.md](docs/00-plan.md). |
 
-Planned (see the plan): `LinkedArtNet.Dates` (free-text date strings to Linked Art TimeSpans), a Kestrel
-service for it, an examples website, and a ground-truth date corpus.
+Live at [linkedart.net](https://linkedart.net) (the examples site, playground, corpus browser and trainer) and
+[dates.linkedart.net](https://dates.linkedart.net) (the dates API). How it is hosted is in
+[docs/09-hosting.md](docs/09-hosting.md).
+
+## Branches and releases
+
+**`main` is what is deployed. `de-pmc` is where work happens.** Day to day, commit to `de-pmc`; corpus pull
+requests from the trainer target it too. To release:
+
+1. Tag on `de-pmc`: `git tag v0.1.x && git push origin v0.1.x`. The "Container images" workflow builds both
+   images from that commit and publishes them to GHCR.
+2. Fast-forward `main` to the same commit, so the repository's front page always shows the code that is running:
+   `git switch main && git merge --ff-only de-pmc && git push origin main && git switch de-pmc`.
+3. On the server, `cd /srv/linkedart && docker compose pull && docker compose up -d`.
+
+`main` never receives work directly, so the fast-forward never conflicts; if `--ff-only` ever refuses,
+something was committed to `main` by mistake and should be moved to `de-pmc` first. The `pmc` and `pmc-2`
+branches are the earlier Paul Mellon Centre pipeline, kept for reference.
 
 ## Quick look
 

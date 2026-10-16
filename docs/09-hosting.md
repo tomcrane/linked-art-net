@@ -124,11 +124,24 @@ obtained. Then check `https://linkedart.net/healthz`, `https://dates.linkedart.n
 playground works even if the public `dates` host is misconfigured; its "raw JSON" links point at the public host
 (`TimeSpanService__PublicUrl`).
 
-## 7. Updating
+## 7. Updating: the release rhythm
 
-Tag a release, wait for the images workflow, then on the server `cd /srv/linkedart && docker compose pull &&
-docker compose up -d`. Caddy is untouched by app updates.
-Pin `IMAGE_TAG` in `.env` to the version if you prefer explicit rollbacks; `latest` follows the newest tag.
+**`main` is what is deployed; `de-pmc` is the working branch.** Every release is the same three steps:
+
+```
+# 1. on de-pmc, when the tree is green (dotnet test linked-art-net.slnx)
+git tag v0.1.x && git push origin v0.1.x          # "Container images" workflow builds and publishes both images
+
+# 2. bring main level with it, so the repository's front page shows the running code
+git switch main && git merge --ff-only de-pmc && git push origin main && git switch de-pmc
+
+# 3. on the server, once the workflow is green
+cd /srv/linkedart && docker compose pull && docker compose up -d
+```
+
+Caddy is untouched by app updates. Pin `IMAGE_TAG` in `.env` to the version if you prefer explicit rollbacks;
+`latest` follows the newest tag. Nothing is ever committed to `main` directly, which is why step 2 is always a
+fast-forward; a refusal means a stray commit on `main` to move across first. First done 2026-10-16 with v0.1.0.
 
 ## 8. Data and backups
 

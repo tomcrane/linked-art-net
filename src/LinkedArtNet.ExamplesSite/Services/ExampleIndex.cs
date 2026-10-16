@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using LinkedArtNet.Examples;
 using LinkedArtNet.Serialization;
+using LinkedArtNet.Vocabulary;
 using Microsoft.Extensions.Options;
 
 namespace LinkedArtNet.ExamplesSite.Services;
@@ -14,7 +15,7 @@ public sealed class ExamplesOptions
 }
 
 /// <summary>One example method's C#, from examples/source.json (written by tools/ExampleSourceExtractor).</summary>
-public sealed record SourceEntry(string Id, string Key, string Topic, string Method, string File, int Line, string Source, string? SiteIssue);
+public sealed record SourceEntry(string Id, string Key, string Topic, string Method, string File, int Line, string Source, string? SiteIssue, IReadOnlyList<string>? Idioms = null);
 
 /// <summary>A section of the site, mirroring one linked.art model page.</summary>
 public sealed record Section(string Slug, string Path, string Title, string Url, IReadOnlyList<ExamplePage> Examples)
@@ -26,7 +27,7 @@ public sealed record Section(string Slug, string Path, string Title, string Url,
 public sealed record ExamplePage(
     string Id, string Section, string? Heading, string? Anchor, string? Description, string SiteUrl, string JsonUrl,
     CoverageReport.Status Status, string? Detail, SourceEntry? Source, string? GeneratedJson, string? SiteJson, string? Difference,
-    IReadOnlyList<string> Properties, IReadOnlyList<string> Terms, string TypeName)
+    IReadOnlyList<string> Properties, IReadOnlyList<string> Terms, string TypeName, string? PlainCSharp = null)
 {
     public bool IsValidated => Status == CoverageReport.Status.Validated;
 }
@@ -51,6 +52,7 @@ public sealed class ExampleIndex
         var pages = new Dictionary<string, ExamplePage>(StringComparer.Ordinal);
         var byProperty = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         var byTerm = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        var byIdiom = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         var sections = new List<Section>();
 
         foreach (var page in Manifest.Pages.Where(p => p.Examples.Count > 0))
@@ -65,6 +67,7 @@ public sealed class ExampleIndex
                     pages[e.Id] = built;
                     foreach (var p in built.Properties) Add(byProperty, p, e.Id);
                     foreach (var t in built.Terms) Add(byTerm, t, e.Id);
+                    foreach (var i in built.Source?.Idioms ?? []) Add(byIdiom, i, e.Id);
                 }
                 examplePages.Add(built with { Section = built.Section }); // the first page an example appears on owns it
             }
@@ -74,6 +77,7 @@ public sealed class ExampleIndex
         Pages = pages;
         ByProperty = byProperty.ToDictionary(kv => kv.Key, kv => (IReadOnlyList<string>)kv.Value.Distinct().ToList(), StringComparer.Ordinal);
         ByTerm = byTerm.ToDictionary(kv => kv.Key, kv => (IReadOnlyList<string>)kv.Value.Distinct().ToList(), StringComparer.Ordinal);
+        ByIdiom = byIdiom.ToDictionary(kv => kv.Key, kv => (IReadOnlyList<string>)kv.Value.Distinct().ToList(), StringComparer.Ordinal);
     }
 
     public string RepoRoot { get; }
@@ -82,6 +86,9 @@ public sealed class ExampleIndex
     public IReadOnlyDictionary<string, ExamplePage> Pages { get; }
     public IReadOnlyDictionary<string, IReadOnlyList<string>> ByProperty { get; }
     public IReadOnlyDictionary<string, IReadOnlyList<string>> ByTerm { get; }
+
+    /// <summary>Example ids by idiom key (see Idioms.cs in the examples project); the keys come from examples/source.json.</summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<string>> ByIdiom { get; }
 
     public int Total => Pages.Count;
     public int Implemented => Pages.Values.Count(p => p.Status is not CoverageReport.Status.Missing);
@@ -113,7 +120,7 @@ public sealed class ExampleIndex
         var example = ExampleCatalog.Find(e.Id);
         var cachedPath = Path.Combine(cachedDir, e.Id.Replace('/', Path.DirectorySeparatorChar) + ".json");
         var siteJson = File.Exists(cachedPath) ? File.ReadAllText(cachedPath) : null;
-        string? generated = null, difference = null, typeName = "";
+        string? generated = null, difference = null, typeName = "", plain = null;
         var properties = new HashSet<string>(StringComparer.Ordinal);
         var terms = new HashSet<string>(StringComparer.Ordinal);
         var row = example is null ? new CoverageReport.Row(e.Id, CoverageReport.Status.Missing, null, null) : CoverageReport.Evaluate(example, cachedDir);
@@ -122,6 +129,7 @@ public sealed class ExampleIndex
         {
             var built = example.Build();
             generated = LinkedArtJson.Serialize(built);
+            plain = LinkedArtCSharp.Write(built, Variable(built));
             typeName = built.Type;
             if (siteJson is not null) difference = JsonEquivalence.FirstDifference(siteJson, generated);
             Collect(JsonNode.Parse(generated), properties, terms, true);
@@ -135,7 +143,14 @@ public sealed class ExampleIndex
 
         return new ExamplePage(e.Id, section, e.Heading, e.Anchor, e.Description, Example.SiteRoot + e.Id, Example.SiteRoot + e.Id + ".json",
             row.Status, row.Detail, example is null ? null : sourceByKey.GetValueOrDefault(example.Key), generated, siteJson, difference,
-            properties.Order(StringComparer.Ordinal).ToList(), terms.Order(StringComparer.Ordinal).ToList(), typeName);
+            properties.Order(StringComparer.Ordinal).ToList(), terms.Order(StringComparer.Ordinal).ToList(), typeName, plain);
+    }
+
+    /// <summary>A variable name for the plain C#: the class, camel-cased (<c>humanMadeObject</c>, <c>person</c>).</summary>
+    private static string Variable(LinkedArtObject built)
+    {
+        var name = built.GetType().Name;
+        return char.ToLowerInvariant(name[0]) + name[1..];
     }
 
     private static void Collect(JsonNode? node, HashSet<string> properties, HashSet<string> terms, bool root)
@@ -144,7 +159,7 @@ public sealed class ExampleIndex
         {
             case JsonObject o:
                 if (!root && o["id"]?.GetValue<string>() is { } id && o["type"]?.GetValue<string>() is { } type && IsVocabulary(id))
-                    terms.Add($"{type}:{id}|{o["_label"]?.GetValue<string>() ?? ""}");
+                    terms.Add($"{type}:{id}|{o["_label"]?.GetValue<string>() ?? FallbackLabel(id)}");
                 foreach (var (k, v) in o)
                 {
                     if (k is not ("@context" or "id" or "type" or "_label")) properties.Add(k);
@@ -164,6 +179,14 @@ public sealed class ExampleIndex
         if (!index.TryGetValue(key, out var list)) index[key] = list = [];
         list.Add(id);
     }
+
+    /// <summary>
+    /// A term written without a <c>_label</c> (some site examples omit it) is shown under the registry's label when
+    /// the id is registered, so it joins the labelled uses of the same concept, and otherwise as its short id.
+    /// </summary>
+    private static string FallbackLabel(string id) =>
+        (id.StartsWith(Aat.Base, StringComparison.Ordinal) ? Aat.TryGet(id)?.Label : null)
+        ?? Regex.Replace(id, "^https?://vocab.getty.edu/", "").Replace('/', ':');
 
     public static string TermLabel(string term) => term.Contains('|') ? term[(term.IndexOf('|') + 1)..] : term;
     public static string TermId(string term) => term.Contains('|') ? term[(term.IndexOf(':') + 1)..term.IndexOf('|')] : term;

@@ -1,0 +1,43 @@
+@page "/idioms"
+@model LinkedArtNet.ExamplesSite.Pages.Idioms.IndexModel
+@{
+    ViewData["Title"] = "Idioms";
+}
+<h1>Idioms</h1>
+<p class="lede">
+    The Linked Art .NET library provides fluent helpers, which can save on boilerplate code.
+    This page links to particularly useful library idioms. Every example also has a Plain C# form that doesn't
+    use the fluent helpers, just regular property assignment and construction. You can mix and match styles as needed.
+</p>
+<p class="cloud">
+    @foreach (var (idiom, examples) in Model.Entries)
+    {
+        <a class="tag" href="#@idiom.Key" style="font-size:@Model.Size(examples.Count).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)rem">@idiom.Title <span class="count">@examples.Count</span></a>
+    }
+</p>
+
+<!--
+<p class="muted">The catalogue is in code, <code>Idioms.cs</code> in the examples project, and the site detects each idiom from the example's source, so these notes follow the code as it changes. The fluent API as a whole is described in <a href="@LinkedArtNet.Examples.Idioms.DocUrl">the model library notes</a>.</p>
+-->
+
+@foreach (var (idiom, examples) in Model.Entries)
+{
+    <section class="idiom" id="@idiom.Key">
+        <h2>@idiom.Title</h2>
+        <p>@idiom.Note</p>
+        <p class="meta">@foreach (var m in idiom.Methods) { <code>@m</code> }</p>
+        <table class="examples">
+            <thead><tr><th>Example</th><th>Section</th><th>What it shows</th></tr></thead>
+            <tbody>
+            @foreach (var e in examples)
+            {
+                <tr>
+                    <td><a href="/examples/@e.Section/@e.Id"><code>@e.Id</code></a></td>
+                    <td>@Model.SectionTitle(e.Section)</td>
+                    <td>@e.Description</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+}

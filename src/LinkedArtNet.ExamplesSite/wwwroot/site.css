@@ -48,6 +48,9 @@ h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.02;
 h1 code { font-size: 0.8em; font-weight: 500; letter-spacing: 0; }
 h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); margin: 3rem 0 1rem; padding-top: 0.75rem; border-top: 1px solid var(--rule-strong); }
 h3 { font-size: 1.1rem; font-weight: 700; color: var(--ink); margin: 1.5rem 0 0.5rem; }
+.snippets h4 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 1.25rem 0 0.4rem; }
+.snippets pre { margin: 0 0 0.5rem; }
+.snippets p.muted { font-size: 0.9rem; margin: 0 0 0.5rem; }
 .lede { font-size: clamp(1.15rem, 1.8vw, 1.45rem); line-height: 1.35; max-width: 46em; color: var(--text); margin-bottom: 1.5rem; }
 .muted { color: var(--muted); }
 .meta { color: var(--muted); font-size: 0.95rem; }
@@ -70,6 +73,12 @@ button, a.button { font: inherit; font-weight: 600; color: var(--paper); backgro
 button:hover, a.button:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 button.primary, a.button { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 button.primary:hover, a.button:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.forms { display: inline-flex; margin-left: 0.75rem; vertical-align: middle; border: 1px solid var(--rule-strong); }
+.forms .form { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.65rem; color: var(--ink); background: transparent; border: 0; border-radius: 0; cursor: pointer; }
+.forms .form + .form { border-left: 1px solid var(--rule-strong); }
+.forms .form.active { color: var(--accent-ink); background: var(--ink); }
+.forms .form:hover:not(.active) { background: var(--tint); }
+.code-forms p.muted { font-size: 0.9rem; margin-top: -0.75rem; }
 button.copy { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.55rem; margin-left: 0.6rem; vertical-align: middle; color: var(--ink); background: transparent; border-color: var(--rule-strong); }
 button.copy:hover { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 button.link { border: none; background: none; color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; padding: 0; font-weight: 500; }
@@ -107,6 +116,14 @@ ul.failures { margin: 0.25rem 0 0; padding-left: 1rem; font-size: 0.85rem; color
 .status-mismatch, .status-missing, .status-unparsed { background: var(--bad); }
 h1 .status { font-size: 0.85rem; vertical-align: middle; margin-left: 0.5rem; }
 .tags { line-height: 2.2; }
+.cloud { line-height: 2.6; margin: 1.5rem 0; }
+.cloud .tag { vertical-align: middle; padding: 0.1rem 0.7rem; }
+.idioms { list-style: none; padding: 0; margin: -0.75rem 0 1.5rem; font-size: 0.9rem; color: var(--muted); }
+.idioms li { margin: 0.35rem 0; }
+.idioms a.term { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); text-decoration: underline dotted; text-decoration-color: var(--muted); text-decoration-thickness: 1px; text-underline-offset: 3px; margin-right: 0.35rem; }
+.idioms a.term:hover { color: var(--accent); text-decoration-color: var(--accent); }
+section.idiom { margin-top: 2.5rem; }
+section.idiom .meta code { margin-right: 0.5rem; }
 .tag { display: inline-block; background: var(--panel); padding: 0.05rem 0.6rem; margin: 0 0.35rem 0.35rem 0; text-decoration: none; font-size: 0.9rem; }
 .tag:hover { background: var(--tint); color: var(--ink); }
 .tag .count { color: var(--muted); margin-left: 0.35rem; font-size: 0.8em; }
@@ -115,16 +132,33 @@ h1 .status { font-size: 0.85rem; vertical-align: middle; margin-left: 0.5rem; }
 
 /* ---- results, JSON, timeline --------------------------------------------------------------------------------- */
 .json-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 32rem), 1fr)); gap: 1.5rem; }
+/* Three panels are a whole span plus its begin and end: the span takes the first row, the pair sit together below it. */
+.json-pair > div:first-child:nth-last-child(3) { grid-column: 1 / -1; }
+.json-pair > div:first-child:nth-last-child(3) ~ div h3::before { content: ""; display: inline-block; width: 0.9rem; height: 0.6rem; margin-right: 0.5rem; vertical-align: 1px; background: var(--ok); }
+.json-pair > div:first-child:nth-last-child(3) ~ div:last-child h3::before { background: var(--bad); }
 .result h2 { border: none; padding-top: 0; }
 .result h2 .muted { display: block; font-size: 0.95rem; font-weight: 400; letter-spacing: 0; margin-top: 0.4rem; }
 dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1.25rem; margin: 1rem 0; }
 dl.kv dt { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 0.2rem; }
 dl.kv dd { margin: 0; }
+dl.kv dt a.term, .result h2 a.term { color: inherit; text-decoration: underline dotted; text-decoration-color: var(--muted); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+dl.kv dt a.term:hover, .result h2 a.term:hover { color: var(--accent); text-decoration-color: var(--accent); }
 ul.notes { color: var(--muted); font-size: 0.95rem; }
 .timeline { position: relative; height: 3.5rem; margin: 1rem 0 1.75rem; background: var(--panel); }
 .timeline .bar { position: absolute; top: 0.6rem; height: 1rem; background: var(--accent); }
 .timeline .bar-begin { top: 1.8rem; background: var(--ok); }
 .timeline .bar-end { top: 1.8rem; background: var(--bad); }
+.timeline .bar.fringe { background: var(--tint); }
+.timeline .bar-begin.fringe { background: color-mix(in srgb, var(--ok) 22%, var(--panel)); }
+.timeline .bar-end.fringe { background: color-mix(in srgb, var(--bad) 22%, var(--panel)); }
+.timeline .bar.open-start { mask-image: linear-gradient(to right, transparent, #000 60%); }
+.timeline .bar.open-end { mask-image: linear-gradient(to left, transparent, #000 60%); }
+.timeline .bar.open-start.open-end { mask-image: linear-gradient(to right, transparent, #000 40%, #000 60%, transparent); }
+.timeline-key { font-size: 0.8rem; margin: 0 0 1.75rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; }
+.timeline-key .swatch { display: inline-block; width: 0.9rem; height: 0.6rem; vertical-align: -1px; margin-right: 0.35rem; background: var(--accent); }
+.timeline-key .swatch.begin { background: var(--ok); }
+.timeline-key .swatch.end { background: var(--bad); }
+.timeline-key .swatch.fringe { background: var(--tint); }
 .timeline .axis-start, .timeline .axis-end { position: absolute; bottom: -1.4rem; font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .timeline .axis-end { right: 0; }
 

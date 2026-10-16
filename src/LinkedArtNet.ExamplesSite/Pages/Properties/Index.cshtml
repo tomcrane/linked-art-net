@@ -4,7 +4,7 @@
     ViewData["Title"] = "Properties and terms";
 }
 <h1>Properties and vocabulary terms</h1>
-<p class="lede">Every JSON property and every Getty vocabulary term the examples use, with the number of examples using each. Follow one to see them all.</p>
+<p class="lede">Every JSON property and Getty vocabulary term the examples use.</p>
 <h2>Properties</h2>
 <p class="tags">
 @foreach (var (name, ids) in Index.ByProperty.OrderByDescending(kv => kv.Value.Count).ThenBy(kv => kv.Key, StringComparer.Ordinal))

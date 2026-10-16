@@ -19,10 +19,22 @@
 
 <h2>Using the library</h2>
 <p>Packages are not yet on NuGet; build from source. The repository README has the quick start. The libraries target .NET 10.</p>
-<pre><code class="language-csharp">var painting = new HumanMadeObject("https://example.org/object/1")
-    .WithLabel("Night Watch")
-    .ClassifiedAs(Aat.Painting, Aat.WorkOfArt);
-painting.ProducedBy().CarriedOutBy(rembrandt).WithTimeSpan("1642");</code></pre>
+<section class="code-forms">
+    <h3>A painting, its maker and its measurements
+        <span class="forms" role="tablist" aria-label="Form">
+            <button type="button" class="form active" role="tab" aria-selected="true" data-form="sample-csharp">C#</button>
+            <button type="button" class="form" role="tab" aria-selected="false" data-form="sample-json">JSON-LD</button>
+        </span>
+        <button type="button" class="copy" data-copy="sample-csharp">Copy</button>
+    </h3>
+    <div data-form="sample-csharp">
+        <pre><code class="language-csharp" id="sample-csharp">@AboutSample.Source</code></pre>
+    </div>
+    <div data-form="sample-json" hidden>
+        <pre><code class="language-json" id="sample-json">@AboutSample.Json</code></pre>
+        <p class="muted">Produced by running the C# shown, at the time the page was served; the code is read from the same source file it compiles from.</p>
+    </div>
+</section>
 
 <h2 id="canonical">Canonical date expressions</h2>
 <p>
@@ -33,9 +45,20 @@ painting.ProducedBy().CarriedOutBy(rembrandt).WithTimeSpan("1642");</code></pre>
     <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/docs/canonical-expression.md">docs/canonical-expression.md</a>.
 </p>
 
+<h2 id="edtf">EDTF</h2>
+<p>
+    The <a href="https://www.loc.gov/standards/datetime/">Extended Date/Time Format</a> is the Library of Congress profile of
+    ISO 8601-2019 for dates as they occur in cultural heritage records: intervals (<code>1606/1669</code>), approximate and
+    uncertain dates (<code>1850~</code>, <code>1850?</code>), unspecified digits (<code>195X</code>), seasons (<code>1969-21</code>
+    is spring 1969) and open ends (<code>../1936</code>). Many catalogues and the Linked Art community already exchange dates in it.
+    The playground shows the EDTF form of a reading whenever one exists; period names, floruit dates, lifecycle pairs and
+    the vaguer bands have no EDTF equivalent, so that row is absent for them and the canonical expression carries the meaning.
+</p>
+
 <h2>Profiles</h2>
 <p>
-    Conventions differ: "19th century" is 1800 to 1899 in a museum label and 1801 to 1900 to a medievalist; "early" is a third to
+    Conventions differ: "19th century" is 1800 to 1899 in a museum label, and 1801
+    to 1900 to anyone counting strictly from year 1, since there was no year zero. "Early" is a third to
     some and a half to others; US archives write month first. A <strong>profile</strong> fixes these choices. The repository ships
     <code>default</code>, <code>library</code>, <code>archive-us</code>, <code>catalogue-quarters</code>, <code>medieval-manuscripts</code>
     and <code>multilingual</code>, and a profile advisor that proposes settings from a sample of your strings.
@@ -44,15 +67,31 @@ painting.ProducedBy().CarriedOutBy(rembrandt).WithTimeSpan("1642");</code></pre>
 <h2 id="corpus">The corpus and its sources</h2>
 <p>Every entry in the corpus states where it came from. Imported collections, each under a licence compatible with this project's MIT licence:</p>
 <ul>
-    <li><strong>yearrange</strong> (MIT), Christopher Johnson's year-range parser test data.</li>
-    <li><strong>timetwister</strong> (MIT), the Yale date normalisation gem's specification examples.</li>
-    <li><strong>Getty ULAN</strong> (ODC-By), life dates from the Union List of Artist Names, fetched from the Getty SPARQL endpoint.</li>
-    <li><strong>EDTF specification</strong> (public domain), the Library of Congress's examples.</li>
+    <li><strong><a href="https://github.com/jeresig/node-yearrange">yearrange</a></strong> (MIT), the
+        <a href="https://github.com/jeresig/node-yearrange/blob/master/test/date-tests.json">test data</a> of John Resig's year-range
+        parser: museum catalogue dates, largely from Japanese print collections.
+        <a href="/dates/corpus?file=imported/yearrange.json">In the corpus browser</a>.</li>
+    <li><strong><a href="https://github.com/alexduryee/timetwister">timetwister</a></strong> (MIT), the
+        <a href="https://github.com/alexduryee/timetwister/blob/master/spec/dates_spec.rb">specification examples</a> of Alex Duryee's
+        date normalisation gem, written at the New York Public Library: archival date forms.
+        <a href="/dates/corpus?file=imported/timetwister.json">In the corpus browser</a>.</li>
+    <li><strong><a href="https://www.getty.edu/research/tools/vocabularies/ulan/">Getty ULAN</a></strong>
+        (<a href="https://opendatacommons.org/licenses/by/1-0/">ODC-By</a>), biography descriptions from the Union List of Artist Names,
+        fetched from the <a href="https://vocab.getty.edu/sparql">Getty SPARQL endpoint</a>.
+        <a href="/dates/corpus?file=imported/getty.json">In the corpus browser</a>.</li>
+    <li><strong><a href="https://www.loc.gov/standards/datetime/">EDTF specification</a></strong> (public domain), the Library of
+        Congress's examples, level by level. <a href="/dates/corpus?file=imported/edtf-spec.json">In the corpus browser</a>.</li>
 </ul>
 <p>
+    Two further collections were seeded from this project's own history and carry the repository's licence: the date strings
+    found in the Paul Mellon Centre pipeline's outputs, and the test strings of Digirati's earlier <code>py_datetime</code> prototype
+    for University of the Arts, London (UAL).<br/>
     Named period tables (Japanese eras, Chinese dynasties, British periods, archaeological ages) and the seven language lexicons
     state their provenance inside each file. Full notices are in
-    <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/corpus/imported/THIRD-PARTY-NOTICES.md">THIRD-PARTY-NOTICES.md</a>.
+    <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/corpus/imported/THIRD-PARTY-NOTICES.md">THIRD-PARTY-NOTICES.md</a>,
+    and the corpus itself, with its <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/corpus/README.md">README</a>
+    and the <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/docs/08-corpus-contributions.md">guide to contributing</a>,
+    is in the repository under <a href="https://github.com/tomcrane/linked-art-net/tree/de-pmc/corpus">corpus/</a>.
 </p>
 
 <h2>Licence</h2>

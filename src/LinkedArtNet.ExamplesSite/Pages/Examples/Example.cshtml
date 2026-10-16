@@ -24,11 +24,48 @@
     <aside class="notice">@Model.Example.Detail</aside>
 }
 
-@if (Model.Example.Source is not null)
+@if (Model.Example.Source is not null || Model.Example.PlainCSharp is not null)
 {
-    <section>
-        <h2>C# <button type="button" class="copy" data-copy="csharp">Copy</button></h2>
-        <pre><code class="language-csharp" id="csharp">@Model.Example.Source.Source</code></pre>
+    <section class="code-forms">
+        <h2>C#
+            @if (Model.Example.Source is not null && Model.Example.PlainCSharp is not null)
+            {
+                <span class="forms" role="tablist" aria-label="Form of the C#">
+                    <button type="button" class="form active" role="tab" aria-selected="true" data-form="csharp">As written</button>
+                    <button type="button" class="form" role="tab" aria-selected="false" data-form="plain">Plain C#</button>
+                </span>
+            }
+            <button type="button" class="copy" data-copy="@(Model.Example.Source is not null ? "csharp" : "plain")">Copy</button>
+        </h2>
+        @if (Model.Example.Source is not null)
+        {
+            <div data-form="csharp">
+                <pre><code class="language-csharp" id="csharp">@Model.Example.Source.Source</code></pre>
+                @{
+                    var idioms = (Model.Example.Source.Idioms ?? []).Select(LinkedArtNet.Examples.Idioms.Find).Where(i => i is not null).Select(i => i!).ToList();
+                }
+                @if (idioms.Count > 0)
+                {
+                    <ul class="idioms">
+                        @foreach (var idiom in idioms)
+                        {
+                            <li><a class="term" href="/idioms#@idiom.Key">@idiom.Title</a> @idiom.Note</li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+        @if (Model.Example.PlainCSharp is not null)
+        {
+            <div data-form="plain" hidden="@(Model.Example.Source is not null)">
+                <pre><code class="language-csharp" id="plain">@Model.Example.PlainCSharp</code></pre>
+                <p class="muted">
+                    Generated from the object the example builds: every property that is set, as object initialisers, with the
+                    vocabulary constants where a term is in the registry. The fluent helpers are a convenience, not a requirement;
+                    this form and the one as written produce the same JSON.
+                </p>
+            </div>
+        }
     </section>
 }
 else

@@ -17,4 +17,9 @@
     <InternalsVisibleTo Include="LinkedArtNet.ExamplesSite.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- The About page shows this file's sample lines next to the JSON they produce, so the code shown is the code that ran. -->
+    <EmbeddedResource Include="Services\AboutSample.cs" />
+  </ItemGroup>
+
 </Project>

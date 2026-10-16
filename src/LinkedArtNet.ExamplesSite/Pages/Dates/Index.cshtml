@@ -7,8 +7,10 @@
 <p class="lede">
     Type a date as it appears in a catalogue record and see the Linked Art <code>TimeSpan</code> the
     <a href="https://github.com/tomcrane/linked-art-net/tree/de-pmc/src/LinkedArtNet.Dates">LinkedArtNet.Dates</a> parser produces.
+    The same parser is a public <a href="/dates/api">HTTP API</a>.
+    <!--
     @if (Model.UsesService) { <text>Results come from the public service, so this page exercises the real API.</text> }
-    else { <text>This page parses in-process; the same code runs behind the service.</text> }
+    else { <text>This page parses in-process; the same code runs behind the service.</text> }-->
 </p>
 <form action="/dates" method="get" class="playground">
     <input type="text" name="s" value="@Model.S" maxlength="500" aria-label="Date string" placeholder="e.g. late 1950s, c. 1850, fl. 1480-1510, 2nd quarter of the 14th century" autofocus />
@@ -31,23 +33,36 @@
 @if (Model.Result is { } r)
 {
     <section class="result">
-        <h2><q>@r.Input</q> <span class="status status-@r.Status">@r.Status</span> <span class="muted">@r.Kind · confidence @r.Confidence.ToString("0.00") · @r.Strategy · profile @r.Profile</span></h2>
+        <h2><q>@r.Input</q> <span class="status status-@r.Status">@r.Status</span> <span class="muted">@r.Kind · confidence @r.Confidence.ToString("0.00") · @r.Strategy · profile @r.Profile · <a class="term" href="@Model.ApiUrl" title="The parse result as the API returns it">raw JSON</a></span></h2>
         <dl class="kv">
-            @if (r.Canonical is not null) { <dt>Canonical</dt><dd><code>@r.Canonical</code> <a class="muted" href="/about#canonical">what is this?</a></dd> }
-            @if (r.Edtf is not null) { <dt>EDTF</dt><dd><code>@r.Edtf</code></dd> }
+            @if (r.Canonical is not null) { <dt><a class="term" href="/about#canonical" title="What a canonical expression is">Canonical</a></dt><dd><code>@r.Canonical</code></dd> }
+            @if (r.Edtf is not null) { <dt><a class="term" href="/about#edtf" title="What EDTF is">EDTF</a></dt><dd><code>@r.Edtf</code></dd> }
             @if (r.Flags.Count > 0) { <dt>Flags</dt><dd>@string.Join(", ", r.Flags)</dd> }
             @if (r.Unconsumed is not null) { <dt>Not understood</dt><dd><q>@r.Unconsumed</q></dd> }
         </dl>
-        @if (r.Bars.Count > 0)
+        @if (r.TimelineInformative)
         {
             <div class="timeline" aria-label="Timeline">
                 @foreach (var bar in r.Bars)
                 {
                     var (left, width) = Model.Place(bar.StartYear, bar.EndYear);
-                    <div class="bar bar-@bar.Label" style="left:@left.ToString("0.##")%;width:@width.ToString("0.##")%" title="@bar.Label: @IndexModel.YearLabel(bar.StartYear) to @IndexModel.YearLabel(bar.EndYear)"></div>
+                    var open = (bar.OpenStart ? " open-start" : "") + (bar.OpenEnd ? " open-end" : "");
+                    <div class="bar bar-@bar.Label @(bar.HasCore ? "fringe" : "")@open" style="left:@left.ToString("0.##")%;width:@width.ToString("0.##")%"
+                         title="@bar.Label: @(bar.OpenStart ? "open" : IndexModel.YearLabel(bar.StartYear)) to @(bar.OpenEnd ? "open" : IndexModel.YearLabel(bar.EndYear))"></div>
+                    if (bar.HasCore)
+                    {
+                        var (coreLeft, coreWidth) = Model.Place(bar.CoreStartYear ?? bar.StartYear, bar.CoreEndYear ?? bar.EndYear);
+                        <div class="bar bar-@bar.Label core" style="left:@coreLeft.ToString("0.##")%;width:@coreWidth.ToString("0.##")%"
+                             title="@bar.Label, certainly: @IndexModel.YearLabel(bar.CoreStartYear ?? bar.StartYear) to @IndexModel.YearLabel(bar.CoreEndYear ?? bar.EndYear)"></div>
+                    }
                 }
-                <span class="axis-start">@IndexModel.YearLabel(Model.AxisStart)</span><span class="axis-end">@IndexModel.YearLabel(Model.AxisEnd)</span>
+                @if (!r.Bars.Any(b => b.OpenStart)) { <span class="axis-start">@IndexModel.YearLabel(Model.AxisStart)</span> }@if (!r.Bars.Any(b => b.OpenEnd)) { <span class="axis-end">@IndexModel.YearLabel(Model.AxisEnd)</span> }
             </div>
+            <p class="timeline-key muted">
+                @if (r.Bars.Count > 1) { <span><i class="swatch begin"></i> begin</span> <span><i class="swatch end"></i> end</span> }
+                @if (r.Bars.Any(b => b.HasCore)) { <span><i class="swatch fringe"></i> the bound lies somewhere in here</span> }
+                @if (r.Bars.Any(b => b.OpenStart || b.OpenEnd)) { <span>fading: no bound on that side</span> }
+            </p>
         }
         @if (r.Notes.Count > 0)
         {
@@ -58,10 +73,20 @@
             @if (r.BeginJson is not null) { <div><h3>Begin</h3><pre><code class="language-json">@r.BeginJson</code></pre></div> }
             @if (r.EndJson is not null) { <div><h3>End</h3><pre><code class="language-json">@r.EndJson</code></pre></div> }
         </div>
-        @if (r.Status is "parsed" or "partial")
+        @if (r.Snippets is { Count: > 0 } snippets)
         {
-            <h3>In C# <button type="button" class="copy" data-copy="csharp">Copy</button></h3>
-            <pre><code class="language-csharp" id="csharp">@r.CSharp</code></pre>
+            <h3>In C#</h3>
+            <div class="snippets">
+                @for (var i = 0; i < snippets.Count; i++)
+                {
+                    var snippet = snippets[i];
+                    <div>
+                        <h4>@snippet.Title <button type="button" class="copy" data-copy="csharp-@i">Copy</button></h4>
+                        <pre><code class="language-csharp" id="csharp-@i">@snippet.Code</code></pre>
+                        @if (snippet.Note is not null) { <p class="muted">@snippet.Note</p> }
+                    </div>
+                }
+            </div>
         }
         @if (r.Alternatives.Count > 0)
         {

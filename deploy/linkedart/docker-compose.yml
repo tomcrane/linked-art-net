@@ -14,6 +14,7 @@ services:
       # behind Caddy: trust X-Forwarded-Proto so the trainer builds https:// callback URLs
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       TimeSpanService__BaseUrl: http://linkedart-dates:8080
+      TimeSpanService__PublicUrl: https://dates.linkedart.net
       Trainer__DataDirectory: /data/trainer
       Trainer__CapturePath: /data/capture/unparsed.jsonl
       Trainer__Reviewers__0: ${TRAINER_REVIEWER}

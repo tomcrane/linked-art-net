@@ -1,0 +1,135 @@
+@page "/dates/api"
+@model LinkedArtNet.ExamplesSite.Pages.Dates.ApiModel
+@{
+    ViewData["Title"] = "Dates API";
+}
+<nav class="crumbs"><a href="/dates">Date parser</a> › API</nav>
+<h1>Using the dates API</h1>
+<p class="lede">
+    The parser behind the <a href="/dates">playground</a> runs as a small HTTP service at <code>@Model.Base</code>. Send it a date as
+    written in a record and it returns a Linked Art <code>TimeSpan</code>, with the canonical reading, EDTF where one exists, a
+    confidence and the flags that explain the reading. No key, no account; any origin may call it from a browser.
+</p>
+
+<h2>One string</h2>
+<pre><code class="language-http">GET @Model.Base/v1/timespan?s=c.%201850</code></pre>
+<p>
+    Try it: <a href="@Model.SampleUrl"><code>@Model.SampleUrl</code></a>. The response below was produced for that request when this
+    page was served.
+</p>
+@if (Model.SampleJson is not null)
+{
+    <pre><code class="language-json">@Model.SampleJson</code></pre>
+}
+
+<h3>Query parameters</h3>
+<table class="examples">
+    <thead><tr><th>Parameter</th><th>Values</th><th>Meaning</th></tr></thead>
+    <tbody>
+        <tr><td><code>s</code></td><td>text, up to 500 characters</td><td>The date as written. Required.</td></tr>
+        <tr><td><code>intent</code></td><td><code>auto</code> (default), <code>single</code>, <code>pair</code></td>
+            <td>Whether "1606-1669" is one span or a birth and a death. <code>auto</code> reads the text's own markers (b., d., fl., born, active); <code>pair</code> forces two spans; <code>single</code> forces one.</td></tr>
+        <tr><td><code>profile</code></td><td>a name from <code>/v1/profiles</code>, default <code>default</code></td>
+            <td>The conventions to realise under: century counting, how wide "early" and "late" are, two-digit years, season dates, date order. See the profiles below.</td></tr>
+        <tr><td><code>shape</code></td><td><code>full</code> (default), <code>timespan</code></td>
+            <td><code>timespan</code> returns only the TimeSpan JSON (or <code>{ timespan, begin, end }</code> for a pair), ready to paste into a record.</td></tr>
+        <tr><td><code>emitInnerBounds</code></td><td><code>true</code>, <code>false</code></td>
+            <td>When true, a vague edge also sets <code>end_of_the_begin</code> and <code>begin_of_the_end</code>, the part of the span the date certainly covers. Off by default; the playground's timeline draws them.</td></tr>
+        <tr><td><code>labelPolicy</code></td><td><code>label</code> (default), <code>labelAndName</code>, <code>name</code></td>
+            <td>Where the original text goes: the TimeSpan's <code>_label</code>, a Name under <code>identified_by</code> as well, or the Name only.</td></tr>
+        <tr><td><code>llm</code></td><td><code>true</code></td><td>Accepted and ignored unless the server has an interpreter configured; a note in the response says so.</td></tr>
+    </tbody>
+</table>
+
+<h3>The response</h3>
+<table class="examples">
+    <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+    <tbody>
+        <tr><td><code>status</code></td><td><code>parsed</code>, <code>partial</code> (something was read, something was not), <code>undated</code> (the text says there is no date), or <code>unparsed</code>. Unreadable text is still HTTP 200; only a malformed request is an error.</td></tr>
+        <tr><td><code>kind</code></td><td><code>single</code>, <code>birthDeath</code>, <code>formationDissolution</code>, <code>floruit</code>, or <code>none</code>.</td></tr>
+        <tr><td><code>confidence</code></td><td>0 to 1. Readings at 0.75 and above are the ones the parser would act on unasked; below that, read the notes.</td></tr>
+        <tr><td><code>canonical</code></td><td>The reading in the parser's own small language, which the service also accepts as input (see <code>/v1/canonical</code>). <a href="/about#canonical">What this is</a>.</td></tr>
+        <tr><td><code>edtf</code></td><td>The <a href="/about#edtf">EDTF</a> form, when EDTF can express the reading.</td></tr>
+        <tr><td><code>flags</code></td><td>What shaped the reading: <code>Approximate</code>, <code>Uncertain</code>, <code>OpenStart</code>, <code>OpenEnd</code>, <code>Bce</code>, <code>Season</code>, <code>NamedPeriod</code>, <code>TwoDigitYear</code>, <code>Unconsumed</code> and others.</td></tr>
+        <tr><td><code>timespan</code>, <code>begin</code>, <code>end</code></td><td>Linked Art JSON exactly as the library writes it. A single reading fills <code>timespan</code>; a pair fills <code>begin</code> and <code>end</code> and gives their hull as <code>timespan</code>. Ends are inclusive: the last second of the period.</td></tr>
+        <tr><td><code>alternatives</code></td><td>Other readings the parser considered, each with its own canonical form and confidence.</td></tr>
+        <tr><td><code>notes</code>, <code>unconsumed</code></td><td>Plain-language remarks, and any part of the text the parser could not use.</td></tr>
+        <tr><td><code>profile</code>, <code>parserVersion</code>, <code>strategy</code></td><td>What produced the result. Same input, profile and parser version always give the same output.</td></tr>
+    </tbody>
+</table>
+
+<h2>Many strings</h2>
+<p>Post up to 500 inputs in one request, as plain strings or as objects that override the intent or profile and carry your own reference.</p>
+<pre><code class="language-http">POST @Model.Base/v1/timespan
+Content-Type: application/json
+
+{
+  "profile": "library",
+  "inputs": [
+    "1984",
+    "late 1950s",
+    { "s": "1606-1669", "intent": "pair", "ref": "row-17" }
+  ]
+}</code></pre>
+<p>The reply is <code>{ "results": [ … ] }</code> in input order, each result in the shape above with your <code>ref</code> echoed back. Optional <code>intent</code> and <code>options</code> (<code>emitInnerBounds</code>, <code>labelPolicy</code>) at the top level apply to every input that does not say otherwise.</p>
+
+<h2>Profiles</h2>
+<p>Conventions differ between collections, so a profile fixes them. The service ships these; <code>GET @Model.Base/v1/profiles/<em>name</em></code> returns a profile's effective settings as JSON.</p>
+<table class="examples">
+    <thead><tr><th>Profile</th><th>Intended for</th></tr></thead>
+    <tbody>
+    @foreach (var (name, description) in Model.Profiles)
+    {
+        <tr><td><code>@name</code></td><td>@description</td></tr>
+    }
+    </tbody>
+</table>
+
+<h2>Canonical expressions without parsing</h2>
+<pre><code class="language-http">GET @Model.Base/v1/canonical?e=late%20195X&amp;profile=library</code></pre>
+<p>
+    Realises a <a href="/about#canonical">canonical expression</a> under a profile, skipping the free-text parser. Useful once you have
+    stored canonical forms and want the TimeSpans regenerated under different conventions, or to check what a form means.
+</p>
+
+<h2>Behaviour</h2>
+<ul>
+    <li><strong>Caching.</strong> Responses carry <code>Cache-Control: public, max-age=86400</code> and an <code>ETag</code>; send <code>If-None-Match</code> to get a 304.</li>
+    <li><strong>Limits.</strong> 500 characters per input, 500 inputs per POST, a 256 KB body, and 600 requests a minute per address, after which the service answers 429.</li>
+    <li><strong>Errors.</strong> 400 for a missing or malformed parameter, 404 for an unknown profile, each with <code>{ "error": "…", "detail": "…" }</code>. A date the parser cannot read is not an error: 200 with <code>status: unparsed</code>.</li>
+    <li><strong>Versioning.</strong> The path is <code>/v1</code>; a breaking change to the response would bump it. Every result names its <code>parserVersion</code>, and <code>GET @Model.Base/version</code> reports the service, parser and model versions.</li>
+    <li><strong>Reference.</strong> The interactive OpenAPI description is at <a href="@Model.Base/docs">@Model.Base/docs</a>, and the document itself at <code>@Model.Base/openapi/v1.json</code>.</li>
+</ul>
+
+<h2>From code</h2>
+<h3>JavaScript</h3>
+<pre><code class="language-javascript">const url = new URL("@Model.Base/v1/timespan");
+url.searchParams.set("s", "c. 1850");
+const result = await fetch(url).then(r =&gt; r.json());
+console.log(result.canonical, result.timespan);</code></pre>
+
+<h3>C#, calling the service</h3>
+<pre><code class="language-csharp">using var http = new HttpClient { BaseAddress = new Uri("@Model.Base/") };
+var result = await http.GetFromJsonAsync&lt;JsonElement&gt;("v1/timespan?s=" + Uri.EscapeDataString("c. 1850"));
+var timespan = result.GetProperty("timespan");</code></pre>
+
+<h3>C#, no service at all</h3>
+<p>The parser is a library; the service is a thin host for it. Reference <code>LinkedArtNet.Dates</code> and the same results come back in-process, with the fluent bridge putting them straight onto the model.</p>
+<pre><code class="language-csharp">var result = TimeSpanParser.Default.Parse("c. 1850");
+result.Status;      // ParseStatus.Parsed
+result.Canonical;   // "1850~"
+result.TimeSpan;    // a LinkedArtTimeSpan
+
+// With a profile from the repository's profiles/ folder
+var profiles = ProfileCatalog.Load("profiles");
+var parser = new TimeSpanParser(profiles.TryGet("library", out var library) ? library : ParseProfile.Default);
+
+// Straight onto the model
+production.WithTimeSpan("c. 1850");
+person.WithLifespan("1606-1669");
+group.WithExistence("fl. 1480-1510");</code></pre>
+<p class="muted">
+    Wrong readings are welcome as <a href="https://github.com/tomcrane/linked-art-net/issues/new">issues</a> with the input and what it should
+    mean; reviewers can correct them in the <a href="/dates/train">trainer</a>, and the <a href="/dates/corpus">corpus</a> records every
+    expectation the parser is tested against.
+</p>

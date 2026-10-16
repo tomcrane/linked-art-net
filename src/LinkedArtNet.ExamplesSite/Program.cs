@@ -70,6 +70,15 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapGet("/healthz", (ExampleIndex index) => Results.Ok(new { examples = index.Total, implemented = index.Implemented }));
 
+// The raw API response for a playground request, in the dates service's shape, for when no public service is configured.
+app.MapGet("/dates/result.json", async (DateClient client, string? s, string? intent, string? profile, CancellationToken ct) =>
+{
+    if (string.IsNullOrWhiteSpace(s)) return Results.BadRequest(new { error = "Missing query parameter 's'." });
+    if (s.Length > 500) s = s[..500];
+    var json = await client.RawJsonAsync(s, intent ?? "auto", profile ?? "default", ct);
+    return json is null ? Results.NotFound() : Results.Content(json, "application/json; charset=utf-8");
+});
+
 app.MapGet("/dates/train/login", async (HttpContext http, string? returnUrl) =>
 {
     var target = returnUrl is { Length: > 0 } && returnUrl.StartsWith('/') && !returnUrl.StartsWith("//", StringComparison.Ordinal) ? returnUrl : "/dates/train";

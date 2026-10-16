@@ -13,6 +13,8 @@ public class IndexModel(DateClient client) : PageModel
     public PlaygroundResult? Result { get; private set; }
     public IReadOnlyList<(string Name, string? Description)> Profiles => client.Profiles;
     public bool UsesService => client.UsesService;
+    /// <summary>Where the raw API response for this request can be seen.</summary>
+    public string? ApiUrl { get; private set; }
     public long AxisStart { get; private set; }
     public long AxisEnd { get; private set; }
 
@@ -26,6 +28,7 @@ public class IndexModel(DateClient client) : PageModel
         if (string.IsNullOrWhiteSpace(S)) return;
         if (S.Length > 500) S = S[..500];
         Result = await client.ParseAsync(S, Intent, Profile, ct);
+        ApiUrl = client.ApiUrl(S, Intent, Profile);
         if (Result is { Bars.Count: > 0 })
         {
             var start = Result.Bars.Min(b => b.StartYear);

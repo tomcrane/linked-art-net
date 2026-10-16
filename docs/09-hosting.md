@@ -15,7 +15,19 @@ Status (2026-10-15): the server exists. Mythic Beasts VPS 2 named `linkedartbox`
 | IPv6 | 2a00:1098:67d::1 |
 | spec | 1 core, 2 GB, 20 GB SSD, 1 TB/month |
 
-DNS, images, GitHub app and first start still to do (sections 3 to 6).
+Status (2026-10-16): DNS is live for all three hosts (A and AAAA, verified). Still to do: images (section 4),
+the GitHub app and token (section 5), the server setup (section 2) and first start (section 6).
+
+## 0. Before the first deployment
+
+1. Commit and push everything; the images are built from the tagged commit, so the tag must point at the code
+   you mean to run. Run `dotnet test linked-art-net.slnx` first.
+2. Tag and push the tag (section 4). Watch the "Container images" workflow in the repository's Actions tab;
+   it builds both images in a few minutes.
+3. Make the two packages public (GitHub profile > Packages > package > Package settings > Change visibility),
+   or plan to `docker login ghcr.io` on the server. The code is MIT, so public is the simple choice.
+4. Create the OAuth app and the token (section 5) and have the values ready for `.env`. They go straight into
+   the server's `.env`, nowhere else.
 
 ## 1. Hosts
 
@@ -46,7 +58,7 @@ On the server, once:
 ```
 sudo apt update && sudo apt install -y docker.io docker-compose-v2 ufw unattended-upgrades
 sudo usermod -aG docker $USER            # log out and in again
-sudo ufw allow OpenSSH && sudo ufw allow 80 && sudo ufw allow 443 && sudo ufw enable
+sudo ufw allow OpenSSH && sudo ufw allow 80 && sudo ufw allow 443 && sudo ufw allow 443/udp && sudo ufw enable   # udp for HTTP/3
 docker network create web                 # the network the front door and every app share
 sudo mkdir -p /srv/edge /srv/linkedart/data/trainer /srv/linkedart/data/capture
 sudo chown -R 1654:1654 /srv/linkedart/data   # the application user in the chiseled images
@@ -96,9 +108,11 @@ cd /srv/linkedart && docker compose pull && docker compose up -d
 docker compose logs -f --tail=100
 ```
 
-Check `https://linkedart.net/healthz`, `https://dates.linkedart.net/healthz`, the playground at `/dates`, and
-sign in at `/dates/train`. The site calls the service over the compose network (`http://dates:8080`), so the
-playground works even if the public `dates` host is misconfigured.
+Caddy's first start fetches three certificates; `docker compose logs caddy` in `/srv/edge` shows them being
+obtained. Then check `https://linkedart.net/healthz`, `https://dates.linkedart.net/healthz`, the playground at
+`/dates`, the API page at `/dates/api`, and sign in at `/dates/train`. The site calls the service over the compose network (`http://linkedart-dates:8080`), so the
+playground works even if the public `dates` host is misconfigured; its "raw JSON" links point at the public host
+(`TimeSpanService__PublicUrl`).
 
 ## 7. Updating
 

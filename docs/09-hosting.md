@@ -15,8 +15,10 @@ Status (2026-10-15): the server exists. Mythic Beasts VPS 2 named `linkedartbox`
 | IPv6 | 2a00:1098:67d::1 |
 | spec | 1 core, 2 GB, 20 GB SSD, 1 TB/month |
 
-Status (2026-10-16): DNS is live for all three hosts (A and AAAA, verified). Still to do: images (section 4),
-the GitHub app and token (section 5), the server setup (section 2) and first start (section 6).
+Status (2026-10-16): **live.** First deployment of v0.1.0 (commit da2fdc8) completed on 2026-10-16: Caddy holds
+certificates for all three hosts, `https://linkedart.net` and `https://dates.linkedart.net` answer, the www host
+redirects to the apex, and the service reports its version at `/version`. Sections 0 to 6 below are the record of
+how it was done; section 7 onwards is what matters from here.
 
 ## 0. Before the first deployment
 
@@ -64,8 +66,16 @@ sudo mkdir -p /srv/edge /srv/linkedart/data/trainer /srv/linkedart/data/capture
 sudo chown -R 1654:1654 /srv/linkedart/data   # the application user in the chiseled images
 ```
 
-Copy `deploy/edge/` into `/srv/edge/` and `deploy/linkedart/` into `/srv/linkedart/`; rename `.env.example`
-to `.env` and fill it in.
+Copy the two projects up from the repository root on your machine. The `/.` on each source copies the folder's
+contents, dot files included, into the existing directory rather than nesting a folder inside it:
+
+```
+scp -r deploy/edge/. root@linkedart.net:/srv/edge/
+scp -r deploy/linkedart/. root@linkedart.net:/srv/linkedart/
+```
+
+Then on the server `cd /srv/linkedart && cp .env.example .env` and fill it in. Running as root, the `sudo`
+prefixes and the `usermod` line are redundant; they matter if you administer the box as an ordinary user.
 
 ## 3. DNS at Mythic Beasts
 

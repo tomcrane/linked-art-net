@@ -6,7 +6,7 @@
     "notes": "Reviewed in the examples-site trainer by tomcrane. Proposed until a maintainer verifies them."
   },
   "defaults": {
-    "status": "proposed",
+    "status": "verified",
     "tags": [
       "trainer"
     ]
@@ -22,7 +22,7 @@
         "status": "undated",
         "toleranceYears": 0
       },
-      "status": "proposed",
+      "status": "verified",
       "notes": "Reviewed by tomcrane in the trainer on 2026-10-16.",
       "sourceExpectation": "trainer"
     }

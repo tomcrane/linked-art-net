@@ -38,3 +38,25 @@ jobs:
         with:
           name: test-results
           path: TestResults
+
+  # The Dockerfiles copy project folders by name, so a new project reference breaks the image build but not the
+  # solution build. Building both images here (without pushing) catches that before a release tag does.
+  images-build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: dates-service
+            dockerfile: src/LinkedArtNet.Dates.Service/Dockerfile
+          - name: examples-site
+            dockerfile: src/LinkedArtNet.ExamplesSite/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: false
+          build-args: GIT_SHA=${{ github.sha }}
+          tags: ${{ matrix.name }}:ci

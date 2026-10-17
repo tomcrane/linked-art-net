@@ -1,0 +1,34 @@
+{
+  "source": {
+    "name": "Authored: descriptive strings without a name (ULAN display biographies and the like)",
+    "licence": "CC0-1.0",
+    "notes": "Getty ULAN 'display biography' strings and similar: nationality adjectives, occupations and dates, no name. The ULAN strings here are the kind the imported Getty dates corpus already holds; expectations checked by hand. Nationality and occupation labels come from the parser's tables; AAT identifiers only where the repository's registry has the term."
+  },
+  "defaults": { "profile": "ulan", "status": "verified", "tags": ["ulan", "descriptive"] },
+  "entries": [
+    { "id": "ul-001", "input": "Dutch painter, 1606-1669", "tags": ["nationality", "occupation"],
+      "expect": { "kind": "person", "name": null, "nationalities": ["Dutch"], "roleLabels": ["painter"], "dateText": "1606-1669", "noUnconsumed": true,
+        "dates": { "status": "parsed", "kind": "birthDeath", "canonical": "1606/1669" } } },
+    { "id": "ul-002", "input": "French illuminator, active mid-15th century", "tags": ["active", "century-band"],
+      "expect": { "kind": "person", "name": null, "nationalities": ["French"], "roleLabels": ["illuminator"], "dateText": "active mid-15th century", "noUnconsumed": true,
+        "dates": { "status": "parsed", "kind": "floruit" } } },
+    { "id": "ul-003", "input": "Italian painter and architect, 1483-1520", "tags": ["two-occupations"],
+      "expect": { "kind": "person", "nationalities": ["Italian"], "roleLabels": ["painter", "architect"], "dateText": "1483-1520", "noUnconsumed": true } },
+    { "id": "ul-004", "input": "British sculptor, born 1965", "tags": ["born-only"],
+      "expect": { "kind": "person", "nationalities": ["British"], "roleLabels": ["sculptor"], "dateText": "born 1965",
+        "dates": { "status": "parsed", "canonical": "born 1965" } } },
+    { "id": "ul-005", "input": "Flemish painter, ca. 1525-1569", "tags": ["circa"],
+      "expect": { "kind": "person", "nationalities": ["Flemish"], "roleLabels": ["painter"], "dateText": "ca. 1525-1569",
+        "dates": { "status": "parsed", "flags": ["Approximate"] } } },
+    { "id": "ul-006", "input": "English painter, 1775-1851", "tags": ["label-only-nationality"],
+      "expect": { "kind": "person", "nationalities": ["English"], "roleLabels": ["painter"], "dateText": "1775-1851" },
+      "notes": "'English' has no AAT nationality term in the registry yet, so the nationality carries a label and no identifier." },
+    { "id": "ul-007", "input": "American photographer and printmaker, 1902-1984", "tags": ["two-occupations"],
+      "expect": { "kind": "person", "nationalities": ["American"], "roleLabels": ["photographer", "printmaker"], "dateText": "1902-1984" } },
+    { "id": "ul-008", "input": "German and Austrian architects, active 20th century", "tags": ["two-nationalities", "plural"],
+      "expect": { "kind": "person", "nationalities": ["German", "Austrian"], "roleLabels": ["architect"], "dateText": "active 20th century" },
+      "notes": "Plural occupation words match the table through their singular phrase ('architects' is listed). Kind stays person: the string describes people, not a body." },
+    { "id": "ul-009", "input": "Scottish painter and etcher, 1760-1830", "tags": ["label-only-nationality"],
+      "expect": { "kind": "person", "nationalities": ["Scottish"], "roleLabels": ["painter", "etcher"], "dateText": "1760-1830" } }
+  ]
+}

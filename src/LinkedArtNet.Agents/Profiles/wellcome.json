@@ -1,0 +1,5 @@
+{
+  "inherits": "marc",
+  "name": "wellcome",
+  "description": "Wellcome Collection contributor labels, which follow library heading practice ('Rembrandt Harmenszoon van Rijn, 1606-1669'); roles arrive separately in the record and are not in the string."
+}

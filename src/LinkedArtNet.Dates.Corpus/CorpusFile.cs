@@ -108,7 +108,7 @@ public sealed record CorpusFile
     /// <summary>Every corpus file under a root (seed/, authored/, imported/, proposed/), in path order.</summary>
     public static IReadOnlyList<CorpusFile> LoadAll(string corpusRoot) =>
         Directory.GetFiles(corpusRoot, "*.json", SearchOption.AllDirectories)
-            .Where(p => !p.Replace('\\', '/').Contains("/schema/") && System.IO.Path.GetFileName(p) != "report.json")
+            .Where(p => !p.Replace('\\', '/').Contains("/schema/") && !p.Replace('\\', '/').Contains("/agents/") && System.IO.Path.GetFileName(p) != "report.json") // agents/ holds the agent corpus, another shape
             .Order(StringComparer.Ordinal)
             .Select(p => Load(p, corpusRoot))
             .ToList();

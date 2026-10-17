@@ -64,6 +64,17 @@ public sealed class ParserHost
 
     public ProfileCatalog Catalog => _catalog;
 
+    private readonly ConcurrentDictionary<string, LinkedArtNet.Agents.AgentStringParser> _agentParsers = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>The agent-string parser for an agent profile (built-in catalog), with this host's dates profiles for the date part.</summary>
+    public bool TryAgentParser(string? profile, out LinkedArtNet.Agents.AgentStringParser parser)
+    {
+        var name = string.IsNullOrEmpty(profile) ? "default" : profile;
+        if (!LinkedArtNet.Agents.AgentProfileCatalog.BuiltIn.TryGet(name, out var agentProfile)) { parser = null!; return false; }
+        parser = _agentParsers.GetOrAdd(agentProfile.Name, _ => new LinkedArtNet.Agents.AgentStringParser(agentProfile, _catalog));
+        return true;
+    }
+
     /// <summary>The built-in period tables plus PeriodO when its file is present.</summary>
     public INamedPeriodSource Periods { get; }
 

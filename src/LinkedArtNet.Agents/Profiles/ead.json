@@ -1,0 +1,7 @@
+{
+  "inherits": "default",
+  "name": "ead",
+  "description": "EAD and ISAAR-style authority names with semicolons: 'Smith; John (1900-1980); artist', where the parts are surname, forenames with dates in parentheses, and epithets. Corporate bodies: 'Royal Academy of Arts; 1768-'.",
+  "semicolonForm": true,
+  "parentheses": ["dates", "qualifier", "honorific"]
+}

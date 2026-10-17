@@ -128,6 +128,8 @@ nav.sample-nav .count { color: var(--muted); margin-left: 0.25rem; font-variant-
 section.samples-section { margin-top: 2.5rem; }
 section.samples-section p.intro { max-width: 60rem; }
 table.samples td.years { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.agent-parts dt { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.72rem; }
+.agent-parts .pill { display: inline-block; background: var(--panel); padding: 0.05rem 0.5rem; margin: 0 0.3rem 0.3rem 0; }
 .cloud { line-height: 2.4; margin: 1.5rem 0; }
 .cloud .tag { font-size: 1.05rem; padding: 0.15rem 0.8rem; margin-right: 0.5rem; }
 .idioms { list-style: none; padding: 0; margin: -0.75rem 0 1.5rem; font-size: 0.9rem; color: var(--muted); }

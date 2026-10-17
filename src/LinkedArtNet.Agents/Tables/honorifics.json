@@ -1,0 +1,13 @@
+{
+  "notes": "Titles and styles that precede or follow a personal name and are not part of it. Matched whole, case-insensitively, with or without a trailing full stop. Written by the assistant from general knowledge of British and continental usage (not copied from any source); add to it as data shows the need. Generational suffixes are kept apart because they stay with the name in a sort form.",
+  "honorifics": [
+    "Sir", "Dame", "Lord", "Lady", "Baron", "Baroness", "Earl", "Countess", "Duke", "Duchess", "Viscount", "Viscountess",
+    "Marquess", "Marquis", "Marchioness", "Count", "Prince", "Princess", "King", "Queen",
+    "Rev", "Revd", "Reverend", "Very Rev", "Rt Rev", "Right Reverend", "Canon", "Dean", "Bishop", "Archbishop", "Cardinal",
+    "Father", "Fr", "Brother", "Sister", "Mother", "Abbot", "Abbess", "Saint", "St",
+    "Dr", "Prof", "Professor", "Mr", "Mrs", "Miss", "Ms", "Mme", "Madame", "Mlle", "Mademoiselle", "M", "Monsieur", "Herr", "Frau", "Fräulein", "Signor", "Signora", "Don", "Doña", "Dom",
+    "Captain", "Capt", "Colonel", "Col", "Lieutenant", "Lt", "Major", "Maj", "General", "Gen", "Admiral", "Commander", "Cdr", "Sergeant", "Sgt",
+    "Hon", "Rt Hon", "Right Honourable", "Honourable", "Bt", "Bart", "Baronet", "Esq", "Esquire", "Knight", "Kt", "KBE", "CBE", "OBE", "MBE", "RA", "ARA", "FRS", "FSA", "MP", "QC", "KC"
+  ],
+  "suffixes": ["Jr", "Jnr", "Junior", "Sr", "Snr", "Senior", "II", "III", "IV", "the Elder", "the Younger", "the elder", "the younger"]
+}

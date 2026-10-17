@@ -19,6 +19,7 @@ LLM escalation; optional capture of unparsed inputs to feed the corpus.
 | GET | `/v1/profiles` | List available profiles with descriptions. |
 | GET | `/v1/profiles/{name}` | A profile's effective settings (JSON). |
 | GET | `/v1/canonical?e=late%20195X` | Realise a canonical expression without parsing text (debug/trainer aid). |
+| GET | `/v1/agent?s=...&profile=` | Read an agent string (2026-10-17): name parts, honorifics, date part (as a dates result), roles, nationality, qualifiers, and the Linked Art Person or Group (`agent=false` omits it). `GET /v1/agent/profiles` lists the profiles. |
 | POST | `/v1/advise` | Profile advice for a dataset (added 2026-10-17): counts of the conventions in use with example strings, recommendations, and a suggested profile stated as changes from `default`. Body `{ "inputs": [...], "languages"?: [...] }` or `text/plain` with one string per line; up to 20,000 strings and 2 MB; strings over 500 characters are skipped and counted. Nothing is stored. The site's `/dates/advise` calls it. |
 | GET | `/healthz`, `/version` | Liveness; parser + corpus version and git SHA. |
 | GET | `/openapi/v1.json`, `/docs` | OpenAPI document and a UI (Scalar). |

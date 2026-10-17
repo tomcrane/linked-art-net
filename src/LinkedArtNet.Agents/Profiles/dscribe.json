@@ -1,0 +1,7 @@
+{
+  "inherits": "default",
+  "name": "dscribe",
+  "description": "DScribe / CALM exports as the Paul Mellon Centre library and archive use them: 'Surname, Forenames [Honorific, dates] (role)'. Brackets hold the honorific and the dates in either order; parentheses hold the role the agent played for this record ('preface by', 'editor', 'publisher').",
+  "brackets": ["dates", "honorific", "qualifier"],
+  "parentheses": ["role", "qualifier"]
+}

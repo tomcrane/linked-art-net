@@ -4,6 +4,18 @@ Releases are git tags on `de-pmc`; each tag builds the two container images (`ex
 `main` is fast-forwarded to it (see "Branches and releases" in the README). Versions follow the tags; the parser
 has its own version (`TimeSpanParser.Version`) reported in every result.
 
+## Unreleased
+
+- `LinkedArtNet.Agents` (new): the agent-string parser. "Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)",
+  "Smith, John, active 1640-1660, ill.", "Dutch painter, 1606-1669", "Smith; John (1900-1980); artist",
+  "attributed to Rembrandt" become a name with family and given parts, honorifics, a date part read by the dates parser
+  with intent pair, roles (with AAT terms where the registry has them), nationality and attribution qualifiers, and a
+  Linked Art Person or Group. Profiles: default, dscribe, marc, ulan, ead, wellcome. Agent corpus under `corpus/agents`
+  with the dates expectation nested; `tools/Corpus agents`.
+- Dates service: `GET /v1/agent?s=&profile=` and `/v1/agent/profiles`. Site: `/agents` playground and a nav entry.
+- Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
+- Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
+
 ## v0.1.2 (2026-10-17)
 
 - Grammar: a year outside the profile's plausible range ("19881", "c. 18011") is read as written but penalised below

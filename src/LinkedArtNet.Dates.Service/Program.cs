@@ -181,6 +181,31 @@ v1.MapPost("/advise", async (HttpContext http, CancellationToken ct) =>
 .Produces<AdviceDto>()
 .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
 
+// ---- GET /v1/agent?s=...&profile= ---------------------------------------------------------------------------------------
+v1.MapGet("/agent", (HttpContext http, string? s, string? profile, bool? agent) =>
+{
+    if (string.IsNullOrWhiteSpace(s)) return Results.BadRequest(new ErrorResponse("Missing query parameter 's'."));
+    if (s.Length > limits.MaxInputLength) return Results.BadRequest(new ErrorResponse($"Input longer than {limits.MaxInputLength} characters."));
+    if (!host.TryAgentParser(profile, out var parser)) return Results.NotFound(new ErrorResponse($"Unknown agent profile '{profile}'.", "See /v1/agent/profiles."));
+    var parsed = parser.Parse(s);
+    var etag = ParserHost.ETag("agent:" + parser.Profile.Name, Intent.Auto, s, agent == false ? "parts" : "full");
+    if (http.Request.Headers.IfNoneMatch.Any(v => v == etag)) return Results.StatusCode(StatusCodes.Status304NotModified);
+    http.Response.Headers.ETag = etag;
+    http.Response.Headers.CacheControl = $"public, max-age={limits.CacheMaxAgeSeconds}";
+    return Results.Ok(LinkedArtNet.Agents.AgentResultDto.From(parsed, withAgent: agent != false));
+})
+.WithName("ParseAgent")
+.WithSummary("Read an agent string: name, dates, honorifics, roles, nationality")
+.WithDescription("\"Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)\", \"Dutch painter, 1606-1669\", \"attributed to Rembrandt\". The date part is read by the dates parser with intent pair; 'agent=false' leaves out the Linked Art Person or Group JSON. Profiles: default, dscribe, marc, ulan, ead, wellcome.")
+.Produces<LinkedArtNet.Agents.AgentResultDto>()
+.Produces<ErrorResponse>(StatusCodes.Status400BadRequest)
+.Produces<ErrorResponse>(StatusCodes.Status404NotFound);
+
+v1.MapGet("/agent/profiles", () => Results.Ok(LinkedArtNet.Agents.AgentProfileCatalog.BuiltIn.Profiles.Values
+        .OrderBy(p => p.Name == "default" ? "" : p.Name, StringComparer.Ordinal)
+        .Select(p => new { p.Name, p.Description, p.DatesProfile, p.NameRequired, p.SemicolonForm })))
+    .WithName("ListAgentProfiles").WithSummary("List the agent-string profiles");
+
 // ---- profiles --------------------------------------------------------------------------------------------------------
 v1.MapGet("/profiles", () => Results.Ok(host.Catalog.Profiles.Values
         .OrderBy(p => p.Name == "default" ? "" : p.Name, StringComparer.Ordinal)

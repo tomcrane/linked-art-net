@@ -1,0 +1,76 @@
+@page "/agents"
+@using LinkedArtNet.Agents
+@model LinkedArtNet.ExamplesSite.Pages.Agents.IndexModel
+@{
+    ViewData["Title"] = "Agent strings";
+}
+<h1>Agent strings to Linked Art people and groups</h1>
+<p class="lede">
+    Library and archive records pack a person into one string: a name, life or activity dates, an honorific, a role, sometimes a
+    nationality. The <a href="https://github.com/tomcrane/linked-art-net/tree/de-pmc/src/LinkedArtNet.Agents">LinkedArtNet.Agents</a> parser
+    takes the string apart under a <em>profile</em> for the source's conventions, hands the date part to the <a href="/dates">dates parser</a>,
+    and builds the Linked Art <code>Person</code> or <code>Group</code>. The same parser answers <code>GET /v1/agent</code> on the
+    <a href="/dates/api">dates API</a>.
+</p>
+<form action="/agents" method="get" class="playground">
+    <input type="text" name="s" value="@Model.S" maxlength="500" aria-label="Agent string" placeholder="e.g. Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)" autofocus />
+    <select name="profile" aria-label="Profile">
+        @foreach (var p in Model.Profiles)
+        {
+            <option value="@p.Name" selected="@(Model.Profile == p.Name)" title="@p.Description">@p.Name</option>
+        }
+    </select>
+    <button type="submit">Parse</button>
+</form>
+<p class="samples">Try: @foreach (var (text, profile) in IndexModel.Samples) { <a href="/agents?s=@Uri.EscapeDataString(text)&amp;profile=@profile">@text</a> }</p>
+
+@if (Model.Result is { } r)
+{
+    <section class="result">
+        <h2><q>@r.Input</q> <span class="status status-@(r.Kind == AgentKind.Unknown ? "unparsed" : "parsed")">@r.Kind.ToString().ToLowerInvariant()</span>
+            <span class="muted">confidence @r.Confidence.ToString("0.00") · profile @r.Profile</span></h2>
+        <dl class="kv agent-parts">
+            @if (r.Name is not null) { <dt>Name</dt><dd>@r.Name</dd> }
+            @if (r.FamilyName is not null) { <dt>Family name</dt><dd>@r.FamilyName</dd> }
+            @if (r.GivenNames is not null) { <dt>Given names</dt><dd>@r.GivenNames</dd> }
+            @if (r.DisplayName is not null && r.DisplayName != r.Name) { <dt>Display</dt><dd>@r.DisplayName</dd> }
+            @if (r.Honorifics.Count > 0) { <dt>Honorifics</dt><dd>@string.Join(", ", r.Honorifics)</dd> }
+            @if (r.DateText is not null) { <dt>Date part</dt><dd><q>@r.DateText</q> @if (r.Dates is { } d) { <text>→ <code>@(d.Canonical ?? d.Status.ToString().ToLowerInvariant())</code> <span class="muted">@d.Kind.ToString() · @d.Confidence.ToString("0.00")</span> · <a class="term" href="/dates?s=@Uri.EscapeDataString(r.DateText)&amp;intent=pair">in the dates playground</a></text> }</dd> }
+            @if (r.Roles.Count > 0) { <dt>Roles</dt><dd>@foreach (var role in r.Roles) { <span class="pill" title="@role.Text">@role.Label@(role.IsOccupation ? "" : " (for this record)")@if (role.AatUri is not null) { <text> · <a class="term" href="@role.AatUri">AAT</a></text> }</span> }</dd> }
+            @if (r.Nationalities.Count > 0) { <dt>Nationality</dt><dd>@foreach (var n in r.Nationalities) { <span class="pill">@n.Label@if (n.AatUri is not null) { <text> · <a class="term" href="@n.AatUri">AAT</a></text> }</span> }</dd> }
+            @if (r.Qualifiers.Count > 0) { <dt>Qualifiers</dt><dd>@string.Join(", ", r.Qualifiers)</dd> }
+            @if (r.Unconsumed is not null) { <dt>Not placed</dt><dd><q>@r.Unconsumed</q></dd> }
+        </dl>
+        @if (r.Notes.Count > 0) { <ul class="notes">@foreach (var n in r.Notes) { <li>@n</li> }</ul> }
+
+        @if (Model.AgentJson is not null)
+        {
+            <section class="code-forms">
+                <h3>As Linked Art
+                    <span class="forms" role="tablist" aria-label="Form">
+                        <button type="button" class="form active" role="tab" aria-selected="true" data-form="agent-json">JSON-LD</button>
+                        <button type="button" class="form" role="tab" aria-selected="false" data-form="agent-csharp">C#</button>
+                    </span>
+                    <button type="button" class="copy" data-copy="agent-json">Copy</button>
+                </h3>
+                <div data-form="agent-json"><pre><code class="language-json" id="agent-json">@Model.AgentJson</code></pre></div>
+                <div data-form="agent-csharp" hidden><pre><code class="language-csharp" id="agent-csharp">@Model.CSharp()</code></pre></div>
+            </section>
+        }
+    </section>
+}
+
+<h2>Profiles</h2>
+<table class="examples">
+    <thead><tr><th>Profile</th><th>Convention</th></tr></thead>
+    <tbody>
+    @foreach (var p in Model.Profiles)
+    {
+        <tr><td><code>@p.Name</code></td><td>@p.Description</td></tr>
+    }
+    </tbody>
+</table>
+<p class="muted">
+    The parser's test set is <code>corpus/agents/</code> in the repository, in the same spirit as the <a href="/dates/corpus">dates corpus</a>;
+    each entry's date part is checked by the dates parser too, so every agent string with dates also tests the date grammar.
+</p>

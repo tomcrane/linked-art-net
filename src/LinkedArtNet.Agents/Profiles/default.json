@@ -1,0 +1,12 @@
+{
+  "name": "default",
+  "description": "General cataloguing: square brackets carry dates, honorifics or qualifiers ('[Sir, 1866-1960]'), parentheses carry roles or qualifiers ('(preface by)', '(attributed)'), 'Surname, Forenames' is inverted order, and trailing comma segments that read as dates, honorifics or roles come off the name ('Smith, John, 1900-1980, artist').",
+  "brackets": ["dates", "honorific", "qualifier", "role"],
+  "parentheses": ["role", "qualifier", "dates", "honorific"],
+  "braces": ["dates"],
+  "trailingSegments": true,
+  "semicolonForm": false,
+  "nameRequired": true,
+  "invertedNames": true,
+  "datesProfile": "default"
+}

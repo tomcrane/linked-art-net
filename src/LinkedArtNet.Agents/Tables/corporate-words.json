@@ -1,0 +1,13 @@
+{
+  "notes": "Words that mark a name as a corporate body rather than a person when they appear as whole words in it. Matched case-insensitively with punctuation stripped. Written by the assistant from common English, French, German and Italian institutional naming; a profile for another language would add its own.",
+  "words": [
+    "ltd", "limited", "inc", "incorporated", "plc", "llc", "gmbh", "ag", "sa", "srl", "co", "company", "corporation", "corp",
+    "society", "societe", "société", "association", "institute", "institution", "institut", "museum", "musee", "musée", "museo", "gallery", "galleries", "galerie",
+    "university", "universite", "université", "universität", "college", "school", "academy", "academie", "académie", "akademie", "accademia", "library", "bibliotheque", "bibliothèque", "bibliothek", "biblioteca",
+    "archive", "archives", "archiv", "archivio", "press", "publishers", "publishing", "verlag", "editions", "éditions", "editore", "editori", "imprimerie", "printers",
+    "studio", "studios", "workshop", "brothers", "bros", "sons", "fils", "frères", "freres", "firm", "foundation", "fondation", "stiftung", "fondazione", "trust",
+    "council", "committee", "commission", "department", "ministry", "office", "board", "club", "church", "cathedral", "abbey", "parish", "diocese", "government", "bank", "agency", "authority",
+    "group", "partners", "partnership", "orchestra", "ensemble", "band", "choir", "theatre", "theater", "company", "collection", "estate", "exhibition", "fair", "congress", "conference", "festival",
+    "centre", "center", "bureau", "parliament", "commons", "lords", "senate", "assembly", "cabinet", "service", "services", "union", "league", "guild", "chambers", "royal", "national", "international", "county", "city", "town", "borough", "district"
+  ]
+}

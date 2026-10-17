@@ -172,6 +172,13 @@ over a fresh dump reconciles only what is new.
 
 ## 6. The agent-string parser (`LinkedArtNet.Agents`), first deliverable
 
+Status 2026-10-17: built as a first version (`src/LinkedArtNet.Agents`): `AgentStringParser` with six profiles (default,
+dscribe, marc, ulan, ead, wellcome), the tables (honorifics, qualifiers, corporate words, nationalities and roles, with
+AAT identifiers only where the registry has the term), `AgentBuilder.ToPerson/ToGroup`, `AgentResultDto`, the agent
+corpus (`corpus/agents/`, four files, 60 entries, evaluated by `AgentCorpusEvaluator` with the nested dates
+expectation), `GET /v1/agent` and `/v1/agent/profiles` on the service, the `/agents` playground, and `tools/Corpus
+agents`. Not yet: the trainer's agent item kind (decision 5) and the Wellcome and PMC strings as corpus files.
+
 Library and archive data pack a person or group into one string: a name, life or activity dates, an honorific, a role
 or occupation, sometimes a nationality. The conventions differ by source but the task is one task:
 

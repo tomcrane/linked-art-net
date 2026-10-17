@@ -356,6 +356,10 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     non-.NET project how to run the dates service from the public image, with the settings that matter (own profiles,
     rate limit, capture) and a Python example.
 
+31. ~~Phase 5 step 1: the agent-string parser.~~ First version 2026-10-17 (doc 10 section 6): `LinkedArtNet.Agents` with
+    profiles and tables, Person/Group builder, agent corpus with nested dates expectations (60 entries, 57 verified),
+    `/v1/agent`, the `/agents` playground, `tools/Corpus agents`. The trainer's agent item kind is the next piece.
+
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:
 

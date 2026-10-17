@@ -182,6 +182,33 @@ public class ServiceTests(ServiceFixture factory) : IClassFixture<ServiceFixture
     }
 
     [Fact]
+    public async Task Agent_endpoint_reads_a_heading_and_lists_profiles()
+    {
+        var response = await _client.GetAsync("/v1/agent?s=" + Uri.EscapeDataString("Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)") + "&profile=dscribe");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(response.Headers.ETag);
+        var a = JsonNode.Parse(await response.Content.ReadAsStringAsync())!;
+        Assert.Equal("person", a["kind"]!.GetValue<string>());
+        Assert.Equal("Grierson, Herbert John Clifford", a["name"]!.GetValue<string>());
+        Assert.Equal("Sir", a["honorifics"]![0]!.GetValue<string>());
+        Assert.Equal("birthDeath", a["dates"]!["kind"]!.GetValue<string>());
+        Assert.Equal("writer of preface", a["roles"]![0]!["label"]!.GetValue<string>());
+        Assert.Equal("Person", a["agent"]!["type"]!.GetValue<string>());
+        Assert.Equal("1866-01-01T00:00:00Z", a["agent"]!["born"]!["timespan"]!["begin_of_the_begin"]!.GetValue<string>());
+
+        var parts = await _client.GetAsync("/v1/agent?s=Dutch%20painter%2C%201606-1669&profile=ulan&agent=false");
+        var p = JsonNode.Parse(await parts.Content.ReadAsStringAsync())!;
+        Assert.Null(p["name"]?.GetValue<string>());
+        Assert.Equal("Dutch", p["nationalities"]![0]!["label"]!.GetValue<string>());
+        Assert.Null(p["agent"]);
+
+        Assert.Equal(HttpStatusCode.BadRequest, (await _client.GetAsync("/v1/agent")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await _client.GetAsync("/v1/agent?s=x&profile=nonesuch")).StatusCode);
+        var profiles = JsonNode.Parse(await _client.GetStringAsync("/v1/agent/profiles"))!.AsArray();
+        Assert.Contains(profiles, n => n!["name"]!.GetValue<string>() == "marc");
+    }
+
+    [Fact]
     public async Task Post_parses_many_in_order_with_refs()
     {
         var body = new

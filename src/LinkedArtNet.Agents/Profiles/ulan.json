@@ -1,0 +1,7 @@
+{
+  "inherits": "default",
+  "name": "ulan",
+  "description": "Getty ULAN display biographies and similar descriptive strings: 'Dutch painter, 1606-1669', 'French illuminator, active mid-15th century', 'Italian painter and architect, 1483-1520'. There is no name; the string gives nationality, occupations and dates.",
+  "nameRequired": false,
+  "invertedNames": false
+}

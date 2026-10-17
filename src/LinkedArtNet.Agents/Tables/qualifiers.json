@@ -1,0 +1,18 @@
+{
+  "notes": "Phrases that qualify what an agent string asserts: attribution ('attributed to', 'circle of'), uncertainty ('possibly', '?'), plurality ('and others'), anonymity. Matched as a whole bracketed group, or as a leading or trailing phrase of the name. Written by the assistant from museum and library cataloguing usage; additions welcome.",
+  "qualifiers": {
+    "attributedTo": ["attributed to", "attributed", "attrib.", "attrib", "attr.", "attr", "ascribed to"],
+    "after": ["after", "copy after"],
+    "circleOf": ["circle of"],
+    "workshopOf": ["workshop of", "studio of", "atelier of"],
+    "followerOf": ["follower of", "imitator of"],
+    "schoolOf": ["school of"],
+    "styleOf": ["style of", "manner of", "in the manner of", "in the style of"],
+    "possibly": ["possibly", "probably", "?", "presumed", "supposed"],
+    "formerly": ["formerly attributed to", "formerly", "previously attributed to"],
+    "andOthers": ["and others", "et al.", "et al", "et alii", "etc."],
+    "pseudonym": ["pseud.", "pseud", "pseudonym", "pseudonym of", "alias"],
+    "anonymous": ["anonymous", "anon.", "anon", "anonyme", "anonimo"],
+    "unknown": ["unknown", "unidentified", "unknown artist", "unknown maker", "unknown photographer", "maker unknown", "artist unknown", "not identified"]
+  }
+}

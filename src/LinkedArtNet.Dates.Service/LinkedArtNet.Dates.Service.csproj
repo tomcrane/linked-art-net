@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
+    <ProjectReference Include="..\LinkedArtNet.Agents\LinkedArtNet.Agents.csproj" />
   </ItemGroup>
 
   <ItemGroup>

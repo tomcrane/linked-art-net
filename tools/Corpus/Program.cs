@@ -13,6 +13,7 @@
 //                                                           write corpus/imported/<source>.json (proposed; see THIRD-PARTY-NOTICES.md)
 //   dotnet run --project tools/Corpus -- periodo [--from <dataset.json[.gz]>]
 //                                                           download https://data.perio.do/dataset/ (or compact a local copy) into periods/periodo.json
+//   dotnet run --project tools/Corpus -- agents [--all]      evaluate the agent corpus (corpus/agents); verified entries gate, the rest inform
 //   dotnet run --project tools/Corpus -- interpret (--strings <file> | --capture <jsonl> | --corpus <file> [--failing] [--status disputed]) [--profile <name>] [--all] [--out <corpus file>] [--model <id>] [--limit <n>] [--dry-run]
 //                                                           ask the Claude interpreter (ANTHROPIC_API_KEY) for the strings the parser cannot read; write them as proposed
 //                                                           entries for review, or, over corpus entries, report agreement with the expectations
@@ -38,6 +39,7 @@ if (command == "review") return Review(args.Skip(1).ToArray());
 if (command == "accept") return Accept(args.Skip(1).ToArray());
 if (command == "periodo") return await PeriodO(args.Skip(1).ToArray());
 if (command == "interpret") return await Interpret(args.Skip(1).ToArray());
+if (command == "agents") return Agents(args.Skip(1).ToArray());
 
 return command switch
 {
@@ -63,7 +65,7 @@ int Validate()
 {
     var problems = new List<string>();
     var ids = new HashSet<string>(StringComparer.Ordinal);
-    foreach (var path in Directory.GetFiles(corpusRoot, "*.json", SearchOption.AllDirectories).Where(p => !p.Contains("schema") && Path.GetFileName(p) != "report.json").Order())
+    foreach (var path in Directory.GetFiles(corpusRoot, "*.json", SearchOption.AllDirectories).Where(p => !p.Contains("schema") && !p.Replace('\\', '/').Contains("/agents/") && Path.GetFileName(p) != "report.json").Order())
     {
         var relative = Path.GetRelativePath(corpusRoot, path).Replace('\\', '/');
         foreach (var error in CorpusFile.SchemaErrors(path, schemaPath)) problems.Add($"{relative}: {error}");
@@ -444,6 +446,32 @@ async Task<int> Interpret(string[] rest)
     File.WriteAllText(target, JsonSerializer.Serialize(corpus, CorpusFile.JsonOptions) + "\n", new UTF8Encoding(false));
     Console.WriteLine($"Wrote {proposals.Count} proposed entries to {Path.GetRelativePath(repoRoot, target)}. Review them in the trainer or with: review {Path.GetRelativePath(corpusRoot, target)}; promote when confirmed.");
     return 0;
+}
+
+// agents [--all]: the agent-string corpus under corpus/agents, evaluated with the repository's dates profiles.
+int Agents(string[] rest)
+{
+    var root = Path.Combine(corpusRoot, "agents");
+    var files = LinkedArtNet.Agents.AgentCorpusFile.LoadAll(root);
+    if (files.Count == 0) { Console.Error.WriteLine($"No agent corpus files under {root}."); return 2; }
+    var evaluator = new LinkedArtNet.Agents.AgentCorpusEvaluator(datesProfiles: LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles")));
+    var all = rest.Contains("--all");
+    var failedVerified = 0;
+    foreach (var file in files)
+    {
+        var results = evaluator.Evaluate(file.Entries);
+        var verified = results.Where(r => r.Entry.Status == EntryStatus.Verified).ToList();
+        var others = results.Where(r => r.Entry.Status != EntryStatus.Verified).ToList();
+        Console.WriteLine($"{file.Path,-32} verified {verified.Count(r => r.Passed)}/{verified.Count}" + (others.Count > 0 ? $"  other {others.Count(r => r.Passed)}/{others.Count}" : ""));
+        foreach (var r in results.Where(r => !r.Passed && (all || r.Entry.Status == EntryStatus.Verified)))
+        {
+            if (r.Entry.Status == EntryStatus.Verified) failedVerified++;
+            Console.WriteLine($"  FAIL {r.Entry.Id} ({r.Entry.Status.ToString()!.ToLowerInvariant()}) \"{r.Entry.Input}\"");
+            foreach (var f in r.Failures) Console.WriteLine("       " + f);
+        }
+    }
+    Console.WriteLine(failedVerified == 0 ? "All verified agent entries pass." : $"{failedVerified} verified agent entries fail.");
+    return failedVerified == 0 ? 0 : 1;
 }
 
 static Intent Trainer_ParseIntent(string? intent) => Enum.TryParse<Intent>(intent, true, out var i) ? i : Intent.Auto;

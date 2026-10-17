@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>LinkedArtNet.Agents</PackageId>
+    <Description>Reads the agent strings of library, archive and museum records ("Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)", "Dutch painter, 1606-1669") into a name, life dates, honorifics, roles and nationality, and builds Linked Art Person and Group records from them.</Description>
+    <RootNamespace>LinkedArtNet.Agents</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkedArtNet\LinkedArtNet.csproj" />
+    <ProjectReference Include="..\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
+    <ProjectReference Include="..\LinkedArtNet.Dates.Corpus\LinkedArtNet.Dates.Corpus.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="LinkedArtNet.Agents.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Profiles\*.json" LogicalName="LinkedArtNet.Agents.Profiles.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Tables\*.json" LogicalName="LinkedArtNet.Agents.Tables.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

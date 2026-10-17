@@ -1,0 +1,7 @@
+{
+  "inherits": "default",
+  "name": "marc",
+  "description": "MARC / RDA name headings: 'Surname, Forenames, 1818-1894', 'Smith, John, active 1640-1660', 'Smith, John, Sir, 1866-1960', with relator terms after the dates ('artist', 'ill.', 'ed.'). Parentheses are qualifiers or fuller forms, not roles.",
+  "parentheses": ["qualifier", "dates", "honorific"],
+  "datesProfile": "library"
+}

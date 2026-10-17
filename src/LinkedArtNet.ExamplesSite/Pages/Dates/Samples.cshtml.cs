@@ -30,9 +30,11 @@ public partial class SamplesModel(CorpusIndex corpus) : PageModel
         foreach (var group in verified.Where(r => r.Entry.File.StartsWith("authored/", StringComparison.Ordinal)).GroupBy(r => r.Entry.File).OrderBy(g => g.Key, StringComparer.Ordinal))
         {
             var source = corpus.Sources.GetValueOrDefault(group.Key);
-            sections.Add(new Section(Key(group.Key), source?.Name?.Replace("Authored: ", "", StringComparison.Ordinal) ?? group.Key, source?.Notes, group.Select(ToSample).ToList(), Authored: true));
+            var title = source?.Name?.Replace("Authored: ", "", StringComparison.Ordinal) ?? group.Key;
+            sections.Add(new Section(Key(group.Key), char.ToUpperInvariant(title[0]) + title[1..], source?.Notes, group.Select(ToSample).ToList(), Authored: true));
         }
-        foreach (var group in verified.Where(r => !r.Entry.File.StartsWith("authored/", StringComparison.Ordinal)).GroupBy(r => r.Entry.File).OrderBy(g => g.Key, StringComparer.Ordinal))
+        // Imported and seed collections; trainer files under proposed/ are reviewers' work in progress, not a showcase.
+        foreach (var group in verified.Where(r => !r.Entry.File.StartsWith("authored/", StringComparison.Ordinal) && !r.Entry.File.StartsWith("proposed/", StringComparison.Ordinal)).GroupBy(r => r.Entry.File).OrderBy(g => g.Key, StringComparer.Ordinal))
         {
             var source = corpus.Sources.GetValueOrDefault(group.Key);
             var picked = group.GroupBy(r => Shape(r.Result.Canonical ?? r.Result.Status.ToString()))

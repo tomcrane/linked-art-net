@@ -15,6 +15,7 @@ public class ServiceFixture : WebApplicationFactory<Program>
     {
         builder.UseSetting("Parser:ProfilesDirectory", Path.Combine(RepoRoot, "profiles"));
         builder.UseSetting("Parser:MaxInputsPerRequest", "5");
+        builder.UseSetting("Parser:MaxAdviseInputs", "50");
         builder.UseSetting("Parser:RequestsPerMinute", "10000");
     }
 
@@ -141,6 +142,43 @@ public class ServiceTests(ServiceFixture factory) : IClassFixture<ServiceFixture
     {
         var response = await _client.GetAsync("/v1/timespan?s=" + new string('1', 501));
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Advise_reports_conventions_and_suggests_a_profile()
+    {
+        var body = new { inputs = new[] { "7/4/1776", "12/25/1850", "1/31/08", "early 1800s", "late 1950s", "vers 1850", "XIVe siècle", "um 1850", "n.d." } };
+        var response = await _client.PostAsJsonAsync("/v1/advise", body);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var advice = JsonNode.Parse(await response.Content.ReadAsStringAsync())!;
+        Assert.Equal(9, advice["strings"]!.GetValue<int>());
+        Assert.Equal(0, advice["skipped"]!.GetValue<int>());
+        Assert.Equal(2, advice["shapes"]!["monthFirstEvidence"]!.GetValue<int>());
+        Assert.Equal("monthFirst", advice["suggestedProfile"]!["dayMonthOrder"]!.GetValue<string>());
+        Assert.Equal(1900, advice["suggestedProfile"]!["twoDigitYearWindow"]!.GetValue<int>());
+        Assert.Equal("default", advice["suggestedProfile"]!["inherits"]!.GetValue<string>());
+        Assert.Contains("7/4/1776", advice["examples"]!["numeric"]!.AsArray().Select(n => n!.GetValue<string>()));
+        Assert.Contains(advice["recommendations"]!.AsArray(), r => r!.GetValue<string>().Contains("monthFirst"));
+        Assert.Contains("# Profile advice", advice["markdown"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Advise_accepts_plain_text_and_validates()
+    {
+        var text = await _client.PostAsync("/v1/advise", new StringContent("early 19th century\r\nca. 1850\r\n\r\n" + new string('x', 600), System.Text.Encoding.UTF8, "text/plain"));
+        Assert.Equal(HttpStatusCode.OK, text.StatusCode);
+        var advice = JsonNode.Parse(await text.Content.ReadAsStringAsync())!;
+        Assert.Equal(2, advice["strings"]!.GetValue<int>());
+        Assert.Equal(1, advice["skipped"]!.GetValue<int>());
+
+        var empty = await _client.PostAsJsonAsync("/v1/advise", new { inputs = Array.Empty<string>() });
+        Assert.Equal(HttpStatusCode.BadRequest, empty.StatusCode);
+        var tooMany = await _client.PostAsJsonAsync("/v1/advise", new { inputs = Enumerable.Range(0, 51).Select(i => (1800 + i).ToString()).ToArray() });
+        Assert.Equal(HttpStatusCode.BadRequest, tooMany.StatusCode);
+        var badLanguage = await _client.PostAsJsonAsync("/v1/advise", new { inputs = new[] { "1984" }, languages = new[] { "xx" } });
+        Assert.Equal(HttpStatusCode.BadRequest, badLanguage.StatusCode);
+        var notJson = await _client.PostAsync("/v1/advise", new StringContent("{ not json", System.Text.Encoding.UTF8, "application/json"));
+        Assert.Equal(HttpStatusCode.BadRequest, notJson.StatusCode);
     }
 
     [Fact]

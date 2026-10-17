@@ -8,6 +8,7 @@ using LinkedArtNet.Dates.Canonical;
 using LinkedArtNet.Dates.Periods;
 using LinkedArtNet.Dates.Realisation;
 using LinkedArtNet.Dates.Service;
+using LinkedArtNet.Dates.Text;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.RateLimiting;
 using Scalar.AspNetCore;
@@ -145,6 +146,39 @@ v1.MapPost("/timespan", (HttpContext http, BatchRequest request) =>
 .WithDescription("Body: { profile?, intent?, options?: { emitInnerBounds?, labelPolicy? }, inputs: [ \"1984\", { \"s\": \"1850-1920\", \"intent\": \"pair\", \"ref\": \"row-17\" } ] }. Results come back in input order with 'ref' echoed.")
 .Accepts<BatchRequest>("application/json")
 .Produces<BatchResponse>()
+.Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
+
+// ---- POST /v1/advise -------------------------------------------------------------------------------------------------
+v1.MapPost("/advise", async (HttpContext http, CancellationToken ct) =>
+{
+    http.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>()?.MaxRequestBodySize = limits.MaxAdviseBodyBytes;
+    IReadOnlyList<string>? inputs; IReadOnlyList<string>? languages = null;
+    if (http.Request.ContentType?.StartsWith("text/plain", StringComparison.OrdinalIgnoreCase) == true)
+    {
+        using var reader = new StreamReader(http.Request.Body);
+        inputs = (await reader.ReadToEndAsync(ct)).Split('\n').Select(l => l.TrimEnd('\r')).ToList();
+    }
+    else
+    {
+        AdviseRequest? request;
+        try { request = await http.Request.ReadFromJsonAsync<AdviseRequest>(ct); }
+        catch (JsonException ex) { return Results.BadRequest(new ErrorResponse("Body must be JSON { \"inputs\": [...] } or text/plain with one string per line.", ex.Message)); }
+        inputs = request?.Inputs; languages = request?.Languages;
+    }
+    inputs = inputs?.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+    if (inputs is null || inputs.Count == 0) return Results.BadRequest(new ErrorResponse("'inputs' must hold at least one string."));
+    if (inputs.Count > limits.MaxAdviseInputs) return Results.BadRequest(new ErrorResponse($"At most {limits.MaxAdviseInputs} strings per request."));
+    if (languages is { Count: > 0 } && languages.FirstOrDefault(l => !Lexicon.Exists(l)) is { } unknown)
+        return Results.BadRequest(new ErrorResponse($"Unknown language '{unknown}'.", "Lexicons: " + string.Join(", ", Lexicon.Codes)));
+    var kept = inputs.Where(s => s.Length <= limits.MaxInputLength).ToList();
+    var report = ProfileAdvisor.Analyse(kept, languages is { Count: > 0 } ? languages : null);
+    return Results.Ok(AdviceDto.From(report, inputs.Count - kept.Count));
+})
+.WithName("Advise")
+.WithSummary("Recommend a profile for a dataset")
+.WithDescription("Looks at a column of date strings before parsing and reports the conventions in use (band words, hedges, era words, century notations, numeric date order, two-digit years, brackets, seasons, open ends, other languages), each with a count and example strings, then recommendations and a suggested profile stated as changes from 'default'. Body: { \"inputs\": [ ... ], \"languages\"?: [ \"en\", \"fr\" ] } or text/plain, one string per line. Nothing is stored.")
+.Accepts<AdviseRequest>("application/json", "text/plain")
+.Produces<AdviceDto>()
 .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
 
 // ---- profiles --------------------------------------------------------------------------------------------------------

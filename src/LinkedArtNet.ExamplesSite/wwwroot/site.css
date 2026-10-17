@@ -116,6 +116,12 @@ ul.failures { margin: 0.25rem 0 0; padding-left: 1rem; font-size: 0.85rem; color
 .status-mismatch, .status-missing, .status-unparsed { background: var(--bad); }
 h1 .status { font-size: 0.85rem; vertical-align: middle; margin-left: 0.5rem; }
 .tags { line-height: 2.2; }
+form.advise textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.95rem; line-height: 1.4; }
+.advice td.num, .advice th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.advice td.egs q { margin-right: 0.75rem; }
+.advice tr.zero { color: var(--muted); }
+.advice tr.zero td.egs { display: table-cell; }
+.recommendations li { margin: 0.4rem 0; }
 .cloud { line-height: 2.4; margin: 1.5rem 0; }
 .cloud .tag { font-size: 1.05rem; padding: 0.15rem 0.8rem; margin-right: 0.5rem; }
 .idioms { list-style: none; padding: 0; margin: -0.75rem 0 1.5rem; font-size: 0.9rem; color: var(--muted); }

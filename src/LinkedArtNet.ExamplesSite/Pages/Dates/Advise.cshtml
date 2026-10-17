@@ -1,0 +1,90 @@
+@page "/dates/advise"
+@model LinkedArtNet.ExamplesSite.Pages.Dates.AdviseModel
+@{
+    ViewData["Title"] = "Profile advisor";
+}
+<nav class="crumbs"><a href="/dates">Date parser</a> › Profile advisor</nav>
+<h1>Profile advisor</h1>
+<p class="lede">
+    Paste a column of dates from a collection and the advisor says which conventions the data uses, before anything is parsed.
+    Each string is still parsed on its own; the advisor only recommends the <a href="/dates/api#profiles">profile</a> to parse it under,
+    and writes that profile out for you to review and save. Nothing you paste is stored.
+</p>
+
+<form method="post" class="stack advise">
+    <textarea name="Inputs" rows="@(Model.Inputs is null ? 8 : 12)" maxlength="2000000" aria-label="Date strings, one per line"
+              placeholder="One date per line, as written in the records: e.g.&#10;early 19th century&#10;ca. 1850&#10;7/4/1776&#10;[18--?]">@Model.Inputs</textarea>
+    <div class="row">
+        <button type="submit">Analyse</button>
+        <span class="muted">Up to @AdviseModel.MaxInputs.ToString("N0") lines; strings over 500 characters are skipped.</span>
+    </div>
+</form>
+<p class="samples">Or try a corpus sample: @foreach (var s in AdviseModel.Samples) { <a href="/dates/advise?sample=@s.Key">@s.Title</a> }</p>
+
+@if (Model.Advice is { } a)
+{
+    <section class="result advice">
+        <h2>
+            @if (Model.SampleTitle is not null) { <text>@Model.SampleTitle</text> } else { <text>Your @Model.Submitted.ToString("N0") strings</text> }
+            <span class="muted">@a.Strings.ToString("N0") analysed@(a.Skipped > 0 ? $", {a.Skipped} skipped as over-long" : "")@(Model.UsesService ? " · via the service" : "")</span>
+        </h2>
+
+        <h3>Recommendations</h3>
+        <ul class="recommendations">
+            @foreach (var r in a.Recommendations) { <li>@r</li> }
+        </ul>
+
+        <h3>Suggested profile <button type="button" class="copy" data-copy="suggested-profile">Copy</button></h3>
+        @if (a.SuggestsDefault)
+        {
+            <p>Nothing in the data called for a change from the <code>default</code> profile.</p>
+        }
+        else
+        {
+            <p class="muted">Only the settings that differ from <code>default</code> are stated. Save it as <code>profiles/<em>name</em>.json</code>, set <code>name</code> to match the file name, and check a sample of results against the collection's own definitions before relying on it.</p>
+        }
+        <pre><code class="language-json" id="suggested-profile">@Model.SuggestedJson</code></pre>
+
+        <h3>Vocabulary</h3>
+        @if (!Model.VocabularyRows().Any())
+        {
+            <p class="muted">No band words, hedges, era words, century notations or other-language words were found.</p>
+        }
+        else
+        {
+            <table class="examples advice">
+                <thead><tr><th>Kind</th><th>Word or notation</th><th class="num">Strings</th><th>For example</th></tr></thead>
+                <tbody>
+                @foreach (var row in Model.VocabularyRows())
+                {
+                    <tr><td>@row.Group</td><td><code>@row.Feature</code></td><td class="num">@row.Count.ToString("N0")</td><td class="egs">@foreach (var e in row.Examples) { <q>@e</q> }</td></tr>
+                }
+                </tbody>
+            </table>
+        }
+
+        <h3>Shapes</h3>
+        <table class="examples advice">
+            <thead><tr><th>Shape</th><th class="num">Strings</th><th>For example</th><th>Why it matters</th></tr></thead>
+            <tbody>
+            @foreach (var row in Model.ShapeRows())
+            {
+                <tr class="@(row.Count == 0 ? "zero" : "")"><td>@row.Feature</td><td class="num">@row.Count.ToString("N0")</td><td class="egs">@foreach (var e in row.Examples) { <q>@e</q> }</td><td class="muted">@row.Meaning</td></tr>
+            }
+            </tbody>
+        </table>
+    </section>
+}
+
+<h2>The same advice from code</h2>
+<p>The advisor is a library call and an endpoint on the <a href="/dates/api#advise">dates API</a>; the response carries these counts, the examples, the recommendations, the suggested profile and a Markdown rendering.</p>
+<pre><code class="language-http">POST @Model.ApiBase/v1/advise
+Content-Type: text/plain
+
+early 19th century
+ca. 1850
+7/4/1776</code></pre>
+<pre><code class="language-csharp">var report = ProfileAdvisor.Analyse(File.ReadLines("dates.txt"));
+Console.WriteLine(report.ToMarkdown());
+File.WriteAllText("profiles/mine.json", report.SuggestedProfileJson("mine").ToJsonString(ParseProfile.JsonOptions));</code></pre>
+<p class="muted">Or from the repository: <code>dotnet run --project tools/Corpus -- advise dates.txt</code>.</p>

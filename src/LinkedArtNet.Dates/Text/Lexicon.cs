@@ -43,6 +43,11 @@ public sealed record Lexicon
 
     public static Lexicon English => Load("en");
 
+    /// <summary>Every language the library ships a lexicon for, English first.</summary>
+    public static readonly IReadOnlyList<string> Codes = ["en", "fr", "de", "it", "es", "nl", "la"];
+
+    public static bool Exists(string languageCode) => Codes.Contains(languageCode, StringComparer.OrdinalIgnoreCase);
+
     public static Lexicon Load(string languageCode)
     {
         lock (Cache)

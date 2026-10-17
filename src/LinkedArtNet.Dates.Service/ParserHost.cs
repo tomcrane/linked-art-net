@@ -17,6 +17,9 @@ public sealed class ParserOptions
     public int MaxInputLength { get; set; } = 500;
     public int MaxInputsPerRequest { get; set; } = 500;
     public int MaxRequestBodyBytes { get; set; } = 256 * 1024;
+    /// <summary>Strings per POST /v1/advise. The advisor is a few regex passes per string, so this is generous.</summary>
+    public int MaxAdviseInputs { get; set; } = 20_000;
+    public int MaxAdviseBodyBytes { get; set; } = 2 * 1024 * 1024;
     /// <summary>Memo cache entries kept in memory; results repeat heavily in real data.</summary>
     public int MemoSize { get; set; } = 50_000;
     public int CacheMaxAgeSeconds { get; set; } = 86_400;

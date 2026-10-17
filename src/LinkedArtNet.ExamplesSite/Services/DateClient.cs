@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LinkedArtNet.Dates;
@@ -121,6 +122,31 @@ public sealed class DateClient
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         WriteIndented = true,
     };
+
+    /// <summary>
+    /// The profile advisor's report for a column of strings: from the service's <c>POST /v1/advise</c> when one is
+    /// configured and answers, otherwise computed in-process in the same shape.
+    /// </summary>
+    public async Task<AdviceDto> AdviseAsync(IReadOnlyList<string> inputs, CancellationToken ct)
+    {
+        if (_http is not null)
+        {
+            try
+            {
+                using var response = await _http.PostAsJsonAsync("v1/advise", new { inputs }, ct);
+                if (response.IsSuccessStatusCode)
+                {
+                    var dto = await response.Content.ReadFromJsonAsync<AdviceDto>(RawJsonOptions, ct);
+                    if (dto is not null) return dto;
+                }
+            }
+            catch (HttpRequestException) { /* fall through to in-process */ }
+            catch (TaskCanceledException) { /* fall through to in-process */ }
+            catch (JsonException) { /* fall through to in-process */ }
+        }
+        var kept = inputs.Where(s => s.Length <= 500).ToList();
+        return AdviceDto.From(ProfileAdvisor.Analyse(kept), inputs.Count - kept.Count);
+    }
 
     private TimeSpanParseResult ParseInProcess(string input, string intent, string profile)
     {

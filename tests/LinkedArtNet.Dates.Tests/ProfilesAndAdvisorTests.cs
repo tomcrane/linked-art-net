@@ -98,6 +98,26 @@ public class ProfilesAndAdvisorTests
         Assert.Equal(12, report.Bands["early"]);
         Assert.Contains(report.Recommendations, r => r.Contains("halves"));
         Assert.Contains("Profile advice", report.ToMarkdown());
+        Assert.Equal(49, report.Suggested.CenturyBands.Early.End);
+        Assert.Equal(4, report.Suggested.DecadeBands.Early.End);
+        var json = report.SuggestedProfileJson("museum");
+        Assert.Equal("default", json["inherits"]!.GetValue<string>());
+        Assert.Equal("museum", json["name"]!.GetValue<string>());
+        Assert.True(json.ContainsKey("centuryBands"));
+        Assert.False(json.ContainsKey("dayMonthOrder"), "unchanged settings are not stated");
+        Assert.False(report.SuggestsDefault);
+        Assert.Contains("early 1500s", report.Examples["band:early"]);
+        Assert.Contains("```json", report.ToMarkdown());
+    }
+
+    [Fact]
+    public void Advisor_suggests_the_default_when_nothing_stands_out()
+    {
+        var report = ProfileAdvisor.Analyse(["1984", "1850-1920", "c. 1600", "1990s"]);
+        Assert.True(report.SuggestsDefault);
+        Assert.Equal(3, report.SuggestedProfileJson().Count); // inherits, name, description
+        Assert.Contains(report.Recommendations, r => r.Contains("Nothing stands out"));
+        Assert.Contains("The default profile", report.ToMarkdown());
     }
 
     [Fact]
@@ -112,5 +132,11 @@ public class ProfilesAndAdvisorTests
         Assert.Contains(report.Recommendations, r => r.Contains("twoDigitYearWindow"));
         Assert.True(report.Languages.ContainsKey("fr"));
         Assert.True(report.Languages.ContainsKey("de"));
+        Assert.Equal(DayMonthOrder.MonthFirst, report.Suggested.DayMonthOrder);
+        Assert.Equal(1900, report.Suggested.TwoDigitYearWindow);
+        Assert.Contains("1/31/08", report.Examples["twoDigitYears"]);
+        Assert.Contains("vers 1850", report.Examples["lang:fr"]);
+        Assert.Equal("en", report.Suggested.Languages[0]);
+        Assert.Equal(report.Languages.Where(kv => kv.Value >= 3).Select(kv => kv.Key).Order(), report.Suggested.Languages.Skip(1).Order()); // only languages at the threshold are suggested
     }
 }

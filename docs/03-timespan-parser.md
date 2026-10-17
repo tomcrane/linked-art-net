@@ -257,7 +257,9 @@ public sealed record TimeSpanParseResult(
 ## 3. Public API
 
 Implemented: `TimeSpanParser`, `ParseOptions`, `ProfileCatalog.Load("profiles")`, the fluent bridge in `TimeSpanBridge`
-(`WithTimeSpan`, `WithLifespan`, `WithExistence`) and `ProfileAdvisor.Analyse`. `TimeSpanParserBuilder` and `ParseAsync`
+(`WithTimeSpan`, `WithLifespan`, `WithExistence`) and `ProfileAdvisor.Analyse` (since 2026-10-17 with example strings per
+feature and a `Suggested` profile, written as changes from `default` by `SuggestedProfileJson`; exposed as `POST /v1/advise`
+and `/dates/advise`). `TimeSpanParserBuilder` and `ParseAsync`
 with an `IDateInterpreter` are still to come.
 
 

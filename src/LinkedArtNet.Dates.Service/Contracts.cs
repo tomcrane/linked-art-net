@@ -12,6 +12,9 @@ public sealed record BatchOptions(bool? Llm = null, bool? EmitInnerBounds = null
 /// <summary>POST body. <see cref="Inputs"/> items are strings or objects <c>{ s, intent?, profile?, ref? }</c>.</summary>
 public sealed record BatchRequest(string? Profile, string? Intent, BatchOptions? Options, IReadOnlyList<JsonElement> Inputs);
 
+/// <summary>POST /v1/advise body: the strings to look at and, optionally, which lexicons to check (default: all of them).</summary>
+public sealed record AdviseRequest(IReadOnlyList<string>? Inputs, IReadOnlyList<string>? Languages);
+
 public sealed record ProfileSummary(string Name, string? Description, IReadOnlyList<string> Languages, string CenturyConvention);
 
 public sealed record VersionInfo(string Service, string Parser, string Model, string? Git, IReadOnlyList<string> Profiles, int PeriodTables);

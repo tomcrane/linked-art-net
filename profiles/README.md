@@ -1,8 +1,9 @@
 # Parse profiles
 
 A profile is every interpretive rule the parser and realiser apply, as data (`ParseProfile`). The parser never
-guesses a convention from the data it is parsing; the caller picks a profile, and the profile advisor
-(`dotnet run --project tools/Corpus -- advise <strings.txt>`) can recommend one from a sample of a dataset.
+guesses a convention from the data it is parsing; the caller picks a profile, and the profile advisor can recommend
+one from a sample of a dataset and write it out as a file to review: `dotnet run --project tools/Corpus -- advise <strings.txt>`,
+`POST /v1/advise` on the service, or the site's [/dates/advise](https://linkedart.net/dates/advise) page.
 
 A file may say `"inherits": "default"` and state only what it changes. The file name and the `name` must agree.
 `ProfileCatalog.Load("profiles")` loads them all; the corpus evaluator resolves entry profiles from this directory.

@@ -24,6 +24,7 @@ for Linked Art (C# reads more easily than JSON-LD) and a living coverage dashboa
 | `/properties/{name}` | Reverse index: every example using a given property or AAT term. |
 | `/dates` | Parser playground: input box, intent and profile selectors, "allow LLM" when configured; result panel with the TimeSpan JSON, a timeline bar (log-scaled for deep time), flags, confidence, notes, alternatives; "copy as C#"; "this is wrong" -> opens the trainer form pre-filled. Calls the public service over HTTP (configurable base URL) so the demo exercises the real API. |
 | `/dates/corpus` | Browse the corpus by tag and status; per-entry pass/fail against the current parser version. |
+| `/dates/advise` | Profile advisor (2026-10-17): paste a column of dates or pick a corpus sample; the conventions found (with example strings), recommendations and a suggested profile to save under `profiles/`. Calls `POST /v1/advise` when the service is configured, else in-process. |
 | `/dates/train` (auth) | Trainer: queue of captured unparsed/low-confidence inputs and uploaded lists; shows the parser's answer; reviewer accepts, edits the canonical expression (live re-realised), sets intent/profile, tags, and submits. Submissions become `proposed` corpus entries in a pull request branch (via GitHub API) or a downloadable JSON when not configured. |
 | `/about` | What Linked Art is, what this library is, how to use the NuGet packages, licence, attribution for imported corpora. |
 

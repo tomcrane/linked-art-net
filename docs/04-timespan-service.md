@@ -19,6 +19,7 @@ LLM escalation; optional capture of unparsed inputs to feed the corpus.
 | GET | `/v1/profiles` | List available profiles with descriptions. |
 | GET | `/v1/profiles/{name}` | A profile's effective settings (JSON). |
 | GET | `/v1/canonical?e=late%20195X` | Realise a canonical expression without parsing text (debug/trainer aid). |
+| POST | `/v1/advise` | Profile advice for a dataset (added 2026-10-17): counts of the conventions in use with example strings, recommendations, and a suggested profile stated as changes from `default`. Body `{ "inputs": [...], "languages"?: [...] }` or `text/plain` with one string per line; up to 20,000 strings and 2 MB; strings over 500 characters are skipped and counted. Nothing is stored. The site's `/dates/advise` calls it. |
 | GET | `/healthz`, `/version` | Liveness; parser + corpus version and git SHA. |
 | GET | `/openapi/v1.json`, `/docs` | OpenAPI document and a UI (Scalar). |
 
@@ -87,7 +88,7 @@ The `_label` of every TimeSpan is the exact input string. `labelPolicy=labelAndN
   environment) **and** the caller passes `llm=true`. LLM results are capped in confidence, flagged
   `Interpreted`, and realised deterministically from the returned canonical expression (never trusted
   to produce datetimes). Per-request timeout; failure falls back to the deterministic result.
-- **Limits.** Input string max 500 chars; 500 inputs per POST; request body 256 KB; built-in rate
+- **Limits.** Input string max 500 chars; 500 inputs per POST; request body 256 KB (`/v1/advise`: 20,000 strings, 2 MB); built-in rate
   limiter (fixed window per IP, generous for GET). CORS: allow any origin for GET and POST without
   credentials, so the examples site and others can call it from the browser.
 - **Capture (opt-in).** If `Capture:Enabled`, inputs with `status != parsed` or confidence below a

@@ -73,7 +73,7 @@ Content-Type: application/json
 }</code></pre>
 <p>The reply is <code>{ "results": [ … ] }</code> in input order, each result in the shape above with your <code>ref</code> echoed back. Optional <code>intent</code> and <code>options</code> (<code>emitInnerBounds</code>, <code>labelPolicy</code>) at the top level apply to every input that does not say otherwise.</p>
 
-<h2>Profiles</h2>
+<h2 id="profiles">Profiles</h2>
 <p>Conventions differ between collections, so a profile fixes them. The service ships these; <code>GET @Model.Base/v1/profiles/<em>name</em></code> returns a profile's effective settings as JSON.</p>
 <table class="examples">
     <thead><tr><th>Profile</th><th>Intended for</th></tr></thead>
@@ -92,10 +92,24 @@ Content-Type: application/json
     stored canonical forms and want the TimeSpans regenerated under different conventions, or to check what a form means.
 </p>
 
+<h2 id="advise">Advice on a dataset</h2>
+<pre><code class="language-http">POST @Model.Base/v1/advise
+Content-Type: application/json
+
+{ "inputs": ["early 19th century", "ca. 1850", "7/4/1776", "[18--?]"] }</code></pre>
+<p>
+    Before parsing a collection, send a sample of its date strings (up to 20,000, or <code>text/plain</code> with one per line) and the
+    <a href="/dates/advise">profile advisor</a> reports the conventions in use: band words (early, mid, late, halves, quarters), hedges, era words,
+    century notations, numeric date order, two-digit years, brackets, seasons, open ends and words from other languages, each with a count
+    and example strings. The response ends with <code>recommendations</code>, a <code>suggestedProfile</code> stated as changes from
+    <code>default</code>, and a <code>markdown</code> rendering of the whole report. An optional <code>languages</code> array limits which lexicons
+    are checked. Nothing is stored. The advisor never changes how a string parses; it only recommends the profile to parse under.
+</p>
+
 <h2>Behaviour</h2>
 <ul>
     <li><strong>Caching.</strong> Responses carry <code>Cache-Control: public, max-age=86400</code> and an <code>ETag</code>; send <code>If-None-Match</code> to get a 304.</li>
-    <li><strong>Limits.</strong> 500 characters per input, 500 inputs per POST, a 256 KB body, and 600 requests a minute per address, after which the service answers 429.</li>
+    <li><strong>Limits.</strong> 500 characters per input, 500 inputs per POST, a 256 KB body (20,000 strings and 2 MB for <code>/v1/advise</code>), and 600 requests a minute per address, after which the service answers 429.</li>
     <li><strong>Errors.</strong> 400 for a missing or malformed parameter, 404 for an unknown profile, each with <code>{ "error": "…", "detail": "…" }</code>. A date the parser cannot read is not an error: 200 with <code>status: unparsed</code>.</li>
     <li><strong>Versioning.</strong> The path is <code>/v1</code>; a breaking change to the response would bump it. Every result names its <code>parserVersion</code>, and <code>GET @Model.Base/version</code> reports the service, parser and model versions.</li>
     <li><strong>Reference.</strong> The interactive OpenAPI description is at <a href="@Model.Base/docs">@Model.Base/docs</a>, and the document itself at <code>@Model.Base/openapi/v1.json</code>.</li>

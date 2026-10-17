@@ -157,6 +157,9 @@ public class InterpreterTests
     [InlineData("1984", false)]
     [InlineData("n.d.", false)]
     [InlineData("ye olde scrawle", true)]
+    [InlineData("19881", true)]      // read as written, but a year outside the plausible range is penalised below the threshold
+    [InlineData("c. 18011", true)]
+    [InlineData("2150", false)]      // within the default range (to 2200)
     public void NeedsInterpreter_follows_status_and_threshold(string input, bool expected)
     {
         Assert.Equal(expected, TimeSpanParser.NeedsInterpreter(Parser.Parse(input), ParseProfile.Default));

@@ -134,7 +134,8 @@ public sealed class CorpusPromotionTests : IDisposable
     [Fact]
     public void A_file_without_defaults_gets_an_explicit_status_on_every_entry()
     {
-        var noDefaults = TrainerFile.Replace("  \"defaults\": { \"status\": \"proposed\", \"tags\": [\"trainer\"] },\n", "");
+        // The raw literal carries the source file's line endings (CRLF on a Windows checkout), so normalise before matching a line.
+        var noDefaults = TrainerFile.ReplaceLineEndings("\n").Replace("  \"defaults\": { \"status\": \"proposed\", \"tags\": [\"trainer\"] },\n", "");
         var path = Write("plain.json", noDefaults);
         CorpusPromotion.Promote(path, null, EntryStatus.Verified, _evaluator);
 

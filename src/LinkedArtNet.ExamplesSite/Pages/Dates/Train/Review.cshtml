@@ -65,7 +65,15 @@ else
     <form method="post" class="stack review-form" id="review">
         <input type="hidden" name="id" value="@Model.Item.Id" />
         <div class="row">
-            <button type="submit" asp-page-handler="Accept" class="primary" title="The parser's answer is right">Accept as is</button>
+            @if (Model.Item.Proposal is { Canonical: not null })
+            {
+                <button type="submit" asp-page-handler="Accept" title="The parser's answer, not the proposal, is right">Accept the parser's reading@(Model.Parsed.Canonical is null ? "" : $" ({Model.Parsed.Canonical})")</button>
+                <span class="muted">To keep the proposed reading, save the correction below.</span>
+            }
+            else
+            {
+                <button type="submit" asp-page-handler="Accept" class="primary" title="The parser's answer is right">Accept as is</button>
+            }
             <button type="submit" asp-page-handler="Skip" title="Leave it for someone else">Skip</button>
         </div>
         <h2>Or correct it</h2>

@@ -1220,7 +1220,12 @@ internal sealed class DateParser
         era = eraFirst ?? TakeEra();
         var value = number.Number;
         if (era == Era.Ce && value == 0) { _notes.Add("There is no year 0; '0 AD' is read as 1 BCE."); return 0; }
-        return era is null ? value : ApplyEra(value, era.Value);
+        var year = era is null ? value : ApplyEra(value, era.Value);
+        // "19881", "c. 18011": a year outside the profile's plausible range is read as written but is probably a typo, so
+        // the confidence drops below the accept threshold and an interpreter or a reviewer gets to see it.
+        if (year > _profile.PlausibleYearMax || year < _profile.PlausibleYearMin)
+            Penalise(0.5, $"The year {year} lies outside the profile's plausible range ({_profile.PlausibleYearMin} to {_profile.PlausibleYearMax}); a typo, or not a year.");
+        return year;
     }
 
     private static long ApplyEra(long value, Era era) => era == Era.Bce ? 1 - value : value;

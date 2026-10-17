@@ -103,6 +103,10 @@ rules); the examples site gains a playground page and, in time, a review page th
 
 ## 4. The store: entities, strings, decisions, authority cache
 
+Status 2026-10-17: built as described, with the additions of an `overrides` table (7.1's first step) and a
+`Lifespan` of four instants in place of a TimeSpan pair; doc 11 has the schema, the API, the importers for the
+pmc-lux files and the earlier PMC tables, the `tools/Align` command line and the test setup.
+
 Everything repeatable lives in `IAlignmentStore`. Five kinds of row.
 
 **Entity**: something the toolkit has minted an identifier for.
@@ -334,9 +338,9 @@ QLever's update path. A later document covers the engine, its indexing and its i
 1. **Agents parser** (`LinkedArtNet.Agents`): parser, profiles, corpus seeded from pmc-2 tests, PMC and ULAN strings and
    the Leeds `eparties` date forms, tests, `/v1/agent`, playground page, and the trainer's agent item kind with the
    nested dates expectation (decision 5). No store, no network. Small.
-2. **Store and model**: the PostgreSQL store; Entity, SourceString, Decision, AuthorityRecord, Run; identifier minting
-   under a per-dataset hostname; importer for the owner's existing tables and the `pmc-lux` overrides. Tests on a
-   disposable database.
+2. **Store and model** (built 2026-10-17, doc 11): the PostgreSQL store; Entity, SourceString, Decision,
+   AuthorityRecord, Run; identifier minting under a per-dataset hostname; importer for the owner's existing tables
+   and the `pmc-lux` overrides. Tests on a disposable database.
 3. **Authority sources and reconciler**: ULAN local index first (the data exists), then AAT, TGN, PeriodO (reuse),
    LCNAF; cached remote clients for VIAF, Wikidata, LoC, LUX with the self-echo rule; scoring, voting, thresholds;
    review queue export; tests against recorded responses.

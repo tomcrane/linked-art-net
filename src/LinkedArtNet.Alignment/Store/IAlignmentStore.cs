@@ -1,0 +1,94 @@
+namespace LinkedArtNet.Alignment.Store;
+
+/// <summary>
+/// Everything repeatable about a transformation (design doc 10, section 4): the entities we minted, the strings we
+/// saw, what we decided each string refers to and on what evidence, the authority records we fetched, and the runs.
+/// One implementation, PostgreSQL; this interface is what pipeline stages and tests program against.
+/// </summary>
+public interface IAlignmentStore
+{
+    /// <summary>Creates or upgrades the schema. Safe to call every start.</summary>
+    Task InitialiseAsync(CancellationToken ct = default);
+
+    // ---- entities
+
+    /// <summary>Stores a new entity. With <see cref="NewEntity.Id"/> null a URI is minted under the scheme and checked unused; with an id, that id is kept (an import of published identifiers).</summary>
+    Task<Entity> AddEntityAsync(string dataset, NewEntity entity, IdentifierScheme scheme, CancellationToken ct = default);
+
+    /// <summary>The entity by URI, or null. A merged entity is returned as stored; <see cref="ResolveEntityAsync"/> follows merges.</summary>
+    Task<Entity?> GetEntityAsync(string id, CancellationToken ct = default);
+
+    /// <summary>The entity by URI following <see cref="Entity.MergedInto"/> to the survivor, or null.</summary>
+    Task<Entity?> ResolveEntityAsync(string id, CancellationToken ct = default);
+
+    /// <summary>Entities whose label or alternate labels normalise to the key, optionally within a dataset and class. Merged entities are left out.</summary>
+    Task<IReadOnlyList<Entity>> FindEntitiesByLabelAsync(string normalisedLabel, string? dataset = null, EntityClass? cls = null, CancellationToken ct = default);
+
+    /// <summary>Entities with this authority URI among their equivalents.</summary>
+    Task<IReadOnlyList<Entity>> FindEntitiesByEquivalentAsync(string uri, CancellationToken ct = default);
+
+    /// <summary>Replaces the entity's current best values (label, labels, lifespan, nationalities, roles, status). Equivalents are managed separately.</summary>
+    Task UpdateEntityAsync(Entity entity, CancellationToken ct = default);
+
+    /// <summary>Adds or replaces an equivalent; an entity with any equivalent that is still provisional becomes aligned.</summary>
+    Task AddEquivalentAsync(string entityId, Equivalent equivalent, CancellationToken ct = default);
+
+    /// <summary>Merges the loser into the survivor: equivalents move, valid decisions re-point, the loser is marked merged and keeps resolving.</summary>
+    Task MergeAsync(string loserId, string survivorId, string? reviewer, CancellationToken ct = default);
+
+    // ---- source strings
+
+    /// <summary>Records a string occurrence: inserts it or bumps last_seen and occurrences. The parsed JSON, when given, replaces what was stored.</summary>
+    Task<SourceString> CollectAsync(string dataset, string context, string raw, string? parsedJson = null, CancellationToken ct = default);
+
+    Task<SourceString?> GetSourceStringAsync(long id, CancellationToken ct = default);
+
+    Task<SourceString?> FindSourceStringAsync(string dataset, string context, string raw, CancellationToken ct = default);
+
+    /// <summary>Strings in the dataset with no valid decision at all, oldest first: the reconciler's work. A decision that left a string unresolved counts as looked at until it is invalidated.</summary>
+    Task<IReadOnlyList<SourceString>> UndecidedAsync(string dataset, int limit = 1000, CancellationToken ct = default);
+
+    // ---- decisions
+
+    /// <summary>Records what a string refers to, invalidating any earlier decision for it. A null entity records "looked at, unresolved".</summary>
+    Task<Decision> DecideAsync(long sourceStringId, string? entityId, string method, string? evidenceJson = null, string? reviewer = null, string? datasetVersion = null, string? runId = null, CancellationToken ct = default);
+
+    /// <summary>The valid decision for a string, or null.</summary>
+    Task<Decision?> DecisionForAsync(long sourceStringId, CancellationToken ct = default);
+
+    /// <summary>The entity a string in a dataset and context currently resolves to, following merges; null when unknown or undecided.</summary>
+    Task<Entity?> ResolveAsync(string dataset, string context, string raw, CancellationToken ct = default);
+
+    /// <summary>Marks every valid decision pointing at the entity invalid, so the reconciler reconsiders those strings.</summary>
+    Task<int> InvalidateDecisionsForEntityAsync(string entityId, CancellationToken ct = default);
+
+    // ---- overrides
+
+    Task PutOverrideAsync(Override item, CancellationToken ct = default);
+
+    /// <summary>The override for a string: the one for its context first, then the one for any context.</summary>
+    Task<Override?> OverrideForAsync(string dataset, string context, string normalised, CancellationToken ct = default);
+
+    // ---- authority records
+
+    Task<AuthorityRecord?> GetAuthorityAsync(string uri, CancellationToken ct = default);
+
+    Task PutAuthorityAsync(AuthorityRecord record, CancellationToken ct = default);
+
+    /// <summary>Cached authority records whose labels normalise to the key, optionally from one source ("ulan").</summary>
+    Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelAsync(string normalisedLabel, string? source = null, CancellationToken ct = default);
+
+    // ---- runs
+
+    Task<Run> StartRunAsync(string dataset, string? manifestJson = null, string? dumpsJson = null, string? gitSha = null, CancellationToken ct = default);
+
+    Task FinishRunAsync(string runId, string? countsJson, string? report, CancellationToken ct = default);
+
+    Task<Run?> GetRunAsync(string runId, CancellationToken ct = default);
+
+    Task<IReadOnlyList<Run>> RunsAsync(string dataset, int limit = 20, CancellationToken ct = default);
+
+    // ---- overview
+
+    Task<StoreCounts> CountsAsync(string? dataset = null, CancellationToken ct = default);
+}

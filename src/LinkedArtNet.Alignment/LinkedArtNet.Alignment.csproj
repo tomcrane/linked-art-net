@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>LinkedArtNet.Alignment</PackageId>
+    <Description>The repeatable part of transforming a collection to Linked Art: a PostgreSQL store of minted entities, source strings, alignment decisions with evidence, cached authority records and runs, so a collection can be re-processed without re-running alignment.</Description>
+    <RootNamespace>LinkedArtNet.Alignment</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkedArtNet\LinkedArtNet.csproj" />
+    <ProjectReference Include="..\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
+    <ProjectReference Include="..\LinkedArtNet.Agents\LinkedArtNet.Agents.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="LinkedArtNet.Alignment.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Store\Schema.sql" LogicalName="LinkedArtNet.Alignment.Schema.sql" />
+  </ItemGroup>
+
+</Project>

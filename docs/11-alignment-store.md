@@ -1,0 +1,100 @@
+# The alignment store (`LinkedArtNet.Alignment`)
+
+Step 2 of the toolkit (doc 10, section 12), built 2026-10-17. The store is the repeatable part of a transformation:
+the identifiers we minted, the strings we saw, what we decided each string refers to and on what evidence, the
+authority records we fetched, and the runs. A collection can be re-processed from a fresh dump without re-running
+alignment because stages 5 and 6 of the pipeline read from here.
+
+## 1. Shape
+
+PostgreSQL only (decision 2), plain Npgsql, one schema file applied idempotently
+(`src/LinkedArtNet.Alignment/Store/Schema.sql`, embedded; `PostgresAlignmentStore.InitialiseAsync` runs it, a
+`schema_version` table records the version). No ORM: the queries are short and the shapes are the design's.
+
+| Table | Row | Key |
+|---|---|---|
+| `entities` | something we minted a URI for: class, best label, alternate labels, lifespan as four instants plus the text, nationalities, roles, status, `merged_into` | URI |
+| `entity_equivalents` | an authority URI an entity is the same as, with source, method, confidence, when, dataset version, run | (entity, uri) |
+| `source_strings` | a string as it occurred: dataset, context, raw, normalised, parsed JSON, first/last seen, occurrences | (dataset, context, normalised) |
+| `decisions` | what a string refers to: entity or null, method, evidence JSON, reviewer, when, run, `valid` | serial; one valid per string |
+| `overrides` | curated answers: (dataset, context or any, normalised) → entity or authority URI, with the source | (dataset, context, normalised) |
+| `authority_records` | a cached external record: source, labels, type, lifespan, sameAs, raw data, fetched, version | URI |
+| `runs` | one pipeline execution: dataset, manifest, dumps, started, finished, git SHA, counts, report | id |
+
+Labels are matched through `normalised_labels text[]` with a GIN index, so "find entities called X" is an index read.
+Lifespans are stored as `begin_earliest`, `begin_latest`, `end_earliest`, `end_latest` (timestamptz) so overlap and
+conflict are SQL; the model's `Lifespan.Compatible` applies the rule in code (both sides known and disjoint is a
+conflict, a silent side is neutral). Dates outside years 1-9999 keep their text only.
+
+## 2. API
+
+`IAlignmentStore` (`Store/IAlignmentStore.cs`) is what pipeline stages and tests program against; the one
+implementation is `PostgresAlignmentStore`. The groups:
+
+- **Entities**: `AddEntityAsync(dataset, NewEntity, scheme)` mints a URI under the scheme unless the `NewEntity`
+  carries one (an import of published identifiers); `GetEntityAsync`, `ResolveEntityAsync` (follows merges),
+  `FindEntitiesByLabelAsync`, `FindEntitiesByEquivalentAsync`, `UpdateEntityAsync`, `AddEquivalentAsync` (a
+  provisional entity with an equivalent becomes aligned), `MergeAsync` (equivalents move, valid decisions re-point,
+  the loser is marked merged and still resolves).
+- **Source strings**: `CollectAsync` upserts by the normalised key and bumps `occurrences` and `last_seen`;
+  `UndecidedAsync` lists the reconciler's work (no valid decision at all).
+- **Decisions**: `DecideAsync` invalidates the earlier decision for the string and records the new one, entity or
+  null ("looked at, unresolved"); `DecisionForAsync`; `ResolveAsync(dataset, context, raw)` goes string → decision →
+  entity following merges; `InvalidateDecisionsForEntityAsync` reopens every string decided to an entity.
+- **Overrides**: `PutOverrideAsync`, `OverrideForAsync` (the context's own override first, then the one for any
+  context).
+- **Authority records**: `GetAuthorityAsync`, `PutAuthorityAsync`, `FindAuthoritiesByLabelAsync(key, source)`.
+- **Runs**: `StartRunAsync`, `FinishRunAsync`, `GetRunAsync`, `RunsAsync`; `CountsAsync` for the overview.
+
+`StringKey.Normalise` is the key for strings, overrides and label matches: Unicode compatibility form, one kind of
+apostrophe and dash, whitespace collapsed, trailing punctuation dropped, case folded. Two strings with the same key
+are the same string for the store; nothing more is claimed.
+
+## 3. Identifiers
+
+`IdentifierScheme(Base, Segments, IdLength)` gives each dataset its hostname (decision 1) and a path segment per
+class; `IdentifierScheme.Pmc` is `https://data.paul-mellon-centre.ac.uk/` with `person`, `group`, `place`,
+`concept` (Type, Material and Language), `period`, `event`, which is what the published PMC identifiers use.
+`IdMinter` keeps the PMC alphabet (lower-case letters and digits without 0, 1, i, l, o; letter first; eight
+characters), generated from a cryptographic source and checked unused on insert. The Leeds thing/document/
+representation layering (doc 10, section 8) is a publishing concern and is not in the scheme yet.
+
+## 4. Importers (`Import/`)
+
+- `PmcLuxOverrides` reads the `digirati-co-uk/pmc-lux` `authority-strings/*.json` files (MIT): the `authorities`
+  become entities with their identifiers kept and their ULAN, VIAF, LoC, Wikidata, AAT, TGN and LUX ids as
+  equivalents (method `override`); the `local_string_map` becomes overrides for any context. Strings whose target
+  has no authority record still get an override to the URI the identifier would have.
+- `LegacyPmcImporter` reads the owner's earlier `authorities` and `source_string_map` tables from a second
+  connection: authorities become entities (identifiers kept, equivalents method `imported`), each source string is
+  collected under its old `source` as the context with a decision of method `imported`, strings that only had an
+  `unrec_` placeholder stay undecided with the placeholder in their parsed JSON, rows with an unknown type or a
+  dangling authority are counted and skipped.
+
+Both are idempotent: entities already present are left alone, overrides are replaced, decisions are not duplicated.
+
+## 5. Command line (`tools/Align`)
+
+```
+dotnet run --project tools/Align -- init
+dotnet run --project tools/Align -- stats [--dataset pmc|all]
+dotnet run --project tools/Align -- import-overrides authority-strings/groups.json [--dataset pmc] [--base https://...] [--class Group]
+dotnet run --project tools/Align -- import-legacy [--dataset pmc]
+```
+
+Connection strings come only from the environment: `LINKEDART_PG` for the store, `LINKEDART_LEGACY_PG` for the
+earlier PMC database. Nothing in the repository holds one.
+
+## 6. Tests
+
+`tests/LinkedArtNet.Alignment.Tests` runs the store against a disposable PostgreSQL 15: the connection string in
+`LINKEDART_TEST_PG` when set (its tables are dropped and recreated, so point it at a scratch database), else a
+container through Testcontainers, which needs Docker. Tests marked `[PostgresFact]` are skipped with the reason when
+neither is available; the scheme, normalisation, lifespan and parsing tests always run. CI's Ubuntu runner has
+Docker, so the store tests run there.
+
+## 7. Not yet
+
+The reconciler and authority sources (step 3), the pipeline runner and PMC instance (step 4), the review UI for
+alignment decisions (step 5). The legacy import has been tested against a copy of the old tables' shape, not yet
+against the owner's database; the first real run is `import-legacy` with `LINKEDART_LEGACY_PG` set.

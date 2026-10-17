@@ -1,0 +1,471 @@
+using System.Data;
+using System.Reflection;
+using Npgsql;
+using NpgsqlTypes;
+
+namespace LinkedArtNet.Alignment.Store;
+
+/// <summary>
+/// The store on PostgreSQL (design decision 2), plain Npgsql, one schema in <c>Schema.sql</c>. Construct with a
+/// connection string or a shared <see cref="NpgsqlDataSource"/>; call <see cref="InitialiseAsync"/> once per
+/// process. Timestamps are UTC. Text keys are compared as stored; callers normalise with <see cref="StringKey"/>.
+/// </summary>
+public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
+{
+    private readonly NpgsqlDataSource _db;
+    private readonly bool _ownsDataSource;
+
+    public PostgresAlignmentStore(string connectionString) : this(NpgsqlDataSource.Create(connectionString), ownsDataSource: true) { }
+
+    public PostgresAlignmentStore(NpgsqlDataSource dataSource, bool ownsDataSource = false)
+    {
+        _db = dataSource;
+        _ownsDataSource = ownsDataSource;
+    }
+
+    public ValueTask DisposeAsync() => _ownsDataSource ? _db.DisposeAsync() : ValueTask.CompletedTask;
+
+    /// <summary>The schema statements, from the embedded Schema.sql.</summary>
+    public static string SchemaSql { get; } = ReadSchema();
+
+    private static string ReadSchema()
+    {
+        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LinkedArtNet.Alignment.Schema.sql") ?? throw new InvalidOperationException("Schema.sql is not embedded.");
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+    }
+
+    public async Task InitialiseAsync(CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(SchemaSql);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    /// <summary>Drops every table of the store. For disposable test databases only.</summary>
+    internal async Task DropAllAsync(CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version cascade");
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    // ---- entities --------------------------------------------------------------------------------------------------
+
+    private const string EntityColumns = "e.id, e.dataset, e.class, e.label, e.labels, e.begin_earliest, e.begin_latest, e.end_earliest, e.end_latest, e.lifespan_text, e.nationalities, e.roles, e.status, e.merged_into, e.created_at, e.updated_at, e.run_id";
+
+    public async Task<Entity> AddEntityAsync(string dataset, NewEntity entity, IdentifierScheme scheme, CancellationToken ct = default)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var labels = (entity.Labels ?? []).Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();
+        for (var attempt = 0; attempt < 20; attempt++)
+        {
+            var id = entity.Id ?? scheme.Mint(entity.Class);
+            await using var cmd = _db.CreateCommand(
+                """
+                insert into entities (id, dataset, class, label, labels, normalised_labels, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, nationalities, roles, status, created_at, updated_at, run_id)
+                values (@id, @dataset, @class, @label, @labels, @normalised, @b1, @b2, @e1, @e2, @ltext, @nat, @roles, @status, @now, @now, @run)
+                on conflict (id) do nothing
+                """);
+            Add(cmd, "id", id); Add(cmd, "dataset", dataset); Add(cmd, "class", entity.Class.ToString()); Add(cmd, "label", entity.Label);
+            Add(cmd, "labels", labels); Add(cmd, "normalised", NormalisedLabels(entity.Label, labels));
+            AddLifespan(cmd, entity.Lifespan);
+            Add(cmd, "nat", (entity.Nationalities ?? []).ToArray()); Add(cmd, "roles", (entity.Roles ?? []).ToArray());
+            Add(cmd, "status", Status(entity.Status)); Add(cmd, "now", now); Add(cmd, "run", entity.RunId);
+            var inserted = await cmd.ExecuteNonQueryAsync(ct);
+            if (inserted == 1) return (await GetEntityAsync(id, ct))!;
+            if (entity.Id is not null) throw new InvalidOperationException($"An entity with id {entity.Id} already exists.");
+        }
+        throw new InvalidOperationException("Could not mint an unused identifier after 20 attempts.");
+    }
+
+    public async Task<Entity?> GetEntityAsync(string id, CancellationToken ct = default)
+    {
+        var list = await QueryEntitiesAsync($"select {EntityColumns} from entities e where e.id = @id", cmd => Add(cmd, "id", id), ct);
+        return list.SingleOrDefault();
+    }
+
+    public async Task<Entity?> ResolveEntityAsync(string id, CancellationToken ct = default)
+    {
+        var current = id;
+        for (var hops = 0; hops < 10; hops++)
+        {
+            var entity = await GetEntityAsync(current, ct);
+            if (entity is null) return null;
+            if (entity.MergedInto is null) return entity;
+            current = entity.MergedInto;
+        }
+        throw new InvalidOperationException($"Merge chain from {id} is longer than ten hops.");
+    }
+
+    public Task<IReadOnlyList<Entity>> FindEntitiesByLabelAsync(string normalisedLabel, string? dataset = null, EntityClass? cls = null, CancellationToken ct = default) =>
+        QueryEntitiesAsync(
+            $"select {EntityColumns} from entities e where e.normalised_labels @> @key and e.status <> 'merged'" +
+            (dataset is null ? "" : " and e.dataset = @dataset") + (cls is null ? "" : " and e.class = @class") + " order by e.created_at",
+            cmd => { Add(cmd, "key", new[] { normalisedLabel }); if (dataset is not null) Add(cmd, "dataset", dataset); if (cls is not null) Add(cmd, "class", cls.ToString()!); }, ct);
+
+    public Task<IReadOnlyList<Entity>> FindEntitiesByEquivalentAsync(string uri, CancellationToken ct = default) =>
+        QueryEntitiesAsync($"select {EntityColumns} from entities e join entity_equivalents q on q.entity_id = e.id where q.uri = @uri order by e.created_at", cmd => Add(cmd, "uri", uri), ct);
+
+    public async Task UpdateEntityAsync(Entity entity, CancellationToken ct = default)
+    {
+        var labels = entity.Labels.Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();
+        await using var cmd = _db.CreateCommand(
+            """
+            update entities set label = @label, labels = @labels, normalised_labels = @normalised, begin_earliest = @b1, begin_latest = @b2, end_earliest = @e1, end_latest = @e2,
+                lifespan_text = @ltext, nationalities = @nat, roles = @roles, status = @status, updated_at = @now
+            where id = @id
+            """);
+        Add(cmd, "id", entity.Id); Add(cmd, "label", entity.Label); Add(cmd, "labels", labels); Add(cmd, "normalised", NormalisedLabels(entity.Label, labels));
+        AddLifespan(cmd, entity.Lifespan); Add(cmd, "nat", entity.Nationalities.ToArray()); Add(cmd, "roles", entity.Roles.ToArray());
+        Add(cmd, "status", Status(entity.Status)); Add(cmd, "now", DateTimeOffset.UtcNow);
+        if (await cmd.ExecuteNonQueryAsync(ct) == 0) throw new KeyNotFoundException($"No entity {entity.Id}.");
+    }
+
+    public async Task AddEquivalentAsync(string entityId, Equivalent equivalent, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        await using (var cmd = new NpgsqlCommand(
+            """
+            insert into entity_equivalents (entity_id, uri, source, method, confidence, decided_at, dataset_version, run_id)
+            values (@entity, @uri, @source, @method, @confidence, @at, @version, @run)
+            on conflict (entity_id, uri) do update set source = excluded.source, method = excluded.method, confidence = excluded.confidence, decided_at = excluded.decided_at, dataset_version = excluded.dataset_version, run_id = excluded.run_id
+            """, conn, tx))
+        {
+            Add(cmd, "entity", entityId); Add(cmd, "uri", equivalent.Uri); Add(cmd, "source", equivalent.Source); Add(cmd, "method", equivalent.Method);
+            Add(cmd, "confidence", equivalent.Confidence); Add(cmd, "at", equivalent.DecidedAt.ToUniversalTime()); Add(cmd, "version", equivalent.DatasetVersion); Add(cmd, "run", equivalent.RunId);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await using (var cmd = new NpgsqlCommand("update entities set status = 'aligned', updated_at = @now where id = @id and status = 'provisional'", conn, tx))
+        {
+            Add(cmd, "id", entityId); Add(cmd, "now", DateTimeOffset.UtcNow);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await tx.CommitAsync(ct);
+    }
+
+    public async Task MergeAsync(string loserId, string survivorId, string? reviewer, CancellationToken ct = default)
+    {
+        if (loserId == survivorId) throw new ArgumentException("An entity cannot be merged into itself.");
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        var now = DateTimeOffset.UtcNow;
+        await using (var cmd = new NpgsqlCommand(
+            """
+            insert into entity_equivalents (entity_id, uri, source, method, confidence, decided_at, dataset_version, run_id)
+            select @survivor, uri, source, method, confidence, decided_at, dataset_version, run_id from entity_equivalents where entity_id = @loser
+            on conflict (entity_id, uri) do nothing
+            """, conn, tx))
+        {
+            Add(cmd, "survivor", survivorId); Add(cmd, "loser", loserId);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await using (var cmd = new NpgsqlCommand("delete from entity_equivalents where entity_id = @loser", conn, tx)) { Add(cmd, "loser", loserId); await cmd.ExecuteNonQueryAsync(ct); }
+        await using (var cmd = new NpgsqlCommand("update decisions set entity_id = @survivor where entity_id = @loser and valid", conn, tx)) { Add(cmd, "survivor", survivorId); Add(cmd, "loser", loserId); await cmd.ExecuteNonQueryAsync(ct); }
+        await using (var cmd = new NpgsqlCommand("update entities set status = 'merged', merged_into = @survivor, updated_at = @now where id = @loser and status <> 'merged'", conn, tx))
+        {
+            Add(cmd, "survivor", survivorId); Add(cmd, "loser", loserId); Add(cmd, "now", now);
+            if (await cmd.ExecuteNonQueryAsync(ct) == 0) throw new InvalidOperationException($"Entity {loserId} does not exist or is already merged.");
+        }
+        await using (var cmd = new NpgsqlCommand("update entities set updated_at = @now, status = case when status = 'provisional' and exists (select 1 from entity_equivalents where entity_id = @survivor) then 'aligned' else status end where id = @survivor", conn, tx))
+        {
+            Add(cmd, "survivor", survivorId); Add(cmd, "now", now);
+            if (await cmd.ExecuteNonQueryAsync(ct) == 0) throw new InvalidOperationException($"Entity {survivorId} does not exist.");
+        }
+        await tx.CommitAsync(ct);
+    }
+
+    private async Task<IReadOnlyList<Entity>> QueryEntitiesAsync(string sql, Action<NpgsqlCommand> bind, CancellationToken ct)
+    {
+        var entities = new List<Entity>();
+        await using (var cmd = _db.CreateCommand(sql))
+        {
+            bind(cmd);
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+            {
+                entities.Add(new Entity(
+                    r.GetString(0), r.GetString(1), Enum.Parse<EntityClass>(r.GetString(2)), Str(r, 3), r.GetFieldValue<string[]>(4),
+                    ReadLifespan(r, 5), r.GetFieldValue<string[]>(10), r.GetFieldValue<string[]>(11),
+                    Enum.Parse<EntityStatus>(r.GetString(12), ignoreCase: true), Str(r, 13), [], r.GetFieldValue<DateTimeOffset>(14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16)));
+            }
+        }
+        if (entities.Count == 0) return entities;
+        var byId = entities.ToDictionary(e => e.Id, e => new List<Equivalent>());
+        await using (var cmd = _db.CreateCommand("select entity_id, uri, source, method, confidence, decided_at, dataset_version, run_id from entity_equivalents where entity_id = any(@ids) order by decided_at"))
+        {
+            Add(cmd, "ids", byId.Keys.ToArray());
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+                byId[r.GetString(0)].Add(new Equivalent(r.GetString(1), r.GetString(2), r.GetString(3), r.GetDouble(4), r.GetFieldValue<DateTimeOffset>(5), Str(r, 6), Str(r, 7)));
+        }
+        return entities.Select(e => e with { Equivalents = byId[e.Id] }).ToList();
+    }
+
+    // ---- source strings --------------------------------------------------------------------------------------------
+
+    private const string StringColumns = "s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences";
+
+    public async Task<SourceString> CollectAsync(string dataset, string context, string raw, string? parsedJson = null, CancellationToken ct = default)
+    {
+        var normalised = StringKey.Normalise(raw);
+        if (normalised.Length == 0) throw new ArgumentException("An empty string cannot be collected.", nameof(raw));
+        await using var cmd = _db.CreateCommand(
+            $"""
+            insert into source_strings as s (dataset, context, raw, normalised, parsed, first_seen, last_seen, occurrences)
+            values (@dataset, @context, @raw, @normalised, @parsed, @now, @now, 1)
+            on conflict (dataset, context, normalised) do update set last_seen = @now, occurrences = s.occurrences + 1, parsed = coalesce(excluded.parsed, s.parsed)
+            returning {StringColumns}
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "context", context); Add(cmd, "raw", raw.Trim()); Add(cmd, "normalised", normalised); AddJson(cmd, "parsed", parsedJson); Add(cmd, "now", DateTimeOffset.UtcNow);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        await r.ReadAsync(ct);
+        return ReadString(r);
+    }
+
+    public async Task<SourceString?> GetSourceStringAsync(long id, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand($"select {StringColumns} from source_strings s where s.id = @id");
+        Add(cmd, "id", id);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? ReadString(r) : null;
+    }
+
+    public async Task<SourceString?> FindSourceStringAsync(string dataset, string context, string raw, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand($"select {StringColumns} from source_strings s where s.dataset = @dataset and s.context = @context and s.normalised = @normalised");
+        Add(cmd, "dataset", dataset); Add(cmd, "context", context); Add(cmd, "normalised", StringKey.Normalise(raw));
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? ReadString(r) : null;
+    }
+
+    public async Task<IReadOnlyList<SourceString>> UndecidedAsync(string dataset, int limit = 1000, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand($"select {StringColumns} from source_strings s where s.dataset = @dataset and not exists (select 1 from decisions d where d.source_string_id = s.id and d.valid) order by s.first_seen, s.id limit @limit");
+        Add(cmd, "dataset", dataset); Add(cmd, "limit", limit);
+        var list = new List<SourceString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(ReadString(r));
+        return list;
+    }
+
+    private static SourceString ReadString(NpgsqlDataReader r) =>
+        new(r.GetInt64(0), r.GetString(1), r.GetString(2), r.GetString(3), r.GetString(4), Str(r, 5), r.GetFieldValue<DateTimeOffset>(6), r.GetFieldValue<DateTimeOffset>(7), r.GetInt32(8));
+
+    // ---- decisions -------------------------------------------------------------------------------------------------
+
+    private const string DecisionColumns = "d.id, d.source_string_id, d.entity_id, d.method, d.evidence::text, d.reviewer, d.decided_at, d.dataset_version, d.run_id, d.valid";
+
+    public async Task<Decision> DecideAsync(long sourceStringId, string? entityId, string method, string? evidenceJson = null, string? reviewer = null, string? datasetVersion = null, string? runId = null, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        await using (var cmd = new NpgsqlCommand("update decisions set valid = false where source_string_id = @s and valid", conn, tx)) { Add(cmd, "s", sourceStringId); await cmd.ExecuteNonQueryAsync(ct); }
+        long id;
+        await using (var cmd = new NpgsqlCommand(
+            """
+            insert into decisions (source_string_id, entity_id, method, evidence, reviewer, decided_at, dataset_version, run_id, valid)
+            values (@s, @entity, @method, @evidence, @reviewer, @now, @version, @run, true) returning id
+            """, conn, tx))
+        {
+            Add(cmd, "s", sourceStringId); Add(cmd, "entity", entityId); Add(cmd, "method", method); AddJson(cmd, "evidence", evidenceJson); Add(cmd, "reviewer", reviewer);
+            Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "version", datasetVersion); Add(cmd, "run", runId);
+            id = (long)(await cmd.ExecuteScalarAsync(ct))!;
+        }
+        await tx.CommitAsync(ct);
+        return (await GetDecisionAsync(id, ct))!;
+    }
+
+    private async Task<Decision?> GetDecisionAsync(long id, CancellationToken ct)
+    {
+        await using var cmd = _db.CreateCommand($"select {DecisionColumns} from decisions d where d.id = @id");
+        Add(cmd, "id", id);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? ReadDecision(r) : null;
+    }
+
+    public async Task<Decision?> DecisionForAsync(long sourceStringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand($"select {DecisionColumns} from decisions d where d.source_string_id = @s and d.valid order by d.decided_at desc limit 1");
+        Add(cmd, "s", sourceStringId);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? ReadDecision(r) : null;
+    }
+
+    public async Task<Entity?> ResolveAsync(string dataset, string context, string raw, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select d.entity_id from source_strings s join decisions d on d.source_string_id = s.id and d.valid
+            where s.dataset = @dataset and s.context = @context and s.normalised = @normalised order by d.decided_at desc limit 1
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "context", context); Add(cmd, "normalised", StringKey.Normalise(raw));
+        var entityId = await cmd.ExecuteScalarAsync(ct) as string;
+        return entityId is null ? null : await ResolveEntityAsync(entityId, ct);
+    }
+
+    public async Task<int> InvalidateDecisionsForEntityAsync(string entityId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("update decisions set valid = false where entity_id = @e and valid");
+        Add(cmd, "e", entityId);
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    private static Decision ReadDecision(NpgsqlDataReader r) =>
+        new(r.GetInt64(0), r.GetInt64(1), Str(r, 2), r.GetString(3), Str(r, 4), Str(r, 5), r.GetFieldValue<DateTimeOffset>(6), Str(r, 7), Str(r, 8), r.GetBoolean(9));
+
+    // ---- overrides -------------------------------------------------------------------------------------------------
+
+    public async Task PutOverrideAsync(Override item, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            insert into overrides (dataset, context, normalised, target, source, note) values (@dataset, @context, @normalised, @target, @source, @note)
+            on conflict (dataset, context, normalised) do update set target = excluded.target, source = excluded.source, note = excluded.note
+            """);
+        Add(cmd, "dataset", item.Dataset); Add(cmd, "context", item.Context ?? ""); Add(cmd, "normalised", item.Normalised); Add(cmd, "target", item.Target); Add(cmd, "source", item.Source); Add(cmd, "note", item.Note);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<Override?> OverrideForAsync(string dataset, string context, string normalised, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select dataset, context, normalised, target, source, note from overrides where dataset = @dataset and normalised = @normalised and context in (@context, '') order by context desc limit 1");
+        Add(cmd, "dataset", dataset); Add(cmd, "normalised", normalised); Add(cmd, "context", context);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        if (!await r.ReadAsync(ct)) return null;
+        var storedContext = r.GetString(1);
+        return new Override(r.GetString(0), storedContext.Length == 0 ? null : storedContext, r.GetString(2), r.GetString(3), r.GetString(4), Str(r, 5));
+    }
+
+    // ---- authority records -----------------------------------------------------------------------------------------
+
+    private const string AuthorityColumns = "a.uri, a.source, a.label, a.labels, a.type, a.begin_earliest, a.begin_latest, a.end_earliest, a.end_latest, a.lifespan_text, a.same_as, a.data::text, a.fetched_at, a.source_version";
+
+    public async Task<AuthorityRecord?> GetAuthorityAsync(string uri, CancellationToken ct = default)
+    {
+        var list = await QueryAuthoritiesAsync($"select {AuthorityColumns} from authority_records a where a.uri = @uri", cmd => Add(cmd, "uri", uri), ct);
+        return list.SingleOrDefault();
+    }
+
+    public async Task PutAuthorityAsync(AuthorityRecord record, CancellationToken ct = default)
+    {
+        var labels = record.Labels.Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();
+        await using var cmd = _db.CreateCommand(
+            """
+            insert into authority_records (uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version)
+            values (@uri, @source, @label, @labels, @normalised, @type, @b1, @b2, @e1, @e2, @ltext, @sameas, @data, @fetched, @version)
+            on conflict (uri) do update set source = excluded.source, label = excluded.label, labels = excluded.labels, normalised_labels = excluded.normalised_labels, type = excluded.type,
+                begin_earliest = excluded.begin_earliest, begin_latest = excluded.begin_latest, end_earliest = excluded.end_earliest, end_latest = excluded.end_latest, lifespan_text = excluded.lifespan_text,
+                same_as = excluded.same_as, data = excluded.data, fetched_at = excluded.fetched_at, source_version = excluded.source_version
+            """);
+        Add(cmd, "uri", record.Uri); Add(cmd, "source", record.Source); Add(cmd, "label", record.Label); Add(cmd, "labels", labels); Add(cmd, "normalised", NormalisedLabels(record.Label, labels));
+        Add(cmd, "type", record.Type); AddLifespan(cmd, record.Lifespan); Add(cmd, "sameas", record.SameAs.ToArray()); AddJson(cmd, "data", record.DataJson);
+        Add(cmd, "fetched", record.FetchedAt.ToUniversalTime()); Add(cmd, "version", record.SourceVersion);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelAsync(string normalisedLabel, string? source = null, CancellationToken ct = default) =>
+        QueryAuthoritiesAsync($"select {AuthorityColumns} from authority_records a where a.normalised_labels @> @key" + (source is null ? "" : " and a.source = @source") + " order by a.uri",
+            cmd => { Add(cmd, "key", new[] { normalisedLabel }); if (source is not null) Add(cmd, "source", source); }, ct);
+
+    private async Task<IReadOnlyList<AuthorityRecord>> QueryAuthoritiesAsync(string sql, Action<NpgsqlCommand> bind, CancellationToken ct)
+    {
+        var list = new List<AuthorityRecord>();
+        await using var cmd = _db.CreateCommand(sql);
+        bind(cmd);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+            list.Add(new AuthorityRecord(r.GetString(0), r.GetString(1), Str(r, 2), r.GetFieldValue<string[]>(3), Str(r, 4), ReadLifespan(r, 5), r.GetFieldValue<string[]>(10), Str(r, 11), r.GetFieldValue<DateTimeOffset>(12), Str(r, 13)));
+        return list;
+    }
+
+    // ---- runs ------------------------------------------------------------------------------------------------------
+
+    private const string RunColumns = "r.id, r.dataset, r.manifest::text, r.dumps::text, r.started_at, r.finished_at, r.git_sha, r.counts::text, r.report";
+
+    public async Task<Run> StartRunAsync(string dataset, string? manifestJson = null, string? dumpsJson = null, string? gitSha = null, CancellationToken ct = default)
+    {
+        var id = $"run-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{IdMinter.Generate(6)}";
+        await using var cmd = _db.CreateCommand("insert into runs (id, dataset, manifest, dumps, started_at, git_sha) values (@id, @dataset, @manifest, @dumps, @now, @sha)");
+        Add(cmd, "id", id); Add(cmd, "dataset", dataset); AddJson(cmd, "manifest", manifestJson); AddJson(cmd, "dumps", dumpsJson); Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "sha", gitSha);
+        await cmd.ExecuteNonQueryAsync(ct);
+        return (await GetRunAsync(id, ct))!;
+    }
+
+    public async Task FinishRunAsync(string runId, string? countsJson, string? report, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("update runs set finished_at = @now, counts = @counts, report = @report where id = @id");
+        Add(cmd, "id", runId); Add(cmd, "now", DateTimeOffset.UtcNow); AddJson(cmd, "counts", countsJson); Add(cmd, "report", report);
+        if (await cmd.ExecuteNonQueryAsync(ct) == 0) throw new KeyNotFoundException($"No run {runId}.");
+    }
+
+    public async Task<Run?> GetRunAsync(string runId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand($"select {RunColumns} from runs r where r.id = @id");
+        Add(cmd, "id", runId);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? ReadRun(r) : null;
+    }
+
+    public async Task<IReadOnlyList<Run>> RunsAsync(string dataset, int limit = 20, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand($"select {RunColumns} from runs r where r.dataset = @dataset order by r.started_at desc limit @limit");
+        Add(cmd, "dataset", dataset); Add(cmd, "limit", limit);
+        var list = new List<Run>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(ReadRun(r));
+        return list;
+    }
+
+    private static Run ReadRun(NpgsqlDataReader r) =>
+        new(r.GetString(0), r.GetString(1), Str(r, 2), Str(r, 3), r.GetFieldValue<DateTimeOffset>(4), r.IsDBNull(5) ? null : r.GetFieldValue<DateTimeOffset>(5), Str(r, 6), Str(r, 7), Str(r, 8));
+
+    // ---- overview --------------------------------------------------------------------------------------------------
+
+    public async Task<StoreCounts> CountsAsync(string? dataset = null, CancellationToken ct = default)
+    {
+        var where = dataset is null ? "" : " where dataset = @dataset";
+        await using var cmd = _db.CreateCommand(
+            $"""
+            select
+              (select count(*) from entities{where}),
+              (select count(*) from source_strings{where}),
+              (select count(*) from source_strings s where exists (select 1 from decisions d where d.source_string_id = s.id and d.valid and d.entity_id is not null){(dataset is null ? "" : " and s.dataset = @dataset")}),
+              (select count(*) from source_strings s where not exists (select 1 from decisions d where d.source_string_id = s.id and d.valid and d.entity_id is not null){(dataset is null ? "" : " and s.dataset = @dataset")}),
+              (select count(*) from overrides{where}),
+              (select count(*) from authority_records),
+              (select count(*) from runs{where})
+            """);
+        if (dataset is not null) Add(cmd, "dataset", dataset);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        await r.ReadAsync(ct);
+        return new StoreCounts(r.GetInt64(0), r.GetInt64(1), r.GetInt64(2), r.GetInt64(3), r.GetInt64(4), r.GetInt64(5), r.GetInt64(6));
+    }
+
+    // ---- helpers ---------------------------------------------------------------------------------------------------
+
+    private static void Add(NpgsqlCommand cmd, string name, object? value) => cmd.Parameters.AddWithValue(name, value ?? DBNull.Value);
+
+    private static void AddJson(NpgsqlCommand cmd, string name, string? json) =>
+        cmd.Parameters.Add(new NpgsqlParameter(name, NpgsqlDbType.Jsonb) { Value = json is null ? DBNull.Value : json });
+
+    private static void AddLifespan(NpgsqlCommand cmd, Lifespan? l)
+    {
+        Add(cmd, "b1", l?.BeginEarliest?.ToUniversalTime()); Add(cmd, "b2", l?.BeginLatest?.ToUniversalTime());
+        Add(cmd, "e1", l?.EndEarliest?.ToUniversalTime()); Add(cmd, "e2", l?.EndLatest?.ToUniversalTime());
+        Add(cmd, "ltext", l?.Text);
+    }
+
+    private static Lifespan? ReadLifespan(NpgsqlDataReader r, int first)
+    {
+        DateTimeOffset? At(int i) => r.IsDBNull(i) ? null : r.GetFieldValue<DateTimeOffset>(i);
+        var l = new Lifespan(At(first), At(first + 1), At(first + 2), At(first + 3), Str(r, first + 4));
+        return l.IsEmpty && l.Text is null ? null : l;
+    }
+
+    private static string? Str(NpgsqlDataReader r, int i) => r.IsDBNull(i) ? null : r.GetString(i);
+
+    private static string Status(EntityStatus s) => s.ToString().ToLowerInvariant();
+
+    private static string[] NormalisedLabels(string? label, IEnumerable<string> labels) =>
+        labels.Prepend(label ?? "").Select(StringKey.Normalise).Where(k => k.Length > 0).Distinct(StringComparer.Ordinal).ToArray();
+}

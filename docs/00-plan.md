@@ -360,6 +360,11 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     profiles and tables, Person/Group builder, agent corpus with nested dates expectations (60 entries, 57 verified),
     `/v1/agent`, the `/agents` playground, `tools/Corpus agents`, and the trainer's agent item kind: agent strings
     reviewed as parts, saved as agent entries whose date part also enters the dates corpus (doc 08 section 8).
+32. ~~Phase 5 step 2: the alignment store.~~ 2026-10-17 (doc 11): `LinkedArtNet.Alignment` on PostgreSQL with
+    entities, equivalents, source strings, decisions, overrides, authority records and runs; `IdentifierScheme`
+    per dataset keeping the PMC paths and alphabet; importers for the pmc-lux override files and the earlier PMC
+    tables; `tools/Align`; 25 tests against a Testcontainers PostgreSQL 15. Step 3, authority sources and the
+    reconciler, is next.
 
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:

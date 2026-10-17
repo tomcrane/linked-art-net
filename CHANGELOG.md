@@ -17,6 +17,12 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   and saved as agent corpus entries; a confirmed or corrected date part also becomes a dates corpus entry tagged
   `agent-derived`, unless the corpus already has it. The interpreter is asked about the date substring only. One
   pull request carries the dates file and the agent file.
+- `LinkedArtNet.Alignment` (new): the alignment store on PostgreSQL. Entities minted under a per-dataset identifier
+  scheme (PMC keeps its hostname, paths and id alphabet), equivalents with method and confidence, source strings
+  keyed by (dataset, context, normalised text), decisions with evidence that a merge or an authority update can
+  reopen, curated overrides, cached authority records, runs. Importers for the `pmc-lux` authority-string files and
+  the earlier PMC `authorities`/`source_string_map` tables; `tools/Align init|stats|import-overrides|import-legacy`.
+  Tests run against a throwaway PostgreSQL container (or `LINKEDART_TEST_PG`) and skip when neither is available.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

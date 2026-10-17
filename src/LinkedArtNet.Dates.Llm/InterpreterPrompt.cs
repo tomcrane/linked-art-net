@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -81,7 +82,7 @@ public static class InterpreterPrompt
         sb.Append("Intent requested by the caller: ").AppendLine(context.Intent.ToString().ToLowerInvariant());
         var d = context.Deterministic;
         sb.Append("Deterministic parser: status ").Append(d.Status.ToString().ToLowerInvariant());
-        if (d.Canonical is not null) sb.Append(", read it as '").Append(d.Canonical).Append("' with confidence ").Append(d.Confidence.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
+        if (d.Canonical is not null) sb.Append(", read it as '").Append(d.Canonical).Append("' with confidence ").Append(d.Confidence.ToString("0.00", CultureInfo.InvariantCulture));
         sb.AppendLine(".");
         if (d.UnconsumedText is not null) sb.Append("Text it could not use: '").Append(d.UnconsumedText).AppendLine("'.");
         foreach (var note in d.Notes.Take(6)) sb.Append("Parser note: ").AppendLine(note);

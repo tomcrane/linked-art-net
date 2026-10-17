@@ -3,6 +3,7 @@
     <Project Path="src/LinkedArtNet.Examples/LinkedArtNet.Examples.csproj" />
     <Project Path="src/LinkedArtNet.Dates/LinkedArtNet.Dates.csproj" />
     <Project Path="src/LinkedArtNet.Dates.Corpus/LinkedArtNet.Dates.Corpus.csproj" />
+    <Project Path="src/LinkedArtNet.Dates.Llm/LinkedArtNet.Dates.Llm.csproj" />
     <Project Path="src/LinkedArtNet.Dates.Service/LinkedArtNet.Dates.Service.csproj" />
     <Project Path="src/LinkedArtNet.ExamplesSite/LinkedArtNet.ExamplesSite.csproj" />
     <Project Path="src/LinkedArtNet/LinkedArtNet.csproj" />

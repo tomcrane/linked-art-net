@@ -13,6 +13,9 @@
 //                                                           write corpus/imported/<source>.json (proposed; see THIRD-PARTY-NOTICES.md)
 //   dotnet run --project tools/Corpus -- periodo [--from <dataset.json[.gz]>]
 //                                                           download https://data.perio.do/dataset/ (or compact a local copy) into periods/periodo.json
+//   dotnet run --project tools/Corpus -- interpret (--strings <file> | --capture <jsonl> | --corpus <file> [--failing] [--status disputed]) [--profile <name>] [--all] [--out <corpus file>] [--model <id>] [--limit <n>] [--dry-run]
+//                                                           ask the Claude interpreter (ANTHROPIC_API_KEY) for the strings the parser cannot read; write them as proposed
+//                                                           entries for review, or, over corpus entries, report agreement with the expectations
 //
 // Exit code 1 when validation fails or when a verified entry fails; proposed and disputed entries are informative.
 
@@ -34,6 +37,7 @@ if (command == "promote") return Promote(args.Skip(1).ToArray());
 if (command == "review") return Review(args.Skip(1).ToArray());
 if (command == "accept") return Accept(args.Skip(1).ToArray());
 if (command == "periodo") return await PeriodO(args.Skip(1).ToArray());
+if (command == "interpret") return await Interpret(args.Skip(1).ToArray());
 
 return command switch
 {
@@ -45,7 +49,7 @@ return command switch
 
 static int Usage()
 {
-    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--note <text>] [--dry-run] | review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>] | accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json> | periodo [--from <dataset.json[.gz]>]");
+    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--note <text>] [--dry-run] | review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>] | accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json> | periodo [--from <dataset.json[.gz]>] | interpret (--strings <file> | --capture <jsonl> | --corpus <file> [--failing] [--status s]) [--profile p] [--all] [--out <file>] [--model id] [--limit n] [--dry-run]");
     return 2;
 }
 
@@ -285,6 +289,158 @@ async Task<int> PeriodO(string[] rest)
     Console.WriteLine($"{shared} labels are defined by more than one authority and resolve to a hull unless narrowed.");
     return 0;
 }
+
+// interpret: the LLM as a corpus-growing assistant. Strings the deterministic parser cannot read (or all of them with
+// --all) go to the Claude interpreter; its readings come back as proposed corpus entries for a reviewer to confirm in
+// the trainer or by promoting the file. Over existing corpus entries it reports where the interpreter agrees with the
+// expectation, which is how its value is measured before anyone trusts it. Never touches verified entries.
+async Task<int> Interpret(string[] rest)
+{
+    string? strings = null, capture = null, corpusFile = null, outPath = null, profileName = null, model = null, status = null;
+    var all = false; var failing = false; var dryRun = false; var limit = int.MaxValue;
+    for (var i = 0; i < rest.Length; i++)
+    {
+        switch (rest[i])
+        {
+            case "--strings" when i + 1 < rest.Length: strings = rest[++i]; break;
+            case "--capture" when i + 1 < rest.Length: capture = rest[++i]; break;
+            case "--corpus" when i + 1 < rest.Length: corpusFile = rest[++i]; break;
+            case "--out" when i + 1 < rest.Length: outPath = rest[++i]; break;
+            case "--profile" when i + 1 < rest.Length: profileName = rest[++i]; break;
+            case "--model" when i + 1 < rest.Length: model = rest[++i]; break;
+            case "--status" when i + 1 < rest.Length: status = rest[++i]; break;
+            case "--limit" when i + 1 < rest.Length && int.TryParse(rest[i + 1], out var limitValue): limit = limitValue; i++; break;
+            case "--all": all = true; break;
+            case "--failing": failing = true; break;
+            case "--dry-run": dryRun = true; break;
+            default: Console.Error.WriteLine($"interpret: unknown option {rest[i]}"); return 2;
+        }
+    }
+    if ((strings is null ? 0 : 1) + (capture is null ? 0 : 1) + (corpusFile is null ? 0 : 1) != 1)
+    {
+        Console.Error.WriteLine("interpret needs exactly one of --strings <file>, --capture <jsonl>, --corpus <file>.");
+        return 2;
+    }
+    if (!dryRun && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")))
+    {
+        Console.Error.WriteLine("ANTHROPIC_API_KEY is not set. Set it (a key from the Console organisation that holds your credits), or add --dry-run to see what would be asked.");
+        return 2;
+    }
+
+    var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
+    var periods = Periods();
+    var parsers = new Dictionary<string, TimeSpanParser>(StringComparer.OrdinalIgnoreCase);
+    TimeSpanParser ParserFor(string name) => parsers.TryGetValue(name, out var p) ? p : parsers[name] = new TimeSpanParser(catalog.TryGet(name, out var profile) ? profile : LinkedArtNet.Dates.Realisation.ParseProfile.Default, periods: periods);
+
+    // What to ask about: (input, profile, intent, expectation when measuring).
+    var items = new List<(string Input, string Profile, string Intent, CorpusEntry? Entry)>();
+    if (strings is not null)
+        items.AddRange(File.ReadLines(strings).Select(l => l.Trim()).Where(l => l.Length > 0 && l.Length <= 500).Distinct(StringComparer.Ordinal).Select(l => (l, profileName ?? "default", "auto", (CorpusEntry?)null)));
+    else if (capture is not null)
+    {
+        foreach (var line in File.ReadLines(capture))
+        {
+            if (string.IsNullOrWhiteSpace(line)) continue;
+            System.Text.Json.Nodes.JsonNode? node;
+            try { node = System.Text.Json.Nodes.JsonNode.Parse(line); } catch (JsonException) { continue; }
+            if (node?["input"]?.GetValue<string>() is { Length: > 0 and <= 500 } input)
+                items.Add((input, profileName ?? node["profile"]?.GetValue<string>() ?? "default", "auto", null));
+        }
+        items = items.DistinctBy(i => (i.Input, i.Profile)).ToList();
+    }
+    else
+    {
+        var path = ResolveCorpusPath(corpusFile!);
+        if (path is null) { Console.Error.WriteLine($"No such corpus file: {corpusFile}"); return 2; }
+        var file = CorpusFile.Load(path, corpusRoot);
+        var evaluator = new CorpusEvaluator(catalog.Get, periods: periods);
+        IEnumerable<CorpusEntry> entries = file.Entries;
+        if (Enum.TryParse<EntryStatus>(status, true, out var wanted)) entries = entries.Where(e => e.Status == wanted);
+        if (failing) entries = entries.Where(e => !evaluator.Evaluate(e).Passed);
+        items.AddRange(entries.Select(e => (e.Input, e.Profile, e.Intent, (CorpusEntry?)e)));
+        all = true; // over corpus entries the question is agreement, so every selected entry is asked
+    }
+
+    // Ask only where the deterministic parser is weak, unless --all.
+    var asked = new List<(string Input, string Profile, string Intent, CorpusEntry? Entry, TimeSpanParseResult Deterministic)>();
+    var confident = 0;
+    foreach (var item in items)
+    {
+        var parser = ParserFor(item.Profile);
+        var deterministic = parser.Parse(item.Input, Trainer_ParseIntent(item.Intent));
+        if (!all && !TimeSpanParser.NeedsInterpreter(deterministic, parser.Profile)) { confident++; continue; }
+        asked.Add((item.Input, item.Profile, item.Intent, item.Entry, deterministic));
+        if (asked.Count >= limit) break;
+    }
+    Console.WriteLine($"{items.Count} strings; {confident} the parser reads confidently; {asked.Count} to ask{(dryRun ? " (dry run, nothing sent)" : "")}.");
+    if (dryRun)
+    {
+        foreach (var a in asked.Take(50)) Console.WriteLine($"  \"{a.Input}\" [{a.Profile}] parser: {a.Deterministic.Status.ToString().ToLowerInvariant()} {a.Deterministic.Canonical}");
+        if (asked.Count > 50) Console.WriteLine($"  ... and {asked.Count - 50} more");
+        return 0;
+    }
+    if (asked.Count == 0) return 0;
+
+    var interpreter = new LinkedArtNet.Dates.Llm.ClaudeDateInterpreter(new LinkedArtNet.Dates.Llm.ClaudeInterpreterOptions { Model = model ?? new LinkedArtNet.Dates.Llm.ClaudeInterpreterOptions().Model });
+    var proposals = new List<CorpusEntry>();
+    int agreed = 0, disagreed = 0, noAnswer = 0, n = 0;
+    var started = DateTime.UtcNow;
+    foreach (var a in asked)
+    {
+        n++;
+        var parser = ParserFor(a.Profile);
+        var result = await parser.ParseAsync(a.Input, interpreter, new ParseOptions { Intent = Trainer_ParseIntent(a.Intent), Profile = parser.Profile });
+        var interpreted = result.Flags.Contains(DateFlag.Interpreted);
+        var rationale = result.Notes.FirstOrDefault(x => x.StartsWith("claude:", StringComparison.Ordinal))?["claude:".Length..].Trim();
+        if (a.Entry is { } entry)
+        {
+            var expected = entry.Expect.Canonical ?? entry.Expect.Status ?? "?";
+            var got = interpreted ? result.Canonical ?? "?" : "(no reading)";
+            var agree = interpreted && entry.Expect.Canonical is not null && string.Equals(entry.Expect.Canonical, result.Canonical, StringComparison.Ordinal);
+            if (!interpreted) noAnswer++; else if (agree) agreed++; else disagreed++;
+            Console.WriteLine($"{(agree ? "AGREE   " : interpreted ? "DIFFER  " : "NOTHING ")} {entry.Id} \"{a.Input}\"  expected {expected}  claude {got}{(rationale is null ? "" : "  ; " + rationale)}");
+        }
+        else
+        {
+            if (!interpreted) { noAnswer++; Console.WriteLine($"NOTHING  \"{a.Input}\""); continue; }
+            Console.WriteLine($"PROPOSE  \"{a.Input}\" -> {result.Canonical} ({result.Confidence:0.00}){(rationale is null ? "" : "  ; " + rationale)}");
+            var canonical = result.Status == ParseStatus.Undated ? null : result.Canonical;
+            var expectedStatus = result.Status == ParseStatus.Undated ? "undated" : "parsed";
+            var note = $"Proposed by {interpreter.Model} on {DateTime.UtcNow:yyyy-MM-dd}" + (rationale is null ? "" : $": {rationale}") +
+                       $" Deterministic parser: {a.Deterministic.Status.ToString().ToLowerInvariant()}{(a.Deterministic.Canonical is null ? "" : " " + a.Deterministic.Canonical)}. Review before promoting.";
+            var expect = new Expectation { Status = expectedStatus, Canonical = canonical };
+            proposals.Add(new CorpusEntry
+            {
+                Id = $"llm-{DateTime.UtcNow:yyyyMMdd}-{proposals.Count + 1:000}", Input = a.Input, Profile = a.Profile, Intent = a.Intent,
+                Tags = ["llm-proposed", interpreter.Model], Expect = expect, Status = EntryStatus.Proposed, Notes = note,
+            });
+        }
+    }
+    var usage = interpreter.Usage;
+    Console.WriteLine();
+    Console.WriteLine($"{n} asked in {(DateTime.UtcNow - started).TotalSeconds:0}s; tokens in {usage.InputTokens} (cache read {usage.CacheReadTokens}, cache write {usage.CacheWriteTokens}), out {usage.OutputTokens}; model {interpreter.Model}.");
+    if (corpusFile is not null)
+    {
+        Console.WriteLine($"Agreement with the expectations: {agreed} agree, {disagreed} differ, {noAnswer} no reading, of {n}.");
+        return 0;
+    }
+    if (proposals.Count == 0) { Console.WriteLine("Nothing to propose."); return 0; }
+    var target = outPath ?? Path.Combine(corpusRoot, "proposed", $"llm-{DateTime.UtcNow:yyyyMMdd-HHmm}.json");
+    var corpus = new CorpusFile
+    {
+        Schema = "../schema/corpus-entry.schema.json",
+        Source = new CorpusSource($"Readings proposed by {interpreter.Model}", "MIT", "https://github.com/tomcrane/linked-art-net", null,
+            $"Strings the deterministic parser could not read, with canonical expressions proposed by the Claude interpreter (LinkedArtNet.Dates.Llm) on {DateTime.UtcNow:yyyy-MM-dd} from {(strings is not null ? Path.GetFileName(strings) : Path.GetFileName(capture!))}. Every entry is proposed and must be reviewed; the model's rationale is in each entry's notes."),
+        Defaults = new CorpusDefaults(Status: EntryStatus.Proposed, Tags: ["llm-proposed"]),
+        Entries = proposals,
+    };
+    Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+    File.WriteAllText(target, JsonSerializer.Serialize(corpus, CorpusFile.JsonOptions) + "\n", new UTF8Encoding(false));
+    Console.WriteLine($"Wrote {proposals.Count} proposed entries to {Path.GetRelativePath(repoRoot, target)}. Review them in the trainer or with: review {Path.GetRelativePath(corpusRoot, target)}; promote when confirmed.");
+    return 0;
+}
+
+static Intent Trainer_ParseIntent(string? intent) => Enum.TryParse<Intent>(intent, true, out var i) ? i : Intent.Auto;
 
 int Tokens(string profileName, string text)
 {

@@ -62,8 +62,9 @@ From Wellcome's Catalogue API: a merged "Works" model with `contributors` (agent
 dates as labels), `subjects` and `genres` as concepts with identifiers, and a nightly line-delimited JSON snapshot
 (`works.json.gz`, 1.5 GB). Their production dates are labels only, exactly what the dates parser exists for.
 
-From Leeds: the public `uol-library` organisation holds IIIF and EPrints work but nothing catalogue-API or Linked Art
-related; the owner has access to the private repositories and will summarise anything relevant into this section.
+From Leeds: the public `uol-library` organisation holds IIIF and EPrints work; the relevant repositories, including
+`linked-art-schemas`, are private (404 from here). The owner will check them out locally, outside this repository, and
+this section gets a paragraph once they have been read.
 
 ## 3. Shape of the code
 
@@ -269,14 +270,30 @@ What a re-run needs, and where it comes from:
 
 ## 10. The Wellcome instance, sketched
 
-The snapshot (`works.json.gz`, line-delimited, same serialisation as the API) is the dump; a streaming adapter reads
-one Work per line. `contributors[].agent` with `roles[]` is the agent-string parser's input where the label carries
-dates, and otherwise a name plus a role; `production[].dates[].label` goes to the dates parser; `subjects` and
-`genres` are concepts with Wellcome identifiers and, where present, external identifiers to carry as `equivalent`;
-`workType`, `languages`, `notes`, `items` and `locations` map to Linked Art the usual way, `partOf`/`parts` to
-`member_of`. Wellcome's own data is CC0. Open points for the instance: which external identifier schemes their
-concepts carry (the public docs do not say), and how their merged "Work" maps onto `HumanMadeObject` versus
-`LinguisticObject`.
+The daily snapshot (`https://data.wellcomecollection.org/catalogue/v2/works.json.gz`, 1.5 GB, line-delimited, the same
+serialisation as the API) is the dump; a streaming adapter reads one Work per line. Two real records
+(`works/vaqg68j6`, a born-digital archive item, and the Rembrandt etchings `yzdmrzhc` and `ka8vy93d`, read 2026-10-17)
+show the shape:
+
+- **Identifiers** name their scheme: source-system ids (`sierra-system-number`, `sierra-identifier`, `calm-ref-no`,
+  `calm-altref-no`, `axiell-guid`, `mets`) and authority ids on agents and concepts (`lc-names` such as `n79142935`
+  for Rembrandt, `lc-subjects` such as `sh85038258`), with `label-derived` for concepts that have no authority yet.
+  The `lc-names`/`lc-subjects` values map straight to LCNAF and LCSH URIs and become `equivalent`; `label-derived`
+  concepts are SourceStrings for the reconciler.
+- **Contributors**: `agent` with `type` (Person, Organisation...), `label`, `identifiers`, and `roles[].label`. Where
+  the label carries dates the agent-string parser applies; where it is a bare heading the identifiers do the work.
+- **Production**: `label` plus `dates[].label` only ("1635.", "April 2006"), `places[].label`, `agents[].label`; the
+  dates parser reads the labels, the places and agents are SourceStrings.
+- **Subjects** can be compound (`Selling - Drugs` with concepts Selling and Drugs), so a subject is one SourceString
+  whose parts are also concepts; **genres** are concepts (`Etching`) usually `label-derived`, which AAT resolves.
+- **Archive hierarchy**: `partOf` (Section, Collection with ids), `parts`, `precededBy`, `succeededBy`; `referenceNumber`
+  is the CALM reference; `workType` (`Format`: "Born-digital archives", "Pictures") decides the Linked Art class.
+- **Items and locations**: `DigitalLocation` with `locationType` (`iiif-presentation`), `license` (`inc`, `cc-by`...) and
+  access status, mapping to `DigitalObject` and rights statements.
+
+Wellcome's own data is CC0; licensing is per item for digitised content. Open points for the instance: the mapping of
+`workType` onto `HumanMadeObject`, `LinguisticObject` and `Set`, and whether `createdDate` or `production` is
+authoritative when both exist.
 
 ## 11. Towards the discovery engine
 

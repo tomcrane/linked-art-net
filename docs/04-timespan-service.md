@@ -112,7 +112,15 @@ The `_label` of every TimeSpan is the exact input string. `labelPolicy=labelAndN
   `HEALTHCHECK`. GitHub Actions: build, test, push to GHCR on tag. Hosting target is the owner's call
   (Azure Container Apps, Fly.io, or a VM behind Caddy all fit a stateless container).
 
-## 4. Example calls
+## 4. Standalone use
+
+The image `ghcr.io/tomcrane/linked-art-net/dates-service` (tags `v0.1.x` and `latest`, built by `.github/workflows/docker.yml`
+from each release tag) runs anywhere Docker does: `docker run --rm -p 8080:8080 ghcr.io/tomcrane/linked-art-net/dates-service:latest`.
+Profiles and the PeriodO table are inside the image; `Parser__ProfilesDirectory` can be pointed at a mounted folder of the
+caller's own profiles, `Parser__RequestsPerMinute` raised on a private network, and `Capture__Enabled` turned on with a
+volume for later review. The site's `/dates/api#docker` section documents this for non-.NET users (2026-10-17).
+
+## 5. Example calls
 
 ```
 GET /v1/timespan?s=c.%201850

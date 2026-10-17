@@ -247,7 +247,13 @@ public sealed class CorpusIndex(ExampleIndex index)
         return new CorpusEvaluator(profiles.Get, periods: LinkedArtNet.Dates.Periods.PeriodOSource.ForRepository(index.RepoRoot)).Evaluate(entries);
     });
 
+    private readonly Lazy<IReadOnlyDictionary<string, CorpusSource>> _sources = new(() =>
+        CorpusFile.LoadAll(Path.Combine(index.RepoRoot, "corpus")).ToDictionary(f => f.Path.Replace('\\', '/'), f => f.Source, StringComparer.Ordinal));
+
     public IReadOnlyList<EntryResult> Results => _results.Value;
+
+    /// <summary>Each corpus file's source block (name, licence, notes), by the file path entries carry.</summary>
+    public IReadOnlyDictionary<string, CorpusSource> Sources => _sources.Value;
 
     public IReadOnlyList<string> Files => Results.Select(r => r.Entry.File).Distinct().Order(StringComparer.Ordinal).ToList();
 

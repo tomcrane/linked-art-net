@@ -29,7 +29,7 @@
     </select>
     <button type="submit">Parse</button>
 </form>
-<p class="samples">Try: @foreach (var s in IndexModel.Samples) { <a href="/dates?s=@Uri.EscapeDataString(s)&amp;profile=@Model.Profile">@s</a> }</p>
+<p class="samples">Try: @foreach (var s in IndexModel.Samples) { <a href="/dates?s=@Uri.EscapeDataString(s)&amp;profile=@Model.Profile">@s</a> } <a class="more" href="/dates/samples">hundreds more &rsaquo;</a></p>
 
 @if (Model.Result is { } r)
 {

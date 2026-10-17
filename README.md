@@ -18,6 +18,19 @@ Live at [linkedart.net](https://linkedart.net) (the examples site, playground, c
 [dates.linkedart.net](https://dates.linkedart.net) (the dates API). How it is hosted is in
 [docs/09-hosting.md](docs/09-hosting.md).
 
+## Run the dates service yourself
+
+The date parser is useful outside .NET. Its service is a public container image with no dependencies, so a
+Python, R or JavaScript project can run it locally and call `GET /v1/timespan?s=...`:
+
+```
+docker run --rm -p 8080:8080 ghcr.io/tomcrane/linked-art-net/dates-service:latest
+curl "http://localhost:8080/v1/timespan?s=late%201950s"
+```
+
+The API, the settings (your own profiles, rate limits, capture of unreadable inputs) and a Python example are on
+[linkedart.net/dates/api](https://linkedart.net/dates/api#docker); the OpenAPI document is served at `/docs`.
+
 ## Branches and releases
 
 **`main` is what is deployed. `de-pmc` is where work happens.** Day to day, commit to `de-pmc`; corpus pull

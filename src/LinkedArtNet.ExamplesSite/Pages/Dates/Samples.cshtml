@@ -1,0 +1,45 @@
+@page "/dates/samples"
+@model LinkedArtNet.ExamplesSite.Pages.Dates.SamplesModel
+@{
+    ViewData["Title"] = "Date samples";
+}
+<nav class="crumbs"><a href="/dates">Date parser</a> › Samples</nav>
+<h1>Date samples</h1>
+<p class="lede">
+    @Model.Total.ToString("N0") dates the parser reads, drawn from the <a href="/dates/corpus">corpus</a> it is tested against, so this page
+    cannot drift from the parser. The authored sets are shown in full, one theme at a time; the imported collections contribute one example
+    of each shape of reading. Click any input to see its TimeSpan, timeline and C# in the <a href="/dates">playground</a>.
+</p>
+<nav class="sample-nav" aria-label="Sections">
+    @foreach (var s in Model.Sections)
+    {
+        <a href="#@s.Key">@s.Title <span class="count">@s.Items.Count</span></a>
+    }
+</nav>
+
+@foreach (var block in Model.Sections)
+{
+    <section class="samples-section" id="@block.Key">
+        <h2>@block.Title <span class="muted">@block.Items.Count</span></h2>
+        @if (block.Intro is not null) { <p class="muted intro">@block.Intro</p> }
+        <table class="examples samples">
+            <thead><tr><th>As written</th><th>Canonical</th><th>Years</th><th>Profile</th></tr></thead>
+            <tbody>
+            @foreach (var item in block.Items)
+            {
+                <tr>
+                    <td><a href="@SamplesModel.PlaygroundUrl(item)">@item.Input</a></td>
+                    <td>@if (item.Canonical is not null) { <code>@item.Canonical</code> } else { <span class="muted">@item.Status</span> }</td>
+                    <td class="years">@item.Years</td>
+                    <td class="muted">@(item.Profile == "default" ? "" : item.Profile)@(item.Intent == "auto" ? "" : $" · {item.Intent}")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+}
+
+<p class="muted">
+    Every row is a <code>verified</code> corpus entry that passes under the current parser (@LinkedArtNet.Dates.TimeSpanParser.Version). Something it reads wrongly?
+    Open it in the playground and use the <a href="/dates/train">trainer</a>, or <a href="https://github.com/tomcrane/linked-art-net/issues/new">file an issue</a> with the input and what it should mean.
+</p>

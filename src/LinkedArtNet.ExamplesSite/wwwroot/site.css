@@ -122,6 +122,12 @@ form.advise textarea { width: 100%; box-sizing: border-box; font-family: ui-mono
 .advice tr.zero { color: var(--muted); }
 .advice tr.zero td.egs { display: table-cell; }
 .recommendations li { margin: 0.4rem 0; }
+.samples a.more { margin-left: 0.5rem; font-weight: 700; }
+nav.sample-nav { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin: 1rem 0 2rem; font-size: 0.9rem; }
+nav.sample-nav .count { color: var(--muted); margin-left: 0.25rem; font-variant-numeric: tabular-nums; }
+section.samples-section { margin-top: 2.5rem; }
+section.samples-section p.intro { max-width: 60rem; }
+table.samples td.years { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .cloud { line-height: 2.4; margin: 1.5rem 0; }
 .cloud .tag { font-size: 1.05rem; padding: 0.15rem 0.8rem; margin-right: 0.5rem; }
 .idioms { list-style: none; padding: 0; margin: -0.75rem 0 1.5rem; font-size: 0.9rem; color: var(--muted); }

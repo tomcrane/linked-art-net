@@ -347,6 +347,12 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     `MultiPart`; labels without dates are skipped; edition and "original" sentences keep their own rule. Authored
     corpus `multi-part.json`; the disputed yearrange lists that now read as sets were accepted and verified.
 
+30. ~~Samples page and standalone-service notes.~~ Done 2026-10-17 (owner's suggestions). `/dates/samples` lists every
+    verified authored corpus entry by theme plus one example of each shape of reading from the imported collections,
+    each linking to the playground, so the page cannot drift from the parser. `/dates/api#docker` and the README tell a
+    non-.NET project how to run the dates service from the public image, with the settings that matter (own profiles,
+    rate limit, capture) and a Python example.
+
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:
 

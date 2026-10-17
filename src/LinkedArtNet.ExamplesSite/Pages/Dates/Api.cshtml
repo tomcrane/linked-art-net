@@ -115,6 +115,51 @@ Content-Type: application/json
     <li><strong>Reference.</strong> The interactive OpenAPI description is at <a href="@Model.Base/docs">@Model.Base/docs</a>, and the document itself at <code>@Model.Base/openapi/v1.json</code>.</li>
 </ul>
 
+<h2 id="docker">Run it yourself</h2>
+<p>
+    The service is a public container image, so a project in any language can have the same parser on its own machine or network with no
+    account and no call to this site. It is a small, read-only process: no database, nothing phoned home, and the profiles and period
+    tables ship inside the image.
+</p>
+<pre><code class="language-bash">docker run --rm -p 8080:8080 ghcr.io/tomcrane/linked-art-net/dates-service:latest
+curl "http://localhost:8080/v1/timespan?s=late%201950s"
+open http://localhost:8080/docs</code></pre>
+<p>The same API as above answers on port 8080. In a <code>docker-compose.yml</code>, pinned to a release:</p>
+<pre><code class="language-yaml">services:
+  dates:
+    image: ghcr.io/tomcrane/linked-art-net/dates-service:v0.1.1
+    ports: ["8080:8080"]
+    environment:
+      Parser__RequestsPerMinute: "100000"   # effectively no rate limit on a private network
+    restart: unless-stopped</code></pre>
+<table class="examples">
+    <thead><tr><th>Setting (environment variable)</th><th>Default</th><th>Meaning</th></tr></thead>
+    <tbody>
+        <tr><td><code>Parser__ProfilesDirectory</code></td><td><code>/app/profiles</code></td><td>Mount your own folder of <a href="/dates/api#profiles">profile</a> files here (<code>-v ./profiles:/app/profiles:ro</code>), for example one the <a href="/dates/advise">advisor</a> suggested for your collection.</td></tr>
+        <tr><td><code>Parser__PeriodOPath</code></td><td><code>/app/periods/periodo.json</code></td><td>The PeriodO period names; point it elsewhere or at a missing file to use only the built-in tables.</td></tr>
+        <tr><td><code>Parser__RequestsPerMinute</code></td><td><code>600</code></td><td>Per client address before 429. Raise it on a private network.</td></tr>
+        <tr><td><code>Parser__MaxInputsPerRequest</code>, <code>Parser__MaxInputLength</code></td><td><code>500</code>, <code>500</code></td><td>Batch size and string length limits.</td></tr>
+        <tr><td><code>Capture__Enabled</code>, <code>Capture__Path</code></td><td><code>false</code></td><td>Append inputs the parser could not read to a JSONL file (mount a volume), to review later in a trainer of your own or to send us as issues.</td></tr>
+        <tr><td><code>ASPNETCORE_HTTP_PORTS</code></td><td><code>8080</code></td><td>Listening port inside the container.</td></tr>
+    </tbody>
+</table>
+<p>From Python, for instance, with nothing but the standard library:</p>
+<pre><code class="language-python">import json, urllib.parse, urllib.request
+
+def timespan(text, profile="default"):
+    url = "http://localhost:8080/v1/timespan?" + urllib.parse.urlencode({"s": text, "profile": profile})
+    with urllib.request.urlopen(url) as response:
+        return json.load(response)
+
+result = timespan("fl. 1480-1510")
+print(result["canonical"], result["confidence"], result["timespan"])</code></pre>
+<p class="muted">
+    Images are built by GitHub Actions from each release tag (<code>v0.1.1</code>, and <code>latest</code>); <code>/version</code> reports the
+    parser and dataset versions inside. The image is a chiseled Ubuntu base with the .NET runtime and runs as a non-root user; <code>/healthz</code>
+    is its health check. The site you are reading is the companion image, <code>examples-site</code>, and the compose file that runs both is
+    <a href="https://github.com/tomcrane/linked-art-net/blob/de-pmc/deploy/linkedart/docker-compose.yml">in the repository</a>.
+</p>
+
 <h2>From code</h2>
 <h3>JavaScript</h3>
 <pre><code class="language-javascript">const url = new URL("@Model.Base/v1/timespan");

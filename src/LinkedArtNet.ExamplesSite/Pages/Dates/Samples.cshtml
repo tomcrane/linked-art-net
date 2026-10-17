@@ -31,7 +31,7 @@
                     <td><a href="@SamplesModel.PlaygroundUrl(item)">@item.Input</a></td>
                     <td>@if (item.Canonical is not null) { <code>@item.Canonical</code> } else { <span class="muted">@item.Status</span> }</td>
                     <td class="years">@item.Years</td>
-                    <td class="muted">@(item.Profile == "default" ? "" : item.Profile)@(item.Intent == "auto" ? "" : $" · {item.Intent}")</td>
+                    <td class="muted">@string.Join(" · ", new[] { item.Profile == "default" ? null : item.Profile, item.Intent == "auto" ? null : item.Intent }.Where(x => x is not null))</td>
                 </tr>
             }
             </tbody>

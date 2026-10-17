@@ -18,6 +18,8 @@ Live at [linkedart.net](https://linkedart.net) (the examples site, playground, c
 [dates.linkedart.net](https://dates.linkedart.net) (the dates API). How it is hosted is in
 [docs/09-hosting.md](docs/09-hosting.md).
 
+What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
+
 ## Run the dates service yourself
 
 The date parser is useful outside .NET. Its service is a public container image with no dependencies, so a

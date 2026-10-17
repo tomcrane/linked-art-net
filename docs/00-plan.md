@@ -86,7 +86,7 @@ done first in Phase 1.
 
 ### Phase 4: Hardening and release (M)
 
-- 1.0 releases of both packages (decoupled: NuGet publishing is deferred, owner 2026-10-13); CHANGELOG;
+- 1.0 releases of both packages (decoupled: NuGet publishing is deferred, owner 2026-10-13); ~~CHANGELOG~~ (CHANGELOG.md from v0.1.1, 2026-10-17);
   ~~docs site pages for API usage~~ (done 2026-10-16: `/dates/api`); perf doc and benchmarks; weekly scheduled
   jobs (site JSON refresh, Getty label check; no workflow has a `schedule` trigger yet); a backup of
   `/srv/linkedart/data` (trainer store and capture file); submit the parser and service to linked.art/software.

@@ -94,10 +94,12 @@ done first in Phase 1.
 - Corpus growth from trainer traffic (first trainer entry merged 2026-10-16, PR #2); multilingual coverage;
   four-point (`EmitInnerBounds`) polish.
 
-### Phase 5 (later): Alignment toolkit
+### Phase 5: Alignment toolkit
 
-Per [07-later-alignment-toolkit.md](07-later-alignment-toolkit.md). Starts with the local-dump
-authority store (QLever or Postgres) and the alignment cache, then a PMC-style pipeline rebuilt on it.
+Designed 2026-10-17 in [10-alignment-toolkit.md](10-alignment-toolkit.md) (doc 07 holds the earlier notes). Order of
+work there, section 12: the agent-string parser first, then the store with entities, strings and decisions, then
+authority sources and the reconciler, then the pipeline runner with PMC as the first instance, the review UI, the
+Wellcome instance, publishing and the QLever loader. Open questions for the owner in its section 13.
 
 ## 3. Decisions (ADR-style, short)
 

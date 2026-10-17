@@ -1,5 +1,8 @@
 # Later: transformation and alignment toolkit (notes, not a design)
 
+Superseded on 2026-10-17 by [10-alignment-toolkit.md](10-alignment-toolkit.md), the design. These notes stay as the
+record of what the PMC work and the LUX survey taught.
+
 Out of scope for the current phases. These notes capture what the PMC work and the survey of Yale's
 pipeline teach, so the model library and parser make the right accommodations now.
 

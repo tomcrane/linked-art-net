@@ -8,6 +8,8 @@ py_datetime/
 LinkedArt/
 tests/
 tools/
-docs/
+# docs/ stays out of the image context except the grammar document LinkedArtNet.Dates.Llm embeds.
+docs/*
+!docs/canonical-expression.md
 corpus/report.json
 corpus/report.md

@@ -62,18 +62,35 @@ From Wellcome's Catalogue API: a merged "Works" model with `contributors` (agent
 dates as labels), `subjects` and `genres` as concepts with identifiers, and a nightly line-delimited JSON snapshot
 (`works.json.gz`, 1.5 GB). Their production dates are labels only, exactly what the dates parser exists for.
 
-From Leeds: the public `uol-library` organisation holds IIIF and EPrints work; the relevant repositories, including
-`linked-art-schemas`, are private (404 from here). The owner will check them out locally, outside this repository, and
-this section gets a paragraph once they have been read.
+From Leeds (University of Leeds Library, Digital Library Infrastructure Project; private repositories read from the
+owner's checkout on 2026-10-17: `linked-art-docs`, `linked-art-schemas`, `linked-art-transformations`, `source-schemas`,
+`linked-art-api`; Python, Pydantic, by Edward Anderson). Their pipeline caches EMu and Alma exports in PostgreSQL,
+validates source records against **data contracts** with a public/full split (a `PublicRecord` the `Record` extends, so
+private fields can never reach a public representation), transforms them with per-field mapper functions into Pydantic
+Linked Art models named after the Linked Art API partitions, and loads a quad store (QLever) behind a FastAPI gateway;
+the components are a `stdin`/`stdout` CLI toolchain with LMDB as the intermediate store. Reconciliation is designed as
+SPARQL queries over the integrated graph (same-name unaligned persons, later place and work overlap, with
+`SERVICE` calls to Wikidata or ULAN) whose findings are written as `la:equivalent` triples into an authority record
+that only the Authority Server owns. Their **persistent identifier policy** separates the thing
+(`https://pid.library.leeds.ac.uk/id/{noid}`, 303 to), the document (`/doc/{noid}`, content negotiation by profile)
+and the representation (`/doc/{noid}/la/about.json`), with eight-character NOIDs from an identifier service; facets
+without their own records (an EMu drop-down value) get **content-based identities**, a hash of path and value. Their
+`eparties` design lists the date forms found in EMu party records ("fl.ca.1737-1751", "b.ca.1441", "d.17??",
+"1690(ca.)"), which is a ready-made test set for the dates parser.
+
+What this design takes from Leeds: the thing/document/representation identifier structure (section 8); content-based
+identities for facets that have no record of their own; the public/full boundary as a stage before mapping, so
+redaction is never the mapper's job; and the observation that once our output is in QLever, reconciliation across our
+own datasets can be SPARQL over the graph as well as lookups in the store. What it does differently: alignment to
+external authorities happens before loading, in the store, so the published records already carry `equivalent`.
 
 ## 3. Shape of the code
 
 ```
 src/LinkedArtNet.Agents/          agent-string parser: "Name [dates] (role)" and its relatives -> Person/Group with
                                   lifespan, role and nationality; profiles and a corpus, like the dates parser
-src/LinkedArtNet.Alignment/       the toolkit: store, entities, decisions, authority sources, reconciler, reidentifier,
-                                  pipeline runner, source adapter contracts, writers
-src/LinkedArtNet.Alignment.Postgres/   the Postgres store (SQLite lives in the core package)
+src/LinkedArtNet.Alignment/       the toolkit: the PostgreSQL store, entities, decisions, authority sources, reconciler,
+                                  reidentifier, pipeline runner, source adapter contracts, writers
 tools/Align/                      CLI: run a pipeline manifest, import decisions, review queue export, reports
 pipelines/pmc/                    the PMC instance: DScribe adapters, mappers, manifest; moves to its own repository
                                   once the packages are published
@@ -119,10 +136,9 @@ labels, dates, type and sameAs links. Lookups during reconciliation read this fi
 **Run**: one execution of a pipeline manifest: dataset, dump identity (file hashes, dates), counts per stage, started
 and finished, the git SHA of the pipeline, and the report. Decisions carry the run that made them.
 
-Two implementations. SQLite in the core package: one file beside the manifest, no install, good to a few million
-rows, which covers PMC and Wellcome. Postgres in a separate package for shared or larger use; the owner's existing
+One implementation: PostgreSQL (decision 2 in section 13), in `LinkedArtNet.Alignment` itself. The owner's existing
 `source_string_map` and `authorities` tables import as decisions and entities (section 9), preserving the identifiers
-already published.
+already published. Tests run against a disposable database.
 
 ## 5. The pipeline
 
@@ -239,8 +255,10 @@ design; the design makes a clean re-export possible either way.
 
 ## 8. Identifiers and publishing
 
-- Entities and records get URIs under one configurable base per dataset, minted once and stored. A re-run never
-  mints a second URI for an entity it already has; `merged_into` keeps old URIs resolvable.
+- Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once
+  and stored. A re-run never mints a second URI for an entity it already has; `merged_into` keeps old URIs resolvable.
+  The structure follows Leeds: an identifier for the thing that 303-redirects, a document identifier that negotiates
+  by profile, and representation identifiers per format, so one opaque reference serves all three.
 - Every authority match is written as Linked Art `equivalent` on the entity; the record references the entity by our
   URI. Consumers that prefer an authority URI follow `equivalent`; consumers that need stability use ours.
 - Each run writes an Activity Streams collection (Create, Update, Delete by URI) alongside the files, which is what
@@ -304,10 +322,12 @@ QLever's update path. A later document covers the engine, its indexing and its i
 
 ## 12. Order of work
 
-1. **Agents parser** (`LinkedArtNet.Agents`): parser, profiles, corpus seeded from pmc-2 tests and PMC/ULAN strings,
-   tests, `/v1/agent`, playground page. No store, no network. Small.
-2. **Store and model**: `IAlignmentStore` with SQLite; Entity, SourceString, Decision, AuthorityRecord, Run;
-   identifier minting; importer for the owner's Postgres tables and the `pmc-lux` overrides. Tests on a temp database.
+1. **Agents parser** (`LinkedArtNet.Agents`): parser, profiles, corpus seeded from pmc-2 tests, PMC and ULAN strings and
+   the Leeds `eparties` date forms, tests, `/v1/agent`, playground page, and the trainer's agent item kind with the
+   nested dates expectation (decision 5). No store, no network. Small.
+2. **Store and model**: the PostgreSQL store; Entity, SourceString, Decision, AuthorityRecord, Run; identifier minting
+   under a per-dataset hostname; importer for the owner's existing tables and the `pmc-lux` overrides. Tests on a
+   disposable database.
 3. **Authority sources and reconciler**: ULAN local index first (the data exists), then AAT, TGN, PeriodO (reuse),
    LCNAF; cached remote clients for VIAF, Wikidata, LoC, LUX with the self-echo rule; scoring, voting, thresholds;
    review queue export; tests against recorded responses.
@@ -319,18 +339,37 @@ QLever's update path. A later document covers the engine, its indexing and its i
 
 Steps 1 to 3 do not touch PMC code and have no network dependency in their tests.
 
-## 13. Questions for the owner
+## 13. Decisions (owner, 2026-10-17)
 
-1. **Identifier base.** What domain do the minted URIs live under: something under `linkedart.net`, a PMC domain for the
-   PMC dataset, or a neutral one per dataset? This fixes the shape of every published record and should be decided
-   before step 2.
-2. **Default store.** SQLite as the zero-install default with Postgres as the option, as proposed, or Postgres only
-   since one is already running here?
-3. **The LUX duplicates.** Raise them with Yale now, or re-export first with the self-echo mapping and let LUX's own
-   merging do the work?
-4. **Leeds.** Which of the private `uol-library` repositories are relevant, and what in them should shape section 5?
-5. **Review UI.** Generalise the trainer inside the examples site, or make the review tool part of `tools/Align` as a
-   local web page beside the store?
-6. **LLM budget for review proposals.** The dates interpreter costs about half a cent a string; agent and concept
-   proposals would be similar. Use the monthly credits for them, within a workspace spend limit, or keep review manual
-   until the heuristics are measured?
+1. **Identifier base: a configurable hostname per dataset.** PMC keeps the hostname its published identifiers already
+   use, so the re-export changes nothing LUX has stored. The base is a manifest setting; new datasets choose their own.
+   The thing/document/representation structure from Leeds is adopted as the shape under that hostname.
+2. **PostgreSQL is the store.** SQLite is dropped from the design: one implementation, one schema, the owner's existing
+   data already there. Tests run against a disposable database (a local instance or a service container in CI).
+3. **The LUX duplicates: leave for now.** The self-echo mapping (7.4) keeps a clean re-export possible either way.
+4. **Leeds: read** (section 2). Anything further the owner finds in those repositories is folded in as it comes.
+5. **Agents get the same playground and trainer as dates, and the two train each other.** The agent-string parser
+   delegates the date substring to the dates parser, so an agent corpus entry's expectation nests a dates expectation
+   for that substring, in the same shape the dates corpus uses, and a failure says which part failed. In the trainer an
+   item has a kind (date, agent, later place and concept); reviewing an agent shows the parsed parts (name, dates,
+   honorific, roles, nationality) for correction, and saving writes an agent corpus entry and, when the date part was
+   corrected or confirmed, a dates corpus entry for the substring as well (de-duplicated against the existing corpus).
+   Agent strings are thus one of the largest sources of dated expectations: every library heading with dates feeds the
+   dates corpus without anyone typing a date on its own.
+6. **LLM escalation, as for dates, with graded autonomy for large datasets.** The dates rule stays for anything that
+   enters the verified corpus: a person confirms. For pipeline output over hundreds of thousands of strings a stricter
+   human-per-string rule would never finish, so the reconciler uses three tiers, all logged with evidence:
+   - *Deterministic*: parser or authority match at or above the accept threshold; no model call.
+   - *Corroborated proposal*: the interpreter's canonical form is realisable and agrees with an independent signal (an
+     authority candidate whose name and dates agree, or the deterministic parser's partial reading). Accepted into the
+     output automatically at the interpreter's capped confidence, flagged `Interpreted`, decision method
+     `llm-corroborated`; a random sample (manifest setting, say 5%) plus every case where the signals disagree goes to
+     the review queue for audit, and any correction found there invalidates the matching decisions.
+   - *Uncorroborated proposal*: queued for a person; the output carries the deterministic reading or a provisional
+     entity meanwhile.
+   Bulk runs use the Message Batches API (half price, asynchronous); the manifest carries a per-run token budget and
+   the run stops asking when it is spent. Nothing a model proposed becomes `verified` corpus or a `confirmed` entity
+   without a person; the autonomy is in what the pipeline outputs, with its provenance stating exactly that.
+
+Still open: whether the review UI stays in the examples site (as the trainer generalised) or moves beside the store as
+part of `tools/Align`; the owner's instinct for the former is noted, and the first agent work will show which fits.

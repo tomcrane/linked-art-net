@@ -259,8 +259,8 @@ public sealed record TimeSpanParseResult(
 Implemented: `TimeSpanParser`, `ParseOptions`, `ProfileCatalog.Load("profiles")`, the fluent bridge in `TimeSpanBridge`
 (`WithTimeSpan`, `WithLifespan`, `WithExistence`) and `ProfileAdvisor.Analyse` (since 2026-10-17 with example strings per
 feature and a `Suggested` profile, written as changes from `default` by `SuggestedProfileJson`; exposed as `POST /v1/advise`
-and `/dates/advise`). `TimeSpanParserBuilder` and `ParseAsync`
-with an `IDateInterpreter` are still to come.
+and `/dates/advise`). `ParseAsync` with an `IDateInterpreter` is implemented (2026-10-17, section 4);
+`TimeSpanParserBuilder` is still to come.
 
 
 ```csharp
@@ -303,12 +303,24 @@ public interface IDateInterpreter
 public sealed record InterpreterResponse(string Canonical, double SelfConfidence, string Rationale);
 ```
 
-`InterpreterContext` carries the profile name and notes, the languages in play, the canonical
-grammar summary and a few worked examples. The default implementation (`LinkedArtNet.Dates.Llm`)
-calls an LLM with a tool definition forcing `{canonical, confidence, rationale}`; the canonical
-string is parsed by strategy 1 and realised normally. If it does not parse, the response is
-discarded. Results are cached. The parser never puts LLM-produced datetimes into a TimeSpan. The
-same interface serves a `HumanReviewInterpreter` in the trainer (a person types the canonical).
+Implemented 2026-10-17 (`src/LinkedArtNet.Dates/Interpretation/`, `src/LinkedArtNet.Dates.Llm/`). `IDateInterpreter`
+has `Name`, `MaxConfidence` (0.6 by default) and `InterpretAsync`; `InterpreterContext` carries the profile (with its
+languages), the intent and the deterministic result; `InterpreterResponse` is a canonical expression, the interpreter's
+own confidence, a rationale and an optional intent. `TimeSpanParser.ParseAsync(input, interpreter, options)` runs
+`Parse` and asks the interpreter only when the result is unparsed, partial or below the profile's accept threshold
+(never for undated text); the answer is read by the canonical reader and realised under the profile, capped at
+`MaxConfidence`, flagged `Interpreted`, with the rationale in the notes and the deterministic reading kept as an
+alternative. A non-canonical answer, no answer or a failure leaves the deterministic result with a note. `Parse`
+itself never calls an interpreter and never does I/O.
+
+`LookupInterpreter` is a table of reviewed readings (text to canonical, from a JSON file or in memory) with a higher
+cap, for curated corrections and for tests. `ClaudeDateInterpreter` (`LinkedArtNet.Dates.Llm`, the Anthropic SDK)
+asks Claude (default `claude-opus-5-5`, effort low) for JSON under the schema `{canonical, confidence, rationale,
+intent}`; the system prompt is this repository's `docs/canonical-expression.md`, embedded and marked for prompt
+caching; answers are memoised and token usage counted. By the owner's decision (2026-10-17) the LLM is a
+corpus-growing assistant: it is reached from the trainer (08-corpus-contributions.md section 7) and from
+`tools/Corpus interpret`, never from the public service, whose `llm=true` is accepted and ignored with a note. The
+reviewer typing a canonical expression in the trainer is the review step itself, not an interpreter implementation.
 
 ## 5. Named periods
 

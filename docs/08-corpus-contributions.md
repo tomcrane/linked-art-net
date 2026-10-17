@@ -5,7 +5,7 @@ the operating guide; the data format and metrics are in [06-corpus-and-testing.m
 the trainer's configuration in [05-examples-site.md](05-examples-site.md), and the canonical expression that
 reviewers edit in [canonical-expression.md](canonical-expression.md).
 
-Status (2026-10-14): implemented and tested end to end; verification is `tools/Corpus promote`. Gaps are in §7. First live run 2026-10-16: PR #2 from the trainer, reviewed by the corpus-review workflow, promoted and merged.
+Status (2026-10-14): implemented and tested end to end; verification is `tools/Corpus promote`. Gaps are in §8. First live run 2026-10-16: PR #2 from the trainer, reviewed by the corpus-review workflow, promoted and merged.
 
 ## 1. The path at a glance
 
@@ -170,7 +170,37 @@ regardless of status.
 | `verified` | a maintainer, in the pull request | yes, one test case each | yes |
 | `disputed` | a maintainer, when reviewers disagree | no | listed separately |
 
-## 7. What is not built yet
+## 7. Proposals from the interpreter (Claude)
+
+Since 2026-10-17 the trainer can ask a language model for a reading. This is the project's only use of an LLM, and it
+is deliberately placed here rather than in the parser's defaults or the public service: the model proposes, a person
+confirms, and only the person's save enters the corpus.
+
+- **Configuration.** `Interpreter:ApiKey` (or `ANTHROPIC_API_KEY`; `.env` on the server), `Interpreter:Model` (default
+  `claude-opus-5-5`), `Interpreter:Effort` (`low`), `Interpreter:MaxConfidence` (0.6), `Interpreter:BatchSize` (25).
+  Without a key the trainer shows no interpreter controls.
+- **What is sent.** The text, the profile's name and description, its languages, the intent, and what the deterministic
+  parser made of the text. The system prompt is the canonical grammar (`docs/canonical-expression.md`, embedded in
+  `LinkedArtNet.Dates.Llm` so prompt and reader stay in step) and is marked for prompt caching. Nothing else from the
+  queue or the store is sent.
+- **What comes back.** A canonical expression, a confidence, a one-sentence rationale and an intent, as JSON under a
+  schema; never a date. The trainer realises the expression under the item's profile, and a proposal that is not
+  canonical is shown but not pre-filled. Confidence is capped (0.6 by default), so an interpreted reading can never
+  pass the accept threshold by itself.
+- **In the trainer.** The index page offers "Ask <model> for readings" for the pending inputs the parser cannot read
+  confidently, a batch at a time; each review page offers "Ask <model> for a reading" for that item, even a confidently
+  parsed one. A proposal pre-fills the correction form with the tag `llm-proposed` and the note "Reading proposed by
+  <model>, confirmed by the reviewer", and its panel shows the rationale. Preview, save or change it as with any correction.
+- **At the command line.** `dotnet run --project tools/Corpus -- interpret --strings <file>` (or `--capture <jsonl>`,
+  the service's capture file) writes the inputs the parser cannot read, with the model's proposals, as a `proposed`
+  corpus file under `corpus/proposed/` for review; `interpret --corpus <file> [--status disputed] [--failing]` reports
+  how often the model agrees with existing expectations, which is how its value is measured before anyone leans on it.
+  `--dry-run` lists what would be sent and costs nothing; `--limit n` bounds a run.
+- **Cost.** One call is about a thousand input tokens, most of them the cached grammar, and under a hundred output
+  tokens; the tool prints token counts after each run. Credits are spent from the Console organisation that owns the
+  key, so keep the key in a workspace with a spend limit.
+
+## 8. What is not built yet
 
 - **Promotion is still a local step.** The pull request comment shows the evaluation and the commands, but the
   maintainer runs `promote` on a checkout and pushes. A "verify" button on the comment would need a workflow that

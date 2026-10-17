@@ -1,6 +1,6 @@
 # Design: Examples site (`LinkedArtNet.ExamplesSite`)
 
-Status (2026-10-14): implemented in `src/LinkedArtNet.ExamplesSite`, including the trainer; the axe lint is not wired in. Live at linkedart.net since 2026-10-16 (v0.1.0); that day added the Plain C# form and idiom notes on every example, the `/idioms` catalogue and the `/dates/api` page (§7 of 00-plan.md, item 24).
+Status (2026-10-14): implemented in `src/LinkedArtNet.ExamplesSite`, including the trainer; the axe lint is not wired in. Live at linkedart.net since 2026-10-16 (v0.1.0); that day added the Plain C# form and idiom notes on every example, the `/idioms` catalogue and the `/dates/api` page (§7 of 00-plan.md, item 24). 2026-10-17: the profile advisor page `/dates/advise`, Claude proposals in the trainer, PeriodO period names in the playground (items 25-27).
 Trainer configuration: `Trainer:GitHub:ClientId`/`ClientSecret` (OAuth app callback `/dates/train/signin-github`),
 `Trainer:Reviewers` (GitHub logins), `Trainer:Submission:Repo`/`Token`/`BaseBranch` for pull requests,
 `Trainer:CapturePath` for the service's capture file, `Trainer:DataDirectory` for the queue and submissions
@@ -25,7 +25,7 @@ for Linked Art (C# reads more easily than JSON-LD) and a living coverage dashboa
 | `/dates` | Parser playground: input box, intent and profile selectors, "allow LLM" when configured; result panel with the TimeSpan JSON, a timeline bar (log-scaled for deep time), flags, confidence, notes, alternatives; "copy as C#"; "this is wrong" -> opens the trainer form pre-filled. Calls the public service over HTTP (configurable base URL) so the demo exercises the real API. |
 | `/dates/corpus` | Browse the corpus by tag and status; per-entry pass/fail against the current parser version. |
 | `/dates/advise` | Profile advisor (2026-10-17): paste a column of dates or pick a corpus sample; the conventions found (with example strings), recommendations and a suggested profile to save under `profiles/`. Calls `POST /v1/advise` when the service is configured, else in-process. |
-| `/dates/train` (auth) | Trainer: queue of captured unparsed/low-confidence inputs and uploaded lists; shows the parser's answer; reviewer accepts, edits the canonical expression (live re-realised), sets intent/profile, tags, and submits. Submissions become `proposed` corpus entries in a pull request branch (via GitHub API) or a downloadable JSON when not configured. |
+| `/dates/train` (auth) | Trainer: queue of captured unparsed/low-confidence inputs and uploaded lists; shows the parser's answer; reviewer accepts, edits the canonical expression (live re-realised), sets intent/profile, tags, and submits. Submissions become `proposed` corpus entries in a pull request branch (via GitHub API) or a downloadable JSON when not configured. Since 2026-10-17, with `Interpreter:ApiKey` set, the reviewer can ask Claude for a proposed reading, per item or a batch for the inputs the parser cannot read; the proposal pre-fills the form and the reviewer confirms or corrects it (08-corpus-contributions.md section 7). |
 | `/about` | What Linked Art is, what this library is, how to use the NuGet packages, licence, attribution for imported corpora. |
 
 ## 2. How the C# source is shown

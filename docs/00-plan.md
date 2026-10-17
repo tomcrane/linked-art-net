@@ -68,7 +68,8 @@ done first in Phase 1.
    words) and recommends profile settings, e.g. a halves band table where "mid" never occurs. Parsing itself
    never depends on other strings (deterministic per string and profile); the advisor runs beforehand and
    the owner pins the result as a profile. Owner's observation, 2026-10-13.
-7. `IDateInterpreter` + `LinkedArtNet.Dates.Llm` reference implementation, behind opt-in.
+7. `IDateInterpreter` + `LinkedArtNet.Dates.Llm` reference implementation, behind opt-in. Done 2026-10-17 (§7, item 27):
+   used as a corpus-growing assistant from the trainer and the Corpus tool, not at request time in the service.
 - Acceptance: >= 98% exact match on `verified` corpus (>= 3,000 entries), 100% on seed; property
   tests green; p50 < 50 µs on idioms; NuGet `LinkedArtNet.Dates 1.0.0-preview`.
 
@@ -322,12 +323,23 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     (`Idioms.cs`, detected by the source extractor); the dates API page `/dates/api`; playground snippets for
     constructing each TimeSpan in C# and from .NET `DateTime`; raw JSON links; About page sample compiled from an
     embedded source file.
+25. ~~Phase 2 step 6, exposed.~~ Done 2026-10-17. The profile advisor writes a suggested profile (as changes from
+    `default`), keeps example strings per feature, and is reachable as `POST /v1/advise` and the site's `/dates/advise`
+    (with corpus samples). Other-language evidence excludes words English also knows; abbreviated range ends are not
+    two-digit years.
+26. ~~Phase 2: PeriodO period source.~~ Done 2026-10-17. `PeriodOSource` over `periods/periodo.json` (CC0, 9,446
+    definitions from 501 authorities, version 301, refreshed by `tools/Corpus periodo`); matched as the whole string
+    only, with PeriodO URIs and citations in the result's notes; the service, site, evaluator and tool share it.
+27. ~~Phase 2 step 7.~~ Done 2026-10-17. `IDateInterpreter` + `ParseAsync`, `LookupInterpreter`,
+    `LinkedArtNet.Dates.Llm` (Claude, JSON-schema answer, cached grammar prompt), `tools/Corpus interpret`, and Claude
+    proposals in the trainer. Decision: the LLM is a corpus-growing assistant; the public service stays deterministic.
 
-Status review (2026-10-16): Phases 0-3 are complete and live. Remaining, in rough order of value:
+Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
+Remaining, in rough order of value:
 
-- Phase 2 leftovers: the PeriodO-backed `INamedPeriodSource` (also the first authority source doc 07 wants, so it
-  tests the Phase 5 plug-in shape without opening Phase 5), the `IDateInterpreter` LLM interpreter (documented in
-  docs 03 and 04, not yet in code), benchmarks.
+- Phase 2: a first measured run of `Corpus interpret --corpus imported/yearrange.json --status disputed` and of the
+  server's capture file once the owner's API key is on the server, to see where Claude's proposals earn their cost;
+  benchmarks; `during: Period` with PeriodO URIs on TimeSpans; PeriodO narrowing (place, authority) as profile settings.
 - Phase 4: the items listed above; the backup cron is the most urgent since the trainer now holds reviewer work.
 - Housekeeping: the axe accessibility lint; renaming `de-pmc` to `main` is a deliberate later sweep (19 references
   across CI, compose, the trainer's base branch, docs and site links).

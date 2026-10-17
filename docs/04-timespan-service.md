@@ -84,10 +84,10 @@ The `_label` of every TimeSpan is the exact input string. `labelPolicy=labelAndN
   `Cache-Control: public, max-age=86400` and an `ETag` of `hash(version, profile, intent, input)`.
 - **Fast.** In-memory LRU memo (inputs repeat heavily in real data). Target p50 < 1 ms, p99 < 20 ms
   for non-LLM paths on a small container.
-- **LLM escalation** is off unless the server is configured with an interpreter (API key via
-  environment) **and** the caller passes `llm=true`. LLM results are capped in confidence, flagged
-  `Interpreted`, and realised deterministically from the returned canonical expression (never trusted
-  to produce datetimes). Per-request timeout; failure falls back to the deterministic result.
+- **No LLM at request time.** Decided 2026-10-17: the public service stays deterministic. `llm=true` is accepted and
+  ignored with a note saying so. The interpreter (`LinkedArtNet.Dates.Llm`) proposes readings for review in the trainer
+  and through `tools/Corpus interpret`; anyone hosting their own service can call the library's `ParseAsync` for
+  escalation, with results capped in confidence and flagged `Interpreted`.
 - **Limits.** Input string max 500 chars; 500 inputs per POST; request body 256 KB (`/v1/advise`: 20,000 strings, 2 MB); built-in rate
   limiter (fixed window per IP, generous for GET). CORS: allow any origin for GET and POST without
   credentials, so the examples site and others can call it from the browser.

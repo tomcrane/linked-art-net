@@ -23,6 +23,7 @@ services:
       Trainer__Submission__Repo: ${SUBMISSION_REPO:-tomcrane/linked-art-net}
       Trainer__Submission__Token: ${GITHUB_SUBMISSION_TOKEN}
       Trainer__Submission__BaseBranch: ${SUBMISSION_BASE_BRANCH:-de-pmc}
+      Interpreter__ApiKey: ${ANTHROPIC_API_KEY:-}
     volumes:
       - ./data/trainer:/data/trainer
       - ./data/capture:/data/capture:ro

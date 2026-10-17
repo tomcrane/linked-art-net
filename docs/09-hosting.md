@@ -109,6 +109,10 @@ code is MIT) or `docker login ghcr.io` on the server with a read-only token befo
   `Trainer__Reviewers__1` lines to the compose file for more).
 - **Submission token**: a fine-grained personal access token scoped to the repository with Contents and
   Pull requests read and write, so the trainer can open pull requests under `corpus/proposed/`.
+- **Anthropic API key** (optional, 2026-10-17): `ANTHROPIC_API_KEY` in `.env` lets the trainer ask Claude for proposed
+  readings (08-corpus-contributions.md section 7). Create it in the Console organisation linked to the Claude plan's
+  monthly API credits, in a workspace of its own with a spend limit. Only the trainer uses it; the public service never
+  calls a model. Add it to `.env`, then `docker compose up -d` recreates the site container with it.
 
 ## 6. Run
 

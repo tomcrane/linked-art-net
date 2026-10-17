@@ -4,6 +4,17 @@ Releases are git tags on `de-pmc`; each tag builds the two container images (`ex
 `main` is fast-forwarded to it (see "Branches and releases" in the README). Versions follow the tags; the parser
 has its own version (`TimeSpanParser.Version`) reported in every result.
 
+## v0.1.2 (2026-10-17)
+
+- Grammar: a year outside the profile's plausible range ("19881", "c. 18011") is read as written but penalised below
+  the accept threshold with a note, so the trainer's bulk ask and the interpreter path pick it up.
+- Trainer: when a proposal is shown, the accept button says it accepts the parser's reading, and the correction form is
+  how the proposal is kept.
+- Images: the site Dockerfile copies the Dates.Llm project and the embedded grammar document; `.dockerignore` lets that
+  one `docs/` file through; CI builds both images on every push; the release matrix no longer cancels the sibling image.
+  (These fixes shipped inside the re-pointed v0.1.1 tag; recorded here because the first v0.1.1 build failed.)
+- Tests: the promotion test no longer depends on the checkout's line endings.
+
 ## v0.1.1 (2026-10-17)
 
 ### Dates library

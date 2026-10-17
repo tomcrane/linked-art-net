@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
+using LinkedArtNet.Dates.Periods;
 using LinkedArtNet.Dates.Realisation;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -14,6 +15,8 @@ public sealed class ParserOptions
 {
     /// <summary>Directory of profile JSON files; relative paths resolve against the content root. Missing: only "default".</summary>
     public string ProfilesDirectory { get; set; } = "profiles";
+    /// <summary>The compact PeriodO file (see periods/README.md); relative paths resolve against the content root. Missing: built-in period tables only.</summary>
+    public string PeriodOPath { get; set; } = "periods/periodo.json";
     public int MaxInputLength { get; set; } = 500;
     public int MaxInputsPerRequest { get; set; } = 500;
     public int MaxRequestBodyBytes { get; set; } = 256 * 1024;
@@ -54,9 +57,18 @@ public sealed class ParserHost
         var dir = Path.IsPathRooted(_options.ProfilesDirectory) ? _options.ProfilesDirectory : Path.Combine(environment.ContentRootPath, _options.ProfilesDirectory);
         _catalog = Directory.Exists(dir) ? ProfileCatalog.Load(dir) : new ProfileCatalog();
         _memo = new MemoryCache(new MemoryCacheOptions { SizeLimit = _options.MemoSize });
+        var periodo = Path.IsPathRooted(_options.PeriodOPath) ? _options.PeriodOPath : Path.Combine(environment.ContentRootPath, _options.PeriodOPath);
+        Periods = PeriodOSource.WithBuiltIn(periodo);
+        PeriodOVersion = File.Exists(periodo) ? PeriodOSource.Load(periodo).Data.Version : null;
     }
 
     public ProfileCatalog Catalog => _catalog;
+
+    /// <summary>The built-in period tables plus PeriodO when its file is present.</summary>
+    public INamedPeriodSource Periods { get; }
+
+    /// <summary>PeriodO dataset version in use, or null when only the built-in tables are loaded.</summary>
+    public string? PeriodOVersion { get; }
 
     public ParserOptions Options => _options;
 
@@ -69,7 +81,7 @@ public sealed class ParserHost
         if (emitInnerBounds is { } eib && eib != profile.EmitInnerBounds) effective = effective with { EmitInnerBounds = eib };
         if (labelPolicy is { } lp && lp != profile.LabelPolicy) effective = effective with { LabelPolicy = lp };
         var key = effective.Name + "|" + effective.GetHashCode();
-        return _parsers.GetOrAdd(key, _ => new TimeSpanParser(effective));
+        return _parsers.GetOrAdd(key, _ => new TimeSpanParser(effective, periods: Periods));
     }
 
     public TimeSpanParseResult Parse(TimeSpanParser parser, string input, Intent intent)

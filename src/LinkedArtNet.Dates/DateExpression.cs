@@ -111,7 +111,9 @@ public sealed record UnspecifiedDigits(string Pattern) : DatePoint
 }
 
 /// <summary>A period known by name ("Edo period", "Regency"); <paramref name="Resolved"/> is null until a period source supplies the bounds.</summary>
-public sealed record NamedPeriod(string Key, string? Label = null, DateExpression? Resolved = null) : DatePoint
+/// <param name="Uri">The period's authority URI when the source has one (PeriodO); null for the built-in tables.</param>
+/// <param name="Source">Where the bounds come from, for the result's notes: the defining authority, or how a shared name was resolved.</param>
+public sealed record NamedPeriod(string Key, string? Label = null, DateExpression? Resolved = null, string? Uri = null, string? Source = null) : DatePoint
 {
     public string Key { get; } = Key.Length > 0 && Key.All(c => char.IsAsciiLetterOrDigit(c) || c is '-' or '_' or '.') ? Key : throw new ArgumentException("A period key is letters, digits, '-', '_' or '.'.", nameof(Key));
 }

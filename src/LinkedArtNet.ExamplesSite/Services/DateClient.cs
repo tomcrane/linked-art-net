@@ -70,12 +70,14 @@ public sealed class DateClient
     private readonly HttpClient? _http;
     private readonly string? _publicUrl;
     private readonly ProfileCatalog _catalog;
+    private readonly LinkedArtNet.Dates.Periods.INamedPeriodSource _periods;
     private readonly Dictionary<string, TimeSpanParser> _parsers = new(StringComparer.OrdinalIgnoreCase);
 
     public DateClient(IOptions<TimeSpanServiceOptions> options, ExampleIndex index, IHttpClientFactory httpFactory)
     {
         var profilesDir = Path.Combine(index.RepoRoot, "profiles");
         _catalog = Directory.Exists(profilesDir) ? ProfileCatalog.Load(profilesDir) : new ProfileCatalog();
+        _periods = LinkedArtNet.Dates.Periods.PeriodOSource.ForRepository(index.RepoRoot);
         _publicUrl = string.IsNullOrWhiteSpace(options.Value.PublicUrl) ? null : options.Value.PublicUrl.TrimEnd('/');
         if (!string.IsNullOrWhiteSpace(options.Value.BaseUrl))
         {
@@ -151,7 +153,7 @@ public sealed class DateClient
     private TimeSpanParseResult ParseInProcess(string input, string intent, string profile)
     {
         if (!_catalog.TryGet(profile, out var p)) p = ParseProfile.Default;
-        if (!_parsers.TryGetValue(p.Name, out var parser)) _parsers[p.Name] = parser = new TimeSpanParser(p);
+        if (!_parsers.TryGetValue(p.Name, out var parser)) _parsers[p.Name] = parser = new TimeSpanParser(p, periods: _periods);
         var intentValue = Enum.TryParse<Intent>(intent, true, out var iv) ? iv : Intent.Auto;
         return parser.Parse(input, intentValue);
     }
@@ -242,7 +244,7 @@ public sealed class CorpusIndex(ExampleIndex index)
         var root = Path.Combine(index.RepoRoot, "corpus");
         var profiles = ProfileCatalog.Load(Path.Combine(index.RepoRoot, "profiles"));
         var entries = CorpusFile.LoadAll(root).SelectMany(f => f.Entries).ToList();
-        return new CorpusEvaluator(profiles.Get).Evaluate(entries);
+        return new CorpusEvaluator(profiles.Get, periods: LinkedArtNet.Dates.Periods.PeriodOSource.ForRepository(index.RepoRoot)).Evaluate(entries);
     });
 
     public IReadOnlyList<EntryResult> Results => _results.Value;

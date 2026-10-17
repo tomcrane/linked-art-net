@@ -10,7 +10,7 @@ namespace LinkedArtNet.Dates.Tests;
 public sealed class CorpusPromotionTests : IDisposable
 {
     private static readonly Lazy<Realisation.ProfileCatalog> Profiles = new(() => Realisation.ProfileCatalog.Load(TestPaths.Profiles));
-    private readonly CorpusEvaluator _evaluator = new(Profiles.Value.Get);
+    private readonly CorpusEvaluator _evaluator = new(Profiles.Value.Get, periods: Periods.PeriodOSource.ForRepository(TestPaths.RepoRoot));
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "lan-promote-" + Guid.NewGuid().ToString("N")[..8]);
 
     private const string TrainerFile = """

@@ -326,8 +326,18 @@ replacement, and the tables are the interim.
 `INamedPeriodSource.TryResolve(string text, CultureInfo, out NamedPeriod)`. Built-in JSON: Japanese
 eras (incl. regnal years, `Meiji 27` -> 1894), Chinese dynasties, British regnal periods, broad
 Western archaeological periods only where bounds are conventional. Art-historical styles ("Baroque")
-are **not** resolved by default (too fuzzy); a profile can add them. Later: a PeriodO-backed source
-(https://perio.do) which has authority URIs for periods, which also lets us emit `during: Period`.
+are **not** resolved by default (too fuzzy); a profile can add them.
+
+**PeriodO (done 2026-10-17).** `PeriodOSource` reads `periods/periodo.json`, a compact copy of the PeriodO dataset
+(https://perio.do, CC0; 9,446 definitions from 501 authorities at version 301; provenance and refresh in
+`periods/README.md`, `tools/Corpus periodo`). `PeriodOSource.ForRepository(root)` composes it after the built-in
+tables, and the service (`Parser:PeriodOPath`), the site, the corpus evaluator and the Corpus tool all use that
+composite, so "Iron Age" parses the same everywhere. A name one authority defines resolves to that definition with its
+PeriodO URI (`NamedPeriod.Uri`) and the key is the PeriodO id, so the canonical `period:p0f65r2qmh2` is a stable,
+dereferenceable reference; a name many authorities define resolves to the hull of all of them under a
+`periodo-<label>` key with a note saying how many and from where, and `PeriodOOptions` (place, authority, language)
+narrows it. `NamedPeriod.Source` carries the citation into the result's notes. Still to come: emitting `during:
+Period` with the URI on the TimeSpan, and a profile setting for the PeriodO options.
 
 ## 6. Error handling and edge cases
 

@@ -61,7 +61,7 @@ public class CorpusTests(ITestOutputHelper output)
     public void Verified_entry_passes(string file, string id)
     {
         var entry = Files.Value.Single(f => f.Path == file).Entries.Single(e => e.Id == id);
-        var result = new CorpusEvaluator(Profiles.Value.Get).Evaluate(entry);
+        var result = new CorpusEvaluator(Profiles.Value.Get, periods: Periods.PeriodOSource.ForRepository(TestPaths.RepoRoot)).Evaluate(entry);
         output.WriteLine($"\"{entry.Input}\" -> {result.Result.Canonical ?? result.Result.Status.ToString()} (confidence {result.Result.Confidence:0.00})");
         foreach (var note in result.Result.Notes) output.WriteLine("  " + note);
         Assert.True(result.Passed, $"{file} {id} \"{entry.Input}\":\n  " + string.Join("\n  ", result.Failures));

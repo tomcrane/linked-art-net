@@ -98,7 +98,7 @@ public sealed partial class TimeSpanParser
     {
         var lexicon = Lexicon.Merge(profile.Languages.Select(Lexicon.Load));
         periods ??= JsonNamedPeriodSource.BuiltIn;
-        return [new CanonicalStrategy(periods), new GrammarStrategy(new Tokenizer(lexicon), periods), new NamedPeriodStrategy(periods), new SalvageStrategy()];
+        return [new CanonicalStrategy(periods), new GrammarStrategy(new Tokenizer(lexicon), periods.ForGrammar()), new NamedPeriodStrategy(periods), new SalvageStrategy()];
     }
 
     public TimeSpanParseResult Parse(string input, Intent intent = Intent.Auto) => Parse(input, new ParseOptions { Intent = intent });

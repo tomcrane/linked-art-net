@@ -23,6 +23,7 @@ COPY --from=build /app .
 # The site reads the manifest, cached site JSON, example source, profiles and corpus from the repository layout.
 COPY examples /repo/examples
 COPY profiles /repo/profiles
+COPY periods /repo/periods
 COPY corpus /repo/corpus
 ENV ASPNETCORE_HTTP_PORTS=8080 \
     Examples__RepoRoot=/repo \

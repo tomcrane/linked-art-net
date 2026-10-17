@@ -18,11 +18,12 @@ public sealed class CorpusEvaluator
 
     /// <param name="profiles">Resolves a profile name; the default resolves only "default". Pass <c>ProfileCatalog.Load(dir).Get</c> for the repository's profiles.</param>
     /// <param name="parserFactory">Builds a parser for a profile; the default is the standard chain.</param>
-    public CorpusEvaluator(Func<string, ParseProfile>? profiles = null, Func<ParseProfile, TimeSpanParser>? parserFactory = null)
+    /// <param name="periods">Period source for the default factory; the built-in tables when null. Pass <c>PeriodOSource.ForRepository(root)</c> to include PeriodO.</param>
+    public CorpusEvaluator(Func<string, ParseProfile>? profiles = null, Func<ParseProfile, TimeSpanParser>? parserFactory = null, LinkedArtNet.Dates.Periods.INamedPeriodSource? periods = null)
     {
         _profiles = profiles ?? (name => name == "default" ? ParseProfile.Default : throw new KeyNotFoundException($"Unknown profile '{name}'."));
         var cache = new Dictionary<ParseProfile, TimeSpanParser>();
-        var factory = parserFactory ?? (p => new TimeSpanParser(p, currentYear: () => 2026));
+        var factory = parserFactory ?? (p => new TimeSpanParser(p, currentYear: () => 2026, periods: periods));
         _parsers = p => cache.TryGetValue(p, out var parser) ? parser : cache[p] = factory(p);
     }
 

@@ -17,6 +17,22 @@ public interface INamedPeriodSource
 
     /// <summary>Resolve a canonical key such as <c>edo</c> or <c>meiji-27</c>.</summary>
     bool TryResolveKey(string key, out NamedPeriod period);
+
+    /// <summary>
+    /// The part of this source the grammar may use inside longer text, where a period name stands wherever a date
+    /// could ("early Edo period", "Meiji 27 to Taisho 3"). Curated tables return themselves. A gazetteer with
+    /// thousands of names, some of them ordinary words ("Italian", "Classical"), returns an empty source so that
+    /// its names are only matched as the whole string by <see cref="NamedPeriodStrategy"/>.
+    /// </summary>
+    INamedPeriodSource ForGrammar() => this;
+}
+
+/// <summary>Knows no periods; what a gazetteer offers the grammar.</summary>
+public sealed class EmptyPeriodSource : INamedPeriodSource
+{
+    public static readonly EmptyPeriodSource Instance = new();
+    public bool TryResolve(string text, out NamedPeriod period) { period = null!; return false; }
+    public bool TryResolveKey(string key, out NamedPeriod period) { period = null!; return false; }
 }
 
 /// <summary>One period in a JSON table.</summary>
@@ -179,15 +195,63 @@ public sealed class CompositePeriodSource(params INamedPeriodSource[] sources) :
         period = null!;
         return false;
     }
+
+    public INamedPeriodSource ForGrammar()
+    {
+        var safe = sources.Select(s => s.ForGrammar()).Where(s => s is not EmptyPeriodSource).ToArray();
+        return safe.Length == sources.Length ? this : safe.Length == 0 ? EmptyPeriodSource.Instance : new CompositePeriodSource(safe);
+    }
 }
 
-/// <summary>Strategy 3: the whole string names a period or a regnal year.</summary>
-public sealed class NamedPeriodStrategy(INamedPeriodSource source) : IParseStrategy
+/// <summary>
+/// Strategy 3: the whole string names a period or a regnal year, allowing a leading "c."/"circa", a band word
+/// (early, mid, late) and "the", and a trailing generic "period"/"era" the table may not list ("Late Iron Age",
+/// "c. Edo era"). Sources are asked for the fuller text before the trimmed one, so a curated table keeps priority
+/// over a gazetteer that would also know the name.
+/// </summary>
+public sealed partial class NamedPeriodStrategy(INamedPeriodSource source) : IParseStrategy
 {
     public string Name => "named-period";
 
-    public Candidate? TryParse(string text, Realisation.ParseProfile profile) =>
-        source.TryResolve(text, out var period)
-            ? new Candidate(period, 0.85, Name, Notes: [$"'{text}' is the period {period.Label} ({period.Resolved!.Canonical})."], Flags: new HashSet<DateFlag> { DateFlag.NamedPeriod })
-            : null;
+    public Candidate? TryParse(string text, Realisation.ParseProfile profile)
+    {
+        var rest = text.Trim();
+        Qualification? qualification = null;
+        Band? band = null;
+        NamedPeriod period;
+        var prefix = Prefix().Match(rest);
+        var circa = prefix.Groups["circa"];
+        // The whole text first ("Early Bronze II" is a period's name, not the early part of "Bronze II"), then without
+        // the hedge ("c. Early Bronze II"), then without the band word too ("late Iron Age").
+        if (Resolve(rest, out period)) { }
+        else if (circa.Success && Resolve(rest[(circa.Index + circa.Length)..].Trim(), out period)) qualification = Qualification.Approximate;
+        else if (prefix.Length > 0 && Resolve(rest[prefix.Length..].Trim(), out period))
+        {
+            if (circa.Success) qualification = Qualification.Approximate;
+            if (prefix.Groups["band"].Success)
+                band = prefix.Groups["band"].Value.ToLowerInvariant() switch { "early" => Band.Early, "mid" or "middle" => Band.Mid, _ => Band.Late };
+            rest = rest[prefix.Length..].Trim();
+        }
+        else return null;
+
+        DateExpression expression = period;
+        var flags = new HashSet<DateFlag> { DateFlag.NamedPeriod };
+        if (band is { } b) { expression = new Banded(expression, b); flags.Add(DateFlag.Band); }
+        if (qualification is { } q) { expression = new Qualified(expression, q); flags.Add(DateFlag.Approximate); }
+        var note = $"'{rest}' is the period {period.Label} ({period.Resolved!.Canonical})." + (period.Source is null ? "" : " " + period.Source);
+        return new Candidate(expression, 0.85, Name, Notes: [note], Flags: flags);
+    }
+
+    private bool Resolve(string text, out NamedPeriod period)
+    {
+        if (source.TryResolve(text, out period)) return true;
+        var m = GenericSuffix().Match(text);
+        return m.Success && source.TryResolve(text[..m.Index].TrimEnd(), out period);
+    }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"^(?:(?<circa>c\.?|ca\.?|circa)\s+)?(?:(?<band>early|mid|middle|late|later)\s+)?(?:the\s+)?", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
+    private static partial System.Text.RegularExpressions.Regex Prefix();
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"\s+(period|era|periode|periodo|age)\.?$", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
+    private static partial System.Text.RegularExpressions.Regex GenericSuffix();
 }

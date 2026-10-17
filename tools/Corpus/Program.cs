@@ -11,6 +11,8 @@
 //                                                           adopt the parser's reading as the expectation of failing entries, keeping the source's in sourceExpectation
 //   dotnet run --project tools/Corpus -- import yearrange <date-tests.json> | import timetwister <dates_spec.rb> | import getty <dir of ulan-*.json>
 //                                                           write corpus/imported/<source>.json (proposed; see THIRD-PARTY-NOTICES.md)
+//   dotnet run --project tools/Corpus -- periodo [--from <dataset.json[.gz]>]
+//                                                           download https://data.perio.do/dataset/ (or compact a local copy) into periods/periodo.json
 //
 // Exit code 1 when validation fails or when a verified entry fails; proposed and disputed entries are informative.
 
@@ -31,6 +33,7 @@ if (command == "import") return await Importers.Run(args.Length > 1 ? args[1] : 
 if (command == "promote") return Promote(args.Skip(1).ToArray());
 if (command == "review") return Review(args.Skip(1).ToArray());
 if (command == "accept") return Accept(args.Skip(1).ToArray());
+if (command == "periodo") return await PeriodO(args.Skip(1).ToArray());
 
 return command switch
 {
@@ -42,7 +45,7 @@ return command switch
 
 static int Usage()
 {
-    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--note <text>] [--dry-run] | review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>] | accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json>");
+    Console.Error.WriteLine("Usage: Corpus validate | run [--all | --status verified|proposed|disputed] [--write] | stats | promote <file> [id ...] [--to verified|disputed|proposed] [--note <text>] [--dry-run] | review <file ...> [--match <regex>] [--tag <tag>] [--failing] [--out <markdown>] | accept <file> [id ...] [--match <regex>] [--tag <tag>] [--verify] [--dry-run] | import yearrange|timetwister <path> | import getty <dir of ulan-*.json> | periodo [--from <dataset.json[.gz]>]");
     return 2;
 }
 
@@ -91,7 +94,7 @@ int Run(EntryStatus? status, bool write)
 {
     var entries = CorpusFile.LoadAll(corpusRoot).SelectMany(f => f.Entries).Where(e => status is null || e.Status == status).ToList();
     var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
-    var results = new CorpusEvaluator(catalog.Get).Evaluate(entries);
+    var results = new CorpusEvaluator(catalog.Get, periods: Periods()).Evaluate(entries);
     var reportJsonPath = Path.Combine(corpusRoot, "report.json");
     var previous = File.Exists(reportJsonPath)
         ? JsonSerializer.Deserialize<Dictionary<string, bool>>(File.ReadAllText(reportJsonPath))
@@ -137,7 +140,7 @@ int Review(string[] rest)
         loaded.Add(CorpusFile.Load(path, corpusRoot));
     }
     var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
-    var evaluator = new CorpusEvaluator(catalog.Get);
+    var evaluator = new CorpusEvaluator(catalog.Get, periods: Periods());
     if (EntryFilter(match, tag, failingOnly, evaluator) is { } filter)
         loaded = loaded.Select(f => f with { Entries = f.Entries.Where(filter).ToList() }).Where(f => f.Entries.Count > 0).ToList();
     var markdown = CorpusReview.Markdown(loaded, evaluator, TimeSpanParser.Version);
@@ -173,7 +176,7 @@ int Accept(string[] rest)
     }
     var filter = EntryFilter(match, tag, failingOnly: false);
     var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
-    var outcome = CorpusAcceptance.Accept(path, ids.Count == 0 ? null : ids, filter, verify ? EntryStatus.Verified : null, new CorpusEvaluator(catalog.Get), dryRun);
+    var outcome = CorpusAcceptance.Accept(path, ids.Count == 0 ? null : ids, filter, verify ? EntryStatus.Verified : null, new CorpusEvaluator(catalog.Get, periods: Periods()), dryRun);
     var relative = Path.GetRelativePath(corpusRoot, path).Replace(Path.DirectorySeparatorChar, '/');
     foreach (var c in outcome.Changed) Console.WriteLine($"{c.Id} \"{c.Input}\"\n    was: {c.Before}\n    now: {c.After}");
     Console.WriteLine();
@@ -217,7 +220,7 @@ int Promote(string[] rest)
     if (path is null) { Console.Error.WriteLine($"No such corpus file: {given}"); return 2; }
 
     var catalog = LinkedArtNet.Dates.Realisation.ProfileCatalog.Load(Path.Combine(repoRoot, "profiles"));
-    var outcome = CorpusPromotion.Promote(path, ids.Count == 0 ? null : ids, to, new CorpusEvaluator(catalog.Get), dryRun, note);
+    var outcome = CorpusPromotion.Promote(path, ids.Count == 0 ? null : ids, to, new CorpusEvaluator(catalog.Get, periods: Periods()), dryRun, note);
     var relative = Path.GetRelativePath(corpusRoot, path).Replace(Path.DirectorySeparatorChar, '/');
     foreach (var f in outcome.Failures)
     {
@@ -237,6 +240,50 @@ int Promote(string[] rest)
     if (dryRun) return 0;
     Console.WriteLine();
     return Run(null, true);
+}
+
+/// <summary>The built-in period tables plus the repository's PeriodO file, as the site and the service use them.</summary>
+LinkedArtNet.Dates.Periods.INamedPeriodSource Periods() => LinkedArtNet.Dates.Periods.PeriodOSource.ForRepository(repoRoot);
+
+// periodo [--from <dataset.json[.gz]>]: download (or read) the full PeriodO dataset and write the compact periods/periodo.json.
+async Task<int> PeriodO(string[] rest)
+{
+    string? from = null;
+    for (var i = 0; i < rest.Length; i++)
+    {
+        if (rest[i] == "--from" && i + 1 < rest.Length) from = rest[++i];
+        else { Console.Error.WriteLine($"periodo: unknown option {rest[i]}"); return 2; }
+    }
+    byte[] bytes; string version; string modified;
+    if (from is not null)
+    {
+        bytes = await File.ReadAllBytesAsync(from);
+        version = "local:" + Path.GetFileName(from);
+        modified = File.GetLastWriteTimeUtc(from).ToString("yyyy-MM-dd");
+    }
+    else
+    {
+        using var http = new HttpClient(new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.All });
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("linked-art-net-corpus-tool/1.0 (+https://github.com/tomcrane/linked-art-net)");
+        http.Timeout = TimeSpan.FromMinutes(3);
+        Console.WriteLine($"Downloading {LinkedArtNet.Dates.Periods.PeriodOData.DatasetUrl} ...");
+        using var response = await http.GetAsync(LinkedArtNet.Dates.Periods.PeriodOData.DatasetUrl);
+        response.EnsureSuccessStatusCode();
+        bytes = await response.Content.ReadAsByteArrayAsync();
+        version = response.Headers.ETag?.Tag.Trim('"').Replace("W/", "").Trim('"') ?? "unknown";
+        modified = (response.Content.Headers.LastModified ?? DateTimeOffset.UtcNow).ToString("yyyy-MM-dd");
+    }
+    Stream stream = new MemoryStream(bytes);
+    if (bytes.Length > 2 && bytes[0] == 0x1f && bytes[1] == 0x8b) stream = new System.IO.Compression.GZipStream(stream, System.IO.Compression.CompressionMode.Decompress);
+    LinkedArtNet.Dates.Periods.PeriodOData data;
+    using (stream) data = LinkedArtNet.Dates.Periods.PeriodOData.FromDataset(stream, version, modified);
+    var outPath = Path.Combine(repoRoot, "periods", "periodo.json");
+    data.Save(outPath);
+    var size = new FileInfo(outPath).Length;
+    Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, outPath)}: {data.Periods.Count} periods from {data.Authorities.Count} authorities, version {data.Version}, modified {data.Modified}, {size / 1024} KB.");
+    var shared = data.Periods.GroupBy(p => LinkedArtNet.Dates.Periods.JsonNamedPeriodSource.Normalise(p.Label)).Count(g => g.Count() > 1);
+    Console.WriteLine($"{shared} labels are defined by more than one authority and resolve to a hull unless narrowed.");
+    return 0;
 }
 
 int Tokens(string profileName, string text)

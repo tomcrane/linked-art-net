@@ -17,7 +17,7 @@ public sealed record AdviseRequest(IReadOnlyList<string>? Inputs, IReadOnlyList<
 
 public sealed record ProfileSummary(string Name, string? Description, IReadOnlyList<string> Languages, string CenturyConvention);
 
-public sealed record VersionInfo(string Service, string Parser, string Model, string? Git, IReadOnlyList<string> Profiles, int PeriodTables);
+public sealed record VersionInfo(string Service, string Parser, string Model, string? Git, IReadOnlyList<string> Profiles, int PeriodTables, string? PeriodO);
 
 public sealed record ErrorResponse(string Error, string? Detail = null);
 

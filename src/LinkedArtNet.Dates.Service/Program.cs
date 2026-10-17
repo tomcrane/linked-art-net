@@ -199,7 +199,7 @@ v1.MapGet("/canonical", (HttpContext http, string? e, string? intent, string? pr
     if (e.Length > limits.MaxInputLength) return Results.BadRequest(new ErrorResponse($"Expression longer than {limits.MaxInputLength} characters."));
     if (!Parsing.TryIntent(intent, out var intentValue)) return Results.BadRequest(new ErrorResponse($"Unknown intent '{intent}'."));
     if (!host.TryGetProfile(profile, out var profileValue)) return Results.NotFound(new ErrorResponse($"Unknown profile '{profile}'."));
-    if (!CanonicalReader.TryParse(e, out var expression, out var error, JsonNamedPeriodSource.BuiltIn))
+    if (!CanonicalReader.TryParse(e, out var expression, out var error, host.Periods))
         return Results.BadRequest(new ErrorResponse("Not a canonical expression.", error));
     var result = new TimeSpanRealiser(profileValue).Realise(expression!, e, intentValue);
     http.Response.Headers.CacheControl = $"public, max-age={limits.CacheMaxAgeSeconds}";
@@ -215,7 +215,7 @@ app.MapGet("/version", () =>
     var model = typeof(LinkedArtObject).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0";
     var git = Environment.GetEnvironmentVariable("GIT_SHA");
     if (git is null && service.Contains('+')) git = service[(service.IndexOf('+') + 1)..];
-    return Results.Ok(new VersionInfo(service, TimeSpanParser.Version, model, git, host.Catalog.Profiles.Keys.Order(StringComparer.Ordinal).ToList(), JsonNamedPeriodSource.BuiltIn.Tables.Count));
+    return Results.Ok(new VersionInfo(service, TimeSpanParser.Version, model, git, host.Catalog.Profiles.Keys.Order(StringComparer.Ordinal).ToList(), JsonNamedPeriodSource.BuiltIn.Tables.Count, host.PeriodOVersion));
 }).WithName("Version").WithSummary("Service, parser and model versions");
 
 app.MapGet("/", () => Results.Redirect("/docs")).ExcludeFromDescription();

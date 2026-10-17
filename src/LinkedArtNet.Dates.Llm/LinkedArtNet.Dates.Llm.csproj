@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>LinkedArtNet.Dates.Llm</PackageId>
+    <Description>Reference IDateInterpreter for LinkedArtNet.Dates backed by Claude: proposes a canonical date expression for text the deterministic parser cannot read, for review. Opt-in; the parser never needs it.</Description>
+    <RootNamespace>LinkedArtNet.Dates.Llm</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Anthropic" Version="12.58.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The canonical grammar is the one document the model is given; embedding the repository's copy keeps the prompt and the reader in step. -->
+    <EmbeddedResource Include="..\..\docs\canonical-expression.md" LogicalName="LinkedArtNet.Dates.Llm.canonical-expression.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="LinkedArtNet.Dates.Tests" />
+  </ItemGroup>
+
+</Project>

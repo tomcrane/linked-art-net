@@ -198,6 +198,7 @@ public sealed class TrainerStore
 public sealed class Trainer
 {
     private readonly ProfileCatalog _catalog;
+    private readonly LinkedArtNet.Dates.Periods.INamedPeriodSource _periods;
     private readonly Dictionary<string, TimeSpanParser> _parsers = new(StringComparer.OrdinalIgnoreCase);
     private readonly string _repoRoot;
 
@@ -206,7 +207,11 @@ public sealed class Trainer
         _repoRoot = index.RepoRoot;
         var dir = Path.Combine(_repoRoot, "profiles");
         _catalog = Directory.Exists(dir) ? ProfileCatalog.Load(dir) : new ProfileCatalog();
+        _periods = LinkedArtNet.Dates.Periods.PeriodOSource.ForRepository(_repoRoot);
     }
+
+    /// <summary>The built-in period tables plus PeriodO when the repository has periods/periodo.json.</summary>
+    public LinkedArtNet.Dates.Periods.INamedPeriodSource Periods => _periods;
 
     public IReadOnlyList<string> ProfileNames => _catalog.Profiles.Keys.OrderBy(n => n == "default" ? "" : n, StringComparer.Ordinal).ToList();
 
@@ -217,7 +222,7 @@ public sealed class Trainer
         var p = Profile(profile);
         lock (_parsers)
         {
-            if (!_parsers.TryGetValue(p.Name, out var parser)) _parsers[p.Name] = parser = new TimeSpanParser(p);
+            if (!_parsers.TryGetValue(p.Name, out var parser)) _parsers[p.Name] = parser = new TimeSpanParser(p, periods: _periods);
             return parser.Parse(input, ParseIntent(intent));
         }
     }

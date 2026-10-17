@@ -1,0 +1,46 @@
+{
+  "type": "rdf:Bag",
+  "id": "p0d/#authorities",
+  "@context": ["http://n2t.net/ark:/99152/p0c", {"@base": "http://n2t.net/ark:/99152/"}],
+  "authorities": {
+    "p0f65r2": {
+      "type": "Authority",
+      "id": "p0f65r2",
+      "source": {"partOf": {"title": "Life in biblical Israel", "yearPublished": 2001, "creators": [{"name": "King, Philip J."}, {"name": "Stager, Lawrence E."}]}, "locator": "page xxiii"},
+      "periods": {
+        "p0f65r2qmh2": {
+          "type": "Period", "id": "p0f65r2qmh2", "language": "http://lexvo.org/id/iso639-1/en", "languageTag": "en",
+          "localizedLabels": {"en": ["EB II", "Early Bronze II"]}, "label": "EB II",
+          "start": {"in": {"year": "-3099"}, "label": "3100 B.C.E."}, "stop": {"in": {"year": "-2649"}, "label": "2650 B.C.E."},
+          "spatialCoverage": [{"id": "http://www.wikidata.org/entity/Q801", "label": "Israel"}], "spatialCoverageDescription": "Levant"
+        },
+        "p0f65r2iron": {
+          "type": "Period", "id": "p0f65r2iron", "languageTag": "en",
+          "localizedLabels": {"en": ["Iron Age"]}, "label": "Iron Age",
+          "start": {"in": {"year": "-1199"}, "label": "1200 B.C.E."}, "stop": {"in": {"year": "-586"}, "label": "587 B.C.E."},
+          "spatialCoverageDescription": "Levant"
+        }
+      }
+    },
+    "p0mn2nd": {
+      "type": "Authority",
+      "id": "p0mn2nd",
+      "source": {"citation": "British Museum. Iron Age collection guide.", "title": "British Museum collection periods", "yearPublished": 2010},
+      "periods": {
+        "p0mn2ndiron": {
+          "type": "Period", "id": "p0mn2ndiron", "languageTag": "en",
+          "localizedLabels": {"en": ["Iron Age"], "fr": ["Âge du fer"]}, "label": "Iron Age",
+          "start": {"in": {"year": -799}, "label": "800 BC"}, "stop": {"in": {"year": 43}, "label": "AD 43"},
+          "spatialCoverageDescription": "Britain"
+        },
+        "p0mn2ndfire": {
+          "type": "Period", "id": "p0mn2ndfire", "languageTag": "en",
+          "localizedLabels": {"en": ["Energy epoch five: fire"]}, "label": "Energy epoch five: fire",
+          "start": {"in": {"latestYear": "-40000", "earliestYear": "-1500000"}, "label": "From 1.5 Ma to 0.4 Ma"},
+          "stop": {"in": {}, "label": "today"},
+          "spatialCoverageDescription": "Earth"
+        }
+      }
+    }
+  }
+}

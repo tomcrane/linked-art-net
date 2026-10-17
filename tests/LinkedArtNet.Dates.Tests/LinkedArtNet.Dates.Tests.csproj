@@ -5,6 +5,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Fixtures\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
     <ProjectReference Include="..\..\src\LinkedArtNet.Dates.Corpus\LinkedArtNet.Dates.Corpus.csproj" />
   </ItemGroup>

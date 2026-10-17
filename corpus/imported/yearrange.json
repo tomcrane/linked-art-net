@@ -7735,23 +7735,13 @@
       }
     },
     {
-      "id": "yr-0553", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
+      "id": "yr-0553", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer. Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1970..1979; flags Approximate.",
       "input": "\u0022lamp\u0022 made in 1956. Others ca. 1970s.",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1970,
-          "end": 1979
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1956,197X~]","edtf":"[1956,197X~]","timespan":{"begin_of_the_begin":"1956-01-01T00:00:00Z","end_of_the_end":"1979-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1970..1979; flags Approximate"
     },
     {
       "id": "yr-0554", "status": "verified",
@@ -11030,14 +11020,7 @@
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1983,
-          "end": 1983
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1983,1986,1989]","edtf":"[1983,1986,1989]","timespan":{"begin_of_the_begin":"1983-01-01T00:00:00Z","end_of_the_end":"1989-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1983..1983", "notes": "Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1983..1983."
     },
     {
       "id": "yr-0806", "status": "verified",
@@ -11284,17 +11267,7 @@
         "circa",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1890,
-          "end": 1890
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1890~,1883]","edtf":"[1890~,1883]","timespan":{"begin_of_the_begin":"1883-01-01T00:00:00Z","end_of_the_end":"1890-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1890..1890; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1890..1890; flags Approximate."
     },
     {
       "id": "yr-0831",
@@ -15252,17 +15225,7 @@
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1970,
-          "end": 1979
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[197X~,1982]","edtf":"[197X~,1982]","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1982-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1970..1979; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1970..1979; flags Approximate."
     },
     {
       "id": "yr-1128",
@@ -16932,44 +16895,24 @@
       "expect": {"status": "parsed", "years": {"start": 1800, "end": 1899}, "toleranceYears": 0}
     },
     {
-      "id": "yr-1253", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
+      "id": "yr-1253", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer. Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1970..1979; flags Approximate.",
       "input": "(1) 1980, (2) 1977, (3) ca. 1970s.",
       "tags": [
         "circa",
         "decade",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1970,
-          "end": 1979
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1980,1977,197X~]","edtf":"[1980,1977,197X~]","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1980-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1970..1979; flags Approximate"
     },
     {
-      "id": "yr-1254", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
+      "id": "yr-1254", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer. Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1970..1979; flags Approximate.",
       "input": "(1) and (2) ca. 1970s, (3) 1982.",
       "tags": [
         "circa",
         "decade",
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1970,
-          "end": 1979
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[197X~,1982]","edtf":"[197X~,1982]","timespan":{"begin_of_the_begin":"1970-01-01T00:00:00Z","end_of_the_end":"1982-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1970..1979; flags Approximate"
     },
     {
       "id": "yr-1255",
@@ -18280,23 +18223,13 @@
       }
     },
     {
-      "id": "yr-1352", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
+      "id": "yr-1352", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer. Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1930..1939; flags Approximate.",
       "input": "Sheet 1; 1964. Sheet 2 and 3; ca. 1930s.",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1930,
-          "end": 1939
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1964,193X~]","edtf":"[1964,193X~]","timespan":{"begin_of_the_begin":"1930-01-01T00:00:00Z","end_of_the_end":"1964-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1930..1939; flags Approximate"
     },
     {
       "id": "yr-1353", "status": "verified",
@@ -19274,13 +19207,13 @@
       }
     },
     {
-      "id": "yr-1430", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
+      "id": "yr-1430", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer. Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 2003..2004.",
       "input": "Spring: July 2005; Summer: May - July 2003; Autumn: Dec 2003 - July 2004; Winter: Sept - Nov 2003.",
       "tags": [
         "month",
         "season"
       ],
-      "expect": {"status": "parsed", "years": {"start": 2003, "end": 2004}, "toleranceYears": 0}
+      "expect": {"status":"parsed","kind":"single","canonical":"[2005-07,2003-05/2003-07,2003-12/2004-07,2003-09/2003-11]","edtf":"[2005-07,2003-05/2003-07,2003-12/2004-07,2003-09/2003-11]","timespan":{"begin_of_the_begin":"2003-05-01T00:00:00Z","end_of_the_end":"2005-07-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 2003..2004"
     },
     {
       "id": "yr-1431",
@@ -19403,14 +19336,7 @@
       "tags": [
         "bracketed"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1980,
-          "end": 1980
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1980,1982]","edtf":"[1980,1982]","timespan":{"begin_of_the_begin":"1980-01-01T00:00:00Z","end_of_the_end":"1982-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1980..1980", "notes": "Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1980..1980."
     },
     {
       "id": "yr-1440", "status": "verified",
@@ -19928,23 +19854,13 @@
       }
     },
     {
-      "id": "yr-1478", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
+      "id": "yr-1478", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer. Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1960..1969; flags Approximate.",
       "input": "\u0022Flower\u0022 in 1972. \u0022Lake in Forest\u0022 in 1969. \u0022Volcano Lake\u0022 ca. 1960s.",
       "tags": [
         "circa",
         "decade"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1960,
-          "end": 1969
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1972,1969,196X~]","edtf":"[1972,1969,196X~]","timespan":{"begin_of_the_begin":"1960-01-01T00:00:00Z","end_of_the_end":"1972-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1960..1969; flags Approximate"
     },
     {
       "id": "yr-1479",
@@ -21967,20 +21883,13 @@
       }
     },
     {
-      "id": "yr-1618", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer.",
+      "id": "yr-1618", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Lists of items or sheets each with its own date; no single span is the answer. Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 533..535.",
       "input": "Virgin, end of 5th century; Annunciation, 533-535; Saints, 705.",
       "tags": [
         "range",
         "century"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 533,
-          "end": 535
-        },
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[end century 5,0533/0535,0705]","edtf":"0475/0705","timespan":{"begin_of_the_begin":"0475-01-01T00:00:00Z","end_of_the_end":"0705-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 533..535"
     },
     {
       "id": "yr-1619",
@@ -22243,17 +22152,7 @@
         "circa",
         "range"
       ],
-      "expect": {
-        "status": "parsed",
-        "years": {
-          "start": 1460,
-          "end": 1470
-        },
-        "flags": [
-          "Approximate"
-        ],
-        "toleranceYears": 0
-      }
+      "expect": {"status":"parsed","kind":"single","canonical":"[1460~/1470,1475~]","edtf":"[1460~/1470,1475~]","timespan":{"begin_of_the_begin":"1460-01-01T00:00:00Z","end_of_the_end":"1475-12-31T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1460..1470; flags Approximate", "notes": "Accepted the parser\u0027s reading on 2026-10-17; the expectation had been: status parsed; years 1460..1470; flags Approximate."
     },
     {
       "id": "yr-1639",

@@ -11,7 +11,8 @@ whether that is 1800-1899 or 1801-1900 is the profile's business.
 
 ```
 expression  := 'undated' | set | interval | prefixed
-set         := '[' expression (',' expression)* ']'          two or more members; "1904 or 1905"
+set         := '[' expression (',' expression)* ']'          two or more members: "1904 or 1905", or the separately
+                                                              dated parts of one record, "(1) 1980, (2) 1977" (flag MultiPart)
 interval    := bound '/' bound                               bound := prefixed | '..'  (open)
 prefixed    := (lifecycle | relation | band)* single
              | 'century' INT | 'millennium' INT              INT negative for BCE: century -5

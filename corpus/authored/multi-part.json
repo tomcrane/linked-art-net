@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/corpus-entry.schema.json",
+  "source": {
+    "name": "Authored: records that date several parts separately",
+    "licence": "CC0-1.0",
+    "notes": "Numbered items, sheets, titled works and components of one object, each with its own date, separated by semicolons, sentences or enumerators like '(2)'. No single span is the answer, so the parser reads a set: the TimeSpan is the hull and each part is an alternative, flagged MultiPart. Edition and reproduction sentences are not parts and keep their own rule (the edition dates the object). Written 2026-10-17 after the first Claude interpreter run read the disputed yearrange lists this way; expectations checked by hand under the default profile (decade bands early 0-3, late 7-9)."
+  },
+  "defaults": { "intent": "single", "profile": "default", "status": "verified", "tags": ["multi-part"] },
+  "entries": [
+    { "id": "mp-001", "input": "(1) 1980, (2) 1977, (3) ca. 1970s.", "tags": ["enumerated"],
+      "expect": { "status": "parsed", "canonical": "[1980,1977,197X~]", "flags": ["MultiPart", "Disjunction", "Approximate"], "years": { "start": 1970, "end": 1980 } } },
+    { "id": "mp-002", "input": "(1) and (2) ca. 1970s, (3) 1982.", "tags": ["enumerated"],
+      "expect": { "status": "parsed", "canonical": "[197X~,1982]", "flags": ["MultiPart"], "years": { "start": 1970, "end": 1982 } } },
+    { "id": "mp-003", "input": "Sheet 1; 1964. Sheet 2 and 3; ca. 1930s.", "tags": ["sheets"],
+      "expect": { "status": "parsed", "canonical": "[1964,193X~]", "flags": ["MultiPart"], "years": { "start": 1930, "end": 1964 } },
+      "notes": "'Sheet 1' and 'Sheet 2 and 3' are labels with no date of their own and are skipped." },
+    { "id": "mp-004", "input": "\"Flower\" in 1972. \"Lake in Forest\" in 1969. \"Volcano Lake\" ca. 1960s.", "tags": ["titles"],
+      "expect": { "status": "parsed", "canonical": "[1972,1969,196X~]", "flags": ["MultiPart"], "years": { "start": 1960, "end": 1972 } } },
+    { "id": "mp-005", "input": "Virgin, end of 5th century; Annunciation, 533-535; Saints, 705.", "tags": ["components"],
+      "expect": { "status": "parsed", "canonical": "[end century 5,0533/0535,0705]", "flags": ["MultiPart", "Band"], "years": { "start": 490, "end": 705 } } },
+    { "id": "mp-006", "input": "1932. Printed 1963.", "tags": ["edition", "not-multi-part"],
+      "expect": { "status": "parsed", "canonical": "1963", "flags": ["SecondaryDate"], "notFlags": ["MultiPart"] },
+      "notes": "Two sentences, but the second is about the printing, which dates the object; the edition rule, not the set." },
+    { "id": "mp-007", "input": "1850; 1850", "tags": ["restated"],
+      "expect": { "status": "parsed", "canonical": "1850", "notFlags": ["MultiPart"] },
+      "notes": "The same date for every part is one date." }
+  ]
+}

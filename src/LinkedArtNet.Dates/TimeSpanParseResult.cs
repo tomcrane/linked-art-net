@@ -19,6 +19,8 @@ public enum DateFlag
     Approximate, Uncertain, OpenStart, OpenEnd, Disjunction, Bracketed, Salvaged, Interpreted, Corrected,
     Floruit, Lifecycle, Bce, DeepTime, NamedPeriod, Season, Band, AmbiguousDayMonth, Unconsumed, Inverted, Padded,
     TwoDigitYear, SecondaryDate, Parenthesised, RomanNumeral,
+    /// <summary>The record dates several parts separately ("Sheet 1; 1964. Sheet 2 and 3; ca. 1930s"); the span is the hull of a set whose members are the parts.</summary>
+    MultiPart,
 }
 
 /// <summary>Another reading of the input, or a member of a disjunction, with its own realisation.</summary>

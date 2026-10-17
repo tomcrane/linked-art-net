@@ -54,6 +54,13 @@ internal sealed class DateParser
         _t.AddRange(RemoveEditionNumbers(main));
         _p = 0;
 
+        // "(1) 1980, (2) 1977, (3) ca. 1970s", "Sheet 1; 1964. Sheet 2 and 3; ca. 1930s": a record that dates several parts
+        // separately. Each clause is read on its own and the parts become a set: the span is their hull, each part an
+        // alternative. Edition and reproduction sentences are not parts; they say which date is the object's, and keep
+        // their own handling below.
+        if (TryEnumeratedParts(out var parts)) return parts;
+        _t.RemoveAll(t => t.Value is string v && v == ClauseSeparator); // the enumerators; real ";" and "." keep their old handling
+
         DateExpression? expression = null;
         var ignoredBefore = 0;
         try
@@ -169,6 +176,73 @@ internal sealed class DateParser
     }
 
     /// <summary>"made after a painting in ...": "after a/an/the" followed by a noun describes the source, not a date relation.</summary>
+    /// <summary>The <see cref="Token.Value"/> of a separator that <see cref="SplitGroups"/> made from an enumerator such as "(2)".</summary>
+    private const string ClauseSeparator = "clause";
+
+    private static bool IsClauseSeparator(Token t) => t.Kind == TokenKind.Other && (t.Value is string v && v == ClauseSeparator || t.Text is ";" or ".");
+
+    /// <summary>Clauses split at ";", at a sentence-ending "." with more text after it, and at enumerators.</summary>
+    private static List<List<Token>> SplitClauses(List<Token> tokens)
+    {
+        var clauses = new List<List<Token>>();
+        var current = new List<Token>();
+        foreach (var t in tokens)
+        {
+            if (IsClauseSeparator(t)) { if (current.Count > 0) clauses.Add(current); current = []; continue; }
+            current.Add(t);
+        }
+        if (current.Count > 0) clauses.Add(current);
+        return clauses;
+    }
+
+    /// <summary>
+    /// Two or more clauses, each with a date of its own and none about an edition or an original, read as the set of
+    /// those dates. A clause without a date ("Sheet 1", a title) is a label and is skipped; a clause that is a lifecycle
+    /// pair or a correction means this is not a list of parts.
+    /// </summary>
+    private bool TryEnumeratedParts(out Candidate? candidate)
+    {
+        candidate = null;
+        var clauses = SplitClauses(_t);
+        if (clauses.Count < 2) return false;
+        if (_t.Any(IsEditionWord) || _t.Any(x => x.Kind == TokenKind.Word && Lexicon.Normalise(x.Text) is "original" or "originally" or "this" or "these") || CopiesAnOriginal(_t)) return false;
+
+        var members = new List<DateExpression>();
+        var notes = new List<string>();
+        var flags = new HashSet<DateFlag>();
+        var confidence = 0.95;
+        var dated = 0;
+        foreach (var clause in clauses)
+        {
+            // "Sheet 1", "Sheet 2 and 3", a title: a clause with nothing year-shaped in it is a label for the next part.
+            if (!clause.Any(x => (x.Kind == TokenKind.Number && !x.HasDecimal && x.Digits >= _profile.MinYearDigits) || x.Kind is TokenKind.Unspecified or TokenKind.CenturyWord or TokenKind.MillenniumWord
+                                 || (x.Kind == TokenKind.Roman && x.Number >= 100) || (x.Kind == TokenKind.Word && _periods is not null && _periods.TryResolve(x.Text, out _))))
+                continue;
+            var inner = new DateParser(clause, _text, _profile, _lexicon, _periods);
+            Candidate? c;
+            try { c = inner.Parse(); }
+            catch (ArgumentException) { return false; }
+            if (c is null || c.Expression is Undated) continue;
+            if (c.Expression is Lifecycle or Corrected) return false;
+            // "1812 - 1820, 1900 and June 10-11, 1910": a clause the grammar could not finish is a list of dates in its own
+            // right, not one part; leave the whole string to the ordinary reading.
+            if (c.UnconsumedText is not null) return false;
+            dated++;
+            notes.AddRange(inner._notes.Where(n => !n.StartsWith("Leading text", StringComparison.Ordinal)));
+            foreach (var f in inner._flags) flags.Add(f);
+            confidence = Math.Min(confidence, c.Confidence);
+            members.AddRange(c.Expression is OneOf set ? set.Members : [c.Expression]);
+        }
+        if (dated < 2) return false;
+        var distinct = members.Distinct().ToList();
+        if (distinct.Count < 2) return false; // the same date stated for every part is one date
+
+        flags.Add(DateFlag.MultiPart);
+        notes.Insert(0, $"The record dates {dated} parts separately ({string.Join("; ", distinct.Select(m => m.Canonical))}); the span covers them all and each part is an alternative.");
+        candidate = new Candidate(new OneOf(distinct), Math.Min(confidence, 0.85), "grammar", null, notes, flags);
+        return true;
+    }
+
     private static bool CopiesAnOriginal(List<Token> tokens)
     {
         for (var i = 0; i + 2 < tokens.Count; i++)
@@ -265,6 +339,8 @@ internal sealed class DateParser
             var inner = tokens.Skip(i + 1).Take(Math.Max(0, j - i - 1)).Where(x => x.Kind is not (TokenKind.OpenParen or TokenKind.CloseParen)).ToList();
             i = j + 1;
             if (inner.Count == 1 && inner[0].Kind == TokenKind.Question) { main.Add(inner[0]); continue; }
+            // "(1) 1980, (2) 1977": a small number alone in parentheses enumerates parts; it becomes a clause separator.
+            if (inner.Count == 1 && inner[0] is { Kind: TokenKind.Number, Digits: <= 2, HasDecimal: false }) { main.Add(new Token(TokenKind.Other, ";", t.Start, ClauseSeparator)); continue; }
             if (inner.Count > 0 && inner.All(x => x.Kind is TokenKind.Hedge or TokenKind.Noise or TokenKind.Floruit or TokenKind.Other) && inner.Any(x => x.Kind == TokenKind.Hedge))
             {
                 main.Add(inner.First(x => x.Kind == TokenKind.Hedge));

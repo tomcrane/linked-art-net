@@ -87,6 +87,8 @@ A recursive-descent grammar over the token stream, roughly:
 ```
 expression   := undated | set | interval | single
 set          := single (OR single)+                           // "1904 or 1905"
+              | clause (SEP clause)+                          // "(1) 1980, (2) 1977", "Sheet 1; 1964. Sheet 2; ca. 1930s": parts dated separately (2026-10-17)
+                                                              // SEP = ";" | sentence "." | "(n)"; a clause without a date is a label; edition sentences are not parts
 interval     := [BETWEEN] bound RANGE bound | relation single | single RANGE          // open end "1971-"
 bound        := single | OPEN
 single       := qualifiers* point qualifiers*

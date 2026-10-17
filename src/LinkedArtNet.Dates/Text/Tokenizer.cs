@@ -144,8 +144,9 @@ public sealed partial class Tokenizer(Lexicon lexicon)
                 continue;
             }
 
-            // "12. März", "19. Jahrhundert", "2. Hälfte": the ordinal dot after a number adds nothing once the word follows.
-            if (t.Kind == TokenKind.Number && i + 2 < raw.Count && raw[i + 1] is { Kind: TokenKind.Other, Text: "." } && raw[i + 2].Kind == TokenKind.Word)
+            // "12. März", "19. Jahrhundert", "2. Hälfte": the ordinal dot after a small number adds nothing once the word follows.
+            // After a year ("1956. Others ca. 1970s") the dot ends a sentence and stays, so the grammar can see the clause boundary.
+            if (t.Kind == TokenKind.Number && t.Digits <= 2 && i + 2 < raw.Count && raw[i + 1] is { Kind: TokenKind.Other, Text: "." } && raw[i + 2].Kind == TokenKind.Word)
             {
                 raw.RemoveAt(i + 1);
             }

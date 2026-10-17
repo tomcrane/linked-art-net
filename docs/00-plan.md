@@ -342,12 +342,15 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     `authored/encoding-and-noise.json`; three yearrange entries moved from disputed to verified). The set reading for
     enumerated parts is the open finding.
 
+29. ~~Set reading for enumerated parts.~~ Done 2026-10-17 (item 28's open finding). Clauses split at ";", a sentence
+    "." or an enumerator "(2)" that each carry a date become a set: hull as the span, parts as alternatives, flag
+    `MultiPart`; labels without dates are skipped; edition and "original" sentences keep their own rule. Authored
+    corpus `multi-part.json`; the disputed yearrange lists that now read as sets were accepted and verified.
+
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:
 
-- Phase 2: the grammar reading records that date several parts separately ("(1) 1980, (2) 1977, (3) ca. 1970s",
-  "Sheet 1; 1964. Sheet 2 and 3; ca. 1930s") as a set, which item 28's run showed to be the main thing Claude reads
-  better than the parser; `interpret` over the server's capture file once the API key is in the server's `.env`;
+- Phase 2: `interpret` over the server's capture file once the API key is in the server's `.env`;
   benchmarks; `during: Period` with PeriodO URIs on TimeSpans; PeriodO narrowing (place, authority) as profile settings.
 - Phase 4: the items listed above; the backup cron is the most urgent since the trainer now holds reviewer work.
 - Housekeeping: the axe accessibility lint; renaming `de-pmc` to `main` is a deliberate later sweep (19 references

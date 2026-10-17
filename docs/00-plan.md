@@ -358,7 +358,8 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
 
 31. ~~Phase 5 step 1: the agent-string parser.~~ First version 2026-10-17 (doc 10 section 6): `LinkedArtNet.Agents` with
     profiles and tables, Person/Group builder, agent corpus with nested dates expectations (60 entries, 57 verified),
-    `/v1/agent`, the `/agents` playground, `tools/Corpus agents`. The trainer's agent item kind is the next piece.
+    `/v1/agent`, the `/agents` playground, `tools/Corpus agents`, and the trainer's agent item kind: agent strings
+    reviewed as parts, saved as agent entries whose date part also enters the dates corpus (doc 08 section 8).
 
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:

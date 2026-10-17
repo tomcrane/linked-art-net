@@ -200,7 +200,39 @@ confirms, and only the person's save enters the corpus.
   tokens; the tool prints token counts after each run. Credits are spent from the Console organisation that owns the
   key, so keep the key in a workspace with a spend limit.
 
-## 8. What is not built yet
+## 8. Agent strings (2026-10-17)
+
+The trainer takes agent strings as well as dates (design decision 5 in doc 10). The **Add agent strings** form
+queues them under an agent profile (`dscribe`, `marc`, `ulan`, `ead`, `wellcome` or `default`); every queue
+item has a kind, `date` or `agent`, and items queued before kinds existed read as dates.
+
+Reviewing an agent item shows two readings: the agent parser's parts (kind, name, family and given names,
+honorifics, roles, nationality, qualifiers, the date part as written, anything not placed) and, when there is a
+date part, the dates parser's reading of that substring under the agent profile's dates profile with intent
+`pair`. The correction form has a field per part; the date part reuses the canonical-expression field with its
+live preview. Blank date text means the string has no dates.
+
+Saving writes an **agent corpus entry** (`ta-yyyyMMdd-nnn`) whose expectation pins each part the reviewer
+stated and nests the dates expectation for the date part in the dates corpus's own shape, so a later failure
+says which parser was wrong. When the date part was given a status (confirmed or corrected), a **dates corpus
+entry** (`tr-...`) for the substring is written too, intent `pair`, tagged `agent-derived`, its note naming the
+agent entry it came from; it is skipped when the dates corpus already has that input under that profile, or
+this store already holds it. "Accept as is" nests the dates expectation only when the dates parser read the
+part fully; a partial reading pins the text alone.
+
+The interpreter is asked about the **date substring** of an agent item, never the whole string, and only when
+the dates parser is weak on it; the proposal pre-fills the date part of the form as it does for a date item.
+
+Export makes one file per kind, `corpus/proposed/trainer-<stamp>.json` and
+`corpus/agents/proposed/trainer-agents-<stamp>.json`, and one pull request carries both. Agent files are not
+schema-checked yet (there is no agent schema); the trainer checks that the file reloads under the strict reader
+with unique ids and known profiles. `tools/Corpus agents --all` shows how the parser does against proposed agent
+entries; there is no `promote` for them yet, so a maintainer sets `"status": "verified"` by hand.
+
+## 9. What is not built yet
+
+- **No agent corpus schema or promotion.** Agent entries are checked on export by reloading, not by a JSON
+  schema, and are verified by editing the file.
 
 - **Promotion is still a local step.** The pull request comment shows the evaluation and the commands, but the
   maintainer runs `promote` on a checkout and pushes. A "verify" button on the comment would need a workflow that

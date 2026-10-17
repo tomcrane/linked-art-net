@@ -7,6 +7,7 @@ using LinkedArtNet.Dates.Canonical;
 using LinkedArtNet.Dates.Corpus;
 using LinkedArtNet.Dates.Periods;
 using LinkedArtNet.Dates.Realisation;
+using LinkedArtNet.Agents;
 using Microsoft.Extensions.Options;
 
 namespace LinkedArtNet.ExamplesSite.Services;
@@ -56,14 +57,31 @@ public sealed class SubmissionOptions
     public string? Token { get; set; }
     public string BaseBranch { get; set; } = "de-pmc";
     public string Directory { get; set; } = "corpus/proposed";
+    /// <summary>Where agent corpus files from the trainer go; under corpus/agents so the agent loader finds them.</summary>
+    public string AgentDirectory { get; set; } = "corpus/agents/proposed";
     public bool Configured => !string.IsNullOrWhiteSpace(Repo) && !string.IsNullOrWhiteSpace(Token);
 }
 
 public enum QueueState { Pending, Done, Skipped }
 
-/// <summary>An input waiting for review, with the parser's answer at the time it was queued and, when asked for, the interpreter's proposal.</summary>
+/// <summary>What kind of string a queue item is. The profile means a dates profile for <c>date</c> and an agent profile for <c>agent</c>.</summary>
+public static class ItemKind
+{
+    public const string Date = "date";
+    public const string Agent = "agent";
+    public static string Normalise(string? kind) => string.Equals(kind, Agent, StringComparison.OrdinalIgnoreCase) ? Agent : Date;
+}
+
+/// <summary>
+/// An input waiting for review, with the parser's answer at the time it was queued and, when asked for, the
+/// interpreter's proposal. <see cref="Kind"/> is <see cref="ItemKind.Date"/> or <see cref="ItemKind.Agent"/>; items
+/// queued before kinds existed read as dates.
+/// </summary>
 public sealed record QueueItem(string Id, string Input, string Profile, string Intent, string Source, DateTimeOffset AddedAt,
-    QueueState State = QueueState.Pending, string? ReviewedBy = null, DateTimeOffset? ReviewedAt = null, Proposal? Proposal = null);
+    QueueState State = QueueState.Pending, string? ReviewedBy = null, DateTimeOffset? ReviewedAt = null, Proposal? Proposal = null, string Kind = ItemKind.Date)
+{
+    public bool IsAgent => Kind == ItemKind.Agent;
+}
 
 /// <summary>
 /// What the interpreter (Claude, by default) proposed for a queued input: a canonical expression, its confidence as the
@@ -72,13 +90,22 @@ public sealed record QueueItem(string Id, string Input, string Profile, string I
 /// </summary>
 public sealed record Proposal(string? Canonical, double Confidence, string? Rationale, string Model, DateTimeOffset At, string? Intent, bool Realisable);
 
-/// <summary>A reviewed entry, kept until it has been exported into a corpus file.</summary>
-public sealed record Submission(string Id, string Reviewer, DateTimeOffset At, string? QueueId, CorpusEntry Entry, string? ExportedTo = null);
+/// <summary>
+/// A reviewed item, kept until it has been exported into a corpus file. A date review has an <see cref="Entry"/>;
+/// an agent review has an <see cref="AgentEntry"/> and, when its date part was confirmed or corrected and the dates
+/// corpus did not already hold that substring, an <see cref="Entry"/> for the substring as well.
+/// </summary>
+public sealed record Submission(string Id, string Reviewer, DateTimeOffset At, string? QueueId, CorpusEntry? Entry, string? ExportedTo = null,
+    LinkedArtNet.Agents.AgentCorpusEntry? AgentEntry = null)
+{
+    public string Input => AgentEntry?.Input ?? Entry?.Input ?? "";
+}
 
 /// <summary>File-backed store for the queue and the submissions. One process, one lock; the data directory is not in git.</summary>
 public sealed class TrainerStore
 {
     private static readonly JsonSerializerOptions Json = new(CorpusFile.JsonOptions);
+    private static readonly JsonSerializerOptions AgentJson = new(LinkedArtNet.Agents.AgentCorpusFile.JsonOptions);
     private readonly object _lock = new();
     private readonly string _queuePath;
     private readonly string _submissionsPath;
@@ -101,18 +128,19 @@ public sealed class TrainerStore
     public IReadOnlyList<Submission> Submissions { get { lock (_lock) return _submissions.ToList(); } }
     public IReadOnlyList<Submission> Unexported => Submissions.Where(s => s.ExportedTo is null).ToList();
 
-    /// <summary>Queues inputs not already queued (same text and profile); returns how many were added.</summary>
-    public int Add(IEnumerable<string> inputs, string profile, string intent, string source)
+    /// <summary>Queues inputs not already queued (same kind, text and profile); returns how many were added.</summary>
+    public int Add(IEnumerable<string> inputs, string profile, string intent, string source, string kind = ItemKind.Date)
     {
+        kind = ItemKind.Normalise(kind);
         lock (_lock)
         {
-            var known = _queue.Select(q => (q.Input, q.Profile)).ToHashSet();
+            var known = _queue.Select(q => (q.Kind, q.Input, q.Profile)).ToHashSet();
             var added = 0;
             foreach (var raw in inputs)
             {
                 var input = raw.Trim();
-                if (input.Length == 0 || input.Length > 500 || !known.Add((input, profile))) continue;
-                _queue.Add(new QueueItem("q-" + Guid.NewGuid().ToString("N")[..10], input, profile, intent, source, DateTimeOffset.UtcNow));
+                if (input.Length == 0 || input.Length > 500 || !known.Add((kind, input, profile))) continue;
+                _queue.Add(new QueueItem("q-" + Guid.NewGuid().ToString("N")[..10], input, profile, intent, source, DateTimeOffset.UtcNow, Kind: kind));
                 added++;
             }
             if (added > 0) Save(_queuePath, _queue);
@@ -144,6 +172,8 @@ public sealed class TrainerStore
 
     public int Count(QueueState state) { lock (_lock) return _queue.Count(q => q.State == state); }
 
+    public int Count(QueueState state, string kind) { lock (_lock) return _queue.Count(q => q.State == state && q.Kind == kind); }
+
     public void SetProposal(string id, Proposal proposal)
     {
         lock (_lock)
@@ -172,23 +202,36 @@ public sealed class TrainerStore
         }
     }
 
-    /// <summary>The next corpus entry id: <c>tr-yyyymmdd-nnn</c>, unique across this store.</summary>
-    public string NextEntryId()
+    /// <summary>The next dates corpus entry id: <c>tr-yyyymmdd-nnn</c>, unique across this store.</summary>
+    public string NextEntryId() => NextId("tr");
+
+    /// <summary>The next agent corpus entry id: <c>ta-yyyymmdd-nnn</c>, unique across this store.</summary>
+    public string NextAgentEntryId() => NextId("ta");
+
+    private string NextId(string kind)
     {
         lock (_lock)
         {
-            var prefix = $"tr-{DateTime.UtcNow:yyyyMMdd}-";
-            var n = _submissions.Count(s => s.Entry.Id.StartsWith(prefix, StringComparison.Ordinal)) + 1;
-            while (_submissions.Any(s => s.Entry.Id == $"{prefix}{n:000}")) n++;
+            var prefix = $"{kind}-{DateTime.UtcNow:yyyyMMdd}-";
+            var ids = _submissions.SelectMany(s => new[] { s.Entry?.Id, s.AgentEntry?.Id }).OfType<string>().ToHashSet(StringComparer.Ordinal);
+            var n = ids.Count(id => id.StartsWith(prefix, StringComparison.Ordinal)) + 1;
+            while (ids.Contains($"{prefix}{n:000}")) n++;
             return $"{prefix}{n:000}";
         }
     }
 
-    public Submission AddSubmission(string reviewer, string? queueId, CorpusEntry entry)
+    /// <summary>Whether a dates entry for this input and profile is already waiting in this store.</summary>
+    public bool HasDatesSubmission(string input, string profile)
     {
+        lock (_lock) return _submissions.Any(s => s.Entry is { } e && string.Equals(e.Input, input, StringComparison.OrdinalIgnoreCase) && string.Equals(e.Profile, profile, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public Submission AddSubmission(string reviewer, string? queueId, CorpusEntry? entry, LinkedArtNet.Agents.AgentCorpusEntry? agentEntry = null)
+    {
+        if (entry is null && agentEntry is null) throw new ArgumentException("A submission needs a dates entry, an agent entry, or both.");
         lock (_lock)
         {
-            var submission = new Submission("s-" + Guid.NewGuid().ToString("N")[..10], reviewer, DateTimeOffset.UtcNow, queueId, entry);
+            var submission = new Submission("s-" + Guid.NewGuid().ToString("N")[..10], reviewer, DateTimeOffset.UtcNow, queueId, entry, AgentEntry: agentEntry);
             _submissions.Add(submission);
             Save(_submissionsPath, _submissions);
             return submission;
@@ -224,6 +267,8 @@ public sealed class Trainer
     private readonly ProfileCatalog _catalog;
     private readonly LinkedArtNet.Dates.Periods.INamedPeriodSource _periods;
     private readonly Dictionary<string, TimeSpanParser> _parsers = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, AgentStringParser> _agentParsers = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Lazy<HashSet<(string Input, string Profile)>> _corpusDates;
     private readonly string _repoRoot;
 
     public Trainer(ExampleIndex index)
@@ -232,6 +277,34 @@ public sealed class Trainer
         var dir = Path.Combine(_repoRoot, "profiles");
         _catalog = Directory.Exists(dir) ? ProfileCatalog.Load(dir) : new ProfileCatalog();
         _periods = LinkedArtNet.Dates.Periods.PeriodOSource.ForRepository(_repoRoot);
+        _corpusDates = new(() => CorpusFile.LoadAll(Path.Combine(_repoRoot, "corpus")).SelectMany(f => f.Entries)
+            .Select(e => (e.Input.Trim().ToLowerInvariant(), e.Profile.ToLowerInvariant())).ToHashSet());
+    }
+
+    public IReadOnlyList<string> AgentProfileNames => AgentProfileCatalog.BuiltIn.Profiles.Keys.OrderBy(n => n == "default" ? "" : n, StringComparer.Ordinal).ToList();
+
+    public AgentProfile AgentProfile(string? name) => AgentProfileCatalog.BuiltIn.TryGet(name, out var p) ? p : LinkedArtNet.Agents.AgentProfile.Default;
+
+    /// <summary>The agent-string parser's reading under an agent profile, its date part read by this trainer's dates profiles.</summary>
+    public ParsedAgent ParseAgent(string input, string? profile)
+    {
+        var p = AgentProfile(profile);
+        lock (_agentParsers)
+        {
+            if (!_agentParsers.TryGetValue(p.Name, out var parser)) _agentParsers[p.Name] = parser = new AgentStringParser(p, _catalog);
+            return parser.Parse(input);
+        }
+    }
+
+    /// <summary>Whether the dates corpus in the repository already has an entry for this input under this profile.</summary>
+    public bool KnownInDatesCorpus(string input, string profile) => _corpusDates.Value.Contains((input.Trim().ToLowerInvariant(), profile.ToLowerInvariant()));
+
+    /// <summary>The text the dates parser is asked about for a queue item, with the dates profile and intent that apply: the whole input for a date item, the date substring for an agent item.</summary>
+    public (string? Text, string Profile, string Intent) DatePart(QueueItem item)
+    {
+        if (!item.IsAgent) return (item.Input, item.Profile, item.Intent);
+        var parsed = ParseAgent(item.Input, item.Profile);
+        return (parsed.DateText, AgentProfile(item.Profile).DatesProfile, "pair");
     }
 
     /// <summary>The built-in period tables plus PeriodO when the repository has periods/periodo.json.</summary>
@@ -251,8 +324,12 @@ public sealed class Trainer
         }
     }
 
-    /// <summary>Whether the deterministic parser is weak enough on this item for an interpreter's proposal to be worth asking for.</summary>
-    public bool NeedsInterpreter(QueueItem item) => TimeSpanParser.NeedsInterpreter(Parse(item.Input, item.Profile, item.Intent), Profile(item.Profile));
+    /// <summary>Whether the deterministic parser is weak enough on this item's date part for an interpreter's proposal to be worth asking for. An agent item with no date part never is.</summary>
+    public bool NeedsInterpreter(QueueItem item)
+    {
+        var (text, profile, intent) = DatePart(item);
+        return text is not null && TimeSpanParser.NeedsInterpreter(Parse(text, profile, intent), Profile(profile));
+    }
 
     /// <summary>
     /// Asks the interpreter about one queued input and returns its proposal, checked against this parser: the
@@ -263,12 +340,14 @@ public sealed class Trainer
     {
         var interpreter = host.Interpreter ?? throw new InvalidOperationException("No interpreter is configured.");
         var model = host.Model ?? interpreter.Name;
-        var profile = Profile(item.Profile);
-        var deterministic = Parse(item.Input, item.Profile, item.Intent);
+        var (text, profileName, intentName) = DatePart(item);
+        if (text is null) return new Proposal(null, 0, "No date part to interpret: the agent parser found no dates in this string.", model, DateTimeOffset.UtcNow, null, false);
+        var profile = Profile(profileName);
+        var deterministic = Parse(text, profileName, intentName);
         LinkedArtNet.Dates.Interpretation.InterpreterResponse? response;
         try
         {
-            response = await interpreter.InterpretAsync(item.Input, new LinkedArtNet.Dates.Interpretation.InterpreterContext(profile, ParseIntent(item.Intent), deterministic), ct);
+            response = await interpreter.InterpretAsync(text, new LinkedArtNet.Dates.Interpretation.InterpreterContext(profile, ParseIntent(intentName), deterministic), ct);
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException or InvalidOperationException)
         {
@@ -277,7 +356,7 @@ public sealed class Trainer
         if (response is null) return new Proposal(null, 0, "No reading offered: the model did not take the text for a date.", model, DateTimeOffset.UtcNow, null, false);
         var canonical = response.Canonical.Trim();
         var intent = response.Intent?.ToString().ToLowerInvariant();
-        var (realised, error) = Realise(canonical, item.Profile, intent ?? item.Intent);
+        var (realised, error) = Realise(canonical, profileName, intent ?? intentName);
         var confidence = Math.Clamp(Math.Min(response.SelfConfidence, interpreter.MaxConfidence), 0, 1);
         return new Proposal(canonical, confidence, string.IsNullOrWhiteSpace(response.Rationale) ? null : response.Rationale.Trim(), model, DateTimeOffset.UtcNow, intent, realised is not null && error is null);
     }
@@ -300,35 +379,84 @@ public sealed class Trainer
     public CorpusEntry BuildEntry(string id, string input, string profile, string intent, string expectedStatus, string? canonical,
         IEnumerable<string> tags, string? notes, string reviewer)
     {
-        var status = expectedStatus.ToLowerInvariant() is "undated" or "unparsed" ? expectedStatus.ToLowerInvariant() : "parsed";
-        Expectation expect;
-        if (status == "parsed")
-        {
-            var (realised, error) = Realise(canonical ?? "", profile, intent);
-            if (realised is null) throw new ArgumentException(error, nameof(canonical));
-            expect = new Expectation
-            {
-                Status = "parsed",
-                Kind = Camel(realised.Kind.ToString()),
-                Canonical = realised.Canonical,
-                Edtf = realised.Edtf,
-                TimeSpan = Expected(realised.TimeSpan),
-                Begin = Expected(realised.Begin),
-                End = Expected(realised.End),
-            };
-        }
-        else
-        {
-            expect = new Expectation { Status = status };
-        }
-        var allTags = tags.Select(t => t.Trim().ToLowerInvariant()).Where(t => t.Length > 0).Distinct().Order(StringComparer.Ordinal).ToList();
-        var note = $"Reviewed by {reviewer} in the trainer on {DateTime.UtcNow:yyyy-MM-dd}.";
-        if (!string.IsNullOrWhiteSpace(notes)) note = notes.Trim() + " " + note;
+        var expect = BuildExpectation(profile, intent, expectedStatus, canonical);
         return new CorpusEntry
         {
-            Id = id, Input = input, Intent = intent.ToLowerInvariant(), Profile = profile, Tags = allTags, Expect = expect,
-            Status = EntryStatus.Proposed, Notes = note, SourceExpectation = "trainer",
+            Id = id, Input = input, Intent = intent.ToLowerInvariant(), Profile = profile, Tags = CleanTags(tags), Expect = expect,
+            Status = EntryStatus.Proposed, Notes = ReviewNote(notes, reviewer), SourceExpectation = "trainer",
         };
+    }
+
+    /// <summary>The dates expectation for a reviewed reading; throws <see cref="ArgumentException"/> when a parsed reading's expression cannot be realised.</summary>
+    public Expectation BuildExpectation(string profile, string intent, string expectedStatus, string? canonical)
+    {
+        var status = expectedStatus.ToLowerInvariant() is "undated" or "unparsed" ? expectedStatus.ToLowerInvariant() : "parsed";
+        if (status != "parsed") return new Expectation { Status = status };
+        var (realised, error) = Realise(canonical ?? "", profile, intent);
+        if (realised is null) throw new ArgumentException(error, nameof(canonical));
+        return new Expectation
+        {
+            Status = "parsed",
+            Kind = Camel(realised.Kind.ToString()),
+            Canonical = realised.Canonical,
+            Edtf = realised.Edtf,
+            TimeSpan = Expected(realised.TimeSpan),
+            Begin = Expected(realised.Begin),
+            End = Expected(realised.End),
+        };
+    }
+
+    /// <summary>
+    /// A proposed agent corpus entry from a review. Every part the reviewer stated is pinned; the date part nests a
+    /// dates expectation when the reviewer gave the substring a status, and <c>noDates</c> when they said there is none.
+    /// </summary>
+    public AgentCorpusEntry BuildAgentEntry(string id, string input, string profile, AgentReview review, IEnumerable<string> tags, string? notes, string reviewer)
+    {
+        var dateText = Blank(review.DateText);
+        Expectation? dates = null;
+        if (dateText is not null && review.DatesStatus is { } status) dates = BuildExpectation(review.DatesProfile, "pair", status, review.DatesCanonical);
+        return new AgentCorpusEntry
+        {
+            Id = id, Input = input, Profile = profile, Tags = CleanTags(tags), Status = EntryStatus.Proposed, Notes = ReviewNote(notes, reviewer),
+            Expect = new AgentExpectation
+            {
+                Kind = review.Kind.ToLowerInvariant(),
+                Name = Blank(review.Name),
+                FamilyName = Blank(review.FamilyName),
+                GivenNames = Blank(review.GivenNames),
+                Honorifics = review.Honorifics.Count > 0 ? review.Honorifics : null,
+                RoleLabels = review.RoleLabels.Count > 0 ? review.RoleLabels : null,
+                Nationalities = review.Nationalities.Count > 0 ? review.Nationalities : null,
+                Qualifiers = review.Qualifiers.Count > 0 ? review.Qualifiers : null,
+                DateText = dateText,
+                Dates = dates,
+                NoDates = dateText is null ? true : null,
+                NoUnconsumed = review.NoUnconsumed ? true : null,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The dates corpus entry an agent review yields for its date substring, or null when the review gave the part no
+    /// status or the dates corpus already has that input under that profile. The entry is tagged <c>agent-derived</c>
+    /// and its note names the agent entry it came from.
+    /// </summary>
+    public CorpusEntry? DerivedDatesEntry(string id, AgentReview review, string agentInput, string agentEntryId, IEnumerable<string> tags, string reviewer)
+    {
+        var dateText = Blank(review.DateText);
+        if (dateText is null || review.DatesStatus is null || KnownInDatesCorpus(dateText, review.DatesProfile)) return null;
+        var note = $"Date part of the agent string \"{agentInput}\" (agent entry {agentEntryId}).";
+        return BuildEntry(id, dateText, review.DatesProfile, "pair", review.DatesStatus, review.DatesCanonical, tags.Append("agent-derived"), note, reviewer);
+    }
+
+    private static string? Blank(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+
+    private static List<string> CleanTags(IEnumerable<string> tags) => tags.Select(t => t.Trim().ToLowerInvariant()).Where(t => t.Length > 0).Distinct().Order(StringComparer.Ordinal).ToList();
+
+    private static string ReviewNote(string? notes, string reviewer)
+    {
+        var note = $"Reviewed by {reviewer} in the trainer on {DateTime.UtcNow:yyyy-MM-dd}.";
+        return string.IsNullOrWhiteSpace(notes) ? note : notes.Trim() + " " + note;
     }
 
     /// <summary>A corpus file holding the given submissions, in the shape of corpus/authored/*.json.</summary>
@@ -341,11 +469,46 @@ public sealed class Trainer
             Source = new CorpusSource("Trainer submissions", "CC0-1.0",
                 Notes: $"Reviewed in the examples-site trainer by {string.Join(", ", reviewers)}. Proposed until a maintainer verifies them."),
             Defaults = new CorpusDefaults(Status: EntryStatus.Proposed, Tags: ["trainer"]),
-            Entries = submissions.Select(s => s.Entry).ToList(),
+            Entries = submissions.Select(s => s.Entry).OfType<CorpusEntry>().ToList(),
         };
     }
 
     public static string Serialise(CorpusFile file) => JsonSerializer.Serialize(file, CorpusFile.JsonOptions) + "\n";
+
+    /// <summary>An agent corpus file holding the given submissions' agent entries, in the shape of corpus/agents/*.json.</summary>
+    public AgentCorpusFile BuildAgentFile(IReadOnlyList<Submission> submissions)
+    {
+        var reviewers = submissions.Select(s => s.Reviewer).Distinct().Order(StringComparer.Ordinal);
+        return new AgentCorpusFile
+        {
+            Source = new CorpusSource("Trainer submissions (agent strings)", "CC0-1.0",
+                Notes: $"Reviewed in the examples-site trainer by {string.Join(", ", reviewers)}. Proposed until a maintainer verifies them; the date parts also went to the dates corpus as agent-derived entries unless it already had them."),
+            Defaults = new AgentCorpusDefaults(Status: EntryStatus.Proposed, Tags: ["trainer"]),
+            Entries = submissions.Select(s => s.AgentEntry).OfType<AgentCorpusEntry>().ToList(),
+        };
+    }
+
+    public static string Serialise(AgentCorpusFile file) => JsonSerializer.Serialize(file, AgentCorpusFile.JsonOptions) + "\n";
+
+    /// <summary>Errors for a serialised agent corpus file: it must load back under the strict reader and every entry must have an id, an input and a known profile.</summary>
+    public IReadOnlyList<string> ValidateAgents(string json)
+    {
+        try
+        {
+            var file = JsonSerializer.Deserialize<AgentCorpusFile>(json, AgentCorpusFile.JsonOptions) ?? throw new JsonException("empty file");
+            var errors = new List<string>();
+            foreach (var e in file.Entries)
+            {
+                if (string.IsNullOrWhiteSpace(e.Id)) errors.Add("an entry has no id");
+                if (string.IsNullOrWhiteSpace(e.Input)) errors.Add($"{e.Id}: no input");
+                if (!AgentProfileCatalog.BuiltIn.TryGet(e.Profile, out _)) errors.Add($"{e.Id}: unknown agent profile '{e.Profile}'");
+            }
+            var dup = file.Entries.GroupBy(e => e.Id).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+            if (dup.Count > 0) errors.Add("duplicate ids: " + string.Join(", ", dup));
+            return errors;
+        }
+        catch (JsonException e) { return [e.Message]; }
+    }
 
     /// <summary>Schema errors for a serialised file, by writing it beside the store and validating as the corpus tool does.</summary>
     public IReadOnlyList<string> Validate(string json, string scratchDirectory)
@@ -366,24 +529,52 @@ public sealed class Trainer
     private static string Camel(string s) => s.Length == 0 ? s : char.ToLowerInvariant(s[0]) + s[1..];
 }
 
-/// <summary>Opens a pull request adding one corpus file, through the GitHub REST API.</summary>
+/// <summary>
+/// What a reviewer says an agent string holds. Lists are the labels the corpus checks as sets; <see cref="DateText"/>
+/// null or blank means there is no date part; <see cref="DatesStatus"/> null means the date part is pinned as text only.
+/// </summary>
+public sealed record AgentReview(string Kind, string? Name, string? FamilyName, string? GivenNames,
+    IReadOnlyList<string> Honorifics, IReadOnlyList<string> RoleLabels, IReadOnlyList<string> Nationalities, IReadOnlyList<string> Qualifiers,
+    string? DateText, string? DatesStatus, string? DatesCanonical, string DatesProfile, bool NoUnconsumed)
+{
+    /// <summary>The parser's reading taken as right. The date part gets a nested expectation only when the dates parser read it fully.</summary>
+    public static AgentReview FromParsed(ParsedAgent a, string datesProfile)
+    {
+        string? status = a.Dates?.Status switch { ParseStatus.Parsed => "parsed", ParseStatus.Undated => "undated", ParseStatus.Unparsed => "unparsed", _ => null };
+        return new AgentReview(a.Kind.ToString().ToLowerInvariant(), a.Name, a.FamilyName, a.GivenNames,
+            a.Honorifics, a.Roles.Select(r => r.Label).ToList(), a.Nationalities.Select(n => n.Label).ToList(), a.Qualifiers.Select(Camel).Order(StringComparer.Ordinal).ToList(),
+            a.DateText, status, a.Dates?.Canonical, datesProfile, a.Unconsumed is null);
+    }
+
+    public static string Camel(AgentQualifier q) => char.ToLowerInvariant(q.ToString()[0]) + q.ToString()[1..];
+
+    public static IReadOnlyList<string> Split(string? list) => (list ?? "").Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Distinct(StringComparer.Ordinal).ToList();
+}
+
+/// <summary>Opens a pull request adding corpus files, through the GitHub REST API.</summary>
 public sealed class GitHubSubmitter(HttpClient http, IOptions<TrainerOptions> options)
 {
     public bool Configured => options.Value.Submission.Configured;
 
     public string BaseBranch => options.Value.Submission.BaseBranch;
 
+    /// <summary>One file under the dates proposed directory.</summary>
+    public Task<string> CreatePullRequestAsync(string fileName, string content, string title, string body, CancellationToken ct = default) =>
+        CreatePullRequestAsync([($"{options.Value.Submission.Directory.TrimEnd('/')}/{fileName}", content)], title, body, ct);
+
+    /// <param name="files">Repository-relative paths with their contents; all go on one branch in one pull request.</param>
     /// <returns>The pull request's HTML URL.</returns>
-    public async Task<string> CreatePullRequestAsync(string fileName, string content, string title, string body, CancellationToken ct = default)
+    public async Task<string> CreatePullRequestAsync(IReadOnlyList<(string Path, string Content)> files, string title, string body, CancellationToken ct = default)
     {
         var s = options.Value.Submission;
         if (!s.Configured) throw new InvalidOperationException("Pull requests are not configured (Trainer:Submission:Repo and :Token).");
+        if (files.Count == 0) throw new ArgumentException("No files to submit.", nameof(files));
         var baseRef = await SendAsync(HttpMethod.Get, $"repos/{s.Repo}/git/ref/heads/{s.BaseBranch}", null, ct);
         var sha = baseRef["object"]!["sha"]!.GetValue<string>();
         var branch = $"trainer/{DateTime.UtcNow:yyyyMMdd-HHmmss}";
         await SendAsync(HttpMethod.Post, $"repos/{s.Repo}/git/refs", new { @ref = $"refs/heads/{branch}", sha }, ct);
-        var path = $"{s.Directory.TrimEnd('/')}/{fileName}";
-        await SendAsync(HttpMethod.Put, $"repos/{s.Repo}/contents/{path}", new { message = title, content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)), branch }, ct);
+        foreach (var (path, content) in files)
+            await SendAsync(HttpMethod.Put, $"repos/{s.Repo}/contents/{path.TrimStart('/')}", new { message = title, content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)), branch }, ct);
         var pr = await SendAsync(HttpMethod.Post, $"repos/{s.Repo}/pulls", new { title, head = branch, @base = s.BaseBranch, body }, ct);
         return pr["html_url"]!.GetValue<string>();
     }

@@ -177,7 +177,9 @@ dscribe, marc, ulan, ead, wellcome), the tables (honorifics, qualifiers, corpora
 AAT identifiers only where the registry has the term), `AgentBuilder.ToPerson/ToGroup`, `AgentResultDto`, the agent
 corpus (`corpus/agents/`, four files, 60 entries, evaluated by `AgentCorpusEvaluator` with the nested dates
 expectation), `GET /v1/agent` and `/v1/agent/profiles` on the service, the `/agents` playground, and `tools/Corpus
-agents`. Not yet: the trainer's agent item kind (decision 5) and the Wellcome and PMC strings as corpus files.
+agents`. The trainer's agent item kind (decision 5) followed the same day: agent strings are queued, reviewed as
+parts, and saved as agent entries with the date part also entering the dates corpus (doc 08 section 8). Not yet:
+the Wellcome and PMC strings as corpus files, an agent corpus schema and `promote` for agent entries.
 
 Library and archive data pack a person or group into one string: a name, life or activity dates, an honorific, a role
 or occupation, sometimes a nationality. The conventions differ by source but the task is one task:

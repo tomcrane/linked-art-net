@@ -13,6 +13,10 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   Linked Art Person or Group. Profiles: default, dscribe, marc, ulan, ead, wellcome. Agent corpus under `corpus/agents`
   with the dates expectation nested; `tools/Corpus agents`.
 - Dates service: `GET /v1/agent?s=&profile=` and `/v1/agent/profiles`. Site: `/agents` playground and a nav entry.
+- Trainer: agent strings are queued, reviewed as parts (name, honorifics, roles, nationality, qualifiers, date part)
+  and saved as agent corpus entries; a confirmed or corrected date part also becomes a dates corpus entry tagged
+  `agent-derived`, unless the corpus already has it. The interpreter is asked about the date substring only. One
+  pull request carries the dates file and the agent file.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

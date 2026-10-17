@@ -272,10 +272,141 @@ public class TrainerTests
         Assert.Contains("scripted-model", entry.Notes);
     }
 
-    private static async Task<string> WriteDownload(TrainerFixture factory, HttpResponseMessage download)
+    [Fact]
+    public async Task Agent_strings_are_reviewed_as_parts_and_feed_both_corpora()
+    {
+        var claude = new ScriptedInterpreter("1801~", 0.9, "The last digit is a slip; about 1801.");
+        using var factory = new TrainerFixture { Interpreter = claude };
+        var client = await SignedInClient(factory);
+
+        // Four agent strings: one the parser reads whole, one whose date part the dates corpus already has, one with no
+        // date part, and one whose date part the dates parser reads weakly.
+        var add = await client.PostAsync("/dates/train?handler=AddAgents", Form(
+            ("inputs", "Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)\nVan Rijn, Rembrandt [1606-1669] (artist)\nRoyal Academy of Arts (publisher)\nBloggs, Fred [c. 18011] (author)"),
+            ("profile", "dscribe")));
+        Assert.Equal(HttpStatusCode.Redirect, add.StatusCode);
+        var home = await client.GetStringAsync("/dates/train");
+        Assert.Contains("4 agent strings added", home);
+        Assert.Contains("<strong>4</strong><span>waiting for review (4 agent strings)</span>", home);
+
+        // Only the weak date part is offered to the interpreter, and it is asked about the substring, not the whole string.
+        Assert.Contains("1 waiting input the parser cannot read confidently has no proposed reading yet", home);
+        var bulk = await client.PostAsync("/dates/train?handler=Propose", Form());
+        Assert.Equal(HttpStatusCode.Redirect, bulk.StatusCode);
+        Assert.Equal(["c. 18011"], claude.Asked);
+
+        // Review 1: the parser's parts are shown and accepted as they are.
+        var review = await client.GetStringAsync("/dates/train/review");
+        Assert.Contains("What the agent parser says", review);
+        Assert.Contains("What the dates parser says of the date part", review);
+        Assert.Contains("Grierson", review);
+        Assert.Contains("<dd>Sir</dd>", review);
+        Assert.Contains("writer of preface", review);
+        Assert.Contains("1866/1960", review);
+        Assert.Contains("value=\"1866-1960\"", review); // the date part pre-fills the correction form
+        var id1 = IdIn(review);
+        Assert.Equal(HttpStatusCode.Redirect, (await client.PostAsync($"/dates/train/review/{id1}?handler=Accept", Form(("id", id1)))).StatusCode);
+
+        // Review 2: a correction of the parts; the date part is already in the dates corpus, so no dates entry follows.
+        review = await client.GetStringAsync("/dates/train/review");
+        Assert.Contains("Van Rijn", review);
+        var id2 = IdIn(review);
+        var save2 = await client.PostAsync($"/dates/train/review/{id2}?handler=Save", Form(("id", id2), ("agentKind", "person"), ("name", "Van Rijn, Rembrandt"),
+            ("familyName", "Van Rijn"), ("givenNames", "Rembrandt"), ("roleLabels", "artist"), ("dateText", "1606-1669"), ("expectedStatus", "parsed"), ("canonical", "1606/1669"),
+            ("datesProfile", "default"), ("intent", "pair"), ("profile", "dscribe"), ("noUnconsumed", "true"), ("tags", "dutch"), ("notes", "The heading inverts the particle.")));
+        Assert.Equal(HttpStatusCode.Redirect, save2.StatusCode);
+
+        // Review 3: no date part at all.
+        review = await client.GetStringAsync("/dates/train/review");
+        Assert.Contains("Royal Academy of Arts", review);
+        Assert.Contains("<span class=\"muted\">none</span>", review);
+        var id3 = IdIn(review);
+        Assert.Equal(HttpStatusCode.Redirect, (await client.PostAsync($"/dates/train/review/{id3}?handler=Accept", Form(("id", id3)))).StatusCode);
+
+        // Review 4: the proposal for the date part pre-fills the form; saving it writes both entries with the provenance.
+        review = await client.GetStringAsync("/dates/train/review");
+        Assert.Contains("Bloggs", review);
+        Assert.Contains("What scripted-model proposes", review);
+        Assert.Contains("value=\"1801~\"", review);
+        var id4 = IdIn(review);
+        var badSave = await client.PostAsync($"/dates/train/review/{id4}?handler=Save", Form(("id", id4), ("agentKind", "person"), ("name", "Bloggs, Fred"),
+            ("dateText", "c. 18011"), ("expectedStatus", "parsed"), ("canonical", "garbage!!"), ("datesProfile", "default"), ("intent", "pair"), ("profile", "dscribe")));
+        Assert.Contains("Cannot save", await badSave.Content.ReadAsStringAsync());
+        var save4 = await client.PostAsync($"/dates/train/review/{id4}?handler=Save", Form(("id", id4), ("agentKind", "person"), ("name", "Bloggs, Fred"), ("familyName", "Bloggs"), ("givenNames", "Fred"),
+            ("roleLabels", "author"), ("dateText", "c. 18011"), ("expectedStatus", "parsed"), ("canonical", "1801~"), ("datesProfile", "default"), ("intent", "pair"), ("profile", "dscribe"),
+            ("noUnconsumed", "true"), ("tags", "llm-proposed"), ("notes", "Reading proposed by scripted-model, confirmed by the reviewer.")));
+        Assert.Equal(HttpStatusCode.Redirect, save4.StatusCode);
+        Assert.Contains("Nothing to review", await client.GetStringAsync("/dates/train/review"));
+
+        home = await client.GetStringAsync("/dates/train");
+        Assert.Contains("4 agent entries", home);
+        Assert.Contains("2 date entries", home);
+        Assert.Contains("Download the agent corpus file", home);
+        Assert.Contains("Download the dates corpus file", home);
+
+        // The agent file: four proposed entries; the accepted ones pass the agent evaluator, the nested dates expectations included.
+        var agentsDownload = await client.PostAsync("/dates/train?handler=DownloadAgents", Form());
+        var agentsPath = await WriteDownload(factory, agentsDownload, "agents.json");
+        var agentFile = LinkedArtNet.Agents.AgentCorpusFile.Load(agentsPath);
+        Assert.Equal(4, agentFile.Entries.Count);
+        Assert.All(agentFile.Entries, e => Assert.Equal(EntryStatus.Proposed, e.Status));
+        Assert.All(agentFile.Entries, e => Assert.Matches("^ta-[0-9]{8}-[0-9]{3}$", e.Id));
+        Assert.All(agentFile.Entries, e => Assert.Equal("dscribe", e.Profile));
+        var grierson = agentFile.Entries.Single(e => e.Input.StartsWith("Grierson"));
+        Assert.Equal("Grierson, Herbert John Clifford", grierson.Expect.Name);
+        Assert.Equal(["Sir"], grierson.Expect.Honorifics);
+        Assert.Equal(["writer of preface"], grierson.Expect.RoleLabels);
+        Assert.Equal("1866-1960", grierson.Expect.DateText);
+        Assert.Equal("1866/1960", grierson.Expect.Dates!.Canonical);
+        Assert.Equal("birthDeath", grierson.Expect.Dates.Kind);
+        Assert.NotNull(grierson.Expect.Dates.Begin);
+        Assert.True(grierson.Expect.NoUnconsumed);
+        var academy = agentFile.Entries.Single(e => e.Input.StartsWith("Royal"));
+        Assert.Equal("group", academy.Expect.Kind);
+        Assert.True(academy.Expect.NoDates);
+        Assert.Null(academy.Expect.Dates);
+        var rembrandt = agentFile.Entries.Single(e => e.Input.StartsWith("Van Rijn"));
+        Assert.Equal("Van Rijn", rembrandt.Expect.FamilyName);
+        Assert.Contains("dutch", rembrandt.Tags);
+        Assert.Contains("inverts the particle", rembrandt.Notes);
+        var evaluator = new LinkedArtNet.Agents.AgentCorpusEvaluator(datesProfiles: ProfileCatalog.Load(Path.Combine(SiteFixture.RepoRoot, "profiles")));
+        foreach (var e in agentFile.Entries.Where(e => !e.Input.StartsWith("Bloggs")))
+        {
+            var r = evaluator.Evaluate(e);
+            Assert.True(r.Passed, e.Input + ": " + string.Join("; ", r.Failures));
+        }
+
+        // The dates file: the two date parts the corpus did not already have, as pair-intent entries that name their agent entry.
+        var datesDownload = await client.PostAsync("/dates/train?handler=Download", Form());
+        var datesPath = await WriteDownload(factory, datesDownload, "dates.json");
+        Assert.Empty(CorpusFile.SchemaErrors(datesPath, Path.Combine(SiteFixture.RepoRoot, "corpus", "schema", "corpus-entry.schema.json")));
+        var datesFile = CorpusFile.Load(datesPath);
+        Assert.Equal(["1866-1960", "c. 18011"], datesFile.Entries.Select(e => e.Input).Order().ToArray());
+        Assert.All(datesFile.Entries, e => Assert.Equal("pair", e.Intent));
+        Assert.All(datesFile.Entries, e => Assert.Contains("agent-derived", e.Tags));
+        Assert.All(datesFile.Entries, e => Assert.Contains("(agent entry ta-", e.Notes));
+        var derived = datesFile.Entries.Single(e => e.Input == "c. 18011");
+        Assert.Equal("1801~", derived.Expect.Canonical);
+        Assert.Contains("llm-proposed", derived.Tags);
+        Assert.Contains("Bloggs, Fred [c. 18011] (author)", derived.Notes);
+
+        // One pull request carries both files.
+        var pr = await client.PostAsync("/dates/train?handler=PullRequest", Form());
+        Assert.Equal(HttpStatusCode.Redirect, pr.StatusCode);
+        Assert.Equal(["GET", "POST", "PUT", "PUT", "POST"], factory.GitHub.Calls.Select(c => c.Method));
+        Assert.StartsWith("/repos/tomcrane/linked-art-net/contents/corpus/proposed/trainer-", factory.GitHub.Calls[2].Path);
+        Assert.StartsWith("/repos/tomcrane/linked-art-net/contents/corpus/agents/proposed/trainer-agents-", factory.GitHub.Calls[3].Path);
+        var body = JsonNode.Parse(factory.GitHub.Calls[4].Body!)!["body"]!.GetValue<string>();
+        Assert.Contains("4 agent strings", body);
+        Assert.Contains("2 date strings", body);
+        Assert.Contains("(from an agent string)", body);
+        Assert.Contains("<strong>0</strong><span>entries not yet exported</span>", await client.GetStringAsync("/dates/train"));
+    }
+
+    private static async Task<string> WriteDownload(TrainerFixture factory, HttpResponseMessage download, string name = "downloaded.json")
     {
         Assert.Equal(HttpStatusCode.OK, download.StatusCode);
-        var path = Path.Combine(factory.DataDirectory, "downloaded.json");
+        var path = Path.Combine(factory.DataDirectory, name);
         await File.WriteAllTextAsync(path, await download.Content.ReadAsStringAsync());
         return path;
     }

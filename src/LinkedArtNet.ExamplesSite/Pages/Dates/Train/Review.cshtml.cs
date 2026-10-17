@@ -1,3 +1,4 @@
+using LinkedArtNet.Agents;
 using LinkedArtNet.Dates;
 using LinkedArtNet.ExamplesSite.Services;
 using LinkedArtNet.Serialization;
@@ -13,10 +14,27 @@ public class ReviewModel(TrainerStore store, Trainer trainer, InterpreterHost in
     public string? InterpreterModel => interpreters.Model;
 
     public QueueItem? Item { get; private set; }
-    public TimeSpanParseResult Parsed { get; private set; } = null!;
+    /// <summary>The dates parser's reading: of the whole input for a date item, of the date substring for an agent item (null when it has none).</summary>
+    public TimeSpanParseResult? Parsed { get; private set; }
+    /// <summary>The agent parser's reading, for agent items.</summary>
+    public ParsedAgent? Agent { get; private set; }
     public int Pending { get; private set; }
     public IReadOnlyList<string> Profiles => trainer.ProfileNames;
     public string? Error { get; private set; }
+
+    // Agent review fields; the date part uses Canonical, ExpectedStatus and DatesProfile (intent is always pair).
+    [BindProperty] public string AgentKind { get; set; } = "person";
+    [BindProperty] public string? Name { get; set; }
+    [BindProperty] public string? FamilyName { get; set; }
+    [BindProperty] public string? GivenNames { get; set; }
+    [BindProperty] public string? Honorifics { get; set; }
+    [BindProperty] public string? RoleLabels { get; set; }
+    [BindProperty] public string? Nationalities { get; set; }
+    [BindProperty] public string? Qualifiers { get; set; }
+    [BindProperty] public string? DateText { get; set; }
+    [BindProperty] public string DatesProfile { get; set; } = "default";
+    [BindProperty] public bool NoUnconsumed { get; set; } = true;
+    public static readonly string[] QualifierNames = Enum.GetValues<AgentQualifier>().Select(AgentReview.Camel).ToArray();
 
     [BindProperty] public string? Canonical { get; set; }
     [BindProperty] public string Intent { get; set; } = "auto";
@@ -31,10 +49,19 @@ public class ReviewModel(TrainerStore store, Trainer trainer, InterpreterHost in
     public IActionResult OnGet(string? id)
     {
         if (!Load(id)) return Page();
-        Canonical = Parsed.Canonical;
         Intent = Item!.Intent;
         Profile = Item.Profile;
-        ExpectedStatus = Parsed.Status == ParseStatus.Parsed ? "parsed" : Parsed.Status == ParseStatus.Undated ? "undated" : "parsed";
+        if (Agent is { } a)
+        {
+            var review = AgentReview.FromParsed(a, trainer.AgentProfile(Item.Profile).DatesProfile);
+            AgentKind = review.Kind; Name = review.Name; FamilyName = review.FamilyName; GivenNames = review.GivenNames;
+            Honorifics = string.Join(", ", review.Honorifics); RoleLabels = string.Join(", ", review.RoleLabels);
+            Nationalities = string.Join(", ", review.Nationalities); Qualifiers = string.Join(", ", review.Qualifiers);
+            DateText = review.DateText; DatesProfile = review.DatesProfile; NoUnconsumed = review.NoUnconsumed;
+            Intent = "pair";
+        }
+        Canonical = Parsed?.Canonical;
+        ExpectedStatus = Parsed is { Status: ParseStatus.Undated } ? "undated" : "parsed";
         if (Item.Proposal is { Canonical: not null, Realisable: true } proposal)
         {
             // The proposal pre-fills the correction form; what the reviewer saves is what enters the corpus.
@@ -58,21 +85,55 @@ public class ReviewModel(TrainerStore store, Trainer trainer, InterpreterHost in
     public IActionResult OnPostPreview(string id)
     {
         if (!Load(id)) return Page();
-        (Preview, PreviewError) = ExpectedStatus == "parsed" ? trainer.Realise(Canonical ?? "", Profile, Intent) : (null, $"Expected status '{ExpectedStatus}' needs no expression.");
+        var (profile, intent) = Agent is null ? (Profile, Intent) : (DatesProfile, "pair");
+        (Preview, PreviewError) = ExpectedStatus == "parsed" ? trainer.Realise(Canonical ?? "", profile, intent) : (null, $"Expected status '{ExpectedStatus}' needs no expression.");
         return Page();
     }
 
     public IActionResult OnPostAccept(string id)
     {
         if (!Load(id)) return Page();
-        var status = Parsed.Status switch { ParseStatus.Undated => "undated", ParseStatus.Unparsed => "unparsed", _ => "parsed" };
+        if (Agent is { } a) return SubmitAgent(id, AgentReview.FromParsed(a, trainer.AgentProfile(Item!.Profile).DatesProfile));
+        var status = Parsed!.Status switch { ParseStatus.Undated => "undated", ParseStatus.Unparsed => "unparsed", _ => "parsed" };
         return Submit(id, status, Parsed.Canonical, Item!.Profile, Item.Intent);
     }
 
     public IActionResult OnPostSave(string id)
     {
         if (!Load(id)) return Page();
+        if (Agent is not null)
+        {
+            var dateText = string.IsNullOrWhiteSpace(DateText) ? null : DateText.Trim();
+            var review = new AgentReview(AgentKind is "group" or "unknown" ? AgentKind : "person", Name, FamilyName, GivenNames,
+                AgentReview.Split(Honorifics), AgentReview.Split(RoleLabels), AgentReview.Split(Nationalities), AgentReview.Split(Qualifiers),
+                dateText, dateText is null ? null : ExpectedStatus, Canonical, DatesProfile, NoUnconsumed);
+            return SubmitAgent(id, review);
+        }
         return Submit(id, ExpectedStatus, Canonical, Profile, Intent);
+    }
+
+    /// <summary>Saves an agent review: the agent entry, and the dates entry for its date part unless the corpus or this store already has that substring.</summary>
+    private IActionResult SubmitAgent(string id, AgentReview review)
+    {
+        var reviewer = User.Identity?.Name ?? "?";
+        var tags = (Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        AgentCorpusEntry agentEntry;
+        LinkedArtNet.Dates.Corpus.CorpusEntry? datesEntry;
+        try
+        {
+            var agentId = store.NextAgentEntryId();
+            agentEntry = trainer.BuildAgentEntry(agentId, Item!.Input, Item.Profile, review, tags, Notes, reviewer);
+            datesEntry = review.DateText is { } t && store.HasDatesSubmission(t, review.DatesProfile) ? null
+                : trainer.DerivedDatesEntry(store.NextEntryId(), review, Item.Input, agentId, tags, reviewer);
+        }
+        catch (ArgumentException e)
+        {
+            Error = "Cannot save: " + e.Message;
+            return Page();
+        }
+        store.AddSubmission(reviewer, id, datesEntry, agentEntry);
+        store.SetState(id, QueueState.Done, reviewer);
+        return RedirectToPage("/Dates/Train/Review", new { id = (string?)null });
     }
 
     public IActionResult OnPostSkip(string id)
@@ -109,7 +170,12 @@ public class ReviewModel(TrainerStore store, Trainer trainer, InterpreterHost in
         Item = id is null ? store.Next() : store.Get(id);
         Pending = store.Count(QueueState.Pending);
         if (Item is null) return false;
-        Parsed = trainer.Parse(Item.Input, Item.Profile, Item.Intent);
+        if (Item.IsAgent)
+        {
+            Agent = trainer.ParseAgent(Item.Input, Item.Profile);
+            Parsed = Agent.Dates;
+        }
+        else Parsed = trainer.Parse(Item.Input, Item.Profile, Item.Intent);
         return true;
     }
 

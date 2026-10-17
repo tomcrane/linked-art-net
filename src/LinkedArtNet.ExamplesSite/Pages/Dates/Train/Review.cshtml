@@ -12,27 +12,50 @@
 else
 {
     <h1>Review <q>@Model.Item.Input</q></h1>
-    <p class="meta">@Model.Pending waiting · from @Model.Item.Source · queued @Model.Item.AddedAt.ToString("yyyy-MM-dd")</p>
+    <p class="meta">@(Model.Item.IsAgent ? "agent string · " : "")@Model.Pending waiting · from @Model.Item.Source · queued @Model.Item.AddedAt.ToString("yyyy-MM-dd")</p>
 
     @if (Model.Error is not null)
     {
         <aside class="notice">@Model.Error</aside>
     }
 
+    @if (Model.Agent is { } ag)
+    {
+        <section class="result">
+            <h2>What the agent parser says <span class="status status-@(ag.Kind == LinkedArtNet.Agents.AgentKind.Unknown ? "unparsed" : "parsed")">@ag.Kind.ToString().ToLowerInvariant()</span>
+                <span class="muted">confidence @ag.Confidence.ToString("0.00") · profile @ag.Profile</span></h2>
+            <dl class="kv agent-parts">
+                @if (ag.Name is not null) { <dt>Name</dt><dd>@ag.Name</dd> }
+                @if (ag.FamilyName is not null) { <dt>Family name</dt><dd>@ag.FamilyName</dd> }
+                @if (ag.GivenNames is not null) { <dt>Given names</dt><dd>@ag.GivenNames</dd> }
+                @if (ag.Honorifics.Count > 0) { <dt>Honorifics</dt><dd>@string.Join(", ", ag.Honorifics)</dd> }
+                @if (ag.Roles.Count > 0) { <dt>Roles</dt><dd>@string.Join(", ", ag.Roles.Select(r => r.Label))</dd> }
+                @if (ag.Nationalities.Count > 0) { <dt>Nationality</dt><dd>@string.Join(", ", ag.Nationalities.Select(n => n.Label))</dd> }
+                @if (ag.Qualifiers.Count > 0) { <dt>Qualifiers</dt><dd>@string.Join(", ", ag.Qualifiers.Select(AgentReview.Camel))</dd> }
+                <dt>Date part</dt><dd>@if (ag.DateText is null) { <span class="muted">none</span> } else { <q>@ag.DateText</q> }</dd>
+                @if (ag.Unconsumed is not null) { <dt>Not placed</dt><dd><q>@ag.Unconsumed</q></dd> }
+            </dl>
+            @if (ag.Notes.Count > 0) { <ul class="notes">@foreach (var n in ag.Notes) { <li>@n</li> }</ul> }
+        </section>
+    }
+
+    @if (Model.Parsed is { } parsed)
+    {
     <section class="result">
-        <h2>What the parser says <span class="status status-@Model.Parsed.Status.ToString().ToLowerInvariant()">@Model.Parsed.Status.ToString().ToLowerInvariant()</span>
-            <span class="muted">@ReviewModel.Kind(Model.Parsed) · confidence @Model.Parsed.Confidence.ToString("0.00") · @Model.Parsed.Strategy · profile @Model.Parsed.Profile</span></h2>
+        <h2>What the @(Model.Agent is null ? "parser" : "dates parser") says@(Model.Agent is null ? "" : " of the date part") <span class="status status-@parsed.Status.ToString().ToLowerInvariant()">@parsed.Status.ToString().ToLowerInvariant()</span>
+            <span class="muted">@ReviewModel.Kind(parsed) · confidence @parsed.Confidence.ToString("0.00") · @parsed.Strategy · profile @parsed.Profile</span></h2>
         <dl class="kv">
-            @if (Model.Parsed.Canonical is not null) { <dt>Canonical</dt><dd><code>@Model.Parsed.Canonical</code></dd> }
-            @if (Model.Parsed.Edtf is not null) { <dt>EDTF</dt><dd><code>@Model.Parsed.Edtf</code></dd> }
-            @if (Model.Parsed.UnconsumedText is not null) { <dt>Not understood</dt><dd><q>@Model.Parsed.UnconsumedText</q></dd> }
-            @if (Model.Parsed.Alternatives.Count > 0) { <dt>Other readings</dt><dd>@foreach (var a in Model.Parsed.Alternatives) { <code>@a.Canonical</code> <small class="muted">(@a.Confidence.ToString("0.00"), @a.Note)</small><br /> }</dd> }
+            @if (parsed.Canonical is not null) { <dt>Canonical</dt><dd><code>@parsed.Canonical</code></dd> }
+            @if (parsed.Edtf is not null) { <dt>EDTF</dt><dd><code>@parsed.Edtf</code></dd> }
+            @if (parsed.UnconsumedText is not null) { <dt>Not understood</dt><dd><q>@parsed.UnconsumedText</q></dd> }
+            @if (parsed.Alternatives.Count > 0) { <dt>Other readings</dt><dd>@foreach (var a in parsed.Alternatives) { <code>@a.Canonical</code> <small class="muted">(@a.Confidence.ToString("0.00"), @a.Note)</small><br /> }</dd> }
         </dl>
-        @if (Model.Parsed.Notes.Count > 0) { <ul class="notes">@foreach (var n in Model.Parsed.Notes) { <li>@n</li> }</ul> }
+        @if (parsed.Notes.Count > 0) { <ul class="notes">@foreach (var n in parsed.Notes) { <li>@n</li> }</ul> }
         <div class="json-pair">
-            @foreach (var (label, json) in ReviewModel.Spans(Model.Parsed)) { <div><h3>@label</h3><pre><code class="language-json">@json</code></pre></div> }
+            @foreach (var (label, json) in ReviewModel.Spans(parsed)) { <div><h3>@label</h3><pre><code class="language-json">@json</code></pre></div> }
         </div>
     </section>
+    }
 
     @if (Model.Item.Proposal is { } proposal)
     {
@@ -67,7 +90,7 @@ else
         <div class="row">
             @if (Model.Item.Proposal is { Canonical: not null })
             {
-                <button type="submit" asp-page-handler="Accept" title="The parser's answer, not the proposal, is right">Accept the parser's reading@(Model.Parsed.Canonical is null ? "" : $" ({Model.Parsed.Canonical})")</button>
+                <button type="submit" asp-page-handler="Accept" title="The parser's answer, not the proposal, is right">Accept the parser's reading@(Model.Parsed?.Canonical is null ? "" : $" ({Model.Parsed.Canonical})")</button>
                 <span class="muted">To keep the proposed reading, save the correction below.</span>
             }
             else
@@ -77,20 +100,54 @@ else
             <button type="submit" asp-page-handler="Skip" title="Leave it for someone else">Skip</button>
         </div>
         <h2>Or correct it</h2>
+        @if (Model.Agent is not null)
+        {
+            <div class="row">
+                <label>Kind <select name="agentKind">@foreach (var k in new[] { "person", "group", "unknown" }) { <option value="@k" selected="@(Model.AgentKind == k)">@k</option> }</select></label>
+                <label class="grow">Name as written (dates, honorifics, roles removed) <input type="text" name="name" value="@Model.Name" autocomplete="off" /></label>
+            </div>
+            <div class="row">
+                <label>Family name <input type="text" name="familyName" value="@Model.FamilyName" autocomplete="off" /></label>
+                <label class="grow">Given names <input type="text" name="givenNames" value="@Model.GivenNames" autocomplete="off" /></label>
+                <label>Honorifics <input type="text" name="honorifics" value="@Model.Honorifics" placeholder="Sir, Dr" autocomplete="off" /></label>
+            </div>
+            <div class="row">
+                <label class="grow">Role labels <input type="text" name="roleLabels" value="@Model.RoleLabels" placeholder="painter, writer of preface" autocomplete="off" /></label>
+                <label>Nationalities <input type="text" name="nationalities" value="@Model.Nationalities" placeholder="Dutch" autocomplete="off" /></label>
+                <label>Qualifiers <input type="text" name="qualifiers" value="@Model.Qualifiers" list="qualifier-names" placeholder="attributedTo" autocomplete="off" /></label>
+                <datalist id="qualifier-names">@foreach (var q in ReviewModel.QualifierNames) { <option value="@q"></option> }</datalist>
+            </div>
+            <div class="row">
+                <label class="grow">Date part as written (blank: this string has no dates) <input type="text" name="dateText" value="@Model.DateText" autocomplete="off" /></label>
+                <label><input type="checkbox" name="noUnconsumed" value="true" checked="@Model.NoUnconsumed" /> Nothing else should be left unplaced</label>
+            </div>
+            <h3>The date part</h3>
+            <input type="hidden" name="intent" id="intent" value="pair" />
+            <input type="hidden" name="profile" value="@Model.Profile" />
+        }
         <div class="row">
             <label>Expected status
                 <select name="expectedStatus" id="expectedStatus">
                     @foreach (var s in new[] { "parsed", "undated", "unparsed" }) { <option value="@s" selected="@(Model.ExpectedStatus == s)">@s</option> }
                 </select>
             </label>
-            <label>Intent
-                <select name="intent" id="intent">@foreach (var i in new[] { "auto", "single", "pair" }) { <option value="@i" selected="@(Model.Intent == i)">@i</option> }</select>
-            </label>
-            <label>Profile
-                <select name="profile" id="profile">@foreach (var p in Model.Profiles) { <option value="@p" selected="@(Model.Profile == p)">@p</option> }</select>
-            </label>
+            @if (Model.Agent is null)
+            {
+                <label>Intent
+                    <select name="intent" id="intent">@foreach (var i in new[] { "auto", "single", "pair" }) { <option value="@i" selected="@(Model.Intent == i)">@i</option> }</select>
+                </label>
+                <label>Profile
+                    <select name="profile" id="profile">@foreach (var p in Model.Profiles) { <option value="@p" selected="@(Model.Profile == p)">@p</option> }</select>
+                </label>
+            }
+            else
+            {
+                <label>Dates profile
+                    <select name="datesProfile" id="profile">@foreach (var p in Model.Profiles) { <option value="@p" selected="@(Model.DatesProfile == p)">@p</option> }</select>
+                </label>
+            }
         </div>
-        <label>Canonical expression <a class="muted" href="/about#canonical" target="_blank">(reference)</a>
+        <label>Canonical expression@(Model.Agent is null ? "" : " for the date part") <a class="muted" href="/about#canonical" target="_blank">(reference)</a>
             <input type="text" name="canonical" id="canonical" value="@Model.Canonical" autocomplete="off" spellcheck="false" placeholder="e.g. late 195X, century 19, born 1606/died 1669, period:edo" />
         </label>
         <div id="preview" class="preview" aria-live="polite">

@@ -42,6 +42,7 @@
             @if (r.Unconsumed is not null) { <dt>Not placed</dt><dd><q>@r.Unconsumed</q></dd> }
         </dl>
         @if (r.Notes.Count > 0) { <ul class="notes">@foreach (var n in r.Notes) { <li>@n</li> }</ul> }
+        <p class="muted">Wrong? Reviewers can <a href="/dates/train">correct it in the trainer</a>, which takes agent strings too; the date part then feeds the dates corpus as well.</p>
 
         @if (Model.AgentJson is not null)
         {

@@ -5,8 +5,8 @@
 }
 <h1>Corpus trainer</h1>
 <p class="lede">
-    Review date strings the parser is unsure about and turn each one into a proposed corpus entry. Signed in as
-    <strong>@User.Identity?.Name</strong>.
+    Review date strings the parser is unsure about, and agent strings (names with dates, honorifics and roles), and turn
+    each one into a proposed corpus entry. Signed in as <strong>@User.Identity?.Name</strong>.
 </p>
 <form method="post" action="/dates/train/logout" class="inline-form"><button type="submit" class="link">Sign out</button></form>
 
@@ -16,7 +16,7 @@
 }
 
 <section class="stats" aria-label="Queue">
-    <div><strong>@Model.Pending</strong><span>waiting for review</span></div>
+    <div><strong>@Model.Pending</strong><span>waiting for review@(Model.PendingAgents > 0 ? $" ({Model.PendingAgents} agent string{(Model.PendingAgents == 1 ? "" : "s")})" : "")</span></div>
     <div><strong>@Model.Done</strong><span>reviewed</span></div>
     <div><strong>@Model.Skipped</strong><span>skipped</span></div>
     <div><strong>@Model.Unexported.Count</strong><span>entries not yet exported</span></div>
@@ -55,6 +55,19 @@
     </div>
 </form>
 
+<h2>Add agent strings</h2>
+<form method="post" asp-page-handler="AddAgents" class="stack">
+    <label>One agent string per line; the date part is read by the dates parser and, when you confirm it, enters the dates corpus too
+        <textarea name="inputs" rows="4" placeholder="Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)&#10;Dutch painter, 1606-1669"></textarea>
+    </label>
+    <div class="row">
+        <label>Agent profile
+            <select name="profile">@foreach (var p in Model.AgentProfiles) { <option value="@p">@p</option> }</select>
+        </label>
+        <button type="submit">Add to queue</button>
+    </div>
+</form>
+
 @if (Model.CaptureAvailable)
 {
     <form method="post" asp-page-handler="ImportCapture">
@@ -69,9 +82,15 @@
 }
 else
 {
-    <p>@Model.Unexported.Count reviewed entr@(Model.Unexported.Count == 1 ? "y" : "ies") will go into one corpus file under <code>corpus/proposed/</code>.</p>
+    <p>
+        @Model.Unexported.Count reviewed item@(Model.Unexported.Count == 1 ? "" : "s"):
+        @if (Model.UnexportedDates > 0) { <text>@Model.UnexportedDates date entr@(Model.UnexportedDates == 1 ? "y" : "ies") for one file under <code>corpus/proposed/</code></text> }
+        @if (Model.UnexportedDates > 0 && Model.UnexportedAgents > 0) { <text>and</text> }
+        @if (Model.UnexportedAgents > 0) { <text>@Model.UnexportedAgents agent entr@(Model.UnexportedAgents == 1 ? "y" : "ies") for one file under <code>corpus/agents/proposed/</code></text> }.
+    </p>
     <div class="row">
-        <form method="post" asp-page-handler="Download"><button type="submit">Download the corpus file</button></form>
+        @if (Model.UnexportedDates > 0) { <form method="post" asp-page-handler="Download"><button type="submit">Download the dates corpus file</button></form> }
+        @if (Model.UnexportedAgents > 0) { <form method="post" asp-page-handler="DownloadAgents"><button type="submit">Download the agent corpus file</button></form> }
         @if (Model.PullRequestsConfigured)
         {
             <form method="post" asp-page-handler="PullRequest"><button type="submit">Open a pull request</button></form>
@@ -87,8 +106,16 @@ else
         @foreach (var s in Model.Unexported)
         {
             <tr>
-                <td>@s.Entry.Input<br /><small class="muted">@s.Entry.Id · @s.Entry.Profile · @s.Entry.Intent</small></td>
-                <td>@s.Entry.Expect.Status @if (s.Entry.Expect.Canonical is not null) { <code>@s.Entry.Expect.Canonical</code> } @if (s.Entry.Expect.Edtf is not null) { <small>@s.Entry.Expect.Edtf</small> }</td>
+                @if (s.AgentEntry is { } ae)
+                {
+                    <td>@ae.Input<br /><small class="muted">@ae.Id · agent · @ae.Profile@(s.Entry is null ? "" : $" · dates {s.Entry.Id}")</small></td>
+                    <td>@ae.Expect.Kind @if (ae.Expect.Name is not null) { <code>@ae.Expect.Name</code> } @if (ae.Expect.DateText is not null) { <small>dates <q>@ae.Expect.DateText</q>@(ae.Expect.Dates?.Canonical is null ? "" : $" → {ae.Expect.Dates.Canonical}")</small> }</td>
+                }
+                else
+                {
+                    <td>@s.Entry!.Input<br /><small class="muted">@s.Entry.Id · @s.Entry.Profile · @s.Entry.Intent</small></td>
+                    <td>@s.Entry.Expect.Status @if (s.Entry.Expect.Canonical is not null) { <code>@s.Entry.Expect.Canonical</code> } @if (s.Entry.Expect.Edtf is not null) { <small>@s.Entry.Expect.Edtf</small> }</td>
+                }
                 <td>@s.Reviewer</td>
                 <td>@s.At.ToString("yyyy-MM-dd HH:mm")</td>
             </tr>

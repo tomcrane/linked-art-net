@@ -1,0 +1,6 @@
+# Files that run on the Linux server must keep LF endings whatever the checkout's autocrlf setting:
+# cron ignores a crontab with CRLF and bash chokes on it.
+*.sh      text eol=lf
+*.cron    text eol=lf
+*.caddy   text eol=lf
+Dockerfile text eol=lf

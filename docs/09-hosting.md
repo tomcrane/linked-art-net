@@ -151,9 +151,36 @@ fast-forward; a refusal means a stray commit on `main` to move across first. Fir
 
 Two things on the server are not in git: `data/trainer/` (the queue and submissions, two JSON files) and
 `data/capture/unparsed.jsonl` (inputs the service could not parse with confidence; the trainer imports it).
-Back up `/srv/linkedart/data` nightly, either to the Mythic Beasts backup space or with a cron job that copies
-the directory to a private repository or off-box storage. Losing it loses unreviewed queue items, not the
-corpus, which is in pull requests.
+Losing them loses unreviewed queue items and uncollected captures, not the corpus, which is in pull requests.
+`.env` holds the secrets; it is not backed up by the scripts below, so keep its values where you keep secrets.
+
+**Nightly snapshot on the box** (added 2026-10-17): `deploy/linkedart/backup.sh` tars `/srv/linkedart/data` into
+`/srv/backups/linkedart/data-<utc stamp>.tar.gz`, keeps 30 days, and points `latest.tar.gz` at the newest. Install once,
+from the repository root on your machine:
+
+```
+scp deploy/linkedart/backup.sh deploy/linkedart/linkedart-backup.cron root@linkedart.net:/root/
+```
+
+and on the server:
+
+```
+install -m 755 /root/backup.sh /usr/local/bin/linkedart-backup
+install -m 644 /root/linkedart-backup.cron /etc/cron.d/linkedart-backup
+linkedart-backup && linkedart-backup --list        # first snapshot now, and what it holds
+```
+
+Cron runs it at 03:17 UTC and appends a line to `/var/log/linkedart-backup.log`. The two files are kept LF by
+`.gitattributes`; if a copy ever arrives with CRLF, cron silently ignores it, so `cat -A /etc/cron.d/linkedart-backup`
+should show no `^M`.
+
+**Off-box copy**: `deploy/linkedart/pull-backup.ps1` pulls `latest.tar.gz` to `%USERPROFILE%\Backups\linkedart` over
+your SSH key and keeps 26 copies. Run it when you think of it, or weekly from Task Scheduler. The archives are a few
+kilobytes.
+
+**Restore**: `cd /srv/linkedart && docker compose down && tar -xzf /srv/backups/linkedart/<file>.tar.gz -C /srv/linkedart
+&& chown -R 1654:1654 data && docker compose up -d`. The archive holds `data/...` paths, so it unpacks over the live
+directory.
 
 ## 9. Behind the proxy
 

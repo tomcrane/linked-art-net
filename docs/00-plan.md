@@ -88,8 +88,9 @@ done first in Phase 1.
 
 - 1.0 releases of both packages (decoupled: NuGet publishing is deferred, owner 2026-10-13); ~~CHANGELOG~~ (CHANGELOG.md from v0.1.1, 2026-10-17);
   ~~docs site pages for API usage~~ (done 2026-10-16: `/dates/api`); perf doc and benchmarks; weekly scheduled
-  jobs (site JSON refresh, Getty label check; no workflow has a `schedule` trigger yet); a backup of
-  `/srv/linkedart/data` (trainer store and capture file); submit the parser and service to linked.art/software.
+  jobs (site JSON refresh, Getty label check; no workflow has a `schedule` trigger yet); ~~a backup of
+  `/srv/linkedart/data`~~ (nightly snapshot script + cron and an off-box pull script, 2026-10-17, 09-hosting.md section 8;
+  the owner installs them on the server); submit the parser and service to linked.art/software.
 - Corpus growth from trainer traffic (first trainer entry merged 2026-10-16, PR #2); multilingual coverage;
   four-point (`EmitInnerBounds`) polish.
 
@@ -358,7 +359,7 @@ Remaining, in rough order of value:
 
 - Phase 2: `interpret` over the server's capture file once the API key is in the server's `.env`;
   benchmarks; `during: Period` with PeriodO URIs on TimeSpans; PeriodO narrowing (place, authority) as profile settings.
-- Phase 4: the items listed above; the backup cron is the most urgent since the trainer now holds reviewer work.
+- Phase 4: the items listed above; the backup scripts exist and need installing on the server (09-hosting.md section 8).
 - Housekeeping: the axe accessibility lint; renaming `de-pmc` to `main` is a deliberate later sweep (19 references
   across CI, compose, the trainer's base branch, docs and site links).
 - The owner's: filing upstream issues (docs/upstream-issues.md), open question 7 (PMC strings), NuGet when ready.

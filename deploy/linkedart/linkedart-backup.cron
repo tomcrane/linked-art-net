@@ -1,0 +1,5 @@
+# /etc/cron.d/linkedart-backup: nightly snapshot of /srv/linkedart/data (see deploy/linkedart/backup.sh).
+# Minute hour day month weekday user command. 03:17 UTC, when nobody is reviewing.
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+17 3 * * * root /usr/local/bin/linkedart-backup >> /var/log/linkedart-backup.log 2>&1

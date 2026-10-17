@@ -84,7 +84,7 @@ v1.MapGet("/timespan", (HttpContext http, string? s, string? intent, string? pro
     var result = host.Parse(parser, s, intentValue);
     capture.Consider(result);
     var dto = TimeSpanResultDto.From(result, null);
-    if (llm == true) dto = dto with { Notes = dto.Notes.Append("llm=true was ignored: no interpreter is configured on this server.").ToList() };
+    if (llm == true) dto = dto with { Notes = dto.Notes.Append("llm=true was ignored: this service is deterministic by design; the LLM interpreter proposes readings for review in the corpus trainer, not at request time.").ToList() };
 
     var etag = ParserHost.ETag(parser.Profile.Name, intentValue, s, shape);
     if (http.Request.Headers.IfNoneMatch.Any(v => v == etag)) return Results.StatusCode(StatusCodes.Status304NotModified);

@@ -6,8 +6,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LinkedArtNet.ExamplesSite.Pages.Dates.Train;
 
-public class ReviewModel(TrainerStore store, Trainer trainer) : PageModel
+public class ReviewModel(TrainerStore store, Trainer trainer, InterpreterHost interpreters) : PageModel
 {
+    /// <summary>An interpreter is configured and this item has not been asked about yet.</summary>
+    public bool CanPropose => interpreters.Available && Item is { Proposal: null };
+    public string? InterpreterModel => interpreters.Model;
+
     public QueueItem? Item { get; private set; }
     public TimeSpanParseResult Parsed { get; private set; } = null!;
     public int Pending { get; private set; }
@@ -31,7 +35,24 @@ public class ReviewModel(TrainerStore store, Trainer trainer) : PageModel
         Intent = Item!.Intent;
         Profile = Item.Profile;
         ExpectedStatus = Parsed.Status == ParseStatus.Parsed ? "parsed" : Parsed.Status == ParseStatus.Undated ? "undated" : "parsed";
+        if (Item.Proposal is { Canonical: not null, Realisable: true } proposal)
+        {
+            // The proposal pre-fills the correction form; what the reviewer saves is what enters the corpus.
+            ExpectedStatus = proposal.Canonical == "undated" ? "undated" : "parsed";
+            Canonical = ExpectedStatus == "undated" ? null : proposal.Canonical;
+            if (proposal.Intent is not null) Intent = proposal.Intent;
+            Tags = "llm-proposed";
+            Notes = $"Reading proposed by {proposal.Model}, confirmed by the reviewer.";
+        }
         return Page();
+    }
+
+    public async Task<IActionResult> OnPostProposeAsync(string id, CancellationToken ct)
+    {
+        if (!Load(id)) return Page();
+        if (!interpreters.Available) { Error = "No interpreter is configured on this server."; return Page(); }
+        store.SetProposal(id, await trainer.ProposeAsync(Item!, interpreters, ct));
+        return RedirectToPage("/Dates/Train/Review", new { id });
     }
 
     public IActionResult OnPostPreview(string id)

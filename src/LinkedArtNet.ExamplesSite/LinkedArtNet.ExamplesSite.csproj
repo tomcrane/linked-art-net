@@ -11,6 +11,7 @@
     <ProjectReference Include="..\LinkedArtNet.Examples\LinkedArtNet.Examples.csproj" />
     <ProjectReference Include="..\LinkedArtNet.Dates\LinkedArtNet.Dates.csproj" />
     <ProjectReference Include="..\LinkedArtNet.Dates.Corpus\LinkedArtNet.Dates.Corpus.csproj" />
+    <ProjectReference Include="..\LinkedArtNet.Dates.Llm\LinkedArtNet.Dates.Llm.csproj" />
   </ItemGroup>
 
   <ItemGroup>

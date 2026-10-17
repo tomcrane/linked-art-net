@@ -61,9 +61,16 @@ public sealed class SubmissionOptions
 
 public enum QueueState { Pending, Done, Skipped }
 
-/// <summary>An input waiting for review, with the parser's answer at the time it was queued.</summary>
+/// <summary>An input waiting for review, with the parser's answer at the time it was queued and, when asked for, the interpreter's proposal.</summary>
 public sealed record QueueItem(string Id, string Input, string Profile, string Intent, string Source, DateTimeOffset AddedAt,
-    QueueState State = QueueState.Pending, string? ReviewedBy = null, DateTimeOffset? ReviewedAt = null);
+    QueueState State = QueueState.Pending, string? ReviewedBy = null, DateTimeOffset? ReviewedAt = null, Proposal? Proposal = null);
+
+/// <summary>
+/// What the interpreter (Claude, by default) proposed for a queued input: a canonical expression, its confidence as the
+/// parser caps it, the model's one-line rationale, and whether this parser can realise the expression. A proposal
+/// pre-fills the review form; the reviewer's save is what enters the corpus.
+/// </summary>
+public sealed record Proposal(string? Canonical, double Confidence, string? Rationale, string Model, DateTimeOffset At, string? Intent, bool Realisable);
 
 /// <summary>A reviewed entry, kept until it has been exported into a corpus file.</summary>
 public sealed record Submission(string Id, string Reviewer, DateTimeOffset At, string? QueueId, CorpusEntry Entry, string? ExportedTo = null);
@@ -136,6 +143,23 @@ public sealed class TrainerStore
     public QueueItem? Get(string id) { lock (_lock) return _queue.FirstOrDefault(q => q.Id == id); }
 
     public int Count(QueueState state) { lock (_lock) return _queue.Count(q => q.State == state); }
+
+    public void SetProposal(string id, Proposal proposal)
+    {
+        lock (_lock)
+        {
+            var i = _queue.FindIndex(q => q.Id == id);
+            if (i < 0) return;
+            _queue[i] = _queue[i] with { Proposal = proposal };
+            Save(_queuePath, _queue);
+        }
+    }
+
+    /// <summary>Pending items the parser cannot read confidently and nobody has asked the interpreter about yet.</summary>
+    public IReadOnlyList<QueueItem> AwaitingProposal(Func<QueueItem, bool> needsInterpreter)
+    {
+        lock (_lock) return _queue.Where(q => q.State == QueueState.Pending && q.Proposal is null && needsInterpreter(q)).OrderBy(q => q.AddedAt).ToList();
+    }
 
     public void SetState(string id, QueueState state, string reviewer)
     {
@@ -225,6 +249,37 @@ public sealed class Trainer
             if (!_parsers.TryGetValue(p.Name, out var parser)) _parsers[p.Name] = parser = new TimeSpanParser(p, periods: _periods);
             return parser.Parse(input, ParseIntent(intent));
         }
+    }
+
+    /// <summary>Whether the deterministic parser is weak enough on this item for an interpreter's proposal to be worth asking for.</summary>
+    public bool NeedsInterpreter(QueueItem item) => TimeSpanParser.NeedsInterpreter(Parse(item.Input, item.Profile, item.Intent), Profile(item.Profile));
+
+    /// <summary>
+    /// Asks the interpreter about one queued input and returns its proposal, checked against this parser: the
+    /// canonical expression is realised under the item's profile, so the reviewer sees whether it is usable before
+    /// accepting it. Never throws for a bad answer; a proposal with a null canonical records that none was offered.
+    /// </summary>
+    public async Task<Proposal> ProposeAsync(QueueItem item, InterpreterHost host, CancellationToken ct = default)
+    {
+        var interpreter = host.Interpreter ?? throw new InvalidOperationException("No interpreter is configured.");
+        var model = host.Model ?? interpreter.Name;
+        var profile = Profile(item.Profile);
+        var deterministic = Parse(item.Input, item.Profile, item.Intent);
+        LinkedArtNet.Dates.Interpretation.InterpreterResponse? response;
+        try
+        {
+            response = await interpreter.InterpretAsync(item.Input, new LinkedArtNet.Dates.Interpretation.InterpreterContext(profile, ParseIntent(item.Intent), deterministic), ct);
+        }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or InvalidOperationException)
+        {
+            return new Proposal(null, 0, "The interpreter could not be reached: " + e.Message, model, DateTimeOffset.UtcNow, null, false);
+        }
+        if (response is null) return new Proposal(null, 0, "No reading offered: the model did not take the text for a date.", model, DateTimeOffset.UtcNow, null, false);
+        var canonical = response.Canonical.Trim();
+        var intent = response.Intent?.ToString().ToLowerInvariant();
+        var (realised, error) = Realise(canonical, item.Profile, intent ?? item.Intent);
+        var confidence = Math.Clamp(Math.Min(response.SelfConfidence, interpreter.MaxConfidence), 0, 1);
+        return new Proposal(canonical, confidence, string.IsNullOrWhiteSpace(response.Rationale) ? null : response.Rationale.Trim(), model, DateTimeOffset.UtcNow, intent, realised is not null && error is null);
     }
 
     /// <summary>Realises a canonical expression under a profile; the error is set when it is not canonical or cannot be realised.</summary>

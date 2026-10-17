@@ -6,8 +6,13 @@ using Microsoft.Extensions.Options;
 
 namespace LinkedArtNet.ExamplesSite.Pages.Dates.Train;
 
-public class IndexModel(TrainerStore store, Trainer trainer, GitHubSubmitter github, IOptions<TrainerOptions> options, IHostEnvironment environment) : PageModel
+public class IndexModel(TrainerStore store, Trainer trainer, GitHubSubmitter github, IOptions<TrainerOptions> options, IHostEnvironment environment, InterpreterHost interpreters) : PageModel
 {
+    public bool InterpreterAvailable => interpreters.Available;
+    public string? InterpreterModel => interpreters.Model;
+    public int BatchSize => interpreters.BatchSize;
+    /// <summary>Pending inputs the parser cannot read confidently and that have no proposal yet.</summary>
+    public int Proposable { get; private set; }
     public int Pending { get; private set; }
     public int Done { get; private set; }
     public int Skipped { get; private set; }
@@ -37,6 +42,21 @@ public class IndexModel(TrainerStore store, Trainer trainer, GitHubSubmitter git
         if (intent is not ("auto" or "single" or "pair")) intent = "auto";
         var added = store.Add(lines, profile, intent, "manual:" + User.Identity?.Name);
         Message = $"{added} input{(added == 1 ? "" : "s")} added to the queue.";
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostProposeAsync(CancellationToken ct)
+    {
+        if (!interpreters.Available) return RedirectToPage();
+        var items = store.AwaitingProposal(trainer.NeedsInterpreter).Take(interpreters.BatchSize).ToList();
+        var offered = 0;
+        foreach (var item in items)
+        {
+            var proposal = await trainer.ProposeAsync(item, interpreters, ct);
+            store.SetProposal(item.Id, proposal);
+            if (proposal.Canonical is not null) offered++;
+        }
+        Message = $"{interpreters.Model} proposed {offered} reading{(offered == 1 ? "" : "s")} for {items.Count} input{(items.Count == 1 ? "" : "s")}; each is pre-filled on its review page for you to confirm.";
         return RedirectToPage();
     }
 
@@ -98,6 +118,7 @@ public class IndexModel(TrainerStore store, Trainer trainer, GitHubSubmitter git
     private void Load()
     {
         Pending = store.Count(QueueState.Pending);
+        Proposable = interpreters.Available ? store.AwaitingProposal(trainer.NeedsInterpreter).Count : 0;
         Done = store.Count(QueueState.Done);
         Skipped = store.Count(QueueState.Skipped);
         var all = store.Submissions;

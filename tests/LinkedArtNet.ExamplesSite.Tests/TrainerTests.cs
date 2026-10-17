@@ -38,6 +38,8 @@ public class TrainerFixture : WebApplicationFactory<Program>
     public string DataDirectory { get; } = Path.Combine(Path.GetTempPath(), "lan-trainer-tests", Guid.NewGuid().ToString("N"));
     public string CapturePath => Path.Combine(DataDirectory, "capture.jsonl");
     public FakeGitHub GitHub { get; } = new();
+    /// <summary>When set, the trainer offers this interpreter's proposals under the model name "scripted-model".</summary>
+    public LinkedArtNet.Dates.Interpretation.IDateInterpreter? Interpreter { get; init; }
 
     protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
     {
@@ -52,7 +54,20 @@ public class TrainerFixture : WebApplicationFactory<Program>
         {
             services.AddHttpClient<GitHubSubmitter>(c => c.BaseAddress = new Uri("https://api.github.com/")).ConfigurePrimaryHttpMessageHandler(() => GitHub);
             services.AddRazorPages(o => o.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute()));
+            if (Interpreter is not null) services.AddSingleton(new InterpreterHost(Interpreter, "scripted-model", batchSize: 25));
         });
+    }
+}
+
+/// <summary>Stands in for Claude: the same reading for everything, and a record of what it was asked.</summary>
+public sealed class ScriptedInterpreter(string canonical, double confidence, string rationale) : LinkedArtNet.Dates.Interpretation.IDateInterpreter
+{
+    public List<string> Asked { get; } = [];
+    public string Name => "scripted";
+    public Task<LinkedArtNet.Dates.Interpretation.InterpreterResponse?> InterpretAsync(string input, LinkedArtNet.Dates.Interpretation.InterpreterContext context, CancellationToken ct = default)
+    {
+        Asked.Add(input);
+        return Task.FromResult<LinkedArtNet.Dates.Interpretation.InterpreterResponse?>(new(canonical, confidence, rationale));
     }
 }
 
@@ -201,6 +216,68 @@ public class TrainerTests
         var put = JsonNode.Parse(factory.GitHub.Calls[2].Body!)!;
         var committed = Encoding.UTF8.GetString(Convert.FromBase64String(put["content"]!.GetValue<string>()));
         Assert.Equal(json, committed);
+    }
+
+    [Fact]
+    public async Task Interpreter_proposals_prefill_the_review_and_are_recorded_in_the_entry()
+    {
+        var claude = new ScriptedInterpreter("1850~", 0.9, "The scrawl means about 1850.");
+        using var factory = new TrainerFixture { Interpreter = claude };
+        var client = await SignedInClient(factory);
+        var add = await client.PostAsync("/dates/train?handler=Add", Form(("inputs", "ye olde scrawle abt eighteen-fiftie\ncirca 1850"), ("profile", "default"), ("intent", "auto")));
+        Assert.Equal(HttpStatusCode.Redirect, add.StatusCode);
+
+        // Only the unreadable input is offered for bulk proposals; the confident one is not.
+        var home = await client.GetStringAsync("/dates/train");
+        Assert.Contains("1 waiting input the parser cannot read confidently has no proposed reading yet", home);
+        Assert.Contains("Ask scripted-model for readings", home);
+        var bulk = await client.PostAsync("/dates/train?handler=Propose", Form());
+        Assert.Equal(HttpStatusCode.Redirect, bulk.StatusCode);
+        home = await client.GetStringAsync("/dates/train");
+        Assert.Contains("scripted-model proposed 1 reading for 1 input", home);
+        Assert.Equal(["ye olde scrawle abt eighteen-fiftie"], claude.Asked);
+
+        // The review page shows the proposal and pre-fills the correction form with it.
+        var review = await client.GetStringAsync("/dates/train/review");
+        Assert.Contains("ye olde scrawle", review);
+        Assert.Contains("What scripted-model proposes", review);
+        Assert.Contains("The scrawl means about 1850.", review);
+        Assert.Contains("confidence 0.60", review); // capped at the interpreter's default 0.6, not its own 0.9
+        Assert.Contains("value=\"1850~\"", review);
+        Assert.Contains("value=\"llm-proposed\"", review);
+        Assert.Contains("Reading proposed by scripted-model, confirmed by the reviewer.", review);
+        var id1 = IdIn(review);
+        var save = await client.PostAsync($"/dates/train/review/{id1}?handler=Save",
+            Form(("id", id1), ("canonical", "1850~"), ("intent", "auto"), ("profile", "default"), ("expectedStatus", "parsed"), ("tags", "llm-proposed"), ("notes", "Reading proposed by scripted-model, confirmed by the reviewer.")));
+        Assert.Equal(HttpStatusCode.Redirect, save.StatusCode);
+
+        // A confident parse can still be asked about, one item at a time.
+        review = await client.GetStringAsync("/dates/train/review");
+        Assert.Contains("circa 1850", review);
+        Assert.Contains("Ask scripted-model for a reading", review);
+        var id2 = IdIn(review);
+        var ask = await client.PostAsync($"/dates/train/review/{id2}?handler=Propose", Form(("id", id2)));
+        Assert.Equal(HttpStatusCode.Redirect, ask.StatusCode);
+        review = await client.GetStringAsync($"/dates/train/review/{id2}");
+        Assert.Contains("What scripted-model proposes", review);
+        Assert.DoesNotContain("Ask scripted-model for a reading", review);
+        Assert.Equal(2, claude.Asked.Count);
+
+        // The saved entry carries the provenance.
+        var download = await client.PostAsync("/dates/train?handler=Download", Form());
+        var file = CorpusFile.Load(await WriteDownload(factory, download));
+        var entry = Assert.Single(file.Entries);
+        Assert.Equal("1850~", entry.Expect.Canonical);
+        Assert.Contains("llm-proposed", entry.Tags);
+        Assert.Contains("scripted-model", entry.Notes);
+    }
+
+    private static async Task<string> WriteDownload(TrainerFixture factory, HttpResponseMessage download)
+    {
+        Assert.Equal(HttpStatusCode.OK, download.StatusCode);
+        var path = Path.Combine(factory.DataDirectory, "downloaded.json");
+        await File.WriteAllTextAsync(path, await download.Content.ReadAsStringAsync());
+        return path;
     }
 
     [Fact]

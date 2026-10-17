@@ -34,6 +34,34 @@ else
         </div>
     </section>
 
+    @if (Model.Item.Proposal is { } proposal)
+    {
+        <section class="result proposal">
+            <h2>What @proposal.Model proposes <span class="muted">asked @proposal.At.ToString("yyyy-MM-dd HH:mm")@(proposal.Canonical is null ? "" : $" · confidence {proposal.Confidence:0.00}")</span></h2>
+            @if (proposal.Canonical is null)
+            {
+                <p>@proposal.Rationale</p>
+            }
+            else
+            {
+                <dl class="kv">
+                    <dt>Canonical</dt><dd><code>@proposal.Canonical</code>@if (!proposal.Realisable) { <span class="diff"> · not an expression this parser can realise, so it is not pre-filled</span> }</dd>
+                    @if (proposal.Intent is not null) { <dt>Intent</dt><dd>@proposal.Intent</dd> }
+                    @if (proposal.Rationale is not null) { <dt>Why</dt><dd>@proposal.Rationale</dd> }
+                </dl>
+                <p class="muted">A proposal, not a verdict: the correction form below is pre-filled with it. Preview, then save it or change it.</p>
+            }
+        </section>
+    }
+    else if (Model.CanPropose)
+    {
+        <form method="post" class="inline-form propose">
+            <input type="hidden" name="id" value="@Model.Item.Id" />
+            <button type="submit" asp-page-handler="Propose">Ask @Model.InterpreterModel for a reading</button>
+            <span class="muted">Sends this text, the profile and the parser's view; the answer is a canonical expression for you to confirm.</span>
+        </form>
+    }
+
     <form method="post" class="stack review-form" id="review">
         <input type="hidden" name="id" value="@Model.Item.Id" />
         <div class="row">

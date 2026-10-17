@@ -27,6 +27,17 @@
     <p><a class="button" href="/dates/train/review">Review the next input</a></p>
 }
 
+@if (Model.InterpreterAvailable && Model.Proposable > 0)
+{
+    <form method="post" asp-page-handler="Propose" class="propose">
+        <p>
+            @Model.Proposable waiting input@(Model.Proposable == 1 ? "" : "s") the parser cannot read confidently @(Model.Proposable == 1 ? "has" : "have") no proposed reading yet.
+            <button type="submit">Ask @Model.InterpreterModel for readings@(Model.Proposable > Model.BatchSize ? $" ({Model.BatchSize} at a time)" : "")</button>
+            <span class="muted">Each answer is a canonical expression that pre-fills the review page; nothing enters the corpus until you confirm it.</span>
+        </p>
+    </form>
+}
+
 <h2>Add inputs</h2>
 <form method="post" asp-page-handler="Add" enctype="multipart/form-data" class="stack">
     <label>One date string per line

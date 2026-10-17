@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<ExamplesOptions>(builder.Configuration.GetSection("Examples"));
 builder.Services.Configure<TimeSpanServiceOptions>(builder.Configuration.GetSection("TimeSpanService"));
 builder.Services.Configure<TrainerOptions>(builder.Configuration.GetSection("Trainer"));
+builder.Services.Configure<InterpreterOptions>(builder.Configuration.GetSection("Interpreter"));
 var trainerOptions = builder.Configuration.GetSection("Trainer").Get<TrainerOptions>() ?? new TrainerOptions();
 
 builder.Services.AddHttpClient();
@@ -17,6 +18,7 @@ builder.Services.AddSingleton<DateClient>();
 builder.Services.AddSingleton<CorpusIndex>();
 builder.Services.AddSingleton<TrainerStore>();
 builder.Services.AddSingleton<Trainer>();
+builder.Services.AddSingleton<InterpreterHost>();
 builder.Services.AddHttpClient<GitHubSubmitter>(c => c.BaseAddress = new Uri("https://api.github.com/"));
 builder.Services.AddRazorPages(o =>
 {

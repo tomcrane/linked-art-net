@@ -122,6 +122,14 @@ public sealed partial class TimeSpanParser
 
         var normalised = Normaliser.Normalise(original);
         if (normalised.Text.Length == 0) return Unparsed(original, profile, "Empty input.", normalised);
+        // The normaliser may have produced an ISO shape itself ("18690500" -> "1869-05"); it must not then be read as free text,
+        // where "1869-05" would be the abbreviated range 1869 to 1905.
+        if (normalised.Text != trimmed && IsoShape().IsMatch(normalised.Text) && CanonicalReader.TryParse(normalised.Text, out var isoFromNormaliser))
+        {
+            var fast = new TimeSpanRealiser(profile, _currentYear).Realise(isoFromNormaliser!, original, options.Intent, 1.0, "canonical");
+            var fastFlags = new HashSet<DateFlag>(fast.Flags); fastFlags.UnionWith(normalised.Flags); // "[1850]" keeps its Bracketed flag
+            return fast with { Notes = normalised.Notes.Concat(fast.Notes).ToList(), Flags = fastFlags };
+        }
 
         var candidates = new List<Candidate>();
         foreach (var strategy in _strategies)

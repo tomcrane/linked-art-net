@@ -1,0 +1,34 @@
+{
+  "$schema": "../schema/corpus-entry.schema.json",
+  "source": {
+    "name": "Authored: encoding damage and machine-shaped values",
+    "licence": "CC0-1.0",
+    "notes": "Strings whose date is sound but whose text was damaged on the way: mojibake apostrophes and dashes (a UTF-8 character read in another encoding, as in yearrange's '1750âs'), and date-column values written as eight digits with zeros for an unknown month or day ('18690000'). The normaliser repairs these before the grammar runs and says so in a note. Written 2026-10-17 after the first Claude interpreter run over the disputed yearrange entries read them the way a cataloguer would; expectations checked by hand under the default profile."
+  },
+  "defaults": { "intent": "single", "profile": "default", "status": "verified", "tags": ["encoding"] },
+  "entries": [
+    { "id": "enc-001", "input": "late 1750âs - early 1760âs", "tags": ["mojibake", "decade", "band"],
+      "expect": { "status": "parsed", "canonical": "late 175X/early 176X", "years": { "start": 1757, "end": 1763 } },
+      "notes": "Both apostrophes repaired; the default decade bands give late = 7-9 and early = 0-3." },
+    { "id": "enc-002", "input": "1730âs early", "tags": ["mojibake", "decade", "band"],
+      "expect": { "status": "parsed", "canonical": "early 173X", "years": { "start": 1730, "end": 1733 } },
+      "notes": "A trailing band word qualifies the decade before it." },
+    { "id": "enc-003", "input": "c. 1750â€™s", "tags": ["mojibake", "decade", "circa"],
+      "expect": { "status": "parsed", "canonical": "175X~", "flags": ["Approximate"] },
+      "notes": "The full three-character form of the damaged apostrophe." },
+    { "id": "enc-004", "input": "1750â€“1760", "tags": ["mojibake", "range"],
+      "expect": { "status": "parsed", "canonical": "1750/1760", "edtf": "1750/1760" },
+      "notes": "A damaged en dash between two years." },
+    { "id": "enc-005", "input": "18690000", "tags": ["yyyymmdd", "year"],
+      "expect": { "status": "parsed", "canonical": "1869", "edtf": "1869" },
+      "notes": "Zero month and day: a year-only value in a date column." },
+    { "id": "enc-006", "input": "18690500", "tags": ["yyyymmdd", "month"],
+      "expect": { "status": "parsed", "canonical": "1869-05", "edtf": "1869-05" },
+      "notes": "Zero day: a month-only value." },
+    { "id": "enc-007", "input": "18690512", "tags": ["yyyymmdd", "day"],
+      "expect": { "status": "parsed", "canonical": "1869-05-12", "edtf": "1869-05-12" } },
+    { "id": "enc-008", "input": "18691300", "tags": ["yyyymmdd", "noise"],
+      "expect": { "status": "unparsed" },
+      "notes": "Month 13: not a date column value, and not a year either." }
+  ]
+}

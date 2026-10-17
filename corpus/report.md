@@ -1,25 +1,26 @@
 # Corpus run
 
-Generated 2026-10-17 10:17 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
+Generated 2026-10-17 11:12 UTC by `dotnet run --project tools/Corpus -- run --all --write` with parser 0.2.0. Verified entries gate CI; proposed and disputed ones are informative.
 
-## verified: 691/691 pass (100.0%), calibration error 0.144
+## verified: 702/702 pass (100.0%), calibration error 0.143
 
 - authored/bce-and-deep-time.json: 20/20
 - authored/canonical-forms.json: 18/18
 - authored/centuries-and-bands.json: 30/30
+- authored/encoding-and-noise.json: 8/8
 - authored/lifecycle-and-floruit.json: 24/24
 - authored/multilingual.json: 44/44
 - authored/named-periods.json: 30/30
 - authored/open-ended-and-relations.json: 36/36
 - imported/timetwister.json: 8/8
-- imported/yearrange.json: 352/352
+- imported/yearrange.json: 355/355
 - proposed/trainer-20261016-1334.json: 1/1
 - seed/pmc-outputs.json: 91/91
 - seed/py-datetime.json: 37/37
 
-Status (expected->actual): parsed->parsed 611, partial->partial 2, undated->undated 73, unparsed->unparsed 5
+Status (expected->actual): parsed->parsed 621, partial->partial 2, undated->undated 73, unparsed->unparsed 6
 
-## proposed: 1600/1600 pass (100.0%), calibration error 0.151
+## proposed: 1600/1600 pass (100.0%), calibration error 0.150
 
 - imported/edtf-spec.json: 61/61
 - imported/getty.json: 180/180
@@ -28,20 +29,20 @@ Status (expected->actual): parsed->parsed 611, partial->partial 2, undated->unda
 
 Status (expected->actual): parsed->parsed 1596, unparsed->unparsed 4
 
-## disputed: 0/22 pass (0.0%), calibration error 0.659
+## disputed: 0/19 pass (0.0%), calibration error 0.684
 
-- imported/yearrange.json: 0/22
+- imported/yearrange.json: 0/19
 
-Status (expected->actual): parsed->parsed 20, parsed->unparsed 2
-Weakest tags: yearrange 0/22, imported 0/22, range 0/3, band 0/3, named-period 0/3, decade 0/7, circa 0/7, bracketed 0/5, month 0/1, season 0/1, century 0/3
+Status (expected->actual): parsed->parsed 18, parsed->unparsed 1
+Weakest tags: yearrange 0/19, imported 0/19, range 0/3, band 0/1, named-period 0/3, decade 0/7, circa 0/7, bracketed 0/5, month 0/1, season 0/1, century 0/3
 
-Since the last run: 0 newly passing, 0 newly failing.
+Since the last run: 2 newly passing, 0 newly failing.
 
 ## Failures
 
-By cause: not parsed 2, bounds differ 20.
+By cause: not parsed 1, bounds differ 18.
 
-### Not parsed (2)
+### Not parsed (1)
 
 The source has a date and the parser found none: grammar gaps, or strings the source read generously.
 
@@ -50,13 +51,8 @@ The source has a date and the parser found none: grammar gaps, or strings the so
   - status: expected parsed, got Unparsed
   - years.start: expected 1925, got (none)
   - years.end: expected 1925, got (none)
-- `yr-0363` (disputed) "18690000" -> Unparsed
-  - expected: status parsed; years 1869..1869
-  - status: expected parsed, got Unparsed
-  - years.start: expected 1869, got (none)
-  - years.end: expected 1869, got (none)
 
-### Bounds differ (20)
+### Bounds differ (18)
 
 The same reading realised to different datetimes: usually a band, season, circa or open-bound convention, or the source's own estimate.
 
@@ -83,16 +79,10 @@ The same reading realised to different datetimes: usually a band, season, circa 
   - expected: status parsed; years 1950..1959
   - years.start: expected 1950, got 1603
   - years.end: expected 1959, got 1868
-- `yr-1044` (disputed) "late 1750âs - early 1760âs" -> late 175X
-  - expected: status parsed; years 1757..1762
-  - years.end: expected 1762, got 1759
 - `yr-1060` (disputed) "c. 18011" -> Y18011~
   - expected: status parsed; years 1801..1801; flags Approximate
   - years.start: expected 1801, got 18011
   - years.end: expected 1801, got 18011
-- `yr-1062` (disputed) "1730âs early" -> 1730
-  - expected: status parsed; years 1730..1732
-  - years.end: expected 1732, got 1730
 - `yr-1236` (disputed) "1879 (Meiji 3, 2nd month)" -> period:meiji-3/1879
   - expected: status parsed; years 1879..1879
   - years.start: expected 1879, got 1870

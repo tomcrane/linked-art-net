@@ -334,11 +334,20 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     `LinkedArtNet.Dates.Llm` (Claude, JSON-schema answer, cached grammar prompt), `tools/Corpus interpret`, and Claude
     proposals in the trainer. Decision: the LLM is a corpus-growing assistant; the public service stays deterministic.
 
+28. ~~First measured interpreter run.~~ Done 2026-10-17 by the owner over the 22 disputed yearrange entries (about a tenth
+    of a dollar): every answer a valid canonical expression; 4 matched the parser, 1 declined ("・07・25"), 17 differed,
+    mostly by writing a set for records that date several parts separately (sheets, numbered items, works), decoding
+    mojibake apostrophes, reading "18690000" as a date-column year, and keeping a written Western year over a conflicting
+    era year. Two of those became parser rules the same day (normaliser: mojibake repair, YYYYMMDD values; corpus
+    `authored/encoding-and-noise.json`; three yearrange entries moved from disputed to verified). The set reading for
+    enumerated parts is the open finding.
+
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:
 
-- Phase 2: a first measured run of `Corpus interpret --corpus imported/yearrange.json --status disputed` and of the
-  server's capture file once the owner's API key is on the server, to see where Claude's proposals earn their cost;
+- Phase 2: the grammar reading records that date several parts separately ("(1) 1980, (2) 1977, (3) ca. 1970s",
+  "Sheet 1; 1964. Sheet 2 and 3; ca. 1930s") as a set, which item 28's run showed to be the main thing Claude reads
+  better than the parser; `interpret` over the server's capture file once the API key is in the server's `.env`;
   benchmarks; `during: Period` with PeriodO URIs on TimeSpans; PeriodO narrowing (place, authority) as profile settings.
 - Phase 4: the items listed above; the backup cron is the most urgent since the trainer now holds reviewer work.
 - Housekeeping: the axe accessibility lint; renaming `de-pmc` to `main` is a deliberate later sweep (19 references

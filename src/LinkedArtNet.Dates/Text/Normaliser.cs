@@ -26,6 +26,11 @@ public static partial class Normaliser
             notes.Add($"Input longer than {MaxLength} characters was truncated.");
         }
 
+        // "1750âs", "1750â€™s": a UTF-8 apostrophe read in another encoding. The source data is corrupt, not the date, so repair it.
+        var repaired = MojibakeApostrophe().Replace(text, "'");
+        repaired = MojibakeDash().Replace(repaired, "-");
+        if (repaired != text) { text = repaired; notes.Add("Mojibake (a UTF-8 apostrophe or dash read in another encoding) repaired."); }
+
         text = text.Normalize(NormalizationForm.FormKC);
         text = Dashes().Replace(text, "-");
         text = text.Replace('‘', '\'').Replace('’', '\'').Replace('“', '"').Replace('”', '"');
@@ -49,6 +54,20 @@ public static partial class Normaliser
         text = LeadingPunctuation().Replace(text, "");
         text = text.Trim();
         if (text != before && before.Length - text.Length > 1) notes.Add("Trailing punctuation or '[sic]' removed.");
+
+        // "18690000", "18690500", "18690512": a date column's YYYYMMDD value, with zeros where the month or day is unknown.
+        if (DigitBlock().Match(text) is { Success: true } block)
+        {
+            var month = int.Parse(block.Groups["m"].Value); var day = int.Parse(block.Groups["d"].Value);
+            string? iso = (month, day) switch
+            {
+                (0, 0) => block.Groups["y"].Value,
+                (>= 1 and <= 12, 0) => $"{block.Groups["y"].Value}-{block.Groups["m"].Value}",
+                (>= 1 and <= 12, >= 1 and <= 31) => $"{block.Groups["y"].Value}-{block.Groups["m"].Value}-{block.Groups["d"].Value}",
+                _ => null,
+            };
+            if (iso is not null) { text = iso; notes.Add("Eight digits read as a YYYYMMDD database value; a zero month or day means unspecified."); }
+        }
 
         return new NormalisedText(text, flags, notes);
     }
@@ -84,4 +103,16 @@ public static partial class Normaliser
 
     [GeneratedRegex(@"\b([Jj])\.-([Cc])\.")]
     private static partial Regex JesusChrist();
+
+    // U+2018/U+2019 in UTF-8 are E2 80 98/99. Read as cp1252 they show as "â€˜"/"â€™"; read as Latin-1 as "â" followed by the
+    // C1 controls U+0080 and U+0098/U+0099 (yearrange's data); a source that dropped the unprintable bytes shows a bare "â" before "s".
+    [GeneratedRegex(@"â(?:\u0080|€)(?:\u0098|\u0099|˜|™)|(?<=\d)â(?=s\b)")]
+    private static partial Regex MojibakeApostrophe();
+
+    // U+2013/U+2014 (en and em dash) are E2 80 93/94: "â€“"/"â€”" in cp1252, "â" + U+0080 + U+0093/U+0094 in Latin-1.
+    [GeneratedRegex(@"â(?:\u0080|€)(?:\u0093|\u0094|“|”)")]
+    private static partial Regex MojibakeDash();
+
+    [GeneratedRegex(@"^(?<y>\d{4})(?<m>\d{2})(?<d>\d{2})$")]
+    private static partial Regex DigitBlock();
 }

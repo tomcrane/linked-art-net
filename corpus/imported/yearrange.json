@@ -5223,7 +5223,7 @@
       "expect": {"status":"parsed","kind":"single","canonical":"period:meiji","edtf":"1868/1912","timespan":{"begin_of_the_begin":"1868-10-23T00:00:00Z","end_of_the_end":"1912-07-30T23:59:59Z"}}, "sourceExpectation": "status parsed; years 1833..1833", "notes": "Accepted the parser\u0027s reading on 2026-10-14; the expectation had been: status parsed; years 1833..1833."
     },
     {
-      "id": "yr-0363", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Not a date string a reader could fix either: middle dots, eight digits, five-digit years, \u00271640 century\u0027.",
+      "id": "yr-0363", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Not a date string a reader could fix either: middle dots, eight digits, five-digit years, \u00271640 century\u0027. Verified 2026-10-17: the normaliser now repairs mojibake apostrophes and reads YYYYMMDD column values, so the parser agrees with the source; the Claude interpreter read these the same way.",
       "input": "18690000",
       "tags": [],
       "expect": {
@@ -14083,7 +14083,7 @@
       }
     },
     {
-      "id": "yr-1044", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Mojibake apostrophes (\u00271720\u00E2s\u0027); the data is corrupt, not the reading.",
+      "id": "yr-1044", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Mojibake apostrophes (\u00271720\u00E2s\u0027); the data is corrupt, not the reading. Verified 2026-10-17: the normaliser now repairs mojibake apostrophes and reads YYYYMMDD column values, so the parser agrees with the source; the Claude interpreter read these the same way.",
       "input": "late 1750\u00E2\u0080\u0099s - early 1760\u00E2\u0080\u0099s",
       "tags": [
         "band"
@@ -14334,7 +14334,7 @@
       "expect": {"status":"undated"}, "sourceExpectation": "status parsed; years 1603..1868", "notes": "Accepted the parser\u0027s reading on 2026-10-15; the expectation had been: status parsed; years 1603..1868."
     },
     {
-      "id": "yr-1062", "status": "disputed", "notes": "Disputed 2026-10-14 (owner): Mojibake apostrophes (\u00271720\u00E2s\u0027); the data is corrupt, not the reading.",
+      "id": "yr-1062", "status": "verified", "notes": "Disputed 2026-10-14 (owner): Mojibake apostrophes (\u00271720\u00E2s\u0027); the data is corrupt, not the reading. Verified 2026-10-17: the normaliser now repairs mojibake apostrophes and reads YYYYMMDD column values, so the parser agrees with the source; the Claude interpreter read these the same way.",
       "input": "1730\u00E2\u0080\u0099s early",
       "tags": [
         "band"

@@ -12,6 +12,8 @@ public sealed record ParseOptions
     public Intent Intent { get; init; } = Intent.Auto;
     public ParseProfile? Profile { get; init; }
     public int MaxAlternatives { get; init; } = 5;
+    /// <summary>Whether <see cref="TimeSpanParser.ParseAsync"/> may consult the interpreter it was given; <see cref="TimeSpanParser.Parse(string, ParseOptions)"/> never does.</summary>
+    public bool AllowInterpreter { get; init; } = true;
 }
 
 /// <summary>A reading of a normalised string produced by one strategy.</summary>

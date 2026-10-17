@@ -30,12 +30,12 @@ public class ParserTests
     [Fact]
     public void Open_ended_dates_and_a_known_role()
     {
-        var a = Parse("Crane, Thomas [1971-] (developer)", "dscribe");
-        Assert.Equal("Crane, Thomas", a.Name);
-        Assert.Equal("1971-", a.DateText);
+        var a = Parse("Ashworth, Mary [1958-] (editor)", "dscribe");
+        Assert.Equal("Ashworth, Mary", a.Name);
+        Assert.Equal("1958-", a.DateText);
         Assert.NotNull(a.Dates!.Begin);
         Assert.Null(a.Dates.End);
-        Assert.Equal("developer", Assert.Single(a.Roles).Label);
+        Assert.Equal("editor", Assert.Single(a.Roles).Label);
     }
 
     [Theory]

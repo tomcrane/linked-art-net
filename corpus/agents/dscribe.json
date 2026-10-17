@@ -2,13 +2,13 @@
   "source": {
     "name": "Authored: DScribe / CALM agent strings (Paul Mellon Centre form)",
     "licence": "CC0-1.0",
-    "notes": "The 'Surname, Forenames [Honorific, dates] (role)' convention of the Paul Mellon Centre's DScribe exports. Seeded from the pmc-2 branch's ParsedAgentTests (the owner's own strings), with invented names in the same shapes; expectations checked by hand. The nested 'dates' expectation is the dates corpus's shape and is checked by the dates parser."
+    "notes": "The 'Surname, Forenames [Honorific, dates] (role)' convention of the Paul Mellon Centre's DScribe exports. Seeded from the shapes in the pmc-2 branch's ParsedAgentTests, with invented names; expectations checked by hand. The nested 'dates' expectation is the dates corpus's shape and is checked by the dates parser."
   },
   "defaults": { "profile": "dscribe", "status": "verified", "tags": ["dscribe"] },
   "entries": [
-    { "id": "ds-001", "input": "Crane, Thomas [1971-] (developer)", "tags": ["open-end"],
-      "expect": { "kind": "person", "name": "Crane, Thomas", "familyName": "Crane", "givenNames": "Thomas", "displayName": "Thomas Crane", "dateText": "1971-", "roleLabels": ["developer"], "noUnconsumed": true,
-        "dates": { "status": "parsed", "canonical": "1971/..", "kind": "birthDeath" } } },
+    { "id": "ds-001", "input": "Ashworth, Mary [1958-] (editor)", "tags": ["open-end"],
+      "expect": { "kind": "person", "name": "Ashworth, Mary", "familyName": "Ashworth", "givenNames": "Mary", "displayName": "Mary Ashworth", "dateText": "1958-", "roleLabels": ["editor"], "noUnconsumed": true,
+        "dates": { "status": "parsed", "canonical": "1958/..", "kind": "birthDeath" } } },
     { "id": "ds-002", "input": "Leconte de Lisle, Charles Marie [1818-1894] (author)", "tags": ["lifespan"],
       "expect": { "kind": "person", "name": "Leconte de Lisle, Charles Marie", "familyName": "Leconte de Lisle", "givenNames": "Charles Marie", "dateText": "1818-1894", "roleLabels": ["author"], "noUnconsumed": true,
         "dates": { "status": "parsed", "kind": "birthDeath", "canonical": "1818/1894", "years": { "start": 1818, "end": 1894 } } } },

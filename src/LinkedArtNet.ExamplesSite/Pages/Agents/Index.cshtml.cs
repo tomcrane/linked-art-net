@@ -22,7 +22,7 @@ public class IndexModel(ExampleIndex index) : PageModel
     public static readonly IReadOnlyList<(string Text, string Profile)> Samples =
     [
         ("Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)", "dscribe"),
-        ("Crane, Thomas [1971-] (developer)", "dscribe"),
+        ("Ashworth, Mary [1958-] (editor)", "dscribe"),
         ("Royal Academy of Arts [1768-] (publisher)", "dscribe"),
         ("Leconte de Lisle, Charles Marie, 1818-1894", "marc"),
         ("Smith, John, active 1640-1660, ill.", "marc"),

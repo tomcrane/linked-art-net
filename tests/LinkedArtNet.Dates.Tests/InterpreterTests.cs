@@ -141,6 +141,18 @@ public class InterpreterTests
         finally { File.Delete(path); }
     }
 
+    [Fact]
+    public async Task AlwaysInterpret_asks_even_about_a_confident_reading()
+    {
+        var interpreter = new ScriptedInterpreter((_, _) => new InterpreterResponse("195X", 0.9, "The whole decade."));
+        var result = await Parser.ParseAsync("late 1950s", interpreter, new ParseOptions { AlwaysInterpret = true });
+        Assert.Single(interpreter.Calls);
+        Assert.Equal("195X", result.Canonical);
+        Assert.Contains(result.Alternatives, a => a.Canonical == "late 195X");
+        await Parser.ParseAsync("n.d.", interpreter, new ParseOptions { AlwaysInterpret = true });
+        Assert.Single(interpreter.Calls); // undated text is still left alone
+    }
+
     [Theory]
     [InlineData("1984", false)]
     [InlineData("n.d.", false)]

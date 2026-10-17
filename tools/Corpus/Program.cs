@@ -383,22 +383,28 @@ async Task<int> Interpret(string[] rest)
 
     var interpreter = new LinkedArtNet.Dates.Llm.ClaudeDateInterpreter(new LinkedArtNet.Dates.Llm.ClaudeInterpreterOptions { Model = model ?? new LinkedArtNet.Dates.Llm.ClaudeInterpreterOptions().Model });
     var proposals = new List<CorpusEntry>();
-    int agreed = 0, disagreed = 0, noAnswer = 0, n = 0;
+    int agreed = 0, disagreed = 0, sameAsParserCount = 0, noAnswer = 0, n = 0;
     var started = DateTime.UtcNow;
     foreach (var a in asked)
     {
         n++;
         var parser = ParserFor(a.Profile);
-        var result = await parser.ParseAsync(a.Input, interpreter, new ParseOptions { Intent = Trainer_ParseIntent(a.Intent), Profile = parser.Profile });
+        var result = await parser.ParseAsync(a.Input, interpreter, new ParseOptions { Intent = Trainer_ParseIntent(a.Intent), Profile = parser.Profile, AlwaysInterpret = all });
         var interpreted = result.Flags.Contains(DateFlag.Interpreted);
-        var rationale = result.Notes.FirstOrDefault(x => x.StartsWith("claude:", StringComparison.Ordinal))?["claude:".Length..].Trim();
+        var rationale = result.Notes.FirstOrDefault(x => x.StartsWith("claude:", StringComparison.Ordinal))?["claude:".Length..].Trim()
+                        ?? result.Notes.FirstOrDefault(x => x.Contains("interpreter", StringComparison.Ordinal)); // or why there was no reading
         if (a.Entry is { } entry)
         {
-            var expected = entry.Expect.Canonical ?? entry.Expect.Status ?? "?";
+            // What there is to compare with: the expectation's canonical form when it has one, else its years or status.
+            var expected = entry.Expect.Canonical
+                           ?? (entry.Expect.Years is { } y ? $"years {y.Start?.ToString() ?? ".."}..{y.End?.ToString() ?? ".."}" : null)
+                           ?? (entry.Expect.Status is { } st ? "status " + st : "?");
             var got = interpreted ? result.Canonical ?? "?" : "(no reading)";
             var agree = interpreted && entry.Expect.Canonical is not null && string.Equals(entry.Expect.Canonical, result.Canonical, StringComparison.Ordinal);
-            if (!interpreted) noAnswer++; else if (agree) agreed++; else disagreed++;
-            Console.WriteLine($"{(agree ? "AGREE   " : interpreted ? "DIFFER  " : "NOTHING ")} {entry.Id} \"{a.Input}\"  expected {expected}  claude {got}{(rationale is null ? "" : "  ; " + rationale)}");
+            var sameAsParser = interpreted && !agree && a.Deterministic.Canonical is not null && string.Equals(a.Deterministic.Canonical, result.Canonical, StringComparison.Ordinal);
+            if (!interpreted) noAnswer++; else if (agree) agreed++; else if (sameAsParser) sameAsParserCount++; else disagreed++;
+            var label = !interpreted ? "NOTHING " : agree ? "AGREE   " : sameAsParser ? "PARSER  " : "DIFFER  ";
+            Console.WriteLine($"{label} {entry.Id} \"{a.Input}\"  expected {expected}  parser {a.Deterministic.Canonical ?? a.Deterministic.Status.ToString().ToLowerInvariant()}  claude {got}{(rationale is null ? "" : "  ; " + rationale)}");
         }
         else
         {
@@ -421,7 +427,7 @@ async Task<int> Interpret(string[] rest)
     Console.WriteLine($"{n} asked in {(DateTime.UtcNow - started).TotalSeconds:0}s; tokens in {usage.InputTokens} (cache read {usage.CacheReadTokens}, cache write {usage.CacheWriteTokens}), out {usage.OutputTokens}; model {interpreter.Model}.");
     if (corpusFile is not null)
     {
-        Console.WriteLine($"Agreement with the expectations: {agreed} agree, {disagreed} differ, {noAnswer} no reading, of {n}.");
+        Console.WriteLine($"Of {n}: {agreed} agree with the expectation, {sameAsParserCount} match the parser's own reading where the expectation has no canonical form, {disagreed} differ from both, {noAnswer} no reading.");
         return 0;
     }
     if (proposals.Count == 0) { Console.WriteLine("Nothing to propose."); return 0; }

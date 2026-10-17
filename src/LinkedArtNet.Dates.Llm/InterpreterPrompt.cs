@@ -29,7 +29,7 @@ public static class InterpreterPrompt
           "required": ["canonical", "confidence", "rationale", "intent"],
           "properties": {
             "canonical": { "type": "string", "description": "A canonical date expression from the grammar, or 'undated' when the text says there is no date. Empty string when the text is not a date at all." },
-            "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How sure you are that the expression is what the cataloguer meant." },
+            "confidence": { "type": "number", "description": "How sure you are that the expression is what the cataloguer meant, from 0 to 1." },
             "rationale": { "type": "string", "description": "One sentence for the reviewer: what in the text led to the reading." },
             "intent": { "type": "string", "enum": ["single", "pair", "auto"], "description": "'pair' when the text gives two life or activity dates (born/died, formed/dissolved), 'single' for one span, 'auto' when unsure." }
           }

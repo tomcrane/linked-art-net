@@ -21,7 +21,8 @@ public sealed partial class TimeSpanParser
         options ??= new ParseOptions();
         var result = Parse(input, options);
         var profile = options.Profile ?? _profile;
-        if (interpreter is null || !options.AllowInterpreter || !NeedsInterpreter(result, profile)) return result;
+        var wanted = options.AlwaysInterpret ? result.Status != ParseStatus.Undated : NeedsInterpreter(result, profile);
+        if (interpreter is null || !options.AllowInterpreter || !wanted) return result;
 
         InterpreterResponse? response;
         try

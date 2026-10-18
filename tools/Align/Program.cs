@@ -10,6 +10,8 @@
 //
 //   dotnet run --project tools/Align -- load-getty <file.nt[.gz] | directory>... --vocab ulan|aat|tgn [--version 2026-10]
 //                                                                              a Getty full N-Triples download into the local authority index
+//   dotnet run --project tools/Align -- load-loc <names.madsrdf.nt.gz> [--version 2026-10]
+//                                                                              the LC Name Authority File (MADS/RDF N-Triples bulk download) into the local index
 //   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
 //                                                                              decide undecided strings from overrides, the store and the local indexes
 //   dotnet run --project tools/Align -- shadow [--dataset pmc] [--method imported] [--context c] [--limit n | --sample n] [--out reports]
@@ -87,6 +89,17 @@ switch (args[0])
         Console.Error.WriteLine($"  {files.Count} file(s)");
         var result = await new GettyVocabLoader(store).LoadAsync(files, vocab, Option("--version"), progress);
         Console.WriteLine($"{result.Vocabulary}: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
+        return 0;
+    }
+
+    case "load-loc":
+    {
+        var path = args.Skip(1).FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal) && a != Option("--version"));
+        if (path is null || !(File.Exists(path) || Directory.Exists(path))) { Console.Error.WriteLine("Give the LC Name Authority File MADS/RDF N-Triples download (.nt or .nt.gz)."); return 2; }
+        await store.InitialiseAsync();
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {DateTime.Now:HH:mm:ss} {m}"));
+        var result = await new LocNamesLoader(store).LoadAsync(path, Option("--version"), progress);
+        Console.WriteLine($"LoC names: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
         return 0;
     }
 
@@ -214,6 +227,8 @@ static void Usage() => Console.WriteLine(
                                              import a pmc-lux authority-strings file as entities and overrides
       load-getty <file|dir>... --vocab ulan|aat|tgn [--version v]
                                              load a Getty full N-Triples download into the local authority index
+      load-loc <names.madsrdf.nt.gz> [--version v]
+                                             load the LC Name Authority File (MADS/RDF N-Triples) into the local authority index
       reconcile [--dataset] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
                                              decide undecided strings from overrides, the store and the local indexes
       decisions --run <id> [--method m] [--limit 20]

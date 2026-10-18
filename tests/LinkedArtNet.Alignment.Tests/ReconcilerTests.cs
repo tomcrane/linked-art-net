@@ -100,6 +100,42 @@ public class NTriplesTests
     }
 }
 
+public class LocHeadingTests
+{
+    [Theory]
+    [InlineData("Dürer, Albrecht, 1471-1528", "Dürer, Albrecht", "1471-1528", 1471, 1528)]
+    [InlineData("Smith, John, 1900-", "Smith, John", "1900-", 1900, null)]
+    [InlineData("Manson, John, -1812", "Manson, John", "-1812", null, 1812)]
+    [InlineData("Grierson, Herbert John Clifford, Sir, 1866-1960", "Grierson, Herbert John Clifford, Sir", "1866-1960", 1866, 1960)]
+    [InlineData("Lely, Peter, Sir, 1618-1680.", "Lely, Peter, Sir", "1618-1680.", 1618, 1680)]
+    [InlineData("Unknown, Artist, approximately 1500-1560", "Unknown, Artist", "approximately 1500-1560", 1500, 1560)]
+    [InlineData("Tate Gallery", "Tate Gallery", null, null, null)]
+    [InlineData("Paixão, Geraldo Ferreira da", "Paixão, Geraldo Ferreira da", null, null, null)]
+    public void Personal_headings_split_into_name_and_dates(string label, string name, string? dates, int? begin, int? end)
+    {
+        var (n, d, l) = LocNamesLoader.SplitHeading(label);
+        Assert.Equal(name, n);
+        Assert.Equal(dates, d);
+        Assert.Equal(begin, l?.BeginEarliest?.Year);
+        Assert.Equal(end, l?.EndLatest?.Year);
+    }
+
+    [Fact]
+    public void Active_dates_are_not_a_lifespan_and_rwo_dates_win()
+    {
+        var (n, d, l) = LocNamesLoader.SplitHeading("Smith, John, active 1640-1660");
+        Assert.Equal("Smith, John", n);
+        Assert.Equal("active 1640-1660", d);
+        Assert.Null(l);
+        var rwo = LocNamesLoader.LifespanFrom("1471-05-21", "approximately 1528")!;
+        Assert.Equal(1471, rwo.BeginEarliest!.Value.Year);
+        Assert.Equal(1528, rwo.EndLatest!.Value.Year);
+        Assert.True(LocNamesLoader.UsableLink("http://viaf.org/viaf/12345"));
+        Assert.True(LocNamesLoader.UsableLink("http://www.wikidata.org/entity/Q5580"));
+        Assert.False(LocNamesLoader.UsableLink("http://viaf.org/viaf/sourceID/LC%7Cn79118011#skos:Concept"));
+    }
+}
+
 public class GroupingTests
 {
     private static StringReading Reading(string text, params EntityClass[] classes) =>
@@ -197,7 +233,53 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["albrecht durer"], "ulan"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500301417", "ulan", "Thomas Agnew & Sons", ["Agnew's"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys("Thos. Agnew & Sons Ltd"), "ulan", "Group"));
-        Assert.Single(await pg.Store.FindAuthoritiesBySameAsAsync("http://www.wikidata.org/entity/Q5580"));
+        Assert.Single(await pg.Store.FindAuthoritiesBySameAsAsync("http://www.wikidata.org/entity/Q5580"), a => a.Source == "ulan"); // the LoC sample links to the same Wikidata item
+    }
+
+    // A sliver of the LC Name Authority File in the MADS/RDF shapes (checked against a 2024 export on 2026-10-18).
+    private const string LocSample = """
+        <http://id.loc.gov/authorities/names/n79118011> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Authority> .
+        <http://id.loc.gov/authorities/names/n79118011> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#PersonalName> .
+        <http://id.loc.gov/authorities/names/n79118011> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "D\u00FCrer, Albrecht, 1471-1528" .
+        <http://id.loc.gov/authorities/names/n79118011> <http://www.loc.gov/mads/rdf/v1#hasVariant> _:v1 .
+        _:v1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#PersonalName> .
+        _:v1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Variant> .
+        _:v1 <http://www.loc.gov/mads/rdf/v1#variantLabel> "Durero, Alberto, 1471-1528" .
+        <http://id.loc.gov/authorities/names/n79118011> <http://www.loc.gov/mads/rdf/v1#hasExactExternalAuthority> <http://viaf.org/viaf/54146219> .
+        <http://id.loc.gov/authorities/names/n79118011> <http://www.loc.gov/mads/rdf/v1#hasExactExternalAuthority> <http://viaf.org/viaf/sourceID/LC%7Cn79118011#skos:Concept> .
+        <http://id.loc.gov/authorities/names/n79118011> <http://www.loc.gov/mads/rdf/v1#hasCloseExternalAuthority> <http://www.wikidata.org/entity/Q5580> .
+        <http://id.loc.gov/authorities/names/n79118011> <http://www.loc.gov/mads/rdf/v1#identifiesRWO> <http://id.loc.gov/rwo/agents/n79118011> .
+        <http://id.loc.gov/rwo/agents/n79118011> <http://www.loc.gov/mads/rdf/v1#birthDate> "1471-05-21" .
+        <http://id.loc.gov/rwo/agents/n79118011> <http://www.loc.gov/mads/rdf/v1#deathDate> "1528-04-06" .
+        <http://id.loc.gov/rwo/agents/n79118011> <http://www.loc.gov/mads/rdf/v1#occupation> <http://id.loc.gov/authorities/subjects/sh85104291> .
+        <http://id.loc.gov/authorities/names/n50063091> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#CorporateName> .
+        <http://id.loc.gov/authorities/names/n50063091> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Tate Gallery" .
+        <http://id.loc.gov/authorities/names/n79021164> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Geographic> .
+        <http://id.loc.gov/authorities/names/n79021164> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Siena (Italy)" .
+        <http://id.loc.gov/authorities/names/n80000000> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Title> .
+        <http://id.loc.gov/authorities/names/n80000000> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Some anonymous work" .
+        """;
+
+    [PostgresFact]
+    public async Task Loc_names_load_with_headings_split_variants_dates_and_usable_links()
+    {
+        var result = await new LocNamesLoader(pg.Store).LoadAsync(NTriples.ReadText(LocSample), "test-sample");
+        Assert.Equal(3, result.Records); // the title heading is left out
+        var durer = (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/names/n79118011"))!;
+        Assert.Equal("loc", durer.Source);
+        Assert.Equal("Person", durer.Type);
+        Assert.Equal("Dürer, Albrecht, 1471-1528", durer.Label);
+        Assert.Contains("Dürer, Albrecht", durer.Labels);
+        Assert.Contains("Durero, Alberto", durer.Labels);
+        Assert.Equal(1471, durer.Lifespan!.BeginEarliest!.Value.Year);
+        Assert.Equal(1528, durer.Lifespan.EndLatest!.Value.Year);
+        Assert.Equal(["http://viaf.org/viaf/54146219", "http://www.wikidata.org/entity/Q5580"], durer.SameAs.OrderBy(x => x));
+        Assert.Contains("sh85104291", durer.DataJson);
+        Assert.Equal("Group", (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/names/n50063091"))!.Type);
+        Assert.Equal("Place", (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/names/n79021164"))!.Type);
+        Assert.Null(await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/names/n80000000"));
+        Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "loc", "Person"));
+        Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["siena"], "loc", "Place")); // the qualifier drops out of the comparison key
     }
 
     [PostgresFact]

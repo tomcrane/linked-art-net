@@ -123,6 +123,14 @@ vocab.getty.edu on 2026-10-18 and the test fixture is a sliver of ULAN in those 
 Credit line, as Getty asks: "Contains information from the J. Paul Getty Trust, Getty Research Institute, Union
 List of Artist Names, which is made available under the ODC Attribution License" (likewise for the AAT and TGN).
 
+`LocNamesLoader` does the same for the Library of Congress Name Authority File, from the MADS/RDF N-Triples bulk
+download (7 GB gzipped, streamed without unpacking): personal, corporate, conference, family and geographic headings
+become records typed Person, Group, Event, Group and Place; the authoritative label and the variants are indexed,
+and a personal heading's embedded dates ("Dürer, Albrecht, 1471-1528") are split off so the name alone is a key and
+the dates become the lifespan when the real-world-object node has none; VIAF and Wikidata links come through as
+sameAs (VIAF's `sourceID` form, which is LoC's own id reflected back, is dropped). The shared staging lives in
+`TripleStaging`. Credit: Library of Congress Name Authority File.
+
 ### 8.2 Reading a string (`Reconciliation/`)
 
 A `ContextRule` per context (the field a string came from) says what classes it may name and which agent-string

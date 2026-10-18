@@ -47,7 +47,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     /// <summary>Drops every table of the store. For disposable test databases only.</summary>
     internal async Task DropAllAsync(CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version, getty_staging cascade");
+        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version, getty_staging, triple_staging cascade");
         await cmd.ExecuteNonQueryAsync(ct);
     }
 

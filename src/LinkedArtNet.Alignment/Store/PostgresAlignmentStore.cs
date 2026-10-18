@@ -462,8 +462,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     public Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelsAsync(IReadOnlyCollection<string> keys, string? source = null, string? type = null, int limit = 50, CancellationToken ct = default)
     {
         if (keys.Count == 0) return Task.FromResult<IReadOnlyList<AuthorityRecord>>([]);
-        var sql = $"select {AuthorityColumns} from authority_records a where a.normalised_labels && @keys"
-            + (source is null ? "" : " and a.source = @source") + (type is null ? "" : " and a.type = @type") + " order by a.uri limit @limit";
+        // the limit is applied before the ordering so the planner takes the label index rather than walking the primary key in order
+        var sql = $"select {AuthorityColumns} from (select * from authority_records x where x.normalised_labels && @keys"
+            + (source is null ? "" : " and x.source = @source") + (type is null ? "" : " and x.type = @type") + " limit @limit) a order by a.uri";
         return QueryAuthoritiesAsync(sql, cmd => { Add(cmd, "keys", keys.ToArray()); if (source is not null) Add(cmd, "source", source); if (type is not null) Add(cmd, "type", type); Add(cmd, "limit", limit); }, ct);
     }
 

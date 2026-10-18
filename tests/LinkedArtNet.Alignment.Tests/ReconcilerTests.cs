@@ -33,6 +33,7 @@ public class NameMatcherTests
     [InlineData("smith, john", "smyth, john", 0.82)] // one letter off: edit similarity, below acceptance and above review
     [InlineData("tate gallery", "national gallery", 0.267)]
     [InlineData("rembrandt", "vermeer", 0.0)]
+    [InlineData("w e h", "hurcomb, w e", 0.4)] // all initials on one side: nothing to anchor on (word overlap only), and no crash
     public void Scores_rank_exact_folded_reordered_initials_then_fuzzy(string a, string b, double expected) =>
         Assert.Equal(expected, NameMatcher.Score(a, b), 2);
 

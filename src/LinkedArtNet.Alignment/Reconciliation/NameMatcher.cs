@@ -84,9 +84,9 @@ public static class NameMatcher
     {
         var (shorter, longer) = a.Length <= b.Length ? (a, b) : (b, a);
         if (shorter.Length < 2 || !shorter.Any(t => t.Length == 1)) return false;
-        // the surname must appear in full on both sides
-        var surname = shorter.First(t => t.Length > 1);
-        if (!longer.Contains(surname, StringComparer.Ordinal)) return false;
+        // the surname must appear in full on both sides; a side that is all initials has nothing to anchor on
+        var surname = shorter.FirstOrDefault(t => t.Length > 1);
+        if (surname is null || !longer.Contains(surname, StringComparer.Ordinal)) return false;
         var rest = longer.Where(t => t != surname).ToList();
         foreach (var t in shorter.Where(t => t != surname))
         {

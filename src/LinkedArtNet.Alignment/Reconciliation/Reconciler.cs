@@ -61,6 +61,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 {
     private readonly ReconcilerOptions _options = options ?? new ReconcilerOptions();
     private readonly Dictionary<string, AgentStringParser> _parsers = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, long> _timings = new(StringComparer.Ordinal);
+
+    private void Time(string stage, System.Diagnostics.Stopwatch sw) { _timings[stage] = _timings.GetValueOrDefault(stage) + sw.ElapsedMilliseconds; sw.Restart(); }
+
+    /// <summary>Milliseconds spent per stage so far (reading, overrides, store lookups, each source, scoring and grouping, commits), for finding where the time goes.</summary>
+    public IReadOnlyDictionary<string, long> Timings => _timings;
+
+    public string TimingsText => string.Join(", ", _timings.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value / 1000.0:0.0}s"));
 
     public ReconcilerOptions Options => _options;
 
@@ -89,20 +97,25 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default)
     {
         var evaluation = await EvaluateAsync(dataset, s, includeStore: true, ct);
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         await CommitAsync(dataset, s, evaluation, runId, ct);
+        Time("commit", sw);
         return evaluation.Outcome;
     }
 
     /// <summary>Reads the string and finds what it would be decided as, writing nothing. With <paramref name="includeStore"/> false the store's own entities are not consulted, so an old decision cannot answer itself.</summary>
     public async Task<Evaluation> EvaluateAsync(string dataset, SourceString s, bool includeStore = true, CancellationToken ct = default)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         var rule = _options.Contexts.TryGetValue(s.Context, out var r) ? r : _options.DefaultContext;
         var reading = StringReading.Read(s, rule, ParserFor(rule.AgentProfile));
+        Time("read", sw);
         if (reading.Key.Length == 0) return new Evaluation(Outcome.Skipped, reading, []);
 
         // 1. overrides, by the whole string and by the name part
         var over = await store.OverrideForAsync(dataset, s.Context, s.Normalised, ct);
         if (over is null && reading.Key != s.Normalised) over = await store.OverrideForAsync(dataset, s.Context, reading.Key, ct);
+        Time("overrides", sw);
         if (over is not null) return new Evaluation(Outcome.Overridden, reading, [], Override: over);
 
         // 2. the store: entities already minted whose labels match
@@ -119,6 +132,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 var labels = e.Label is null ? e.Labels : e.Labels.Prepend(e.Label);
                 candidates.Add(new Candidate(e.Id, "store", e.Label, e.Class, e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, e.Status == EntityStatus.Provisional));
             }
+            Time("store", sw);
             // one acceptable entity, or one acceptable entity with authority behind it among provisional lookalikes
             var storeScored = Score(reading, candidates).Where(c => !c.Veto && c.Score >= _options.AcceptScore).ToList();
             var firm = storeScored.Where(c => !c.Candidate.Provisional).ToList();
@@ -129,9 +143,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
         // 3. local indexes (remote sources come in step 3b)
         foreach (var source in sources.Where(x => !x.IsRemote))
+        {
             candidates.AddRange(await source.FindAsync(reading, ct));
+            Time("source:" + source.Name, sw);
+        }
 
         var groups = Groups(Score(reading, candidates));
+        Time("score", sw);
         var top = groups.FirstOrDefault();
         // a rival group counts as a disagreement only when something other than a provisional lookalike is in it
         var second = groups.Skip(1).FirstOrDefault(g => g.Members.Any(m => !m.Veto && !m.Candidate.Provisional));

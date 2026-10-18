@@ -109,6 +109,7 @@ switch (args[0])
         var report = await reconciler.RunAsync(dataset, limit, run.Id, progress);
         await store.FinishRunAsync(run.Id, System.Text.Json.JsonSerializer.Serialize(report), report.ToString());
         Console.WriteLine($"run {run.Id}: {report}");
+        Console.WriteLine($"time by stage: {reconciler.TimingsText}");
         return 0;
     }
 

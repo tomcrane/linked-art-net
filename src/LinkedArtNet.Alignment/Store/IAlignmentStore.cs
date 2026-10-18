@@ -27,6 +27,9 @@ public interface IAlignmentStore
     /// <summary>A page of the dataset's entities by id, optionally only those with an equivalent from one source ("ulan"), starting after an id; merged entities are left out.</summary>
     Task<IReadOnlyList<Entity>> ListEntitiesAsync(string dataset, string? equivalentSource = null, string? afterId = null, int limit = 500, CancellationToken ct = default);
 
+    /// <summary>Entities of the dataset with a label containing the normalised text; merged entities are left out.</summary>
+    Task<IReadOnlyList<Entity>> FindEntitiesByLabelContainingAsync(string dataset, string containing, int limit = 20, CancellationToken ct = default);
+
     /// <summary>Entities with this authority URI among their equivalents.</summary>
     Task<IReadOnlyList<Entity>> FindEntitiesByEquivalentAsync(string uri, CancellationToken ct = default);
 
@@ -35,6 +38,24 @@ public interface IAlignmentStore
 
     /// <summary>Adds or replaces an equivalent; an entity with any equivalent that is still provisional becomes aligned.</summary>
     Task AddEquivalentAsync(string entityId, Equivalent equivalent, CancellationToken ct = default);
+
+    /// <summary>Removes one equivalent. True when it was there.</summary>
+    Task<bool> RemoveEquivalentAsync(string entityId, string uri, CancellationToken ct = default);
+
+    /// <summary>A page of the dataset's entities for browsing: optionally of one status and class, by id after a cursor. Merged entities are left out.</summary>
+    Task<IReadOnlyList<Entity>> BrowseEntitiesAsync(string dataset, EntityStatus? status = null, EntityClass? cls = null, string? afterId = null, int limit = 50, CancellationToken ct = default);
+
+    /// <summary>Strings whose valid decision points at the entity, with those decisions.</summary>
+    Task<IReadOnlyList<DecidedString>> StringsForEntityAsync(string entityId, int limit = 200, CancellationToken ct = default);
+
+    /// <summary>Strings of the dataset whose normalised text contains the word.</summary>
+    Task<IReadOnlyList<SourceString>> FindStringsAsync(string dataset, string containing, int limit = 200, CancellationToken ct = default);
+
+    /// <summary>Invalidates a string's valid decision with no replacement, so it is undecided again. True when there was one.</summary>
+    Task<bool> ReopenStringAsync(long stringId, CancellationToken ct = default);
+
+    /// <summary>Removes provisional entities of the dataset that no valid decision points at, nothing merged into and that have no equivalents: the leavings of re-pointed strings. Returns how many went.</summary>
+    Task<int> RemoveOrphanProvisionalsAsync(string dataset, CancellationToken ct = default);
 
     /// <summary>Merges the loser into the survivor: equivalents move, valid decisions re-point, the loser is marked merged and keeps resolving.</summary>
     Task MergeAsync(string loserId, string survivorId, string? reviewer, CancellationToken ct = default);
@@ -83,6 +104,9 @@ public interface IAlignmentStore
     // ---- overrides
 
     Task PutOverrideAsync(Override item, CancellationToken ct = default);
+
+    /// <summary>Every override of the dataset.</summary>
+    Task<IReadOnlyList<Override>> OverridesAsync(string dataset, CancellationToken ct = default);
 
     /// <summary>Removes one override (context null means the any-context one). True when something was removed.</summary>
     Task<bool> RemoveOverrideAsync(string dataset, string? context, string normalised, CancellationToken ct = default);

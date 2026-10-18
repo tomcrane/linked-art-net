@@ -1,0 +1,52 @@
+@page "/p/{dataset}/variants"
+@model VariantsModel
+@{ ViewData["Title"] = "Variants"; }
+<h1>Variants</h1>
+<p class="muted">Every spelling of one thing on one screen. Type a string or a word; the strings containing its most distinctive word are listed by the entity they currently resolve to. Tick the ones that are one thing, say which entity, and attach the ids you know.</p>
+@if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
+<form method="get" class="row" style="gap:.5rem">
+    <input type="search" name="seed" value="@Model.Seed" placeholder="Thos. Agnew &amp; Sons Ltd" style="flex:1" autofocus />
+    <input type="search" name="ids" value="@Model.Ids" placeholder="Search the indexes for ids (optional)" style="flex:1" />
+    <button type="submit">Show</button>
+</form>
+@if (Model.Seed is not null)
+{
+    <p class="small muted">Word searched: <code>@Model.Word</code> · @Model.Groups.Sum(g => g.Strings.Count) strings in @Model.Groups.Count group(s)</p>
+    <form method="post" asp-page-handler="Cluster">
+        <input type="hidden" name="seed" value="@Model.Seed" />
+        @foreach (var g in Model.Groups)
+        {
+            <div class="card">
+                <div class="row">
+                    @if (g.Entity is null) { <strong class="muted">undecided</strong> }
+                    else { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(g.Entity.Id)">@g.Entity.Label</a></strong> <span class="tag">@g.Entity.Status.ToString().ToLowerInvariant()</span> @foreach (var q in g.Entity.Equivalents.Take(4)) { <span class="tag src">@q.Source</span> } <label class="inline small" style="margin:0"><input type="radio" name="entity" value="@g.Entity.Id" /> cluster into this entity</label> }
+                    <span class="small muted">@g.Strings.Count string(s)</span>
+                </div>
+                @foreach (var s in g.Strings)
+                {
+                    <div class="row small" style="margin-top:.25rem"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="strings" value="@s.String.Id" /> @s.String.Raw</label> <span class="muted">@s.String.Context ×@s.String.Occurrences@(s.Decision is null ? "" : $" · {s.Decision.Method}")</span></div>
+                }
+            </div>
+        }
+        <div class="card">
+            <h3 style="margin-top:0">Cluster the ticked strings</h3>
+            <div class="grid">
+                <div>
+                    <label>Into an existing entity: pick one above, or a new local authority with this label</label>
+                    <input type="text" name="newLabel" placeholder="Thomas Agnew &amp; Sons" />
+                    <label for="note">Note</label>
+                    <input type="text" id="note" name="note" placeholder="London dealers, from 1817; all the sale-catalogue spellings" />
+                </div>
+                <div>
+                    <label>Identifiers to attach (from the index search, or typed)</label>
+                    @foreach (var r in Model.IdCandidates)
+                    {
+                        <div class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="externalUris" value="@r.Uri" /> <span class="tag src">@r.Source</span> @r.Label @r.Lifespan?.Text <a href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></label></div>
+                    }
+                    <input type="text" name="externalUris" placeholder="http://vocab.getty.edu/ulan/… (typed)" />
+                </div>
+            </div>
+            <div class="actions"><button type="submit">Cluster</button></div>
+        </div>
+    </form>
+}

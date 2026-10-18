@@ -1,0 +1,94 @@
+@page "/p/{dataset}/entity"
+@model EntityModel
+@{
+    var v = Model.View;
+    var e = v.Entity;
+    ViewData["Title"] = e.Label ?? "Entity";
+    var back = Url.Page("/Projects/Entity", new { dataset = Model.Dataset, id = e.Id });
+}
+@if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
+<p class="small muted"><a href="/p/@Model.Dataset/entities">Entities</a> › <code>@e.Id</code></p>
+<h1 style="margin-top:0">@e.Label <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span></h1>
+<div class="grid">
+    <div>
+        <dl class="facts">
+            @if (e.Labels.Any(l => l != e.Label)) { <dt>Also</dt><dd>@string.Join(" · ", e.Labels.Where(l => l != e.Label))</dd> }
+            @if (e.Lifespan?.Text is { } life) { <dt>Dates</dt><dd>@life</dd> }
+            @if (e.Nationalities.Count > 0) { <dt>Nationality</dt><dd>@string.Join(", ", e.Nationalities)</dd> }
+            @if (e.Roles.Count > 0) { <dt>Roles</dt><dd>@string.Join(", ", e.Roles)</dd> }
+            <dt>Created</dt><dd>@e.CreatedAt.ToString("yyyy-MM-dd")@(e.RunId is null ? "" : $" in run {e.RunId}")</dd>
+        </dl>
+
+        <h2>Identifiers</h2>
+        @if (e.Equivalents.Count == 0) { <p class="muted">None: a local authority.</p> }
+        <table>
+            <tbody>
+            @foreach (var q in e.Equivalents)
+            {
+                v.Records.TryGetValue(q.Uri, out var record);
+                <tr>
+                    <td><span class="tag src">@q.Source</span></td>
+                    <td><a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>@if (record is not null) { <div class="small muted">@record.Label @record.Lifespan?.Text</div> }</td>
+                    <td class="small muted">@q.Method @q.Confidence.ToString("0.00")</td>
+                    <td><form method="post" asp-page-handler="RemoveEquivalent" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@q.Uri" /><button type="submit" class="quiet">Remove</button></form></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <form method="post" asp-page-handler="AddEquivalent" class="row" style="gap:.4rem; margin-top:.5rem">
+            <input type="hidden" name="id" value="@e.Id" />
+            <input type="text" name="uri" placeholder="http://vocab.getty.edu/ulan/… or another authority URI" style="flex:1" />
+            <button type="submit" class="secondary">Add identifier</button>
+        </form>
+
+        <h2>Strings that resolve here (@v.Strings.Count)</h2>
+        <form method="post" asp-page-handler="Reopen">
+            <input type="hidden" name="id" value="@e.Id" />
+            <table>
+                <thead><tr><th></th><th>String</th><th>Context</th><th>Decided</th></tr></thead>
+                <tbody>
+                @foreach (var s in v.Strings)
+                {
+                    <tr><td><input type="checkbox" name="strings" value="@s.String.Id" aria-label="select" /></td><td>@s.String.Raw</td><td class="small">@s.String.Context ×@s.String.Occurrences</td><td class="small muted">@s.Decision.Method@(s.Decision.Reviewer is null ? "" : $" · {s.Decision.Reviewer}")</td></tr>
+                }
+                </tbody>
+            </table>
+            @if (v.Strings.Count > 0) { <div class="actions"><button type="submit" class="quiet" title="Take the selected strings away from this entity; they are undecided again and the next reconcile reconsiders them">Reopen selected strings</button></div> }
+        </form>
+    </div>
+    <div>
+        <form method="post" asp-page-handler="Label" class="card">
+            <input type="hidden" name="id" value="@e.Id" />
+            <h3 style="margin-top:0">Label</h3>
+            <input type="text" name="label" value="@e.Label" />
+            <div class="actions"><button type="submit" class="secondary">Save label</button></div>
+        </form>
+        @if (e.Status != EntityStatus.Confirmed)
+        {
+            <form method="post" asp-page-handler="Confirm" class="card">
+                <input type="hidden" name="id" value="@e.Id" />
+                <h3 style="margin-top:0">Confirm</h3>
+                <p class="small muted">A person vouches for this entity as it stands: as a local authority if it has no identifiers, or with the identifiers it has.</p>
+                <input type="text" name="note" placeholder="Note (optional)" />
+                <div class="actions"><button type="submit">Confirm</button></div>
+            </form>
+        }
+        <form method="get" class="card">
+            <input type="hidden" name="id" value="@e.Id" />
+            <h3 style="margin-top:0">Merge into another entity</h3>
+            <div class="row"><input type="search" name="merge" value="@Model.Merge" placeholder="Search for the survivor" style="flex:1" /><button type="submit" class="secondary">Search</button></div>
+            @foreach (var other in Model.MergeCandidates)
+            {
+                <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@other.Label</strong> <span class="tag">@other.Status.ToString().ToLowerInvariant()</span> <span class="small muted">@string.Join(" ", other.Equivalents.Select(q => q.Source))</span></div>
+                    <form method="post" asp-page-handler="Merge" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="survivor" value="@other.Id" /><button type="submit">Merge into this</button></form></div>
+            }
+        </form>
+        <form method="post" asp-page-handler="Note" class="card">
+            <input type="hidden" name="id" value="@e.Id" />
+            <h3 style="margin-top:0">Notes</h3>
+            @foreach (var n in v.Notes) { <p class="small"><strong>@n.Author</strong> <span class="muted">@n.CreatedAt.ToString("yyyy-MM-dd")</span><br />@n.Text</p> }
+            <input type="text" name="text" placeholder="Add a note" />
+            <div class="actions"><button type="submit" class="quiet">Add note</button></div>
+        </form>
+    </div>
+</div>

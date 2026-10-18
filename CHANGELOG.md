@@ -51,6 +51,10 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   `undo-run` removes a run's equivalents and voted entities; one staging table per load, retired records removed
   on reload; EDTF years in LoC; `reindex-labels`; report CSVs neutralise formula characters; typed-name sign-in only
   in Development from the local machine.
+- Workbench step 2 (first cut): entities (browse, search, labels, identifiers, strings with reopen, confirm, merge,
+  notes), variants (a seed's spellings grouped by entity, clustered into one with overrides and identifiers), and
+  the export of a project's overrides in the pmc-lux JSON shape; `CurationService`; `tools/Align export-overrides`
+  and `cleanup-orphans`; the reconciler queues a vote whose ids already sit on two entities.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

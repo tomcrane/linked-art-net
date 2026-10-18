@@ -194,6 +194,23 @@ switch (args[0])
         return 0;
     }
 
+    case "cleanup-orphans":
+    {
+        var removed = await store.RemoveOrphanProvisionalsAsync(dataset);
+        Console.WriteLine($"dataset {dataset}: {removed} orphaned provisional entities removed");
+        return 0;
+    }
+
+    case "export-overrides":
+    {
+        var project = await store.GetProjectAsync(dataset);
+        var curation = new CurationService(store, scheme, new Reconciler(store, scheme, [], (project is null ? ProjectManifest.PmcDefault : ProjectManifest.FromJson(project.ManifestJson)).ToOptions()));
+        var json = await curation.ExportOverridesJsonAsync(dataset);
+        var outPath = Option("--out");
+        if (outPath is null) Console.WriteLine(json); else { await File.WriteAllTextAsync(outPath, json); Console.WriteLine($"written to {Path.GetFullPath(outPath)}"); }
+        return 0;
+    }
+
     case "reindex-labels":
     {
         await store.InitialiseAsync();
@@ -242,6 +259,8 @@ static void Usage() => Console.WriteLine(
                                              flagged ones (--all includes the clean gains too)
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
       reindex-labels                         recompute every entity's and authority record's lookup keys after the key rules change
+      cleanup-orphans [--dataset]            remove provisional entities nothing points at any more
+      export-overrides [--dataset] [--out f] the project's overrides in the pmc-lux JSON shape
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
         [--reuse-by-equivalent] [--only-referenced] [--version v]
                                              for a second copy of those tables: map authorities onto entities that share

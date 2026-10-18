@@ -168,10 +168,24 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var topIsFirm = top is not null && top.Members.Any(m => !m.Veto && !m.Candidate.Provisional);
         var second = live.Skip(1).FirstOrDefault(g => !topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional));
         if (top is not null && top.Score >= _options.AcceptScore && !truncated && Carries(reading, top) && (second is null || second.Score < _options.AcceptScore))
+        {
+            // the group's ids already on two different entities of ours means the store disagrees with itself: review, not a vote onto the first
+            if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
             return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top);
+        }
         if (top is not null && top.Score >= _options.ReviewScore)
             return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
         return new Evaluation(_options.MintWhenNothingFound ? Outcome.Minted : Outcome.Deferred, reading, groups, Truncated: truncated);
+    }
+
+    /// <summary>How many distinct live entities of the dataset hold any of the URIs as an equivalent.</summary>
+    private async Task<int> HoldersAsync(string dataset, IReadOnlyList<string> uris, CancellationToken ct)
+    {
+        var holders = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var uri in uris.Where(u => !scheme.Owns(u)))
+            foreach (var e in await store.FindEntitiesByEquivalentAsync(uri, ct))
+                if (e.Dataset == dataset && e.MergedInto is null) holders.Add(e.Id);
+        return holders.Count;
     }
 
     /// <summary>A store entity as a candidate: its lifespan from itself or, when it has none (an imported entity, say), from the authority records behind its equivalents; and whether it is a lookalike awaiting review.</summary>

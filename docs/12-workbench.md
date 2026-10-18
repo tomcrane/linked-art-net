@@ -161,6 +161,13 @@ Anthropic key for proposals) come from the environment, as everywhere else.
    name `local` an owner. Tests in `tests/LinkedArtNet.Workbench.Tests` drive the pages over HTTP against a
    throwaway PostgreSQL.*
 2. **Entities and variants**: browse, search, merge, overrides, the inline index search, the pmc-lux export.
+   *Built 2026-10-18 (first cut): `/p/{dataset}/entities` with search and filters; `/p/{dataset}/entity` with
+   labels, identifiers (add a known or recognised authority URI, remove one), the strings that resolve to the
+   entity with reopen, confirm, merge into another entity found by search, notes; `/p/{dataset}/variants` lists the
+   strings containing a seed's distinctive word grouped by what they resolve to, and clusters the ticked ones into
+   an existing entity or a new confirmed local authority, attaching identifiers from an inline index search, with an
+   override per spelling; `/p/{dataset}/export/overrides.json` writes the project's overrides in the pmc-lux shape.
+   `CurationService` in the library carries the actions; `tools/Align export-overrides` and `cleanup-orphans`.*
 3. **Jobs, runs and indexes**: the background service, progress, undo, the comparison table for shadow runs, the
    audit as a review list, the index loads with download.
 4. **Projects**: the wizard and the manifest, together with the pipeline runner (doc 10, step 4), PMC first.

@@ -38,7 +38,7 @@
             <dt>Authority records</dt><dd>@Model.Counts.AuthorityRecords.ToString("N0") <span class="muted small">(shared across projects)</span></dd>
             <dt>Identifiers</dt><dd><code>@Model.Project.Project.IdentifierBase</code></dd>
         </dl>
-        @if (Model.Can(ProjectRole.Owner)) { <p><a href="/p/@Model.Dataset/members">Members</a></p> }
+        <p><a href="/p/@Model.Dataset/entities">Browse entities</a> · <a href="/p/@Model.Dataset/variants">Cluster variants</a> · <a href="/p/@Model.Dataset/export/overrides.json">Export overrides (pmc-lux JSON)</a>@if (Model.Can(ProjectRole.Owner)) { <text> · <a href="/p/@Model.Dataset/members">Members</a></text> }</p>
     </div>
 </div>
 

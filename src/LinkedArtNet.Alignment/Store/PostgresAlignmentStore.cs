@@ -113,6 +113,15 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             + " order by e.id limit @limit",
             cmd => { Add(cmd, "dataset", dataset); if (afterId is not null) Add(cmd, "after", afterId); if (equivalentSource is not null) Add(cmd, "source", equivalentSource); Add(cmd, "limit", limit); }, ct);
 
+    public Task<IReadOnlyList<Entity>> FindEntitiesByLabelContainingAsync(string dataset, string containing, int limit = 20, CancellationToken ct = default)
+    {
+        if (containing.Length == 0) return Task.FromResult<IReadOnlyList<Entity>>([]);
+        var pattern = "%" + containing.Replace(@"\", @"\\").Replace("%", @"\%").Replace("_", @"\_") + "%";
+        return QueryEntitiesAsync(
+            $"select {EntityColumns} from entities e where e.dataset = @dataset and e.merged_into is null and exists (select 1 from unnest(e.normalised_labels) l where l like @pattern) order by e.label limit @limit",
+            cmd => { Add(cmd, "dataset", dataset); Add(cmd, "pattern", pattern); Add(cmd, "limit", limit); }, ct);
+    }
+
     public Task<IReadOnlyList<Entity>> FindEntitiesByEquivalentAsync(string uri, CancellationToken ct = default) =>
         QueryEntitiesAsync($"select {EntityColumns} from entities e join entity_equivalents q on q.entity_id = e.id where q.uri = @uri order by e.created_at", cmd => Add(cmd, "uri", uri), ct);
 
@@ -333,6 +342,68 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await using var cmd = _db.CreateCommand("delete from authority_records where source = @source and fetched_at < @since");
         Add(cmd, "source", source); Add(cmd, "since", notFetchedSince.ToUniversalTime());
         cmd.CommandTimeout = 0;
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<bool> RemoveEquivalentAsync(string entityId, string uri, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("delete from entity_equivalents where entity_id = @e and uri = @uri");
+        Add(cmd, "e", entityId); Add(cmd, "uri", uri);
+        return await cmd.ExecuteNonQueryAsync(ct) > 0;
+    }
+
+    public Task<IReadOnlyList<Entity>> BrowseEntitiesAsync(string dataset, EntityStatus? status = null, EntityClass? cls = null, string? afterId = null, int limit = 50, CancellationToken ct = default) =>
+        QueryEntitiesAsync(
+            $"select {EntityColumns} from entities e where e.dataset = @dataset and e.merged_into is null"
+            + (status is null ? "" : " and e.status = @status") + (cls is null ? "" : " and e.class = @class") + (afterId is null ? "" : " and e.id > @after")
+            + " order by e.id limit @limit",
+            cmd => { Add(cmd, "dataset", dataset); if (status is not null) Add(cmd, "status", Status(status.Value)); if (cls is not null) Add(cmd, "class", cls.ToString()!); if (afterId is not null) Add(cmd, "after", afterId); Add(cmd, "limit", limit); }, ct);
+
+    public async Task<IReadOnlyList<DecidedString>> StringsForEntityAsync(string entityId, int limit = 200, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            $"select {StringColumns}, {DecisionColumns} from decisions d join source_strings s on s.id = d.source_string_id where d.entity_id = @e and d.valid order by s.context, s.raw limit @limit");
+        Add(cmd, "e", entityId); Add(cmd, "limit", limit);
+        var list = new List<DecidedString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+        {
+            var s = ReadString(r);
+            var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18), r.IsDBNull(19) ? null : r.GetInt64(19));
+            list.Add(new DecidedString(s, d));
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<SourceString>> FindStringsAsync(string dataset, string containing, int limit = 200, CancellationToken ct = default)
+    {
+        var pattern = "%" + containing.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_") + "%";
+        await using var cmd = _db.CreateCommand($"select {StringColumns} from source_strings s where s.dataset = @dataset and s.normalised like @pattern order by s.raw limit @limit");
+        Add(cmd, "dataset", dataset); Add(cmd, "pattern", pattern); Add(cmd, "limit", limit);
+        var list = new List<SourceString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(ReadString(r));
+        return list;
+    }
+
+    public async Task<bool> ReopenStringAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("update decisions set valid = false where source_string_id = @s and valid");
+        Add(cmd, "s", stringId);
+        return await cmd.ExecuteNonQueryAsync(ct) > 0;
+    }
+
+    public async Task<int> RemoveOrphanProvisionalsAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            delete from entities e where e.dataset = @dataset and e.status = 'provisional' and e.merged_into is null
+              and not exists (select 1 from decisions d where d.entity_id = e.id and d.valid)
+              and not exists (select 1 from entities m where m.merged_into = e.id)
+              and not exists (select 1 from entity_equivalents q where q.entity_id = e.id)
+              and not exists (select 1 from decisions d where d.entity_id = e.id)
+            """);
+        Add(cmd, "dataset", dataset);
         return await cmd.ExecuteNonQueryAsync(ct);
     }
 
@@ -571,6 +642,16 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             """);
         Add(cmd, "dataset", item.Dataset); Add(cmd, "context", item.Context ?? ""); Add(cmd, "normalised", item.Normalised); Add(cmd, "target", item.Target); Add(cmd, "source", item.Source); Add(cmd, "note", item.Note);
         await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<Override>> OverridesAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select dataset, context, normalised, target, source, note from overrides where dataset = @dataset order by normalised");
+        Add(cmd, "dataset", dataset);
+        var list = new List<Override>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) { var c = r.GetString(1); list.Add(new Override(r.GetString(0), c.Length == 0 ? null : c, r.GetString(2), r.GetString(3), r.GetString(4), Str(r, 5))); }
+        return list;
     }
 
     public async Task<bool> RemoveOverrideAsync(string dataset, string? context, string normalised, CancellationToken ct = default)

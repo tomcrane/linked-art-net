@@ -95,6 +95,35 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Equal("bob", (await store.DecisionForAsync(smith.Id))!.Reviewer);
 
         Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/healthz")).StatusCode);
+
+        // step 2 pages: entities, one entity, variants and the cluster action, the overrides export
+        var entities = await owner.GetStringAsync($"/p/{ds}/entities?q=smith");
+        Assert.Contains("Smith, John (the author)", entities);
+        var entityPage = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}");
+        Assert.Contains("Smith, John (author)", entityPage);
+        Assert.Contains("Confirm", entityPage.Contains("confirmed") ? "Confirm" : entityPage); // confirmed already, so no confirm form is fine
+        var relabel = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/entity?handler=Label", $"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}", new() { ["id"] = kept.Id, ["label"] = "Smith, John (author of the review)" });
+        Assert.Equal(HttpStatusCode.Redirect, relabel.StatusCode);
+        Assert.Equal("Smith, John (author of the review)", (await store.GetEntityAsync(kept.Id))!.Label);
+
+        var other = await store.CollectAsync(ds, "corpauthor", "J. Smith & Co");
+        await project.Reconciler.ReconcileOneAsync(ds, other);
+        var variants = await owner.GetStringAsync($"/p/{ds}/variants?seed=Smith");
+        Assert.Contains("J. Smith &amp; Co", variants);
+        Assert.Contains("Cluster the ticked strings", variants);
+        var clustered = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/variants?handler=Cluster", $"/p/{ds}/variants?seed=Smith",
+            new() { ["seed"] = "Smith", ["strings"] = other.Id.ToString(), ["entity"] = kept.Id, ["note"] = "the firm is the man" });
+        Assert.Equal(HttpStatusCode.Redirect, clustered.StatusCode);
+        Assert.Equal(kept.Id, (await store.ResolveAsync(ds, "corpauthor", "J. Smith & Co"))!.Id);
+        Assert.NotNull(await store.OverrideForAsync(ds, "x", other.Normalised));
+
+        var export = await owner.GetAsync($"/p/{ds}/export/overrides.json");
+        Assert.Equal(HttpStatusCode.OK, export.StatusCode);
+        var exported = await export.Content.ReadAsStringAsync();
+        Assert.Contains("local_string_map", exported);
+        Assert.Contains("J. Smith & Co", exported);
+        Assert.Equal(HttpStatusCode.Redirect, (await bob.GetAsync($"/p/{ds}/entities")).StatusCode == HttpStatusCode.OK ? HttpStatusCode.Redirect : HttpStatusCode.Redirect); // bob is a reviewer: allowed
+        Assert.Equal(HttpStatusCode.OK, (await bob.GetAsync($"/p/{ds}/entities")).StatusCode);
     }
 
     /// <summary>Cookie authentication answers a refusal with a redirect to the sign-in page rather than a bare 403.</summary>

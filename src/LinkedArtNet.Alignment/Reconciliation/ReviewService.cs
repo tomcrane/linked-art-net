@@ -84,6 +84,10 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         foreach (var key in NameMatcher.Keys(text))
             foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, null, ct))
                 if (found.Count < limit) found[e.Id] = e;
+        // then anything whose labels contain the text, for a single word or a part of a name
+        if (found.Count < limit)
+            foreach (var e in await store.FindEntitiesByLabelContainingAsync(dataset, StringKey.Normalise(text), limit - found.Count, ct))
+                found.TryAdd(e.Id, e);
         return found.Values.ToList();
     }
 
@@ -181,7 +185,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         // the override this one replaces is kept in the evidence so an undo can put it back
         var previous = await store.OverrideForAsync(dataset, "", decided.String.Normalised, ct);
         previous = previous is { Context: null } ? previous : null;
-        await store.PutOverrideAsync(new Override(dataset, null, decided.String.Normalised, entity.Id, "workbench:" + reviewer, note ?? $"\"{decided.String.Raw}\" → {targetUri}"), ct);
+        await store.PutOverrideAsync(new Override(dataset, null, decided.String.Normalised, entity.Id, "workbench:" + reviewer, $"\"{decided.String.Raw}\" → {targetUri}" + (note is null ? "" : $" ({note})")), ct);
         await store.DecideAsync(stringId, entity.Id, DecisionMethod.Override, Evidence("override", reading, new { target = targetUri, entity = entity.Id, note, overrideKey = decided.String.Normalised, previousOverride = previous is null ? null : new { previous.Target, previous.Source, previous.Note } }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return entity;

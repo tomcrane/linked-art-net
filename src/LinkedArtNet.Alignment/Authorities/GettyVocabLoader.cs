@@ -60,8 +60,26 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
 
     public static string SourceName(GettyVocabulary v) => v switch { GettyVocabulary.Ulan => "ulan", GettyVocabulary.Aat => "aat", _ => "tgn" };
 
+    /// <summary>Loads one file, or every <c>.nt</c>/<c>.nt.gz</c> in a directory: a Getty zip unpacks to several files whose statements about one concept must be staged together.</summary>
     public Task<GettyLoadResult> LoadAsync(string path, GettyVocabulary vocabulary, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
-        => LoadAsync(NTriples.Read(path), vocabulary, sourceVersion ?? Path.GetFileName(path), progress, ct);
+        => LoadAsync(Files(path), vocabulary, sourceVersion, progress, ct);
+
+    public Task<GettyLoadResult> LoadAsync(IReadOnlyList<string> paths, GettyVocabulary vocabulary, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
+    {
+        if (paths.Count == 0) throw new ArgumentException("No N-Triples files to load.", nameof(paths));
+        var version = sourceVersion ?? (paths.Count == 1 ? Path.GetFileName(paths[0]) : Path.GetFileName(Path.GetDirectoryName(paths[0]) ?? paths[0]));
+        return LoadAsync(paths.SelectMany(p => { progress?.Report($"reading {Path.GetFileName(p)}"); return NTriples.Read(p); }), vocabulary, version, progress, ct);
+    }
+
+    /// <summary>The N-Triples files a path names: the file itself, or those inside a directory.</summary>
+    public static IReadOnlyList<string> Files(string path)
+    {
+        if (Directory.Exists(path))
+            return Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly)
+                .Where(f => f.EndsWith(".nt", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".nt.gz", StringComparison.OrdinalIgnoreCase))
+                .OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
+        return File.Exists(path) ? [path] : [];
+    }
 
     public async Task<GettyLoadResult> LoadAsync(IEnumerable<Triple> triples, GettyVocabulary vocabulary, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {

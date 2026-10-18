@@ -168,7 +168,7 @@ evidence JSON holds the reading and the top groups with each member's score and 
 ### 8.5 Command line
 
 ```
-dotnet run --project tools/Align -- load-getty ulan.nt.gz --vocab ulan --version 2026-10
+dotnet run --project tools/Align -- load-getty <ulan.nt | unzipped-folder> --vocab ulan --version 2026-10
 dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
 ```
 

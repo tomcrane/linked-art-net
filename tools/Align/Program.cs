@@ -8,7 +8,7 @@
 //                                                                              the owner's earlier authorities and source_string_map tables; the two
 //                                                                              flags are for a second copy of them with its own identifiers
 //
-//   dotnet run --project tools/Align -- load-getty <file.nt[.gz]> --vocab ulan|aat|tgn [--version 2026-10]
+//   dotnet run --project tools/Align -- load-getty <file.nt[.gz] | directory>... --vocab ulan|aat|tgn [--version 2026-10]
 //                                                                              a Getty full N-Triples download into the local authority index
 //   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
 //                                                                              decide undecided strings from overrides, the store and the local indexes
@@ -75,12 +75,14 @@ switch (args[0])
 
     case "load-getty":
     {
-        var path = args.Skip(1).FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
-        if (path is null || !File.Exists(path)) { Console.Error.WriteLine("Give the path of a Getty N-Triples file (.nt or .nt.gz)."); return 2; }
+        var optionValues = new HashSet<string>(new[] { Option("--vocab"), Option("--version"), Option("--dataset"), Option("--base") }.OfType<string>(), StringComparer.Ordinal);
+        var files = args.Skip(1).Where(a => !a.StartsWith("--", StringComparison.Ordinal) && !optionValues.Contains(a)).SelectMany(GettyVocabLoader.Files).ToList();
+        if (files.Count == 0) { Console.Error.WriteLine("Give Getty N-Triples files (.nt or .nt.gz) or the directory a Getty zip unpacked to."); return 2; }
         if (!Enum.TryParse<GettyVocabulary>(Option("--vocab"), true, out var vocab)) { Console.Error.WriteLine("Say which vocabulary: --vocab ulan|aat|tgn"); return 2; }
         await store.InitialiseAsync();
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
-        var result = await new GettyVocabLoader(store).LoadAsync(path, vocab, Option("--version"), progress);
+        Console.Error.WriteLine($"  {files.Count} file(s)");
+        var result = await new GettyVocabLoader(store).LoadAsync(files, vocab, Option("--version"), progress);
         Console.WriteLine($"{result.Vocabulary}: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
         return 0;
     }
@@ -129,7 +131,7 @@ static void Usage() => Console.WriteLine(
       stats [--dataset pmc|all]              counts
       import-overrides <file> [--dataset] [--base] [--class]
                                              import a pmc-lux authority-strings file as entities and overrides
-      load-getty <file> --vocab ulan|aat|tgn [--version v]
+      load-getty <file|dir>... --vocab ulan|aat|tgn [--version v]
                                              load a Getty full N-Triples download into the local authority index
       reconcile [--dataset] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
                                              decide undecided strings from overrides, the store and the local indexes

@@ -192,10 +192,32 @@ goes to review), 444 minted. The minted sample was mostly genuine residue (local
 plus misses that the bare and canonical keys now cover ("Thos. Agnew & Sons Ltd", "Messrs Langford", names with
 punctuation) and auctioneers ULAN holds as people, which the corpauthor rule now allows.
 
+### 8.7 Measuring the earlier alignment: shadow and audit
+
+The imported decisions were made in 2024 by fuzzy name matching against live LUX, VIAF and LoC results, with dates
+and type rarely available to veto. Two commands measure them without a human; the third measure, a reviewed random
+sample, waits for the review UI.
+
+`tools/Align shadow` re-judges decided strings (the imported ones by default) as if from scratch: the reconciler's
+`EvaluateAsync` runs with the store's entities hidden, so an old decision cannot answer itself, and the new
+evaluation is compared with the old entity's authority ids. Verdicts: **Agree** (the new answer points at the old
+entity or one of its ids), **Disagree** (the new answer is accepted and names a different record in a source the old
+entity also has an id in: one of them is wrong), **Unverifiable** (accepted, but in a source the old entity never had),
+**QueuedWithOld** and **QueuedWithoutOld** (the new run would send it to review, with or without the old answer among
+the candidates), **OldOnly** (the new run found nothing), **OldLocal** (the old entity had no authority ids, so there is
+nothing to compare). Nothing is decided; the run is recorded with the totals and by-context breakdown, and everything
+but Agree and OldLocal goes to a CSV under `reports/` for the review spreadsheet. `--sample n` takes a random page.
+
+`tools/Align audit` checks every entity with a ULAN id against the local ULAN index: **UlanMissing** (the id is not in
+the dump: retired, merged or mistyped), **LabelMismatch**, **DatesConflict**, **TypeMismatch**, **LinkConflict** (the
+entity has a LoC, Wikidata or VIAF id and ULAN links to a different one: the strongest signal of a wrong cluster), and
+**LinkGain** (ULAN links to an id the entity lacks: an equivalent it could gain). The flagged entities go to a CSV.
+
 ## 9. Not yet
 
 Step 3b: the remote sources (VIAF, LoC suggest, LUX with the self-echo rule, Wikidata by known id) behind a cache
-and a per-run budget, with tests against recorded responses; a loader for the LoC name file; a seed of the index
+and a per-run budget, with tests against recorded responses; acting on the audit (adopting LinkGain equivalents,
+reopening LinkConflict decisions) once the owner has read the first reports; a loader for the LoC name file; a seed of the index
 from the owner's earlier `ulan_labels`/`aat_labels` caches; PeriodO as a source for Period strings. Then the
 pipeline runner and PMC instance (step 4) and the review UI for alignment decisions (step 5). The legacy import first ran against the owner's database on 2026-10-18: 27,443 authorities became
 entities with 76,152 equivalents, and all 72,904 strings were visited (72,714 after strings that share a normalised key collapsed), 35,333 of them decided, with nothing skipped

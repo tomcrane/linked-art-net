@@ -32,7 +32,10 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   nationality, grouped through sameAs links, and accepted, queued for review with a provisional entity, or minted,
   every decision with its evidence. `tools/Align load-getty|reconcile|decisions`. Labels and names are also keyed
   bare (no punctuation) and canonical (conventional abbreviations expanded, firm prefixes and legal suffixes removed;
-  `Tables/name-forms.json`).
+  `Tables/name-forms.json`). `tools/Align shadow` re-judges earlier decisions from scratch with the store hidden and
+  compares (Agree, Disagree, Unverifiable, Queued with or without the old answer, OldOnly, OldLocal); `audit` checks
+  entities with ULAN ids against the local index (missing id, label, dates, type, link conflicts and gains); `undo-run`.
+  Both write CSVs under `reports/`, which is ignored by git.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

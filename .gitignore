@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Alignment reports written by tools/Align shadow|audit (local, per machine)
+reports/
+
 # User-specific files
 *.rsuser
 *.suo

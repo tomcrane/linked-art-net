@@ -32,17 +32,37 @@ public sealed record ReconcileReport(int Considered, int Overridden, int Matched
 }
 
 /// <summary>
+/// What the reconciler would do with a string, before anything is written: the outcome, how the string was read, the
+/// candidate groups, and whichever of an override, a store entity or an accepted group decided it.
+/// </summary>
+public sealed record Evaluation(Outcome Outcome, StringReading Reading, IReadOnlyList<CandidateGroup> Groups, Override? Override = null, Entity? StoreMatch = null, CandidateGroup? Accepted = null, ScoredCandidate? StoreChoice = null)
+{
+    /// <summary>The URIs the evaluation points at: the override target, the store entity and its equivalents, or the accepted group's URIs; for a queued string the top group's.</summary>
+    public IReadOnlyList<string> TargetUris => Outcome switch
+    {
+        Outcome.Overridden when Override is not null => [Override.Target],
+        Outcome.MatchedStore when StoreMatch is not null => [StoreMatch.Id, .. StoreMatch.Equivalents.Select(q => q.Uri)],
+        Outcome.Accepted when Accepted is not null => Accepted.Uris,
+        Outcome.Queued when Groups.Count > 0 => Groups[0].Uris,
+        _ => [],
+    };
+}
+
+/// <summary>
 /// Decides what undecided source strings refer to (design doc 10, section 7). For each string, in order and
 /// stopping at the first acceptance: the overrides; entities already in the store whose labels match and whose
 /// lifespan does not conflict; the local authority indexes; then remote sources (step 3b). Candidates are scored on
 /// name, dates, type and nationality, grouped through their sameAs links so sources that name the same thing vote
 /// together, and accepted, queued for review with a provisional entity, or given a provisional entity when nothing
-/// was found. Every decision records its evidence.
+/// was found. Every decision records its evidence. <see cref="EvaluateAsync"/> does the thinking without writing,
+/// which the shadow run uses to re-judge old decisions from scratch.
 /// </summary>
 public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, IReadOnlyList<IAuthoritySource> sources, ReconcilerOptions? options = null, ProfileCatalog? datesProfiles = null)
 {
     private readonly ReconcilerOptions _options = options ?? new ReconcilerOptions();
     private readonly Dictionary<string, AgentStringParser> _parsers = new(StringComparer.OrdinalIgnoreCase);
+
+    public ReconcilerOptions Options => _options;
 
     public async Task<ReconcileReport> RunAsync(string dataset, int limit = 1000, string? runId = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
@@ -68,41 +88,43 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default)
     {
+        var evaluation = await EvaluateAsync(dataset, s, includeStore: true, ct);
+        await CommitAsync(dataset, s, evaluation, runId, ct);
+        return evaluation.Outcome;
+    }
+
+    /// <summary>Reads the string and finds what it would be decided as, writing nothing. With <paramref name="includeStore"/> false the store's own entities are not consulted, so an old decision cannot answer itself.</summary>
+    public async Task<Evaluation> EvaluateAsync(string dataset, SourceString s, bool includeStore = true, CancellationToken ct = default)
+    {
         var rule = _options.Contexts.TryGetValue(s.Context, out var r) ? r : _options.DefaultContext;
         var reading = StringReading.Read(s, rule, ParserFor(rule.AgentProfile));
-        if (reading.Key.Length == 0) return Outcome.Skipped;
+        if (reading.Key.Length == 0) return new Evaluation(Outcome.Skipped, reading, []);
 
         // 1. overrides, by the whole string and by the name part
         var over = await store.OverrideForAsync(dataset, s.Context, s.Normalised, ct);
         if (over is null && reading.Key != s.Normalised) over = await store.OverrideForAsync(dataset, s.Context, reading.Key, ct);
-        if (over is not null)
-        {
-            var entity = await EntityForTargetAsync(dataset, over.Target, reading, runId, ct);
-            await store.DecideAsync(s.Id, entity.Id, DecisionMethod.Override, Evidence("override", reading, [], new { over.Target, over.Source, over.Note }), runId: runId, ct: ct);
-            return Outcome.Overridden;
-        }
+        if (over is not null) return new Evaluation(Outcome.Overridden, reading, [], Override: over);
 
         // 2. the store: entities already minted whose labels match
         var candidates = new List<Candidate>();
         var storeMatches = new Dictionary<string, Entity>(StringComparer.Ordinal);
-        foreach (var cls in reading.Classes)
-            foreach (var key in reading.Keys)
-                foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, cls, ct))
-                    storeMatches[e.Id] = e;
-        foreach (var e in storeMatches.Values)
+        if (includeStore)
         {
-            var labels = e.Label is null ? e.Labels : e.Labels.Prepend(e.Label);
-            candidates.Add(new Candidate(e.Id, "store", e.Label, e.Class, e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, e.Status == EntityStatus.Provisional));
-        }
-        // one acceptable entity, or one acceptable entity with authority behind it among provisional lookalikes
-        var storeScored = Score(reading, candidates).Where(c => !c.Veto && c.Score >= _options.AcceptScore).ToList();
-        var firm = storeScored.Where(c => !c.Candidate.Provisional).ToList();
-        var chosen = storeScored.Count == 1 ? storeScored[0] : firm.Count == 1 ? firm[0] : null;
-        if (chosen is not null)
-        {
-            var e = storeMatches[chosen.Candidate.EntityId!];
-            await store.DecideAsync(s.Id, e.Id, DecisionMethod.ExactName, Evidence("store", reading, [Group([chosen])], null), runId: runId, ct: ct);
-            return Outcome.MatchedStore;
+            foreach (var cls in reading.Classes)
+                foreach (var key in reading.Keys)
+                    foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, cls, ct))
+                        storeMatches[e.Id] = e;
+            foreach (var e in storeMatches.Values)
+            {
+                var labels = e.Label is null ? e.Labels : e.Labels.Prepend(e.Label);
+                candidates.Add(new Candidate(e.Id, "store", e.Label, e.Class, e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, e.Status == EntityStatus.Provisional));
+            }
+            // one acceptable entity, or one acceptable entity with authority behind it among provisional lookalikes
+            var storeScored = Score(reading, candidates).Where(c => !c.Veto && c.Score >= _options.AcceptScore).ToList();
+            var firm = storeScored.Where(c => !c.Candidate.Provisional).ToList();
+            var chosen = storeScored.Count == 1 ? storeScored[0] : firm.Count == 1 ? firm[0] : null;
+            if (chosen is not null)
+                return new Evaluation(Outcome.MatchedStore, reading, [Group([chosen])], StoreMatch: storeMatches[chosen.Candidate.EntityId!], StoreChoice: chosen);
         }
 
         // 3. local indexes (remote sources come in step 3b)
@@ -114,21 +136,46 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // a rival group counts as a disagreement only when something other than a provisional lookalike is in it
         var second = groups.Skip(1).FirstOrDefault(g => g.Members.Any(m => !m.Veto && !m.Candidate.Provisional));
         if (top is not null && top.Score >= _options.AcceptScore && Carries(reading, top) && (second is null || second.Score < _options.AcceptScore))
-        {
-            var entity = await EntityForGroupAsync(dataset, reading, top, runId, ct);
-            await store.DecideAsync(s.Id, entity.Id, DecisionMethod.Vote, Evidence("vote", reading, groups, null), runId: runId, ct: ct);
-            return Outcome.Accepted;
-        }
+            return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top);
         if (top is not null && top.Score >= _options.ReviewScore)
+            return new Evaluation(Outcome.Queued, reading, groups);
+        return new Evaluation(_options.MintWhenNothingFound ? Outcome.Minted : Outcome.Deferred, reading, groups);
+    }
+
+    /// <summary>Writes an evaluation: the decision with its evidence and, where needed, the entity.</summary>
+    public async Task CommitAsync(string dataset, SourceString s, Evaluation e, string? runId = null, CancellationToken ct = default)
+    {
+        var reading = e.Reading;
+        switch (e.Outcome)
         {
-            var provisional = await MintAsync(dataset, reading, runId, ct);
-            await store.DecideAsync(s.Id, provisional.Id, DecisionMethod.Queued, Evidence("queued", reading, groups, null), runId: runId, ct: ct);
-            return Outcome.Queued;
+            case Outcome.Overridden:
+            {
+                var entity = await EntityForTargetAsync(dataset, e.Override!.Target, reading, runId, ct);
+                await store.DecideAsync(s.Id, entity.Id, DecisionMethod.Override, Evidence("override", reading, [], new { e.Override.Target, e.Override.Source, e.Override.Note }), runId: runId, ct: ct);
+                break;
+            }
+            case Outcome.MatchedStore:
+                await store.DecideAsync(s.Id, e.StoreMatch!.Id, DecisionMethod.ExactName, Evidence("store", reading, e.Groups, null), runId: runId, ct: ct);
+                break;
+            case Outcome.Accepted:
+            {
+                var entity = await EntityForGroupAsync(dataset, reading, e.Accepted!, runId, ct);
+                await store.DecideAsync(s.Id, entity.Id, DecisionMethod.Vote, Evidence("vote", reading, e.Groups, null), runId: runId, ct: ct);
+                break;
+            }
+            case Outcome.Queued:
+            {
+                var provisional = await MintAsync(dataset, reading, runId, ct);
+                await store.DecideAsync(s.Id, provisional.Id, DecisionMethod.Queued, Evidence("queued", reading, e.Groups, null), runId: runId, ct: ct);
+                break;
+            }
+            case Outcome.Minted:
+            {
+                var fresh = await MintAsync(dataset, reading, runId, ct);
+                await store.DecideAsync(s.Id, fresh.Id, DecisionMethod.Minted, Evidence("minted", reading, e.Groups, null), runId: runId, ct: ct);
+                break;
+            }
         }
-        if (!_options.MintWhenNothingFound) return Outcome.Deferred;
-        var fresh = await MintAsync(dataset, reading, runId, ct);
-        await store.DecideAsync(s.Id, fresh.Id, DecisionMethod.Minted, Evidence("minted", reading, groups, null), runId: runId, ct: ct);
-        return Outcome.Minted;
     }
 
     // ---- scoring and grouping ----------------------------------------------------------------------------------

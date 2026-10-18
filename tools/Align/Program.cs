@@ -12,6 +12,9 @@
 //                                                                              a Getty full N-Triples download into the local authority index
 //   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
 //                                                                              decide undecided strings from overrides, the store and the local indexes
+//   dotnet run --project tools/Align -- shadow [--dataset pmc] [--method imported] [--context c] [--limit n | --sample n] [--out reports]
+//                                                                              re-judge old decisions from scratch and compare; writes a CSV, decides nothing
+//   dotnet run --project tools/Align -- audit [--dataset pmc] [--out reports]  check entities with ULAN ids against the local ULAN index; writes a CSV
 //
 // Connection strings come from the environment, never from arguments or files in the repository:
 //   LINKEDART_PG         the store (e.g. "Host=localhost;Database=linkedart;Username=...;Password=...")
@@ -135,6 +138,48 @@ switch (args[0])
         return 0;
     }
 
+    case "shadow":
+    {
+        await store.InitialiseAsync();
+        var options = new ReconcilerOptions { Contexts = PmcContexts(), AcceptSingleSourceWithDates = !args.Contains("--no-single-source") };
+        var sources = new IAuthoritySource[] { new LocalIndexSource(store, "ulan"), new LocalIndexSource(store, "aat"), new LocalIndexSource(store, "tgn"), new LocalIndexSource(store, "loc") };
+        var reconciler = new Reconciler(store, scheme, sources, options);
+        var sample = int.TryParse(Option("--sample"), out var sn) ? sn : 0;
+        var limit = sample > 0 ? sample : int.TryParse(Option("--limit"), out var l) ? l : 100_000;
+        var method = Option("--method") ?? DecisionMethod.Imported;
+        var run = await store.StartRunAsync(dataset, System.Text.Json.JsonSerializer.Serialize(new { shadow = true, method, context = Option("--context"), limit, sample = sample > 0 }));
+        var outDir = Option("--out") ?? "reports";
+        Directory.CreateDirectory(outDir);
+        var csvPath = Path.Combine(outDir, $"shadow-{run.Id}.csv");
+        await using var csv = new StreamWriter(csvPath, false, new System.Text.UTF8Encoding(true));
+        await csv.WriteLineAsync(ShadowRun.CsvHeader);
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
+        var report = await new ShadowRun(store, reconciler).RunAsync(dataset, method, Option("--context"), limit, sample > 0,
+            onItem: item => item.Verdict is Verdict.Agree or Verdict.OldLocal ? Task.CompletedTask : csv.WriteLineAsync(ShadowRun.CsvLine(item)), progress: progress);
+        await csv.FlushAsync();
+        var text = report.ToString() + "\n" + string.Join("\n", report.ByContext.Select(x => $"  {x.Context,-16} {x.Verdict,-18} {x.Count}"));
+        await store.FinishRunAsync(run.Id, System.Text.Json.JsonSerializer.Serialize(report.Totals.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value)), text);
+        Console.WriteLine($"shadow run {run.Id}: {text}");
+        Console.WriteLine($"disagreements and the rest written to {Path.GetFullPath(csvPath)}");
+        return 0;
+    }
+
+    case "audit":
+    {
+        await store.InitialiseAsync();
+        var outDir = Option("--out") ?? "reports";
+        Directory.CreateDirectory(outDir);
+        var csvPath = Path.Combine(outDir, $"audit-{dataset}-{DateTime.UtcNow:yyyyMMdd-HHmmss}.csv");
+        await using var csv = new StreamWriter(csvPath, false, new System.Text.UTF8Encoding(true));
+        await csv.WriteLineAsync(IndexAudit.CsvHeader);
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
+        var report = await new IndexAudit(store).RunAsync(dataset, item => item.Flags.All(f => f == AuditFlag.LinkGain) ? Task.CompletedTask : csv.WriteLineAsync(IndexAudit.CsvLine(item)), progress);
+        await csv.FlushAsync();
+        Console.WriteLine(report);
+        Console.WriteLine($"flagged entities written to {Path.GetFullPath(csvPath)}");
+        return 0;
+    }
+
     case "undo-run":
     {
         var runId = Option("--run");
@@ -172,6 +217,9 @@ static void Usage() => Console.WriteLine(
                                              decide undecided strings from overrides, the store and the local indexes
       decisions --run <id> [--method m] [--limit 20]
                                              a run's decisions by context and method, then a sample with evidence
+      shadow [--dataset] [--method imported] [--context c] [--limit n | --sample n] [--out reports]
+                                             re-judge old decisions from scratch (store entities hidden) and compare; CSV of the differences
+      audit [--dataset] [--out reports]      check entities with ULAN ids against the local ULAN index; CSV of the flagged ones
       undo-run --run <id>                    take a run back: its decisions invalidated, its unreferenced provisional entities removed
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
         [--reuse-by-equivalent] [--only-referenced] [--version v]

@@ -24,6 +24,9 @@ public interface IAlignmentStore
     /// <summary>Entities whose label or alternate labels normalise to the key, optionally within a dataset and class. Merged entities are left out.</summary>
     Task<IReadOnlyList<Entity>> FindEntitiesByLabelAsync(string normalisedLabel, string? dataset = null, EntityClass? cls = null, CancellationToken ct = default);
 
+    /// <summary>A page of the dataset's entities by id, optionally only those with an equivalent from one source ("ulan"), starting after an id; merged entities are left out.</summary>
+    Task<IReadOnlyList<Entity>> ListEntitiesAsync(string dataset, string? equivalentSource = null, string? afterId = null, int limit = 500, CancellationToken ct = default);
+
     /// <summary>Entities with this authority URI among their equivalents.</summary>
     Task<IReadOnlyList<Entity>> FindEntitiesByEquivalentAsync(string uri, CancellationToken ct = default);
 
@@ -58,6 +61,9 @@ public interface IAlignmentStore
 
     /// <summary>The entity a string in a dataset and context currently resolves to, following merges; null when unknown or undecided.</summary>
     Task<Entity?> ResolveAsync(string dataset, string context, string raw, CancellationToken ct = default);
+
+    /// <summary>Strings of the dataset with a valid decision to an entity, by string id after <paramref name="afterStringId"/>, optionally of one method and context; <paramref name="sample"/> returns a random page instead.</summary>
+    Task<IReadOnlyList<DecidedString>> DecidedStringsAsync(string dataset, string? method = null, string? context = null, long afterStringId = 0, int limit = 500, bool sample = false, CancellationToken ct = default);
 
     /// <summary>The valid decisions a run made, oldest first, optionally of one method ("queued", "minted"), with their strings.</summary>
     Task<IReadOnlyList<DecidedString>> DecisionsForRunAsync(string runId, string? method = null, int limit = 50, CancellationToken ct = default);

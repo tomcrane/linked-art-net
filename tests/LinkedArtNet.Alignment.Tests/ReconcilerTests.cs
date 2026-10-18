@@ -270,6 +270,32 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(DecisionMethod.ExactName, (await pg.Store.DecisionForAsync(later.Id))!.Method);
         Assert.Equal(0, (await reconciler.RunAsync(ds)).Considered);
 
+        // the shadow run re-judges the decisions with the store hidden: the voted Dürer agrees with itself through its ULAN id,
+        // the override agrees through its target, the minted ones have nothing to compare
+        var shadow = await new ShadowRun(pg.Store, reconciler).RunAsync(ds, method: DecisionMethod.Vote);
+        Assert.Equal(1, shadow[Verdict.Agree]);
+        Assert.Equal(1, shadow.Considered);
+        var shadowAll = await new ShadowRun(pg.Store, reconciler).RunAsync(ds, method: DecisionMethod.Minted);
+        Assert.Equal(shadowAll.Considered, shadowAll[Verdict.OldLocal]);
+        // a wrong old answer is caught: give Dürer's string a decision to an entity with a different ULAN id
+        var impostor = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Dürer, Albrecht", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(impostor.Id, new Equivalent("http://vocab.getty.edu/ulan/500000099", "ulan", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        await pg.Store.DecideAsync(durerDated.Id, impostor.Id, DecisionMethod.Imported);
+        var caught = await new ShadowRun(pg.Store, reconciler).RunAsync(ds, method: DecisionMethod.Imported);
+        Assert.Equal(1, caught[Verdict.Disagree]);
+        await pg.Store.DecideAsync(durerDated.Id, durer.Id, DecisionMethod.Vote); // put it back
+
+        // the audit: Dürer's entity agrees with its ULAN record; the impostor's ULAN id is not in the index
+        var flagged = new List<AuditItem>();
+        var audit = await new IndexAudit(pg.Store).RunAsync(ds, item => { flagged.Add(item); return Task.CompletedTask; });
+        Assert.Equal(2, audit.WithUlan);
+        Assert.Equal(1, audit.Clean);
+        Assert.Contains(flagged, f => f.Entity.Id == impostor.Id && f.Flags.Contains(AuditFlag.UlanMissing));
+        var linkConflict = IndexAudit.Check(durer with { Equivalents = [.. durer.Equivalents.Where(q => q.Source != "loc"), new Equivalent("http://id.loc.gov/authorities/names/n00000000", "loc", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow)] },
+            "http://vocab.getty.edu/ulan/500115493", await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500115493"));
+        Assert.Contains(AuditFlag.LinkConflict, linkConflict.Flags);
+        Assert.Contains("n79118011", linkConflict.Detail);
+
         // undoing a run: its strings are undecided again, the provisional entities it minted go, the aligned one stays
         var run = await pg.Store.StartRunAsync(ds);
         var extra = await pg.Store.CollectAsync(ds, "persauthorfull", "Nobody Else, 1901-1981");

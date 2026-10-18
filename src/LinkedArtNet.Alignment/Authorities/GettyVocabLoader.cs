@@ -227,8 +227,8 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         const string wikiPage = "wikidata.org/wiki/";
         var i = uri.IndexOf(wikiPage, StringComparison.Ordinal);
         if (i >= 0) return AuthorityUris.Wikidata + uri[(i + wikiPage.Length)..];
-        if (uri.StartsWith("https://id.loc.gov/", StringComparison.Ordinal)) return "http://" + uri[8..];
-        return uri;
+        if (uri.StartsWith("https://id.loc.gov/", StringComparison.Ordinal) || uri.StartsWith("https://viaf.org/", StringComparison.Ordinal)) return "http://" + uri[8..];
+        return uri.EndsWith('/') ? uri.TrimEnd('/') : uri;
     }
 
     /// <summary>A lifespan from gYear bounds as the Getty biographies give them; years outside 1-9999 keep the text only.</summary>

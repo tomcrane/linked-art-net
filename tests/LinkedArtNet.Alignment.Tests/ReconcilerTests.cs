@@ -68,6 +68,7 @@ public class NTriplesTests
     {
         Assert.Equal("http://www.wikidata.org/entity/Q5580", GettyVocabLoader.CanonicalSameAs("https://wikidata.org/wiki/Q5580"));
         Assert.Equal("http://id.loc.gov/authorities/names/n79118011", GettyVocabLoader.CanonicalSameAs("https://id.loc.gov/authorities/names/n79118011"));
+        Assert.Equal("http://viaf.org/viaf/98031201", GettyVocabLoader.CanonicalSameAs("https://viaf.org/viaf/98031201")); // as the ULAN VIAF alignment file writes them
         var l = GettyVocabLoader.LifespanFromYears("1471", "1528")!;
         Assert.Equal(1471, l.BeginEarliest!.Value.Year);
         Assert.Equal(1528, l.EndLatest!.Value.Year);

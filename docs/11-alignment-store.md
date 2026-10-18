@@ -69,7 +69,11 @@ representation layering (doc 10, section 8) is a publishing concern and is not i
   connection: authorities become entities (identifiers kept, equivalents method `imported`), each source string is
   collected under its old `source` as the context with a decision of method `imported`, strings that only had an
   `unrec_` placeholder stay undecided with the placeholder in their parsed JSON, rows with an unknown type or a
-  dangling authority are counted and skipped.
+  dangling authority are counted and skipped. `LegacyImportOptions` is for a second copy of those tables from another
+  run, with its own minted identifiers: `ReuseByEquivalent` maps an authority onto an entity of the same dataset and
+  class that already has one of its ULAN, VIAF, LoC or Wikidata ids (the label joins the alternates), `OnlyReferenced`
+  adds entities only for authorities a new decision needs, `DatasetVersion` tags what the import writes. A string the
+  store has already decided keeps its decision, so the first import's answers stand.
 
 Both are idempotent: entities already present are left alone, overrides are replaced, decisions are not duplicated.
 
@@ -80,6 +84,7 @@ dotnet run --project tools/Align -- init
 dotnet run --project tools/Align -- stats [--dataset pmc|all]
 dotnet run --project tools/Align -- import-overrides authority-strings/groups.json [--dataset pmc] [--base https://...] [--class Group]
 dotnet run --project tools/Align -- import-legacy [--dataset pmc]
+dotnet run --project tools/Align -- import-legacy --reuse-by-equivalent --only-referenced --version legacy-stealth
 ```
 
 Connection strings come only from the environment: `LINKEDART_PG` for the store, `LINKEDART_LEGACY_PG` for the
@@ -96,5 +101,10 @@ Docker, so the store tests run there.
 ## 7. Not yet
 
 The reconciler and authority sources (step 3), the pipeline runner and PMC instance (step 4), the review UI for
-alignment decisions (step 5). The legacy import has been tested against a copy of the old tables' shape, not yet
-against the owner's database; the first real run is `import-legacy` with `LINKEDART_LEGACY_PG` set.
+alignment decisions (step 5). The legacy import first ran against the owner's database on 2026-10-18: 27,443 authorities became
+entities with 76,152 equivalents, and all 72,904 strings were visited (72,714 after strings that share a normalised key collapsed), 35,333 of them decided, with nothing skipped
+for an unknown type or a dangling authority. A second, smaller run over corporate names only (December 2024, 1,282
+strings) was compared first: of 808 strings both runs decided, 5 disagreed and the first run was right in 3, so its
+answers stand and the second copy was imported with the reuse and only-referenced options as version `legacy-stealth`:
+45 entities added, 42 mapped onto existing ones, 139 equivalents, 35 new strings and 93 new decisions. The store then
+held 27,488 entities and 72,749 strings, 35,426 decided.

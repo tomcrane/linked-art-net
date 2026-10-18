@@ -4,8 +4,9 @@
 //   dotnet run --project tools/Align -- stats [--dataset pmc]                  counts
 //   dotnet run --project tools/Align -- import-overrides <file.json> [--dataset pmc] [--base https://data.paul-mellon-centre.ac.uk/] [--class Group]
 //                                                                              a pmc-lux authority-strings file
-//   dotnet run --project tools/Align -- import-legacy [--dataset pmc] [--base ...]
-//                                                                              the owner's earlier authorities and source_string_map tables
+//   dotnet run --project tools/Align -- import-legacy [--dataset pmc] [--base ...] [--reuse-by-equivalent] [--only-referenced] [--version legacy]
+//                                                                              the owner's earlier authorities and source_string_map tables; the two
+//                                                                              flags are for a second copy of them with its own identifiers
 //
 // Connection strings come from the environment, never from arguments or files in the repository:
 //   LINKEDART_PG         the store (e.g. "Host=localhost;Database=linkedart;Username=...;Password=...")
@@ -58,8 +59,9 @@ switch (args[0])
         if (string.IsNullOrWhiteSpace(legacy)) { Console.Error.WriteLine("Set LINKEDART_LEGACY_PG to the earlier PMC database's connection string."); return 2; }
         await store.InitialiseAsync();
         await using var source = NpgsqlDataSource.Create(legacy);
-        var result = await new LegacyPmcImporter(source).ImportAsync(store, scheme, dataset);
-        Console.WriteLine($"entities added {result.EntitiesAdded}, already present {result.EntitiesExisting}, skipped for unknown type {result.SkippedForType}; equivalents {result.Equivalents}");
+        var options = new LegacyImportOptions(ReuseByEquivalent: args.Contains("--reuse-by-equivalent"), OnlyReferenced: args.Contains("--only-referenced"), DatasetVersion: Option("--version") ?? "legacy");
+        var result = await new LegacyPmcImporter(source).ImportAsync(store, scheme, options, dataset);
+        Console.WriteLine($"entities added {result.EntitiesAdded}, already present {result.EntitiesExisting}, reused through a shared authority id {result.EntitiesReused}, skipped for unknown type {result.SkippedForType}; equivalents {result.Equivalents}");
         Console.WriteLine($"strings {result.Strings}: decided {result.Decided}, unresolved {result.Unresolved} (of which pointing at a missing authority {result.DanglingAuthority})");
         return 0;
     }
@@ -77,4 +79,7 @@ static void Usage() => Console.WriteLine(
       import-overrides <file> [--dataset] [--base] [--class]
                                              import a pmc-lux authority-strings file as entities and overrides
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
+        [--reuse-by-equivalent] [--only-referenced] [--version v]
+                                             for a second copy of those tables: map authorities onto entities that share
+                                             an authority id, add only authorities a new decision needs, tag the version
     """);

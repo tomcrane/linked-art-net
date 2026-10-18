@@ -23,6 +23,8 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   reopen, curated overrides, cached authority records, runs. Importers for the `pmc-lux` authority-string files and
   the earlier PMC `authorities`/`source_string_map` tables; `tools/Align init|stats|import-overrides|import-legacy`.
   Tests run against a throwaway PostgreSQL container (or `LINKEDART_TEST_PG`) and skip when neither is available.
+  The legacy importer takes options for a second copy of the old tables: map authorities onto entities that share
+  an authority id, add only the authorities a new decision needs, tag the dataset version.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

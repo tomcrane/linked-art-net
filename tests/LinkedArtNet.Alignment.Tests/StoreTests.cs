@@ -248,4 +248,56 @@ public class StoreTests(PostgresFixture pg)
         Assert.Equal(3, again.Decided);
         Assert.Equal(2, (await pg.Store.FindSourceStringAsync(ds, "publisher", "Some Press"))!.Occurrences); // collecting twice counts twice; the decision is not duplicated
     }
+
+    [PostgresFact]
+    public async Task A_second_legacy_copy_reuses_entities_through_shared_authority_ids()
+    {
+        var ds = Dataset();
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        // The big run: two groups, two decided strings.
+        await using (var cmd = pg.DataSource.CreateCommand(
+            """
+            create table if not exists authorities (identifier text primary key, type text, label text, ulan text, aat text, lux text, loc text, viaf text, wikidata text, pmc text, tgn text);
+            create table if not exists source_string_map (source text, string text, authority text, processed timestamptz, unreconciled_authority text);
+            delete from authorities; delete from source_string_map;
+            insert into authorities (identifier, type, label, ulan, viaf) values ('big00001', 'Group', 'Brooklyn Museum of Art', '500267611', '265104231');
+            insert into authorities (identifier, type, label, ulan) values ('big00002', 'Group', 'Arts Council of Great Britain', '500219164');
+            insert into source_string_map (source, string, authority) values ('corpauthor', 'Brooklyn Museum', 'big00001');
+            insert into source_string_map (source, string, authority) values ('corpauthor', 'Arts Council of Great Britain', 'big00002');
+            """))
+            await cmd.ExecuteNonQueryAsync();
+        var first = await new LegacyPmcImporter(pg.DataSource).ImportAsync(pg.Store, scheme, ds);
+        Assert.Equal(2, first.EntitiesAdded);
+
+        // The later, smaller run: its own identifiers. One is the Brooklyn Museum again by VIAF with a different label and a
+        // new string; one disagrees about a string the big run decided (and loses); one is new and referenced; one is new
+        // and referenced by nothing.
+        await using (var cmd = pg.DataSource.CreateCommand(
+            """
+            delete from authorities; delete from source_string_map;
+            insert into authorities (identifier, type, label, viaf) values ('small001', 'Group', 'Brooklyn Museum', '265104231');
+            insert into authorities (identifier, type, label, viaf) values ('small002', 'Group', 'Arts Council England', '143603950');
+            insert into authorities (identifier, type, label) values ('small003', 'Group', 'Christie''s East (Firm)');
+            insert into authorities (identifier, type, label, viaf) values ('small004', 'Group', 'Nobody Asked', '1');
+            insert into source_string_map (source, string, authority) values ('corpauthor', 'Brooklyn Museum', 'small001');
+            insert into source_string_map (source, string, authority) values ('corpauthor', 'Brooklyn Museum, N.Y.', 'small001');
+            insert into source_string_map (source, string, authority) values ('corpauthor', 'Arts Council of Great Britain', 'small002');
+            insert into source_string_map (source, string, authority) values ('corpauthor', 'Christie''s East (Firm)', 'small003');
+            """))
+            await cmd.ExecuteNonQueryAsync();
+        var second = await new LegacyPmcImporter(pg.DataSource).ImportAsync(pg.Store, scheme, new LegacyImportOptions(ReuseByEquivalent: true, OnlyReferenced: true, DatasetVersion: "legacy-small"), ds);
+        Assert.Equal(new LegacyImportResult(EntitiesAdded: 1, EntitiesExisting: 0, Equivalents: 0, SkippedForType: 0, Strings: 4, Decided: 4, Unresolved: 0, DanglingAuthority: 0, EntitiesReused: 1), second);
+
+        var brooklyn = (await pg.Store.ResolveAsync(ds, "corpauthor", "Brooklyn Museum, N.Y."))!;
+        Assert.Equal($"https://data.example.org/{ds}/group/big00001", brooklyn.Id); // the new string went to the big run's entity
+        Assert.Contains("Brooklyn Museum", brooklyn.Labels); // and the small run's label joined it
+        Assert.Equal("Brooklyn Museum of Art", brooklyn.Label);
+        Assert.Null(await pg.Store.GetEntityAsync($"https://data.example.org/{ds}/group/small001"));
+        Assert.Equal($"https://data.example.org/{ds}/group/big00002", (await pg.Store.ResolveAsync(ds, "corpauthor", "Arts Council of Great Britain"))!.Id); // the big run's answer stood
+        Assert.Null(await pg.Store.GetEntityAsync($"https://data.example.org/{ds}/group/small002")); // the losing authority was never created
+        Assert.Null(await pg.Store.GetEntityAsync($"https://data.example.org/{ds}/group/small004")); // nor the unreferenced one
+        var christies = (await pg.Store.ResolveAsync(ds, "corpauthor", "Christie's East (Firm)"))!;
+        Assert.Equal($"https://data.example.org/{ds}/group/small003", christies.Id);
+        Assert.Equal("legacy-small", (await pg.Store.DecisionForAsync((await pg.Store.FindSourceStringAsync(ds, "corpauthor", "Christie's East (Firm)"))!.Id))!.DatasetVersion);
+    }
 }

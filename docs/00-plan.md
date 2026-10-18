@@ -364,7 +364,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     entities, equivalents, source strings, decisions, overrides, authority records and runs; `IdentifierScheme`
     per dataset keeping the PMC paths and alphabet; importers for the pmc-lux override files and the earlier PMC
     tables; `tools/Align`; 25 tests against a Testcontainers PostgreSQL 15. Step 3, authority sources and the
-    reconciler, is next.
+    reconciler: local half built 2026-10-18 (Getty N-Triples loader, name matching, scoring and grouping, the
+    decision ladder, `tools/Align load-getty|reconcile`; doc 11 section 8); remote half (3b) next. The owner's
+    earlier reconciliation (72,904 strings, 35,426 decisions) was imported into the store the same day.
 
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:

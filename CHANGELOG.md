@@ -25,6 +25,12 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   Tests run against a throwaway PostgreSQL container (or `LINKEDART_TEST_PG`) and skip when neither is available.
   The legacy importer takes options for a second copy of the old tables: map authorities onto entities that share
   an authority id, add only the authorities a new decision needs, tag the dataset version.
+- Alignment, step 3 (local half): a streaming N-Triples reader and a loader for the Getty ULAN, AAT and TGN full
+  downloads into the store's authority records (labels indexed normalised and diacritic-folded, lifespans from the
+  biographies, LoC and Wikidata links as sameAs); the reconciler: context rules read strings through the agent
+  parser, candidates from overrides, the store and the local indexes are scored on name, dates, type and
+  nationality, grouped through sameAs links, and accepted, queued for review with a provisional entity, or minted,
+  every decision with its evidence. `tools/Align load-getty|reconcile`.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

@@ -78,6 +78,15 @@ public interface IAlignmentStore
     /// <summary>Cached authority records whose labels normalise to the key, optionally from one source ("ulan").</summary>
     Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelAsync(string normalisedLabel, string? source = null, CancellationToken ct = default);
 
+    /// <summary>Authority records matching any of the keys (normalised or diacritic-folded labels), optionally within one source and one type ("Person"), at most <paramref name="limit"/>.</summary>
+    Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelsAsync(IReadOnlyCollection<string> keys, string? source = null, string? type = null, int limit = 50, CancellationToken ct = default);
+
+    /// <summary>Authority records that declare the URI as the same thing (skos:exactMatch and the like).</summary>
+    Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesBySameAsAsync(string uri, CancellationToken ct = default);
+
+    /// <summary>Stores many authority records at once (a vocabulary load), replacing by URI. Returns how many were written.</summary>
+    Task<int> PutAuthoritiesAsync(IAsyncEnumerable<AuthorityRecord> records, CancellationToken ct = default);
+
     // ---- runs
 
     Task<Run> StartRunAsync(string dataset, string? manifestJson = null, string? dumpsJson = null, string? gitSha = null, CancellationToken ct = default);

@@ -343,7 +343,9 @@ QLever's update path. A later document covers the engine, its indexing and its i
    and the `pmc-lux` overrides. Tests on a disposable database.
 3. **Authority sources and reconciler**: ULAN local index first (the data exists), then AAT, TGN, PeriodO (reuse),
    LCNAF; cached remote clients for VIAF, Wikidata, LoC, LUX with the self-echo rule; scoring, voting, thresholds;
-   review queue export; tests against recorded responses.
+   review queue export; tests against recorded responses. *Local half built 2026-10-18 (doc 11, section 8): Getty
+   N-Triples loader, name matching, scoring and grouping, the decision ladder, `tools/Align load-getty|reconcile`.
+   Remote half (3b) next.*
 4. **Pipeline runner and the PMC instance**: manifest, stages, DScribe adapters and mappers ported from pmc-2, the
    writer with the Activity Streams delta; a full run over the current dumps; the report.
 5. **Review UI**: the trainer generalised to agents, places and concepts, with LLM proposals as in the dates trainer.

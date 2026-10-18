@@ -22,6 +22,8 @@ public static class DecisionMethod
     public const string Imported = "imported";
     /// <summary>No match anywhere: a provisional entity was minted for the string.</summary>
     public const string Minted = "minted";
+    /// <summary>Candidates were found but none accepted: the string is in the review queue, with a provisional entity meanwhile and the candidates in the evidence.</summary>
+    public const string Queued = "queued";
     /// <summary>A LUX record that already represents one of our entities (design doc 10, 7.4).</summary>
     public const string LuxSelf = "lux-self";
 }

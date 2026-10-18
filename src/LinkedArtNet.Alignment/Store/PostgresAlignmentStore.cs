@@ -25,6 +25,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     public ValueTask DisposeAsync() => _ownsDataSource ? _db.DisposeAsync() : ValueTask.CompletedTask;
 
+    /// <summary>The connection source, for loaders that stage data beside the store's tables.</summary>
+    public NpgsqlDataSource DataSource => _db;
+
     /// <summary>The schema statements, from the embedded Schema.sql.</summary>
     public static string SchemaSql { get; } = ReadSchema();
 
@@ -44,7 +47,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     /// <summary>Drops every table of the store. For disposable test databases only.</summary>
     internal async Task DropAllAsync(CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version cascade");
+        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version, getty_staging cascade");
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
@@ -367,6 +370,65 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         QueryAuthoritiesAsync($"select {AuthorityColumns} from authority_records a where a.normalised_labels @> @key" + (source is null ? "" : " and a.source = @source") + " order by a.uri",
             cmd => { Add(cmd, "key", new[] { normalisedLabel }); if (source is not null) Add(cmd, "source", source); }, ct);
 
+    public Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelsAsync(IReadOnlyCollection<string> keys, string? source = null, string? type = null, int limit = 50, CancellationToken ct = default)
+    {
+        if (keys.Count == 0) return Task.FromResult<IReadOnlyList<AuthorityRecord>>([]);
+        var sql = $"select {AuthorityColumns} from authority_records a where a.normalised_labels && @keys"
+            + (source is null ? "" : " and a.source = @source") + (type is null ? "" : " and a.type = @type") + " order by a.uri limit @limit";
+        return QueryAuthoritiesAsync(sql, cmd => { Add(cmd, "keys", keys.ToArray()); if (source is not null) Add(cmd, "source", source); if (type is not null) Add(cmd, "type", type); Add(cmd, "limit", limit); }, ct);
+    }
+
+    public Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesBySameAsAsync(string uri, CancellationToken ct = default) =>
+        QueryAuthoritiesAsync($"select {AuthorityColumns} from authority_records a where a.same_as @> @uri order by a.uri", cmd => Add(cmd, "uri", new[] { uri }), ct);
+
+    public async Task<int> PutAuthoritiesAsync(IAsyncEnumerable<AuthorityRecord> records, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using (var create = new NpgsqlCommand("drop table if exists authority_records_in; create temp table authority_records_in (like authority_records including defaults)", conn))
+            await create.ExecuteNonQueryAsync(ct);
+        var count = 0;
+        await using (var writer = await conn.BeginBinaryImportAsync("copy authority_records_in (uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version) from stdin (format binary)", ct))
+        {
+            await foreach (var record in records.WithCancellation(ct))
+            {
+                var labels = record.Labels.Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();
+                await writer.StartRowAsync(ct);
+                await writer.WriteAsync(record.Uri, NpgsqlDbType.Text, ct);
+                await writer.WriteAsync(record.Source, NpgsqlDbType.Text, ct);
+                await WriteText(writer, record.Label, ct);
+                await writer.WriteAsync(labels, NpgsqlDbType.Array | NpgsqlDbType.Text, ct);
+                await writer.WriteAsync(NormalisedLabels(record.Label, labels), NpgsqlDbType.Array | NpgsqlDbType.Text, ct);
+                await WriteText(writer, record.Type, ct);
+                await WriteTime(writer, record.Lifespan?.BeginEarliest, ct); await WriteTime(writer, record.Lifespan?.BeginLatest, ct);
+                await WriteTime(writer, record.Lifespan?.EndEarliest, ct); await WriteTime(writer, record.Lifespan?.EndLatest, ct);
+                await WriteText(writer, record.Lifespan?.Text, ct);
+                await writer.WriteAsync(record.SameAs.ToArray(), NpgsqlDbType.Array | NpgsqlDbType.Text, ct);
+                if (record.DataJson is null) await writer.WriteNullAsync(ct); else await writer.WriteAsync(record.DataJson, NpgsqlDbType.Jsonb, ct);
+                await writer.WriteAsync(record.FetchedAt.ToUniversalTime(), NpgsqlDbType.TimestampTz, ct);
+                await WriteText(writer, record.SourceVersion, ct);
+                count++;
+            }
+            await writer.CompleteAsync(ct);
+        }
+        await using (var merge = new NpgsqlCommand(
+            """
+            insert into authority_records (uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version)
+            select distinct on (uri) uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version from authority_records_in order by uri
+            on conflict (uri) do update set source = excluded.source, label = excluded.label, labels = excluded.labels, normalised_labels = excluded.normalised_labels, type = excluded.type,
+                begin_earliest = excluded.begin_earliest, begin_latest = excluded.begin_latest, end_earliest = excluded.end_earliest, end_latest = excluded.end_latest, lifespan_text = excluded.lifespan_text,
+                same_as = excluded.same_as, data = excluded.data, fetched_at = excluded.fetched_at, source_version = excluded.source_version;
+            drop table authority_records_in
+            """, conn))
+        {
+            merge.CommandTimeout = 0;
+            await merge.ExecuteNonQueryAsync(ct);
+        }
+        return count;
+    }
+
+    private static Task WriteText(NpgsqlBinaryImporter w, string? value, CancellationToken ct) => value is null ? w.WriteNullAsync(ct) : w.WriteAsync(value, NpgsqlDbType.Text, ct);
+    private static Task WriteTime(NpgsqlBinaryImporter w, DateTimeOffset? value, CancellationToken ct) => value is null ? w.WriteNullAsync(ct) : w.WriteAsync(value.Value.ToUniversalTime(), NpgsqlDbType.TimestampTz, ct);
+
     private async Task<IReadOnlyList<AuthorityRecord>> QueryAuthoritiesAsync(string sql, Action<NpgsqlCommand> bind, CancellationToken ct)
     {
         var list = new List<AuthorityRecord>();
@@ -466,6 +528,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     private static string Status(EntityStatus s) => s.ToString().ToLowerInvariant();
 
+    /// <summary>The lookup keys for a set of labels: each label normalised, and its diacritic-folded form when that differs, so "Dürer" is found by "Durer".</summary>
     private static string[] NormalisedLabels(string? label, IEnumerable<string> labels) =>
-        labels.Prepend(label ?? "").Select(StringKey.Normalise).Where(k => k.Length > 0).Distinct(StringComparer.Ordinal).ToArray();
+        labels.Prepend(label ?? "").Select(StringKey.Normalise).Where(k => k.Length > 0).SelectMany(k => new[] { k, StringKey.Fold(k) }).Distinct(StringComparer.Ordinal).ToArray();
 }

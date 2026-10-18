@@ -8,12 +8,19 @@
 //                                                                              the owner's earlier authorities and source_string_map tables; the two
 //                                                                              flags are for a second copy of them with its own identifiers
 //
+//   dotnet run --project tools/Align -- load-getty <file.nt[.gz]> --vocab ulan|aat|tgn [--version 2026-10]
+//                                                                              a Getty full N-Triples download into the local authority index
+//   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
+//                                                                              decide undecided strings from overrides, the store and the local indexes
+//
 // Connection strings come from the environment, never from arguments or files in the repository:
 //   LINKEDART_PG         the store (e.g. "Host=localhost;Database=linkedart;Username=...;Password=...")
 //   LINKEDART_LEGACY_PG  the earlier PMC database, for import-legacy
 
 using LinkedArtNet.Alignment;
+using LinkedArtNet.Alignment.Authorities;
 using LinkedArtNet.Alignment.Import;
+using LinkedArtNet.Alignment.Reconciliation;
 using LinkedArtNet.Alignment.Store;
 using Npgsql;
 
@@ -66,10 +73,54 @@ switch (args[0])
         return 0;
     }
 
+    case "load-getty":
+    {
+        var path = args.Skip(1).FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
+        if (path is null || !File.Exists(path)) { Console.Error.WriteLine("Give the path of a Getty N-Triples file (.nt or .nt.gz)."); return 2; }
+        if (!Enum.TryParse<GettyVocabulary>(Option("--vocab"), true, out var vocab)) { Console.Error.WriteLine("Say which vocabulary: --vocab ulan|aat|tgn"); return 2; }
+        await store.InitialiseAsync();
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
+        var result = await new GettyVocabLoader(store).LoadAsync(path, vocab, Option("--version"), progress);
+        Console.WriteLine($"{result.Vocabulary}: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
+        return 0;
+    }
+
+    case "reconcile":
+    {
+        await store.InitialiseAsync();
+        var limit = int.TryParse(Option("--limit"), out var l) ? l : 1000;
+        var options = new ReconcilerOptions
+        {
+            AcceptScore = double.TryParse(Option("--accept"), System.Globalization.CultureInfo.InvariantCulture, out var a) ? a : 0.9,
+            ReviewScore = double.TryParse(Option("--review"), System.Globalization.CultureInfo.InvariantCulture, out var rv) ? rv : 0.6,
+            AcceptSingleSourceWithDates = !args.Contains("--no-single-source"),
+            MintWhenNothingFound = !args.Contains("--no-mint"),
+            Contexts = PmcContexts(),
+        };
+        var sources = new IAuthoritySource[] { new LocalIndexSource(store, "ulan"), new LocalIndexSource(store, "aat"), new LocalIndexSource(store, "tgn"), new LocalIndexSource(store, "loc") };
+        var run = await store.StartRunAsync(dataset, System.Text.Json.JsonSerializer.Serialize(options));
+        var reconciler = new Reconciler(store, scheme, sources, options);
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
+        var report = await reconciler.RunAsync(dataset, limit, run.Id, progress);
+        await store.FinishRunAsync(run.Id, System.Text.Json.JsonSerializer.Serialize(report), report.ToString());
+        Console.WriteLine($"run {run.Id}: {report}");
+        return 0;
+    }
+
     default:
         Usage();
         return 2;
 }
+
+// How the PMC library's fields are read (the old source_string_map sources). Other datasets will carry this in their manifest (step 4).
+static Dictionary<string, ContextRule> PmcContexts() => new(StringComparer.OrdinalIgnoreCase)
+{
+    ["persauthorfull"] = new([EntityClass.Person], "default"),
+    ["corpauthor"] = new([EntityClass.Group], "default"),
+    ["publisher"] = new([EntityClass.Group], "default"),
+    ["place"] = new([EntityClass.Place]),
+    ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place]),
+};
 
 static void Usage() => Console.WriteLine(
     """
@@ -78,6 +129,10 @@ static void Usage() => Console.WriteLine(
       stats [--dataset pmc|all]              counts
       import-overrides <file> [--dataset] [--base] [--class]
                                              import a pmc-lux authority-strings file as entities and overrides
+      load-getty <file> --vocab ulan|aat|tgn [--version v]
+                                             load a Getty full N-Triples download into the local authority index
+      reconcile [--dataset] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
+                                             decide undecided strings from overrides, the store and the local indexes
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
         [--reuse-by-equivalent] [--only-referenced] [--version v]
                                              for a second copy of those tables: map authorities onto entities that share

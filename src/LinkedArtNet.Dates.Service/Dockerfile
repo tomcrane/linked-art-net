@@ -4,10 +4,14 @@ WORKDIR /src
 COPY global.json Directory.Build.props linked-art-net.slnx ./
 COPY src/LinkedArtNet/LinkedArtNet.csproj src/LinkedArtNet/
 COPY src/LinkedArtNet.Dates/LinkedArtNet.Dates.csproj src/LinkedArtNet.Dates/
+COPY src/LinkedArtNet.Dates.Corpus/LinkedArtNet.Dates.Corpus.csproj src/LinkedArtNet.Dates.Corpus/
+COPY src/LinkedArtNet.Agents/LinkedArtNet.Agents.csproj src/LinkedArtNet.Agents/
 COPY src/LinkedArtNet.Dates.Service/LinkedArtNet.Dates.Service.csproj src/LinkedArtNet.Dates.Service/
 RUN dotnet restore src/LinkedArtNet.Dates.Service/LinkedArtNet.Dates.Service.csproj
 COPY src/LinkedArtNet src/LinkedArtNet
 COPY src/LinkedArtNet.Dates src/LinkedArtNet.Dates
+COPY src/LinkedArtNet.Dates.Corpus src/LinkedArtNet.Dates.Corpus
+COPY src/LinkedArtNet.Agents src/LinkedArtNet.Agents
 COPY src/LinkedArtNet.Dates.Service src/LinkedArtNet.Dates.Service
 ARG GIT_SHA=unknown
 RUN dotnet publish src/LinkedArtNet.Dates.Service/LinkedArtNet.Dates.Service.csproj -c Release -o /app --no-restore \

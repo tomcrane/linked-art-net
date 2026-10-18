@@ -7,6 +7,7 @@ COPY src/LinkedArtNet.Examples/LinkedArtNet.Examples.csproj src/LinkedArtNet.Exa
 COPY src/LinkedArtNet.Dates/LinkedArtNet.Dates.csproj src/LinkedArtNet.Dates/
 COPY src/LinkedArtNet.Dates.Corpus/LinkedArtNet.Dates.Corpus.csproj src/LinkedArtNet.Dates.Corpus/
 COPY src/LinkedArtNet.Dates.Llm/LinkedArtNet.Dates.Llm.csproj src/LinkedArtNet.Dates.Llm/
+COPY src/LinkedArtNet.Agents/LinkedArtNet.Agents.csproj src/LinkedArtNet.Agents/
 COPY src/LinkedArtNet.ExamplesSite/LinkedArtNet.ExamplesSite.csproj src/LinkedArtNet.ExamplesSite/
 RUN dotnet restore src/LinkedArtNet.ExamplesSite/LinkedArtNet.ExamplesSite.csproj
 COPY src/LinkedArtNet src/LinkedArtNet
@@ -14,6 +15,7 @@ COPY src/LinkedArtNet.Examples src/LinkedArtNet.Examples
 COPY src/LinkedArtNet.Dates src/LinkedArtNet.Dates
 COPY src/LinkedArtNet.Dates.Corpus src/LinkedArtNet.Dates.Corpus
 COPY src/LinkedArtNet.Dates.Llm src/LinkedArtNet.Dates.Llm
+COPY src/LinkedArtNet.Agents src/LinkedArtNet.Agents
 COPY docs/canonical-expression.md docs/
 COPY src/LinkedArtNet.ExamplesSite src/LinkedArtNet.ExamplesSite
 ARG GIT_SHA=unknown

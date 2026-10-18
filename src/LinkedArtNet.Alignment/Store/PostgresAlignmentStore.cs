@@ -506,7 +506,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             on conflict (uri) do update set source = excluded.source, label = excluded.label, labels = excluded.labels, normalised_labels = excluded.normalised_labels, type = excluded.type,
                 begin_earliest = excluded.begin_earliest, begin_latest = excluded.begin_latest, end_earliest = excluded.end_earliest, end_latest = excluded.end_latest, lifespan_text = excluded.lifespan_text,
                 same_as = excluded.same_as, data = excluded.data, fetched_at = excluded.fetched_at, source_version = excluded.source_version;
-            drop table authority_records_in
+            drop table authority_records_in;
+            analyze authority_records
             """, conn))
         {
             merge.CommandTimeout = 0;

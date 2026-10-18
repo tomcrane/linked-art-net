@@ -126,15 +126,19 @@ List of Artist Names, which is made available under the ODC Attribution License"
 A `ContextRule` per context (the field a string came from) says what classes it may name and which agent-string
 profile reads it. `StringReading.Read` runs the agent parser when a profile is named, so "Dürer, Albrecht,
 1471-1528" becomes the name "Dürer, Albrecht", a lifespan, and any nationality or occupation the string carried;
-`NameMatcher.Keys` then gives the lookup keys: the normalised name, its folded form, and the other word order
-("albrecht dürer").
+`NameMatcher.Keys` then gives the lookup keys: the normalised name, its folded form, the bare form without
+punctuation, the comparison form with conventional abbreviations expanded and firm noise removed ("thos. agnew &
+sons ltd" and "messrs langford" become "thomas agnew sons" and "langford"; `Tables/name-forms.json`, written from
+general knowledge and extended as data shows the need), and the other word order ("albrecht dürer"). Labels are
+indexed under the same variants (`StringKey.Variants`), so any of them finds the record.
 
 ### 8.3 Candidates, scoring, groups
 
 `IAuthoritySource.FindAsync(reading)` returns `Candidate`s; `LocalIndexSource` is the store's records for one
 source (ulan, aat, tgn, loc) looked up by the keys within the allowed classes. `NameMatcher.Score` ranks a name
-against a record's labels: exact 1.0, folded 0.97, the same words in another order 0.93, a surname with initials
-against full given names 0.85, then word overlap and a bounded edit distance (one letter off scores about 0.82).
+against a record's labels: exact 1.0, folded 0.97, the same comparison form 0.95, the same words in another order
+0.93, a surname with initials against full given names 0.85, then word overlap and a bounded edit distance (one
+letter off scores about 0.82).
 `Reconciler.Score` then applies the design's rules: a candidate of a class the context forbids is vetoed; when both
 sides have dates, agreement lifts the score and conflict vetoes; a shared nationality lifts it. `Reconciler.Groups`
 joins candidates through their URIs and `sameAs` links (union-find), so ULAN's record and the LoC record it points
@@ -172,9 +176,19 @@ dotnet run --project tools/Align -- load-getty <ulan.nt | unzipped-folder> --voc
 dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
 ```
 
-`reconcile` records a run with its options and report. The PMC context rules live in the tool for now
-(persauthorfull: Person; corpauthor and publisher: Group; place: Place; keywords: anything), and move to the
-dataset manifest in step 4.
+`reconcile` records a run with its options and report; `decisions --run <id> [--method m]` shows a run's breakdown
+by context and method and a sample with evidence. The PMC context rules live in the tool for now (persauthorfull:
+Person; corpauthor and publisher: Group then Person, since sale catalogues name auctioneers and dealers there;
+place: Place; keywords: anything), and move to the dataset manifest in step 4.
+
+### 8.6 First real run (2026-10-18)
+
+ULAN explicit (January 2026 dump, 65 million triples, 404,624 records) loaded in eight minutes on the owner's
+laptop. The first 500 undecided PMC strings were almost all corpauthor residue the 2024 run had failed on: 7
+matched the store, 49 were queued (ULAN has them, at full score through alternate labels, but a lone undated source
+goes to review), 444 minted. The minted sample was mostly genuine residue (local committees, fairs, small dealers)
+plus misses that the bare and canonical keys now cover ("Thos. Agnew & Sons Ltd", "Messrs Langford", names with
+punctuation) and auctioneers ULAN holds as people, which the corpauthor rule now allows.
 
 ## 9. Not yet
 

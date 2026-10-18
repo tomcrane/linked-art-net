@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Store\Schema.sql" LogicalName="LinkedArtNet.Alignment.Schema.sql" />
+    <EmbeddedResource Include="Tables\name-forms.json" LogicalName="LinkedArtNet.Alignment.Tables.name-forms.json" />
   </ItemGroup>
 
 </Project>

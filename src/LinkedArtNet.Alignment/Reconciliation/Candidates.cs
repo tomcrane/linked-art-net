@@ -4,7 +4,7 @@ using LinkedArtNet.Alignment.Store;
 namespace LinkedArtNet.Alignment.Reconciliation;
 
 /// <summary>How strings in one context are read: what they may name, and whether the agent-string parser separates the name from dates, roles and honorifics first.</summary>
-/// <param name="Classes">The entity classes a string in this context may name, in order of preference.</param>
+/// <param name="Classes">The entity classes a string in this context may name, in order of preference; the first is what a new entity is minted as, and the agent parser's reading of the kind moves that class to the front.</param>
 /// <param name="AgentProfile">The agent parser profile to read the string with, or null to take the text as the whole name.</param>
 public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null)
 {
@@ -41,8 +41,9 @@ public sealed record StringReading(
         {
             agent = parser.Parse(s.Raw);
             if (agent.HasName) text = agent.Name!;
-            if (agent.Kind == AgentKind.Group && classes.Contains(EntityClass.Group)) classes = [EntityClass.Group];
-            else if (agent.Kind == AgentKind.Person && classes.Contains(EntityClass.Person)) classes = [EntityClass.Person];
+            // the parser's reading of the kind puts that class first; the rule still says what is allowed at all
+            if (agent.Kind == AgentKind.Group && classes.Contains(EntityClass.Group)) classes = [EntityClass.Group, .. classes.Where(c => c != EntityClass.Group)];
+            else if (agent.Kind == AgentKind.Person && classes.Contains(EntityClass.Person)) classes = [EntityClass.Person, .. classes.Where(c => c != EntityClass.Person)];
             if (agent.Dates is { Kind: Dates.ResultKind.BirthDeath or Dates.ResultKind.FormationDissolution } d)
                 lifespan = Lifespan.From(d.Begin, d.End, agent.DateText);
             nationalities = agent.Nationalities.Select(n => n.AatUri ?? n.Label).Distinct(StringComparer.Ordinal).ToArray();

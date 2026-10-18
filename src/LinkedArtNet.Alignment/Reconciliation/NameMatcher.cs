@@ -9,14 +9,13 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 /// </summary>
 public static class NameMatcher
 {
-    /// <summary>The lookup keys for a name: its normalised form, the folded form, and the inverted or natural order of the words when the name has a comma.</summary>
+    /// <summary>The lookup keys for a name: its normalised, folded, bare and canonical forms (<see cref="StringKey.Variants"/>), and the inverted or natural order of the words when the name has a comma.</summary>
     public static IReadOnlyList<string> Keys(string name)
     {
         var key = StringKey.Normalise(name);
         if (key.Length == 0) return [];
-        var keys = new List<string> { key };
+        var keys = new List<string>(StringKey.Variants(name));
         void Add(string k) { if (k.Length > 0 && !keys.Contains(k, StringComparer.Ordinal)) keys.Add(k); }
-        Add(StringKey.Fold(key));
         var comma = key.IndexOf(',');
         if (comma > 0 && comma < key.Length - 1)
         {
@@ -59,6 +58,8 @@ public static class NameMatcher
         if (a == b) return 1.0;
         var fa = StringKey.Fold(a); var fb = StringKey.Fold(b);
         if (fa == fb) return 0.97;
+        var ca = NameForms.Canonical(fa); var cb = NameForms.Canonical(fb);
+        if (ca.Length > 0 && ca == cb) return 0.95;
         var ta = Tokens(fa); var tb = Tokens(fb);
         if (ta.Length == 0 || tb.Length == 0) return 0;
         if (SameMultiset(ta, tb)) return 0.93;

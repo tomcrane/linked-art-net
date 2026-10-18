@@ -14,6 +14,9 @@ public class NameMatcherTests
         Assert.Contains("albrecht dürer", keys);
         Assert.Contains("albrecht durer", keys);
         Assert.Contains("smith, john", NameMatcher.Keys("John Smith"));
+        Assert.Contains("knight frank rutley", NameMatcher.Keys("Knight, Frank & Rutley"));
+        Assert.Contains("thomas agnew sons", NameMatcher.Keys("Thos. Agnew & Sons Ltd"));
+        Assert.Contains("langford", NameMatcher.Keys("Messrs Langford"));
         Assert.Equal(["tate gallery"], NameMatcher.Keys("Tate Gallery").Where(k => k == "tate gallery"));
         Assert.Empty(NameMatcher.Keys("  "));
     }
@@ -24,11 +27,23 @@ public class NameMatcherTests
     [InlineData("smith, john", "john smith", 0.93)]
     [InlineData("smith, j.", "smith, john", 0.85)]
     [InlineData("smith, j. a.", "smith, john arthur", 0.85)]
+    [InlineData("thos. agnew & sons ltd", "thomas agnew & sons", 0.95)]
+    [InlineData("messrs. langford", "langford", 0.95)]
+    [InlineData("knight, frank & rutley", "knight frank and rutley", 0.95)] // "&" and "and" compare equal in the canonical form
     [InlineData("smith, john", "smyth, john", 0.82)] // one letter off: edit similarity, below acceptance and above review
     [InlineData("tate gallery", "national gallery", 0.267)]
     [InlineData("rembrandt", "vermeer", 0.0)]
     public void Scores_rank_exact_folded_reordered_initials_then_fuzzy(string a, string b, double expected) =>
         Assert.Equal(expected, NameMatcher.Score(a, b), 2);
+
+    [Theory]
+    [InlineData("Thos. Agnew & Sons Ltd", "thomas agnew sons")]
+    [InlineData("Messrs Waterer & Sons", "waterer sons")]
+    [InlineData("Marlborough Galerie AG", "marlborough galerie")]
+    [InlineData("England & Co.", "england co")]
+    [InlineData("Hazlitt, Gooden and Fox", "hazlitt gooden fox")]
+    [InlineData("Ltd", "ltd")] // a name that is only a suffix is left alone
+    public void Canonical_forms_expand_abbreviations_and_drop_firm_noise(string raw, string canonical) => Assert.Equal(canonical, NameForms.Canonical(StringKey.Normalise(raw)));
 
     [Theory]
     [InlineData("dürer", "durer")]
@@ -175,6 +190,8 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // found by the folded key and by the inverted order
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person"));
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["albrecht durer"], "ulan"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500301417", "ulan", "Thomas Agnew & Sons", ["Agnew's"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys("Thos. Agnew & Sons Ltd"), "ulan", "Group"));
         Assert.Single(await pg.Store.FindAuthoritiesBySameAsAsync("http://www.wikidata.org/entity/Q5580"));
     }
 

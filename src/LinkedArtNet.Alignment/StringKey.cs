@@ -31,6 +31,29 @@ public static partial class StringKey
     /// decomposition spelled out (\u00df to ss, \u00f8 to o, \u0142 to l). The store indexes this as a second lookup key
     /// beside the normalised one, so accents present on one side and absent on the other do not decide a match.
     /// </summary>
+    [GeneratedRegex(@"[^\p{L}\p{Nd}\s]+")] private static partial Regex NotLetterOrDigit();
+
+    /// <summary>A normalised key with everything but letters, digits and spaces removed: "knight, frank &amp; rutley" becomes "knight frank rutley".</summary>
+    public static string Bare(string normalised) => Spaces().Replace(NotLetterOrDigit().Replace(normalised, " "), " ").Trim();
+
+    /// <summary>
+    /// Every key under which a label is indexed, so a lookup by any of them finds it: the normalised form, its
+    /// diacritic-folded form, the bare form without punctuation, and the comparison form with abbreviations expanded
+    /// and legal suffixes removed (<see cref="NameForms.Canonical"/>), each only when it differs.
+    /// </summary>
+    public static IReadOnlyList<string> Variants(string? raw)
+    {
+        var key = Normalise(raw);
+        if (key.Length == 0) return [];
+        var list = new List<string>(6) { key };
+        void Add(string k) { if (k.Length > 0 && !list.Contains(k, StringComparer.Ordinal)) list.Add(k); }
+        var folded = Fold(key);
+        Add(folded);
+        Add(Bare(folded));
+        Add(NameForms.Canonical(folded));
+        return list;
+    }
+
     public static string Fold(string normalised)
     {
         if (normalised.Length == 0) return normalised;

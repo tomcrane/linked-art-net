@@ -555,7 +555,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     private static string Status(EntityStatus s) => s.ToString().ToLowerInvariant();
 
-    /// <summary>The lookup keys for a set of labels: each label normalised, and its diacritic-folded form when that differs, so "Dürer" is found by "Durer".</summary>
+    /// <summary>The lookup keys for a set of labels (<see cref="StringKey.Variants"/>): normalised, folded, bare and canonical forms, so "Dürer" is found by "Durer" and "Thos. Agnew &amp; Sons Ltd" by "Thomas Agnew &amp; Sons".</summary>
     private static string[] NormalisedLabels(string? label, IEnumerable<string> labels) =>
-        labels.Prepend(label ?? "").Select(StringKey.Normalise).Where(k => k.Length > 0).SelectMany(k => new[] { k, StringKey.Fold(k) }).Distinct(StringComparer.Ordinal).ToArray();
+        labels.Prepend(label ?? "").SelectMany(StringKey.Variants).Distinct(StringComparer.Ordinal).ToArray();
 }

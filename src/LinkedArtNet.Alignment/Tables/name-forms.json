@@ -1,0 +1,12 @@
+{
+  "notes": "Forms that make two writings of one name compare equal: conventional English abbreviations of given names as found in sale catalogues and imprints (Thos. Agnew, Wm. Blake), a plural courtesy prefix for firms, the connective that an ampersand stands for, and legal-form suffixes that catalogues add or drop (Ltd, GmbH). Written by the assistant from general knowledge of British trade usage, not copied from any source; add to it as data shows the need. Applied to normalised keys only when comparing or indexing, never to what is published.",
+  "abbreviations": {
+    "thos": "thomas", "wm": "william", "jas": "james", "chas": "charles", "geo": "george", "jno": "john", "robt": "robert",
+    "hy": "henry", "hen": "henry", "fredk": "frederick", "saml": "samuel", "benj": "benjamin", "edwd": "edward", "edw": "edward",
+    "richd": "richard", "danl": "daniel", "jos": "joseph", "nathl": "nathaniel", "alexr": "alexander", "elizth": "elizabeth",
+    "margt": "margaret", "theo": "theodore", "josh": "joshua", "abm": "abraham", "jon": "jonathan"
+  },
+  "firmPrefixes": ["messrs"],
+  "connectives": ["and"],
+  "legalSuffixes": ["ltd", "limited", "plc", "inc", "incorporated", "llc", "llp", "gmbh", "ag", "sa", "srl", "bv", "nv", "pty", "pvt", "co ltd"]
+}

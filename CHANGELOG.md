@@ -30,7 +30,9 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   biographies, LoC and Wikidata links as sameAs); the reconciler: context rules read strings through the agent
   parser, candidates from overrides, the store and the local indexes are scored on name, dates, type and
   nationality, grouped through sameAs links, and accepted, queued for review with a provisional entity, or minted,
-  every decision with its evidence. `tools/Align load-getty|reconcile`.
+  every decision with its evidence. `tools/Align load-getty|reconcile|decisions`. Labels and names are also keyed
+  bare (no punctuation) and canonical (conventional abbreviations expanded, firm prefixes and legal suffixes removed;
+  `Tables/name-forms.json`).
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

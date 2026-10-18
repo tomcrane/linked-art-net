@@ -22,6 +22,8 @@ public enum AuditFlag
     UlanViaLink,
     /// <summary>The entity has no ULAN id and more than one ULAN record links to its ids: not resolved here.</summary>
     UlanAmbiguous,
+    /// <summary>The entity carries more than one ULAN id: two people or bodies conflated, unless ULAN itself has a duplicate.</summary>
+    MultipleUlan,
 }
 
 public sealed record AuditItem(Entity Entity, string UlanUri, AuthorityRecord? Record, IReadOnlyList<AuditFlag> Flags, string Detail);
@@ -55,11 +57,16 @@ public sealed class IndexAudit(IAlignmentStore store)
                 after = e.Id;
                 entities++;
                 AuditItem item;
-                var ulan = e.Equivalents.FirstOrDefault(q => q.Source == "ulan")?.Uri;
-                if (ulan is not null)
+                var ulans = e.Equivalents.Where(q => q.Source == "ulan").Select(q => q.Uri).Distinct(StringComparer.Ordinal).ToList();
+                if (ulans.Count > 0)
                 {
                     withUlan++;
-                    item = Check(e, ulan, await store.GetAuthorityAsync(ulan, ct));
+                    // every ULAN id is checked; the flags and details of all of them are reported together
+                    var checks = new List<AuditItem>();
+                    foreach (var ulan in ulans) checks.Add(Check(e, ulan, await store.GetAuthorityAsync(ulan, ct)));
+                    var flagsAll = checks.SelectMany(c => c.Flags).Distinct().ToList();
+                    if (ulans.Count > 1) flagsAll.Insert(0, AuditFlag.MultipleUlan);
+                    item = new AuditItem(e, string.Join(" ", ulans), checks[0].Record, flagsAll, string.Join("; ", checks.Select(c => c.Detail).Where(d => d.Length > 0)));
                 }
                 else
                 {
@@ -123,7 +130,7 @@ public sealed class IndexAudit(IAlignmentStore store)
 
     public static string CsvLine(AuditItem item)
     {
-        static string Q(string? s) => s is null ? "" : "\"" + s.Replace("\"", "\"\"") + "\"";
+        static string Q(string? s) => s is null ? "" : "\"" + (s.Length > 0 && "=+-@\t\r".Contains(s[0]) ? "'" + s : s).Replace("\"", "\"\"") + "\""; // a leading formula character would run when the report is opened in a spreadsheet
         return string.Join(",", Q(item.Entity.Id), item.Entity.Class.ToString(), Q(item.Entity.Label), Q(item.UlanUri), Q(item.Record?.Label), Q(string.Join(" ", item.Flags)), Q(item.Detail));
     }
 }

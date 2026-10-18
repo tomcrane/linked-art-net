@@ -72,6 +72,20 @@ public class SchemeTests
         Assert.False(rembrandt.Compatible(later));
         Assert.False(rembrandt.IsEmpty);
         Assert.True(silent.IsEmpty);
+        // three states: a shared side that overlaps agrees; different sides are incomparable unless a begin lies after, or a lifetime before, the other's end
+        Assert.Equal(DateAgreement.Agree, rembrandt.Compare(sameBirthUnknownDeath));
+        Assert.Equal(DateAgreement.Conflict, rembrandt.Compare(later));
+        var bornOnly = new Lifespan(Y(1850), Y(1850, end: true), null, null, "1850-");
+        var diedOnly = new Lifespan(null, null, Y(1700), Y(1700, end: true), "-1700");
+        Assert.Equal(DateAgreement.Conflict, bornOnly.Compare(diedOnly));        // born 150 years after the other died
+        Assert.Equal(DateAgreement.Conflict, diedOnly.Compare(bornOnly));
+        var diedLater = new Lifespan(null, null, Y(1900), Y(1900, end: true), "-1900");
+        Assert.Equal(DateAgreement.Incomparable, bornOnly.Compare(diedLater));   // 50 years: nothing to say
+        Assert.Equal(DateAgreement.Incomparable, bornOnly.Compare(diedLater, 120));
+        var diedMuchLater = new Lifespan(null, null, Y(2000), Y(2000, end: true), "-2000");
+        Assert.Equal(DateAgreement.Conflict, bornOnly.Compare(diedMuchLater, 120)); // a 150-year life, for a person
+        Assert.Equal(DateAgreement.Incomparable, bornOnly.Compare(diedMuchLater)); // fine for an institution
+        Assert.Equal(DateAgreement.Incomparable, rembrandt.Compare(silent));
     }
 
     [Fact]

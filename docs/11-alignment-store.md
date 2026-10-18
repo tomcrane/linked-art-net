@@ -129,8 +129,10 @@ download (7 GB gzipped, streamed without unpacking): personal, corporate, confer
 become records typed Person, Group, Event, Group and Place; the authoritative label and the variants are indexed,
 and a personal heading's embedded dates ("Dürer, Albrecht, 1471-1528") are split off so the name alone is a key and
 the dates become the lifespan when the real-world-object node has none; VIAF and Wikidata links come through as
-sameAs (VIAF's `sourceID` form, which is LoC's own id reflected back, is dropped). The shared staging lives in
-`TripleStaging`. Credit: Library of Congress Name Authority File.
+sameAs (VIAF's `sourceID` form, which is LoC's own id reflected back, is dropped). EDTF years are read as ranges
+("185X" is 1850 to 1859) and a negative year, BCE, stays text. Each load stages into its own table, dropped at the
+end, and retires the source's records the new dump no longer has, so a vanished id is noticed. The shared staging
+lives in `TripleStaging`. Credit: Library of Congress Name Authority File.
 
 ### 8.2 Reading a string (`Reconciliation/`)
 
@@ -150,10 +152,14 @@ source (ulan, aat, tgn, loc) looked up by the keys within the allowed classes. `
 against a record's labels: exact 1.0, folded 0.97, the same comparison form 0.95, the same words in another order
 0.93, a surname with initials against full given names 0.85, then word overlap and a bounded edit distance (one
 letter off scores about 0.82).
-`Reconciler.Score` then applies the design's rules: a candidate of a class the context forbids is vetoed; when both
-sides have dates, agreement lifts the score and conflict vetoes; a shared nationality lifts it. `Reconciler.Groups`
-joins candidates through their URIs and `sameAs` links (union-find), so ULAN's record and the LoC record it points
-at vote as one group with two sources; a group whose members are all vetoed drops out.
+`Reconciler.Score` then applies the design's rules: a candidate of a class the context forbids is vetoed; dates are
+compared three ways (`Lifespan.Compare`): a side both know that overlaps is agreement and lifts the score, a side
+both know that is disjoint, or a birth after the other's death or more than a lifetime before it, is a conflict and
+vetoes, and dates known on different sides that neither check bites are not comparable and change nothing; a shared
+nationality lifts the score. `Reconciler.Groups` joins candidates through their URIs and `sameAs` links
+(union-find), so ULAN's record and the LoC record it points at vote as one group with two sources. A group is vetoed
+when all its members are, or when a vetoed member is linked by the authorities to a live one: they say it is the
+same person, so the conflict is the live record's too. The store's own entities do not count as a source.
 
 ### 8.4 Decisions
 
@@ -161,14 +167,19 @@ For each undecided string, stopping at the first that answers:
 
 1. **Override** for the whole string or the name part: method `override`; the target becomes the entity (created
    under the curated identifier if it is ours, or with the authority URI as its equivalent).
-2. **The store**: entities of the dataset whose labels match a key and whose lifespan does not conflict. One
-   acceptable match, or one with authority behind it among provisional lookalikes, is taken: method `exact-name`.
-   This is the common case on a rerun.
+2. **The store**: entities of the dataset whose labels match a key and whose lifespan does not conflict; an entity
+   without dates of its own (an import) is given its authority records' dates for the check. One acceptable match,
+   or one with authority behind it among provisional lookalikes, is taken: method `exact-name`. An entity minted for
+   a string that is itself awaiting review never answers silently, so siblings of a queued string are queued too; an
+   entity minted because nothing was found anywhere does, so one unknown name across contexts stays one local
+   authority. This is the common case on a rerun.
 3. **The local indexes**, scored and grouped. The top group is accepted (method `vote`) when its score reaches
-   `AcceptScore` and it carries: two independent sources agree, or an entity already in the store is in it, or
-   (`AcceptSingleSourceWithDates`, on by default while ULAN is the only index; doc 10 sends a lone source to review)
-   one source matches the name exactly and both sides have compatible dates. A rival group at acceptance score,
-   unless it is only a provisional lookalike, is a disagreement and sends the string to review instead.
+   `AcceptScore` and it carries: two independent sources agree, or an entity with authority behind it is already in
+   the store, or (`AcceptSingleSourceWithDates`, on by default while ULAN is the only index; doc 10 sends a lone
+   source to review) one source matches the name exactly and the dates agree, both known on the same side. A rival
+   group at acceptance score is a disagreement and sends the string to review; a provisional lookalike counts as a
+   rival only against another lookalike. A lookup that returned more records than it was asked for never accepts,
+   since the rival may be among the unseen, and queues instead.
 4. **Review** when the best group reaches `ReviewScore` but is not accepted: a provisional entity is minted for the
    string meanwhile and the decision, method `queued`, carries the candidates as evidence. The review UI (step 5)
    reads these.
@@ -188,9 +199,11 @@ dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--
 ```
 
 `reconcile` records a run with its options and report; `decisions --run <id> [--method m]` shows a run's breakdown
-by context and method and a sample with evidence; `undo-run --run <id>` invalidates a run's decisions and removes
-the provisional entities it minted that nothing else points at, so the same strings can be reconciled again after
-a change. The PMC context rules live in the tool for now (persauthorfull:
+by context and method and a sample with evidence; `undo-run --run <id>` invalidates a run's decisions, removes the
+equivalents it added (an entity left with none goes back to provisional) and the entities it minted that nothing
+else points at, so the same strings can be reconciled again after a change and cannot find the run's own answer;
+`reindex-labels` recomputes every lookup key after the key rules change (the comparison form, the abbreviation
+table), since keys are computed when a row is written. The PMC context rules live in the tool for now (persauthorfull:
 Person; corpauthor and publisher: Group then Person, since sale catalogues name auctioneers and dealers there;
 place: Place; keywords: anything), and move to the dataset manifest in step 4.
 
@@ -225,7 +238,8 @@ the ULAN record that links to its LoC, Wikidata or VIAF id: **UlanMissing** (the
 merged or mistyped), **LabelMismatch**, **DatesConflict**, **TypeMismatch**, **LinkConflict** (the entity has a LoC,
 Wikidata or VIAF id and ULAN links to a different one: a wrong cluster on one side, or LoC's two headings for one
 body under its earlier and later names; review decides), **LinkGain** (ULAN links to an id the entity lacks),
-**UlanViaLink** (the ULAN id the entity could gain) and **UlanAmbiguous** (several ULAN records claim its ids). The
+**UlanViaLink** (the ULAN id the entity could gain), **UlanAmbiguous** (several ULAN records claim its ids) and
+**MultipleUlan** (the entity carries more than one ULAN id, each of which is checked). The
 first run over the PMC store found only 799 entities with a ULAN id, and its label mismatches were mostly LoC-style
 parenthesised qualifiers, which the comparison form now drops. The flagged entities go to a CSV.
 

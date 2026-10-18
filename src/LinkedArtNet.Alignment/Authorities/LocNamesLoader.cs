@@ -68,6 +68,7 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
                 progress, ct);
             progress?.Report("building records");
             var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(store.DataSource, table, sourceVersion, ct), ct);
+            if (records > 0) await store.RetireAuthoritiesAsync("loc", started, ct);
             return new LocLoadResult(read, kept, records, DateTimeOffset.UtcNow - started);
         }
         finally { await TripleStaging.DropAsync(store, table, ct); }
@@ -145,8 +146,28 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
     [GeneratedRegex(@"^(?<name>.+?),\s*(?<dates>(approximately |ca\. |b\. |d\. |fl\. |active |flourished )?-?\d{3,4}(\??)[-–]?(\s*(approximately |ca\. )?\d{3,4}\??)?\.?|(?<dates2>-\d{3,4}))$")]
     private static partial Regex TrailingDates();
 
-    [GeneratedRegex(@"\d{3,4}")]
+    [GeneratedRegex(@"\d{1,3}[Xx]{1,3}|\d{1,3}[Uu]{1,3}|-?\d{3,4}")] // the unspecified-digit forms first, or "185X" would match as "185"
     private static partial Regex Year();
+
+    /// <summary>A year from a heading or an EDTF date: "1471" is exact; "185X" is 1850 to 1859 and "18XX" 1800 to 1899 (EDTF unspecified digits); a negative year is BCE and stays text only.</summary>
+    internal static (int? From, int? To) ParseYear(string token)
+    {
+        token = token.Trim();
+        if (token.StartsWith('-')) return (null, null);
+        var unspecified = token.Count(c => c is 'X' or 'x' or 'U' or 'u');
+        if (unspecified == 0) return int.TryParse(token, NumberStyles.None, CultureInfo.InvariantCulture, out var y) && y > 0 ? (y, y) : (null, null);
+        var digits = token[..^unspecified];
+        if (!int.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out var lead)) return (null, null);
+        var scale = (int)Math.Pow(10, unspecified);
+        return (lead * scale, lead * scale + scale - 1);
+    }
+
+    private static Lifespan? LifespanFromRanges((int? From, int? To) start, (int? From, int? To) end, string text)
+    {
+        static DateTimeOffset? Day(int? y, bool last) => y is null || y < 1 || y > 9999 ? null : last ? new DateTimeOffset(y.Value, 12, 31, 23, 59, 59, TimeSpan.Zero) : new DateTimeOffset(y.Value, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        var l = new Lifespan(Day(start.From, false), Day(start.To, true), Day(end.From, false), Day(end.To, true), text);
+        return l.IsEmpty ? new Lifespan(null, null, null, null, text) : l;
+    }
 
     /// <summary>Splits a personal heading into the name and its date segment: "Dürer, Albrecht, 1471-1528" gives the name "Dürer, Albrecht" and a lifespan 1471 to 1528; "Smith, John, 1900-" an open one; "approximately 1500" a start only.</summary>
     internal static (string Name, string? Dates, Lifespan? Lifespan) SplitHeading(string label)
@@ -155,24 +176,23 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
         if (!m.Success) return (label, null, null);
         var name = m.Groups["name"].Value.TrimEnd(',', ' ');
         var dates = m.Groups["dates"].Success ? m.Groups["dates"].Value : m.Groups["dates2"].Value;
-        var years = Year().Matches(dates).Select(y => int.Parse(y.Value, CultureInfo.InvariantCulture)).ToList();
+        var years = Year().Matches(dates).Select(y => y.Value.TrimStart('-')).Where(y => y.Length >= 3).ToList();
         if (years.Count == 0 || name.Length == 0) return (label, null, null);
         var startsWithDash = dates.TrimStart().StartsWith('-') || dates.StartsWith("d. ", StringComparison.Ordinal);
-        string? start = null, end = null;
-        if (dates.StartsWith("d. ", StringComparison.Ordinal) || (startsWithDash && years.Count == 1)) end = years[0].ToString(CultureInfo.InvariantCulture);
-        else { start = years[0].ToString(CultureInfo.InvariantCulture); if (years.Count > 1) end = years[1].ToString(CultureInfo.InvariantCulture); }
+        (int?, int?) start = (null, null), end = (null, null);
+        if (dates.StartsWith("d. ", StringComparison.Ordinal) || (startsWithDash && years.Count == 1)) end = ParseYear(years[0]);
+        else { start = ParseYear(years[0]); if (years.Count > 1) end = ParseYear(years[1]); }
         if (dates.StartsWith("fl. ", StringComparison.Ordinal) || dates.StartsWith("active ", StringComparison.Ordinal) || dates.StartsWith("flourished ", StringComparison.Ordinal))
             return (name, dates, null); // active dates are not a lifespan
-        return (name, dates, GettyVocabLoader.LifespanFromYears(start, end)! with { Text = dates });
+        return (name, dates, LifespanFromRanges(start, end, dates));
     }
 
     /// <summary>A lifespan from the RWO's birth and death dates, which are years or ISO dates, sometimes with "approximately".</summary>
     internal static Lifespan? LifespanFrom(string? birth, string? death)
     {
-        static string? FirstYear(string? s) => s is null ? null : Year().Match(s) is { Success: true } m ? m.Value : null;
-        var b = FirstYear(birth); var d = FirstYear(death);
-        if (b is null && d is null) return null;
-        var l = GettyVocabLoader.LifespanFromYears(b, d);
-        return l is null ? null : l with { Text = birth is not null && death is not null ? $"{birth}-{death}" : birth ?? death };
+        static (int?, int?) FirstYear(string? s) => s is null ? (null, null) : Year().Match(s) is { Success: true } m ? ParseYear(m.Value) : (null, null);
+        if (birth is null && death is null) return null;
+        var text = birth is not null && death is not null ? $"{birth}-{death}" : (birth ?? death)!;
+        return LifespanFromRanges(FirstYear(birth), FirstYear(death), text);
     }
 }

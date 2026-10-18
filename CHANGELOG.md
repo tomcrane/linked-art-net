@@ -43,6 +43,14 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   the review desk for queued strings: the reconciler's evidence beside each one, with accept, always (an override),
   same as an existing entity, keep as a local authority, notes, skip and undo. `ReviewService` and `ProjectManifest`
   in the Alignment library; store schema version 2 (users, projects, memberships, notes); `RevertDecisionAsync`.
+- After an independent review of the alignment work: schema version 3 enforces one valid decision per string and
+  records what each decision superseded, so undo is exact; merges follow chains and refuse cycles; the desk checks
+  the project boundary and validates targets; dates compare three ways (agree, conflict, not comparable) with a
+  birth-against-death check; store entities take their authority records' dates; lookalikes awaiting review never
+  answer silently; vetoed members veto the group the authorities link them to; truncated lookups never accept;
+  `undo-run` removes a run's equivalents and voted entities; one staging table per load, retired records removed
+  on reload; EDTF years in LoC; `reindex-labels`; report CSVs neutralise formula characters; typed-name sign-in only
+  in Development from the local machine.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

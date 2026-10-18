@@ -58,6 +58,7 @@ public sealed record StringReading(
 /// <param name="NameScore">How well the string's name matched this candidate's labels, 0..1.</param>
 /// <param name="EntityId">Set when the candidate is an entity in the store rather than an external record.</param>
 /// <param name="Provisional">A store entity minted for an earlier string without any authority behind it: a lookalike that must not make a known entity ambiguous or contradict a vote.</param>
+/// <param name="ProvisionalQueued">A provisional entity whose own string is awaiting review: it never answers another string silently.</param>
 public sealed record Candidate(
     string Uri,
     string Source,
@@ -69,16 +70,25 @@ public sealed record Candidate(
     double NameScore,
     string? EntityId = null,
     IReadOnlyList<string>? Nationalities = null,
-    bool Provisional = false);
+    bool Provisional = false,
+    bool ProvisionalQueued = false);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
-public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason);
+/// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
+public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false);
 
 /// <summary>Candidates that are the same real-world thing across sources, joined through their mutual sameAs links, voting as one.</summary>
-public sealed record CandidateGroup(IReadOnlyList<ScoredCandidate> Members, double Score, IReadOnlyList<string> Sources, IReadOnlyList<string> Uris)
+/// <param name="Vetoed">Every member is vetoed, or a vetoed member is the same thing as a live one by the authorities' own links: the group cannot be the answer.</param>
+public sealed record CandidateGroup(IReadOnlyList<ScoredCandidate> Members, double Score, IReadOnlyList<string> Sources, IReadOnlyList<string> Uris, bool Vetoed = false)
 {
-    /// <summary>The highest-scoring member that was not vetoed.</summary>
-    public ScoredCandidate Best => Members.Where(m => !m.Veto).OrderByDescending(m => m.Score).First();
+    /// <summary>The highest-scoring member that was not vetoed, or the highest-scoring member of a vetoed group.</summary>
+    public ScoredCandidate Best => (Members.Where(m => !m.Veto).OrderByDescending(m => m.Score).FirstOrDefault() ?? Members.OrderByDescending(m => m.Score).First());
+}
+
+/// <summary>What a source found, and whether it had more than it was allowed to return.</summary>
+public sealed record CandidateSet(IReadOnlyList<Candidate> Candidates, bool Truncated)
+{
+    public static readonly CandidateSet Empty = new([], false);
 }
 
 /// <summary>A place to look for what a string names. Local sources read the store's authority records; remote ones call a service through a cache and a budget.</summary>
@@ -86,23 +96,27 @@ public interface IAuthoritySource
 {
     string Name { get; }
     bool IsRemote { get; }
-    Task<IReadOnlyList<Candidate>> FindAsync(StringReading reading, CancellationToken ct = default);
+    Task<CandidateSet> FindAsync(StringReading reading, CancellationToken ct = default);
 }
 
-/// <summary>A local index: the authority records of one source (ulan, aat, tgn, loc) already in the store, looked up by the reading's keys and limited to the classes the reading allows.</summary>
-public sealed class LocalIndexSource(IAlignmentStore store, string source, int limit = 50) : IAuthoritySource
+/// <summary>A local index: the authority records of one source (ulan, aat, tgn, loc) already in the store, looked up by the reading's keys and limited to the classes the reading allows. When more records match than the limit, the set says so and the reconciler sends the string to review rather than accept a candidate it may not have seen the rival of.</summary>
+public sealed class LocalIndexSource(IAlignmentStore store, string source, int limit = 200) : IAuthoritySource
 {
     public string Name => source;
     public bool IsRemote => false;
 
-    public async Task<IReadOnlyList<Candidate>> FindAsync(StringReading reading, CancellationToken ct = default)
+    public async Task<CandidateSet> FindAsync(StringReading reading, CancellationToken ct = default)
     {
-        if (reading.Keys.Count == 0) return [];
+        if (reading.Keys.Count == 0) return CandidateSet.Empty;
         var found = new Dictionary<string, AuthorityRecord>(StringComparer.Ordinal);
+        var truncated = false;
         foreach (var cls in reading.Classes)
-            foreach (var r in await store.FindAuthoritiesByLabelsAsync(reading.Keys, source, cls.ToString(), limit, ct))
-                found[r.Uri] = r;
-        return found.Values.Select(r => ToCandidate(r, reading, "local")).ToList();
+        {
+            var page = await store.FindAuthoritiesByLabelsAsync(reading.Keys, source, cls.ToString(), limit + 1, ct);
+            if (page.Count > limit) truncated = true;
+            foreach (var r in page.Take(limit)) found[r.Uri] = r;
+        }
+        return new CandidateSet(found.Values.Select(r => ToCandidate(r, reading, "local")).ToList(), truncated);
     }
 
     public static Candidate ToCandidate(AuthorityRecord r, StringReading reading, string stage)

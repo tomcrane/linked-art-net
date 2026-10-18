@@ -123,9 +123,20 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         await EnsureTargetAsync(dataset, decided, targetUri, ct);
         var reading = reconciler.Read(decided.String);
         var entity = await reconciler.EntityForUriAsync(dataset, targetUri, reading, null, ct);
+        await FoldProvisionalAsync(decided, entity, reviewer, ct);
         await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept", reading, new { target = targetUri, entity = entity.Id, note }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return entity;
+    }
+
+    /// <summary>The provisional entity a queued or minted string pointed at merges into the entity the reviewer chose, so nothing is left behind and its other strings follow. An entity with authority behind it is left alone.</summary>
+    private async Task FoldProvisionalAsync(DecidedString decided, Entity chosen, string reviewer, CancellationToken ct)
+    {
+        if (decided.Decision.EntityId is null || decided.Decision.EntityId == chosen.Id) return;
+        var current = await store.ResolveEntityAsync(decided.Decision.EntityId, ct);
+        if (current is null || current.Id == chosen.Id || current.Status != EntityStatus.Provisional || current.Equivalents.Count > 0) return;
+        try { await store.MergeAsync(current.Id, chosen.Id, reviewer, ct); }
+        catch (InvalidOperationException) { /* a chain or project mismatch: the decision still re-points below */ }
     }
 
     /// <summary>The reviewer says the string is the same as an entity already in the store.</summary>
@@ -135,6 +146,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var entity = await store.ResolveEntityAsync(entityId, ct) ?? throw new KeyNotFoundException($"No entity {entityId}.");
         if (entity.Dataset != dataset) throw new InvalidOperationException("The entity belongs to another project.");
         var reading = reconciler.Read(decided.String);
+        await FoldProvisionalAsync(decided, entity, reviewer, ct);
         await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("same-as", reading, new { entity = entity.Id, note }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return entity;

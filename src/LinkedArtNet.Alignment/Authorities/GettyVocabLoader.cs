@@ -82,6 +82,8 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
             var (read, kept) = await TripleStaging.StageAsync(store, table, triples, t => Wanted.Contains(t.Predicate) && (t.Predicate != RdfType || ConceptTypes.ContainsKey(t.Object)), progress, ct);
             progress?.Report("building records");
             var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(store.DataSource, table, vocabulary, sourceVersion, ct), ct);
+            // ids the new dump no longer has (retired or merged) go, so UlanMissing can fire for them
+            if (records > 0) await store.RetireAuthoritiesAsync(SourceName(vocabulary), started, ct);
             return new GettyLoadResult(vocabulary, read, kept, records, DateTimeOffset.UtcNow - started);
         }
         finally { await TripleStaging.DropAsync(store, table, ct); }

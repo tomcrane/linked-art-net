@@ -44,9 +44,11 @@ public class ReviewServiceTests(PostgresFixture pg)
         Assert.Equal(EntityStatus.Provisional, item.Entity!.Status);
         Assert.Null(await desk.NextAsync(ds, afterStringId: smith.Id));
 
-        // accept one candidate: a new entity with the ULAN id and its Wikidata link; the decision is human
+        // accept one candidate: a new entity with the ULAN id and its Wikidata link; the decision is human; the provisional lookalike is folded into it
+        var provisionalId = item.Entity.Id;
         var accepted = await desk.AcceptAsync(ds, smith.Id, "http://vocab.getty.edu/ulan/500000001", "tester", "the painter, not the engraver");
         Assert.Equal(EntityStatus.Confirmed, accepted.Status);
+        Assert.Equal(accepted.Id, (await pg.Store.ResolveEntityAsync(provisionalId))!.Id);
         Assert.Equal(["http://vocab.getty.edu/ulan/500000001", "http://www.wikidata.org/entity/Q1"], accepted.Equivalents.Select(q => q.Uri).OrderBy(x => x));
         var decision = (await pg.Store.DecisionForAsync(smith.Id))!;
         Assert.Equal(DecisionMethod.Human, decision.Method);

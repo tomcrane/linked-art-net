@@ -87,6 +87,15 @@ public class NTriplesTests
     }
 
     [Fact]
+    public void Report_csv_cells_cannot_run_as_formulas()
+    {
+        var s = new SourceString(1, "ds", "ctx", "=HYPERLINK(\"http://evil\")", "=hyperlink", null, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1);
+        var reading = new StringReading(s, s.Raw, [], [EntityClass.Person], null, [], [], null);
+        var line = ShadowRun.CsvLine(new ShadowItem(s, new Decision(1, 1, null, "imported", null, null, DateTimeOffset.UtcNow, null, null, true), null, new Evaluation(Outcome.Minted, reading, []), Verdict.OldLocal));
+        Assert.Contains("\"'=HYPERLINK(\"\"http://evil\"\")\"", line);
+    }
+
+    [Fact]
     public void A_bad_escape_fails_its_line_and_not_the_load()
     {
         var triples = NTriples.ReadText("<http://a/s> <http://a/p> \"bad \\U0011FFFF\" .\n<http://a/s> <http://a/p> \"surrogate \\U0000D800\" .\n<http://a/s> <http://a/p> \"fine \\U0001F600\" .").ToList();
@@ -113,6 +122,19 @@ public class NTriplesTests
 
 public class LocHeadingTests
 {
+    [Theory]
+    [InlineData("185X", 1850, 1859)]
+    [InlineData("18XX", 1800, 1899)]
+    [InlineData("1471", 1471, 1471)]
+    [InlineData("-0469", null, null)]
+    [InlineData("19uu", 1900, 1999)]
+    public void Edtf_years_read_as_ranges_and_bce_stays_text(string token, int? from, int? to)
+    {
+        var (f, t) = LocNamesLoader.ParseYear(token);
+        Assert.Equal(from, f);
+        Assert.Equal(to, t);
+    }
+
     [Theory]
     [InlineData("Dürer, Albrecht, 1471-1528", "Dürer, Albrecht", "1471-1528", 1471, 1528)]
     [InlineData("Smith, John, 1900-", "Smith, John", "1900-", 1900, null)]
@@ -141,6 +163,12 @@ public class LocHeadingTests
         var rwo = LocNamesLoader.LifespanFrom("1471-05-21", "approximately 1528")!;
         Assert.Equal(1471, rwo.BeginEarliest!.Value.Year);
         Assert.Equal(1528, rwo.EndLatest!.Value.Year);
+        var decade = LocNamesLoader.LifespanFrom("185X", null)!;
+        Assert.Equal(1850, decade.BeginEarliest!.Value.Year);
+        Assert.Equal(1859, decade.BeginLatest!.Value.Year);
+        var bce = LocNamesLoader.LifespanFrom("-0469", "-0399")!;
+        Assert.True(bce.IsEmpty);
+        Assert.Equal("-0469--0399", bce.Text);
         Assert.True(LocNamesLoader.UsableLink("http://viaf.org/viaf/12345"));
         Assert.True(LocNamesLoader.UsableLink("http://www.wikidata.org/entity/Q5580"));
         Assert.False(LocNamesLoader.UsableLink("http://viaf.org/viaf/sourceID/LC%7Cn79118011#skos:Concept"));
@@ -160,12 +188,23 @@ public class GroupingTests
         var loc = new Candidate("http://id.loc.gov/authorities/names/n1", "loc", "Dürer, Albrecht", EntityClass.Person, null, [], "local", 1.0);
         var otherGroup = new Candidate("http://vocab.getty.edu/ulan/2", "ulan", "Dürer, Albrecht", EntityClass.Group, null, [], "local", 1.0);
         var weak = new Candidate("http://viaf.org/viaf/9", "viaf", "Durer, Albert", EntityClass.Person, null, [], "remote", 0.9);
-        var groups = Reconciler.Groups(Reconciler.Score(reading, [ulan, loc, otherGroup, weak]));
-        Assert.Equal(2, groups.Count); // the Group-typed candidate is vetoed and its group dropped
+        var groups = Reconciler.Groups(Reconciler.Score(reading, [ulan, loc, otherGroup, weak], 120));
+        Assert.Equal(3, groups.Count);
         Assert.Equal(["ulan", "loc"], groups[0].Sources);
         Assert.Equal(1.0, groups[0].Score);
         Assert.Contains("http://id.loc.gov/authorities/names/n1", groups[0].Uris);
         Assert.Equal(["viaf"], groups[1].Sources);
+        Assert.True(groups[2].Vetoed); // the Group-typed candidate: its group is vetoed and ranks last
+
+        // a vetoed member that the authorities link to a live one takes the live one down with it: the undated LoC record is the
+        // same person as the ULAN record whose dates conflict
+        var dated = reading with { Lifespan = new Lifespan(new DateTimeOffset(1800, 1, 1, 0, 0, 0, TimeSpan.Zero), null, null, null, "1800-") };
+        var ulanDated = ulan with { Lifespan = GettyVocabLoader.LifespanFromYears("1471", "1528") };
+        var linked = Reconciler.Groups(Reconciler.Score(dated, [ulanDated, loc], 120));
+        Assert.True(Assert.Single(linked).Vetoed);
+        // the store's own entity does not count as a source
+        var storeEntity = new Candidate("https://data.example.org/x/person/abc", "store", "Dürer, Albrecht", EntityClass.Person, null, ["http://vocab.getty.edu/ulan/1"], "store", 1.0, "https://data.example.org/x/person/abc");
+        Assert.Equal(["ulan", "loc"], Reconciler.Groups(Reconciler.Score(reading, [storeEntity, ulan, loc], 120))[0].Sources);
     }
 
     [Fact]
@@ -176,10 +215,21 @@ public class GroupingTests
         var agrees = new Candidate("u1", "ulan", "Dürer, Albrecht", EntityClass.Person, GettyVocabLoader.LifespanFromYears("1471", "1528"), [], "local", 0.9, Nationalities: ["http://vocab.getty.edu/aat/300111192"]);
         var conflicts = new Candidate("u2", "ulan", "Dürer, Albrecht", EntityClass.Person, GettyVocabLoader.LifespanFromYears("1700", "1760"), [], "local", 1.0);
         var silent = new Candidate("u3", "ulan", "Dürer, Albrecht", EntityClass.Person, null, [], "local", 0.9);
-        var scored = Reconciler.Score(reading, [agrees, conflicts, silent]);
+        var scored = Reconciler.Score(reading, [agrees, conflicts, silent], 120);
         Assert.Equal(0.98, scored[0].Score); // 0.9 + dates + nationality
+        Assert.True(scored[0].DatesAgree);
         Assert.True(scored[1].Veto);
         Assert.Equal(0.9, scored[2].Score);
+        Assert.False(scored[2].DatesAgree);
+        // dates on different sides are not comparable: no lift, no veto, and no single-source acceptance
+        var diedOnly = new Candidate("u4", "loc", "Dürer, Albrecht", EntityClass.Person, new Lifespan(null, null, new DateTimeOffset(1520, 1, 1, 0, 0, 0, TimeSpan.Zero), null, "-1520"), [], "local", 1.0);
+        var incomparable = Reconciler.Score(reading, [diedOnly], 120)[0];
+        Assert.False(incomparable.Veto);
+        Assert.False(incomparable.DatesAgree);
+        Assert.Equal(1.0, incomparable.Score);
+        Assert.Contains("not comparable", incomparable.Reason);
+        var diedBefore = new Candidate("u5", "loc", "Dürer, Albrecht", EntityClass.Person, new Lifespan(null, null, new DateTimeOffset(1400, 1, 1, 0, 0, 0, TimeSpan.Zero), null, "-1400"), [], "local", 1.0);
+        Assert.True(Reconciler.Score(reading, [diedBefore], 120)[0].Veto); // died before the string's birth
     }
 }
 
@@ -244,6 +294,18 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["albrecht durer"], "ulan"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500301417", "ulan", "Thomas Agnew & Sons", ["Agnew's"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys("Thos. Agnew & Sons Ltd"), "ulan", "Group"));
+        // a reload without a record retires it; a stale key is recomputed by reindexing
+        await using (var cmd = pg.DataSource.CreateCommand("update authority_records set normalised_labels = '{stale}' where uri = 'http://vocab.getty.edu/ulan/500115493'")) await cmd.ExecuteNonQueryAsync();
+        Assert.Empty(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person"));
+        var reindexed = await pg.Store.ReindexLabelsAsync();
+        Assert.True(reindexed.AuthorityRecords >= 4);
+        Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person"));
+        var smaller = UlanSample[..UlanSample.IndexOf("<http://vocab.getty.edu/ulan/500301641>", StringComparison.Ordinal)]; // Dürer only
+        await Task.Delay(50);
+        await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(smaller), GettyVocabulary.Ulan, "test-sample-2");
+        Assert.NotNull(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500115493"));
+        Assert.Null(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500301641")); // retired: not in the new dump
+        Assert.Null(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500301417")); // the hand-added Agnew's went with it
         Assert.Single(await pg.Store.FindAuthoritiesBySameAsAsync("http://www.wikidata.org/entity/Q5580"), a => a.Source == "ulan"); // the LoC sample links to the same Wikidata item
     }
 
@@ -323,8 +385,8 @@ public class ReconcilerStoreTests(PostgresFixture pg)
 
         var report = await reconciler.RunAsync(ds);
         // oldest first: Tate (override), the dated Dürer (vote), the inverted Dürer (now in the store), Smith (two exact Smiths: review),
-        // Nobody (minted), the wrongly dated Dürer (ULAN vetoed by dates; the undated LoC record alone sends it to review)
-        Assert.Equal(new ReconcileReport(Considered: 6, Overridden: 1, MatchedStore: 1, Accepted: 1, Queued: 2, Minted: 1, Deferred: 0, Skipped: 0), report);
+        // Nobody (minted), the wrongly dated Dürer (ULAN vetoed by dates, and the LoC record it is linked to falls with it: minted)
+        Assert.Equal(new ReconcileReport(Considered: 6, Overridden: 1, MatchedStore: 1, Accepted: 1, Queued: 1, Minted: 2, Deferred: 0, Skipped: 0), report);
 
         // override: the entity was created under the curated identifier
         var tateEntity = (await pg.Store.ResolveAsync(ds, "corpauthor", "Tate"))!;
@@ -349,21 +411,53 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Contains("500000001", smithDecision.EvidenceJson);
         Assert.Contains("500000002", smithDecision.EvidenceJson);
 
-        // minted: nothing found. The wrongly dated string: the ULAN candidate is vetoed by its dates and the undated LoC record alone is not enough
+        // minted: nothing found. The wrongly dated string: the ULAN candidate is vetoed by its dates and takes the linked LoC record with it
         Assert.Equal(DecisionMethod.Minted, (await pg.Store.DecisionForAsync(nobody.Id))!.Method);
         var minted = (await pg.Store.ResolveAsync(ds, "persauthorfull", "Nobody, Zed, 1900-1980"))!;
         Assert.Equal("Nobody, Zed", minted.Label);
         Assert.Equal(1900, minted.Lifespan!.BeginEarliest!.Value.Year);
         var conflict = (await pg.Store.DecisionForAsync(wrongDates.Id))!;
-        Assert.Equal(DecisionMethod.Queued, conflict.Method);
+        Assert.Equal(DecisionMethod.Minted, conflict.Method);
         Assert.Contains("dates conflict", conflict.EvidenceJson);
+        Assert.Contains("vetoed", conflict.EvidenceJson);
         Assert.NotEqual(durer.Id, conflict.EntityId); // a provisional entity of its own, not Dürer's
+
+        // lookalikes: a sibling of a string awaiting review is queued too, never answered by the lookalike; a sibling of an
+        // unknown minted name is consolidated onto it; two provisional lookalikes with different dates make an undated string ambiguous
+        var smithAgain = await pg.Store.CollectAsync(ds, "persauthorfull", "Smith, John (editor)");
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, smithAgain));
+        var nobodyAgain = await pg.Store.CollectAsync(ds, "persauthorfull", "Nobody, Zed (editor)");
+        Assert.Equal(Outcome.MatchedStore, await reconciler.ReconcileOneAsync(ds, nobodyAgain));
+        Assert.Equal(minted.Id, (await pg.Store.ResolveAsync(ds, "persauthorfull", "Nobody, Zed (editor)"))!.Id);
+        await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Brown, Mary, 1800-1850"));
+        await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Brown, Mary, 1900-1960"));
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Brown, Mary")));
+        // a dated string whose only candidate has dates on the other side is not accepted on a single source
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000001", "loc", "Green, Ann", ["Green, Ann"], "Person", new Lifespan(null, null, new DateTimeOffset(1700, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1700, 12, 31, 0, 0, 0, TimeSpan.Zero), "-1700"), [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Green, Ann, 1850-"))); // born after the record's death: conflict
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000002", "loc", "White, Bea", ["White, Bea"], "Person", new Lifespan(null, null, new DateTimeOffset(1900, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1900, 12, 31, 0, 0, 0, TimeSpan.Zero), "-1900"), [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "White, Bea, 1850-"))); // not comparable: review, not acceptance
+        // a truncated lookup never accepts: with room for one record, the dated Dürer string is queued although ULAN alone would have carried it
+        var narrow = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan", limit: 1)], options);
+        var narrowString = await pg.Store.CollectAsync(ds, "persauthorfull", "Smith, John, 1700-1750");
+        var narrowEvaluation = await narrow.EvaluateAsync(ds, narrowString, includeStore: false);
+        Assert.True(narrowEvaluation.Truncated);
+        Assert.NotEqual(Outcome.Accepted, narrowEvaluation.Outcome);
+        await narrow.CommitAsync(ds, narrowString, narrowEvaluation);
 
         // a later run: a new spelling of a known person is answered from the store, not the indexes
         var later = await pg.Store.CollectAsync(ds, "persauthorfull", "Durer, Albrecht (engraver)");
         var again = await reconciler.RunAsync(ds);
         Assert.Equal(1, again.Considered);
         Assert.Equal(1, again.MatchedStore);
+        // an imported entity without dates is checked against its authority record's dates before the store answers for it
+        var imported = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Dürer, Albrecht", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(imported.Id, new Equivalent("http://vocab.getty.edu/ulan/500115493", "ulan", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var modern = await pg.Store.CollectAsync(ds, "persauthorfull", "Dürer, Albrecht, 1900-1980");
+        var modernEvaluation = await reconciler.EvaluateAsync(ds, modern);
+        Assert.NotEqual(Outcome.MatchedStore, modernEvaluation.Outcome);
+        Assert.Contains(modernEvaluation.Groups.SelectMany(g => g.Members), m => m.Candidate.EntityId == imported.Id && m.Veto);
+        await reconciler.CommitAsync(ds, modern, modernEvaluation);
         Assert.Equal(durer.Id, (await pg.Store.ResolveAsync(ds, "persauthorfull", "Durer, Albrecht (engraver)"))!.Id);
         Assert.Equal(DecisionMethod.ExactName, (await pg.Store.DecisionForAsync(later.Id))!.Method);
         Assert.Equal(0, (await reconciler.RunAsync(ds)).Considered);
@@ -386,7 +480,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // the audit: Dürer's entity agrees with its ULAN record; the impostor's ULAN id is not in the index
         var flagged = new List<AuditItem>();
         var audit = await new IndexAudit(pg.Store).RunAsync(ds, item => { flagged.Add(item); return Task.CompletedTask; });
-        Assert.Equal(2, audit.WithUlan);
+        Assert.Equal(3, audit.WithUlan); // Dürer, the impostor, and the undated import above
         Assert.True(audit.Clean >= 1);
         // an entity with only the LoC id is reached through ULAN's link and could gain the ULAN id
         var locOnly = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Durer, Albrecht", Status: EntityStatus.Aligned), scheme);
@@ -395,6 +489,15 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var audit2 = await new IndexAudit(pg.Store).RunAsync(ds, item => { viaLink.Add(item); return Task.CompletedTask; });
         Assert.Equal(1, audit2.ViaLink);
         Assert.Contains(viaLink, f => f.Entity.Id == locOnly.Id && f.Flags.Contains(AuditFlag.UlanViaLink) && f.Detail.Contains("500115493"));
+        // two ULAN ids on one entity are flagged, and both are checked
+        var conflated = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Dürer, Albrecht", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(conflated.Id, new Equivalent("http://vocab.getty.edu/ulan/500115493", "ulan", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        await pg.Store.AddEquivalentAsync(conflated.Id, new Equivalent("http://vocab.getty.edu/ulan/500000001", "ulan", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var multi = new List<AuditItem>();
+        await new IndexAudit(pg.Store).RunAsync(ds, item => { multi.Add(item); return Task.CompletedTask; });
+        var flaggedMulti = Assert.Single(multi, f => f.Entity.Id == conflated.Id);
+        Assert.Contains(AuditFlag.MultipleUlan, flaggedMulti.Flags);
+        Assert.Contains(AuditFlag.LabelMismatch, flaggedMulti.Flags); // Smith, John is not Dürer
         Assert.Contains(flagged, f => f.Entity.Id == impostor.Id && f.Flags.Contains(AuditFlag.UlanMissing));
         var linkConflict = IndexAudit.Check(durer with { Equivalents = [.. durer.Equivalents.Where(q => q.Source != "loc"), new Equivalent("http://id.loc.gov/authorities/names/n00000000", "loc", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow)] },
             "http://vocab.getty.edu/ulan/500115493", await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500115493"));
@@ -412,5 +515,18 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Null(await pg.Store.GetEntityAsync(provisional));
         Assert.NotNull(await pg.Store.GetEntityAsync(durer.Id));
         Assert.Equal(1, (await reconciler.RunAsync(ds)).Considered);
+        // a run that voted: its entity and its equivalents go too, so a rerun cannot find its own old answer
+        var voteRun = await pg.Store.StartRunAsync(ds);
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500999999", "ulan", "Voted, Vera", ["Voted, Vera"], "Person", GettyVocabLoader.LifespanFromYears("1900", "1980"), ["http://id.loc.gov/authorities/names/n99999999"], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n99999999", "loc", "Voted, Vera", ["Voted, Vera"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var vera = await pg.Store.CollectAsync(ds, "persauthorfull", "Voted, Vera, 1900-1980");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, vera, voteRun.Id));
+        var veraEntity = (await pg.Store.ResolveAsync(ds, "persauthorfull", "Voted, Vera, 1900-1980"))!;
+        Assert.Equal(EntityStatus.Aligned, veraEntity.Status);
+        var voteUndone = await pg.Store.UndoRunAsync(voteRun.Id);
+        Assert.Equal(1, voteUndone.ProvisionalEntitiesRemoved);
+        Assert.Null(await pg.Store.GetEntityAsync(veraEntity.Id));
+        Assert.Empty(await pg.Store.FindEntitiesByEquivalentAsync("http://vocab.getty.edu/ulan/500999999"));
+        Assert.Equal(1, (await reconciler.RunAsync(ds)).Considered); // the string is open again
     }
 }

@@ -258,6 +258,84 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return entities.Select(e => e with { Equivalents = byId[e.Id] }).ToList();
     }
 
+    /// <summary>A session-level advisory lock on a key, held on its own connection until disposed: two writers that would create an entity for the same authority URI take turns.</summary>
+    public async Task<IAsyncDisposable> LockAsync(string key, CancellationToken ct = default)
+    {
+        var conn = await _db.OpenConnectionAsync(ct);
+        try
+        {
+            await using var take = new NpgsqlCommand("select pg_advisory_lock(hashtext(@key))", conn);
+            take.Parameters.AddWithValue("key", key);
+            await take.ExecuteNonQueryAsync(ct);
+        }
+        catch { await conn.DisposeAsync(); throw; }
+        return new AdvisoryLock(conn, key);
+    }
+
+    private sealed class AdvisoryLock(NpgsqlConnection conn, string key) : IAsyncDisposable
+    {
+        public async ValueTask DisposeAsync()
+        {
+            try
+            {
+                await using var release = new NpgsqlCommand("select pg_advisory_unlock(hashtext(@key))", conn);
+                release.Parameters.AddWithValue("key", key);
+                await release.ExecuteNonQueryAsync();
+            }
+            finally { await conn.DisposeAsync(); }
+        }
+    }
+
+    /// <summary>Recomputes every entity's and authority record's lookup keys from its labels, after the key rules change (<see cref="StringKey.Variants"/>). Returns how many rows were rewritten.</summary>
+    public async Task<(int Entities, int AuthorityRecords)> ReindexLabelsAsync(IProgress<string>? progress = null, CancellationToken ct = default)
+    {
+        var entities = await ReindexAsync("entities", "id", progress, ct);
+        var records = await ReindexAsync("authority_records", "uri", progress, ct);
+        await using (var cmd = _db.CreateCommand("analyze entities; analyze authority_records")) await cmd.ExecuteNonQueryAsync(ct);
+        return (entities, records);
+    }
+
+    private async Task<int> ReindexAsync(string table, string keyColumn, IProgress<string>? progress, CancellationToken ct)
+    {
+        var done = 0;
+        string? after = null;
+        while (true)
+        {
+            var batch = new List<(string Key, string? Label, string[] Labels)>();
+            await using (var cmd = _db.CreateCommand($"select {keyColumn}, label, labels from {table}" + (after is null ? "" : $" where {keyColumn} > @after") + $" order by {keyColumn} limit 2000"))
+            {
+                if (after is not null) Add(cmd, "after", after);
+                await using var r = await cmd.ExecuteReaderAsync(ct);
+                while (await r.ReadAsync(ct)) batch.Add((r.GetString(0), Str(r, 1), r.GetFieldValue<string[]>(2)));
+            }
+            if (batch.Count == 0) break;
+            await using (var conn = await _db.OpenConnectionAsync(ct))
+            await using (var b = conn.CreateBatch())
+            {
+                foreach (var (key, label, labels) in batch)
+                {
+                    var c = new NpgsqlBatchCommand($"update {table} set normalised_labels = @n where {keyColumn} = @k");
+                    c.Parameters.AddWithValue("n", NormalisedLabels(label, labels)); c.Parameters.AddWithValue("k", key);
+                    b.BatchCommands.Add(c);
+                }
+                await b.ExecuteNonQueryAsync(ct);
+            }
+            done += batch.Count;
+            after = batch[^1].Key;
+            if (done % 20000 == 0) progress?.Report($"{table}: {done:N0} reindexed");
+        }
+        return done;
+    }
+
+    /// <summary>Removes a source's records that a load did not touch (fetched before the load began): retired or merged ids. Returns how many went.</summary>
+    public async Task<int> RetireAuthoritiesAsync(string source, DateTimeOffset notFetchedSince, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("delete from authority_records where source = @source and fetched_at < @since");
+        Add(cmd, "source", source); Add(cmd, "since", notFetchedSince.ToUniversalTime());
+        cmd.CommandTimeout = 0;
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
     // ---- source strings --------------------------------------------------------------------------------------------
 
     private const string StringColumns = "s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences";
@@ -351,6 +429,13 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return await r.ReadAsync(ct) ? ReadDecision(r) : null;
     }
 
+    public async Task<bool> HasValidDecisionAsync(string entityId, string method, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select exists (select 1 from decisions where entity_id = @e and method = @m and valid)");
+        Add(cmd, "e", entityId); Add(cmd, "m", method);
+        return (bool)(await cmd.ExecuteScalarAsync(ct))!;
+    }
+
     public async Task<Decision?> DecisionForAsync(long sourceStringId, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand($"select {DecisionColumns} from decisions d where d.source_string_id = @s and d.valid order by d.decided_at desc limit 1");
@@ -424,11 +509,24 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             cmd.Parameters.AddWithValue("run", runId);
             decisions = await cmd.ExecuteNonQueryAsync(ct);
         }
-        // provisional entities of the run that nothing points at any more; the run's own invalidated decisions let go of them first
+        // the equivalents the run added to any entity go; an entity the run left aligned with nothing behind it is provisional again
+        await using (var cmd = new NpgsqlCommand(
+            """
+            create temp table undo_touched on commit drop as select distinct entity_id from entity_equivalents where run_id = @run;
+            delete from entity_equivalents where run_id = @run;
+            update entities e set status = 'provisional', updated_at = now()
+              where e.id in (select entity_id from undo_touched) and e.status = 'aligned'
+                and not exists (select 1 from entity_equivalents q where q.entity_id = e.id)
+            """, conn, tx))
+        {
+            cmd.Parameters.AddWithValue("run", runId);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        // entities the run minted (provisional or voted) that nothing points at any more; the run's own invalidated decisions let go of them first
         await using (var cmd = new NpgsqlCommand(
             """
             create temp table undo_entities on commit drop as
-              select e.id from entities e where e.run_id = @run and e.status = 'provisional' and e.merged_into is null
+              select e.id from entities e where e.run_id = @run and e.merged_into is null
                 and not exists (select 1 from decisions d where d.entity_id = e.id and d.valid)
                 and not exists (select 1 from entities m where m.merged_into = e.id)
                 and not exists (select 1 from entity_equivalents q where q.entity_id = e.id);

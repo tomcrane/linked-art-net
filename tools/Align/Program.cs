@@ -194,6 +194,15 @@ switch (args[0])
         return 0;
     }
 
+    case "reindex-labels":
+    {
+        await store.InitialiseAsync();
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
+        var (entities, records) = await store.ReindexLabelsAsync(progress);
+        Console.WriteLine($"lookup keys recomputed for {entities:N0} entities and {records:N0} authority records");
+        return 0;
+    }
+
     case "undo-run":
     {
         var runId = Option("--run");
@@ -231,7 +240,8 @@ static void Usage() => Console.WriteLine(
       audit [--dataset] [--out reports] [--all]
                                              check entities against the local ULAN index, by their ULAN id or through LoC/Wikidata/VIAF links; CSV of the
                                              flagged ones (--all includes the clean gains too)
-      undo-run --run <id>                    take a run back: its decisions invalidated, its unreferenced provisional entities removed
+      undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
+      reindex-labels                         recompute every entity's and authority record's lookup keys after the key rules change
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
         [--reuse-by-equivalent] [--only-referenced] [--version v]
                                              for a second copy of those tables: map authorities onto entities that share

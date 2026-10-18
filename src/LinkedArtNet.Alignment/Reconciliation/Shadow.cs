@@ -115,7 +115,7 @@ public sealed class ShadowRun(IAlignmentStore store, Reconciler reconciler)
 
     public static string CsvLine(ShadowItem item)
     {
-        static string Q(string? s) => s is null ? "" : "\"" + s.Replace("\"", "\"\"") + "\"";
+        static string Q(string? s) => s is null ? "" : "\"" + (s.Length > 0 && "=+-@\t\r".Contains(s[0]) ? "'" + s : s).Replace("\"", "\"\"") + "\""; // a leading formula character would run when the report is opened in a spreadsheet
         var top = item.New.Groups.FirstOrDefault();
         var second = item.New.Groups.Skip(1).FirstOrDefault();
         var ids = item.OldEntity is null ? "" : string.Join(" ", item.OldEntity.Equivalents.Select(q => q.Uri));

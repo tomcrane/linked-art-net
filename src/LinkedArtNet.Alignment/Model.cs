@@ -37,21 +37,45 @@ public sealed record Equivalent(string Uri, string Source, string Method, double
 /// <see cref="BeginEarliest"/> and <see cref="BeginLatest"/>, their death between <see cref="EndEarliest"/> and
 /// <see cref="EndLatest"/>. <see cref="Text"/> is the dates as written. Any bound may be unknown.
 /// </summary>
+public enum DateAgreement { Agree, Conflict, Incomparable }
+
 public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? BeginLatest, DateTimeOffset? EndEarliest, DateTimeOffset? EndLatest, string? Text = null)
 {
     public bool IsEmpty => BeginEarliest is null && BeginLatest is null && EndEarliest is null && EndLatest is null;
 
-    /// <summary>Whether two lifespans could belong to the same thing: both begins known and disjoint is a conflict, likewise both ends; a missing side is neutral.</summary>
-    public bool Compatible(Lifespan other)
+    /// <summary>Whether two lifespans could belong to the same thing: anything but a <see cref="DateAgreement.Conflict"/>.</summary>
+    public bool Compatible(Lifespan other, int? maxLifetimeYears = null) => Compare(other, maxLifetimeYears) != DateAgreement.Conflict;
+
+    /// <summary>
+    /// How two lifespans relate. <b>Agree</b>: a side both know (begin or end) overlaps and nothing contradicts.
+    /// <b>Conflict</b>: a side both know is disjoint; or one's begin is after the other's end; or, given a longest
+    /// lifetime, one's begin is more than that many years before the other's end. <b>Incomparable</b>: the two know
+    /// different sides and neither check bites, so nothing can be said either way.
+    /// </summary>
+    public DateAgreement Compare(Lifespan other, int? maxLifetimeYears = null)
     {
+        static bool Known(DateTimeOffset? a, DateTimeOffset? b) => a is not null || b is not null;
         static bool Overlap(DateTimeOffset? a1, DateTimeOffset? a2, DateTimeOffset? b1, DateTimeOffset? b2)
         {
-            if (a1 is null && a2 is null || b1 is null && b2 is null) return true;
             var aFrom = a1 ?? DateTimeOffset.MinValue; var aTo = a2 ?? DateTimeOffset.MaxValue;
             var bFrom = b1 ?? DateTimeOffset.MinValue; var bTo = b2 ?? DateTimeOffset.MaxValue;
             return aFrom <= bTo && bFrom <= aTo;
         }
-        return Overlap(BeginEarliest, BeginLatest, other.BeginEarliest, other.BeginLatest) && Overlap(EndEarliest, EndLatest, other.EndEarliest, other.EndLatest);
+        var beginsKnown = Known(BeginEarliest, BeginLatest) && Known(other.BeginEarliest, other.BeginLatest);
+        var endsKnown = Known(EndEarliest, EndLatest) && Known(other.EndEarliest, other.EndLatest);
+        if (beginsKnown && !Overlap(BeginEarliest, BeginLatest, other.BeginEarliest, other.BeginLatest)) return DateAgreement.Conflict;
+        if (endsKnown && !Overlap(EndEarliest, EndLatest, other.EndEarliest, other.EndLatest)) return DateAgreement.Conflict;
+        if (CrossConflict(BeginEarliest ?? BeginLatest, other.EndLatest ?? other.EndEarliest, maxLifetimeYears)) return DateAgreement.Conflict;
+        if (CrossConflict(other.BeginEarliest ?? other.BeginLatest, EndLatest ?? EndEarliest, maxLifetimeYears)) return DateAgreement.Conflict;
+        return beginsKnown || endsKnown ? DateAgreement.Agree : DateAgreement.Incomparable;
+    }
+
+    /// <summary>A begin after the other's end, or more than a lifetime before it, cannot be the same person.</summary>
+    private static bool CrossConflict(DateTimeOffset? begin, DateTimeOffset? end, int? maxLifetimeYears)
+    {
+        if (begin is null || end is null) return false;
+        if (begin > end) return true;
+        return maxLifetimeYears is { } max && end.Value.Year - begin.Value.Year > max;
     }
 
     /// <summary>A lifespan from two Linked Art TimeSpans, as the dates parser yields for a pair.</summary>

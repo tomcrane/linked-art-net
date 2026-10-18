@@ -56,6 +56,9 @@ public interface IAlignmentStore
     /// <summary>Records what a string refers to, invalidating any earlier decision for it. A null entity records "looked at, unresolved".</summary>
     Task<Decision> DecideAsync(long sourceStringId, string? entityId, string method, string? evidenceJson = null, string? reviewer = null, string? datasetVersion = null, string? runId = null, CancellationToken ct = default);
 
+    /// <summary>Whether any valid decision of the method points at the entity ("queued": the entity is a lookalike awaiting review).</summary>
+    Task<bool> HasValidDecisionAsync(string entityId, string method, CancellationToken ct = default);
+
     /// <summary>The valid decision for a string, or null.</summary>
     Task<Decision?> DecisionForAsync(long sourceStringId, CancellationToken ct = default);
 
@@ -101,6 +104,15 @@ public interface IAlignmentStore
 
     /// <summary>Authority records that declare the URI as the same thing (skos:exactMatch and the like).</summary>
     Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesBySameAsAsync(string uri, CancellationToken ct = default);
+
+    /// <summary>Removes a source's records not refreshed since the instant given (a load's start): ids the new dump no longer has. Returns how many went.</summary>
+    Task<int> RetireAuthoritiesAsync(string source, DateTimeOffset notFetchedSince, CancellationToken ct = default);
+
+    /// <summary>Recomputes every entity's and authority record's lookup keys from its labels, for after the key rules change.</summary>
+    Task<(int Entities, int AuthorityRecords)> ReindexLabelsAsync(IProgress<string>? progress = null, CancellationToken ct = default);
+
+    /// <summary>A lock on a key held until disposed, so two writers that would create the same thing take turns.</summary>
+    Task<IAsyncDisposable> LockAsync(string key, CancellationToken ct = default);
 
     /// <summary>Stores many authority records at once (a vocabulary load), replacing by URI. Returns how many were written.</summary>
     Task<int> PutAuthoritiesAsync(IAsyncEnumerable<AuthorityRecord> records, CancellationToken ct = default);

@@ -14,18 +14,22 @@ public enum AuditFlag
     DatesConflict,
     /// <summary>The entity says Person and the record says Group, or the reverse.</summary>
     TypeMismatch,
-    /// <summary>The entity has an id in a source (LoC, Wikidata, VIAF) and ULAN's record links to a different id in that source: one of the two clusters is wrong.</summary>
+    /// <summary>The entity has an id in a source (LoC, Wikidata, VIAF) and ULAN's record links to a different id in that source: a wrong cluster on one side, or two headings for one body (LoC's earlier and later names). Review decides.</summary>
     LinkConflict,
     /// <summary>ULAN links to an id in a source the entity has no id for: an equivalent the entity could gain.</summary>
     LinkGain,
+    /// <summary>The entity has no ULAN id, but exactly one ULAN record links to one of its LoC, Wikidata or VIAF ids: the ULAN id it could gain, and the record it was checked against.</summary>
+    UlanViaLink,
+    /// <summary>The entity has no ULAN id and more than one ULAN record links to its ids: not resolved here.</summary>
+    UlanAmbiguous,
 }
 
 public sealed record AuditItem(Entity Entity, string UlanUri, AuthorityRecord? Record, IReadOnlyList<AuditFlag> Flags, string Detail);
 
-public sealed record AuditReport(int Entities, int WithUlan, IReadOnlyDictionary<AuditFlag, int> Flags, int Clean)
+public sealed record AuditReport(int Entities, int WithUlan, IReadOnlyDictionary<AuditFlag, int> Flags, int Clean, int ViaLink = 0, int NotChecked = 0)
 {
     public override string ToString() =>
-        $"entities {Entities}, with a ULAN id {WithUlan}: clean {Clean}; " + string.Join(", ", Enum.GetValues<AuditFlag>().Select(f => $"{f} {Flags.GetValueOrDefault(f)}"));
+        $"entities {Entities}: with a ULAN id {WithUlan}, reached through a LoC/Wikidata/VIAF link {ViaLink}, unchecked {NotChecked}; clean {Clean}; " + string.Join(", ", Enum.GetValues<AuditFlag>().Select(f => $"{f} {Flags.GetValueOrDefault(f)}"));
 }
 
 /// <summary>
@@ -39,29 +43,49 @@ public sealed class IndexAudit(IAlignmentStore store)
     public async Task<AuditReport> RunAsync(string dataset, Func<AuditItem, Task>? onItem = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var flags = new Dictionary<AuditFlag, int>();
-        int entities = 0, withUlan = 0, clean = 0;
+        int entities = 0, withUlan = 0, viaLink = 0, notChecked = 0, clean = 0;
         string? after = null;
         while (true)
         {
-            var page = await store.ListEntitiesAsync(dataset, "ulan", after, 500, ct);
+            var page = await store.ListEntitiesAsync(dataset, null, after, 500, ct);
             if (page.Count == 0) break;
             foreach (var e in page)
             {
                 ct.ThrowIfCancellationRequested();
                 after = e.Id;
                 entities++;
+                AuditItem item;
                 var ulan = e.Equivalents.FirstOrDefault(q => q.Source == "ulan")?.Uri;
-                if (ulan is null) continue;
-                withUlan++;
-                var record = await store.GetAuthorityAsync(ulan, ct);
-                var item = Check(e, ulan, record);
-                if (item.Flags.Count == 0 || item.Flags.All(f => f == AuditFlag.LinkGain)) clean++;
+                if (ulan is not null)
+                {
+                    withUlan++;
+                    item = Check(e, ulan, await store.GetAuthorityAsync(ulan, ct));
+                }
+                else
+                {
+                    // no ULAN id: does a ULAN record claim one of the entity's other ids?
+                    var linked = new Dictionary<string, AuthorityRecord>(StringComparer.Ordinal);
+                    foreach (var q in e.Equivalents.Where(q => q.Source is "loc" or "wikidata" or "viaf"))
+                        foreach (var r in await store.FindAuthoritiesBySameAsAsync(q.Uri, ct))
+                            if (r.Source == "ulan") linked[r.Uri] = r;
+                    if (linked.Count == 0) { notChecked++; continue; }
+                    viaLink++;
+                    if (linked.Count > 1)
+                        item = new AuditItem(e, string.Join(" ", linked.Keys), null, [AuditFlag.UlanAmbiguous], $"{linked.Count} ULAN records link to this entity's ids: {string.Join("; ", linked.Values.Select(r => r.Label))}");
+                    else
+                    {
+                        var (uri, record) = (linked.Keys.First(), linked.Values.First());
+                        var checkedItem = Check(e, uri, record);
+                        item = checkedItem with { Flags = [AuditFlag.UlanViaLink, .. checkedItem.Flags], Detail = ($"could gain {uri}; " + checkedItem.Detail).TrimEnd(' ', ';') };
+                    }
+                }
+                if (item.Flags.All(f => f is AuditFlag.LinkGain or AuditFlag.UlanViaLink)) clean++;
                 foreach (var f in item.Flags) flags[f] = flags.GetValueOrDefault(f) + 1;
                 if (item.Flags.Count > 0 && onItem is not null) await onItem(item);
-                if (withUlan % 2000 == 0) progress?.Report($"{withUlan} checked: link conflicts {flags.GetValueOrDefault(AuditFlag.LinkConflict)}, missing {flags.GetValueOrDefault(AuditFlag.UlanMissing)}");
+                if (entities % 2000 == 0) progress?.Report($"{entities} entities: link conflicts {flags.GetValueOrDefault(AuditFlag.LinkConflict)}, via link {viaLink}, notChecked {notChecked}");
             }
         }
-        return new AuditReport(entities, withUlan, flags, clean);
+        return new AuditReport(entities, withUlan, flags, clean, viaLink, notChecked);
     }
 
     public static AuditItem Check(Entity e, string ulan, AuthorityRecord? record)

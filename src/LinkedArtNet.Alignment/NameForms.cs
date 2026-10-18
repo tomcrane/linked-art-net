@@ -16,14 +16,14 @@ public static class NameForms
     public static IReadOnlySet<string> FirmPrefixes => Tables.Value.FirmPrefixes;
 
     /// <summary>
-    /// The comparison form of a normalised key: punctuation dropped, a leading firm prefix removed, abbreviated given
+    /// The comparison form of a normalised key: parenthesised qualifiers ("(New York, N.Y.)", "(Firm)") and punctuation dropped, a leading firm prefix removed, abbreviated given
     /// names expanded, legal suffixes at the end removed, and the connective an ampersand stands for dropped so that
     /// "&amp;" and "and" compare equal. "thos. agnew &amp; sons ltd", "thomas agnew &amp; sons" and "thomas agnew and sons" all
     /// give "thomas agnew sons".
     /// </summary>
     public static string Canonical(string normalised)
     {
-        var tokens = StringKey.Bare(normalised).Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+        var tokens = StringKey.Bare(StringKey.WithoutQualifiers(normalised)).Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
         if (tokens.Count == 0) return "";
         var (abbreviations, prefixes, suffixes, connectives) = Tables.Value;
         if (tokens.Count > 1 && prefixes.Contains(tokens[0])) tokens.RemoveAt(0);

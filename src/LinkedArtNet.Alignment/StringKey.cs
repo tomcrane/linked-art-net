@@ -32,9 +32,17 @@ public static partial class StringKey
     /// beside the normalised one, so accents present on one side and absent on the other do not decide a match.
     /// </summary>
     [GeneratedRegex(@"[^\p{L}\p{Nd}\s]+")] private static partial Regex NotLetterOrDigit();
+    [GeneratedRegex(@"\s*\([^()]*\)")] private static partial Regex Parenthetical();
 
-    /// <summary>A normalised key with everything but letters, digits and spaces removed: "knight, frank &amp; rutley" becomes "knight frank rutley".</summary>
-    public static string Bare(string normalised) => Spaces().Replace(NotLetterOrDigit().Replace(normalised, " "), " ").Trim();
+    /// <summary>A normalised key without its parenthesised qualifiers: "lisson gallery (new york, n.y.)" becomes "lisson gallery". A key that is nothing but a qualifier is left alone.</summary>
+    public static string WithoutQualifiers(string normalised)
+    {
+        var stripped = Parenthetical().Replace(normalised, "").Trim();
+        return stripped.Length == 0 ? normalised : stripped;
+    }
+
+    /// <summary>A normalised key with everything but letters, digits and spaces removed: "knight, frank &amp; rutley" becomes "knight frank rutley". An apostrophe joins rather than splits, so "christie's" becomes "christies" and "o'keeffe" "okeeffe".</summary>
+    public static string Bare(string normalised) => Spaces().Replace(NotLetterOrDigit().Replace(normalised.Replace("'", ""), " "), " ").Trim();
 
     /// <summary>
     /// Every key under which a label is indexed, so a lookup by any of them finds it: the normalised form, its

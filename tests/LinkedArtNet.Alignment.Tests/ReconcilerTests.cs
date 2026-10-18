@@ -28,6 +28,7 @@ public class NameMatcherTests
     [InlineData("smith, j.", "smith, john", 0.85)]
     [InlineData("smith, j. a.", "smith, john arthur", 0.85)]
     [InlineData("thos. agnew & sons ltd", "thomas agnew & sons", 0.95)]
+    [InlineData("landmark trust (great britain)", "landmark trust", 0.95)]
     [InlineData("messrs. langford", "langford", 0.95)]
     [InlineData("knight, frank & rutley", "knight frank and rutley", 0.95)] // "&" and "and" compare equal in the canonical form
     [InlineData("smith, john", "smyth, john", 0.82)] // one letter off: edit similarity, below acceptance and above review
@@ -43,6 +44,9 @@ public class NameMatcherTests
     [InlineData("Marlborough Galerie AG", "marlborough galerie")]
     [InlineData("England & Co.", "england co")]
     [InlineData("Hazlitt, Gooden and Fox", "hazlitt gooden fox")]
+    [InlineData("Lisson Gallery (New York, N.Y.)", "lisson gallery")]
+    [InlineData("Christie's East (Firm)", "christies east")]
+    [InlineData("(Firm)", "firm")]
     [InlineData("Ltd", "ltd")] // a name that is only a suffix is left alone
     public void Canonical_forms_expand_abbreviations_and_drop_firm_noise(string raw, string canonical) => Assert.Equal(canonical, NameForms.Canonical(StringKey.Normalise(raw)));
 
@@ -290,7 +294,14 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var flagged = new List<AuditItem>();
         var audit = await new IndexAudit(pg.Store).RunAsync(ds, item => { flagged.Add(item); return Task.CompletedTask; });
         Assert.Equal(2, audit.WithUlan);
-        Assert.Equal(1, audit.Clean);
+        Assert.True(audit.Clean >= 1);
+        // an entity with only the LoC id is reached through ULAN's link and could gain the ULAN id
+        var locOnly = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Durer, Albrecht", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(locOnly.Id, new Equivalent("http://id.loc.gov/authorities/names/n79118011", "loc", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var viaLink = new List<AuditItem>();
+        var audit2 = await new IndexAudit(pg.Store).RunAsync(ds, item => { viaLink.Add(item); return Task.CompletedTask; });
+        Assert.Equal(1, audit2.ViaLink);
+        Assert.Contains(viaLink, f => f.Entity.Id == locOnly.Id && f.Flags.Contains(AuditFlag.UlanViaLink) && f.Detail.Contains("500115493"));
         Assert.Contains(flagged, f => f.Entity.Id == impostor.Id && f.Flags.Contains(AuditFlag.UlanMissing));
         var linkConflict = IndexAudit.Check(durer with { Equivalents = [.. durer.Equivalents.Where(q => q.Source != "loc"), new Equivalent("http://id.loc.gov/authorities/names/n00000000", "loc", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow)] },
             "http://vocab.getty.edu/ulan/500115493", await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500115493"));

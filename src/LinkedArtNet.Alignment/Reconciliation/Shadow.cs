@@ -15,8 +15,10 @@ public enum Verdict
     Unverifiable,
     /// <summary>The new run would send it to review; the old answer is among the candidates.</summary>
     QueuedWithOld,
-    /// <summary>The new run would send it to review and the old answer is not among the candidates.</summary>
-    QueuedWithoutOld,
+    /// <summary>The new run would send it to review; the top candidates share a source with the old entity's ids but name different records.</summary>
+    QueuedConflict,
+    /// <summary>The new run would send it to review and its candidates' ids and the old entity's have no source in common (a ULAN person against LoC and VIAF ids, say): nothing to compare.</summary>
+    QueuedUnlinked,
     /// <summary>The new run found nothing; the old run had an answer with authority ids.</summary>
     OldOnly,
     /// <summary>The old entity has no authority ids, so there is nothing to compare: a local entity then, and a provisional one now.</summary>
@@ -57,7 +59,7 @@ public sealed class ShadowRun(IAlignmentStore store, Reconciler reconciler)
         long after = 0;
         while (considered < limit)
         {
-            var page = await store.DecidedStringsAsync(dataset, method, context, after, Math.Min(500, limit - considered), sample, ct);
+            var page = await store.DecidedStringsAsync(dataset, method, context, after, sample ? limit : Math.Min(500, limit - considered), sample, ct);
             if (page.Count == 0) break;
             foreach (var item in page)
             {
@@ -97,8 +99,12 @@ public sealed class ShadowRun(IAlignmentStore store, Reconciler reconciler)
                 return target.Select(AuthorityUris.SourceOf).Any(oldSources.Contains) ? Verdict.Disagree : Verdict.Unverifiable;
             }
             case Outcome.Queued:
+            {
                 if (oldExternal.Count == 0) return Verdict.OldLocal;
-                return target.Any(oldUris.Contains) ? Verdict.QueuedWithOld : Verdict.QueuedWithoutOld;
+                if (target.Any(oldUris.Contains)) return Verdict.QueuedWithOld;
+                var oldSources = oldExternal.Select(AuthorityUris.SourceOf).Where(s => s != "other").ToHashSet(StringComparer.Ordinal);
+                return target.Select(AuthorityUris.SourceOf).Any(oldSources.Contains) ? Verdict.QueuedConflict : Verdict.QueuedUnlinked;
+            }
             default:
                 return oldExternal.Count == 0 ? Verdict.OldLocal : Verdict.OldOnly;
         }

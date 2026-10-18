@@ -174,7 +174,7 @@ switch (args[0])
         await using var csv = new StreamWriter(csvPath, false, new System.Text.UTF8Encoding(true));
         await csv.WriteLineAsync(IndexAudit.CsvHeader);
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
-        var report = await new IndexAudit(store).RunAsync(dataset, item => item.Flags.All(f => f == AuditFlag.LinkGain) ? Task.CompletedTask : csv.WriteLineAsync(IndexAudit.CsvLine(item)), progress);
+        var report = await new IndexAudit(store).RunAsync(dataset, item => item.Flags.All(f => f is AuditFlag.LinkGain or AuditFlag.UlanViaLink) && !args.Contains("--all") ? Task.CompletedTask : csv.WriteLineAsync(IndexAudit.CsvLine(item)), progress);
         await csv.FlushAsync();
         Console.WriteLine(report);
         Console.WriteLine($"flagged entities written to {Path.GetFullPath(csvPath)}");
@@ -220,7 +220,9 @@ static void Usage() => Console.WriteLine(
                                              a run's decisions by context and method, then a sample with evidence
       shadow [--dataset] [--method imported] [--context c] [--limit n | --sample n] [--out reports]
                                              re-judge old decisions from scratch (store entities hidden) and compare; CSV of the differences
-      audit [--dataset] [--out reports]      check entities with ULAN ids against the local ULAN index; CSV of the flagged ones
+      audit [--dataset] [--out reports] [--all]
+                                             check entities against the local ULAN index, by their ULAN id or through LoC/Wikidata/VIAF links; CSV of the
+                                             flagged ones (--all includes the clean gains too)
       undo-run --run <id>                    take a run back: its decisions invalidated, its unreferenced provisional entities removed
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
         [--reuse-by-equivalent] [--only-referenced] [--version v]

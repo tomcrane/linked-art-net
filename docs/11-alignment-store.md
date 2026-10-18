@@ -205,15 +205,20 @@ sample, waits for the review UI.
 evaluation is compared with the old entity's authority ids. Verdicts: **Agree** (the new answer points at the old
 entity or one of its ids), **Disagree** (the new answer is accepted and names a different record in a source the old
 entity also has an id in: one of them is wrong), **Unverifiable** (accepted, but in a source the old entity never had),
-**QueuedWithOld** and **QueuedWithoutOld** (the new run would send it to review, with or without the old answer among
-the candidates), **OldOnly** (the new run found nothing), **OldLocal** (the old entity had no authority ids, so there is
+**QueuedWithOld**, **QueuedConflict** and **QueuedUnlinked** (the new run would send it to review: the old answer is
+among the candidates; or a candidate shares a source with the old ids but names a different record; or the two id
+sets have no source in common, a ULAN person against LoC and VIAF ids, so nothing can be compared), **OldOnly** (the new run found nothing), **OldLocal** (the old entity had no authority ids, so there is
 nothing to compare). Nothing is decided; the run is recorded with the totals and by-context breakdown, and everything
 but Agree and OldLocal goes to a CSV under `reports/` for the review spreadsheet. `--sample n` takes a random page.
 
-`tools/Align audit` checks every entity with a ULAN id against the local ULAN index: **UlanMissing** (the id is not in
-the dump: retired, merged or mistyped), **LabelMismatch**, **DatesConflict**, **TypeMismatch**, **LinkConflict** (the
-entity has a LoC, Wikidata or VIAF id and ULAN links to a different one: the strongest signal of a wrong cluster), and
-**LinkGain** (ULAN links to an id the entity lacks: an equivalent it could gain). The flagged entities go to a CSV.
+`tools/Align audit` checks every entity against the local ULAN index, by its ULAN id or, when it has none, through
+the ULAN record that links to its LoC, Wikidata or VIAF id: **UlanMissing** (the id is not in the dump: retired,
+merged or mistyped), **LabelMismatch**, **DatesConflict**, **TypeMismatch**, **LinkConflict** (the entity has a LoC,
+Wikidata or VIAF id and ULAN links to a different one: a wrong cluster on one side, or LoC's two headings for one
+body under its earlier and later names; review decides), **LinkGain** (ULAN links to an id the entity lacks),
+**UlanViaLink** (the ULAN id the entity could gain) and **UlanAmbiguous** (several ULAN records claim its ids). The
+first run over the PMC store found only 799 entities with a ULAN id, and its label mismatches were mostly LoC-style
+parenthesised qualifiers, which the comparison form now drops. The flagged entities go to a CSV.
 
 ## 9. Not yet
 

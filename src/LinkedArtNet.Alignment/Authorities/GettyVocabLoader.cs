@@ -157,7 +157,10 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
     {
         var source = SourceName(vocabulary);
         var now = DateTimeOffset.UtcNow;
-        await using var cmd = db.CreateCommand(RecordsSql(table));
+        // the joins over tens of millions of staged rows need room: a session with generous working memory, or they spill to disk for hours
+        await using var conn = await db.OpenConnectionAsync(ct);
+        await using (var tune = new NpgsqlCommand("set work_mem = '512MB'", conn)) await tune.ExecuteNonQueryAsync(ct);
+        await using var cmd = new NpgsqlCommand(RecordsSql(table), conn);
         cmd.CommandTimeout = 0;
         await using var r = await cmd.ExecuteReaderAsync(System.Data.CommandBehavior.SequentialAccess, ct);
         while (await r.ReadAsync(ct))

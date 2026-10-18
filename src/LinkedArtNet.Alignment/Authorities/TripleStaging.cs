@@ -41,7 +41,7 @@ public static class TripleStaging
             await writer.CompleteAsync(ct);
         }
         progress?.Report($"{read:N0} triples read, {kept:N0} staged; indexing");
-        await using (var cmd = db.CreateCommand($"create index {table}_s on {table} (s); create index {table}_p_s on {table} (p, s); create index {table}_p_o on {table} (p, o); analyze {table}"))
+        await using (var cmd = db.CreateCommand($"set maintenance_work_mem = '1GB'; create index {table}_s on {table} (s); create index {table}_p_s on {table} (p, s); create index {table}_p_o on {table} (p, o); analyze {table}"))
         {
             cmd.CommandTimeout = 0;
             await cmd.ExecuteNonQueryAsync(ct);

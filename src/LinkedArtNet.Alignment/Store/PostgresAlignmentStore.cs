@@ -636,6 +636,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     public async Task<int> PutAuthoritiesAsync(IAsyncEnumerable<AuthorityRecord> records, CancellationToken ct = default)
     {
         await using var conn = await _db.OpenConnectionAsync(ct);
+        // the merge of millions of rows and its index maintenance want memory; a local setting for this session only
+        await using (var tune = new NpgsqlCommand("set work_mem = '512MB'; set maintenance_work_mem = '1GB'", conn)) await tune.ExecuteNonQueryAsync(ct);
         await using (var create = new NpgsqlCommand("drop table if exists authority_records_in; create temp table authority_records_in (like authority_records including defaults)", conn))
             await create.ExecuteNonQueryAsync(ct);
         var count = 0;

@@ -208,15 +208,8 @@ switch (args[0])
         return 2;
 }
 
-// How the PMC library's fields are read (the old source_string_map sources). Other datasets will carry this in their manifest (step 4).
-static Dictionary<string, ContextRule> PmcContexts() => new(StringComparer.OrdinalIgnoreCase)
-{
-    ["persauthorfull"] = new([EntityClass.Person], "default"),
-    ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default"), // sale catalogues name auctioneers and dealers here, some of them people
-    ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default"),
-    ["place"] = new([EntityClass.Place]),
-    ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place]),
-};
+// How the PMC library's fields are read: the manifest's PMC default until the project's own manifest in the store carries it.
+static IReadOnlyDictionary<string, ContextRule> PmcContexts() => ProjectManifest.PmcDefault.ToOptions().Contexts;
 
 static void Usage() => Console.WriteLine(
     """

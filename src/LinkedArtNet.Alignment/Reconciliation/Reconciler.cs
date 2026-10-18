@@ -103,12 +103,18 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return evaluation.Outcome;
     }
 
+    /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>
+    public StringReading Read(SourceString s)
+    {
+        var rule = _options.Contexts.TryGetValue(s.Context, out var r) ? r : _options.DefaultContext;
+        return StringReading.Read(s, rule, ParserFor(rule.AgentProfile));
+    }
+
     /// <summary>Reads the string and finds what it would be decided as, writing nothing. With <paramref name="includeStore"/> false the store's own entities are not consulted, so an old decision cannot answer itself.</summary>
     public async Task<Evaluation> EvaluateAsync(string dataset, SourceString s, bool includeStore = true, CancellationToken ct = default)
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        var rule = _options.Contexts.TryGetValue(s.Context, out var r) ? r : _options.DefaultContext;
-        var reading = StringReading.Read(s, rule, ParserFor(rule.AgentProfile));
+        var reading = Read(s);
         Time("read", sw);
         if (reading.Key.Length == 0) return new Evaluation(Outcome.Skipped, reading, []);
 
@@ -289,6 +295,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
+    /// <summary>The entity for a URI: one of ours (resolved, or created under that identifier), or the entity that already has the authority URI as an equivalent, or a new confirmed entity built from the cached authority record with that URI as its equivalent. The review desk and overrides use this.</summary>
+    public Task<Entity> EntityForUriAsync(string dataset, string uri, StringReading reading, string? runId = null, CancellationToken ct = default) => EntityForTargetAsync(dataset, uri, reading, runId, ct);
+
     private async Task<Entity> EntityForTargetAsync(string dataset, string target, StringReading reading, string? runId, CancellationToken ct)
     {
         if (scheme.Owns(target))
@@ -300,8 +309,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if ((await store.FindEntitiesByEquivalentAsync(target, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null) is { } existing) return existing;
         var record = await store.GetAuthorityAsync(target, ct);
         var recordClass = record is not null && Enum.TryParse<EntityClass>(record.Type, true, out var rc) ? rc : reading.Classes[0];
-        var entity = await store.AddEntityAsync(dataset, new NewEntity(recordClass, record?.Label ?? reading.Text, [reading.Text], record?.Lifespan ?? reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed, RunId: runId), scheme, ct);
-        await store.AddEquivalentAsync(entity.Id, new Equivalent(target, AuthorityUris.SourceOf(target), DecisionMethod.Override, 1.0, DateTimeOffset.UtcNow, RunId: runId), ct);
+        var labels = (record is null ? [] : record.Labels).Append(reading.Text).Distinct(StringComparer.Ordinal).ToList();
+        var entity = await store.AddEntityAsync(dataset, new NewEntity(recordClass, record?.Label ?? reading.Text, labels, record?.Lifespan ?? reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed, RunId: runId), scheme, ct);
+        var now = DateTimeOffset.UtcNow;
+        await store.AddEquivalentAsync(entity.Id, new Equivalent(target, AuthorityUris.SourceOf(target), DecisionMethod.Override, 1.0, now, RunId: runId), ct);
+        // the record's own links come along, as a vote's would
+        foreach (var same in record?.SameAs ?? [])
+            if (!scheme.Owns(same) && same != target) await store.AddEquivalentAsync(entity.Id, new Equivalent(same, AuthorityUris.SourceOf(same), DecisionMethod.Override, 1.0, now, RunId: runId), ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 

@@ -39,6 +39,10 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   N-Triples) as the `loc` index, headings split from their dates, variants and VIAF/Wikidata links kept.
 - Design doc 12: the alignment workbench, the human side of the toolkit (review desk, variants, entities, jobs,
   projects, reports outward), as a separate app with per-project members.
+- `LinkedArtNet.Workbench` (new, first cut): sign-in, projects with members and roles, the project overview and
+  the review desk for queued strings: the reconciler's evidence beside each one, with accept, always (an override),
+  same as an existing entity, keep as a local authority, notes, skip and undo. `ReviewService` and `ProjectManifest`
+  in the Alignment library; store schema version 2 (users, projects, memberships, notes); `RevertDecisionAsync`.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

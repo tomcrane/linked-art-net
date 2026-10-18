@@ -116,3 +116,42 @@ create table if not exists overrides (
 );
 
 insert into schema_version (version) values (1) on conflict do nothing;
+
+-- version 2 (2026-10-18): the workbench's users, projects, memberships and notes (design doc 12, section 4)
+
+create table if not exists users (
+    login           text primary key,
+    display_name    text,
+    created_at      timestamptz not null default now(),
+    last_seen       timestamptz
+);
+
+create table if not exists projects (
+    dataset         text primary key,
+    name            text not null,
+    description     text,
+    identifier_base text not null,
+    manifest        jsonb,
+    created_at      timestamptz not null default now(),
+    updated_at      timestamptz not null default now()
+);
+
+create table if not exists memberships (
+    dataset         text not null references projects(dataset) on delete cascade,
+    login           text not null references users(login) on delete cascade,
+    role            text not null,
+    added_at        timestamptz not null default now(),
+    primary key (dataset, login)
+);
+
+create table if not exists notes (
+    id              bigserial primary key,
+    dataset         text not null,
+    target          text not null,
+    author          text,
+    text            text not null,
+    created_at      timestamptz not null default now()
+);
+create index if not exists notes_target on notes (dataset, target);
+
+insert into schema_version (version) values (2) on conflict do nothing;

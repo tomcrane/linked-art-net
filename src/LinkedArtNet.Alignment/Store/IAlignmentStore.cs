@@ -112,6 +112,29 @@ public interface IAlignmentStore
 
     Task<IReadOnlyList<Run>> RunsAsync(string dataset, int limit = 20, CancellationToken ct = default);
 
+    // ---- projects, users, memberships, notes (the workbench)
+
+    Task UpsertProjectAsync(Project project, CancellationToken ct = default);
+    Task<Project?> GetProjectAsync(string dataset, CancellationToken ct = default);
+    Task<IReadOnlyList<Project>> ListProjectsAsync(CancellationToken ct = default);
+    Task UpsertUserAsync(string login, string? displayName, CancellationToken ct = default);
+    Task<User?> GetUserAsync(string login, CancellationToken ct = default);
+    Task SetMembershipAsync(string dataset, string login, string role, CancellationToken ct = default);
+    Task RemoveMembershipAsync(string dataset, string login, CancellationToken ct = default);
+    Task<IReadOnlyList<Membership>> MembershipsAsync(string dataset, CancellationToken ct = default);
+    Task<IReadOnlyList<Membership>> MembershipsForAsync(string login, CancellationToken ct = default);
+    Task<Note> AddNoteAsync(string dataset, string target, string? author, string text, CancellationToken ct = default);
+    Task<IReadOnlyList<Note>> NotesAsync(string dataset, string target, CancellationToken ct = default);
+
+    /// <summary>One string with its valid decision, or null when it has none.</summary>
+    Task<DecidedString?> DecidedStringAsync(long stringId, CancellationToken ct = default);
+
+    /// <summary>Strings with a valid decision of one method, counted by context: the review queue's size.</summary>
+    Task<IReadOnlyList<ContextMethodCount>> QueueCountsAsync(string dataset, string method, CancellationToken ct = default);
+
+    /// <summary>Takes back the latest valid decision for a string and makes the one before it valid again, so an undo restores what stood before. Returns the decision now valid, or null when none is.</summary>
+    Task<Decision?> RevertDecisionAsync(long stringId, CancellationToken ct = default);
+
     // ---- overview
 
     Task<StoreCounts> CountsAsync(string? dataset = null, CancellationToken ct = default);

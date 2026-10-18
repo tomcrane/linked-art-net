@@ -8,6 +8,7 @@
     <Project Path="src/LinkedArtNet.Alignment/LinkedArtNet.Alignment.csproj" />
     <Project Path="src/LinkedArtNet.Dates.Service/LinkedArtNet.Dates.Service.csproj" />
     <Project Path="src/LinkedArtNet.ExamplesSite/LinkedArtNet.ExamplesSite.csproj" />
+    <Project Path="src/LinkedArtNet.Workbench/LinkedArtNet.Workbench.csproj" />
     <Project Path="src/LinkedArtNet/LinkedArtNet.csproj" />
   </Folder>
   <Folder Name="/tests/">
@@ -17,6 +18,7 @@
     <Project Path="tests/LinkedArtNet.Alignment.Tests/LinkedArtNet.Alignment.Tests.csproj" />
     <Project Path="tests/LinkedArtNet.Dates.Service.Tests/LinkedArtNet.Dates.Service.Tests.csproj" />
     <Project Path="tests/LinkedArtNet.ExamplesSite.Tests/LinkedArtNet.ExamplesSite.Tests.csproj" />
+    <Project Path="tests/LinkedArtNet.Workbench.Tests/LinkedArtNet.Workbench.Tests.csproj" />
     <Project Path="tests/LinkedArtNet.Tests/LinkedArtNet.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">

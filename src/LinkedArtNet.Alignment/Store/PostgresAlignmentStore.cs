@@ -47,7 +47,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     /// <summary>Drops every table of the store. For disposable test databases only.</summary>
     internal async Task DropAllAsync(CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version, getty_staging, triple_staging cascade");
+        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version, getty_staging, triple_staging, memberships, notes, projects, users cascade");
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
@@ -571,6 +571,145 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     private static Run ReadRun(NpgsqlDataReader r) =>
         new(r.GetString(0), r.GetString(1), Str(r, 2), Str(r, 3), r.GetFieldValue<DateTimeOffset>(4), r.IsDBNull(5) ? null : r.GetFieldValue<DateTimeOffset>(5), Str(r, 6), Str(r, 7), Str(r, 8));
+
+    // ---- projects, users, memberships, notes -------------------------------------------------------------------------
+
+    public async Task UpsertProjectAsync(Project project, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            insert into projects (dataset, name, description, identifier_base, manifest, created_at, updated_at) values (@dataset, @name, @description, @base, @manifest, @now, @now)
+            on conflict (dataset) do update set name = excluded.name, description = excluded.description, identifier_base = excluded.identifier_base, manifest = excluded.manifest, updated_at = excluded.updated_at
+            """);
+        Add(cmd, "dataset", project.Dataset); Add(cmd, "name", project.Name); Add(cmd, "description", project.Description); Add(cmd, "base", project.IdentifierBase); AddJson(cmd, "manifest", project.ManifestJson); Add(cmd, "now", DateTimeOffset.UtcNow);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    private const string ProjectColumns = "p.dataset, p.name, p.description, p.identifier_base, p.manifest::text, p.created_at, p.updated_at";
+    private static Project ReadProject(NpgsqlDataReader r) => new(r.GetString(0), r.GetString(1), Str(r, 2), r.GetString(3), Str(r, 4), r.GetFieldValue<DateTimeOffset>(5), r.GetFieldValue<DateTimeOffset>(6));
+
+    public async Task<Project?> GetProjectAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand($"select {ProjectColumns} from projects p where p.dataset = @dataset");
+        Add(cmd, "dataset", dataset);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? ReadProject(r) : null;
+    }
+
+    public async Task<IReadOnlyList<Project>> ListProjectsAsync(CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand($"select {ProjectColumns} from projects p order by p.name");
+        var list = new List<Project>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(ReadProject(r));
+        return list;
+    }
+
+    public async Task UpsertUserAsync(string login, string? displayName, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("insert into users (login, display_name, last_seen) values (@login, @name, @now) on conflict (login) do update set display_name = coalesce(excluded.display_name, users.display_name), last_seen = excluded.last_seen");
+        Add(cmd, "login", login); Add(cmd, "name", displayName); Add(cmd, "now", DateTimeOffset.UtcNow);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<User?> GetUserAsync(string login, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select login, display_name, created_at, last_seen from users where login = @login");
+        Add(cmd, "login", login);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? new User(r.GetString(0), Str(r, 1), r.GetFieldValue<DateTimeOffset>(2), r.IsDBNull(3) ? null : r.GetFieldValue<DateTimeOffset>(3)) : null;
+    }
+
+    public async Task SetMembershipAsync(string dataset, string login, string role, CancellationToken ct = default)
+    {
+        if (!ProjectRole.All.Contains(role)) throw new ArgumentException($"Unknown role '{role}'.", nameof(role));
+        await using var cmd = _db.CreateCommand("insert into memberships (dataset, login, role) values (@dataset, @login, @role) on conflict (dataset, login) do update set role = excluded.role");
+        Add(cmd, "dataset", dataset); Add(cmd, "login", login); Add(cmd, "role", role);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task RemoveMembershipAsync(string dataset, string login, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("delete from memberships where dataset = @dataset and login = @login");
+        Add(cmd, "dataset", dataset); Add(cmd, "login", login);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    private async Task<IReadOnlyList<Membership>> MembershipsWhereAsync(string where, Action<NpgsqlCommand> bind, CancellationToken ct)
+    {
+        await using var cmd = _db.CreateCommand($"select dataset, login, role, added_at from memberships where {where} order by dataset, login");
+        bind(cmd);
+        var list = new List<Membership>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new Membership(r.GetString(0), r.GetString(1), r.GetString(2), r.GetFieldValue<DateTimeOffset>(3)));
+        return list;
+    }
+
+    public Task<IReadOnlyList<Membership>> MembershipsAsync(string dataset, CancellationToken ct = default) => MembershipsWhereAsync("dataset = @dataset", cmd => Add(cmd, "dataset", dataset), ct);
+    public Task<IReadOnlyList<Membership>> MembershipsForAsync(string login, CancellationToken ct = default) => MembershipsWhereAsync("login = @login", cmd => Add(cmd, "login", login), ct);
+
+    public async Task<Note> AddNoteAsync(string dataset, string target, string? author, string text, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("insert into notes (dataset, target, author, text) values (@dataset, @target, @author, @text) returning id, created_at");
+        Add(cmd, "dataset", dataset); Add(cmd, "target", target); Add(cmd, "author", author); Add(cmd, "text", text);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        await r.ReadAsync(ct);
+        return new Note(r.GetInt64(0), dataset, target, author, text, r.GetFieldValue<DateTimeOffset>(1));
+    }
+
+    public async Task<IReadOnlyList<Note>> NotesAsync(string dataset, string target, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select id, dataset, target, author, text, created_at from notes where dataset = @dataset and target = @target order by created_at");
+        Add(cmd, "dataset", dataset); Add(cmd, "target", target);
+        var list = new List<Note>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new Note(r.GetInt64(0), r.GetString(1), r.GetString(2), Str(r, 3), r.GetString(4), r.GetFieldValue<DateTimeOffset>(5)));
+        return list;
+    }
+
+    public async Task<DecidedString?> DecidedStringAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            $"select s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences, {DecisionColumns} " +
+            "from source_strings s join decisions d on d.source_string_id = s.id and d.valid where s.id = @id order by d.decided_at desc limit 1");
+        Add(cmd, "id", stringId);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        if (!await r.ReadAsync(ct)) return null;
+        var s = ReadString(r);
+        var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18));
+        return new DecidedString(s, d);
+    }
+
+    public async Task<IReadOnlyList<ContextMethodCount>> QueueCountsAsync(string dataset, string method, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select s.context, d.method, count(*) from source_strings s join decisions d on d.source_string_id = s.id and d.valid where s.dataset = @dataset and d.method = @method group by s.context, d.method order by s.context");
+        Add(cmd, "dataset", dataset); Add(cmd, "method", method);
+        var list = new List<ContextMethodCount>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new ContextMethodCount(r.GetString(0), r.GetString(1), r.GetInt64(2)));
+        return list;
+    }
+
+    public async Task<Decision?> RevertDecisionAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        long? latest = null;
+        await using (var cmd = new NpgsqlCommand("select id from decisions where source_string_id = @s and valid order by id desc limit 1", conn, tx))
+        {
+            cmd.Parameters.AddWithValue("s", stringId);
+            latest = (long?)await cmd.ExecuteScalarAsync(ct);
+        }
+        if (latest is null) return null;
+        await using (var cmd = new NpgsqlCommand("update decisions set valid = false where id = @id", conn, tx)) { cmd.Parameters.AddWithValue("id", latest.Value); await cmd.ExecuteNonQueryAsync(ct); }
+        await using (var cmd = new NpgsqlCommand("update decisions set valid = true where id = (select id from decisions where source_string_id = @s and id < @latest and entity_id is not null order by id desc limit 1)", conn, tx))
+        {
+            cmd.Parameters.AddWithValue("s", stringId); cmd.Parameters.AddWithValue("latest", latest.Value);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await tx.CommitAsync(ct);
+        return await DecisionForAsync(stringId, ct);
+    }
 
     // ---- overview --------------------------------------------------------------------------------------------------
 

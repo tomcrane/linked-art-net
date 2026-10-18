@@ -21,6 +21,7 @@ PostgreSQL only (decision 2), plain Npgsql, one schema file applied idempotently
 | `overrides` | curated answers: (dataset, context or any, normalised) → entity or authority URI, with the source | (dataset, context, normalised) |
 | `authority_records` | a cached external record: source, labels, type, lifespan, sameAs, raw data, fetched, version | URI |
 | `runs` | one pipeline execution: dataset, manifest, dumps, started, finished, git SHA, counts, report | id |
+| `projects`, `users`, `memberships`, `notes` | the workbench's projects (name, identifier base, manifest), signed-in people, their roles per project, and free-text notes on strings, entities or runs (schema version 2; doc 12 section 4) | |
 
 Labels are matched through `normalised_labels text[]` with a GIN index, so "find entities called X" is an index read.
 Lifespans are stored as `begin_earliest`, `begin_latest`, `end_earliest`, `end_latest` (timestamptz) so overlap and

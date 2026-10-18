@@ -153,6 +153,13 @@ Anthropic key for proposals) come from the environment, as everywhere else.
 1. **The review desk for authority items**, read-only first, then the actions: accept, same as, local, override,
    defer, undo. Sign-in and the PMC project created from the store. Uses the 88 queued strings and the shadow and
    audit items that exist now. Decision method `human` and the entity handling shared with the reconciler.
+   *Built 2026-10-18 (first cut): `src/LinkedArtNet.Workbench` with sign-in (GitHub or a typed name in
+   development), projects with members and roles, the project overview, and the desk with accept, always
+   (override), same as, keep local, note, skip and undo; `ReviewService` in the Alignment library carries the
+   actions; schema version 2 adds users, projects, memberships and notes. Run it with `dotnet run --project
+   src/LinkedArtNet.Workbench` and `LINKEDART_PG` set; the development settings allow a typed sign-in and make the
+   name `local` an owner. Tests in `tests/LinkedArtNet.Workbench.Tests` drive the pages over HTTP against a
+   throwaway PostgreSQL.*
 2. **Entities and variants**: browse, search, merge, overrides, the inline index search, the pmc-lux export.
 3. **Jobs, runs and indexes**: the background service, progress, undo, the comparison table for shadow runs, the
    audit as a review list, the index loads with download.

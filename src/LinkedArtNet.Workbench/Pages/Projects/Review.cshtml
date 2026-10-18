@@ -1,0 +1,142 @@
+@page "/p/{dataset}/review"
+@model ReviewModel
+@{
+    ViewData["Title"] = "Review";
+    var item = Model.Item;
+}
+<div class="row" style="justify-content:space-between">
+    <h1 style="margin:0">Review desk</h1>
+    <form method="get" class="row" style="gap:.5rem">
+        <input type="hidden" name="method" value="@Model.Method" />
+        <select name="context" onchange="this.form.submit()" aria-label="Context">
+            <option value="">all contexts (@Model.Queue.Sum(r => r.Count))</option>
+            @foreach (var row in Model.Queue)
+            {
+                <option value="@row.Context" selected="@(row.Context == Model.Context)">@row.Context (@row.Count)</option>
+            }
+        </select>
+        <select name="method" onchange="this.form.submit()" aria-label="Kind">
+            <option value="queued" selected="@(Model.Method == "queued")">queued for review</option>
+            <option value="minted" selected="@(Model.Method == "minted")">minted (nothing found)</option>
+            <option value="human" selected="@(Model.Method == "human")">decided by a person</option>
+        </select>
+    </form>
+</div>
+@if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
+
+@if (item is null)
+{
+    <p class="empty">Nothing @(Model.Method == "queued" ? "waiting for review" : "here")@(Model.Context is null ? "" : $" in {Model.Context}"). <a href="/p/@Model.Dataset">Back to the project</a>.</p>
+}
+else
+{
+    var ev = item.Evidence;
+    var reading = ev.Reading;
+    <p class="small muted">@Model.Remaining in this list · string @item.String.Id · seen @item.String.Occurrences time@(item.String.Occurrences == 1 ? "" : "s") in <strong>@item.String.Context</strong> · decided <em>@item.Decision.Method</em>@(item.Decision.Reviewer is null ? "" : $" by {item.Decision.Reviewer}") @item.Decision.DecidedAt.ToString("yyyy-MM-dd")</p>
+    <p class="string">@item.String.Raw</p>
+    @if (reading is not null)
+    {
+        <dl class="facts">
+            <dt>Read as</dt><dd><strong>@reading.Text</strong> @if (reading.Classes is { Count: > 0 }) { <span class="tag">@string.Join(" or ", reading.Classes)</span> }</dd>
+            @if (reading.Lifespan is not null) { <dt>Dates</dt><dd>@reading.Lifespan</dd> }
+            @if (reading.Roles is { Count: > 0 }) { <dt>Roles</dt><dd>@string.Join(", ", reading.Roles)</dd> }
+            @if (reading.Nationalities is { Count: > 0 }) { <dt>Nationality</dt><dd>@string.Join(", ", reading.Nationalities)</dd> }
+            @if (item.Entity is not null) { <dt>Currently</dt><dd>@item.Entity.Label <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span> <code class="small">@item.Entity.Id</code></dd> }
+        </dl>
+    }
+    @if (item.Notes.Count > 0)
+    {
+        <div class="card"><h3 style="margin-top:0">Notes</h3>@foreach (var n in item.Notes) { <p class="small"><strong>@n.Author</strong> <span class="muted">@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span><br />@n.Text</p> }</div>
+    }
+
+    <h2>Candidates</h2>
+    @if (ev.Groups.Count == 0) { <p class="muted">The reconciler found nothing in the local indexes for this string.</p> }
+    var first = true;
+    foreach (var group in ev.Groups)
+    {
+        var live = group.Members.Where(m => m.Veto != true).ToList();
+        var allVeto = live.Count == 0;
+        <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")">
+            <div class="row">
+                <span class="score">@group.Score.ToString("0.00")</span>
+                @foreach (var s in group.Sources) { <span class="tag src">@s</span> }
+                @if (group.Members.Count > 1) { <span class="muted small">@group.Members.Count records agree they are one thing</span> }
+            </div>
+            @foreach (var m in group.Members)
+            {
+                item.Records.TryGetValue(m.Uri, out var record);
+                <div class="row" style="margin-top:.5rem; @(m.Veto == true ? "opacity:.6" : "")">
+                    <div style="flex:1">
+                        <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong>
+                        @if (record?.Lifespan?.Text is { } life) { <span class="muted">@life</span> }
+                        @if (record?.Type is { } type) { <span class="tag">@type.ToLowerInvariant()</span> }
+                        <span class="tag">@m.Source</span>
+                        <a class="small" href="@m.Uri" target="_blank" rel="noopener">@m.Uri</a>
+                        @if (record is not null && record.Labels.Count > 1) { <div class="small muted">also: @string.Join(" · ", record.Labels.Where(l => l != record.Label).Take(6))</div> }
+                        @if (record?.DataJson is { } data && System.Text.Json.JsonDocument.Parse(data).RootElement.TryGetProperty("description", out var desc)) { <div class="small">@desc.GetString()</div> }
+                        <div class="reason">@m.Reason</div>
+                    </div>
+                    @if (m.Veto != true && !m.IsStore && Model.Method != "human")
+                    {
+                        <form method="post" asp-page-handler="Accept" class="inline">
+                            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
+                            <button type="submit">Accept</button>
+                        </form>
+                        <form method="post" asp-page-handler="Override" class="inline">
+                            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
+                            <button type="submit" class="secondary" title="Always read this exact spelling as this record, in any context">Always</button>
+                        </form>
+                    }
+                    @if (m.Veto != true && m.IsStore && Model.Method != "human")
+                    {
+                        <form method="post" asp-page-handler="SameAs" class="inline">
+                            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@m.Uri" />
+                            <button type="submit">Same as this</button>
+                        </form>
+                    }
+                </div>
+            }
+        </div>
+        first = false;
+    }
+
+    <h2>Something else</h2>
+    <div class="grid">
+        <form method="get" class="card">
+            <input type="hidden" name="method" value="@Model.Method" /><input type="hidden" name="context" value="@Model.Context" /><input type="hidden" name="id" value="@item.String.Id" />
+            <label for="q">Search the store's entities and the local indexes</label>
+            <div class="row"><input type="search" id="q" name="q" value="@Model.Q" placeholder="@(reading?.Text ?? item.String.Raw)" style="flex:1" /><button type="submit" class="secondary">Search</button></div>
+            @if (Model.Q is not null)
+            {
+                @if (Model.EntityMatches.Count == 0 && Model.IndexMatches.Count == 0) { <p class="muted small">Nothing found for "@Model.Q".</p> }
+                @foreach (var e in Model.EntityMatches)
+                {
+                    <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@e.Label</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span> <span class="small muted">@string.Join(" ", e.Equivalents.Select(q => q.Source))</span></div>
+                        <form method="post" asp-page-handler="SameAs" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@e.Id" /><button type="submit">Same as</button></form></div>
+                }
+                @foreach (var r in Model.IndexMatches)
+                {
+                    <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Text is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag src">@r.Source</span> <a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
+                        <form method="post" asp-page-handler="Accept" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit">Accept</button></form></div>
+                }
+            }
+        </form>
+        <form method="post" asp-page-handler="Local" class="card">
+            <input type="hidden" name="id" value="@item.String.Id" />
+            <h3 style="margin-top:0">None of these: it is real and local</h3>
+            <p class="small muted">Keeps the entity as a confirmed local authority, in no external source. The pipeline stops asking.</p>
+            <label for="label">Label (as it should be published)</label>
+            <input type="text" id="label" name="label" value="@(item.Entity?.Label ?? reading?.Text)" />
+            <label for="lnote">Note</label>
+            <input type="text" id="lnote" name="note" placeholder="Edinburgh dealer, not the national gallery" />
+            <div class="actions"><button type="submit">Keep as local authority</button></div>
+        </form>
+    </div>
+
+    <div class="actions" style="margin-top:1.5rem">
+        <form method="post" asp-page-handler="Skip" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet">Skip for now</button></form>
+        <form method="post" asp-page-handler="Undo" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="Take back the latest decision on this string">Undo last decision</button></form>
+        <form method="post" asp-page-handler="Flag" class="row inline" style="gap:.4rem"><input type="hidden" name="id" value="@item.String.Id" /><input type="text" name="text" placeholder="Note for another reviewer" style="width:18rem" /><button type="submit" class="quiet">Add note</button></form>
+        <a class="button secondary" href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, after = item.String.Id })">Next →</a>
+    </div>
+}

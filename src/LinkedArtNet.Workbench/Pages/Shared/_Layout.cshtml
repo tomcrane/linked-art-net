@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@(ViewData["Title"] is string t ? t + " · " : "")Alignment workbench</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" />
+    <link rel="stylesheet" href="~/site.css" asp-append-version="true" />
+</head>
+<body>
+<header class="top">
+    <a class="brand" href="/">Alignment workbench</a>
+    <nav>
+        <a href="/">Projects</a>
+        @if (ViewData["Dataset"] is string ds)
+        {
+            <a href="/p/@ds">@(ViewData["ProjectName"] ?? ds)</a>
+            <a href="/p/@ds/review">Review</a>
+        }
+    </nav>
+    <div class="who">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <span>@User.Identity.Name</span>
+            <form method="post" action="/signout" class="inline">@Html.AntiForgeryToken()<button type="submit" class="link">Sign out</button></form>
+        }
+        else
+        {
+            <a href="/signin">Sign in</a>
+        }
+    </div>
+</header>
+<main>
+    @RenderBody()
+</main>
+<footer>
+    <p>Part of <a href="https://github.com/tomcrane/linked-art-net">linked-art-net</a>. Authority data: Getty ULAN, AAT and TGN under ODC-By; Library of Congress Name Authority File.</p>
+</footer>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

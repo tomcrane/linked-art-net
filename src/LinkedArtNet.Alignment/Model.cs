@@ -16,6 +16,7 @@ public static class DecisionMethod
     public const string ExactUri = "exact-uri";
     public const string ExactName = "exact-name";
     public const string Vote = "vote";
+    /// <summary>A person decided it in the workbench; the evidence says what they chose and why.</summary>
     public const string Human = "human";
     public const string LlmProposedThenHuman = "llm-proposed-then-human";
     /// <summary>Carried over from an earlier system's tables, identifiers preserved.</summary>
@@ -115,6 +116,27 @@ public sealed record UndoResult(int DecisionsInvalidated, int ProvisionalEntitie
 
 /// <summary>How many strings of one context a run decided by one method.</summary>
 public sealed record ContextMethodCount(string Context, string Method, long Count);
+
+/// <summary>A project: a dataset with its name, identifier base, manifest (context rules, thresholds, sources) and members (design doc 12, section 4).</summary>
+public sealed record Project(string Dataset, string Name, string? Description, string IdentifierBase, string? ManifestJson, DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt);
+
+/// <summary>A signed-in person; the login is the reviewer name on decisions.</summary>
+public sealed record User(string Login, string? DisplayName, DateTimeOffset CreatedAt, DateTimeOffset? LastSeen);
+
+public static class ProjectRole
+{
+    public const string Reviewer = "reviewer";
+    public const string Operator = "operator";
+    public const string Owner = "owner";
+    public static readonly string[] All = [Reviewer, Operator, Owner];
+    /// <summary>Whether a role includes another's rights: owner includes operator includes reviewer.</summary>
+    public static bool Covers(string role, string required) => Array.IndexOf(All, role) >= Array.IndexOf(All, required) && Array.IndexOf(All, role) >= 0;
+}
+
+public sealed record Membership(string Dataset, string Login, string Role, DateTimeOffset AddedAt);
+
+/// <summary>Free text a reviewer attached to something: a string ("string:123"), an entity (its URI) or a run.</summary>
+public sealed record Note(long Id, string Dataset, string Target, string? Author, string Text, DateTimeOffset CreatedAt);
 
 public sealed record StoreCounts(long Entities, long SourceStrings, long Decided, long Unresolved, long Overrides, long AuthorityRecords, long Runs);
 

@@ -1,0 +1,42 @@
+@page
+@model IndexModel
+@{ ViewData["Title"] = "Projects"; }
+<h1>Projects</h1>
+@if (Model.Projects.Count == 0)
+{
+    <p class="empty">No projects yet@(Model.IsOwner ? "" : " that you are a member of. Ask a project owner to add you.").</p>
+}
+<div class="grid">
+@foreach (var (project, role) in Model.Projects)
+{
+    <div class="card">
+        <h2 style="margin-top:0"><a href="/p/@project.Dataset">@project.Name</a> <span class="tag">@role</span></h2>
+        @if (!string.IsNullOrWhiteSpace(project.Description)) { <p class="muted">@project.Description</p> }
+        <p class="small muted">dataset <code>@project.Dataset</code> · identifiers under <code>@project.IdentifierBase</code></p>
+        <div class="actions"><a class="button" href="/p/@project.Dataset/review">Review desk</a> <a class="button secondary" href="/p/@project.Dataset">Overview</a></div>
+    </div>
+}
+</div>
+@if (Model.IsOwner)
+{
+    <h2>New project</h2>
+    <form method="post" class="card">
+        @if (Model.Error is not null) { <p class="notice">@Model.Error</p> }
+        <div class="grid">
+            <div>
+                <label for="dataset">Dataset key (short, lower-case; <code>pmc</code> for the strings already in the store)</label>
+                <input type="text" id="dataset" name="dataset" required pattern="[a-z0-9][a-z0-9-]*" />
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required />
+            </div>
+            <div>
+                <label for="base">Identifier base (the hostname and path your published identifiers use)</label>
+                <input type="text" id="base" name="identifierBase" required placeholder="https://data.example.org/" value="@(Model.Projects.Count == 0 ? "https://data.paul-mellon-centre.ac.uk/" : "")" />
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description" />
+            </div>
+        </div>
+        <p class="small muted">The manifest starts from the PMC library's field rules (persauthorfull is a person; corpauthor and publisher a group or a person; place a place; keywords anything) until the projects step adds the editor.</p>
+        <div class="actions"><button type="submit">Create project</button></div>
+    </form>
+}

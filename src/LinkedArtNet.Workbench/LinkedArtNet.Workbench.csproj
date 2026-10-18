@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>LinkedArtNet.Workbench</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Description>The alignment workbench (design doc 12): the human side of the toolkit. Projects with members, a review desk for the reconciler's queued strings with the evidence beside each question, and the actions that write a person's judgement back to the store.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkedArtNet.Alignment\LinkedArtNet.Alignment.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="LinkedArtNet.Workbench.Tests" />
+  </ItemGroup>
+
+</Project>

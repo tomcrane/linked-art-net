@@ -1,0 +1,58 @@
+@page "/p/{dataset}"
+@model HomeModel
+@{ ViewData["Title"] = Model.Project.Project.Name; }
+<h1>@Model.Project.Project.Name <span class="tag">@Model.Role</span></h1>
+@if (!string.IsNullOrWhiteSpace(Model.Project.Project.Description)) { <p class="muted">@Model.Project.Project.Description</p> }
+
+<div class="grid">
+    <div class="card">
+        <h2 style="margin-top:0">Review queue</h2>
+        @if (Model.Queue.Count == 0)
+        {
+            <p class="muted">Nothing waiting for review.</p>
+        }
+        else
+        {
+            <table class="counts">
+                <thead><tr><th>Context</th><th>Queued</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var row in Model.Queue)
+                {
+                    <tr><td>@row.Context</td><td>@row.Count</td><td><a href="/p/@Model.Dataset/review?context=@Uri.EscapeDataString(row.Context)">Review</a></td></tr>
+                }
+                <tr><th>All</th><th>@Model.Queue.Sum(r => r.Count)</th><td><a class="button" href="/p/@Model.Dataset/review">Start</a></td></tr>
+                </tbody>
+            </table>
+        }
+        <p class="small muted">Queued strings have a provisional entity meanwhile; a reviewer's decision replaces it. Minted strings (nothing found) can be reviewed too: <a href="/p/@Model.Dataset/review?method=minted">review minted</a>.</p>
+    </div>
+    <div class="card">
+        <h2 style="margin-top:0">The store</h2>
+        <dl class="facts">
+            <dt>Entities</dt><dd>@Model.Counts.Entities.ToString("N0")</dd>
+            <dt>Strings</dt><dd>@Model.Counts.SourceStrings.ToString("N0")</dd>
+            <dt>Decided</dt><dd>@Model.Counts.Decided.ToString("N0")</dd>
+            <dt>Unresolved</dt><dd>@Model.Counts.Unresolved.ToString("N0")</dd>
+            <dt>Overrides</dt><dd>@Model.Counts.Overrides.ToString("N0")</dd>
+            <dt>Runs</dt><dd>@Model.Counts.Runs.ToString("N0")</dd>
+            <dt>Authority records</dt><dd>@Model.Counts.AuthorityRecords.ToString("N0") <span class="muted small">(shared across projects)</span></dd>
+            <dt>Identifiers</dt><dd><code>@Model.Project.Project.IdentifierBase</code></dd>
+        </dl>
+        @if (Model.Can(ProjectRole.Owner)) { <p><a href="/p/@Model.Dataset/members">Members</a></p> }
+    </div>
+</div>
+
+<h2>Recent runs</h2>
+@if (Model.Runs.Count == 0) { <p class="muted">No runs recorded for this project.</p> }
+else
+{
+    <table>
+        <thead><tr><th>Run</th><th>Started</th><th>Report</th></tr></thead>
+        <tbody>
+        @foreach (var run in Model.Runs)
+        {
+            <tr><td><code>@run.Id</code></td><td>@run.StartedAt.ToString("yyyy-MM-dd HH:mm")</td><td class="small">@(run.Report ?? (run.FinishedAt is null ? "running or interrupted" : ""))</td></tr>
+        }
+        </tbody>
+    </table>
+}

@@ -135,6 +135,15 @@ switch (args[0])
         return 0;
     }
 
+    case "undo-run":
+    {
+        var runId = Option("--run");
+        if (runId is null) { Console.Error.WriteLine("Give the run: --run run-..."); return 2; }
+        var undone = await store.UndoRunAsync(runId);
+        Console.WriteLine($"run {runId} undone: {undone.DecisionsInvalidated} decisions invalidated, {undone.ProvisionalEntitiesRemoved} provisional entities removed");
+        return 0;
+    }
+
     default:
         Usage();
         return 2;
@@ -163,6 +172,7 @@ static void Usage() => Console.WriteLine(
                                              decide undecided strings from overrides, the store and the local indexes
       decisions --run <id> [--method m] [--limit 20]
                                              a run's decisions by context and method, then a sample with evidence
+      undo-run --run <id>                    take a run back: its decisions invalidated, its unreferenced provisional entities removed
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
         [--reuse-by-equivalent] [--only-referenced] [--version v]
                                              for a second copy of those tables: map authorities onto entities that share

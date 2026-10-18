@@ -177,7 +177,9 @@ dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--
 ```
 
 `reconcile` records a run with its options and report; `decisions --run <id> [--method m]` shows a run's breakdown
-by context and method and a sample with evidence. The PMC context rules live in the tool for now (persauthorfull:
+by context and method and a sample with evidence; `undo-run --run <id>` invalidates a run's decisions and removes
+the provisional entities it minted that nothing else points at, so the same strings can be reconciled again after
+a change. The PMC context rules live in the tool for now (persauthorfull:
 Person; corpauthor and publisher: Group then Person, since sale catalogues name auctioneers and dealers there;
 place: Place; keywords: anything), and move to the dataset manifest in step 4.
 

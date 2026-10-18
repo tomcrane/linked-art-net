@@ -110,6 +110,9 @@ public sealed record Override(string Dataset, string? Context, string Normalised
 /// <summary>A string with the decision a run made about it.</summary>
 public sealed record DecidedString(SourceString String, Decision Decision);
 
+/// <summary>What undoing a run removed.</summary>
+public sealed record UndoResult(int DecisionsInvalidated, int ProvisionalEntitiesRemoved);
+
 /// <summary>How many strings of one context a run decided by one method.</summary>
 public sealed record ContextMethodCount(string Context, string Method, long Count);
 

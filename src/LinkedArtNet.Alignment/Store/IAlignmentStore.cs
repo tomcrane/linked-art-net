@@ -62,6 +62,9 @@ public interface IAlignmentStore
     /// <summary>The valid decisions a run made, oldest first, optionally of one method ("queued", "minted"), with their strings.</summary>
     Task<IReadOnlyList<DecidedString>> DecisionsForRunAsync(string runId, string? method = null, int limit = 50, CancellationToken ct = default);
 
+    /// <summary>Takes a run back: its decisions are invalidated so the strings are undecided again, and provisional entities it minted that nothing else points at are removed (they were never published). Aligned and confirmed entities stay.</summary>
+    Task<UndoResult> UndoRunAsync(string runId, CancellationToken ct = default);
+
     /// <summary>A run's valid decisions counted by the string's context and the method.</summary>
     Task<IReadOnlyList<ContextMethodCount>> RunBreakdownAsync(string runId, CancellationToken ct = default);
 

@@ -330,6 +330,41 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    public async Task<UndoResult> UndoRunAsync(string runId, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        int decisions, entities;
+        await using (var cmd = new NpgsqlCommand("update decisions set valid = false where run_id = @run and valid", conn, tx))
+        {
+            cmd.Parameters.AddWithValue("run", runId);
+            decisions = await cmd.ExecuteNonQueryAsync(ct);
+        }
+        // provisional entities of the run that nothing points at any more; the run's own invalidated decisions let go of them first
+        await using (var cmd = new NpgsqlCommand(
+            """
+            create temp table undo_entities on commit drop as
+              select e.id from entities e where e.run_id = @run and e.status = 'provisional' and e.merged_into is null
+                and not exists (select 1 from decisions d where d.entity_id = e.id and d.valid)
+                and not exists (select 1 from entities m where m.merged_into = e.id)
+                and not exists (select 1 from entity_equivalents q where q.entity_id = e.id);
+            update decisions set entity_id = null where not valid and entity_id in (select id from undo_entities)
+            """, conn, tx))
+        {
+            cmd.Parameters.AddWithValue("run", runId);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await using (var cmd = new NpgsqlCommand("delete from entities where id in (select id from undo_entities)", conn, tx))
+            entities = await cmd.ExecuteNonQueryAsync(ct);
+        await using (var cmd = new NpgsqlCommand("update runs set report = coalesce(report, '') || ' [undone]' where id = @run", conn, tx))
+        {
+            cmd.Parameters.AddWithValue("run", runId);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await tx.CommitAsync(ct);
+        return new UndoResult(decisions, entities);
+    }
+
     public async Task<IReadOnlyList<ContextMethodCount>> RunBreakdownAsync(string runId, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand("select s.context, d.method, count(*) from decisions d join source_strings s on s.id = d.source_string_id where d.run_id = @run and d.valid group by s.context, d.method order by s.context, d.method");

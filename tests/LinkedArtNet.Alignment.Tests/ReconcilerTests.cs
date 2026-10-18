@@ -269,5 +269,17 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(durer.Id, (await pg.Store.ResolveAsync(ds, "persauthorfull", "Durer, Albrecht (engraver)"))!.Id);
         Assert.Equal(DecisionMethod.ExactName, (await pg.Store.DecisionForAsync(later.Id))!.Method);
         Assert.Equal(0, (await reconciler.RunAsync(ds)).Considered);
+
+        // undoing a run: its strings are undecided again, the provisional entities it minted go, the aligned one stays
+        var run = await pg.Store.StartRunAsync(ds);
+        var extra = await pg.Store.CollectAsync(ds, "persauthorfull", "Nobody Else, 1901-1981");
+        await reconciler.RunAsync(ds, runId: run.Id);
+        var provisional = (await pg.Store.DecisionForAsync(extra.Id))!.EntityId!;
+        var undone = await pg.Store.UndoRunAsync(run.Id);
+        Assert.Equal(new UndoResult(DecisionsInvalidated: 1, ProvisionalEntitiesRemoved: 1), undone);
+        Assert.Null(await pg.Store.DecisionForAsync(extra.Id));
+        Assert.Null(await pg.Store.GetEntityAsync(provisional));
+        Assert.NotNull(await pg.Store.GetEntityAsync(durer.Id));
+        Assert.Equal(1, (await reconciler.RunAsync(ds)).Considered);
     }
 }

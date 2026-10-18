@@ -59,6 +59,12 @@ public interface IAlignmentStore
     /// <summary>The entity a string in a dataset and context currently resolves to, following merges; null when unknown or undecided.</summary>
     Task<Entity?> ResolveAsync(string dataset, string context, string raw, CancellationToken ct = default);
 
+    /// <summary>The valid decisions a run made, oldest first, optionally of one method ("queued", "minted"), with their strings.</summary>
+    Task<IReadOnlyList<DecidedString>> DecisionsForRunAsync(string runId, string? method = null, int limit = 50, CancellationToken ct = default);
+
+    /// <summary>A run's valid decisions counted by the string's context and the method.</summary>
+    Task<IReadOnlyList<ContextMethodCount>> RunBreakdownAsync(string runId, CancellationToken ct = default);
+
     /// <summary>Marks every valid decision pointing at the entity invalid, so the reconciler reconsiders those strings.</summary>
     Task<int> InvalidateDecisionsForEntityAsync(string entityId, CancellationToken ct = default);
 

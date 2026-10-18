@@ -107,6 +107,12 @@ public sealed record Run(string Id, string Dataset, string? ManifestJson, string
 /// <summary>A curated answer for a string: this normalised text in this dataset (and context, or any context when null) is this entity or authority URI. Always wins.</summary>
 public sealed record Override(string Dataset, string? Context, string Normalised, string Target, string Source, string? Note = null);
 
+/// <summary>A string with the decision a run made about it.</summary>
+public sealed record DecidedString(SourceString String, Decision Decision);
+
+/// <summary>How many strings of one context a run decided by one method.</summary>
+public sealed record ContextMethodCount(string Context, string Method, long Count);
+
 public sealed record StoreCounts(long Entities, long SourceStrings, long Decided, long Unresolved, long Overrides, long AuthorityRecords, long Runs);
 
 /// <summary>The authority namespaces the toolkit recognises, with the URI each identifier lives under.</summary>

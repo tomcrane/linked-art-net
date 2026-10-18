@@ -109,6 +109,32 @@ switch (args[0])
         return 0;
     }
 
+    case "decisions":
+    {
+        var runId = Option("--run");
+        if (runId is null) { Console.Error.WriteLine("Give the run: --run run-..."); return 2; }
+        var limit = int.TryParse(Option("--limit"), out var l) ? l : 20;
+        Console.WriteLine("by context and method:");
+        foreach (var row in await store.RunBreakdownAsync(runId)) Console.WriteLine($"  {row.Context,-16} {row.Method,-12} {row.Count}");
+        Console.WriteLine();
+        foreach (var item in await store.DecisionsForRunAsync(runId, Option("--method"), limit))
+        {
+            Console.WriteLine($"[{item.String.Context}] {item.String.Raw}");
+            Console.WriteLine($"   -> {item.Decision.Method}  {item.Decision.EntityId}");
+            if (item.Decision.EvidenceJson is { } ev)
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(ev);
+                var root = doc.RootElement;
+                if (root.TryGetProperty("reading", out var reading)) Console.WriteLine($"   read as: {reading.GetProperty("text").GetString()}" + (reading.TryGetProperty("lifespan", out var ls) && ls.ValueKind == System.Text.Json.JsonValueKind.String ? $" [{ls.GetString()}]" : "") + $" ({string.Join("/", reading.GetProperty("classes").EnumerateArray().Select(c => c.GetString()))})");
+                if (root.TryGetProperty("groups", out var groups))
+                    foreach (var g in groups.EnumerateArray().Take(3))
+                        foreach (var m in g.GetProperty("members").EnumerateArray().Take(3))
+                            Console.WriteLine($"   {m.GetProperty("score").GetDouble():0.00} {m.GetProperty("source").GetString(),-6} {m.GetProperty("label").GetString()}  <{m.GetProperty("uri").GetString()}>  {m.GetProperty("reason").GetString()}");
+            }
+        }
+        return 0;
+    }
+
     default:
         Usage();
         return 2;
@@ -135,6 +161,8 @@ static void Usage() => Console.WriteLine(
                                              load a Getty full N-Triples download into the local authority index
       reconcile [--dataset] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-mint]
                                              decide undecided strings from overrides, the store and the local indexes
+      decisions --run <id> [--method m] [--limit 20]
+                                             a run's decisions by context and method, then a sample with evidence
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
         [--reuse-by-equivalent] [--only-referenced] [--version v]
                                              for a second copy of those tables: map authorities onto entities that share

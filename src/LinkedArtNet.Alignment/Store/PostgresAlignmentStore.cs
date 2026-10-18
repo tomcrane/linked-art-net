@@ -313,6 +313,33 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return await cmd.ExecuteNonQueryAsync(ct);
     }
 
+    public async Task<IReadOnlyList<DecidedString>> DecisionsForRunAsync(string runId, string? method = null, int limit = 50, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            $"select s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences, {DecisionColumns} " +
+            "from decisions d join source_strings s on s.id = d.source_string_id where d.run_id = @run and d.valid" + (method is null ? "" : " and d.method = @method") + " order by d.id limit @limit");
+        Add(cmd, "run", runId); if (method is not null) Add(cmd, "method", method); Add(cmd, "limit", limit);
+        var list = new List<DecidedString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+        {
+            var s = ReadString(r);
+            var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18));
+            list.Add(new DecidedString(s, d));
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<ContextMethodCount>> RunBreakdownAsync(string runId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select s.context, d.method, count(*) from decisions d join source_strings s on s.id = d.source_string_id where d.run_id = @run and d.valid group by s.context, d.method order by s.context, d.method");
+        Add(cmd, "run", runId);
+        var list = new List<ContextMethodCount>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new ContextMethodCount(r.GetString(0), r.GetString(1), r.GetInt64(2)));
+        return list;
+    }
+
     private static Decision ReadDecision(NpgsqlDataReader r) =>
         new(r.GetInt64(0), r.GetInt64(1), Str(r, 2), r.GetString(3), Str(r, 4), Str(r, 5), r.GetFieldValue<DateTimeOffset>(6), Str(r, 7), Str(r, 8), r.GetBoolean(9));
 

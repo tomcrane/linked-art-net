@@ -102,7 +102,6 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
         left join variants on variants.uri = h.uri
         left join links on links.uri = h.uri
         left join rwoinfo on rwoinfo.uri = h.uri
-        order by h.uri
         """;
 
     private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)

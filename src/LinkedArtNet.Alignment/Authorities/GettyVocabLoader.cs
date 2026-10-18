@@ -150,7 +150,6 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         left join nat on nat.uri = c.uri
         left join geo on geo.uri = c.uri
         left join extra on extra.uri = c.uri
-        order by c.uri
         """;
 
     private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, GettyVocabulary vocabulary, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)

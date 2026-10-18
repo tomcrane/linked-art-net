@@ -65,7 +65,9 @@ representation layering (doc 10, section 8) is a publishing concern and is not i
 - `PmcLuxOverrides` reads the `digirati-co-uk/pmc-lux` `authority-strings/*.json` files (MIT): the `authorities`
   become entities with their identifiers kept and their ULAN, VIAF, LoC, Wikidata, AAT, TGN and LUX ids as
   equivalents (method `override`); the `local_string_map` becomes overrides for any context. Strings whose target
-  has no authority record still get an override to the URI the identifier would have.
+  has no authority record still get an override to the URI the identifier would have. An entity of the dataset that
+  already shares an authority id with a curated one (an earlier run's own minted Agnew's, say) is merged into it: the
+  curated identifier survives, its labels and decisions follow.
 - `LegacyPmcImporter` reads the owner's earlier `authorities` and `source_string_map` tables from a second
   connection: authorities become entities (identifiers kept, equivalents method `imported`), each source string is
   collected under its old `source` as the context with a decision of method `imported`, strings that only had an

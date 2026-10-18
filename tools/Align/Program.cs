@@ -59,7 +59,7 @@ switch (args[0])
             : Path.GetFileNameWithoutExtension(path).Contains("people", StringComparison.OrdinalIgnoreCase) ? EntityClass.Person : EntityClass.Group;
         await store.InitialiseAsync();
         var result = await PmcLuxOverrides.Load(path).ImportAsync(store, scheme, dataset, "pmc-lux/" + Path.GetFileName(path), defaultClass);
-        Console.WriteLine($"entities added {result.EntitiesAdded}, already present {result.EntitiesExisting}; equivalents {result.Equivalents}; overrides {result.Overrides} (targets without an authority record {result.UnknownTargets})");
+        Console.WriteLine($"entities added {result.EntitiesAdded}, already present {result.EntitiesExisting}, earlier duplicates merged in {result.Merged}; equivalents {result.Equivalents}; overrides {result.Overrides} (targets without an authority record {result.UnknownTargets})");
         return 0;
     }
 

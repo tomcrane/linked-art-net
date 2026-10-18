@@ -31,7 +31,7 @@ public sealed record PmcLuxOverrides(
     {
         var now = DateTimeOffset.UtcNow;
         var entityIds = new Dictionary<string, string>(StringComparer.Ordinal);
-        int entitiesAdded = 0, entitiesExisting = 0, equivalents = 0, overrides = 0, unknownTargets = 0;
+        int entitiesAdded = 0, entitiesExisting = 0, equivalents = 0, overrides = 0, unknownTargets = 0, merged = 0;
         foreach (var a in Authorities)
         {
             if (string.IsNullOrWhiteSpace(a.Identifier)) continue;
@@ -50,6 +50,18 @@ public sealed record PmcLuxOverrides(
                 await store.AddEquivalentAsync(id, new Equivalent(uri, AuthorityUris.SourceOf(uri), DecisionMethod.Override, 1.0, now, RunId: runId), ct);
                 equivalents++;
             }
+            // other entities of the dataset that share an authority id are the same thing under an earlier minted identifier:
+            // they merge into the curated one, which keeps the identifier; their labels and decisions follow
+            foreach (var uri in a.EquivalentUris())
+                foreach (var duplicate in await store.FindEntitiesByEquivalentAsync(uri, ct))
+                {
+                    if (duplicate.Id == id || duplicate.Dataset != dataset || duplicate.MergedInto is not null) continue;
+                    var curated = (await store.GetEntityAsync(id, ct))!;
+                    var labels = curated.Labels.Concat(duplicate.Labels).Append(duplicate.Label).Append(curated.Label).OfType<string>().Where(l => l.Length > 0).Distinct(StringComparer.Ordinal).ToList();
+                    if (labels.Count != curated.Labels.Count) await store.UpdateEntityAsync(curated with { Labels = labels, Lifespan = curated.Lifespan ?? duplicate.Lifespan }, ct);
+                    await store.MergeAsync(duplicate.Id, id, sourceName, ct);
+                    merged++;
+                }
         }
         foreach (var (raw, target) in LocalStringMap)
         {
@@ -63,7 +75,7 @@ public sealed record PmcLuxOverrides(
             await store.PutOverrideAsync(new Override(dataset, null, normalised, uri, sourceName, $"\"{raw}\" → {target}"), ct);
             overrides++;
         }
-        return new PmcLuxImportResult(entitiesAdded, entitiesExisting, equivalents, overrides, unknownTargets);
+        return new PmcLuxImportResult(entitiesAdded, entitiesExisting, equivalents, overrides, unknownTargets, merged);
     }
 
     public static EntityClass? ClassOf(string? type) => type?.Trim().ToLowerInvariant() switch
@@ -99,4 +111,5 @@ public sealed record PmcLuxAuthority(
     }
 }
 
-public sealed record PmcLuxImportResult(int EntitiesAdded, int EntitiesExisting, int Equivalents, int Overrides, int UnknownTargets);
+/// <param name="Merged">Entities of the dataset that shared an authority id with a curated one and were merged into it.</param>
+public sealed record PmcLuxImportResult(int EntitiesAdded, int EntitiesExisting, int Equivalents, int Overrides, int UnknownTargets, int Merged = 0);

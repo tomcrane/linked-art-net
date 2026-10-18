@@ -194,11 +194,20 @@ public class StoreTests(PostgresFixture pg)
                                { "identifier": "pmc-unplaced", "type": "Group", "label": "Unplaced Society" } ] }
             """);
         var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        // an earlier run minted its own Tate with the same VIAF id and decided a string to it
+        var earlier = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Tate Gallery (London)", ["Tate Britain"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(earlier.Id, new Equivalent("http://viaf.org/viaf/155600523", "viaf", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var earlierString = await pg.Store.CollectAsync(ds, "corpauthor", "Tate Gallery, London");
+        await pg.Store.DecideAsync(earlierString.Id, earlier.Id, DecisionMethod.Imported);
+
         var result = await file.ImportAsync(pg.Store, scheme, ds, "pmc-lux/groups.json", EntityClass.Group);
-        Assert.Equal(new PmcLuxImportResult(2, 0, 2, 4, 1), result);
+        Assert.Equal(new PmcLuxImportResult(2, 0, 2, 4, 1, Merged: 1), result);
         var tate = (await pg.Store.GetEntityAsync($"https://data.example.org/{ds}/group/pmc-tate-gallery"))!;
         Assert.Equal(EntityStatus.Aligned, tate.Status);
         Assert.Equal(2, tate.Equivalents.Count);
+        Assert.Contains("Tate Britain", tate.Labels); // the duplicate's labels came across
+        Assert.Equal(tate.Id, (await pg.Store.ResolveAsync(ds, "corpauthor", "Tate Gallery, London"))!.Id); // and its decision follows
+        Assert.Equal(tate.Id, (await pg.Store.ResolveEntityAsync(earlier.Id))!.Id);
         Assert.All(tate.Equivalents, q => Assert.Equal(DecisionMethod.Override, q.Method));
         Assert.Equal(EntityStatus.Provisional, (await pg.Store.GetEntityAsync($"https://data.example.org/{ds}/group/pmc-unplaced"))!.Status);
         Assert.Equal(tate.Id, (await pg.Store.OverrideForAsync(ds, "library.publisher", StringKey.Normalise("The Tate Gallery.")))!.Target);

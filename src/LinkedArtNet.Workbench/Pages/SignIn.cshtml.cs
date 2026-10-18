@@ -10,9 +10,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace LinkedArtNet.Workbench.Pages;
 
 [AllowAnonymous]
-public sealed class SignInModel(WorkbenchOptions options, IAlignmentStore store) : PageModel
+public sealed class SignInModel(WorkbenchOptions options, IAlignmentStore store, IWebHostEnvironment environment) : PageModel
 {
     public WorkbenchOptions Options => options;
+
+    /// <summary>The typed-name sign-in is for a developer's own machine: the configuration must allow it, the environment must be Development or Testing, and the request must come from this machine.</summary>
+    public bool LocalSignInAvailable => options.AllowLocalSignIn && (environment.IsDevelopment() || environment.IsEnvironment("Testing")) && (HttpContext.Connection.RemoteIpAddress is null || System.Net.IPAddress.IsLoopback(HttpContext.Connection.RemoteIpAddress));
 
     public void OnGet() { }
 
@@ -21,7 +24,7 @@ public sealed class SignInModel(WorkbenchOptions options, IAlignmentStore store)
 
     public async Task<IActionResult> OnPostLocalAsync(string name)
     {
-        if (!options.AllowLocalSignIn) return NotFound();
+        if (!LocalSignInAvailable) return NotFound();
         name = (name ?? "").Trim();
         if (name.Length is 0 or > 60) return Page();
         await store.UpsertUserAsync(name, null);

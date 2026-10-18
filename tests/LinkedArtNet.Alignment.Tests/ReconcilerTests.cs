@@ -28,7 +28,8 @@ public class NameMatcherTests
     [InlineData("smith, j.", "smith, john", 0.85)]
     [InlineData("smith, j. a.", "smith, john arthur", 0.85)]
     [InlineData("thos. agnew & sons ltd", "thomas agnew & sons", 0.95)]
-    [InlineData("landmark trust (great britain)", "landmark trust", 0.95)]
+    [InlineData("landmark trust (great britain)", "landmark trust", 0.85)] // the qualifier is a disambiguator: review, not acceptance
+    [InlineData("smith, john (clergyman)", "smith, john (painter)", 0.85)]
     [InlineData("messrs. langford", "langford", 0.95)]
     [InlineData("knight, frank & rutley", "knight frank and rutley", 0.95)] // "&" and "and" compare equal in the canonical form
     [InlineData("smith, john", "smyth, john", 0.82)] // one letter off: edit similarity, below acceptance and above review
@@ -42,6 +43,8 @@ public class NameMatcherTests
     [InlineData("Thos. Agnew & Sons Ltd", "thomas agnew sons")]
     [InlineData("Messrs Waterer & Sons", "waterer sons")]
     [InlineData("Marlborough Galerie AG", "marlborough galerie")]
+    [InlineData("Pedro Sá", "pedro sá")] // a suffix that is also a surname is not stripped
+    [InlineData("Jon Smith", "jon smith")] // a short form that is also a name is not expanded
     [InlineData("England & Co.", "england co")]
     [InlineData("Hazlitt, Gooden and Fox", "hazlitt gooden fox")]
     [InlineData("Lisson Gallery (New York, N.Y.)", "lisson gallery")]
@@ -81,6 +84,14 @@ public class NTriplesTests
         Assert.True(triples[1].IsLiteral);
         Assert.Equal("http://www.w3.org/2001/XMLSchema#gYear", triples[2].Datatype);
         Assert.Equal("_:b1", triples[3].Subject);
+    }
+
+    [Fact]
+    public void A_bad_escape_fails_its_line_and_not_the_load()
+    {
+        var triples = NTriples.ReadText("<http://a/s> <http://a/p> \"bad \\U0011FFFF\" .\n<http://a/s> <http://a/p> \"surrogate \\U0000D800\" .\n<http://a/s> <http://a/p> \"fine \\U0001F600\" .").ToList();
+        Assert.Single(triples);
+        Assert.Equal("fine \U0001F600", triples[0].Object);
     }
 
     [Fact]

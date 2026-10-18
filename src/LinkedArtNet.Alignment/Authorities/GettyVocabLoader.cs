@@ -76,37 +76,41 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
     public async Task<GettyLoadResult> LoadAsync(IEnumerable<Triple> triples, GettyVocabulary vocabulary, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var started = DateTimeOffset.UtcNow;
-        var (read, kept) = await TripleStaging.StageAsync(store, triples, t => Wanted.Contains(t.Predicate) && (t.Predicate != RdfType || ConceptTypes.ContainsKey(t.Object)), progress, ct);
-        progress?.Report("building records");
-        var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(store.DataSource, vocabulary, sourceVersion, ct), ct);
-        await TripleStaging.ClearAsync(store, ct);
-        return new GettyLoadResult(vocabulary, read, kept, records, DateTimeOffset.UtcNow - started);
+        var table = TripleStaging.NewTable();
+        try
+        {
+            var (read, kept) = await TripleStaging.StageAsync(store, table, triples, t => Wanted.Contains(t.Predicate) && (t.Predicate != RdfType || ConceptTypes.ContainsKey(t.Object)), progress, ct);
+            progress?.Report("building records");
+            var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(store.DataSource, table, vocabulary, sourceVersion, ct), ct);
+            return new GettyLoadResult(vocabulary, read, kept, records, DateTimeOffset.UtcNow - started);
+        }
+        finally { await TripleStaging.DropAsync(store, table, ct); }
     }
 
     // One row per concept, joined in SQL; normalisation and the record shape are done in code.
-    private static readonly string RecordsSql = $"""
+    private static string RecordsSql(string table) => $"""
         with concepts as (
-            select s as uri, min(o) as type from {TripleStaging.Table} where p = '{RdfType}' group by s
+            select s as uri, min(o) as type from {table} where p = '{RdfType}' group by s
         ),
         pref as (
             select st.s as uri, min(t.o) as label
-            from {TripleStaging.Table} st join {TripleStaging.Table} t on t.s = st.o and t.p = '{Xl}literalForm'
+            from {table} st join {table} t on t.s = st.o and t.p = '{Xl}literalForm'
             where st.p = '{Gvp}prefLabelGVP' group by st.s
         ),
         xlabels as (
             select st.s as uri, t.o as label
-            from {TripleStaging.Table} st join {TripleStaging.Table} t on t.s = st.o and t.p = '{Xl}literalForm'
+            from {table} st join {table} t on t.s = st.o and t.p = '{Xl}literalForm'
             where st.p in ('{Xl}prefLabel', '{Xl}altLabel')
             union
-            select s, o from {TripleStaging.Table} where p in ('{Skos}prefLabel', '{Skos}altLabel')
+            select s, o from {table} where p in ('{Skos}prefLabel', '{Skos}altLabel')
         ),
         labels as (select uri, array_agg(distinct label) as labels from xlabels group by uri),
         matches as (
-            select s as uri, array_agg(distinct o) as same_as from {TripleStaging.Table} where p in ('{Skos}exactMatch', '{Skos}closeMatch') group by s
+            select s as uri, array_agg(distinct o) as same_as from {table} where p in ('{Skos}exactMatch', '{Skos}closeMatch') group by s
         ),
-        focus as (select s as uri, o as agent from {TripleStaging.Table} where p = '{FoafFocus}'),
+        focus as (select s as uri, o as agent from {table} where p = '{FoafFocus}'),
         bio as (
-            select f.uri, min(b.o) as bio from focus f join {TripleStaging.Table} b on b.s = f.agent and b.p = '{Gvp}biographyPreferred' group by f.uri
+            select f.uri, min(b.o) as bio from focus f join {table} b on b.s = f.agent and b.p = '{Gvp}biographyPreferred' group by f.uri
         ),
         bioinfo as (
             select bio.uri,
@@ -114,16 +118,16 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
                    max(case when x.p = '{Gvp}estEnd' then x.o end) as est_end,
                    max(case when x.p = '{Schema}description' then x.o end) as description,
                    max(case when x.p = '{Schema}gender' then x.o end) as gender
-            from bio join {TripleStaging.Table} x on x.s = bio.bio group by bio.uri
+            from bio join {table} x on x.s = bio.bio group by bio.uri
         ),
         nat as (
-            select f.uri, array_agg(distinct n.o) as nationalities from focus f join {TripleStaging.Table} n on n.s = f.agent and n.p = '{Gvp}nationalityPreferred' group by f.uri
+            select f.uri, array_agg(distinct n.o) as nationalities from focus f join {table} n on n.s = f.agent and n.p = '{Gvp}nationalityPreferred' group by f.uri
         ),
         geo as (
             select f.uri,
                    max(case when g.p = '{Wgs}lat' then g.o end) as lat,
                    max(case when g.p = '{Wgs}long' then g.o end) as long
-            from focus f join {TripleStaging.Table} g on g.s = f.agent and g.p in ('{Wgs}lat', '{Wgs}long') group by f.uri
+            from focus f join {table} g on g.s = f.agent and g.p in ('{Wgs}lat', '{Wgs}long') group by f.uri
         ),
         extra as (
             select s as uri,
@@ -131,7 +135,7 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
                    max(case when p = '{Gvp}placeTypePreferred' then o end) as place_type,
                    max(case when p = '{Gvp}broaderPreferred' then o end) as broader,
                    max(case when p = '{Gvp}parentString' then o end) as parent_string
-            from {TripleStaging.Table} where p in ('{Gvp}agentTypePreferred', '{Gvp}placeTypePreferred', '{Gvp}broaderPreferred', '{Gvp}parentString') group by s
+            from {table} where p in ('{Gvp}agentTypePreferred', '{Gvp}placeTypePreferred', '{Gvp}broaderPreferred', '{Gvp}parentString') group by s
         )
         select c.uri, c.type, pref.label, labels.labels, matches.same_as,
                bioinfo.est_start, bioinfo.est_end, bioinfo.description, bioinfo.gender, nat.nationalities,
@@ -147,11 +151,11 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         order by c.uri
         """;
 
-    private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, GettyVocabulary vocabulary, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
+    private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, GettyVocabulary vocabulary, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
     {
         var source = SourceName(vocabulary);
         var now = DateTimeOffset.UtcNow;
-        await using var cmd = db.CreateCommand(RecordsSql);
+        await using var cmd = db.CreateCommand(RecordsSql(table));
         cmd.CommandTimeout = 0;
         await using var r = await cmd.ExecuteReaderAsync(System.Data.CommandBehavior.SequentialAccess, ct);
         while (await r.ReadAsync(ct))

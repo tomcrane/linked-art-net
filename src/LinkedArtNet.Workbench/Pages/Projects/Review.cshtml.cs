@@ -62,7 +62,9 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
 
     public async Task<IActionResult> OnPostUndoAsync(long id)
     {
-        var restored = await Project.Desk.UndoAsync(id);
+        Decision? restored;
+        try { restored = await Project.Desk.UndoAsync(Dataset, id); }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException) { return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, message = e.Message }); }
         return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, message = restored is null ? "Nothing to undo." : $"Undone; the earlier decision ({restored.Method}) stands again." });
     }
 

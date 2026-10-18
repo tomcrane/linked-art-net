@@ -9,16 +9,16 @@
         <button type="submit">Sign in with GitHub</button>
     </form>
 }
-@if (Model.Options.AllowLocalSignIn)
+@if (Model.LocalSignInAvailable)
 {
     <form method="post" asp-page-handler="Local" class="card">
-        <p class="muted small">Development sign-in: type a name. This is on because the configuration allows it; it is never on for a shared instance.</p>
+        <p class="muted small">Development sign-in: type a name. Available only in Development, from this machine, when the configuration allows it.</p>
         <label for="name">Name</label>
         <input type="text" id="name" name="name" required autofocus />
         <div class="actions"><button type="submit">Sign in</button></div>
     </form>
 }
-@if (!Model.Options.GitHubLoginConfigured && !Model.Options.AllowLocalSignIn)
+@if (!Model.Options.GitHubLoginConfigured && !Model.LocalSignInAvailable)
 {
     <p class="notice">No sign-in is configured. Set <code>Workbench:GitHub</code> or, for development, <code>Workbench:AllowLocalSignIn</code>.</p>
 }

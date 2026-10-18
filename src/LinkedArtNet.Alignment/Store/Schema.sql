@@ -155,3 +155,12 @@ create table if not exists notes (
 create index if not exists notes_target on notes (dataset, target);
 
 insert into schema_version (version) values (2) on conflict do nothing;
+
+-- version 3 (2026-10-18, after review): a string has at most one valid decision, enforced; each decision records
+-- the one it superseded so an undo restores exactly that. Older duplicates, if any, keep only the newest valid.
+alter table decisions add column if not exists supersedes bigint references decisions(id);
+update decisions d set valid = false
+  where d.valid and d.id < (select max(x.id) from decisions x where x.source_string_id = d.source_string_id and x.valid);
+create unique index if not exists decisions_one_valid on decisions (source_string_id) where valid;
+
+insert into schema_version (version) values (3) on conflict do nothing;

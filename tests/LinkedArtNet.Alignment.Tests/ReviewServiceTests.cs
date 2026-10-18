@@ -55,8 +55,15 @@ public class ReviewServiceTests(PostgresFixture pg)
         Assert.Single(await pg.Store.NotesAsync(ds, ReviewService.StringTarget(smith.Id)));
         Assert.Empty(await desk.QueueCountsAsync(ds));
 
+        // another project's desk cannot touch this string, and a made-up target is refused
+        await Assert.ThrowsAsync<InvalidOperationException>(() => desk.AcceptAsync("other-project", smith.Id, "http://vocab.getty.edu/ulan/500000002", "intruder"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => desk.UndoAsync("other-project", smith.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => desk.AcceptAsync(ds, smith.Id, scheme.Uri(EntityClass.Person, "madeup12"), "tester"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => desk.AcceptAsync(ds, smith.Id, "http://example.org/not-an-authority", "tester"));
+        Assert.Equal(DecisionMethod.Human, (await pg.Store.DecisionForAsync(smith.Id))!.Method);
+
         // undo: the queued decision stands again
-        var reverted = (await desk.UndoAsync(smith.Id))!;
+        var reverted = (await desk.UndoAsync(ds, smith.Id))!;
         Assert.Equal(DecisionMethod.Queued, reverted.Method);
         Assert.Equal(1, Assert.Single(await desk.QueueCountsAsync(ds)).Count);
 
@@ -87,6 +94,16 @@ public class ReviewServiceTests(PostgresFixture pg)
         Assert.Equal(overrideEntity.Id, (await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised))!.Target);
         var evaluation = await reconciler.EvaluateAsync(ds, pinned);
         Assert.Equal(Outcome.Overridden, evaluation.Outcome);
+        // undoing an "always" removes the override it made; undoing one that replaced an earlier override restores that one
+        await desk.UndoAsync(ds, pinned.Id);
+        Assert.Null(await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised));
+        Assert.Equal(DecisionMethod.Minted, (await pg.Store.DecisionForAsync(pinned.Id))!.Method);
+        await desk.OverrideAsync(ds, pinned.Id, "http://vocab.getty.edu/ulan/500000001", "tester");
+        var firstTarget = (await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised))!.Target;
+        await desk.OverrideAsync(ds, pinned.Id, "http://vocab.getty.edu/ulan/500000002", "tester");
+        Assert.NotEqual(firstTarget, (await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised))!.Target);
+        await desk.UndoAsync(ds, pinned.Id);
+        Assert.Equal(firstTarget, (await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised))!.Target);
 
         // searching for "same as" and for other records
         Assert.Contains(await desk.SearchEntitiesAsync(ds, "john smith"), e => e.Id == accepted.Id);

@@ -16,7 +16,7 @@ public class StoreTests(PostgresFixture pg)
         await pg.Store.InitialiseAsync();
         await pg.Store.InitialiseAsync();
         await using var cmd = pg.DataSource.CreateCommand("select max(version) from schema_version");
-        Assert.Equal(2, (int)(await cmd.ExecuteScalarAsync())!);
+        Assert.Equal(3, (int)(await cmd.ExecuteScalarAsync())!);
     }
 
     [PostgresFact]
@@ -182,6 +182,62 @@ public class StoreTests(PostgresFixture pg)
         await pg.Store.DecideAsync(s.Id, (await pg.Store.FindEntitiesByLabelAsync("london", ds)).Single().Id, DecisionMethod.ExactName);
         var counts = await pg.Store.CountsAsync(ds);
         Assert.Equal(new StoreCounts(1, 2, 1, 1, 0, counts.AuthorityRecords, 1), counts);
+    }
+
+    [PostgresFact]
+    public async Task A_string_keeps_one_valid_decision_and_undo_restores_exactly_the_superseded_one()
+    {
+        var ds = Dataset();
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var s = await pg.Store.CollectAsync(ds, "ctx", "Someone");
+        var e1 = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "One"), scheme);
+        var e2 = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Two"), scheme);
+        var d1 = await pg.Store.DecideAsync(s.Id, e1.Id, DecisionMethod.Queued);
+        var d2 = await pg.Store.DecideAsync(s.Id, e1.Id, DecisionMethod.Human);
+        Assert.Equal(d1.Id, d2.Supersedes);
+        Assert.Equal(d1.Id, (await pg.Store.RevertDecisionAsync(s.Id))!.Id);          // undo: d1 again
+        var d3 = await pg.Store.DecideAsync(s.Id, e2.Id, DecisionMethod.Human);        // a second human decision over the restored d1
+        Assert.Equal(d1.Id, d3.Supersedes);
+        Assert.Equal(d1.Id, (await pg.Store.RevertDecisionAsync(s.Id))!.Id);          // undo again restores d1, not the undone d2
+        Assert.Equal(DecisionMethod.Queued, (await pg.Store.DecisionForAsync(s.Id))!.Method);
+
+        // the unique index is the backstop: a second valid decision cannot be written around the lock
+        await using (var cmd = pg.DataSource.CreateCommand("insert into decisions (source_string_id, entity_id, method, valid) values (@s, @e, 'rogue', true)"))
+        {
+            cmd.Parameters.AddWithValue("s", s.Id); cmd.Parameters.AddWithValue("e", e2.Id);
+            await Assert.ThrowsAsync<Npgsql.PostgresException>(() => cmd.ExecuteNonQueryAsync());
+        }
+
+        // two deciders at once: both succeed in turn, one valid decision remains
+        var tasks = Enumerable.Range(0, 6).Select(i => pg.Store.DecideAsync(s.Id, i % 2 == 0 ? e1.Id : e2.Id, DecisionMethod.Vote)).ToArray();
+        await Task.WhenAll(tasks);
+        await using (var cmd = pg.DataSource.CreateCommand("select count(*) from decisions where source_string_id = @s and valid"))
+        {
+            cmd.Parameters.AddWithValue("s", s.Id);
+            Assert.Equal(1L, (long)(await cmd.ExecuteScalarAsync())!);
+        }
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => pg.Store.DecideAsync(-1, e1.Id, DecisionMethod.Vote));
+    }
+
+    [PostgresFact]
+    public async Task Merges_refuse_cycles_and_merged_losers_and_carry_labels()
+    {
+        var ds = Dataset();
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var a = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Agnew's", ["Thos. Agnew & Sons"]), scheme);
+        var b = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Thomas Agnew & Sons"), scheme);
+        var c = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Agnew & Son Ltd"), scheme);
+        await pg.Store.MergeAsync(a.Id, b.Id, "test");
+        var survivor = (await pg.Store.GetEntityAsync(b.Id))!;
+        Assert.Contains("Agnew's", survivor.Labels);
+        Assert.Contains("Thos. Agnew & Sons", survivor.Labels);
+        Assert.Single(await pg.Store.FindEntitiesByLabelAsync("agnew's", ds)); // the loser's spelling finds the survivor
+        await Assert.ThrowsAsync<InvalidOperationException>(() => pg.Store.MergeAsync(b.Id, a.Id, "test"));  // into a merged entity that resolves to the loser: a cycle
+        await Assert.ThrowsAsync<InvalidOperationException>(() => pg.Store.MergeAsync(a.Id, c.Id, "test"));  // a loser already merged
+        await pg.Store.MergeAsync(c.Id, a.Id, "test"); // a merged survivor is followed to its end: c joins b
+        Assert.Equal(b.Id, (await pg.Store.ResolveEntityAsync(c.Id))!.Id);
+        var other = await pg.Store.AddEntityAsync(ds + "-other", new NewEntity(EntityClass.Group, "Elsewhere"), new IdentifierScheme("https://data.example.org/" + ds + "-other"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => pg.Store.MergeAsync(other.Id, b.Id, "test")); // another project
     }
 
     [PostgresFact]

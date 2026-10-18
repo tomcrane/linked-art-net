@@ -29,6 +29,7 @@ public abstract class ProjectPageModel(ProjectServices services, ProjectAccess a
         if (role is null || !ProjectRole.Covers(role, RequiredRole)) { context.Result = Forbid(); return; }
         Project = project;
         Role = role;
+        Dataset = project.Project.Dataset; // the stored key, exactly, whatever the route's case
         ViewData["Dataset"] = Dataset;
         ViewData["ProjectName"] = project.Project.Name;
         await next();

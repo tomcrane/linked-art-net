@@ -115,6 +115,7 @@ public static class NTriples
                                 sb.Append((char)u4); i += 6; break;
                             case 'U':
                                 if (i + 10 > line.Length || !int.TryParse(line.AsSpan(i + 2, 8), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var u8)) return false;
+                                if (u8 < 0 || u8 > 0x10FFFF || (u8 >= 0xD800 && u8 <= 0xDFFF)) return false; // not a scalar value: the line is skipped, not the load
                                 sb.Append(char.ConvertFromUtf32(u8)); i += 10; break;
                             default: return false;
                         }
@@ -154,7 +155,7 @@ public static class NTriples
         for (var i = 0; i < iri.Length; i++)
         {
             if (iri[i] == '\\' && i + 5 < iri.Length && iri[i + 1] == 'u' && int.TryParse(iri.Slice(i + 2, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var u4)) { sb.Append((char)u4); i += 5; }
-            else if (iri[i] == '\\' && i + 9 < iri.Length && iri[i + 1] == 'U' && int.TryParse(iri.Slice(i + 2, 8), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var u8)) { sb.Append(char.ConvertFromUtf32(u8)); i += 9; }
+            else if (iri[i] == '\\' && i + 9 < iri.Length && iri[i + 1] == 'U' && int.TryParse(iri.Slice(i + 2, 8), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var u8) && u8 >= 0 && u8 <= 0x10FFFF && (u8 < 0xD800 || u8 > 0xDFFF)) { sb.Append(char.ConvertFromUtf32(u8)); i += 9; }
             else sb.Append(iri[i]);
         }
         return sb.ToString();

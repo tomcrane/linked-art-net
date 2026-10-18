@@ -58,8 +58,11 @@ public static class NameMatcher
         if (a == b) return 1.0;
         var fa = StringKey.Fold(a); var fb = StringKey.Fold(b);
         if (fa == fb) return 0.97;
-        var ca = NameForms.Canonical(fa); var cb = NameForms.Canonical(fb);
+        var ca = NameForms.Canonical(fa, dropQualifiers: false); var cb = NameForms.Canonical(fb, dropQualifiers: false);
         if (ca.Length > 0 && ca == cb) return 0.95;
+        // equal only once parenthesised qualifiers go: in LoC those are the disambiguators ("Smith, John (Clergyman)"), so this is review territory, not acceptance
+        var qa = NameForms.Canonical(fa); var qb = NameForms.Canonical(fb);
+        if (qa.Length > 0 && qa == qb) return 0.85;
         var ta = Tokens(fa); var tb = Tokens(fb);
         if (ta.Length == 0 || tb.Length == 0) return 0;
         if (SameMultiset(ta, tb)) return 0.93;

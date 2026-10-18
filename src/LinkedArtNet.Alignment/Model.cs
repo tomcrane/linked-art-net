@@ -97,7 +97,8 @@ public sealed record NewEntity(
 public sealed record SourceString(long Id, string Dataset, string Context, string Raw, string Normalised, string? ParsedJson, DateTimeOffset FirstSeen, DateTimeOffset LastSeen, int Occurrences);
 
 /// <summary>What a source string refers to. A null entity means it was looked at and left unresolved; <see cref="Valid"/> false means a later event (merge, authority update) reopened it.</summary>
-public sealed record Decision(long Id, long SourceStringId, string? EntityId, string Method, string? EvidenceJson, string? Reviewer, DateTimeOffset DecidedAt, string? DatasetVersion, string? RunId, bool Valid);
+/// <param name="Supersedes">The decision this one replaced when it was made, so an undo restores exactly that one.</param>
+public sealed record Decision(long Id, long SourceStringId, string? EntityId, string Method, string? EvidenceJson, string? Reviewer, DateTimeOffset DecidedAt, string? DatasetVersion, string? RunId, bool Valid, long? Supersedes = null);
 
 /// <summary>A cached copy of an external authority's record, so reconciliation reads locally and fetches once.</summary>
 public sealed record AuthorityRecord(string Uri, string Source, string? Label, IReadOnlyList<string> Labels, string? Type, Lifespan? Lifespan, IReadOnlyList<string> SameAs, string? DataJson, DateTimeOffset FetchedAt, string? SourceVersion);

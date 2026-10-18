@@ -92,10 +92,35 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
 
     // ---- actions -------------------------------------------------------------------------------------------------
 
+    /// <summary>The string with its decision, and only if it belongs to the project: a page of another project cannot act on it.</summary>
+    private async Task<DecidedString> OwnAsync(string dataset, long stringId, CancellationToken ct)
+    {
+        var decided = await store.DecidedStringAsync(stringId, ct) ?? throw new KeyNotFoundException($"No decided string {stringId}.");
+        if (!string.Equals(decided.String.Dataset, dataset, StringComparison.Ordinal)) throw new InvalidOperationException("The string belongs to another project.");
+        return decided;
+    }
+
+    /// <summary>A target the reviewer may choose: a candidate in the decision's evidence, an authority record the store holds, or an entity of this project. Anything else is refused rather than minted.</summary>
+    private async Task EnsureTargetAsync(string dataset, DecidedString decided, string targetUri, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(targetUri) || !Uri.TryCreate(targetUri, UriKind.Absolute, out _)) throw new InvalidOperationException("The target is not a URI.");
+        if (scheme.Owns(targetUri))
+        {
+            var entity = await store.ResolveEntityAsync(targetUri, ct);
+            if (entity is null || entity.Dataset != dataset) throw new InvalidOperationException("The target is not an entity of this project.");
+            return;
+        }
+        if (await store.GetAuthorityAsync(targetUri, ct) is not null) return;
+        var evidence = ParseEvidence(decided.Decision.EvidenceJson);
+        if (evidence.Groups.Any(g => g.Members.Any(m => m.Uri == targetUri))) return;
+        throw new InvalidOperationException("The target is not a candidate, a known authority record or an entity of this project.");
+    }
+
     /// <summary>The reviewer says the string is this authority record (a URI from the candidates or a search) or this entity (one of ours).</summary>
     public async Task<Entity> AcceptAsync(string dataset, long stringId, string targetUri, string reviewer, string? note = null, CancellationToken ct = default)
     {
-        var decided = await store.DecidedStringAsync(stringId, ct) ?? throw new KeyNotFoundException($"No decided string {stringId}.");
+        var decided = await OwnAsync(dataset, stringId, ct);
+        await EnsureTargetAsync(dataset, decided, targetUri, ct);
         var reading = reconciler.Read(decided.String);
         var entity = await reconciler.EntityForUriAsync(dataset, targetUri, reading, null, ct);
         await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept", reading, new { target = targetUri, entity = entity.Id, note }), reviewer, ct: ct);
@@ -106,7 +131,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     /// <summary>The reviewer says the string is the same as an entity already in the store.</summary>
     public async Task<Entity> SameAsAsync(string dataset, long stringId, string entityId, string reviewer, string? note = null, CancellationToken ct = default)
     {
-        var decided = await store.DecidedStringAsync(stringId, ct) ?? throw new KeyNotFoundException($"No decided string {stringId}.");
+        var decided = await OwnAsync(dataset, stringId, ct);
         var entity = await store.ResolveEntityAsync(entityId, ct) ?? throw new KeyNotFoundException($"No entity {entityId}.");
         if (entity.Dataset != dataset) throw new InvalidOperationException("The entity belongs to another project.");
         var reading = reconciler.Read(decided.String);
@@ -118,7 +143,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     /// <summary>The reviewer says none of the candidates is right and the thing is real: the provisional entity becomes a confirmed local authority, renamed if asked.</summary>
     public async Task<Entity> KeepLocalAsync(string dataset, long stringId, string reviewer, string? label = null, string? note = null, CancellationToken ct = default)
     {
-        var decided = await store.DecidedStringAsync(stringId, ct) ?? throw new KeyNotFoundException($"No decided string {stringId}.");
+        var decided = await OwnAsync(dataset, stringId, ct);
         var reading = reconciler.Read(decided.String);
         var entity = decided.Decision.EntityId is null ? null : await store.ResolveEntityAsync(decided.Decision.EntityId, ct);
         if (entity is null || entity.Status is EntityStatus.Aligned or EntityStatus.Confirmed && entity.Equivalents.Count > 0)
@@ -137,20 +162,39 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     /// <summary>The reviewer makes this spelling always mean the target, for any context: an override, applied now.</summary>
     public async Task<Entity> OverrideAsync(string dataset, long stringId, string targetUri, string reviewer, string? note = null, CancellationToken ct = default)
     {
-        var decided = await store.DecidedStringAsync(stringId, ct) ?? throw new KeyNotFoundException($"No decided string {stringId}.");
+        var decided = await OwnAsync(dataset, stringId, ct);
+        await EnsureTargetAsync(dataset, decided, targetUri, ct);
         var reading = reconciler.Read(decided.String);
         var entity = await reconciler.EntityForUriAsync(dataset, targetUri, reading, null, ct);
+        // the override this one replaces is kept in the evidence so an undo can put it back
+        var previous = await store.OverrideForAsync(dataset, "", decided.String.Normalised, ct);
+        previous = previous is { Context: null } ? previous : null;
         await store.PutOverrideAsync(new Override(dataset, null, decided.String.Normalised, entity.Id, "workbench:" + reviewer, note ?? $"\"{decided.String.Raw}\" → {targetUri}"), ct);
-        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Override, Evidence("override", reading, new { target = targetUri, entity = entity.Id, note }), reviewer, ct: ct);
+        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Override, Evidence("override", reading, new { target = targetUri, entity = entity.Id, note, overrideKey = decided.String.Normalised, previousOverride = previous is null ? null : new { previous.Target, previous.Source, previous.Note } }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return entity;
     }
 
     /// <summary>A note for another reviewer; the decision is unchanged.</summary>
-    public Task<Note> FlagAsync(string dataset, long stringId, string reviewer, string text, CancellationToken ct = default) => store.AddNoteAsync(dataset, StringTarget(stringId), reviewer, text, ct);
+    public async Task<Note> FlagAsync(string dataset, long stringId, string reviewer, string text, CancellationToken ct = default)
+    {
+        await OwnAsync(dataset, stringId, ct);
+        return await store.AddNoteAsync(dataset, StringTarget(stringId), reviewer, text, ct);
+    }
 
-    /// <summary>Takes back the latest decision; what stood before is valid again.</summary>
-    public Task<Decision?> UndoAsync(long stringId, CancellationToken ct = default) => store.RevertDecisionAsync(stringId, ct);
+    /// <summary>Takes back the latest decision; what stood before is valid again. Undoing an "always" also puts the previous override back, or removes the one it made.</summary>
+    public async Task<Decision?> UndoAsync(string dataset, long stringId, CancellationToken ct = default)
+    {
+        var decided = await OwnAsync(dataset, stringId, ct);
+        if (decided.Decision.Method == DecisionMethod.Override && ParseEvidence(decided.Decision.EvidenceJson).Extra is { } extra && extra.TryGetProperty("overrideKey", out var keyElement) && keyElement.GetString() is { } key)
+        {
+            if (extra.TryGetProperty("previousOverride", out var prev) && prev.ValueKind == JsonValueKind.Object)
+                await store.PutOverrideAsync(new Override(dataset, null, key, prev.GetProperty("target").GetString()!, prev.GetProperty("source").GetString() ?? "unknown", prev.TryGetProperty("note", out var n) ? n.GetString() : null), ct);
+            else
+                await store.RemoveOverrideAsync(dataset, null, key, ct);
+        }
+        return await store.RevertDecisionAsync(stringId, ct);
+    }
 
     private async Task NoteIfAnyAsync(string dataset, long stringId, string reviewer, string? note, CancellationToken ct)
     {

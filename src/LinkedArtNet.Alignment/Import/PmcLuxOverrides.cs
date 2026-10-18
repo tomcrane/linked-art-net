@@ -53,10 +53,13 @@ public sealed record PmcLuxOverrides(
             // other entities of the dataset that share an authority id are the same thing under an earlier minted identifier:
             // they merge into the curated one, which keeps the identifier; their labels and decisions follow
             foreach (var uri in a.EquivalentUris())
-                foreach (var duplicate in await store.FindEntitiesByEquivalentAsync(uri, ct))
+                foreach (var found in await store.FindEntitiesByEquivalentAsync(uri, ct))
                 {
-                    if (duplicate.Id == id || duplicate.Dataset != dataset || duplicate.MergedInto is not null) continue;
-                    var curated = (await store.GetEntityAsync(id, ct))!;
+                    var duplicate = found.MergedInto is null ? found : await store.ResolveEntityAsync(found.Id, ct);
+                    if (duplicate is null || duplicate.Id == id || duplicate.Dataset != dataset) continue;
+                    var curated = await store.ResolveEntityAsync(id, ct) ?? throw new InvalidOperationException($"Curated entity {id} vanished.");
+                    if (curated.Id != id) throw new InvalidOperationException($"Curated entity {id} has been merged into {curated.Id}; the file's identifiers must stay the survivors.");
+                    if (curated.Id == duplicate.Id) continue;
                     var labels = curated.Labels.Concat(duplicate.Labels).Append(duplicate.Label).Append(curated.Label).OfType<string>().Where(l => l.Length > 0).Distinct(StringComparer.Ordinal).ToList();
                     if (labels.Count != curated.Labels.Count) await store.UpdateEntityAsync(curated with { Labels = labels, Lifespan = curated.Lifespan ?? duplicate.Lifespan }, ct);
                     await store.MergeAsync(duplicate.Id, id, sourceName, ct);

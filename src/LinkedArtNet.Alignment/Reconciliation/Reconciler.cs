@@ -243,7 +243,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 var members = g.OrderByDescending(m => m.Score).ToList();
                 var live = members.Where(m => !m.Veto).ToList();
                 if (live.Count == 0) return null;
-                return new CandidateGroup(members, live.Max(m => m.Score), live.Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToArray(),
+                // the store's own entities are not an independent source: their ids came from earlier votes
+                return new CandidateGroup(members, live.Max(m => m.Score), live.Select(m => m.Candidate.Source).Where(s => s != "store").Distinct(StringComparer.Ordinal).ToArray(),
                     members.Select(m => m.Candidate.Uri).Concat(members.SelectMany(m => m.Candidate.SameAs)).Distinct(StringComparer.Ordinal).ToArray());
             })
             .OfType<CandidateGroup>()

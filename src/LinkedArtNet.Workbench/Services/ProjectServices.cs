@@ -11,7 +11,7 @@ public sealed record ProjectContext(Project Project, IdentifierScheme Scheme, Pr
 /// <summary>Builds and caches the per-project services; <see cref="Invalidate"/> after the project or its manifest changes.</summary>
 public sealed class ProjectServices(IAlignmentStore store)
 {
-    private readonly ConcurrentDictionary<string, ProjectContext> _cache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, ProjectContext> _cache = new(StringComparer.Ordinal);
 
     public IAlignmentStore Store => store;
 
@@ -40,7 +40,7 @@ public sealed class ProjectAccess(IAlignmentStore store, WorkbenchOptions option
         if (login is null) return null;
         if (options.IsOwner(login)) return ProjectRole.Owner;
         var memberships = await store.MembershipsForAsync(login, ct);
-        return memberships.FirstOrDefault(m => string.Equals(m.Dataset, dataset, StringComparison.OrdinalIgnoreCase))?.Role;
+        return memberships.FirstOrDefault(m => string.Equals(m.Dataset, dataset, StringComparison.Ordinal))?.Role;
     }
 
     /// <summary>The projects a login may see: all of them for an owner, otherwise those with a membership.</summary>
@@ -49,7 +49,7 @@ public sealed class ProjectAccess(IAlignmentStore store, WorkbenchOptions option
         if (login is null) return [];
         var all = await store.ListProjectsAsync(ct);
         if (options.IsOwner(login)) return all.Select(p => (p, ProjectRole.Owner)).ToList();
-        var memberships = (await store.MembershipsForAsync(login, ct)).ToDictionary(m => m.Dataset, m => m.Role, StringComparer.OrdinalIgnoreCase);
+        var memberships = (await store.MembershipsForAsync(login, ct)).ToDictionary(m => m.Dataset, m => m.Role, StringComparer.Ordinal);
         return all.Where(p => memberships.ContainsKey(p.Dataset)).Select(p => (p, memberships[p.Dataset])).ToList();
     }
 }

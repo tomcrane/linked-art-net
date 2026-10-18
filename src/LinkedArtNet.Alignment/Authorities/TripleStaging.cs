@@ -6,23 +6,25 @@ namespace LinkedArtNet.Alignment.Authorities;
 
 /// <summary>
 /// Stages the triples a vocabulary loader needs in an unlogged table beside the store, so a dump of tens or hundreds
-/// of millions of statements can be joined in SQL instead of held in memory. One table, <c>triple_staging</c>, is
-/// truncated per load; the loaders decide which predicates (and which subjects or objects) are worth keeping.
+/// of millions of statements can be joined in SQL instead of held in memory. Each load gets its own table
+/// (<c>triple_staging_xxxxxx</c>), dropped when the load ends, so two loads running at once cannot touch each
+/// other's rows; the loaders decide which predicates (and which subjects or objects) are worth keeping.
 /// </summary>
 public static class TripleStaging
 {
-    public const string Table = "triple_staging";
+    /// <summary>A fresh staging table name for one load.</summary>
+    public static string NewTable() => "triple_staging_" + IdMinter.Generate(8);
 
-    /// <summary>Clears the staging table and copies in every triple the filter accepts. Returns (read, kept).</summary>
-    public static async Task<(long Read, long Kept)> StageAsync(PostgresAlignmentStore store, IEnumerable<Triple> triples, Func<Triple, bool> keep, IProgress<string>? progress, CancellationToken ct)
+    /// <summary>Creates the load's staging table and copies in every triple the filter accepts. Returns (read, kept).</summary>
+    public static async Task<(long Read, long Kept)> StageAsync(PostgresAlignmentStore store, string table, IEnumerable<Triple> triples, Func<Triple, bool> keep, IProgress<string>? progress, CancellationToken ct)
     {
         var db = store.DataSource;
-        await using (var cmd = db.CreateCommand($"create unlogged table if not exists {Table} (s text not null, p text not null, o text not null, lang text); truncate {Table}; drop index if exists {Table}_s; drop index if exists {Table}_p_s; drop index if exists {Table}_p_o"))
+        await using (var cmd = db.CreateCommand($"create unlogged table {table} (s text not null, p text not null, o text not null, lang text)"))
             await cmd.ExecuteNonQueryAsync(ct);
 
         long read = 0, kept = 0;
         await using (var conn = await db.OpenConnectionAsync(ct))
-        await using (var writer = await conn.BeginBinaryImportAsync($"copy {Table} (s, p, o, lang) from stdin (format binary)", ct))
+        await using (var writer = await conn.BeginBinaryImportAsync($"copy {table} (s, p, o, lang) from stdin (format binary)", ct))
         {
             foreach (var t in triples)
             {
@@ -39,7 +41,7 @@ public static class TripleStaging
             await writer.CompleteAsync(ct);
         }
         progress?.Report($"{read:N0} triples read, {kept:N0} staged; indexing");
-        await using (var cmd = db.CreateCommand($"create index {Table}_s on {Table} (s); create index {Table}_p_s on {Table} (p, s); create index {Table}_p_o on {Table} (p, o); analyze {Table}"))
+        await using (var cmd = db.CreateCommand($"create index {table}_s on {table} (s); create index {table}_p_s on {table} (p, s); create index {table}_p_o on {table} (p, o); analyze {table}"))
         {
             cmd.CommandTimeout = 0;
             await cmd.ExecuteNonQueryAsync(ct);
@@ -47,10 +49,11 @@ public static class TripleStaging
         return (read, kept);
     }
 
-    public static async Task ClearAsync(PostgresAlignmentStore store, CancellationToken ct)
+    /// <summary>Drops the load's staging table. Called whether the load succeeded or failed.</summary>
+    public static async Task DropAsync(PostgresAlignmentStore store, string table, CancellationToken ct)
     {
-        await using var cmd = store.DataSource.CreateCommand($"truncate {Table}");
-        await cmd.ExecuteNonQueryAsync(ct);
+        await using var cmd = store.DataSource.CreateCommand($"drop table if exists {table}");
+        await cmd.ExecuteNonQueryAsync(CancellationToken.None);
     }
 
     /// <summary>The N-Triples files a path names: the file itself, or those inside a directory.</summary>

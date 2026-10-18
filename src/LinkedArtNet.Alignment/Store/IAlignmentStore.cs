@@ -81,6 +81,9 @@ public interface IAlignmentStore
 
     Task PutOverrideAsync(Override item, CancellationToken ct = default);
 
+    /// <summary>Removes one override (context null means the any-context one). True when something was removed.</summary>
+    Task<bool> RemoveOverrideAsync(string dataset, string? context, string normalised, CancellationToken ct = default);
+
     /// <summary>The override for a string: the one for its context first, then the one for any context.</summary>
     Task<Override?> OverrideForAsync(string dataset, string context, string normalised, CancellationToken ct = default);
 
@@ -132,7 +135,7 @@ public interface IAlignmentStore
     /// <summary>Strings with a valid decision of one method, counted by context: the review queue's size.</summary>
     Task<IReadOnlyList<ContextMethodCount>> QueueCountsAsync(string dataset, string method, CancellationToken ct = default);
 
-    /// <summary>Takes back the latest valid decision for a string and makes the one before it valid again, so an undo restores what stood before. Returns the decision now valid, or null when none is.</summary>
+    /// <summary>Takes back the latest valid decision for a string and makes the one it superseded valid again, so an undo restores exactly what stood before. Returns the decision now valid, or null when none is.</summary>
     Task<Decision?> RevertDecisionAsync(long stringId, CancellationToken ct = default);
 
     // ---- overview

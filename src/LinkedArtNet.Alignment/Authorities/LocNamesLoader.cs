@@ -58,38 +58,42 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
     public async Task<LocLoadResult> LoadAsync(IEnumerable<Triple> triples, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var started = DateTimeOffset.UtcNow;
-        // types are kept only for headings in the names file (variants are typed too, as blank nodes); labels of
-        // headings and variants, the links, and the RWO's dates and occupations
-        var (read, kept) = await TripleStaging.StageAsync(store, triples,
-            t => Wanted.Contains(t.Predicate) && (t.Predicate != RdfType || (HeadingTypes.ContainsKey(t.Object) && t.Subject.StartsWith(NamesPrefix, StringComparison.Ordinal))),
-            progress, ct);
-        progress?.Report("building records");
-        var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(store.DataSource, sourceVersion, ct), ct);
-        await TripleStaging.ClearAsync(store, ct);
-        return new LocLoadResult(read, kept, records, DateTimeOffset.UtcNow - started);
+        var table = TripleStaging.NewTable();
+        try
+        {
+            // types are kept only for headings in the names file (variants are typed too, as blank nodes); labels of
+            // headings and variants, the links, and the RWO's dates and occupations
+            var (read, kept) = await TripleStaging.StageAsync(store, table, triples,
+                t => Wanted.Contains(t.Predicate) && (t.Predicate != RdfType || (HeadingTypes.ContainsKey(t.Object) && t.Subject.StartsWith(NamesPrefix, StringComparison.Ordinal))),
+                progress, ct);
+            progress?.Report("building records");
+            var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(store.DataSource, table, sourceVersion, ct), ct);
+            return new LocLoadResult(read, kept, records, DateTimeOffset.UtcNow - started);
+        }
+        finally { await TripleStaging.DropAsync(store, table, ct); }
     }
 
-    private static readonly string RecordsSql = $"""
+    private static string RecordsSql(string table) => $"""
         with headings as (
-            select s as uri, min(o) as type from {TripleStaging.Table} where p = '{RdfType}' and s like '{NamesPrefix}%' group by s
+            select s as uri, min(o) as type from {table} where p = '{RdfType}' and s like '{NamesPrefix}%' group by s
         ),
-        auth as (select s as uri, min(o) as label from {TripleStaging.Table} where p = '{Mads}authoritativeLabel' and s like '{NamesPrefix}%' group by s),
+        auth as (select s as uri, min(o) as label from {table} where p = '{Mads}authoritativeLabel' and s like '{NamesPrefix}%' group by s),
         variants as (
             select hv.s as uri, array_agg(distinct vl.o) as labels
-            from {TripleStaging.Table} hv join {TripleStaging.Table} vl on vl.s = hv.o and vl.p = '{Mads}variantLabel'
+            from {table} hv join {table} vl on vl.s = hv.o and vl.p = '{Mads}variantLabel'
             where hv.p = '{Mads}hasVariant' group by hv.s
         ),
         links as (
-            select s as uri, array_agg(distinct o) as same_as from {TripleStaging.Table}
+            select s as uri, array_agg(distinct o) as same_as from {table}
             where p in ('{Mads}hasExactExternalAuthority', '{Mads}hasCloseExternalAuthority', '{Skos}exactMatch', '{Skos}closeMatch') group by s
         ),
-        rwo as (select s as uri, min(o) as rwo from {TripleStaging.Table} where p = '{Mads}identifiesRWO' group by s),
+        rwo as (select s as uri, min(o) as rwo from {table} where p = '{Mads}identifiesRWO' group by s),
         rwoinfo as (
             select rwo.uri,
                    max(case when x.p = '{Mads}birthDate' then x.o end) as birth,
                    max(case when x.p = '{Mads}deathDate' then x.o end) as death,
                    array_remove(array_agg(distinct case when x.p = '{Mads}occupation' then x.o end), null) as occupations
-            from rwo join {TripleStaging.Table} x on x.s = rwo.rwo group by rwo.uri
+            from rwo join {table} x on x.s = rwo.rwo group by rwo.uri
         )
         select h.uri, h.type, auth.label, variants.labels, links.same_as, rwoinfo.birth, rwoinfo.death, rwoinfo.occupations
         from headings h
@@ -100,10 +104,10 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
         order by h.uri
         """;
 
-    private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
+    private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
-        await using var cmd = db.CreateCommand(RecordsSql);
+        await using var cmd = db.CreateCommand(RecordsSql(table));
         cmd.CommandTimeout = 0;
         await using var r = await cmd.ExecuteReaderAsync(System.Data.CommandBehavior.SequentialAccess, ct);
         while (await r.ReadAsync(ct))

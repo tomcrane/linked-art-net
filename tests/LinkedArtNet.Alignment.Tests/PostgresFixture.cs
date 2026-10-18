@@ -35,7 +35,13 @@ public sealed class PostgresFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         string connection;
-        if (!string.IsNullOrWhiteSpace(ExternalConnectionString)) connection = ExternalConnectionString;
+        if (!string.IsNullOrWhiteSpace(ExternalConnectionString))
+        {
+            // the tests drop and recreate tables: only a database whose name says it is for tests may be pointed at
+            var database = new Npgsql.NpgsqlConnectionStringBuilder(ExternalConnectionString).Database ?? "";
+            if (!database.Contains("test", StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException($"LINKEDART_TEST_PG points at database '{database}'; the tests drop tables, so the name must contain 'test'.");
+            connection = ExternalConnectionString;
+        }
         else
         {
             _container = new PostgreSqlBuilder("postgres:15-alpine").Build();

@@ -47,7 +47,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     /// <summary>Drops every table of the store. For disposable test databases only.</summary>
     internal async Task DropAllAsync(CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version, getty_staging, triple_staging, memberships, notes, projects, users cascade");
+        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version, getty_staging, triple_staging, memberships, notes, projects, users cascade; do $$ declare t text; begin for t in select tablename from pg_tables where schemaname = current_schema() and tablename like 'triple_staging_%' loop execute 'drop table if exists ' || quote_ident(t); end loop; end $$");
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
@@ -160,6 +160,34 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await using var conn = await _db.OpenConnectionAsync(ct);
         await using var tx = await conn.BeginTransactionAsync(ct);
         var now = DateTimeOffset.UtcNow;
+        // lock both rows; the survivor is followed to the end of its merge chain, and a loser already merged, or sitting on that chain, is refused
+        string? loserDataset = null, loserStatus = null;
+        await using (var cmd = new NpgsqlCommand("select dataset, status from entities where id = @id for update", conn, tx))
+        {
+            Add(cmd, "id", loserId);
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            if (await r.ReadAsync(ct)) { loserDataset = r.GetString(0); loserStatus = r.GetString(1); }
+        }
+        if (loserDataset is null) throw new InvalidOperationException($"Entity {loserId} does not exist.");
+        if (loserStatus == "merged") throw new InvalidOperationException($"Entity {loserId} is already merged.");
+        var chain = new List<string>();
+        for (var current = survivorId; ;)
+        {
+            if (current == loserId) throw new InvalidOperationException($"Entity {survivorId} resolves through {loserId}: the merge would make a cycle.");
+            if (chain.Contains(current) || chain.Count > 10) throw new InvalidOperationException($"Merge chain from {survivorId} does not end.");
+            chain.Add(current);
+            string? next = null, dataset = null;
+            await using (var cmd = new NpgsqlCommand("select merged_into, dataset from entities where id = @id for update", conn, tx))
+            {
+                Add(cmd, "id", current);
+                await using var r = await cmd.ExecuteReaderAsync(ct);
+                if (!await r.ReadAsync(ct)) throw new InvalidOperationException($"Entity {current} does not exist.");
+                next = Str(r, 0); dataset = r.GetString(1);
+            }
+            if (dataset != loserDataset) throw new InvalidOperationException("Entities of different projects cannot be merged.");
+            if (next is null) { survivorId = current; break; }
+            current = next;
+        }
         await using (var cmd = new NpgsqlCommand(
             """
             insert into entity_equivalents (entity_id, uri, source, method, confidence, decided_at, dataset_version, run_id)
@@ -181,6 +209,24 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         {
             Add(cmd, "survivor", survivorId); Add(cmd, "now", now);
             if (await cmd.ExecuteNonQueryAsync(ct) == 0) throw new InvalidOperationException($"Entity {survivorId} does not exist.");
+        }
+        // the loser's labels come across, so its spellings keep finding the survivor
+        string? loserLabel = null; string[] loserLabels = []; string? survivorLabel = null; string[] survivorLabels = [];
+        await using (var cmd = new NpgsqlCommand("select id, label, labels from entities where id in (@loser, @survivor)", conn, tx))
+        {
+            Add(cmd, "loser", loserId); Add(cmd, "survivor", survivorId);
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+            {
+                if (r.GetString(0) == loserId) { loserLabel = Str(r, 1); loserLabels = r.GetFieldValue<string[]>(2); }
+                else { survivorLabel = Str(r, 1); survivorLabels = r.GetFieldValue<string[]>(2); }
+            }
+        }
+        var merged = survivorLabels.Concat(loserLabels).Append(loserLabel).OfType<string>().Where(l => l.Length > 0 && l != survivorLabel).Distinct(StringComparer.Ordinal).ToArray();
+        await using (var cmd = new NpgsqlCommand("update entities set labels = @labels, normalised_labels = @normalised where id = @survivor", conn, tx))
+        {
+            Add(cmd, "survivor", survivorId); Add(cmd, "labels", merged); Add(cmd, "normalised", NormalisedLabels(survivorLabel, merged));
+            await cmd.ExecuteNonQueryAsync(ct);
         }
         await tx.CommitAsync(ct);
     }
@@ -264,22 +310,33 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     // ---- decisions -------------------------------------------------------------------------------------------------
 
-    private const string DecisionColumns = "d.id, d.source_string_id, d.entity_id, d.method, d.evidence::text, d.reviewer, d.decided_at, d.dataset_version, d.run_id, d.valid";
+    private const string DecisionColumns = "d.id, d.source_string_id, d.entity_id, d.method, d.evidence::text, d.reviewer, d.decided_at, d.dataset_version, d.run_id, d.valid, d.supersedes";
 
     public async Task<Decision> DecideAsync(long sourceStringId, string? entityId, string method, string? evidenceJson = null, string? reviewer = null, string? datasetVersion = null, string? runId = null, CancellationToken ct = default)
     {
         await using var conn = await _db.OpenConnectionAsync(ct);
         await using var tx = await conn.BeginTransactionAsync(ct);
-        await using (var cmd = new NpgsqlCommand("update decisions set valid = false where source_string_id = @s and valid", conn, tx)) { Add(cmd, "s", sourceStringId); await cmd.ExecuteNonQueryAsync(ct); }
+        // the string row is the lock: two deciders for one string take turns, and the unique index on valid decisions is the backstop
+        await using (var cmd = new NpgsqlCommand("select 1 from source_strings where id = @s for update", conn, tx))
+        {
+            Add(cmd, "s", sourceStringId);
+            if (await cmd.ExecuteScalarAsync(ct) is null) throw new KeyNotFoundException($"No source string {sourceStringId}.");
+        }
+        long? superseded;
+        await using (var cmd = new NpgsqlCommand("update decisions set valid = false where source_string_id = @s and valid returning id", conn, tx))
+        {
+            Add(cmd, "s", sourceStringId);
+            superseded = (long?)await cmd.ExecuteScalarAsync(ct);
+        }
         long id;
         await using (var cmd = new NpgsqlCommand(
             """
-            insert into decisions (source_string_id, entity_id, method, evidence, reviewer, decided_at, dataset_version, run_id, valid)
-            values (@s, @entity, @method, @evidence, @reviewer, @now, @version, @run, true) returning id
+            insert into decisions (source_string_id, entity_id, method, evidence, reviewer, decided_at, dataset_version, run_id, valid, supersedes)
+            values (@s, @entity, @method, @evidence, @reviewer, @now, @version, @run, true, @supersedes) returning id
             """, conn, tx))
         {
             Add(cmd, "s", sourceStringId); Add(cmd, "entity", entityId); Add(cmd, "method", method); AddJson(cmd, "evidence", evidenceJson); Add(cmd, "reviewer", reviewer);
-            Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "version", datasetVersion); Add(cmd, "run", runId);
+            Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "version", datasetVersion); Add(cmd, "run", runId); Add(cmd, "supersedes", superseded);
             id = (long)(await cmd.ExecuteScalarAsync(ct))!;
         }
         await tx.CommitAsync(ct);
@@ -334,7 +391,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         while (await r.ReadAsync(ct))
         {
             var s = ReadString(r);
-            var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18));
+            var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18), r.IsDBNull(19) ? null : r.GetInt64(19));
             list.Add(new DecidedString(s, d));
         }
         return list;
@@ -351,7 +408,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         while (await r.ReadAsync(ct))
         {
             var s = ReadString(r);
-            var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18));
+            var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18), r.IsDBNull(19) ? null : r.GetInt64(19));
             list.Add(new DecidedString(s, d));
         }
         return list;
@@ -403,7 +460,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     }
 
     private static Decision ReadDecision(NpgsqlDataReader r) =>
-        new(r.GetInt64(0), r.GetInt64(1), Str(r, 2), r.GetString(3), Str(r, 4), Str(r, 5), r.GetFieldValue<DateTimeOffset>(6), Str(r, 7), Str(r, 8), r.GetBoolean(9));
+        new(r.GetInt64(0), r.GetInt64(1), Str(r, 2), r.GetString(3), Str(r, 4), Str(r, 5), r.GetFieldValue<DateTimeOffset>(6), Str(r, 7), Str(r, 8), r.GetBoolean(9), r.IsDBNull(10) ? null : r.GetInt64(10));
 
     // ---- overrides -------------------------------------------------------------------------------------------------
 
@@ -416,6 +473,13 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             """);
         Add(cmd, "dataset", item.Dataset); Add(cmd, "context", item.Context ?? ""); Add(cmd, "normalised", item.Normalised); Add(cmd, "target", item.Target); Add(cmd, "source", item.Source); Add(cmd, "note", item.Note);
         await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<bool> RemoveOverrideAsync(string dataset, string? context, string normalised, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("delete from overrides where dataset = @dataset and context = @context and normalised = @normalised");
+        Add(cmd, "dataset", dataset); Add(cmd, "context", context ?? ""); Add(cmd, "normalised", normalised);
+        return await cmd.ExecuteNonQueryAsync(ct) > 0;
     }
 
     public async Task<Override?> OverrideForAsync(string dataset, string context, string normalised, CancellationToken ct = default)
@@ -676,7 +740,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await using var r = await cmd.ExecuteReaderAsync(ct);
         if (!await r.ReadAsync(ct)) return null;
         var s = ReadString(r);
-        var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18));
+        var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18), r.IsDBNull(19) ? null : r.GetInt64(19));
         return new DecidedString(s, d);
     }
 
@@ -694,17 +758,22 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     {
         await using var conn = await _db.OpenConnectionAsync(ct);
         await using var tx = await conn.BeginTransactionAsync(ct);
-        long? latest = null;
-        await using (var cmd = new NpgsqlCommand("select id from decisions where source_string_id = @s and valid order by id desc limit 1", conn, tx))
+        await using (var cmd = new NpgsqlCommand("select 1 from source_strings where id = @s for update", conn, tx)) { cmd.Parameters.AddWithValue("s", stringId); if (await cmd.ExecuteScalarAsync(ct) is null) return null; }
+        long? latest = null, supersedes = null;
+        await using (var cmd = new NpgsqlCommand("select id, supersedes from decisions where source_string_id = @s and valid order by id desc limit 1", conn, tx))
         {
             cmd.Parameters.AddWithValue("s", stringId);
-            latest = (long?)await cmd.ExecuteScalarAsync(ct);
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            if (await r.ReadAsync(ct)) { latest = r.GetInt64(0); supersedes = r.IsDBNull(1) ? null : r.GetInt64(1); }
         }
         if (latest is null) return null;
         await using (var cmd = new NpgsqlCommand("update decisions set valid = false where id = @id", conn, tx)) { cmd.Parameters.AddWithValue("id", latest.Value); await cmd.ExecuteNonQueryAsync(ct); }
-        await using (var cmd = new NpgsqlCommand("update decisions set valid = true where id = (select id from decisions where source_string_id = @s and id < @latest and entity_id is not null order by id desc limit 1)", conn, tx))
+        // exactly the decision this one replaced comes back; a decision made before supersedes was recorded falls back to the one before it
+        await using (var cmd = new NpgsqlCommand(supersedes is null
+            ? "update decisions set valid = true where id = (select id from decisions where source_string_id = @s and id < @latest and entity_id is not null order by id desc limit 1)"
+            : "update decisions set valid = true where id = @supersedes and source_string_id = @s", conn, tx))
         {
-            cmd.Parameters.AddWithValue("s", stringId); cmd.Parameters.AddWithValue("latest", latest.Value);
+            cmd.Parameters.AddWithValue("s", stringId); cmd.Parameters.AddWithValue("latest", latest.Value); cmd.Parameters.AddWithValue("supersedes", (object?)supersedes ?? DBNull.Value);
             await cmd.ExecuteNonQueryAsync(ct);
         }
         await tx.CommitAsync(ct);

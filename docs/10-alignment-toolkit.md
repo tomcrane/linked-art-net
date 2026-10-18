@@ -386,5 +386,5 @@ Steps 1 to 3 do not touch PMC code and have no network dependency in their tests
    the run stops asking when it is spent. Nothing a model proposed becomes `verified` corpus or a `confirmed` entity
    without a person; the autonomy is in what the pipeline outputs, with its provenance stating exactly that.
 
-Still open: whether the review UI stays in the examples site (as the trainer generalised) or moves beside the store as
-part of `tools/Align`; the owner's instinct for the former is noted, and the first agent work will show which fits.
+The review UI question is settled in [12-workbench.md](12-workbench.md) (2026-10-18): a separate app,
+`LinkedArtNet.Workbench`, with projects and per-project members; the trainer moves into it.

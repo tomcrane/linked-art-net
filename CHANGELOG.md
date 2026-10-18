@@ -37,6 +37,8 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   entities with ULAN ids against the local index (missing id, label, dates, type, link conflicts and gains); `undo-run`.
   Both write CSVs under `reports/`, which is ignored by git. `load-loc` loads the LC Name Authority File (MADS/RDF
   N-Triples) as the `loc` index, headings split from their dates, variants and VIAF/Wikidata links kept.
+- Design doc 12: the alignment workbench, the human side of the toolkit (review desk, variants, entities, jobs,
+  projects, reports outward), as a separate app with per-project members.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

@@ -366,7 +366,10 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     tables; `tools/Align`; 25 tests against a Testcontainers PostgreSQL 15. Step 3, authority sources and the
     reconciler: local half built 2026-10-18 (Getty N-Triples loader, name matching, scoring and grouping, the
     decision ladder, `tools/Align load-getty|reconcile`; doc 11 section 8); remote half (3b) next. The owner's
-    earlier reconciliation (72,904 strings, 35,426 decisions) was imported into the store the same day.
+    earlier reconciliation (72,904 strings, 35,426 decisions) was imported into the store the same day. The human
+    side is designed in docs/12-workbench.md (2026-10-18): a separate app with a review desk, variants and entities
+    views, jobs and runs, projects, reports outward; the trainer moves into it. Step 5 of doc 10 becomes its first
+    three steps.
 
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:

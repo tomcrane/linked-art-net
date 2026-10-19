@@ -59,7 +59,7 @@ else
         <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")">
             <div class="row">
                 <span class="score">@group.Score.ToString("0.00")</span>
-                @foreach (var s in group.Sources) { <span class="tag src">@s</span> }
+                @foreach (var s in group.Sources) { if (group.Members.FirstOrDefault(m => m.Source == s)?.Uri is { } su) { <a class="tag src" href="@su" target="_blank" rel="noopener" title="@su">@s</a> } else { <span class="tag src">@s</span> } }
                 @if (group.Members.Count > 1) { <span class="muted small">@group.Members.Count records agree they are one thing</span> }
             </div>
             @foreach (var m in group.Members)
@@ -116,7 +116,7 @@ else
                 }
                 @foreach (var r in Model.IndexMatches)
                 {
-                    <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Text is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag src">@r.Source</span> <a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
+                    <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Text is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <a class="tag src" href="@r.Uri" target="_blank" rel="noopener" title="@r.Uri">@r.Source</a> <a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
                         <form method="post" asp-page-handler="Accept" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit">Accept</button></form></div>
                 }
             }

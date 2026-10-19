@@ -33,7 +33,7 @@ else
                 <td>@e.Class.ToString().ToLowerInvariant()</td>
                 <td><span class="tag">@e.Status.ToString().ToLowerInvariant()</span></td>
                 <td class="small">@e.Lifespan?.Text</td>
-                <td class="small">@foreach (var q in e.Equivalents.Take(5)) { <span class="tag src">@q.Source</span> }</td>
+                <td class="small">@foreach (var q in e.Equivalents.Take(5)) { <a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> }</td>
             </tr>
         }
         </tbody>

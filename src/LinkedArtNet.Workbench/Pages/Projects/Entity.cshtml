@@ -27,7 +27,7 @@
             {
                 v.Records.TryGetValue(q.Uri, out var record);
                 <tr>
-                    <td><span class="tag src">@q.Source</span></td>
+                    <td><a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a></td>
                     <td><a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>@if (record is not null) { <div class="small muted">@record.Label @record.Lifespan?.Text</div> }</td>
                     <td class="small muted">@q.Method @q.Confidence.ToString("0.00")</td>
                     <td><form method="post" asp-page-handler="RemoveEquivalent" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@q.Uri" /><button type="submit" class="quiet">Remove</button></form></td>

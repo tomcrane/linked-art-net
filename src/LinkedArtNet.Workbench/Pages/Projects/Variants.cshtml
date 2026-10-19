@@ -19,7 +19,7 @@
             <div class="card">
                 <div class="row">
                     @if (g.Entity is null) { <strong class="muted">undecided</strong> }
-                    else { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(g.Entity.Id)">@g.Entity.Label</a></strong> <span class="tag">@g.Entity.Status.ToString().ToLowerInvariant()</span> @foreach (var q in g.Entity.Equivalents.Take(4)) { <span class="tag src">@q.Source</span> } <label class="inline small" style="margin:0"><input type="radio" name="entity" value="@g.Entity.Id" /> make this the target for the ticked strings</label> }
+                    else { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(g.Entity.Id)">@g.Entity.Label</a></strong> <span class="tag">@g.Entity.Status.ToString().ToLowerInvariant()</span> @foreach (var q in g.Entity.Equivalents.Take(4)) { <a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> } <label class="inline small" style="margin:0"><input type="radio" name="entity" value="@g.Entity.Id" /> make this the target for the ticked strings</label> }
                     <span class="small muted">@g.Strings.Count string(s)</span>
                 </div>
                 @foreach (var s in g.Strings)
@@ -44,7 +44,7 @@
                     <label>Identifiers to attach (from the index search, or typed)</label>
                     @foreach (var r in Model.IdCandidates)
                     {
-                        <div class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="externalUris" value="@r.Uri" /> <span class="tag src">@r.Source</span> @r.Label @r.Lifespan?.Text <a href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></label></div>
+                        <div class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="externalUris" value="@r.Uri" /> <a class="tag src" href="@r.Uri" target="_blank" rel="noopener" title="@r.Uri">@r.Source</a> @r.Label @r.Lifespan?.Text <a href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></label></div>
                     }
                     <input type="text" name="externalUris" placeholder="http://vocab.getty.edu/ulan/… (typed)" />
                 </div>

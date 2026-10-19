@@ -51,7 +51,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     public async Task InitialiseAsync(CancellationToken ct = default)
     {
         if (await CurrentSchemaVersionAsync(ct) >= SchemaVersion) return;
+        // a migration may rebuild an index over millions of rows; no client timeout. The script runs as one transaction.
         await using var cmd = _db.CreateCommand(SchemaSql);
+        cmd.CommandTimeout = 0;
         await cmd.ExecuteNonQueryAsync(ct);
     }
 

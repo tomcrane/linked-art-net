@@ -284,7 +284,9 @@ keywords OldOnly 222 are LCSH ids (not loaded yet); place has no Agree because T
 ### 8.9 Policy: the unique exact single-source match (owner, 2026-10-19)
 
 Accepted. An undated string whose one exact match in one source is the only candidate at any score, vetoed or not,
-all members authority records (no provisional lookalike, no store entity), is decided under its own method,
+all members authority records (no provisional lookalike, no store entity), and a name of at least two words ("Mr
+Farebrother" read as "Farebrother" matched an auctioneer's record on the surname alone in the first sample: a person
+decides those), is decided under its own method,
 `exact-single`, with the equivalents marked the same way; the string's own context rules and the holders check
 still apply. Off by `acceptUniqueExactSingleSource: false` in the manifest or `--no-unique-exact` on the tool. The
 project page links "review single-source acceptances", the desk filtered to that method, so the set can be sampled;

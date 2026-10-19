@@ -182,7 +182,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         }
         // policy: one source's exact match, the only candidate there is (vetoed or not), authority records only, and
         // nothing on the string to check it against (an undated string); see ReconcilerOptions.AcceptUniqueExactSingleSource
+        // a name of one word ("Mr Farebrother" read as "Farebrother") is not exact enough to carry this alone: a person decides
         if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count == 1 && reading.Lifespan is null
+            && StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
             && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null))
         {

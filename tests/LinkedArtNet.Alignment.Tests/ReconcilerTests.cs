@@ -457,6 +457,9 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000004", "loc", "Grey, Di", ["Grey, Di"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000005", "loc", "Grey, Di, 1950-", ["Grey, Di, 1950-", "Grey, Di"], "Person", new Lifespan(new DateTimeOffset(1950, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1950, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1950-"), [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Grey, Di (author)")));
+        // nor for a one-word name: an honorific and a surname is not an exact name
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500000777", "ulan", "Hoard, William Henry", ["Hoard, William Henry", "Hoard"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Mr Hoard"))); // the test corpauthor context allows groups only
         // and not at all when the project turns the policy off
         var strict = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc")], options with { AcceptUniqueExactSingleSource = false });
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000006", "loc", "Pink, Al", ["Pink, Al"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));

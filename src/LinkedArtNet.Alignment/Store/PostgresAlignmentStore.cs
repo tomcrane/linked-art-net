@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+using System.Globalization;
 using System.Data;
 using System.Reflection;
 using Npgsql;
@@ -38,10 +40,26 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return reader.ReadToEnd();
     }
 
+    /// <summary>The version the embedded Schema.sql brings a store to: its last schema_version insert.</summary>
+    public static int SchemaVersion { get; } = int.Parse(Regex.Matches(SchemaSql, @"insert into schema_version \(version\) values \((\d+)\)")[^1].Groups[1].Value, CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Brings the store's schema up to date. A store already at the current version is left alone: the script's
+    /// "create index if not exists" statements take a share lock on each table even when the index exists, and would
+    /// wait behind a running load's insert transaction.
+    /// </summary>
     public async Task InitialiseAsync(CancellationToken ct = default)
     {
+        if (await CurrentSchemaVersionAsync(ct) >= SchemaVersion) return;
         await using var cmd = _db.CreateCommand(SchemaSql);
         await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    private async Task<int> CurrentSchemaVersionAsync(CancellationToken ct)
+    {
+        await using var cmd = _db.CreateCommand("select coalesce(max(version), 0) from schema_version");
+        try { return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct), CultureInfo.InvariantCulture); }
+        catch (PostgresException e) when (e.SqlState == PostgresErrorCodes.UndefinedTable) { return 0; }
     }
 
     /// <summary>Drops every table of the store. For disposable test databases only.</summary>

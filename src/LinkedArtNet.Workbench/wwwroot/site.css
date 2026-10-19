@@ -12,6 +12,10 @@ header.top { display: flex; align-items: center; gap: 1.5rem; padding: .6rem 1.2
 header .brand { font-weight: 800; text-decoration: none; color: var(--fg); }
 header nav { display: flex; gap: 1rem; flex: 1; }
 header nav a { text-decoration: none; color: var(--fg); }
+header nav .project-group { display: flex; align-items: center; gap: 1rem; padding: .2rem .75rem; border: 1px solid var(--line); border-radius: 999px; background: var(--card); }
+header nav .project-group .project-name { font-weight: 700; padding-right: .75rem; border-right: 1px solid var(--line); }
+header nav .project-group a:not(.project-name) { color: var(--muted); }
+header nav .project-group a:not(.project-name):hover { color: var(--fg); }
 header .who { color: var(--muted); display: flex; gap: .75rem; align-items: center; }
 main { max-width: 1100px; margin: 0 auto; padding: 1.25rem; }
 footer { color: var(--muted); font-size: .85rem; padding: 1rem 1.25rem; border-top: 1px solid var(--line); margin-top: 3rem; }

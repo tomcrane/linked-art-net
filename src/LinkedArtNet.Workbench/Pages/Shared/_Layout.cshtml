@@ -16,10 +16,12 @@
         <a href="/">Projects</a>
         @if (ViewData["Dataset"] is string ds)
         {
-            <a href="/p/@ds">@(ViewData["ProjectName"] ?? ds)</a>
-            <a href="/p/@ds/review">Review</a>
-            <a href="/p/@ds/entities">Entities</a>
-            <a href="/p/@ds/variants">Variants</a>
+            <span class="project-group" title="These pages show this project's own strings, entities and decisions. The authority indexes (ULAN, LoC) are shared by every project and are consulted from inside them.">
+                <a class="project-name" href="/p/@ds">@(ViewData["ProjectName"] ?? ds)</a>
+                <a href="/p/@ds/review">Review</a>
+                <a href="/p/@ds/entities">Entities</a>
+                <a href="/p/@ds/variants">Variants</a>
+            </span>
         }
     </nav>
     <div class="who">

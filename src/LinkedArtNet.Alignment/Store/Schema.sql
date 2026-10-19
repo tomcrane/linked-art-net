@@ -1,6 +1,12 @@
 -- LinkedArtNet.Alignment store, PostgreSQL. Applied by PostgresAlignmentStore.InitialiseAsync; every statement is
 -- idempotent so re-applying is safe. Later versions append statements guarded by schema_version.
 
+-- a big index build wants memory; a session setting, so it applies only to the connection running this script
+set maintenance_work_mem = '1GB';
+-- btree_gin lets a GIN index carry scalar columns beside the label array, so a lookup for one source and type never
+-- reads another source's rows (standard contrib module; trusted, so the database owner may create it)
+create extension if not exists btree_gin;
+
 create table if not exists schema_version (
     version     integer primary key,
     applied_at  timestamptz not null default now()
@@ -89,7 +95,7 @@ create table if not exists authority_records (
     fetched_at          timestamptz not null default now(),
     source_version      text
 );
-create index if not exists authority_records_source_labels on authority_records using gin (normalised_labels);
+create index if not exists authority_records_source_labels on authority_records using gin (source, type, normalised_labels);
 create index if not exists authority_records_same_as on authority_records using gin (same_as);
 
 create table if not exists runs (
@@ -164,3 +170,16 @@ update decisions d set valid = false
 create unique index if not exists decisions_one_valid on decisions (source_string_id) where valid;
 
 insert into schema_version (version) values (3) on conflict do nothing;
+
+-- version 4 (2026-10-19, after the LoC load): the label index carries source and type, so a lookup for one source and
+-- type reads only that source's rows. With ten million LoC records a ULAN lookup for a common label had been reading
+-- thousands of LoC rows from disk just to filter them out. A store below version 4 has the old single-column index
+-- under this name; it is rebuilt here (minutes over ten million rows).
+do $$ begin
+  if not exists (select 1 from schema_version where version >= 4) then
+    drop index if exists authority_records_source_labels;
+    create index authority_records_source_labels on authority_records using gin (source, type, normalised_labels);
+  end if;
+end $$;
+
+insert into schema_version (version) values (4) on conflict do nothing;

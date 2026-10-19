@@ -782,7 +782,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                 same_as = excluded.same_as, data = excluded.data, fetched_at = excluded.fetched_at, source_version = excluded.source_version;
             drop table authority_records_in;
             """
-            + (rebuild ? "create index authority_records_source_labels on authority_records using gin (normalised_labels); create index authority_records_same_as on authority_records using gin (same_as);" + " " : "")
+            + (rebuild ? "create index authority_records_source_labels on authority_records using gin (source, type, normalised_labels); create index authority_records_same_as on authority_records using gin (same_as);" + " " : "")
             + "analyze authority_records", conn))
         {
             merge.CommandTimeout = 0;

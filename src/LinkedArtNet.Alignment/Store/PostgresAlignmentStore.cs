@@ -788,6 +788,14 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             merge.CommandTimeout = 0;
             await merge.ExecuteNonQueryAsync(ct);
         }
+        if (rebuild)
+        {
+            // a large load leaves dead row versions (replaced records) and a full GIN pending list; autovacuum would
+            // get to them throttled over an hour or more, slowing every lookup meanwhile, so vacuum now, unthrottled.
+            // Must run outside the transaction above, so a separate command.
+            await using var vacuum = new NpgsqlCommand("vacuum (analyze) authority_records", conn) { CommandTimeout = 0 };
+            await vacuum.ExecuteNonQueryAsync(ct);
+        }
         return count;
     }
 

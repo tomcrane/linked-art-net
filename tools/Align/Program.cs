@@ -12,7 +12,7 @@
 //                                                                              a Getty full N-Triples download into the local authority index
 //   dotnet run --project tools/Align -- load-loc <names.madsrdf.nt.gz> [--version 2026-10]
 //                                                                              the LC Name Authority File (MADS/RDF N-Triples bulk download) into the local index
-//   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit 1000] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint]
+//   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint]
 //                                                                              decide undecided strings from overrides, the store and the local indexes
 //   dotnet run --project tools/Align -- shadow [--dataset pmc] [--method imported] [--context c] [--limit n | --sample n] [--out reports]
 //                                                                              re-judge old decisions from scratch and compare; writes a CSV, decides nothing
@@ -107,7 +107,7 @@ switch (args[0])
     case "reconcile":
     {
         await store.InitialiseAsync();
-        var limit = int.TryParse(Option("--limit"), out var l) ? l : 1000;
+        var limit = int.TryParse(Option("--limit"), out var l) ? l : 0; // no limit: every undecided string
         var options = new ReconcilerOptions
         {
             AcceptScore = double.TryParse(Option("--accept"), System.Globalization.CultureInfo.InvariantCulture, out var a) ? a : 0.9,
@@ -249,7 +249,7 @@ static void Usage() => Console.WriteLine(
                                              load a Getty full N-Triples download into the local authority index
       load-loc <names.madsrdf.nt.gz> [--version v]
                                              load the LC Name Authority File (MADS/RDF N-Triples) into the local authority index
-      reconcile [--dataset] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-unique-exact] [--no-mint]
+      reconcile [--dataset] [--limit n] (all undecided strings unless limited) [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-unique-exact] [--no-mint]
                                              decide undecided strings from overrides, the store and the local indexes
       decisions --run <id> [--method m] [--limit 20]
                                              a run's decisions by context and method, then a sample with evidence

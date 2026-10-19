@@ -372,6 +372,34 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     three steps. Its first cut, sign-in, projects, members and the review desk, was built the same day; entities,
     variants and the overrides export followed, and docs/13-workbench-guide.md is the user guide's first draft.
 
+33. ~~Phase 5 step 3, first real indexes and the first corpus-wide run.~~ 2026-10-19 (doc 11 sections 8.8-8.9). LoC
+    names (10.5M records) and AAT (57k) loaded beside ULAN; five store lessons measured and fixed (per-source partial
+    label indexes, materialised lookups, label statistics, unloaded sources answered without a query, post-load
+    vacuum and index rebuild); ULAN's estimated years read as outer bounds unless the biography states them, and its
+    person-typed corporate bodies read as groups. Policy (owner): a unique exact single-source match on an undated
+    string is accepted as `exact-single`. Whole corpus reconciled (36,823 strings, 19 min): overridden 57, store
+    2,050, accepted 1,532, queued 5,715, minted 27,469. Shadow of 2,000 old decisions: 2 disagreements, both the old
+    run's. Workbench: generic projects with a manifest editor, scoped overrides, counts, linked lozenges, user guide
+    (doc 13); the 2024 PMC documents sifted for what a project needs (doc 14); compound subjects designed (doc 10
+    section 7.5).
+
+    **Open items from the day, in rough order:**
+    - Store: the entity side of a run took 12 of the 19 minutes (store stage 738 s): plan it on the real store as the
+      authority side was. Turn off Npgsql's infinity conversion (year 1 became -infinity; LoC n82239358). The
+      reconcile report should split accepted into vote and exact-single. A run that dies should be marked
+      interrupted at the next start, not sit as "running or interrupted".
+    - Loads: LCSH (the subjects file is downloaded; the names loader needs the Topic, Geographic, GenreForm,
+      Temporal and ComplexSubject classes first), then TGN (downloaded; loader ready). Both feed compound subjects.
+    - Audit: check entities against their LoC records as well as ULAN; report ULAN's person-typed corporate bodies
+      (1,552) and stale LUX ids; the reports-outward step (doc 12 step 5) sends the ULAN findings to Getty.
+    - Measure again: a shadow sample after today's stricter date agreement, and the human sample through the desk's
+      "review single-source acceptances".
+    - Workbench step 3 (jobs): runs, loads and indexes pages (authority_sources is the indexes table), a schedule,
+      the counters list; step 4 as extended by doc 14 section 4 (sources and uploaded dumps, the profile job,
+      contexts namespaced by source, role routing, mapping tables as overrides, the brief's tables imported as
+      credited overrides).
+    - Then compound subjects (doc 10 section 7.5) and the remote sources (3b), LUX self-echo first.
+
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:
 

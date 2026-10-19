@@ -56,6 +56,11 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
   the export of a project's overrides in the pmc-lux JSON shape; `CurationService`; `tools/Align export-overrides`
   and `cleanup-orphans`; the reconciler queues a vote whose ids already sit on two entities. The new-project form
   is generic and the project page edits the manifest; docs/13 is the user guide's first draft.
+- Alignment, 2026-10-19: LoC names and AAT indexes; schema v4-v6 (per-source partial label indexes, authority_sources,
+  undo indexes); materialised lookups and label statistics; large loads rebuild indexes and vacuum; ULAN estimated
+  years as outer bounds, person-typed corporate bodies as groups; the `exact-single` policy; `reindex-labels --source`;
+  `reconcile` unlimited by default; slow lookups reported. Workbench: scoped overrides, nav grouping, counts, linked
+  lozenges, manifest editor. Docs 10 §7.5, 11 §8.8-8.9, 14.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

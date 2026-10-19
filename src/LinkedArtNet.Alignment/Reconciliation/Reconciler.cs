@@ -17,6 +17,13 @@ public sealed record ReconcilerOptions
     public int MinIndependentSources { get; init; } = 2;
     /// <summary>Accept one source alone when the name is exact and the string's and the record's dates agree (both known on the same side). Design doc 10 sends a lone source to review; this is the pragmatic default while ULAN is the only local index, and a manifest can turn it off.</summary>
     public bool AcceptSingleSourceWithDates { get; init; } = true;
+    /// <summary>
+    /// Accept a group that is one source's exact match when it is the only candidate at any score and the string carries
+    /// no dates to check (an undated string with one exact LoC heading and no namesake anywhere). Policy, not evidence:
+    /// a third of the PMC corpus looked like this in the 2026-10-19 shadow run, far more than a desk can take, and the
+    /// 2024 process accepted them. Decided under DecisionMethod.ExactSingle so the set stays reviewable and reversible.
+    /// </summary>
+    public bool AcceptUniqueExactSingleSource { get; init; } = true;
     /// <summary>Reading rules by context (the field a string came from); contexts not listed use <see cref="DefaultContext"/>.</summary>
     public IReadOnlyDictionary<string, ContextRule> Contexts { get; init; } = new Dictionary<string, ContextRule>(StringComparer.OrdinalIgnoreCase);
     public ContextRule DefaultContext { get; init; } = ContextRule.Anything;
@@ -38,7 +45,7 @@ public sealed record ReconcileReport(int Considered, int Overridden, int Matched
 /// candidate groups, and whichever of an override, a store entity or an accepted group decided it.
 /// </summary>
 /// <param name="Truncated">A local index returned more candidates than it was asked for, so the best may not have been seen; such a string is never accepted, only queued.</param>
-public sealed record Evaluation(Outcome Outcome, StringReading Reading, IReadOnlyList<CandidateGroup> Groups, Override? Override = null, Entity? StoreMatch = null, CandidateGroup? Accepted = null, ScoredCandidate? StoreChoice = null, bool Truncated = false)
+public sealed record Evaluation(Outcome Outcome, StringReading Reading, IReadOnlyList<CandidateGroup> Groups, Override? Override = null, Entity? StoreMatch = null, CandidateGroup? Accepted = null, ScoredCandidate? StoreChoice = null, bool Truncated = false, string? AcceptedMethod = null)
 {
     /// <summary>The URIs the evaluation points at: the override target, the store entity and its equivalents, or the accepted group's URIs; for a queued string the top group's.</summary>
     public IReadOnlyList<string> TargetUris => Outcome switch
@@ -173,6 +180,15 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
             return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top);
         }
+        // policy: one source's exact match, the only candidate there is (vetoed or not), authority records only, and
+        // nothing on the string to check it against (an undated string); see ReconcilerOptions.AcceptUniqueExactSingleSource
+        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count == 1 && reading.Lifespan is null
+            && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
+            && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null))
+        {
+            if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+            return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top, AcceptedMethod: DecisionMethod.ExactSingle);
+        }
         if (top is not null && top.Score >= _options.ReviewScore)
             return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
         return new Evaluation(_options.MintWhenNothingFound ? Outcome.Minted : Outcome.Deferred, reading, groups, Truncated: truncated);
@@ -219,8 +235,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 break;
             case Outcome.Accepted:
             {
-                var entity = await EntityForGroupAsync(dataset, reading, e.Accepted!, runId, ct);
-                await store.DecideAsync(s.Id, entity.Id, DecisionMethod.Vote, Evidence("vote", reading, e.Groups, null), runId: runId, ct: ct);
+                var method = e.AcceptedMethod ?? DecisionMethod.Vote;
+                var entity = await EntityForGroupAsync(dataset, reading, e.Accepted!, runId, ct, method);
+                await store.DecideAsync(s.Id, entity.Id, method, Evidence(method, reading, e.Groups, null), runId: runId, ct: ct);
                 break;
             }
             case Outcome.Queued:
@@ -315,7 +332,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     // ---- entities ------------------------------------------------------------------------------------------------
 
-    private async Task<Entity> EntityForGroupAsync(string dataset, StringReading reading, CandidateGroup group, string? runId, CancellationToken ct)
+    private async Task<Entity> EntityForGroupAsync(string dataset, StringReading reading, CandidateGroup group, string? runId, CancellationToken ct, string method = DecisionMethod.Vote)
     {
         // one writer at a time per authority identity, so two reconcilers (or a reconcile and the desk) do not both mint an entity for the same ids
         var lockKey = dataset + "|" + group.Uris.OrderBy(u => u, StringComparer.Ordinal).First();
@@ -342,9 +359,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var present = entity.Equivalents.Select(q => q.Uri).ToHashSet(StringComparer.Ordinal);
         foreach (var c in external)
         {
-            if (present.Add(c.Uri)) await store.AddEquivalentAsync(entity.Id, new Equivalent(c.Uri, c.Source, DecisionMethod.Vote, group.Score, now, RunId: runId), ct);
+            if (present.Add(c.Uri)) await store.AddEquivalentAsync(entity.Id, new Equivalent(c.Uri, c.Source, method, group.Score, now, RunId: runId), ct);
             foreach (var same in c.SameAs)
-                if (!scheme.Owns(same) && present.Add(same)) await store.AddEquivalentAsync(entity.Id, new Equivalent(same, AuthorityUris.SourceOf(same), DecisionMethod.Vote, group.Score, now, RunId: runId), ct);
+                if (!scheme.Owns(same) && present.Add(same)) await store.AddEquivalentAsync(entity.Id, new Equivalent(same, AuthorityUris.SourceOf(same), method, group.Score, now, RunId: runId), ct);
         }
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }

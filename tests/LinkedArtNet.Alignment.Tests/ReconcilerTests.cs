@@ -447,6 +447,20 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Green, Ann, 1850-"))); // born after the record's death: conflict
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000002", "loc", "White, Bea", ["White, Bea"], "Person", new Lifespan(null, null, new DateTimeOffset(1900, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1900, 12, 31, 0, 0, 0, TimeSpan.Zero), "-1900"), [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "White, Bea, 1850-"))); // not comparable: review, not acceptance
+        // policy: an undated string whose one exact match in one source is the only candidate at all is accepted as exact-single
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000003", "loc", "Black, Cy", ["Black, Cy"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var black = await pg.Store.CollectAsync(ds, "persauthorfull", "Black, Cy (author)");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, black));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(black.Id))!.Method);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "persauthorfull", "Black, Cy (author)"))!.Equivalents, q => q.Uri.EndsWith("n00000003") && q.Method == DecisionMethod.ExactSingle);
+        // not when a namesake exists anywhere, however it scores
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000004", "loc", "Grey, Di", ["Grey, Di"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000005", "loc", "Grey, Di, 1950-", ["Grey, Di, 1950-", "Grey, Di"], "Person", new Lifespan(new DateTimeOffset(1950, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1950, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1950-"), [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Grey, Di (author)")));
+        // and not at all when the project turns the policy off
+        var strict = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc")], options with { AcceptUniqueExactSingleSource = false });
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n00000006", "loc", "Pink, Al", ["Pink, Al"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal(Outcome.Queued, await strict.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Pink, Al (author)")));
         // a truncated lookup never accepts: with room for one record, the dated Dürer string is queued although ULAN alone would have carried it
         var narrow = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan", limit: 1)], options);
         var narrowString = await pg.Store.CollectAsync(ds, "persauthorfull", "Smith, John, 1700-1750");

@@ -281,6 +281,15 @@ them. Whether a unique exact single-source match should be accepted without a pe
 (§8.9 below records it when made); at this sample's rate it is about a third of the corpus, some 12,000 strings.
 keywords OldOnly 222 are LCSH ids (not loaded yet); place has no Agree because TGN is not loaded.
 
+### 8.9 Policy: the unique exact single-source match (owner, 2026-10-19)
+
+Accepted. An undated string whose one exact match in one source is the only candidate at any score, vetoed or not,
+all members authority records (no provisional lookalike, no store entity), is decided under its own method,
+`exact-single`, with the equivalents marked the same way; the string's own context rules and the holders check
+still apply. Off by `acceptUniqueExactSingleSource: false` in the manifest or `--no-unique-exact` on the tool. The
+project page links "review single-source acceptances", the desk filtered to that method, so the set can be sampled;
+`undo-run` reverses a run of them. A dated string is never reached by this rule: the dates rule governs it.
+
 ## 9. Not yet
 
 Step 3b: the remote sources (VIAF, LoC suggest, LUX with the self-echo rule, Wikidata by known id) behind a cache

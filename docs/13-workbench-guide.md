@@ -53,6 +53,7 @@ a time; a new decision replaces the old one, and *undo* brings the old one back.
 |---|---|
 | override | a curated rule said this spelling always means this |
 | vote | authority records agreed, or one agreed closely enough with dates |
+| exact-single | one source's exact match was the only candidate and the string had no dates to check: accepted by project policy, reviewable as a set |
 | exact-name | an entity already in the project matched |
 | human | a person decided it on the desk or in the variants view |
 | queued | candidates exist but none was good enough: waiting for a person |
@@ -126,7 +127,10 @@ The manifest is the project's reading rules, shown and edited on the project pag
   the two goes to the queue; below the second, nothing was found.
 - `minIndependentSources`: how many authority files must agree for acceptance without a person (two).
 - `acceptSingleSourceWithDates`: whether one file alone is enough when the name is exact and the dates agree on
-  both sides. On by default while ULAN is the only index for a project; a cautious project turns it off.
+  both sides. On by default; a cautious project turns it off.
+- `acceptUniqueExactSingleSource`: whether an undated string's one exact match in one file is accepted when it is the
+  only candidate there is. On by default, since the alternative is a queue too long to work; such decisions carry the
+  method `exact-single` and the project page offers them for review as a set.
 - `sources`: which indexes to consult, in order.
 
 An example for a project whose records come from a library catalogue:

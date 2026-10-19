@@ -16,6 +16,8 @@ public static class DecisionMethod
     public const string ExactUri = "exact-uri";
     public const string ExactName = "exact-name";
     public const string Vote = "vote";
+    /// <summary>One source alone, an exact name, no rival candidate at any score, and no dates on the string to check: accepted by policy (ReconcilerOptions.AcceptUniqueExactSingleSource), kept apart so these can be reviewed or reversed as a set.</summary>
+    public const string ExactSingle = "exact-single";
     /// <summary>A person decided it in the workbench; the evidence says what they chose and why.</summary>
     public const string Human = "human";
     public const string LlmProposedThenHuman = "llm-proposed-then-human";

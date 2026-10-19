@@ -15,6 +15,8 @@ public sealed record ProjectManifest
     public double ReviewScore { get; init; } = 0.6;
     public int MinIndependentSources { get; init; } = 2;
     public bool AcceptSingleSourceWithDates { get; init; } = true;
+    /// <summary>Accept an undated string's single exact match in one source when it is the only candidate at any score (policy; see ReconcilerOptions).</summary>
+    public bool AcceptUniqueExactSingleSource { get; init; } = true;
     public bool MintWhenNothingFound { get; init; } = true;
     /// <summary>The local indexes to consult, in order.</summary>
     public List<string> Sources { get; init; } = ["ulan", "aat", "tgn", "loc"];
@@ -31,6 +33,7 @@ public sealed record ProjectManifest
         ReviewScore = ReviewScore,
         MinIndependentSources = MinIndependentSources,
         AcceptSingleSourceWithDates = AcceptSingleSourceWithDates,
+        AcceptUniqueExactSingleSource = AcceptUniqueExactSingleSource,
         MintWhenNothingFound = MintWhenNothingFound,
         Contexts = Contexts.ToDictionary(kv => kv.Key, kv => kv.Value.ToRule(), StringComparer.OrdinalIgnoreCase),
     };

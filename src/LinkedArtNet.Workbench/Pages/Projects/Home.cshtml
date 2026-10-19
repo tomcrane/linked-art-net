@@ -42,6 +42,20 @@
     </div>
 </div>
 
+@if (Model.Can(ProjectRole.Operator))
+{
+    <h2>Manifest</h2>
+    <form method="post" asp-page-handler="Manifest" class="card">
+        @if (Model.ManifestError is not null) { <p class="notice">@Model.ManifestError</p> }
+        <p class="small muted">The project's reading rules and thresholds, as JSON. <code>contexts</code> maps each field a string can come from to the classes it may name (person, group, place, type, material, language, period, event) and the agent-string profile that reads it (default, dscribe, marc, ulan, ead, wellcome); <code>sources</code> lists the local indexes to consult; the scores decide acceptance and review. A context not listed may name anything.</p>
+        <textarea name="manifest" rows="18" style="font-family: ui-monospace, monospace; font-size: .85rem">@Model.ManifestJson</textarea>
+        <div class="actions">
+            <button type="submit">Save manifest</button>
+            <button type="submit" asp-page-handler="PmcRules" class="secondary" title="Fill in the Paul Mellon Centre library's field rules: persauthorfull is a person; corpauthor and publisher a group or a person; place a place; keywords anything">Use the PMC library rules</button>
+        </div>
+    </form>
+}
+
 <h2>Recent runs</h2>
 @if (Model.Runs.Count == 0) { <p class="muted">No runs recorded for this project.</p> }
 else

@@ -24,19 +24,19 @@
         @if (Model.Error is not null) { <p class="notice">@Model.Error</p> }
         <div class="grid">
             <div>
-                <label for="dataset">Dataset key (short, lower-case; <code>pmc</code> for the strings already in the store)</label>
-                <input type="text" id="dataset" name="dataset" required pattern="[a-z0-9][a-z0-9-]*" />
+                <label for="dataset">Dataset key: short, lower-case, never changes; it keys everything the project holds in the store</label>
+                <input type="text" id="dataset" name="dataset" required pattern="[a-z0-9][a-z0-9-]*" placeholder="wellcome" />
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required />
             </div>
             <div>
-                <label for="base">Identifier base (the hostname and path your published identifiers use)</label>
-                <input type="text" id="base" name="identifierBase" required placeholder="https://data.example.org/" value="@(Model.Projects.Count == 0 ? "https://data.paul-mellon-centre.ac.uk/" : "")" />
+                <label for="base">Identifier base: the hostname and path the project's published identifiers use, or will use</label>
+                <input type="text" id="base" name="identifierBase" required placeholder="https://data.example.org/" />
                 <label for="description">Description</label>
                 <input type="text" id="description" name="description" />
             </div>
         </div>
-        <p class="small muted">The manifest starts from the PMC library's field rules (persauthorfull is a person; corpauthor and publisher a group or a person; place a place; keywords anything) until the projects step adds the editor.</p>
+        <p class="small muted">The project starts with no reading rules: every string may name anything until the manifest on the project page says which fields hold people, groups, places or concepts. The sources' adapters and the collecting of strings from a dump come with the pipeline runner.</p>
         <div class="actions"><button type="submit">Create project</button></div>
     </form>
 }

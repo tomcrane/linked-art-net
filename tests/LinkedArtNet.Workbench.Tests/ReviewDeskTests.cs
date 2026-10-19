@@ -37,10 +37,21 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Equal(HttpStatusCode.Redirect, created.StatusCode);
         Assert.Equal("/p/" + ds, created.Headers.Location!.ToString());
 
-        // seed through the store: two ULAN Smiths and a string the reconciler can only queue
+        // a new project has no reading rules; the PMC button fills them in for this project only, and bad JSON is refused
+        var bare = await owner.GetStringAsync("/p/" + ds);
+        Assert.Contains("Manifest", bare);
+        var pmcRules = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}?handler=PmcRules", "/p/" + ds, new());
+        Assert.Equal(HttpStatusCode.Redirect, pmcRules.StatusCode);
+        Assert.Contains("persauthorfull", await owner.GetStringAsync("/p/" + ds));
+        var badJson = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}?handler=Manifest", "/p/" + ds, new() { ["manifest"] = "{ not json" });
+        Assert.Equal(HttpStatusCode.Redirect, badJson.StatusCode);
+        Assert.Contains("not valid JSON", Uri.UnescapeDataString(badJson.Headers.Location!.ToString()).Replace('+', ' '));
+
+        // seed through the store: two ULAN Smiths and a string the reconciler can only queue, read under the rules just set
         var store = wb.Factory.Services.GetRequiredService<IAlignmentStore>();
         await new GettyVocabLoader((PostgresAlignmentStore)store).LoadAsync(NTriples.ReadText(UlanSample), GettyVocabulary.Ulan, "test");
         var project = (await wb.Factory.Services.GetRequiredService<ProjectServices>().GetAsync(ds))!;
+        Assert.Equal(5, project.Manifest.Contexts.Count);
         var smith = await store.CollectAsync(ds, "persauthorfull", "Smith, John (author)");
         await project.Reconciler.RunAsync(ds);
 

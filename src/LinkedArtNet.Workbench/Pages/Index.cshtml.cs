@@ -27,7 +27,7 @@ public sealed partial class IndexModel(IAlignmentStore store, ProjectAccess acce
             return Page();
         }
         var now = DateTimeOffset.UtcNow;
-        await store.UpsertProjectAsync(new Project(dataset, name.Trim(), string.IsNullOrWhiteSpace(description) ? null : description.Trim(), baseUri.ToString(), ProjectManifest.PmcDefault.ToJson(), now, now));
+        await store.UpsertProjectAsync(new Project(dataset, name.Trim(), string.IsNullOrWhiteSpace(description) ? null : description.Trim(), baseUri.ToString(), new ProjectManifest().ToJson(), now, now));
         services.Invalidate(dataset);
         return Redirect("/p/" + dataset);
     }

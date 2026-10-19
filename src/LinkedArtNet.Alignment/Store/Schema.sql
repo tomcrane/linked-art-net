@@ -94,6 +94,9 @@ create table if not exists authority_records (
 );
 -- the label index is one partial GIN index per source (see version 5 below and PostgresAlignmentStore.EnsureSourceIndexesAsync)
 create index if not exists authority_records_same_as on authority_records using gin (same_as);
+-- richer statistics on the label array: with the default sample the planner estimated 164,000 matches for a name
+-- that had none over ten million rows, and launched parallel workers for every lookup (idempotent)
+alter table authority_records alter column normalised_labels set statistics 1000;
 
 create table if not exists runs (
     id              text primary key,

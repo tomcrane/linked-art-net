@@ -866,7 +866,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             // a large load leaves dead row versions (replaced records) and a full GIN pending list; autovacuum would
             // get to them throttled over an hour or more, slowing every lookup meanwhile, so vacuum now, unthrottled.
             // Must run outside the transaction above, so a separate command.
-            await using var vacuum = new NpgsqlCommand("vacuum (analyze) authority_records", conn) { CommandTimeout = 0 };
+            await using (var stats = new NpgsqlCommand("alter table authority_records alter column normalised_labels set statistics 1000", conn)) await stats.ExecuteNonQueryAsync(ct);
+            await using var vacuum = new NpgsqlCommand("vacuum (analyze) authority_records", conn) { CommandTimeout = 0 }; // alone: vacuum cannot share a command
             await vacuum.ExecuteNonQueryAsync(ct);
         }
         return count;

@@ -1026,6 +1026,16 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     private static string Status(EntityStatus s) => s.ToString().ToLowerInvariant();
 
+    public async Task<IReadOnlyList<EntityCount>> EntityCountsAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select status, class, count(*) from entities where dataset = @dataset and merged_into is null group by status, class");
+        Add(cmd, "dataset", dataset);
+        var list = new List<EntityCount>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new EntityCount(Enum.Parse<EntityStatus>(r.GetString(0), true), Enum.Parse<EntityClass>(r.GetString(1), true), r.GetInt64(2)));
+        return list;
+    }
+
     /// <summary>The lookup keys for a set of labels (<see cref="StringKey.Variants"/>): normalised, folded, bare and canonical forms, so "Dürer" is found by "Durer" and "Thos. Agnew &amp; Sons Ltd" by "Thomas Agnew &amp; Sons".</summary>
     private static string[] NormalisedLabels(string? label, IEnumerable<string> labels) =>
         labels.Prepend(label ?? "").SelectMany(StringKey.Variants).Distinct(StringComparer.Ordinal).ToArray();

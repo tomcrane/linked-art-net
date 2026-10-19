@@ -11,7 +11,7 @@
 </form>
 @if (Model.Seed is not null)
 {
-    <p class="small muted">Word searched: <code>@Model.Word</code> · @Model.Groups.Sum(g => g.Strings.Count) strings in @Model.Groups.Count group(s)</p>
+    <p class="small muted">Word searched: <code>@Model.Word</code> · @Model.Shown strings in @Model.Groups.Count group(s)@(Model.Shown >= VariantsModel.Limit ? $"; the first {VariantsModel.Limit} alphabetically, so narrow the word to see the rest" : "")</p>
     <form method="post" asp-page-handler="Cluster">
         <input type="hidden" name="seed" value="@Model.Seed" />
         @foreach (var g in Model.Groups)

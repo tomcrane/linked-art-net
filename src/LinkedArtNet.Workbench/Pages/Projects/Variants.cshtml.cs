@@ -12,6 +12,8 @@ public sealed class VariantsModel(ProjectServices services, ProjectAccess access
 
     public string Word { get; private set; } = "";
     public IReadOnlyList<VariantGroup> Groups { get; private set; } = [];
+    public const int Limit = 200;
+    public int Shown => Groups.Sum(g => g.Strings.Count);
     public IReadOnlyList<AuthorityRecord> IdCandidates { get; private set; } = [];
     public string? Message { get; private set; }
 
@@ -20,7 +22,7 @@ public sealed class VariantsModel(ProjectServices services, ProjectAccess access
         Message = message ?? TakeFlash();
         if (string.IsNullOrWhiteSpace(Seed)) { Seed = null; return; }
         Word = CurationService.SeedWord(Seed);
-        Groups = await Project.Curation.VariantsAsync(Dataset, Seed);
+        Groups = await Project.Curation.VariantsAsync(Dataset, Seed, Limit);
         if (!string.IsNullOrWhiteSpace(Ids)) IdCandidates = await Project.Desk.SearchIndexesAsync(Ids, null, 12);
     }
 

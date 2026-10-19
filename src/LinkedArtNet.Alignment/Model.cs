@@ -142,6 +142,9 @@ public sealed record UndoResult(int DecisionsInvalidated, int ProvisionalEntitie
 /// <summary>How many strings of one context a run decided by one method.</summary>
 public sealed record ContextMethodCount(string Context, string Method, long Count);
 
+/// <summary>How many of a project's live entities (not merged) are in each status and class.</summary>
+public sealed record EntityCount(EntityStatus Status, EntityClass Class, long Count);
+
 /// <summary>A project: a dataset with its name, identifier base, manifest (context rules, thresholds, sources) and members (design doc 12, section 4).</summary>
 public sealed record Project(string Dataset, string Name, string? Description, string IdentifierBase, string? ManifestJson, DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt);
 

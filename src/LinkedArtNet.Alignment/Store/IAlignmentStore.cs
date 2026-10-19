@@ -177,4 +177,7 @@ public interface IAlignmentStore
     // ---- overview
 
     Task<StoreCounts> CountsAsync(string? dataset = null, CancellationToken ct = default);
+
+    /// <summary>The project's live entities counted by status and class.</summary>
+    Task<IReadOnlyList<EntityCount>> EntityCountsAsync(string dataset, CancellationToken ct = default);
 }

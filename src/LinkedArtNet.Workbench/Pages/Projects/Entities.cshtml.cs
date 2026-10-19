@@ -14,9 +14,16 @@ public sealed class EntitiesModel(ProjectServices services, ProjectAccess access
     [BindProperty(SupportsGet = true)] public string? After { get; set; }
 
     public IReadOnlyList<Entity> Entities { get; private set; } = [];
+    public IReadOnlyList<EntityCount> Counts { get; private set; } = [];
+    public long Total => Counts.Sum(c => c.Count);
+    /// <summary>How many entities the current status and class filters select.</summary>
+    public long Matching => Counts.Where(c => (Status is null || c.Status == Status) && (Class is null || c.Class == Class)).Sum(c => c.Count);
+    public long ByStatus(EntityStatus s) => Counts.Where(c => c.Status == s && (Class is null || c.Class == Class)).Sum(c => c.Count);
+    public long ByClass(EntityClass k) => Counts.Where(c => c.Class == k && (Status is null || c.Status == Status)).Sum(c => c.Count);
 
     public async Task OnGetAsync()
     {
+        Counts = await Services.Store.EntityCountsAsync(Dataset);
         if (!string.IsNullOrWhiteSpace(Q))
         {
             var found = await Project.Desk.SearchEntitiesAsync(Dataset, Q, 100);

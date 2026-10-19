@@ -2,16 +2,16 @@
 @model EntitiesModel
 @{ ViewData["Title"] = "Entities"; }
 <div class="row" style="justify-content:space-between">
-    <h1 style="margin:0">Entities</h1>
+    <h1 style="margin:0">Entities <span class="muted" style="font-weight:400; font-size:1rem">@Model.Total.ToString("N0") in this project</span></h1>
     <form method="get" class="row" style="gap:.5rem">
         <input type="search" name="q" value="@Model.Q" placeholder="Search by name" aria-label="Search" style="width:18rem" />
         <select name="status" onchange="this.form.submit()" aria-label="Status">
-            <option value="">any status</option>
-            @foreach (var s in Enum.GetValues<EntityStatus>().Where(s => s != EntityStatus.Merged)) { <option value="@s" selected="@(Model.Status == s)">@s.ToString().ToLowerInvariant()</option> }
+            <option value="">any status (@Model.Counts.Where(c => Model.Class is null || c.Class == Model.Class).Sum(c => c.Count).ToString("N0"))</option>
+            @foreach (var s in Enum.GetValues<EntityStatus>().Where(s => s != EntityStatus.Merged)) { <option value="@s" selected="@(Model.Status == s)">@s.ToString().ToLowerInvariant() (@Model.ByStatus(s).ToString("N0"))</option> }
         </select>
         <select name="cls" onchange="this.form.submit()" aria-label="Class">
-            <option value="">any class</option>
-            @foreach (var c in Enum.GetValues<EntityClass>()) { <option value="@c" selected="@(Model.Class == c)">@c.ToString().ToLowerInvariant()</option> }
+            <option value="">any class (@Model.Counts.Where(c => Model.Status is null || c.Status == Model.Status).Sum(c => c.Count).ToString("N0"))</option>
+            @foreach (var c in Enum.GetValues<EntityClass>()) { <option value="@c" selected="@(Model.Class == c)">@c.ToString().ToLowerInvariant() (@Model.ByClass(c).ToString("N0"))</option> }
         </select>
         <button type="submit" class="secondary">Go</button>
     </form>
@@ -19,6 +19,10 @@
 @if (Model.Entities.Count == 0) { <p class="empty">No entities match.</p> }
 else
 {
+    <p class="small muted">
+        @if (Model.Q is not null) { <text>@Model.Entities.Count found for "@Model.Q"@(Model.Entities.Count >= 100 ? ", first 100 shown" : "")</text> }
+        else { <text>@Model.Matching.ToString("N0") match the filters; @(Model.After is null ? "" : "a later page of ")@Model.Entities.Count shown, by identifier</text> }
+    </p>
     <table>
         <thead><tr><th>Label</th><th>Class</th><th>Status</th><th>Dates</th><th>Identifiers</th></tr></thead>
         <tbody>

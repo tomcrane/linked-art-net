@@ -297,8 +297,9 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // a reload without a record retires it; a stale key is recomputed by reindexing
         await using (var cmd = pg.DataSource.CreateCommand("update authority_records set normalised_labels = '{stale}' where uri = 'http://vocab.getty.edu/ulan/500115493'")) await cmd.ExecuteNonQueryAsync();
         Assert.Empty(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person"));
-        var reindexed = await pg.Store.ReindexLabelsAsync();
-        Assert.True(reindexed.AuthorityRecords >= 4);
+        var reindexed = await pg.Store.ReindexLabelsAsync("ulan");
+        Assert.Equal(1, reindexed.AuthorityRecords); // only the stale row is rewritten; current rows are left alone
+        Assert.Equal(0, (await pg.Store.ReindexLabelsAsync("loc")).AuthorityRecords); // another source: nothing to do
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person"));
         var smaller = UlanSample[..UlanSample.IndexOf("<http://vocab.getty.edu/ulan/500301641>", StringComparison.Ordinal)]; // Dürer only
         await Task.Delay(50);

@@ -215,8 +215,8 @@ switch (args[0])
     {
         await store.InitialiseAsync();
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
-        var (entities, records) = await store.ReindexLabelsAsync(progress);
-        Console.WriteLine($"lookup keys recomputed for {entities:N0} entities and {records:N0} authority records");
+        var (entities, records) = await store.ReindexLabelsAsync(Option("--source"), progress);
+        Console.WriteLine($"lookup keys rewritten for {entities:N0} entities and {records:N0} authority records" + (Option("--source") is { } src ? $" of source {src}" : "") + " (rows already current were left alone)");
         return 0;
     }
 
@@ -258,7 +258,8 @@ static void Usage() => Console.WriteLine(
                                              check entities against the local ULAN index, by their ULAN id or through LoC/Wikidata/VIAF links; CSV of the
                                              flagged ones (--all includes the clean gains too)
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
-      reindex-labels                         recompute every entity's and authority record's lookup keys after the key rules change
+      reindex-labels [--source s]            recompute lookup keys after the key rules change; --source limits the records to one
+                                             index (ulan, loc, aat, tgn); rows already current are not rewritten
       cleanup-orphans [--dataset]            remove provisional entities nothing points at any more
       export-overrides [--dataset] [--out f] the project's overrides in the pmc-lux JSON shape
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)

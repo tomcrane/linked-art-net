@@ -314,44 +314,49 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     }
 
     /// <summary>Recomputes every entity's and authority record's lookup keys from its labels, after the key rules change (<see cref="StringKey.Variants"/>). Returns how many rows were rewritten.</summary>
-    public async Task<(int Entities, int AuthorityRecords)> ReindexLabelsAsync(IProgress<string>? progress = null, CancellationToken ct = default)
+    public async Task<(int Entities, int AuthorityRecords)> ReindexLabelsAsync(string? source = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
-        var entities = await ReindexAsync("entities", "id", progress, ct);
-        var records = await ReindexAsync("authority_records", "uri", progress, ct);
+        var entities = await ReindexAsync("entities", "id", null, progress, ct);
+        var records = await ReindexAsync("authority_records", "uri", source, progress, ct);
         await using (var cmd = _db.CreateCommand("analyze entities; analyze authority_records")) await cmd.ExecuteNonQueryAsync(ct);
         return (entities, records);
     }
 
-    private async Task<int> ReindexAsync(string table, string keyColumn, IProgress<string>? progress, CancellationToken ct)
+    private async Task<int> ReindexAsync(string table, string keyColumn, string? source, IProgress<string>? progress, CancellationToken ct)
     {
-        var done = 0;
+        var seen = 0; var written = 0;
         string? after = null;
         while (true)
         {
-            var batch = new List<(string Key, string? Label, string[] Labels)>();
-            await using (var cmd = _db.CreateCommand($"select {keyColumn}, label, labels from {table}" + (after is null ? "" : $" where {keyColumn} > @after") + $" order by {keyColumn} limit 2000"))
+            var batch = new List<(string Key, string? Label, string[] Labels, string[] Current)>();
+            await using (var cmd = _db.CreateCommand($"select {keyColumn}, label, labels, normalised_labels from {table} where true"
+                + (source is null ? "" : " and source = @source") + (after is null ? "" : $" and {keyColumn} > @after") + $" order by {keyColumn} limit 2000"))
             {
+                if (source is not null) Add(cmd, "source", source);
                 if (after is not null) Add(cmd, "after", after);
                 await using var r = await cmd.ExecuteReaderAsync(ct);
-                while (await r.ReadAsync(ct)) batch.Add((r.GetString(0), Str(r, 1), r.GetFieldValue<string[]>(2)));
+                while (await r.ReadAsync(ct)) batch.Add((r.GetString(0), Str(r, 1), r.GetFieldValue<string[]>(2), r.GetFieldValue<string[]>(3)));
             }
             if (batch.Count == 0) break;
             await using (var conn = await _db.OpenConnectionAsync(ct))
             await using (var b = conn.CreateBatch())
             {
-                foreach (var (key, label, labels) in batch)
+                foreach (var (key, label, labels, current) in batch)
                 {
+                    var keys = NormalisedLabels(label, labels);
+                    if (keys.SequenceEqual(current, StringComparer.Ordinal)) continue; // already current: no write, no index churn
                     var c = new NpgsqlBatchCommand($"update {table} set normalised_labels = @n where {keyColumn} = @k");
-                    c.Parameters.AddWithValue("n", NormalisedLabels(label, labels)); c.Parameters.AddWithValue("k", key);
+                    c.Parameters.AddWithValue("n", keys); c.Parameters.AddWithValue("k", key);
                     b.BatchCommands.Add(c);
+                    written++;
                 }
-                await b.ExecuteNonQueryAsync(ct);
+                if (b.BatchCommands.Count > 0) await b.ExecuteNonQueryAsync(ct);
             }
-            done += batch.Count;
+            seen += batch.Count;
             after = batch[^1].Key;
-            if (done % 20000 == 0) progress?.Report($"{table}: {done:N0} reindexed");
+            if (seen % 20000 == 0) progress?.Report($"{table}: {seen:N0} checked, {written:N0} rewritten");
         }
-        return done;
+        return written;
     }
 
     /// <summary>Removes a source's records that a load did not touch (fetched before the load began): retired or merged ids. Returns how many went.</summary>

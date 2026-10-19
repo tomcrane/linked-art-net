@@ -133,7 +133,8 @@ public interface IAlignmentStore
     Task<int> RetireAuthoritiesAsync(string source, DateTimeOffset notFetchedSince, CancellationToken ct = default);
 
     /// <summary>Recomputes every entity's and authority record's lookup keys from its labels, for after the key rules change.</summary>
-    Task<(int Entities, int AuthorityRecords)> ReindexLabelsAsync(IProgress<string>? progress = null, CancellationToken ct = default);
+    /// <summary>Recomputes lookup keys with the current rules. <paramref name="source"/> limits the authority records to one source (entities are always done); rows whose keys are already current are not written.</summary>
+    Task<(int Entities, int AuthorityRecords)> ReindexLabelsAsync(string? source = null, IProgress<string>? progress = null, CancellationToken ct = default);
 
     /// <summary>A lock on a key held until disposed, so two writers that would create the same thing take turns.</summary>
     Task<IAsyncDisposable> LockAsync(string key, CancellationToken ct = default);

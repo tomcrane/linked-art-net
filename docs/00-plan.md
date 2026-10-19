@@ -388,8 +388,23 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       authority side was. Turn off Npgsql's infinity conversion (year 1 became -infinity; LoC n82239358). The
       reconcile report should split accepted into vote and exact-single. A run that dies should be marked
       interrupted at the next start, not sit as "running or interrupted".
-    - Loads: LCSH (the subjects file is downloaded; the names loader needs the Topic, Geographic, GenreForm,
-      Temporal and ComplexSubject classes first), then TGN (downloaded; loader ready). Both feed compound subjects.
+    - ~~Loads: LCSH, then TGN.~~ Both loaded 2026-10-19 (lcsh 513,362; tgn 2,991,010); five sources, 14.5M records.
+    - Home vocabularies per context. The evening shadow (run-20261019-195509-a2wv6z, 2000 strings, 9 disagreements)
+      had one that is design rather than data: "Juvenile literature", which the 2024 process linked to LCSH
+      sh85071184, was accepted on AAT "children's literature" alone, because lcsh was not yet in the manifest. With
+      lcsh in play the two become rival groups and the string is queued, and so will most keywords: AAT and LCSH both
+      hold a term for most library subjects and never link to each other. A library catalogue's keywords are LCSH
+      strings, so the context should name its home vocabulary (keywords: lcsh first, aat as an equivalent to carry
+      when its exact term agrees), and the reconciler should treat a home-vocabulary exact match as decisive while
+      recording the other vocabulary's exact term as an equivalent rather than a rival. Needs a manifest field on
+      ContextRule and a grouping rule; measure on the keywords context after the rerun.
+    - The other eight disagreements in that shadow: four were the 2024 process's own errors (Claude Flight linked
+      to Edith Lawrence, Dublin City Council to its Culture Company, Sir Charles Lock Eastlake to his nephew,
+      Stoke-on-Trent's museum to Carlisle's) and four were 2024 lumpings of a body into its parent or successor
+      (the NGS trustees into the NGS, RCHME into English Heritage, the Fine Arts Museums of San Francisco into the
+      de Young, the Arts Council Gallery into the Hayward). The new answers are the bodies the strings name,
+      checked against the ULAN records. Whether PMC wants the lumping is an editorial choice for the desk; an
+      override expresses it. No disagreements at all on persauthorfull in the 2000.
     - Audit: check entities against their LoC records as well as ULAN; report ULAN's person-typed corporate bodies
       (1,552) and stale LUX ids; the reports-outward step (doc 12 step 5) sends the ULAN findings to Getty.
     - Measure again: a shadow sample after today's stricter date agreement, and the human sample through the desk's

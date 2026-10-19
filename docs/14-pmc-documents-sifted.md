@@ -34,9 +34,10 @@ confirm or contradict in docs 10–13. Facts and tables below come from those do
    contributor. So a role is not only an AAT id but a *route*: creator part, publishing, provenance, production,
    subject, or none. The agent parser (doc 10 §6) already separates the role; the project needs the table that says
    where each role sends the agent, and which roles mean "do not reconcile as a creator".
-5. **Runs started by a person or a clock, with counters.** "Enable Tom (S) to run the transformation" and "enable
-   automation" are, as the owner wrote, the same feature: once a run can be started from a page it can be started by
-   a schedule. "Increment counters of all the things we might be interested in" is the runs table's job; the
+5. **Runs started by a person or a clock, with counters.** "Enable Tom (S) to run the transformation" means the
+   client's own staff (Tom Scutt at PMC), not the developer: the institution must be able to run its transformation
+   without the person who wrote it. That is the workbench's operator role, and "enable automation" is, as the owner
+   wrote, the same feature: once a run can be started from a page it can be started by a schedule. "Increment counters of all the things we might be interested in" is the runs table's job; the
    brief's scattered "stats" asks are the list of counters. This is doc 12 step 3 as designed, plus a schedule.
 6. **Publishing and a change stream.** Records are to be published at their identifiers (`data.paul-mellon-centre.ac.uk`
    over S3 with DNS), and harvested by ActivityStreams (IIIF Change Discovery) rather than full dumps, with the

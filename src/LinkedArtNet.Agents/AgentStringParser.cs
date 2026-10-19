@@ -300,14 +300,21 @@ public sealed partial class AgentStringParser
         {
             var family = name[..comma];
             var givenWords = name[(comma + 1)..].Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-            while (givenWords.Count > 1 && _tables.IsHonorific(givenWords[0])) { honorifics.Add(givenWords[0].TrimEnd('.')); givenWords.RemoveAt(0); }
-            while (givenWords.Count > 1 && _tables.IsHonorific(givenWords[^1])) { honorifics.Add(givenWords[^1].TrimEnd('.')); givenWords.RemoveAt(givenWords.Count - 1); }
+            while (givenWords.Count > 1 && IsHonorificWord(givenWords[0])) { honorifics.Add(givenWords[0].TrimEnd('.')); givenWords.RemoveAt(0); }
+            while (givenWords.Count > 1 && IsHonorificWord(givenWords[^1])) { honorifics.Add(givenWords[^1].TrimEnd('.')); givenWords.RemoveAt(givenWords.Count - 1); }
             return givenWords.Count == 0 ? family.Trim() : $"{family.Trim()}, {string.Join(' ', givenWords)}";
         }
         var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-        while (words.Count > 1 && _tables.IsHonorific(words[0])) { honorifics.Add(words[0].TrimEnd('.')); words.RemoveAt(0); }
+        while (words.Count > 1 && IsHonorificWord(words[0])) { honorifics.Add(words[0].TrimEnd('.')); words.RemoveAt(0); }
         return string.Join(' ', words);
     }
+
+    /// <summary>
+    /// A word of the name that is a title. A single letter never is, whatever the table says: "M" is in the table for the
+    /// French Monsieur, but in "Larsen, Ruth M" or "J. Smith" it is an initial, and 2026-10-19's shadow run showed four
+    /// strings matched to the wrong person for want of theirs.
+    /// </summary>
+    private bool IsHonorificWord(string word) => word.TrimEnd('.').Length > 1 && _tables.IsHonorific(word);
 
     private bool IsCorporate(string name) =>
         name.Split([' ', ',', '.', ';', '/'], StringSplitOptions.RemoveEmptyEntries).Any(_tables.IsCorporateWord);

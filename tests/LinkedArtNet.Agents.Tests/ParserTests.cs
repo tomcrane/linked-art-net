@@ -9,6 +9,18 @@ public class ParserTests
         new AgentStringParser(AgentProfileCatalog.BuiltIn.Get(profile)).Parse(text);
 
     [Fact]
+    public void A_single_letter_is_an_initial_not_a_title()
+    {
+        Assert.Equal("Larsen, Ruth M", Parse("Larsen, Ruth M (editor)", "dscribe").Name); // "M" is Monsieur in the table, an initial here
+        Assert.Equal("Bennett, Shelley M.", Parse("Bennett, Shelley M. (author)", "dscribe").Name);
+        Assert.Equal("Smith, J. Robert", Parse("Smith, J. Robert (author)", "dscribe").Name);
+        var direct = Parse("J. Smith", "default");
+        Assert.Equal("J. Smith", direct.Name);
+        Assert.Empty(direct.Honorifics);
+        Assert.Equal(["Mr"], Parse("Smith, Mr John", "dscribe").Honorifics); // a real title still comes off
+    }
+
+    [Fact]
     public void DScribe_bracket_and_parenthesis_form()
     {
         var a = Parse("Grierson, Herbert John Clifford [Sir, 1866-1960] (preface by)", "dscribe");

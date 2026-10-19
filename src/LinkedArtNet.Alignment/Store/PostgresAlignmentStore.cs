@@ -763,22 +763,31 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             }
             await writer.CompleteAsync(ct);
         }
+        // A large batch rebuilds the two GIN indexes after the insert instead of maintaining them row by row, which
+        // is several times cheaper (the per-row path is bound by writing the transaction log). All in one implicit
+        // transaction, so a failure rolls the drops back; the table is locked against readers while it runs.
+        var rebuild = count >= RebuildIndexesAbove;
         await using (var merge = new NpgsqlCommand(
-            """
+            (rebuild ? "drop index if exists authority_records_source_labels, authority_records_same_as;" + " " : "")
+            + """
             insert into authority_records (uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version)
             select distinct on (uri) uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version from authority_records_in order by uri
             on conflict (uri) do update set source = excluded.source, label = excluded.label, labels = excluded.labels, normalised_labels = excluded.normalised_labels, type = excluded.type,
                 begin_earliest = excluded.begin_earliest, begin_latest = excluded.begin_latest, end_earliest = excluded.end_earliest, end_latest = excluded.end_latest, lifespan_text = excluded.lifespan_text,
                 same_as = excluded.same_as, data = excluded.data, fetched_at = excluded.fetched_at, source_version = excluded.source_version;
             drop table authority_records_in;
-            analyze authority_records
-            """, conn))
+            """
+            + (rebuild ? "create index authority_records_source_labels on authority_records using gin (normalised_labels); create index authority_records_same_as on authority_records using gin (same_as);" + " " : "")
+            + "analyze authority_records", conn))
         {
             merge.CommandTimeout = 0;
             await merge.ExecuteNonQueryAsync(ct);
         }
         return count;
     }
+
+    /// <summary>Batches of at least this many records drop and rebuild the label indexes around the insert rather than maintaining them row by row. Settable for tests.</summary>
+    internal int RebuildIndexesAbove { get; set; } = 500_000;
 
     private static Task WriteText(NpgsqlBinaryImporter w, string? value, CancellationToken ct) => value is null ? w.WriteNullAsync(ct) : w.WriteAsync(value, NpgsqlDbType.Text, ct);
     private static Task WriteTime(NpgsqlBinaryImporter w, DateTimeOffset? value, CancellationToken ct) => value is null ? w.WriteNullAsync(ct) : w.WriteAsync(value.Value.ToUniversalTime(), NpgsqlDbType.TimestampTz, ct);

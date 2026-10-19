@@ -302,7 +302,11 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person"));
         var smaller = UlanSample[..UlanSample.IndexOf("<http://vocab.getty.edu/ulan/500301641>", StringComparison.Ordinal)]; // Dürer only
         await Task.Delay(50);
-        await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(smaller), GettyVocabulary.Ulan, "test-sample-2");
+        // the second load takes the large-batch path, which rebuilds the label indexes around the insert
+        pg.Store.RebuildIndexesAbove = 1;
+        try { await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(smaller), GettyVocabulary.Ulan, "test-sample-2"); }
+        finally { pg.Store.RebuildIndexesAbove = 500_000; }
+        Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person")); // the rebuilt index answers
         Assert.NotNull(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500115493"));
         Assert.Null(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500301641")); // retired: not in the new dump
         Assert.Null(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500301417")); // the hand-added Agnew's went with it

@@ -157,8 +157,8 @@ Anthropic key for proposals) come from the environment, as everywhere else.
    development), projects with members and roles, the project overview, and the desk with accept, always
    (override), same as, keep local, note, skip and undo; `ReviewService` in the Alignment library carries the
    actions; schema version 2 adds users, projects, memberships and notes. Run it with `dotnet run --project
-   src/LinkedArtNet.Workbench` and `LINKEDART_PG` set; the development settings allow a typed sign-in and make the
-   name `local` an owner. Tests in `tests/LinkedArtNet.Workbench.Tests` drive the pages over HTTP against a
+   src/LinkedArtNet.Workbench` and `LINKEDART_PG` set (the launch settings put it in Development on
+   http://localhost:5200); the development settings allow a typed sign-in and make the name `local` an owner. Tests in `tests/LinkedArtNet.Workbench.Tests` drive the pages over HTTP against a
    throwaway PostgreSQL.*
 2. **Entities and variants**: browse, search, merge, overrides, the inline index search, the pmc-lux export.
    *Built 2026-10-18 (first cut): `/p/{dataset}/entities` with search and filters; `/p/{dataset}/entity` with

@@ -71,7 +71,8 @@ public sealed record Candidate(
     string? EntityId = null,
     IReadOnlyList<string>? Nationalities = null,
     bool Provisional = false,
-    bool ProvisionalQueued = false);
+    bool ProvisionalQueued = false,
+    bool Disambiguated = false);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
@@ -123,6 +124,7 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
     {
         var cls = Enum.TryParse<EntityClass>(r.Type, true, out var c) ? c : (EntityClass?)null;
         IReadOnlyList<string>? nationalities = null;
+        var disambiguated = false;
         if (r.DataJson is not null)
         {
             try
@@ -130,10 +132,12 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
                 using var doc = System.Text.Json.JsonDocument.Parse(r.DataJson);
                 if (doc.RootElement.TryGetProperty("nationalities", out var n) && n.ValueKind == System.Text.Json.JsonValueKind.Array)
                     nationalities = n.EnumerateArray().Select(e => e.GetString()).OfType<string>().ToArray();
+                // a LoC heading carries dates ("Taylor, Desmond, 1930-") when the cataloguer had namesakes to tell apart: the record is disambiguated
+                disambiguated = doc.RootElement.TryGetProperty("headingDates", out var hd) && hd.ValueKind == System.Text.Json.JsonValueKind.String;
             }
             catch (System.Text.Json.JsonException) { }
         }
         var labels = r.Label is null ? r.Labels : r.Labels.Prepend(r.Label);
-        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, r.SameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities);
+        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, r.SameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities, Disambiguated: disambiguated);
     }
 }

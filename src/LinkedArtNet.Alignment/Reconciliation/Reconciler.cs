@@ -194,7 +194,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count == 1 && reading.Lifespan is null
             && StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
-            && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null))
+            && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
+            // a heading that carries dates was disambiguated from namesakes by its cataloguer: an undated string cannot claim it alone
+            && !top.Members.Any(m => m.Candidate.Disambiguated))
         {
             if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
             return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top, AcceptedMethod: DecisionMethod.ExactSingle);

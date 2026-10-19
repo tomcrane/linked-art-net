@@ -116,7 +116,7 @@ switch (args[0])
             MintWhenNothingFound = !args.Contains("--no-mint"),
             Contexts = PmcContexts(),
         };
-        var sources = new IAuthoritySource[] { new LocalIndexSource(store, "ulan"), new LocalIndexSource(store, "aat"), new LocalIndexSource(store, "tgn"), new LocalIndexSource(store, "loc") };
+        var sources = await SourcesAsync(store, dataset);
         var run = await store.StartRunAsync(dataset, System.Text.Json.JsonSerializer.Serialize(options));
         var reconciler = new Reconciler(store, scheme, sources, options);
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
@@ -157,7 +157,7 @@ switch (args[0])
     {
         await store.InitialiseAsync();
         var options = new ReconcilerOptions { Contexts = PmcContexts(), AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact") };
-        var sources = new IAuthoritySource[] { new LocalIndexSource(store, "ulan"), new LocalIndexSource(store, "aat"), new LocalIndexSource(store, "tgn"), new LocalIndexSource(store, "loc") };
+        var sources = await SourcesAsync(store, dataset);
         var reconciler = new Reconciler(store, scheme, sources, options);
         var sample = int.TryParse(Option("--sample"), out var sn) ? sn : 0;
         var limit = sample > 0 ? sample : int.TryParse(Option("--limit"), out var l) ? l : 100_000;
@@ -237,6 +237,20 @@ switch (args[0])
 
 // How the PMC library's fields are read: the manifest's PMC default until the project's own manifest in the store carries it.
 static IReadOnlyDictionary<string, ContextRule> PmcContexts() => ProjectManifest.PmcDefault.ToOptions().Contexts;
+
+// The local indexes to ask: the project's manifest names them (the default list when the project has none), and only
+// those with records loaded are asked. The 2026-10-19 corpus run never asked lcsh because this list was written by hand.
+static async Task<IAuthoritySource[]> SourcesAsync(IAlignmentStore store, string dataset)
+{
+    var project = await store.GetProjectAsync(dataset);
+    var manifest = project is null ? ProjectManifest.PmcDefault : ProjectManifest.FromJson(project.ManifestJson);
+    var loaded = (await store.AuthoritySourcesAsync()).Where(x => x.Records > 0).Select(x => x.Source).ToHashSet(StringComparer.Ordinal);
+    var asked = manifest.Sources.Where(loaded.Contains).ToList();
+    var missing = manifest.Sources.Where(x => !loaded.Contains(x)).ToList();
+    var unused = loaded.Where(x => !manifest.Sources.Contains(x, StringComparer.Ordinal)).OrderBy(x => x, StringComparer.Ordinal).ToList();
+    Console.Error.WriteLine($"  sources: {string.Join(", ", asked)}" + (missing.Count > 0 ? $" (in the manifest but not loaded: {string.Join(", ", missing)})" : "") + (unused.Count > 0 ? $" (loaded but not in the manifest: {string.Join(", ", unused)})" : ""));
+    return asked.Select(x => (IAuthoritySource)new LocalIndexSource(store, x)).ToArray();
+}
 
 static void Usage() => Console.WriteLine(
     """

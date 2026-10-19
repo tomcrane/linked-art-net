@@ -17,7 +17,7 @@ public sealed class VariantsModel(ProjectServices services, ProjectAccess access
 
     public async Task OnGetAsync(string? message = null)
     {
-        Message = message;
+        Message = message ?? TakeFlash();
         if (string.IsNullOrWhiteSpace(Seed)) { Seed = null; return; }
         Word = CurationService.SeedWord(Seed);
         Groups = await Project.Curation.VariantsAsync(Dataset, Seed);
@@ -29,11 +29,11 @@ public sealed class VariantsModel(ProjectServices services, ProjectAccess access
         try
         {
             var result = await Project.Curation.ClusterAsync(Dataset, strings ?? [], entity, newLabel, externalUris ?? [], Reviewer, string.IsNullOrWhiteSpace(note) ? null : note.Trim());
-            return RedirectToPage(new { dataset = Dataset, seed, message = $"{(strings ?? []).Length} string(s) clustered into {result.Label}." });
+            return Flash($"{(strings ?? []).Length} string(s) clustered into {result.Label}.", new { dataset = Dataset, seed });
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
-            return RedirectToPage(new { dataset = Dataset, seed, message = e.Message });
+            return Flash(e.Message, new { dataset = Dataset, seed });
         }
     }
 }

@@ -21,6 +21,16 @@ public abstract class ProjectPageModel(ProjectServices services, ProjectAccess a
 
     public bool Can(string role) => ProjectRole.Covers(Role, role);
 
+    /// <summary>Redirects after an action with a one-time message for the next page, carried in TempData rather than the address bar, so a refresh does not repeat it.</summary>
+    protected IActionResult Flash(string message, object routeValues)
+    {
+        TempData["Flash"] = message;
+        return RedirectToPage(routeValues);
+    }
+
+    /// <summary>The message left by the previous action, if any; reading it clears it.</summary>
+    protected string? TakeFlash() => TempData["Flash"] as string;
+
     public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
         var project = await services.GetAsync(Dataset, HttpContext.RequestAborted);

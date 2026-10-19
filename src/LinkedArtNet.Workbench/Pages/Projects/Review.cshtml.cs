@@ -28,7 +28,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
 
     public async Task OnGetAsync(string? message = null)
     {
-        Message = message;
+        Message = message ?? TakeFlash();
         if (string.IsNullOrWhiteSpace(Context)) Context = null;
         Queue = await Project.Desk.QueueCountsAsync(Dataset, Method);
         Item = Id is { } id ? await Project.Desk.GetAsync(id) : await Project.Desk.NextAsync(Dataset, Method, Context, After);
@@ -55,7 +55,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public async Task<IActionResult> OnPostFlagAsync(long id, string text)
     {
         if (!string.IsNullOrWhiteSpace(text)) await Project.Desk.FlagAsync(Dataset, id, Reviewer, text.Trim());
-        return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, message = "Note added." });
+        return Flash("Note added.", new { dataset = Dataset, method = Method, context = Context, id });
     }
 
     public IActionResult OnPostSkip(long id) => RedirectToPage(new { dataset = Dataset, method = Method, context = Context, after = id });
@@ -64,8 +64,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     {
         Decision? restored;
         try { restored = await Project.Desk.UndoAsync(Dataset, id); }
-        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException) { return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, message = e.Message }); }
-        return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, message = restored is null ? "Nothing to undo." : $"Undone; the earlier decision ({restored.Method}) stands again." });
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+        return Flash(restored is null ? "Nothing to undo." : $"Undone; the earlier decision ({restored.Method}) stands again.", new { dataset = Dataset, method = Method, context = Context, id });
     }
 
     private async Task<IActionResult> Act(long id, Func<Task<string>> action)
@@ -74,8 +74,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         try { message = await action(); }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
-            return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, message = e.Message });
+            return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id });
         }
-        return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, after = id, message });
+        return Flash(message, new { dataset = Dataset, method = Method, context = Context, after = id });
     }
 }

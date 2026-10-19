@@ -15,7 +15,7 @@ public sealed class HomeModel(ProjectServices services, ProjectAccess access) : 
 
     public async Task OnGetAsync(string? message = null)
     {
-        ManifestError = message;
+        ManifestError = message ?? TakeFlash();
         Queue = await Project.Desk.QueueCountsAsync(Dataset);
         Counts = await Services.Store.CountsAsync(Dataset);
         Runs = await Services.Store.RunsAsync(Dataset, 8);
@@ -31,10 +31,10 @@ public sealed class HomeModel(ProjectServices services, ProjectAccess access) : 
         if (!Can(ProjectRole.Operator)) return Forbid();
         ProjectManifest parsed;
         try { parsed = read(); }
-        catch (System.Text.Json.JsonException e) { return RedirectToPage(new { dataset = Dataset, message = "The manifest is not valid JSON: " + e.Message }); }
+        catch (System.Text.Json.JsonException e) { return Flash("The manifest is not valid JSON: " + e.Message, new { dataset = Dataset }); }
         var p = Project.Project;
         await Services.Store.UpsertProjectAsync(p with { ManifestJson = parsed.ToJson(), UpdatedAt = DateTimeOffset.UtcNow });
         Services.Invalidate(Dataset);
-        return RedirectToPage(new { dataset = Dataset, message = done });
+        return Flash(done, new { dataset = Dataset });
     }
 }

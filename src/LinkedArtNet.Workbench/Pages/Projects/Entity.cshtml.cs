@@ -16,7 +16,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
     {
-        Message = message;
+        Message = message ?? TakeFlash();
         var view = await Project.Curation.EntityAsync(Dataset, Id);
         if (view is null) return NotFound();
         View = view;
@@ -37,11 +37,11 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         try
         {
             var result = await Project.Curation.MergeAsync(Dataset, id, survivor, Reviewer);
-            return RedirectToPage(new { dataset = Dataset, id = result.Id, message = "Merged." });
+            return Flash("Merged.", new { dataset = Dataset, id = result.Id });
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
-            return RedirectToPage(new { dataset = Dataset, id, message = e.Message });
+            return Flash(e.Message, new { dataset = Dataset, id });
         }
     }
 
@@ -50,6 +50,6 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         string message;
         try { message = await action(); }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { message = e.Message; }
-        return RedirectToPage(new { dataset = Dataset, id, message });
+        return Flash(message, new { dataset = Dataset, id });
     }
 }

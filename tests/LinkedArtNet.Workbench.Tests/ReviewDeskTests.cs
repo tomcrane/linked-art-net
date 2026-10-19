@@ -45,7 +45,8 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("persauthorfull", await owner.GetStringAsync("/p/" + ds));
         var badJson = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}?handler=Manifest", "/p/" + ds, new() { ["manifest"] = "{ not json" });
         Assert.Equal(HttpStatusCode.Redirect, badJson.StatusCode);
-        Assert.Contains("not valid JSON", Uri.UnescapeDataString(badJson.Headers.Location!.ToString()).Replace('+', ' '));
+        Assert.DoesNotContain("message=", badJson.Headers.Location!.ToString()); // the message travels in TempData, not the address bar
+        Assert.Contains("not valid JSON", await owner.GetStringAsync(badJson.Headers.Location!.ToString()));
 
         // seed through the store: two ULAN Smiths and a string the reconciler can only queue, read under the rules just set
         var store = wb.Factory.Services.GetRequiredService<IAlignmentStore>();

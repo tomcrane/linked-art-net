@@ -54,7 +54,8 @@ has its own version (`TimeSpanParser.Version`) reported in every result.
 - Workbench step 2 (first cut): entities (browse, search, labels, identifiers, strings with reopen, confirm, merge,
   notes), variants (a seed's spellings grouped by entity, clustered into one with overrides and identifiers), and
   the export of a project's overrides in the pmc-lux JSON shape; `CurationService`; `tools/Align export-overrides`
-  and `cleanup-orphans`; the reconciler queues a vote whose ids already sit on two entities.
+  and `cleanup-orphans`; the reconciler queues a vote whose ids already sit on two entities. The new-project form
+  is generic and the project page edits the manifest; docs/13 is the user guide's first draft.
 - Backups: nightly snapshot script and cron file for the server, off-box pull script, restore steps (docs 09 section 8).
 - Design: `docs/10-alignment-toolkit.md`, the transformation and alignment toolkit (Phase 5).
 

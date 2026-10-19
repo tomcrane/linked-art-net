@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Data;
@@ -735,12 +736,23 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         // Each source has its own partial label index, matched only when the source appears as a literal in the
         // predicate; a lookup across sources is a union of one branch per loaded source. The limit sits inside each
         // branch so the planner takes the label index rather than walking the primary key in order.
-        var sources = source is null ? await SourcesAsync(ct) : [source];
-        if (sources.Count == 0) return [];
+        // a source with no records has no index either, and asking for it would scan the whole table: answer at once
+        var loaded = await SourcesAsync(ct);
+        var sources = source is null ? loaded : loaded.Contains(source, StringComparer.Ordinal) ? [source] : [];
+        if (sources.Count == 0) { if (source is not null) Literal(source); return []; }
         string Branch(string src) => $"(select * from authority_records x where x.normalised_labels && @keys and x.source = {Literal(src)}" + (type is null ? "" : " and x.type = @type") + " limit @limit)";
         var sql = $"select {AuthorityColumns} from ({string.Join(" union all ", sources.Select(Branch))}) a order by a.uri limit @limit";
-        return await QueryAuthoritiesAsync(sql, cmd => { Add(cmd, "keys", keys.ToArray()); if (type is not null) Add(cmd, "type", type); Add(cmd, "limit", limit); }, ct);
+        var started = Stopwatch.GetTimestamp();
+        var found = await QueryAuthoritiesAsync(sql, cmd => { Add(cmd, "keys", keys.ToArray()); if (type is not null) Add(cmd, "type", type); Add(cmd, "limit", limit); }, ct);
+        var elapsed = Stopwatch.GetElapsedTime(started);
+        if (elapsed > SlowLookup && SlowLookupReported is { } report)
+            report($"slow label lookup {elapsed.TotalSeconds:0.0}s: source {source ?? "any"}, type {type ?? "any"}, {found.Count} found, keys [{string.Join(" | ", keys)}]");
+        return found;
     }
+
+    /// <summary>A label lookup slower than this is reported through <see cref="SlowLookupReported"/>, with its keys, so the cause can be seen rather than guessed.</summary>
+    public TimeSpan SlowLookup { get; set; } = TimeSpan.FromSeconds(2);
+    public Action<string>? SlowLookupReported { get; set; }
 
     private static readonly Regex SourceName = new("^[a-z0-9_]+$", RegexOptions.Compiled);
 

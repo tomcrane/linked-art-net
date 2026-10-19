@@ -38,6 +38,7 @@ var scheme = Option("--base") is { } b ? new IdentifierScheme(b) : IdentifierSch
 var connection = Environment.GetEnvironmentVariable("LINKEDART_PG");
 if (string.IsNullOrWhiteSpace(connection)) { Console.Error.WriteLine("Set LINKEDART_PG to the store's connection string."); return 2; }
 await using var store = new PostgresAlignmentStore(connection);
+store.SlowLookupReported = m => Console.Error.WriteLine("  " + m);
 
 switch (args[0])
 {

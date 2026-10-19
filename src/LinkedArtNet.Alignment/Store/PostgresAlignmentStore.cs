@@ -870,13 +870,14 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         }
         // the per-source label indexes: rebuilt after a large batch (dropped above), created for a source new to the store, and the source counts refreshed
         await EnsureSourceIndexesAsync(conn, sources, ct);
-        if (rebuild)
+        if (count >= VacuumAbove)
         {
-            // a large load leaves dead row versions (replaced records) and a full GIN pending list; autovacuum would
-            // get to them throttled over an hour or more, slowing every lookup meanwhile, so vacuum now, unthrottled.
-            // Must run outside the transaction above, so a separate command.
+            // a load leaves dead row versions (replaced records) and the GIN indexes with pending lists of new entries that
+            // every lookup scans until a vacuum folds them in: reloading ULAN (404k rows) made each lookup 20 times slower
+            // until one ran. Autovacuum would get there throttled, over an hour or more. So vacuum now, unthrottled; it
+            // must run outside the transaction above, as a command of its own.
             await using (var stats = new NpgsqlCommand("alter table authority_records alter column normalised_labels set statistics 1000", conn)) await stats.ExecuteNonQueryAsync(ct);
-            await using var vacuum = new NpgsqlCommand("vacuum (analyze) authority_records", conn) { CommandTimeout = 0 }; // alone: vacuum cannot share a command
+            await using var vacuum = new NpgsqlCommand("vacuum (analyze) authority_records", conn) { CommandTimeout = 0 };
             await vacuum.ExecuteNonQueryAsync(ct);
         }
         return count;
@@ -884,6 +885,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     /// <summary>Batches of at least this many records drop and rebuild the label indexes around the insert rather than maintaining them row by row. Settable for tests.</summary>
     internal int RebuildIndexesAbove { get; set; } = 500_000;
+
+    /// <summary>Batches of at least this many records are followed by an unthrottled vacuum of the table, which folds the GIN pending lists in and clears the replaced rows.</summary>
+    internal int VacuumAbove { get; set; } = 5_000;
 
     private static Task WriteText(NpgsqlBinaryImporter w, string? value, CancellationToken ct) => value is null ? w.WriteNullAsync(ct) : w.WriteAsync(value, NpgsqlDbType.Text, ct);
     private static Task WriteTime(NpgsqlBinaryImporter w, DateTimeOffset? value, CancellationToken ct) => value is null ? w.WriteNullAsync(ct) : w.WriteAsync(value.Value.ToUniversalTime(), NpgsqlDbType.TimestampTz, ct);

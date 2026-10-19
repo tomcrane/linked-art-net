@@ -734,13 +734,15 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     {
         if (keys.Count == 0) return [];
         // Each source has its own partial label index, matched only when the source appears as a literal in the
-        // predicate; a lookup across sources is a union of one branch per loaded source. The limit sits inside each
-        // branch so the planner takes the label index rather than walking the primary key in order.
+        // predicate; a lookup across sources is a union of one branch per loaded source. Each branch finds its rows in
+        // a materialised CTE before any limit applies: with a limit in reach the planner may pick a sequential scan,
+        // expecting to meet 201 matches early, and for a rare name that reads the whole table (22 seconds over ten
+        // million rows). Materialising makes it use the label index; the cost is bounded by the rows sharing a key.
         // a source with no records has no index either, and asking for it would scan the whole table: answer at once
         var loaded = await SourcesAsync(ct);
         var sources = source is null ? loaded : loaded.Contains(source, StringComparer.Ordinal) ? [source] : [];
         if (sources.Count == 0) { if (source is not null) Literal(source); return []; }
-        string Branch(string src) => $"(select * from authority_records x where x.normalised_labels && @keys and x.source = {Literal(src)}" + (type is null ? "" : " and x.type = @type") + " limit @limit)";
+        string Branch(string src) => $"(with h as materialized (select * from authority_records x where x.normalised_labels && @keys and x.source = {Literal(src)}" + (type is null ? "" : " and x.type = @type") + ") select * from h limit @limit)";
         var sql = $"select {AuthorityColumns} from ({string.Join(" union all ", sources.Select(Branch))}) a order by a.uri limit @limit";
         var started = Stopwatch.GetTimestamp();
         var found = await QueryAuthoritiesAsync(sql, cmd => { Add(cmd, "keys", keys.ToArray()); if (type is not null) Add(cmd, "type", type); Add(cmd, "limit", limit); }, ct);

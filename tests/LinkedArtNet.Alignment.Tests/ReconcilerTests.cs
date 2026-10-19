@@ -319,6 +319,18 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Single(await pg.Store.FindAuthoritiesBySameAsAsync("http://www.wikidata.org/entity/Q5580"), a => a.Source == "ulan"); // the LoC sample links to the same Wikidata item
     }
 
+    [Fact]
+    public void Getty_placeholders_and_group_typed_persons_are_read_for_what_they_are()
+    {
+        Assert.Null(GettyVocabLoader.LifespanFromYears("1200", "2080", "Group")); // ULAN's "unknown" placeholder ends in the future
+        Assert.Null(GettyVocabLoader.LifespanFromYears("1500", "1700", "Person")); // no one lives 200 years
+        Assert.NotNull(GettyVocabLoader.LifespanFromYears("1500", "1700", "Group")); // a body can
+        Assert.NotNull(GettyVocabLoader.LifespanFromYears("1471", "1528", "Person"));
+        Assert.Equal("Group", GettyVocabLoader.ClassFor("Person", "http://vocab.getty.edu/aat/300386361")); // a corporate body typed as a person
+        Assert.Equal("Person", GettyVocabLoader.ClassFor("Person", "http://vocab.getty.edu/aat/300025103")); // an artist stays a person
+        Assert.Equal("Place", GettyVocabLoader.ClassFor("Place", null));
+    }
+
     // A sliver of the LC Name Authority File in the MADS/RDF shapes (checked against a 2024 export on 2026-10-18).
     private const string LocSample = """
         <http://id.loc.gov/authorities/names/n79118011> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Authority> .

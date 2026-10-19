@@ -176,7 +176,8 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
             var agentType = Str(r, 12); var placeType = Str(r, 13); var broader = Str(r, 14); var parentString = Str(r, 15);
 
             label ??= labels.FirstOrDefault();
-            var lifespan = LifespanFromYears(estStart, estEnd);
+            type = ClassFor(type, agentType);
+            var lifespan = LifespanFromYears(estStart, estEnd, type);
             var data = new Dictionary<string, object?>();
             if (nationalities.Length > 0) data["nationalities"] = nationalities;
             if (agentType is not null) data["agentType"] = agentType;
@@ -202,10 +203,35 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         return uri.EndsWith('/') ? uri.TrimEnd('/') : uri;
     }
 
-    /// <summary>A lifespan from gYear bounds as the Getty biographies give them; years outside 1-9999 keep the text only.</summary>
-    internal static Lifespan? LifespanFromYears(string? start, string? end)
+    /// <summary>
+    /// ULAN agent types (AAT ids) that make a record a Group whatever its concept class says: ULAN 500452706, the Basil and
+    /// Elise Goulandris Foundation, is a PersonConcept typed "corporate bodies" (seen 2026-10-19). "corporate bodies" is from
+    /// that record; "families" and "organizations" are the ids the PMC brief (R. Sanderson, 2024) used for Family and Corporate.
+    /// </summary>
+    private static readonly HashSet<string> GroupAgentTypes = new(StringComparer.Ordinal)
+    {
+        "http://vocab.getty.edu/aat/300386361", // corporate bodies
+        "http://vocab.getty.edu/aat/300055474", // families
+        "http://vocab.getty.edu/aat/300025948", // organizations
+    };
+
+    /// <summary>The class for a record: the concept class, except that a person-typed record whose agent type is a kind of group is a Group.</summary>
+    internal static string ClassFor(string conceptClass, string? agentType) =>
+        conceptClass == nameof(EntityClass.Person) && agentType is not null && GroupAgentTypes.Contains(agentType) ? nameof(EntityClass.Group) : conceptClass;
+
+    /// <summary>
+    /// A lifespan from gYear bounds as the Getty biographies give them; years outside 1-9999 keep the text only. Getty's
+    /// placeholders for "unknown" (ULAN 500452706 has 1200-2080) are dropped: an end after next year, or a person's span
+    /// longer than any lifetime, is no lifespan.
+    /// </summary>
+    internal static Lifespan? LifespanFromYears(string? start, string? end, string? type = null)
     {
         if (start is null && end is null) return null;
+        if (int.TryParse(end?.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var endYear))
+        {
+            if (endYear > DateTimeOffset.UtcNow.Year + 1) return null;
+            if (type == nameof(EntityClass.Person) && int.TryParse(start?.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var startYear) && endYear - startYear > 150) return null;
+        }
         static DateTimeOffset? Day(string? y, bool last)
         {
             if (y is null || !int.TryParse(y.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var year) || year < 1 || year > 9999) return null;

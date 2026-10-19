@@ -18,6 +18,14 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     private readonly NpgsqlDataSource _db;
     private readonly bool _ownsDataSource;
 
+    static PostgresAlignmentStore()
+    {
+        // Npgsql writes DateTime.MinValue and MaxValue as -infinity and infinity unless told not to; the first day of year 1
+        // is MinValue exactly, and LoC has people born "approximately 1" (n82239358, Scribonius Largus). Set before any
+        // data source is created by this process; the test fixture and the hosts construct the store first.
+        AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+    }
+
     public PostgresAlignmentStore(string connectionString) : this(NpgsqlDataSource.Create(connectionString), ownsDataSource: true) { }
 
     public PostgresAlignmentStore(NpgsqlDataSource dataSource, bool ownsDataSource = false)
@@ -897,6 +905,13 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     public async Task<Run> StartRunAsync(string dataset, string? manifestJson = null, string? dumpsJson = null, string? gitSha = null, CancellationToken ct = default)
     {
+        // a run that never finished and is hours old was interrupted (the process died or was stopped); say so rather than
+        // leave it looking live. Six hours is longer than any run so far; the jobs step will own run state properly.
+        await using (var stale = _db.CreateCommand("update runs set report = 'interrupted' where dataset = @dataset and finished_at is null and report is null and started_at < now() - interval '6 hours'"))
+        {
+            Add(stale, "dataset", dataset);
+            await stale.ExecuteNonQueryAsync(ct);
+        }
         var id = $"run-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{IdMinter.Generate(6)}";
         await using var cmd = _db.CreateCommand("insert into runs (id, dataset, manifest, dumps, started_at, git_sha) values (@id, @dataset, @manifest, @dumps, @now, @sha)");
         Add(cmd, "id", id); Add(cmd, "dataset", dataset); AddJson(cmd, "manifest", manifestJson); AddJson(cmd, "dumps", dumpsJson); Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "sha", gitSha);

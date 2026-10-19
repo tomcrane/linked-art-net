@@ -35,9 +35,11 @@ public sealed record ReconcilerOptions
 
 public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minted, Deferred }
 
-public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped)
+public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0)
 {
-    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted}, queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}";
+    /// <summary>Accepted by independent sources agreeing (or one with dates), as opposed to the single-source policy.</summary>
+    public int Voted => Accepted - ExactSingle;
+    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}";
 }
 
 /// <summary>
@@ -86,32 +88,37 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<ReconcileReport> RunAsync(string dataset, int limit = 0, string? runId = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var strings = await store.UndecidedAsync(dataset, limit > 0 ? limit : int.MaxValue, ct);
-        int overridden = 0, matched = 0, accepted = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, n = 0;
+        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, n = 0;
         foreach (var s in strings)
         {
             ct.ThrowIfCancellationRequested();
-            switch (await ReconcileOneAsync(dataset, s, runId, ct))
+            var e = await ReconcileOneDetailedAsync(dataset, s, runId, ct);
+            switch (e.Outcome)
             {
                 case Outcome.Overridden: overridden++; break;
                 case Outcome.MatchedStore: matched++; break;
-                case Outcome.Accepted: accepted++; break;
+                case Outcome.Accepted: accepted++; if (e.AcceptedMethod == DecisionMethod.ExactSingle) exactSingle++; break;
                 case Outcome.Queued: queued++; break;
                 case Outcome.Minted: minted++; break;
                 case Outcome.Deferred: deferred++; break;
                 default: skipped++; break;
             }
-            if (++n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted}, queued {queued}, minted {minted}");
+            if (++n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}");
         }
-        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped);
+        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle);
     }
 
-    public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default)
+    public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>
+        (await ReconcileOneDetailedAsync(dataset, s, runId, ct)).Outcome;
+
+    /// <summary>Evaluates and commits one string, returning the evaluation so the caller can see how it was decided.</summary>
+    public async Task<Evaluation> ReconcileOneDetailedAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default)
     {
         var evaluation = await EvaluateAsync(dataset, s, includeStore: true, ct);
         var sw = System.Diagnostics.Stopwatch.StartNew();
         await CommitAsync(dataset, s, evaluation, runId, ct);
         Time("commit", sw);
-        return evaluation.Outcome;
+        return evaluation;
     }
 
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>

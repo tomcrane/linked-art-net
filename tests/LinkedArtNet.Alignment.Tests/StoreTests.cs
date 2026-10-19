@@ -18,6 +18,11 @@ public class StoreTests(PostgresFixture pg)
         Assert.Equal(6, LinkedArtNet.Alignment.Store.PostgresAlignmentStore.SchemaVersion);
         await using var cmd = pg.DataSource.CreateCommand("select max(version) from schema_version");
         Assert.Equal(6, (int)(await cmd.ExecuteScalarAsync())!);
+        // the first day of year 1 is DateTime.MinValue, which Npgsql would otherwise write as -infinity
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n82239358", "loc", "Scribonius Largus, approximately 1-approximately 50", ["Scribonius Largus"], "Person",
+            new Lifespan(new DateTimeOffset(1, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1, 12, 31, 23, 59, 59, TimeSpan.Zero), new DateTimeOffset(50, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(50, 12, 31, 23, 59, 59, TimeSpan.Zero), "approximately 1-approximately 50"), [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal(1, (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/names/n82239358"))!.Lifespan!.BeginEarliest!.Value.Year);
+        await using (var inf = pg.DataSource.CreateCommand("select count(*) from authority_records where not isfinite(begin_earliest)")) Assert.Equal(0L, (long)(await inf.ExecuteScalarAsync())!);
     }
 
     [PostgresFact]

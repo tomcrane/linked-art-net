@@ -243,6 +243,44 @@ body under its earlier and later names; review decides), **LinkGain** (ULAN link
 first run over the PMC store found only 799 entities with a ULAN id, and its label mismatches were mostly LoC-style
 parenthesised qualifiers, which the comparison form now drops. The flagged entities go to a CSV.
 
+### 8.8 The LoC names index, and what it changed (2026-10-19)
+
+**The load.** 724 million triples read, 81 million staged, 10,496,266 records, 3 h 23 min on the owner's laptop:
+about 40 min reading and staging, 45 min indexing the staging table, an hour aggregating records, an hour inserting
+them. The insert was bound by writing the transaction log, which is what live GIN maintenance costs per row; a batch
+of 500,000 or more now drops the label indexes first and rebuilds them after, then vacuums the table itself,
+unthrottled (autovacuum would have taken an hour or more, slowing every lookup meanwhile).
+
+**Three lookup lessons, each measured with `explain (analyze, buffers)` on the real store:**
+
+1. *One label index for all sources* made a ULAN lookup for a common label read thousands of LoC rows from disk only
+   to filter them out by source. *A composite GIN index* (`source, type, normalised_labels` with btree_gin, schema v4)
+   answered ULAN questions in a millisecond but gave the LoC source an index entry listing ten million rows, which
+   every LoC lookup walked. The shape that works is *one partial GIN index per source*
+   (`authority_records_labels_<source> ... where source = 'loc'`, schema v5), matched by a literal source in the
+   predicate; a lookup across sources is a union of one branch per loaded source, and `authority_sources` records
+   what is loaded. A lookup for a source with no records is answered without a query: with per-source indexes an
+   unloaded source (the manifest lists aat and tgn) would otherwise mean a full table scan per string.
+2. *A limit within reach of the planner* let it choose a sequential scan, expecting to meet 201 matches early; for a
+   name LoC does not have, that read all 10.9 million rows: 25.2 s, `Rows Removed by Filter: 10900890`. Each branch
+   now finds its rows in a materialised CTE before the limit applies: 52 ms, index scan 0.08 ms.
+3. *Default statistics* estimated 164,000 matches for that name and launched two parallel workers per lookup, most
+   of the 52 ms. `alter column normalised_labels set statistics 1000` is in the schema and in the post-load step.
+
+**What LoC changed, same 500 corpauthor strings:** ULAN only: accepted 0, store 23, queued 88, minted 382. ULAN + LoC:
+accepted 12, store 34, queued 173, minted 277. A hundred and five fewer invented entities; the queue nearly doubled
+with strings LoC knows something about.
+
+**Shadow, 2,000 of the 2024 decisions:** Agree 279, Disagree 2, Unverifiable 5, QueuedWithOld 1,011, QueuedConflict
+185, QueuedUnlinked 197, OldOnly 320 (this morning, ULAN only, OldOnly was 400 of 490). Both disagreements are the
+2024 run's errors: "Flight, Claude" had been given Edith Lawrence, his partner; "Canney, Michael (artist)" a Michael
+S. Canney born 1982; ULAN and LoC agree on the artists. Of the 1,011 queued with the old answer among the candidates,
+677 are a single exact match in one source (LoC in 648 of them) with no rival at all, and the 2024 decision chose
+exactly that record; only one of the 677 strings carries dates, so the single-source-with-dates rule cannot reach
+them. Whether a unique exact single-source match should be accepted without a person is the owner's policy call
+(§8.9 below records it when made); at this sample's rate it is about a third of the corpus, some 12,000 strings.
+keywords OldOnly 222 are LCSH ids (not loaded yet); place has no Agree because TGN is not loaded.
+
 ## 9. Not yet
 
 Step 3b: the remote sources (VIAF, LoC suggest, LUX with the self-echo rule, Wikidata by known id) behind a cache

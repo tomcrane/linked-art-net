@@ -127,7 +127,8 @@ public class ReviewDeskTests(WorkbenchFixture wb)
             new() { ["seed"] = "Smith", ["strings"] = other.Id.ToString(), ["entity"] = kept.Id, ["note"] = "the firm is the man" });
         Assert.Equal(HttpStatusCode.Redirect, clustered.StatusCode);
         Assert.Equal(kept.Id, (await store.ResolveAsync(ds, "corpauthor", "J. Smith & Co"))!.Id);
-        Assert.NotNull(await store.OverrideForAsync(ds, "x", other.Normalised));
+        Assert.NotNull(await store.OverrideForAsync(ds, other.Context, other.Normalised)); // scoped to the string's own field
+        Assert.Null(await store.OverrideForAsync(ds, "x", other.Normalised));
 
         var export = await owner.GetAsync($"/p/{ds}/export/overrides.json");
         Assert.Equal(HttpStatusCode.OK, export.StatusCode);

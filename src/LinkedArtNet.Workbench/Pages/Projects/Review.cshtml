@@ -84,7 +84,7 @@ else
                         </form>
                         <form method="post" asp-page-handler="Override" class="inline">
                             <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
-                            <button type="submit" class="secondary" title="Always read this exact spelling as this record, in any context">Always</button>
+                            <button type="submit" class="secondary" title="Always read this exact spelling as this record when it occurs in this field; the variants page can widen a rule to every field">Always, in this field</button>
                         </form>
                     }
                     @if (m.Veto != true && m.IsStore && Model.Method != "human")

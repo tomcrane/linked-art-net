@@ -24,11 +24,11 @@ public sealed class VariantsModel(ProjectServices services, ProjectAccess access
         if (!string.IsNullOrWhiteSpace(Ids)) IdCandidates = await Project.Desk.SearchIndexesAsync(Ids, null, 12);
     }
 
-    public async Task<IActionResult> OnPostClusterAsync(string seed, long[]? strings, string? entity, string? newLabel, string? note, string[]? externalUris)
+    public async Task<IActionResult> OnPostClusterAsync(string seed, long[]? strings, string? entity, string? newLabel, string? note, string[]? externalUris, bool anyField = false)
     {
         try
         {
-            var result = await Project.Curation.ClusterAsync(Dataset, strings ?? [], entity, newLabel, externalUris ?? [], Reviewer, string.IsNullOrWhiteSpace(note) ? null : note.Trim());
+            var result = await Project.Curation.ClusterAsync(Dataset, strings ?? [], entity, newLabel, externalUris ?? [], Reviewer, string.IsNullOrWhiteSpace(note) ? null : note.Trim(), anyField);
             return Flash($"{(strings ?? []).Length} string(s) clustered into {result.Label}.", new { dataset = Dataset, seed });
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)

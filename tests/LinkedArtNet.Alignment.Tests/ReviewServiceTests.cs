@@ -93,19 +93,23 @@ public class ReviewServiceTests(PostgresFixture pg)
         var overrideEntity = await desk.OverrideAsync(ds, pinned.Id, "http://vocab.getty.edu/ulan/500000002", "tester");
         Assert.NotEqual(accepted.Id, overrideEntity.Id);
         Assert.Equal(DecisionMethod.Override, (await pg.Store.DecisionForAsync(pinned.Id))!.Method);
-        Assert.Equal(overrideEntity.Id, (await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised))!.Target);
+        Assert.Equal(overrideEntity.Id, (await pg.Store.OverrideForAsync(ds, pinned.Context, pinned.Normalised))!.Target);
+        Assert.Null(await pg.Store.OverrideForAsync(ds, "corpauthor", pinned.Normalised)); // scoped to the field it came from
         var evaluation = await reconciler.EvaluateAsync(ds, pinned);
         Assert.Equal(Outcome.Overridden, evaluation.Outcome);
         // undoing an "always" removes the override it made; undoing one that replaced an earlier override restores that one
         await desk.UndoAsync(ds, pinned.Id);
-        Assert.Null(await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised));
+        Assert.Null(await pg.Store.OverrideForAsync(ds, pinned.Context, pinned.Normalised));
         Assert.Equal(DecisionMethod.Minted, (await pg.Store.DecisionForAsync(pinned.Id))!.Method);
         await desk.OverrideAsync(ds, pinned.Id, "http://vocab.getty.edu/ulan/500000001", "tester");
-        var firstTarget = (await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised))!.Target;
+        var firstTarget = (await pg.Store.OverrideForAsync(ds, pinned.Context, pinned.Normalised))!.Target;
         await desk.OverrideAsync(ds, pinned.Id, "http://vocab.getty.edu/ulan/500000002", "tester");
-        Assert.NotEqual(firstTarget, (await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised))!.Target);
+        Assert.NotEqual(firstTarget, (await pg.Store.OverrideForAsync(ds, pinned.Context, pinned.Normalised))!.Target);
         await desk.UndoAsync(ds, pinned.Id);
-        Assert.Equal(firstTarget, (await pg.Store.OverrideForAsync(ds, "anything", pinned.Normalised))!.Target);
+        Assert.Equal(firstTarget, (await pg.Store.OverrideForAsync(ds, pinned.Context, pinned.Normalised))!.Target);
+        // widened to any field on request
+        await desk.OverrideAsync(ds, pinned.Id, "http://vocab.getty.edu/ulan/500000002", "tester", anyField: true);
+        Assert.NotNull(await pg.Store.OverrideForAsync(ds, "corpauthor", pinned.Normalised));
 
         // searching for "same as" and for other records
         Assert.Contains(await desk.SearchEntitiesAsync(ds, "john smith"), e => e.Id == accepted.Id);

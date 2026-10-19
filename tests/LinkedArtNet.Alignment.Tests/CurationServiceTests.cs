@@ -47,12 +47,15 @@ public class CurationServiceTests(PostgresFixture pg)
         {
             Assert.Equal(firm.Id, (await pg.Store.ResolveAsync(ds, "corpauthor", s.Raw))!.Id);
             Assert.Equal(DecisionMethod.Human, (await pg.Store.DecisionForAsync(s.Id))!.Method);
-            Assert.Equal(firm.Id, (await pg.Store.OverrideForAsync(ds, "anything", s.Normalised))!.Target);
+            Assert.Equal(firm.Id, (await pg.Store.OverrideForAsync(ds, "corpauthor", s.Normalised))!.Target);
+            Assert.Null(await pg.Store.OverrideForAsync(ds, "publisher", s.Normalised)); // scoped to the field the strings came from
         }
         Assert.NotEqual(firm.Id, (await pg.Store.ResolveAsync(ds, "corpauthor", "Agnew, Joan (editor)"))!.Id);
         Assert.Single(await pg.Store.NotesAsync(ds, firm.Id));
-        // the override applies to a new spelling's twin at once
+        // the same spelling in another field is not caught until the rule is widened to any field
         var twin = await pg.Store.CollectAsync(ds, "publisher", "Agnew's");
+        Assert.NotEqual(Outcome.Overridden, await reconciler.EvaluateAsync(ds, twin).ContinueWith(t => t.Result.Outcome));
+        await curation.ClusterAsync(ds, [strings[1].Id], firm.Id, null, [], "tester", anyField: true);
         Assert.Equal(Outcome.Overridden, await reconciler.ReconcileOneAsync(ds, twin));
 
         // the entity page's view, label, identifiers, confirm, reopen
@@ -82,7 +85,7 @@ public class CurationServiceTests(PostgresFixture pg)
         using var doc = JsonDocument.Parse(json);
         var map = doc.RootElement.GetProperty("local_string_map");
         Assert.Equal(firm.Id.Split('/')[^1], map.GetProperty("Agnew's").GetString());
-        Assert.Equal(5, map.EnumerateObject().Count());
+        Assert.Equal(5, map.EnumerateObject().Count()); // one spelling per entry, whatever fields it is scoped to
         var authority = Assert.Single(doc.RootElement.GetProperty("authorities").EnumerateArray());
         Assert.Equal("500301417", authority.GetProperty("ulan").GetString());
         Assert.Equal("Group", authority.GetProperty("type").GetString());

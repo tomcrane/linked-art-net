@@ -76,10 +76,11 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
 
     /// <summary>
     /// The reviewer says these strings are one thing: an existing entity, or a new confirmed local authority with the
-    /// label given. External ids attach to it; each string gets an override for its spelling, any provisional entity it
-    /// had folds in, and a human decision points it at the entity. Returns the entity.
+    /// label given. External ids attach to it; each string gets an override for its spelling in the field it came from
+    /// (or in any field when asked), any provisional entity it had folds in, and a human decision points it at the
+    /// entity. Returns the entity.
     /// </summary>
-    public async Task<Entity> ClusterAsync(string dataset, IReadOnlyList<long> stringIds, string? entityId, string? newLabel, IReadOnlyList<string> externalUris, string reviewer, string? note = null, CancellationToken ct = default)
+    public async Task<Entity> ClusterAsync(string dataset, IReadOnlyList<long> stringIds, string? entityId, string? newLabel, IReadOnlyList<string> externalUris, string reviewer, string? note = null, bool anyField = false, CancellationToken ct = default)
     {
         if (stringIds.Count == 0) throw new InvalidOperationException("Choose at least one string.");
         Entity entity;
@@ -109,7 +110,8 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
                 if (current is not null && current.Id != entity.Id && current.Status == EntityStatus.Provisional && current.Equivalents.Count == 0)
                 { try { await store.MergeAsync(current.Id, entity.Id, reviewer, ct); } catch (InvalidOperationException) { } }
             }
-            await store.PutOverrideAsync(new Override(dataset, null, s.Normalised, entity.Id, "workbench:" + reviewer, $"\"{s.Raw}\" clustered" + (note is null ? "" : $": {note}")), ct);
+            // the override is scoped to the field the string came from: the same spelling in another field may be something else
+            await store.PutOverrideAsync(new Override(dataset, anyField ? null : s.Context, s.Normalised, entity.Id, "workbench:" + reviewer, $"\"{s.Raw}\" clustered" + (note is null ? "" : $": {note}")), ct);
             var reading = reconciler.Read(s);
             await store.DecideAsync(s.Id, entity.Id, DecisionMethod.Human, Reconciler.Evidence("cluster", reading, [], new { entity = entity.Id, note, strings = stringIds.Count }), reviewer, ct: ct);
             labels.Add(reading.Text); labels.Add(s.Raw);

@@ -175,18 +175,19 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         return entity;
     }
 
-    /// <summary>The reviewer makes this spelling always mean the target, for any context: an override, applied now.</summary>
-    public async Task<Entity> OverrideAsync(string dataset, long stringId, string targetUri, string reviewer, string? note = null, CancellationToken ct = default)
+    /// <summary>The reviewer makes this spelling always mean the target: an override, applied now. Scoped to the field the string came from, since the same spelling in another field may be something else; <paramref name="anyField"/> widens it to every field.</summary>
+    public async Task<Entity> OverrideAsync(string dataset, long stringId, string targetUri, string reviewer, string? note = null, bool anyField = false, CancellationToken ct = default)
     {
         var decided = await OwnAsync(dataset, stringId, ct);
         await EnsureTargetAsync(dataset, decided, targetUri, ct);
         var reading = reconciler.Read(decided.String);
         var entity = await reconciler.EntityForUriAsync(dataset, targetUri, reading, null, ct);
-        // the override this one replaces is kept in the evidence so an undo can put it back
-        var previous = await store.OverrideForAsync(dataset, "", decided.String.Normalised, ct);
-        previous = previous is { Context: null } ? previous : null;
-        await store.PutOverrideAsync(new Override(dataset, null, decided.String.Normalised, entity.Id, "workbench:" + reviewer, $"\"{decided.String.Raw}\" → {targetUri}" + (note is null ? "" : $" ({note})")), ct);
-        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Override, Evidence("override", reading, new { target = targetUri, entity = entity.Id, note, overrideKey = decided.String.Normalised, previousOverride = previous is null ? null : new { previous.Target, previous.Source, previous.Note } }), reviewer, ct: ct);
+        var scope = anyField ? null : decided.String.Context;
+        // the override this one replaces, in the same scope, is kept in the evidence so an undo can put it back
+        var previous = await store.OverrideForAsync(dataset, scope ?? "", decided.String.Normalised, ct);
+        previous = previous is not null && previous.Context == scope ? previous : null;
+        await store.PutOverrideAsync(new Override(dataset, scope, decided.String.Normalised, entity.Id, "workbench:" + reviewer, $"\"{decided.String.Raw}\" → {targetUri}" + (note is null ? "" : $" ({note})")), ct);
+        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Override, Evidence("override", reading, new { target = targetUri, entity = entity.Id, note, overrideKey = decided.String.Normalised, overrideContext = scope, previousOverride = previous is null ? null : new { previous.Target, previous.Source, previous.Note } }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return entity;
     }
@@ -204,10 +205,11 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var decided = await OwnAsync(dataset, stringId, ct);
         if (decided.Decision.Method == DecisionMethod.Override && ParseEvidence(decided.Decision.EvidenceJson).Extra is { } extra && extra.TryGetProperty("overrideKey", out var keyElement) && keyElement.GetString() is { } key)
         {
+            var scope = extra.TryGetProperty("overrideContext", out var ctxElement) && ctxElement.ValueKind == JsonValueKind.String ? ctxElement.GetString() : null;
             if (extra.TryGetProperty("previousOverride", out var prev) && prev.ValueKind == JsonValueKind.Object)
-                await store.PutOverrideAsync(new Override(dataset, null, key, prev.GetProperty("target").GetString()!, prev.GetProperty("source").GetString() ?? "unknown", prev.TryGetProperty("note", out var n) ? n.GetString() : null), ct);
+                await store.PutOverrideAsync(new Override(dataset, scope, key, prev.GetProperty("target").GetString()!, prev.GetProperty("source").GetString() ?? "unknown", prev.TryGetProperty("note", out var n) ? n.GetString() : null), ct);
             else
-                await store.RemoveOverrideAsync(dataset, null, key, ct);
+                await store.RemoveOverrideAsync(dataset, scope, key, ct);
         }
         return await store.RevertDecisionAsync(stringId, ct);
     }

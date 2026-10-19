@@ -2,7 +2,7 @@
 @model VariantsModel
 @{ ViewData["Title"] = "Variants"; }
 <h1>Variants</h1>
-<p class="muted">Every spelling of one thing on one screen. Type a string or a word; the strings containing its most distinctive word are listed by the entity they currently resolve to. Tick the ones that are one thing, say which entity, and attach the ids you know.</p>
+<p class="muted">Every spelling of one thing on one screen. Type a string or a word; the strings containing its most distinctive word are listed by the entity each currently resolves to. That grouping is the software's current state, not a judgement: imported decisions, votes, and provisional entities. Tick the strings that are one thing, say which entity they belong to, attach the ids you know, and the grouping becomes a person's decision that no run can change.</p>
 @if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
 <form method="get" class="row" style="gap:.5rem">
     <input type="search" name="seed" value="@Model.Seed" placeholder="Thos. Agnew &amp; Sons Ltd" style="flex:1" autofocus />
@@ -19,7 +19,7 @@
             <div class="card">
                 <div class="row">
                     @if (g.Entity is null) { <strong class="muted">undecided</strong> }
-                    else { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(g.Entity.Id)">@g.Entity.Label</a></strong> <span class="tag">@g.Entity.Status.ToString().ToLowerInvariant()</span> @foreach (var q in g.Entity.Equivalents.Take(4)) { <span class="tag src">@q.Source</span> } <label class="inline small" style="margin:0"><input type="radio" name="entity" value="@g.Entity.Id" /> cluster into this entity</label> }
+                    else { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(g.Entity.Id)">@g.Entity.Label</a></strong> <span class="tag">@g.Entity.Status.ToString().ToLowerInvariant()</span> @foreach (var q in g.Entity.Equivalents.Take(4)) { <span class="tag src">@q.Source</span> } <label class="inline small" style="margin:0"><input type="radio" name="entity" value="@g.Entity.Id" /> make this the target for the ticked strings</label> }
                     <span class="small muted">@g.Strings.Count string(s)</span>
                 </div>
                 @foreach (var s in g.Strings)
@@ -36,6 +36,9 @@
                     <input type="text" name="newLabel" placeholder="Thomas Agnew &amp; Sons" />
                     <label for="note">Note</label>
                     <input type="text" id="note" name="note" placeholder="London dealers, from 1817; all the sale-catalogue spellings" />
+                    <label>Where the spellings should always mean this</label>
+                    <div class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="anyField" value="false" checked /> only in the fields these strings came from (a name in another field may be someone else)</label></div>
+                    <div class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="anyField" value="true" /> in any field of this project</label></div>
                 </div>
                 <div>
                     <label>Identifiers to attach (from the index search, or typed)</label>

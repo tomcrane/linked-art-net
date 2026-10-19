@@ -54,6 +54,12 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
     /// lifetime, one's begin is more than that many years before the other's end. <b>Incomparable</b>: the two know
     /// different sides and neither check bites, so nothing can be said either way.
     /// </summary>
+    /// <summary>A bound is tight when both its edges are given and lie within about a decade: a year, or a short range. ULAN's windows of possibility (1850-2080) have one edge each and are loose.</summary>
+    public static bool Tight(DateTimeOffset? earliest, DateTimeOffset? latest) => earliest is not null && latest is not null && (latest.Value - earliest.Value).TotalDays <= 366 * 10;
+
+    /// <summary>Whether this lifespan dates its subject: a tight begin or a tight end. Loose outer bounds can rule a match out but never confirm one.</summary>
+    public bool IsDated => Tight(BeginEarliest, BeginLatest) || Tight(EndEarliest, EndLatest);
+
     public DateAgreement Compare(Lifespan other, int? maxLifetimeYears = null)
     {
         static bool Known(DateTimeOffset? a, DateTimeOffset? b) => a is not null || b is not null;
@@ -69,7 +75,10 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
         if (endsKnown && !Overlap(EndEarliest, EndLatest, other.EndEarliest, other.EndLatest)) return DateAgreement.Conflict;
         if (CrossConflict(BeginEarliest ?? BeginLatest, other.EndLatest ?? other.EndEarliest, maxLifetimeYears)) return DateAgreement.Conflict;
         if (CrossConflict(other.BeginEarliest ?? other.BeginLatest, EndLatest ?? EndEarliest, maxLifetimeYears)) return DateAgreement.Conflict;
-        return beginsKnown || endsKnown ? DateAgreement.Agree : DateAgreement.Incomparable;
+        // agreement needs a tight bound on both sides: a window of possibility (ULAN's 1850-2080) overlaps anything and proves nothing
+        var beginsDated = Tight(BeginEarliest, BeginLatest) && Tight(other.BeginEarliest, other.BeginLatest);
+        var endsDated = Tight(EndEarliest, EndLatest) && Tight(other.EndEarliest, other.EndLatest);
+        return beginsDated || endsDated ? DateAgreement.Agree : DateAgreement.Incomparable;
     }
 
     /// <summary>A begin after the other's end, or more than a lifetime before it, cannot be the same person.</summary>

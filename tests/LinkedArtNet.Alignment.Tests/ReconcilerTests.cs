@@ -320,12 +320,24 @@ public class ReconcilerStoreTests(PostgresFixture pg)
     }
 
     [Fact]
-    public void Getty_placeholders_and_group_typed_persons_are_read_for_what_they_are()
+    public void Getty_bounds_are_tight_only_when_the_biography_states_the_year()
     {
-        Assert.Null(GettyVocabLoader.LifespanFromYears("1200", "2080", "Group")); // ULAN's "unknown" placeholder ends in the future
-        Assert.Null(GettyVocabLoader.LifespanFromYears("1500", "1700", "Person")); // no one lives 200 years
-        Assert.NotNull(GettyVocabLoader.LifespanFromYears("1500", "1700", "Group")); // a body can
-        Assert.NotNull(GettyVocabLoader.LifespanFromYears("1471", "1528", "Person"));
+        var durer = GettyVocabLoader.LifespanFromYears("1471", "1528", "German printmaker and painter, 1471-1528")!;
+        Assert.True(durer.IsDated);
+        Assert.Equal("1471-1528", durer.Text);
+        var window = GettyVocabLoader.LifespanFromYears("1850", "2080", "American painter, active 20th century")!; // ULAN's window of possibility
+        Assert.False(window.IsDated);
+        Assert.Equal(1850, window.BeginEarliest!.Value.Year); Assert.Null(window.BeginLatest); Assert.Null(window.EndEarliest); Assert.Equal(2080, window.EndLatest!.Value.Year);
+        Assert.Equal("1850~-~2080", window.Text);
+        var living = GettyVocabLoader.LifespanFromYears("1950", "2050", "British sculptor, born 1950")!;
+        Assert.True(Lifespan.Tight(living.BeginEarliest, living.BeginLatest)); Assert.Null(living.EndEarliest); // birth stated, end an outer bound
+        Assert.Null(GettyVocabLoader.LifespanFromYears("1", "2090", "Italian painter")); // ULAN's "no dates"
+        // a window agrees with nothing, but can still conflict
+        var dated = new Lifespan(new DateTimeOffset(1900, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1900, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1900-");
+        Assert.Equal(DateAgreement.Incomparable, dated.Compare(window));
+        Assert.Equal(DateAgreement.Conflict, new Lifespan(new DateTimeOffset(1700, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1700, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1700-").Compare(window)); // born before the window opens
+        Assert.Equal(DateAgreement.Conflict, dated.Compare(living)); // born 1900 is not born 1950
+        Assert.Equal(DateAgreement.Agree, new Lifespan(new DateTimeOffset(1950, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1950, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1950-").Compare(living));
         Assert.Equal("Group", GettyVocabLoader.ClassFor("Person", "http://vocab.getty.edu/aat/300386361")); // a corporate body typed as a person
         Assert.Equal("Person", GettyVocabLoader.ClassFor("Person", "http://vocab.getty.edu/aat/300025103")); // an artist stays a person
         Assert.Equal("Place", GettyVocabLoader.ClassFor("Place", null));

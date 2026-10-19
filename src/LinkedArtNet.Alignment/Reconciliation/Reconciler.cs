@@ -357,7 +357,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             var cls = best.Class ?? reading.Classes[0];
             var labels = external.Select(c => c.Label).OfType<string>().Append(reading.Text).Distinct(StringComparer.Ordinal).ToList();
-            entity = await store.AddEntityAsync(dataset, new NewEntity(cls, best.Label ?? reading.Text, labels, best.Lifespan ?? reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Aligned, RunId: runId), scheme, ct);
+            // the record's dates when they date it; otherwise the string's own, since a record's loose window (ULAN's 1850-2080) is not a lifespan to publish
+            var lifespan = best.Lifespan is { IsDated: true } ? best.Lifespan : reading.Lifespan ?? best.Lifespan;
+            entity = await store.AddEntityAsync(dataset, new NewEntity(cls, best.Label ?? reading.Text, labels, lifespan, reading.Nationalities, reading.Roles, EntityStatus.Aligned, RunId: runId), scheme, ct);
         }
         var present = entity.Equivalents.Select(q => q.Uri).ToHashSet(StringComparer.Ordinal);
         foreach (var c in external)

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Text.Json;
 using LinkedArtNet.Alignment.Store;
@@ -177,7 +178,7 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
 
             label ??= labels.FirstOrDefault();
             type = ClassFor(type, agentType);
-            var lifespan = LifespanFromYears(estStart, estEnd, type);
+            var lifespan = LifespanFromYears(estStart, estEnd, description);
             var data = new Dictionary<string, object?>();
             if (nationalities.Length > 0) data["nationalities"] = nationalities;
             if (agentType is not null) data["agentType"] = agentType;
@@ -220,24 +221,29 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         conceptClass == nameof(EntityClass.Person) && agentType is not null && GroupAgentTypes.Contains(agentType) ? nameof(EntityClass.Group) : conceptClass;
 
     /// <summary>
-    /// A lifespan from gYear bounds as the Getty biographies give them; years outside 1-9999 keep the text only. Getty's
-    /// placeholders for "unknown" (ULAN 500452706 has 1200-2080) are dropped: an end after next year, or a person's span
-    /// longer than any lifetime, is no lifespan.
+    /// A lifespan from the gYear bounds of a Getty biography. Getty's estStart/estEnd are bounds of possibility, exact only
+    /// when the biography text states the year ("German painter, 1471-1528"; "American, born 1950"): a stated year is a
+    /// tight bound, an unstated one an outer bound only (ULAN gives undatable people windows like 1850-2080, 1200-2080,
+    /// 1500-2080; measured on the full dump, 2026-10-19). Year 1 means unknown and gives no bound at all (0001-2090 is
+    /// ULAN's "no dates"). Years outside 2-9999 keep the text only.
     /// </summary>
-    internal static Lifespan? LifespanFromYears(string? start, string? end, string? type = null)
+    internal static Lifespan? LifespanFromYears(string? start, string? end, string? description = null)
     {
         if (start is null && end is null) return null;
-        if (int.TryParse(end?.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var endYear))
-        {
-            if (endYear > DateTimeOffset.UtcNow.Year + 1) return null;
-            if (type == nameof(EntityClass.Person) && int.TryParse(start?.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var startYear) && endYear - startYear > 150) return null;
-        }
-        static DateTimeOffset? Day(string? y, bool last)
-        {
-            if (y is null || !int.TryParse(y.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var year) || year < 1 || year > 9999) return null;
-            return last ? new DateTimeOffset(year, 12, 31, 23, 59, 59, TimeSpan.Zero) : new DateTimeOffset(year, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        }
-        var text = start is not null && end is not null ? $"{start}-{end}" : start ?? end;
-        return new Lifespan(Day(start, false), Day(start, true), Day(end, false), Day(end, true), text);
+        static int? Year(string? y) => y is not null && int.TryParse(y.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var year) && year is >= 2 and <= 9999 ? year : null;
+        static DateTimeOffset First(int year) => new(year, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        static DateTimeOffset Last(int year) => new(year, 12, 31, 23, 59, 59, TimeSpan.Zero);
+        // without a biography text to check against, the years are taken as stated
+        bool Stated(int year) => description is null || Regex.IsMatch(description, $@"(?<!\d){year}(?!\d)");
+        var s = Year(start); var e = Year(end);
+        var startTight = s is { } sy && Stated(sy);
+        var endTight = e is { } ey && Stated(ey);
+        if (s is null && e is not null && !endTight) return null; // an unknown start and a loose end ("0001-2090") say nothing
+        if (s is null && e is null) return new Lifespan(null, null, null, null, start is not null && end is not null ? $"{start}-{end}" : start ?? end); // BCE or out of range: the text only
+        var text = (startTight ? start!.Trim() : s is null ? "?" : $"{s}~") + "-" + (endTight ? end!.Trim() : e is null ? "" : $"~{e}");
+        return new Lifespan(
+            s is null ? null : First(s.Value), startTight ? Last(s!.Value) : null,
+            endTight ? First(e!.Value) : null, e is null ? null : Last(e.Value),
+            text);
     }
 }

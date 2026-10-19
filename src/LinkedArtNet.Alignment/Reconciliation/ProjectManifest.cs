@@ -19,7 +19,7 @@ public sealed record ProjectManifest
     public bool AcceptUniqueExactSingleSource { get; init; } = true;
     public bool MintWhenNothingFound { get; init; } = true;
     /// <summary>The local indexes to consult, in order.</summary>
-    public List<string> Sources { get; init; } = ["ulan", "aat", "tgn", "loc"];
+    public List<string> Sources { get; init; } = ["ulan", "aat", "tgn", "loc", "lcsh"];
 
     public static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) } };
 

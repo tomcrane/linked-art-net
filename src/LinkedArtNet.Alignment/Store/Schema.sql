@@ -198,3 +198,14 @@ do $$ declare s record; begin
 end $$;
 
 insert into schema_version (version) values (5) on conflict do nothing;
+
+-- version 6 (2026-10-19): indexes for undoing a run and for the entity side of reconciling. Undoing the first
+-- corpus-wide run (36,823 decisions) timed out on the per-entity checks for want of these.
+create index if not exists entities_run on entities (run_id);
+create index if not exists entities_merged_into on entities (merged_into) where merged_into is not null;
+create index if not exists decisions_run on decisions (run_id);
+create index if not exists entity_equivalents_entity on entity_equivalents (entity_id);
+create index if not exists entity_equivalents_run on entity_equivalents (run_id);
+create index if not exists source_strings_dataset_context on source_strings (dataset, context);
+
+insert into schema_version (version) values (6) on conflict do nothing;

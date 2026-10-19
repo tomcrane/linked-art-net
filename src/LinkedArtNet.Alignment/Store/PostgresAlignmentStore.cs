@@ -601,8 +601,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     {
         await using var conn = await _db.OpenConnectionAsync(ct);
         await using var tx = await conn.BeginTransactionAsync(ct);
+        // a corpus-wide run has tens of thousands of decisions: no client timeout on any step; the transaction keeps it all-or-nothing
         int decisions, entities;
-        await using (var cmd = new NpgsqlCommand("update decisions set valid = false where run_id = @run and valid", conn, tx))
+        await using (var cmd = new NpgsqlCommand("update decisions set valid = false where run_id = @run and valid", conn, tx) { CommandTimeout = 0 })
         {
             cmd.Parameters.AddWithValue("run", runId);
             decisions = await cmd.ExecuteNonQueryAsync(ct);
@@ -615,7 +616,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             update entities e set status = 'provisional', updated_at = now()
               where e.id in (select entity_id from undo_touched) and e.status = 'aligned'
                 and not exists (select 1 from entity_equivalents q where q.entity_id = e.id)
-            """, conn, tx))
+            """, conn, tx) { CommandTimeout = 0 })
         {
             cmd.Parameters.AddWithValue("run", runId);
             await cmd.ExecuteNonQueryAsync(ct);
@@ -629,14 +630,14 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                 and not exists (select 1 from entities m where m.merged_into = e.id)
                 and not exists (select 1 from entity_equivalents q where q.entity_id = e.id);
             update decisions set entity_id = null where not valid and entity_id in (select id from undo_entities)
-            """, conn, tx))
+            """, conn, tx) { CommandTimeout = 0 })
         {
             cmd.Parameters.AddWithValue("run", runId);
             await cmd.ExecuteNonQueryAsync(ct);
         }
-        await using (var cmd = new NpgsqlCommand("delete from entities where id in (select id from undo_entities)", conn, tx))
+        await using (var cmd = new NpgsqlCommand("delete from entities where id in (select id from undo_entities)", conn, tx) { CommandTimeout = 0 })
             entities = await cmd.ExecuteNonQueryAsync(ct);
-        await using (var cmd = new NpgsqlCommand("update runs set report = coalesce(report, '') || ' [undone]' where id = @run", conn, tx))
+        await using (var cmd = new NpgsqlCommand("update runs set report = coalesce(report, '') || ' [undone]' where id = @run", conn, tx) { CommandTimeout = 0 })
         {
             cmd.Parameters.AddWithValue("run", runId);
             await cmd.ExecuteNonQueryAsync(ct);

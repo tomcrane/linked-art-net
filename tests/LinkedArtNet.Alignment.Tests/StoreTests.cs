@@ -15,9 +15,9 @@ public class StoreTests(PostgresFixture pg)
     {
         await pg.Store.InitialiseAsync();
         await pg.Store.InitialiseAsync();
-        Assert.Equal(5, LinkedArtNet.Alignment.Store.PostgresAlignmentStore.SchemaVersion);
+        Assert.Equal(6, LinkedArtNet.Alignment.Store.PostgresAlignmentStore.SchemaVersion);
         await using var cmd = pg.DataSource.CreateCommand("select max(version) from schema_version");
-        Assert.Equal(5, (int)(await cmd.ExecuteScalarAsync())!);
+        Assert.Equal(6, (int)(await cmd.ExecuteScalarAsync())!);
     }
 
     [PostgresFact]

@@ -266,6 +266,44 @@ loads; its `equivalent` list is read as a candidate group.
 Whether to ask LUX to withdraw or merge the premature records is the owner's conversation and independent of this
 design; the design makes a clean re-export possible either way.
 
+### 7.5 Compound subjects (designed 2026-10-19, not built)
+
+The PMC library's `keywords` field holds precoordinated LCSH-style headings: "Art, Modern--18th century--Great
+Britain", "Cotman, Frederick George, 1850-1920--Exhibitions". The 2024 export treated each heading as one opaque
+concept: LUX today holds, for the stem "Art, Modern--19th century" alone, 53 PMC concepts (`unrec_…` identifiers)
+whose only content is the whole heading as a label, with no parts and no external ids, so a LUX search for
+"Exhibitions influenced by Cotman" finds nothing (checked against the LUX API on 2026-10-19). The LUX records the
+2024 notes pointed at are 404: LUX reminted its UUIDs, while the PMC identifiers inside the records survived.
+
+Linked Art's rule for a coordinated concept (linked.art/model/concept, "Creation and Influences") is a `Type` whose
+`created_by` `Creation` is `influenced_by` the component entities, which may be of any class; components are not
+`broader` terms, since "France" is a Place, not a narrower kind of "History of France".
+
+The design:
+
+1. **Split, then reconcile the parts.** A string in a context marked `compound` (the manifest says which contexts and
+   the separator, `--` for LCSH) is split into part strings, collected in derived contexts: `keywords:head` for the
+   first segment, `keywords:sub` for each subdivision. The head may name a type, person, group or place and is read
+   with the LoC heading profile (so "Cotman, Frederick George, 1850-1920" meets the LoC names index as a person); a
+   subdivision may name a type, place or period. Parts are strings like any other: they go through the ladder, the
+   desk and the variants page, and overrides apply to them. One decision on "Art, Modern" settles every heading that
+   contains it; thousands of headings decompose into a few hundred distinct parts.
+2. **The heading stays an entity** with its existing PMC identifier (LUX already holds those ids; the self-echo pass
+   of 7.4 maps them). The heading entity's class is Type; its label is the heading. Its parts are not stored as a
+   second truth: at export time the parts are the current decisions of its part strings, in order, so a reviewer's
+   later correction of a part flows into every heading. The export writes the pattern above, with each resolved part
+   as the entity its decision names and an unresolved part as the project's own provisional entity for that part.
+3. **Indexes.** LCSH (the LoC subjects file, same MADS/RDF shape as names, same loader with the subject classes) for
+   topics, forms and chronological subdivisions; AAT for forms and materials; TGN and LoC names for places; the LoC
+   names index for name headings. Period subdivisions ("18th century") resolve to LCSH's own period headings or to a
+   local period authority minted once per project.
+4. **Workbench.** The entity page of a heading lists its parts with their lozenges and links to the part entities; the
+   desk shows a part string with the headings it occurs in as context; the project page counts parts separately.
+
+Open for the owner: keep the `unrec_` identifiers for headings now that they carry structure (recommended: LUX holds
+them), or remint. Order of work: after step 3b (remote sources), since the LCSH index and the LUX mapping both
+matter here.
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

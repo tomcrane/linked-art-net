@@ -389,6 +389,52 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["siena"], "loc", "Place")); // the qualifier drops out of the comparison key
     }
 
+    // A sliver of the LC Subject Headings file in its MADS/RDF shapes (read from the 2026 export on 2026-10-19): a topic, a
+    // subdivision, the complex heading made of the two with its component list, and a geographic heading with a broader one.
+    private const string LcshSample = """
+        <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Topic> .
+        <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Authority> .
+        <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Angiotensin II"@en .
+        <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.loc.gov/mads/rdf/v1#hasVariant> _:v1 .
+        _:v1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Topic> .
+        _:v1 <http://www.loc.gov/mads/rdf/v1#variantLabel> "Angiotensin 2"@en .
+        <http://id.loc.gov/authorities/subjects/sh99002348> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Topic> .
+        <http://id.loc.gov/authorities/subjects/sh99002348> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Antagonists"@en .
+        <http://id.loc.gov/authorities/subjects/sh00000071> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#ComplexSubject> .
+        <http://id.loc.gov/authorities/subjects/sh00000071> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Angiotensin II--Antagonists"@en .
+        <http://id.loc.gov/authorities/subjects/sh00000071> <http://www.loc.gov/mads/rdf/v1#componentList> _:l1 .
+        _:l1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://id.loc.gov/authorities/subjects/sh00000074> .
+        _:l1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:l2 .
+        _:l2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://id.loc.gov/authorities/subjects/sh99002348> .
+        _:l2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+        <http://id.loc.gov/authorities/subjects/sh85056664> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Geographic> .
+        <http://id.loc.gov/authorities/subjects/sh85056664> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Great Britain"@en .
+        <http://id.loc.gov/authorities/subjects/sh85056664> <http://www.loc.gov/mads/rdf/v1#hasBroaderAuthority> <http://id.loc.gov/authorities/subjects/sh85045631> .
+        <http://id.loc.gov/authorities/subjects/sh85056664> <http://www.w3.org/2004/02/skos/core#closeMatch> <http://vocab.getty.edu/tgn/7002445> .
+        """;
+
+    [PostgresFact]
+    public async Task Lcsh_subjects_load_as_types_places_and_complex_headings_with_components()
+    {
+        var result = await new LocNamesLoader(pg.Store).LoadAsync(NTriples.ReadText(LcshSample), LocFile.Subjects, "test-sample");
+        Assert.Equal(4, result.Records);
+        var topic = (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/subjects/sh00000074"))!;
+        Assert.Equal("lcsh", topic.Source);
+        Assert.Equal("Type", topic.Type);
+        Assert.Contains("Angiotensin 2", topic.Labels);
+        Assert.Null(topic.Lifespan);
+        var complex = (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/subjects/sh00000071"))!;
+        Assert.Equal("Angiotensin II--Antagonists", complex.Label);
+        Assert.Contains("\"components\": [\"http://id.loc.gov/authorities/subjects/sh00000074\", \"http://id.loc.gov/authorities/subjects/sh99002348\"]", complex.DataJson); // jsonb spacing
+        Assert.Contains("\"madsClass\": \"ComplexSubject\"", complex.DataJson);
+        var gb = (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/subjects/sh85056664"))!;
+        Assert.Equal("Place", gb.Type);
+        Assert.Contains("sh85045631", gb.DataJson);
+        Assert.Contains("http://vocab.getty.edu/tgn/7002445", gb.SameAs);
+        Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["angiotensin ii"], "lcsh", "Type")); // its own index and source row
+        Assert.Contains(await pg.Store.AuthoritySourcesAsync(), s => s.Source == "lcsh" && s.Records == 4);
+    }
+
     [PostgresFact]
     public async Task Strings_are_overridden_matched_in_store_accepted_queued_or_minted()
     {

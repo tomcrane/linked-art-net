@@ -8,6 +8,9 @@ namespace LinkedArtNet.Alignment.Authorities;
 
 public sealed record LocLoadResult(long TriplesRead, long TriplesKept, int Records, TimeSpan Elapsed);
 
+/// <summary>Which Library of Congress bulk file is being read: the Name Authority File (index <c>loc</c>) or the Subject Headings (index <c>lcsh</c>).</summary>
+public enum LocFile { Names, Subjects }
+
 /// <summary>
 /// Loads the Library of Congress Name Authority File (the MADS/RDF N-Triples bulk download at id.loc.gov/download,
 /// about 7 GB gzipped, read without unpacking) into the store's authority records as the <c>loc</c> index.
@@ -24,61 +27,111 @@ public sealed record LocLoadResult(long TriplesRead, long TriplesKept, int Recor
 /// without them and takes a lifespan from them when the RWO has none. VIAF links in the <c>sourceID</c> form are
 /// not cluster ids and are dropped. The data are in the public domain in the United States; LoC asks for credit to
 /// the Library of Congress Name Authority File.
+/// <para>
+/// The Subject Headings file (<see cref="LocFile.Subjects"/>, checked against the 2026 export on 2026-10-19) uses the
+/// same MADS shapes under <c>http://id.loc.gov/authorities/subjects/</c>, with the classes <c>Topic</c>,
+/// <c>Geographic</c>, <c>HierarchicalGeographic</c>, <c>GenreForm</c>, <c>Temporal</c>, <c>ComplexSubject</c> and a
+/// few name classes; <c>madsrdf:hasBroaderAuthority</c> gives the hierarchy, and a <c>ComplexSubject</c> (a
+/// precoordinated heading such as "Angiotensin II--Antagonists") has a <c>madsrdf:componentList</c>, an RDF list of
+/// the component headings' URIs, kept in the record's data as <c>components</c> for the compound-subjects work.
+/// Subject headings carry no RWO dates and their embedded numbers are not lifespans, so only personal-name
+/// headings are split for dates.
+/// </para>
 /// </remarks>
 public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
 {
     private const string Mads = "http://www.loc.gov/mads/rdf/v1#";
     private const string Skos = "http://www.w3.org/2004/02/skos/core#";
     private const string RdfType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-    private const string NamesPrefix = "http://id.loc.gov/authorities/names/";
+    private const string RdfFirst = "http://www.w3.org/1999/02/22-rdf-syntax-ns#first";
+    private const string RdfRest = "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest";
+    private const string RdfNil = "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil";
 
-    private static readonly Dictionary<string, string> HeadingTypes = new(StringComparer.Ordinal)
+    /// <summary>What differs between the two files: where the headings live, which classes they take, which index they fill, and whether personal headings carry dates to split off.</summary>
+    private sealed record Profile(string Prefix, Dictionary<string, string> Types, string Source, bool Components);
+
+    private static readonly Profile Names = new("http://id.loc.gov/authorities/names/", new(StringComparer.Ordinal)
     {
         [Mads + "PersonalName"] = nameof(EntityClass.Person),
         [Mads + "CorporateName"] = nameof(EntityClass.Group),
         [Mads + "ConferenceName"] = nameof(EntityClass.Event),
         [Mads + "FamilyName"] = nameof(EntityClass.Group),
         [Mads + "Geographic"] = nameof(EntityClass.Place),
-    };
+    }, "loc", Components: false);
 
-    private static readonly HashSet<string> Wanted = new(StringComparer.Ordinal)
+    private static readonly Profile Subjects = new("http://id.loc.gov/authorities/subjects/", new(StringComparer.Ordinal)
+    {
+        [Mads + "Topic"] = nameof(EntityClass.Type),
+        [Mads + "GenreForm"] = nameof(EntityClass.Type),
+        [Mads + "ComplexSubject"] = nameof(EntityClass.Type),
+        [Mads + "Temporal"] = nameof(EntityClass.Period),
+        [Mads + "Geographic"] = nameof(EntityClass.Place),
+        [Mads + "HierarchicalGeographic"] = nameof(EntityClass.Place),
+        [Mads + "PersonalName"] = nameof(EntityClass.Person),
+        [Mads + "CorporateName"] = nameof(EntityClass.Group),
+        [Mads + "ConferenceName"] = nameof(EntityClass.Event),
+        [Mads + "FamilyName"] = nameof(EntityClass.Group),
+    }, "lcsh", Components: true);
+
+    private static Profile For(LocFile file) => file == LocFile.Subjects ? Subjects : Names;
+
+    private static readonly HashSet<string> WantedAlways = new(StringComparer.Ordinal)
     {
         RdfType, Mads + "authoritativeLabel", Mads + "hasVariant", Mads + "variantLabel",
         Mads + "hasExactExternalAuthority", Mads + "hasCloseExternalAuthority", Skos + "exactMatch", Skos + "closeMatch",
-        Mads + "identifiesRWO", Mads + "birthDate", Mads + "deathDate", Mads + "occupation",
+        Mads + "identifiesRWO", Mads + "birthDate", Mads + "deathDate", Mads + "occupation", Mads + "hasBroaderAuthority",
     };
+    // the subjects file's component lists are RDF lists; the names file has lists too (element lists on every heading), not wanted there
+    private static readonly HashSet<string> WantedForComponents = new(StringComparer.Ordinal) { Mads + "componentList", RdfFirst, RdfRest };
 
-    public Task<LocLoadResult> LoadAsync(string path, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
+    public Task<LocLoadResult> LoadAsync(string path, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default) =>
+        LoadAsync(path, LocFile.Names, sourceVersion, progress, ct);
+
+    public Task<LocLoadResult> LoadAsync(string path, LocFile file, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var files = TripleStaging.Files(path);
         if (files.Count == 0) throw new FileNotFoundException("No N-Triples file at " + path);
-        return LoadAsync(TripleStaging.ReadAll(files, progress), sourceVersion ?? TripleStaging.VersionFor(files), progress, ct);
+        return LoadAsync(TripleStaging.ReadAll(files, progress), file, sourceVersion ?? TripleStaging.VersionFor(files), progress, ct);
     }
 
-    public async Task<LocLoadResult> LoadAsync(IEnumerable<Triple> triples, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
+    public Task<LocLoadResult> LoadAsync(IEnumerable<Triple> triples, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default) =>
+        LoadAsync(triples, LocFile.Names, sourceVersion, progress, ct);
+
+    public async Task<LocLoadResult> LoadAsync(IEnumerable<Triple> triples, LocFile file, string? sourceVersion = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
+        var profile = For(file);
         var started = DateTimeOffset.UtcNow;
         var table = TripleStaging.NewTable();
         try
         {
-            // types are kept only for headings in the names file (variants are typed too, as blank nodes); labels of
-            // headings and variants, the links, and the RWO's dates and occupations
+            // types are kept only for headings under the file's prefix (variants are typed too, as blank nodes); labels of
+            // headings and variants, the links, the RWO's dates and occupations, and for subjects the component lists
             var (read, kept) = await TripleStaging.StageAsync(store, table, triples,
-                t => Wanted.Contains(t.Predicate) && (t.Predicate != RdfType || (HeadingTypes.ContainsKey(t.Object) && t.Subject.StartsWith(NamesPrefix, StringComparison.Ordinal))),
+                t => (WantedAlways.Contains(t.Predicate) || (profile.Components && WantedForComponents.Contains(t.Predicate)))
+                     && (t.Predicate != RdfType || (profile.Types.ContainsKey(t.Object) && t.Subject.StartsWith(profile.Prefix, StringComparison.Ordinal))),
                 progress, ct);
             progress?.Report("building records");
-            var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(store.DataSource, table, sourceVersion, ct), ct);
-            if (records > 0) await store.RetireAuthoritiesAsync("loc", started, ct);
+            var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(store.DataSource, table, profile, sourceVersion, ct), ct);
+            if (records > 0) await store.RetireAuthoritiesAsync(profile.Source, started, ct);
             return new LocLoadResult(read, kept, records, DateTimeOffset.UtcNow - started);
         }
         finally { await TripleStaging.DropAsync(store, table, ct); }
     }
 
-    private static string RecordsSql(string table) => $"""
-        with headings as (
-            select s as uri, min(o) as type from {table} where p = '{RdfType}' and s like '{NamesPrefix}%' group by s
+    private static string RecordsSql(string table, Profile profile) => $"""
+        with recursive headings as (
+            select s as uri, min(o) as type from {table} where p = '{RdfType}' and s like '{profile.Prefix}%' group by s
         ),
-        auth as (select s as uri, min(o) as label from {table} where p = '{Mads}authoritativeLabel' and s like '{NamesPrefix}%' group by s),
+        auth as (select s as uri, min(o) as label from {table} where p = '{Mads}authoritativeLabel' and s like '{profile.Prefix}%' group by s),
+        broader as (select s as uri, array_agg(distinct o) as broader from {table} where p = '{Mads}hasBroaderAuthority' group by s),
+        listwalk as (
+            select cl.s as uri, cl.o as node, 0 as pos from {table} cl where cl.p = '{Mads}componentList'
+            union all
+            select l.uri, r.o, l.pos + 1 from listwalk l join {table} r on r.s = l.node and r.p = '{RdfRest}' where r.o <> '{RdfNil}' and l.pos < 20
+        ),
+        components as (
+            select l.uri, array_agg(f.o order by l.pos) as components from listwalk l join {table} f on f.s = l.node and f.p = '{RdfFirst}' group by l.uri
+        ),
         variants as (
             select hv.s as uri, array_agg(distinct vl.o) as labels
             from {table} hv join {table} vl on vl.s = hv.o and vl.p = '{Mads}variantLabel'
@@ -96,27 +149,30 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
                    array_remove(array_agg(distinct case when x.p = '{Mads}occupation' then x.o end), null) as occupations
             from rwo join {table} x on x.s = rwo.rwo group by rwo.uri
         )
-        select h.uri, h.type, auth.label, variants.labels, links.same_as, rwoinfo.birth, rwoinfo.death, rwoinfo.occupations
+        select h.uri, h.type, auth.label, variants.labels, links.same_as, rwoinfo.birth, rwoinfo.death, rwoinfo.occupations, broader.broader, components.components
         from headings h
         left join auth on auth.uri = h.uri
         left join variants on variants.uri = h.uri
         left join links on links.uri = h.uri
         left join rwoinfo on rwoinfo.uri = h.uri
+        left join broader on broader.uri = h.uri
+        left join components on components.uri = h.uri
         """;
 
-    private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
+    private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, Profile profile, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
         // the joins over tens of millions of staged rows need room: a session with generous working memory, or they spill to disk for hours
         await using var conn = await db.OpenConnectionAsync(ct);
         await using (var tune = new NpgsqlCommand("set work_mem = '512MB'", conn)) await tune.ExecuteNonQueryAsync(ct);
-        await using var cmd = new NpgsqlCommand(RecordsSql(table), conn);
+        await using var cmd = new NpgsqlCommand(RecordsSql(table, profile), conn);
         cmd.CommandTimeout = 0;
         await using var r = await cmd.ExecuteReaderAsync(System.Data.CommandBehavior.SequentialAccess, ct);
         while (await r.ReadAsync(ct))
         {
             var uri = r.GetString(0);
-            var type = HeadingTypes.GetValueOrDefault(r.GetString(1));
+            var madsClass = r.GetString(1);
+            var type = profile.Types.GetValueOrDefault(madsClass);
             if (type is null) continue;
             var label = r.IsDBNull(2) ? null : r.GetString(2);
             var variants = r.IsDBNull(3) ? [] : r.GetFieldValue<string[]>(3);
@@ -124,18 +180,25 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
             var birth = r.IsDBNull(5) ? null : r.GetString(5);
             var death = r.IsDBNull(6) ? null : r.GetString(6);
             var occupations = r.IsDBNull(7) ? [] : r.GetFieldValue<string[]>(7);
+            var broader = r.IsDBNull(8) ? [] : r.GetFieldValue<string[]>(8);
+            var components = r.IsDBNull(9) ? [] : r.GetFieldValue<string[]>(9);
             if (label is null) continue;
 
-            var heading = SplitHeading(label);
+            // only a personal-name heading embeds dates; a subject heading's numbers ("Great Britain--History--1800-1837") are not a lifespan
+            var splitDates = madsClass == Mads + "PersonalName";
+            var heading = splitDates ? SplitHeading(label) : (Name: label, Dates: (string?)null, Lifespan: (Lifespan?)null);
             var labels = new List<string>(variants.Length + 2) { label };
             if (heading.Name != label) labels.Add(heading.Name);
-            foreach (var v in variants) { labels.Add(v); var sv = SplitHeading(v).Name; if (sv != v) labels.Add(sv); }
+            foreach (var v in variants) { labels.Add(v); if (splitDates) { var sv = SplitHeading(v).Name; if (sv != v) labels.Add(sv); } }
             var sameAs = links.Select(GettyVocabLoader.CanonicalSameAs).Where(UsableLink).Distinct(StringComparer.Ordinal).ToArray();
             var lifespan = LifespanFrom(birth, death) ?? heading.Lifespan;
             var data = new Dictionary<string, object?>();
             if (occupations.Length > 0) data["occupations"] = occupations;
             if (heading.Dates is not null) data["headingDates"] = heading.Dates;
-            yield return new AuthorityRecord(uri, "loc", label, labels.Distinct(StringComparer.Ordinal).ToList(), type, lifespan, sameAs, data.Count == 0 ? null : JsonSerializer.Serialize(data), now, sourceVersion);
+            if (broader.Length > 0) data["broader"] = broader;
+            if (components.Length > 0) data["components"] = components;
+            data["madsClass"] = madsClass[Mads.Length..];
+            yield return new AuthorityRecord(uri, profile.Source, label, labels.Distinct(StringComparer.Ordinal).ToList(), type, lifespan, sameAs, data.Count == 0 ? null : JsonSerializer.Serialize(data), now, sourceVersion);
         }
     }
 

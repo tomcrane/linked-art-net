@@ -99,7 +99,7 @@ switch (args[0])
         if (path is null || !(File.Exists(path) || Directory.Exists(path))) { Console.Error.WriteLine("Give the LC Name Authority File MADS/RDF N-Triples download (.nt or .nt.gz)."); return 2; }
         await store.InitialiseAsync();
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {DateTime.Now:HH:mm:ss} {m}"));
-        var result = await new LocNamesLoader(store).LoadAsync(path, Option("--version"), progress);
+        var result = await new LocNamesLoader(store).LoadAsync(path, string.Equals(Option("--vocab"), "subjects", StringComparison.OrdinalIgnoreCase) ? LocFile.Subjects : LocFile.Names, Option("--version"), progress);
         Console.WriteLine($"LoC names: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
         return 0;
     }
@@ -247,7 +247,9 @@ static void Usage() => Console.WriteLine(
                                              import a pmc-lux authority-strings file as entities and overrides
       load-getty <file|dir>... --vocab ulan|aat|tgn [--version v]
                                              load a Getty full N-Triples download into the local authority index
-      load-loc <names.madsrdf.nt.gz> [--version v]
+      load-loc <file.madsrdf.nt.gz> [--vocab names|subjects] [--version v]
+                                             a Library of Congress MADS/RDF file: the Name Authority File (default, index loc)
+                                             or the Subject Headings (index lcsh)
                                              load the LC Name Authority File (MADS/RDF N-Triples) into the local authority index
       reconcile [--dataset] [--limit n] (all undecided strings unless limited) [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-unique-exact] [--no-mint]
                                              decide undecided strings from overrides, the store and the local indexes

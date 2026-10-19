@@ -308,6 +308,11 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         try { await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(smaller), GettyVocabulary.Ulan, "test-sample-2"); }
         finally { pg.Store.RebuildIndexesAbove = 500_000; }
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person")); // the rebuilt index answers
+        Assert.Contains(await pg.Store.AuthoritySourcesAsync(), src => src.Source == "ulan" && src.Records >= 1);
+        // a lookup across sources is a union over the loaded sources; an unknown source finds nothing
+        Assert.NotEmpty(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"]));
+        Assert.Empty(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "viaf"));
+        await Assert.ThrowsAsync<ArgumentException>(() => pg.Store.FindAuthoritiesByLabelsAsync(["x"], "bad source"));
         Assert.NotNull(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500115493"));
         Assert.Null(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500301641")); // retired: not in the new dump
         Assert.Null(await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/ulan/500301417")); // the hand-added Agnew's went with it

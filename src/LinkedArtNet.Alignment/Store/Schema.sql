@@ -3,9 +3,6 @@
 
 -- a big index build wants memory; a session setting, so it applies only to the connection running this script
 set maintenance_work_mem = '1GB';
--- btree_gin lets a GIN index carry scalar columns beside the label array, so a lookup for one source and type never
--- reads another source's rows (standard contrib module; trusted, so the database owner may create it)
-create extension if not exists btree_gin;
 
 create table if not exists schema_version (
     version     integer primary key,
@@ -95,7 +92,7 @@ create table if not exists authority_records (
     fetched_at          timestamptz not null default now(),
     source_version      text
 );
-create index if not exists authority_records_source_labels on authority_records using gin (source, type, normalised_labels);
+-- the label index is one partial GIN index per source (see version 5 below and PostgresAlignmentStore.EnsureSourceIndexesAsync)
 create index if not exists authority_records_same_as on authority_records using gin (same_as);
 
 create table if not exists runs (
@@ -171,15 +168,30 @@ create unique index if not exists decisions_one_valid on decisions (source_strin
 
 insert into schema_version (version) values (3) on conflict do nothing;
 
--- version 4 (2026-10-19, after the LoC load): the label index carries source and type, so a lookup for one source and
--- type reads only that source's rows. With ten million LoC records a ULAN lookup for a common label had been reading
--- thousands of LoC rows from disk just to filter them out. A store below version 4 has the old single-column index
--- under this name; it is rebuilt here (minutes over ten million rows).
-do $$ begin
-  if not exists (select 1 from schema_version where version >= 4) then
+-- version 4 (2026-10-19) put source and type into one composite GIN label index (btree_gin). Superseded the same day
+-- by version 5: in GIN every value carries the list of rows holding it, so the entry for the LoC source listed ten
+-- million rows and every LoC lookup walked it. Nothing to do here on a fresh store.
+insert into schema_version (version) values (4) on conflict do nothing;
+
+-- version 5 (2026-10-19): one partial GIN label index per source, authority_records_labels_<source>, so a lookup for one
+-- source touches only that source's rows and no index entry lists more than that source's rows. The store creates
+-- the index for a new source when its records first arrive. authority_sources lists the sources loaded, with their
+-- record counts, for the lookups that span every source and for the workbench's indexes page.
+create table if not exists authority_sources (
+    source      text primary key,
+    records     bigint not null default 0,
+    loaded_at   timestamptz not null default now()
+);
+do $$ declare s record; begin
+  if not exists (select 1 from schema_version where version >= 5) then
     drop index if exists authority_records_source_labels;
-    create index authority_records_source_labels on authority_records using gin (source, type, normalised_labels);
+    insert into authority_sources (source, records, loaded_at)
+      select source, count(*), coalesce(max(fetched_at), now()) from authority_records group by source
+      on conflict (source) do update set records = excluded.records, loaded_at = excluded.loaded_at;
+    for s in select source from authority_sources where source ~ '^[a-z0-9_]+$' loop
+      execute format('create index if not exists %I on authority_records using gin (normalised_labels) where source = %L', 'authority_records_labels_' || s.source, s.source);
+    end loop;
   end if;
 end $$;
 
-insert into schema_version (version) values (4) on conflict do nothing;
+insert into schema_version (version) values (5) on conflict do nothing;

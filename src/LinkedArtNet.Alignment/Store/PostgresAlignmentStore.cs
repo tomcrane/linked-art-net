@@ -67,7 +67,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     /// <summary>Drops every table of the store. For disposable test databases only.</summary>
     internal async Task DropAllAsync(CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, runs, entities, schema_version, getty_staging, triple_staging, memberships, notes, projects, users cascade; do $$ declare t text; begin for t in select tablename from pg_tables where schemaname = current_schema() and tablename like 'triple_staging_%' loop execute 'drop table if exists ' || quote_ident(t); end loop; end $$");
+        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, authority_sources, runs, entities, schema_version, getty_staging, triple_staging, memberships, notes, projects, users cascade; do $$ declare t text; begin for t in select tablename from pg_tables where schemaname = current_schema() and tablename like 'triple_staging_%' loop execute 'drop table if exists ' || quote_ident(t); end loop; end $$");
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
@@ -364,7 +364,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     /// <summary>Removes a source's records that a load did not touch (fetched before the load began): retired or merged ids. Returns how many went.</summary>
     public async Task<int> RetireAuthoritiesAsync(string source, DateTimeOffset notFetchedSince, CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("delete from authority_records where source = @source and fetched_at < @since");
+        await using var cmd = _db.CreateCommand("delete from authority_records where source = @source and fetched_at < @since; "
+            + "update authority_sources set records = (select count(*) from authority_records where source = @source) where source = @source");
         Add(cmd, "source", source); Add(cmd, "since", notFetchedSince.ToUniversalTime());
         cmd.CommandTimeout = 0;
         return await cmd.ExecuteNonQueryAsync(ct);
@@ -721,19 +722,68 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         Add(cmd, "type", record.Type); AddLifespan(cmd, record.Lifespan); Add(cmd, "sameas", record.SameAs.ToArray()); AddJson(cmd, "data", record.DataJson);
         Add(cmd, "fetched", record.FetchedAt.ToUniversalTime()); Add(cmd, "version", record.SourceVersion);
         await cmd.ExecuteNonQueryAsync(ct);
+        await using (var conn = await _db.OpenConnectionAsync(ct)) await EnsureSourceIndexesAsync(conn, [record.Source], ct);
     }
 
     public Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelAsync(string normalisedLabel, string? source = null, CancellationToken ct = default) =>
         QueryAuthoritiesAsync($"select {AuthorityColumns} from authority_records a where a.normalised_labels @> @key" + (source is null ? "" : " and a.source = @source") + " order by a.uri",
             cmd => { Add(cmd, "key", new[] { normalisedLabel }); if (source is not null) Add(cmd, "source", source); }, ct);
 
-    public Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelsAsync(IReadOnlyCollection<string> keys, string? source = null, string? type = null, int limit = 50, CancellationToken ct = default)
+    public async Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelsAsync(IReadOnlyCollection<string> keys, string? source = null, string? type = null, int limit = 50, CancellationToken ct = default)
     {
-        if (keys.Count == 0) return Task.FromResult<IReadOnlyList<AuthorityRecord>>([]);
-        // the limit is applied before the ordering so the planner takes the label index rather than walking the primary key in order
-        var sql = $"select {AuthorityColumns} from (select * from authority_records x where x.normalised_labels && @keys"
-            + (source is null ? "" : " and x.source = @source") + (type is null ? "" : " and x.type = @type") + " limit @limit) a order by a.uri";
-        return QueryAuthoritiesAsync(sql, cmd => { Add(cmd, "keys", keys.ToArray()); if (source is not null) Add(cmd, "source", source); if (type is not null) Add(cmd, "type", type); Add(cmd, "limit", limit); }, ct);
+        if (keys.Count == 0) return [];
+        // Each source has its own partial label index, matched only when the source appears as a literal in the
+        // predicate; a lookup across sources is a union of one branch per loaded source. The limit sits inside each
+        // branch so the planner takes the label index rather than walking the primary key in order.
+        var sources = source is null ? await SourcesAsync(ct) : [source];
+        if (sources.Count == 0) return [];
+        string Branch(string src) => $"(select * from authority_records x where x.normalised_labels && @keys and x.source = {Literal(src)}" + (type is null ? "" : " and x.type = @type") + " limit @limit)";
+        var sql = $"select {AuthorityColumns} from ({string.Join(" union all ", sources.Select(Branch))}) a order by a.uri limit @limit";
+        return await QueryAuthoritiesAsync(sql, cmd => { Add(cmd, "keys", keys.ToArray()); if (type is not null) Add(cmd, "type", type); Add(cmd, "limit", limit); }, ct);
+    }
+
+    private static readonly Regex SourceName = new("^[a-z0-9_]+$", RegexOptions.Compiled);
+
+    /// <summary>A source name as a SQL literal; source names are short lower-case tokens (ulan, loc, aat, tgn), checked here before they reach SQL or an index name.</summary>
+    private static string Literal(string source) => SourceName.IsMatch(source) ? "'" + source + "'" : throw new ArgumentException($"Not a source name: {source}", nameof(source));
+
+    private IReadOnlyList<string>? _sources;
+    private DateTimeOffset _sourcesRead;
+
+    /// <summary>The sources with records in the store, from authority_sources; cached a few minutes per store instance.</summary>
+    public async Task<IReadOnlyList<string>> SourcesAsync(CancellationToken ct = default)
+    {
+        if (_sources is not null && DateTimeOffset.UtcNow - _sourcesRead < TimeSpan.FromMinutes(5)) return _sources;
+        var list = new List<string>();
+        await using (var cmd = _db.CreateCommand("select source from authority_sources where records > 0 order by source"))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct)) list.Add(r.GetString(0));
+        _sources = list; _sourcesRead = DateTimeOffset.UtcNow;
+        return list;
+    }
+
+    /// <summary>The sources loaded, with record counts and when they were last loaded.</summary>
+    public async Task<IReadOnlyList<AuthoritySource>> AuthoritySourcesAsync(CancellationToken ct = default)
+    {
+        var list = new List<AuthoritySource>();
+        await using var cmd = _db.CreateCommand("select source, records, loaded_at from authority_sources order by source");
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new AuthoritySource(r.GetString(0), r.GetInt64(1), r.GetFieldValue<DateTimeOffset>(2)));
+        return list;
+    }
+
+    /// <summary>Makes sure each source has its partial label index and an authority_sources row with a fresh count.</summary>
+    private async Task EnsureSourceIndexesAsync(NpgsqlConnection conn, IEnumerable<string> sources, CancellationToken ct)
+    {
+        foreach (var src in sources.Distinct(StringComparer.Ordinal))
+        {
+            await using var cmd = new NpgsqlCommand(
+                $"create index if not exists authority_records_labels_{src} on authority_records using gin (normalised_labels) where source = {Literal(src)}; "
+                + $"insert into authority_sources (source, records, loaded_at) select {Literal(src)}, count(*), now() from authority_records where source = {Literal(src)} "
+                + "on conflict (source) do update set records = excluded.records, loaded_at = excluded.loaded_at", conn) { CommandTimeout = 0 };
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        _sources = null;
     }
 
     public Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesBySameAsAsync(string uri, CancellationToken ct = default) =>
@@ -747,11 +797,13 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await using (var create = new NpgsqlCommand("drop table if exists authority_records_in; create temp table authority_records_in (like authority_records including defaults)", conn))
             await create.ExecuteNonQueryAsync(ct);
         var count = 0;
+        var sources = new HashSet<string>(StringComparer.Ordinal);
         await using (var writer = await conn.BeginBinaryImportAsync("copy authority_records_in (uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version) from stdin (format binary)", ct))
         {
             await foreach (var record in records.WithCancellation(ct))
             {
                 var labels = record.Labels.Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();
+                sources.Add(record.Source);
                 await writer.StartRowAsync(ct);
                 await writer.WriteAsync(record.Uri, NpgsqlDbType.Text, ct);
                 await writer.WriteAsync(record.Source, NpgsqlDbType.Text, ct);
@@ -774,8 +826,11 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         // is several times cheaper (the per-row path is bound by writing the transaction log). All in one implicit
         // transaction, so a failure rolls the drops back; the table is locked against readers while it runs.
         var rebuild = count >= RebuildIndexesAbove;
+        foreach (var src in sources) Literal(src); // validated before any of them reaches SQL
+        var dropIndexes = "drop index if exists authority_records_same_as" + string.Concat(sources.Select(src => $", authority_records_labels_{src}")) + "; ";
+        var createSame = "create index authority_records_same_as on authority_records using gin (same_as); ";
         await using (var merge = new NpgsqlCommand(
-            (rebuild ? "drop index if exists authority_records_source_labels, authority_records_same_as;" + " " : "")
+            (rebuild ? dropIndexes : "")
             + """
             insert into authority_records (uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version)
             select distinct on (uri) uri, source, label, labels, normalised_labels, type, begin_earliest, begin_latest, end_earliest, end_latest, lifespan_text, same_as, data, fetched_at, source_version from authority_records_in order by uri
@@ -784,12 +839,14 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                 same_as = excluded.same_as, data = excluded.data, fetched_at = excluded.fetched_at, source_version = excluded.source_version;
             drop table authority_records_in;
             """
-            + (rebuild ? "create index authority_records_source_labels on authority_records using gin (source, type, normalised_labels); create index authority_records_same_as on authority_records using gin (same_as);" + " " : "")
+            + (rebuild ? createSame : "")
             + "analyze authority_records", conn))
         {
             merge.CommandTimeout = 0;
             await merge.ExecuteNonQueryAsync(ct);
         }
+        // the per-source label indexes: rebuilt after a large batch (dropped above), created for a source new to the store, and the source counts refreshed
+        await EnsureSourceIndexesAsync(conn, sources, ct);
         if (rebuild)
         {
             // a large load leaves dead row versions (replaced records) and a full GIN pending list; autovacuum would

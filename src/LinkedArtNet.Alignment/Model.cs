@@ -145,6 +145,9 @@ public sealed record ContextMethodCount(string Context, string Method, long Coun
 /// <summary>How many of a project's live entities (not merged) are in each status and class.</summary>
 public sealed record EntityCount(EntityStatus Status, EntityClass Class, long Count);
 
+/// <summary>An authority source loaded into the store: its name, how many records it has, and when it was last loaded.</summary>
+public sealed record AuthoritySource(string Source, long Records, DateTimeOffset LoadedAt);
+
 /// <summary>A project: a dataset with its name, identifier base, manifest (context rules, thresholds, sources) and members (design doc 12, section 4).</summary>
 public sealed record Project(string Dataset, string Name, string? Description, string IdentifierBase, string? ManifestJson, DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt);
 

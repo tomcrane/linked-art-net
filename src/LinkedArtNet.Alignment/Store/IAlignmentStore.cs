@@ -181,4 +181,7 @@ public interface IAlignmentStore
 
     /// <summary>The project's live entities counted by status and class.</summary>
     Task<IReadOnlyList<EntityCount>> EntityCountsAsync(string dataset, CancellationToken ct = default);
+
+    /// <summary>The authority sources loaded, with record counts.</summary>
+    Task<IReadOnlyList<AuthoritySource>> AuthoritySourcesAsync(CancellationToken ct = default);
 }

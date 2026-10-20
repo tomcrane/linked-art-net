@@ -317,6 +317,14 @@ public class GroupingTests
         Assert.All(twice, m => Assert.Null(m.JoinedTo));
         // without a home vocabulary the exact terms stay rival groups
         Assert.Equal(2, Reconciler.Groups(Reconciler.Score(reading with { Home = null }, [lcsh, aat], 120)).Count);
+        // only a record of the home record's own class is carried: ULAN's George Dance matches "Dance" exactly through a
+        // variant but is a person, not LCSH's topic, and stays a rival (the string goes to the desk, not to a person entity)
+        var dance = Reading("Dance", EntityClass.Type, EntityClass.Person) with { Home = "lcsh" };
+        var topic = new Candidate("http://id.loc.gov/authorities/subjects/sh85035886", "lcsh", "Dance", EntityClass.Type, null, [], "local", 1.0);
+        var george = new Candidate("http://vocab.getty.edu/ulan/500030341", "ulan", "Dance, George, the younger", EntityClass.Person, null, [], "local", 1.0);
+        var mixed = Reconciler.Score(dance, [topic, george], 120);
+        Assert.Null(mixed[1].JoinedTo);
+        Assert.Equal(2, Reconciler.Groups(mixed).Count);
     }
 
     [Fact]

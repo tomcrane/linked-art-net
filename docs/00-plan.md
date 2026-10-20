@@ -384,7 +384,8 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     section 7.5).
 
     **Open items from the day, in rough order:**
-    - Store: the entity side of a run took 12 of the 19 minutes (store stage 738 s): plan it on the real store as the
+    - Store: the entity side of a run took 12 of the 19 minutes (store stage 738 s; 968 s on 2026-10-20 with 9,437 part
+      strings more): plan it on the real store as the
       authority side was. Turn off Npgsql's infinity conversion (year 1 became -infinity; LoC n82239358). The
       reconcile report should split accepted into vote and exact-single. A run that dies should be marked
       interrupted at the next start, not sit as "running or interrupted".
@@ -438,10 +439,30 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       Numbers and the two findings in doc 10 section 7.6 "Measured". Both built and measured the same day
       (run-20261020-112520-sxyxbc: place single 44 + vote 98, minted 198, legacy LoC places gaining TGN ids); the
       state and province abbreviations ("Secaucus (N.J.)") then read as names, to measure on the next run. The
-      compound shape with the home vocabulary built the same evening (doc 10 section 7.6 "Built ... (evening)"): the
-      next run should move most of the 17,849 minted keywords into composites whose parts are a few hundred strings;
-      watch the keywords:head and keywords:sub rows, and sample `--method composite` and the two part contexts.
-      Still to come for compounds: export as coordinated concepts (7.5 item 2), the entity page listing a heading's
+      compound shape with the home vocabulary built the same evening (doc 10 section 7.6 "Built ... (evening)") and
+      measured (run-20261020-124120-aqn6dz): keywords minted 17,849 -> 3,033, composites 15,749 over 9,437 part
+      strings (keywords:head 7,741, mostly dated personal names; keywords:sub 1,536); accepted 4,827, queued 8,657,
+      minted 12,287; store stage 968 s. Seven findings in doc 10 section 7.6 "Measured ... aqn6dz", of which the
+      "Dance" person bug and the report wording were fixed that evening. The rest, in order of value:
+    - LCSH subdivision records (doc 10 7.6 aqn6dz finding 2): "Catalogs", "Diaries", "20th century" meet the topic
+      and the subdivision record of the same words and are queued (most of keywords:sub's 632 queued). Keep
+      `madsrdf:isMemberOfMADSCollection` in the LCSH record data at load (reload lcsh), add a `collection` field to
+      the context rule (keywords:sub: subdivisions; keywords:head: headings), veto a home record outside the named
+      collection when one inside matches as well. Needs the owner to reload lcsh after the loader change.
+    - Dated string, undated namesake (finding 3; owner's decision): when the string's dates agree with a record's,
+      veto the same source's records that have no dates ("Doyle, Richard, 1824-1883" vs LoC's undated "Doyle,
+      Richard"). Reaches persauthorfull too. Ceiling to measure first, the owner runs:
+      `select ss.context, count(*) from decisions d join source_strings ss on ss.id = d.source_string_id where
+      d.run_id = 'run-20261020-124120-aqn6dz' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan'
+      is not null and d.evidence::text like '%dates agree%' group by 1;`
+    - Mis-keyed compound separator (finding 4): a part beginning in lower case ("Stage--setting and scenery" for
+      LCSH's "Stage-setting and scenery") is rejoined to the part before it with one hyphen and the whole looked up
+      again before decomposing. Count first, the owner runs: `select count(*) filter (where raw ~ '^[a-z]') as
+      lower_case, count(*) as subdivisions from source_strings where dataset = 'pmc' and context = 'keywords:sub';`
+    - AAT qualified terms (finding 5): index the AAT term without its parenthetical qualifier, qualifier kept as
+      placement, so "dance (performing arts genre)" is exact on "dance" and the home rule carries it. Loader change
+      and aat reload.
+    - Still to come for compounds: export as coordinated concepts (7.5 item 2), the entity page listing a heading's
       parts and the desk showing a part's parents (7.5 item 4), and whether `unrec_` identifiers are kept (owner).
     - ~~"Placed through" (doc 10 section 7.6 finding 1)~~ and ~~the `single` method (finding 2)~~: both built
       2026-10-20 after the owner's yes; the rerun measures them (expect place votes up, place minted down, the

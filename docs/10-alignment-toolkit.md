@@ -460,6 +460,53 @@ from the command line; the project page shows the same "In effect now" sentence 
 button reads "Replace with the PMC library rules". The answer is: after any commit that changes `PmcDefault`, which
 the line now tells you.
 
+Measured 2026-10-20 (run-20261020-124120-aqn6dz, compound shape and home vocabulary in play): considered 36,930 and
+9,437 new part strings; accepted 4,827 (vote 2,059, single 647, exact-single 2,121), queued 8,657, minted 12,287,
+lists 404, compounds 15,749. Keywords: composite 15,749, minted 3,033 (from 17,849), queued 2,086, exact-name 269,
+exact-single 346, vote 235. keywords:head, 7,741 strings: exact-name 1,944 (heads that are already the project's
+entities: "Painting", "Portraits", "Art, Modern"), exact-single 948, vote 1,497, single 549, queued 2,050, minted
+738, override 15. keywords:sub, 1,536 strings: exact-name 269, exact-single 79, vote 46, queued 632, minted 510.
+Place as before (minted 198, vote 116, single 31). Store stage 968 s. The forecast "a few hundred part strings" was
+wrong by an order of magnitude: PMC's subject headings are mostly about people ("Tuke, Henry Scott,
+1858-1929--Exhibitions"), so keywords:head is the corpus's second-largest name context and reconciles as
+persauthorfull does (Tuke and Hewlett voted ULAN with LoC on dates; "Clanbrassill, James Hamilton, Earl of, ca.
+1691-1758" is a single on LoC's "approximately 1691-1758"). Findings from the samples:
+
+1. Bug, fixed the same evening: "Dance" (keywords:head) was accepted as a *person*. LCSH's topic "Dance" was the one
+   exact home record and carried ULAN's George Dance the younger, ULAN's Nathaniel Dance-Holland and LoC's Dance
+   Association for North Carolina Educators, all exact on the name through a variant, and the entity took the class
+   of the group's best member. `JoinToHome` now carries only records of the home record's own class; "Dance" goes to
+   the desk as four rivals.
+2. LCSH holds a subdivision as a record of its own, beside the heading of the same words: "Catalogs" is sh85020898
+   (the topic), sh99001246 (the form subdivision) and sh2005003411; "Diaries" sh85037601 and sh99001602; "20th
+   century" meets "Twentieth century" sh85139020 and the chronological subdivision sh2002012476. In keywords:sub the
+   subdivision record is the right one, in keywords:head the heading; today they are rivals and the string is
+   queued, which is most of the 632 queued subdivisions. LCSH says which is which in `madsrdf:isMemberOfMADSCollection`
+   (collection_Subdivisions and its kinds, collection_TopicSubdivisions, collection_FormSubdivisions,
+   collection_ChronSubdivisions, collection_GeographicSubdivisions; headings are in collection_LCSHAuthorizedHeadings;
+   collection names from the assistant's knowledge of id.loc.gov, to check against the file), which the loader does
+   not keep. Design: keep the memberships in the record's data at load (an LCSH reload), and let a context rule name
+   the collection its strings belong to (`collection: subdivisions` on keywords:sub); a home record outside the named
+   collection is then vetoed when one inside it matches as well. Not built.
+3. "Doyle, Richard, 1824-1883" (keywords:head) queued although ULAN and LoC n79071133 agree on the dates: LoC's
+   undated no2020029689 "Doyle, Richard" is a rival at 1.00 (the 1948- record is vetoed by its dates). The analogue
+   of the qualifier veto, for the owner: when the string carries dates and a record agrees with them, a record of the
+   same source with no dates is a namesake the cataloguer could not date, not the dated person, and should be
+   vetoed. The same rule would reach persauthorfull. Measure first (the SQL in the plan item).
+4. "Stage--setting and scenery" decomposed into "Stage" (two TGN hamlets and LCSH "Acting", queued) and the
+   subdivision "setting and scenery", minted. LCSH's heading is "Stage-setting and scenery" with one hyphen; the data's
+   double hyphen is a mis-keyed separator, and the sign is a part beginning in lower case (LCSH subdivisions are
+   capitalised). Design: before decomposing, rejoin a lower-case part to the one before it with a single hyphen and
+   look the whole up again; count the lower-case subdivisions first. Not built.
+5. AAT's qualified terms score 0.85 against the bare word: "dance (performing arts genre)", "twentieth century
+   (dates CE)", where "diaries" scores 1.00, so the home rule cannot carry them. The AAT loader could index the term
+   without its parenthetical qualifier, keeping the qualifier as the record's placement as the LoC labels already
+   are read (`Qualified.Split`). Loader change and reload; not built.
+6. "Canada" (keywords:sub): TGN's nation, LoC n79007233 and two TGN namesakes at 1.00, queued: the open place-type
+   preference item; the home rule does not reach it because the geographic name is in LoC names, not LCSH.
+7. The report line read "compounds 15749 (as 9437 new parts)" though the parts count covers the list parts too (160
+   of them); it now reads "between them N new part strings".
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

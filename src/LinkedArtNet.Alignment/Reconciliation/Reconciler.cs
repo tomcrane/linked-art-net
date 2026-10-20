@@ -43,7 +43,7 @@ public sealed record ReconcileReport(int Considered, int Overridden, int Matched
 {
     /// <summary>Accepted by independent sources agreeing, as opposed to one source carried by the string or the single-source policy.</summary>
     public int Voted => Accepted - ExactSingle - Single;
-    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (as {Parts} new parts)" : "");
+    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (between them {Parts} new part strings)" : "");
 }
 
 /// <summary>
@@ -393,7 +393,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// The context's home vocabulary decides: when exactly one of its records matches the name exactly, another vocabulary's
     /// exact term on the same name (or the store's own entity under that label) is that concept's equivalent, not a rival
     /// group: "Juvenile literature" is LCSH sh85071184 carrying AAT's "children's literature", where the two were rival
-    /// groups and the string was queued. Two exact home records stay rivals for the desk.
+    /// groups and the string was queued. Two exact home records stay rivals for the desk. Only a record of the home
+    /// record's own class is carried: LCSH's topic "Dance" carries AAT's concept, not ULAN's George Dance or LoC's
+    /// Dance Association, which match the name exactly through a variant and are rivals of another kind.
     /// </summary>
     private static void JoinToHome(string home, List<ScoredCandidate> list)
     {
@@ -404,6 +406,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             var b = list[i];
             if (b.Veto || b.Candidate.Source == home || b.Candidate.NameScore < 0.97 || b.JoinedTo is not null) continue;
+            if (b.Candidate.Class is { } cls && h.Candidate.Class is { } homeClass && cls != homeClass) continue;
             list[i] = b with { JoinedTo = h.Candidate.Uri, Reason = b.Reason + $"; carried by {home} {h.Candidate.Label}" };
         }
     }

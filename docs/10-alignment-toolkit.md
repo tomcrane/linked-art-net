@@ -304,6 +304,65 @@ Open for the owner: keep the `unrec_` identifiers for headings now that they car
 them), or remint. Order of work: after step 3b (remote sources), since the LCSH index and the LUX mapping both
 matter here.
 
+### 7.6 Strings made of parts (designed 2026-10-20, not built; generalises 7.5)
+
+The first full corpus runs with all five indexes loaded (ulan, loc, aat, lcsh, tgn; 14.5M records) left 26,594 of
+36,823 PMC strings minted. Samples by context (run-20261019-193430-gm5vtp and run-20261020-090207-x7q3sw) show that
+the residue is not missing authority records but strings that name more than one thing, or one thing plus where it
+is:
+
+| context | strings | minted | what the minted ones are |
+|---|---|---|---|
+| keywords | 21,721 | 18,477 before LCSH, ~17,400 after | compound headings: "Painting--Canada", "Art, Modern--20th century--France--Exhibitions", "Tuke, Henry Scott, 1858-1929--Exhibitions" |
+| place | 1,402 | 934 | lists, "Dublin; New York", "Paris ; Aix-en-Provence"; a place and its parent, "Hammersmith, London", "Piltown, County Kilkenny", "Heaton, Bradford"; a few misspellings, "Farborough" |
+| publisher, corpauthor | 9,285 | 5,748 | mostly genuine residue: small galleries, printers and firms absent from ULAN and LoC |
+| persauthorfull | 4,415 | 2,089 | genuine residue, to be measured against VIAF (3b) |
+
+TGN holds Hammersmith, with a parent string containing London; LCSH holds "Painting" and "Canada" and some
+precoordinated headings whole, but a free-floating subdivision (Exhibitions, Catalogs, History) combines with anything
+and is never a record. Section 7.5 designed the split for keywords; the same mechanism serves places, and it is one
+mechanism with three shapes:
+
+- **Compound** (7.5): parts coordinate into one concept. Separator `--`. The whole is an entity (Type) whose parts
+  are the decisions of its part strings; export as a coordinated concept.
+- **List**: the string names several entities, each complete in itself. Separator `;` in `place` (publication
+  places), and in any context the manifest marks so. The whole is not an entity: the parent string's decision is
+  `list` and the record that cited it gets every member's entity.
+- **Qualified**: one entity named with its container or a disambiguator, "Hammersmith, London", "Kent Town, S.
+  Australia", "Fountains Hall (Yorkshire)". No split into part strings: the reading is the name plus a qualifier, and
+  the qualifier scores against the candidate record, for a place against TGN's parent string (`data.parentString`,
+  already loaded) and LoC's geographic qualifier, for a group against the LoC parenthetical. Today a qualifier is
+  stripped and scored at 0.85 (the qualifier-stripped match); checking it instead gives agreement or conflict, and
+  "Heaton, Bradford" stops tying with the Heaton in Newcastle.
+
+Shape in the store and the reconciler:
+
+1. **Derived strings.** `source_strings` gains `parent_id` and `position` (and `role`: head, sub, member). A context
+   rule gains `Parts`: `{ separator: "--", shape: compound, contexts: { head: "keywords:head", sub: "keywords:sub" } }`
+   or `{ separator: ";", shape: list, context: "place" }`. Collecting a parent string collects its parts as strings in
+   the derived contexts, de-duplicated by key like any other string, so "Exhibitions" is one string with thousands of
+   parents. Parts go through the ladder, the desk and the variants page unchanged; an override on a part applies
+   everywhere it occurs.
+2. **The parent's decision.** Method `composite` (compound) or `list`, entity null for a list and the heading's own
+   Type entity for a compound; evidence lists the part string ids in order. A parent is "decided" when every part is;
+   the project page counts parents and parts separately, and the desk shows a part with the parents it serves.
+3. **Reading parts.** The head of a compound heading may be a person or group: it is read with the agent parser's
+   LoC heading profile, so "Tuke, Henry Scott, 1858-1929" meets ULAN and LoC as a dated person and the vote has its
+   dates. Subdivisions read as Type, Place or Period; a period part ("20th century") resolves to LCSH's period heading
+   or a project period entity minted once. A list member in `place` reads as a qualified place.
+4. **Home vocabulary per context** (plan open item, 2026-10-19 shadow): a derived context names the vocabulary whose
+   exact term decides, keywords:head and keywords:sub say lcsh, and the other vocabulary's exact term on the same
+   string is carried as an equivalent rather than a rival group.
+5. **Export.** A compound heading exports as 7.5 says; a list exports as its members on the citing record; a
+   qualified place exports as the TGN place with its parent chain available from the record.
+6. **Parser gaps seen in the samples**: "McSloy, Tom, op 1946" (a working date written "op"; dates grammar), "The
+   Hunterian" and "Hunting Art prizes" read as Person (no corporate word; a definite article or "prizes" should lean
+   Group), "Mainz/Rhein" (a slash variant of "Mainz am Rhein"; name-forms).
+
+Order of work: the qualified reading first (no schema change, measurable on the 934 places at once), then derived
+strings with the list shape for places, then the compound shape for keywords with the home-vocabulary rule. Each step
+is measured by the by-context table of a fresh corpus run and a shadow sample.
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

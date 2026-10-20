@@ -413,7 +413,11 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       the counters list; step 4 as extended by doc 14 section 4 (sources and uploaded dumps, the profile job,
       contexts namespaced by source, role routing, mapping tables as overrides, the brief's tables imported as
       credited overrides).
-    - Then compound subjects (doc 10 section 7.5) and the remote sources (3b), LUX self-echo first.
+    - Strings made of parts (doc 10 section 7.6, designed 2026-10-20 from the minted samples: compound headings,
+      place lists, qualified places): qualified reading first, then derived strings (list shape for places), then
+      the compound shape for keywords with the home-vocabulary rule. Then the remote sources (3b), LUX self-echo
+      first. Measured baseline 2026-10-20 (run-20261020-090207-x7q3sw, all five sources): accepted 1,468 (vote 412,
+      exact-single 1,056), queued 6,674, minted 26,594; LCSH alone moved ~650 strings out of minted.
 
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:

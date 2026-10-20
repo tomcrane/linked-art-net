@@ -52,7 +52,7 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var store = wb.Factory.Services.GetRequiredService<IAlignmentStore>();
         await new GettyVocabLoader((PostgresAlignmentStore)store).LoadAsync(NTriples.ReadText(UlanSample), GettyVocabulary.Ulan, "test");
         var project = (await wb.Factory.Services.GetRequiredService<ProjectServices>().GetAsync(ds))!;
-        Assert.Equal(5, project.Manifest.Contexts.Count);
+        Assert.Equal(LinkedArtNet.Alignment.Reconciliation.ProjectManifest.PmcDefault.Contexts.Count, project.Manifest.Contexts.Count); // the library rules as the toolkit currently defines them
         var smith = await store.CollectAsync(ds, "persauthorfull", "Smith, John (author)");
         await project.Reconciler.RunAsync(ds);
 

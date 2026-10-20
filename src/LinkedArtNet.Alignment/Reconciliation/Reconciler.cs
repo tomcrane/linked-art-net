@@ -158,6 +158,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // minted for a string that is itself awaiting review never answers silently; an entity minted because nothing
             // was found anywhere does, so the same unknown name across contexts becomes one local authority.
             var storeScored = Score(reading, candidates).Where(c => !c.Veto && c.Score >= _options.AcceptScore).ToList();
+            // in a qualified context ("Heaton, Bradford") an entity answers silently only when its qualifier agrees with the string's, or
+            // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
+            if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
             var firm = storeScored.Where(c => !c.Candidate.Provisional).ToList();
             var chosen = storeScored.Count == 1 ? storeScored[0] : firm.Count == 1 ? firm[0] : null;
             if (chosen is not null && chosen.Candidate.ProvisionalQueued) chosen = null;
@@ -196,7 +199,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
             && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
             // a heading that carries dates was disambiguated from namesakes by its cataloguer: an undated string cannot claim it alone
-            && !top.Members.Any(m => m.Candidate.Disambiguated))
+            && !top.Members.Any(m => m.Candidate.Disambiguated)
+            // a qualifier that the record does not bear out ("Princeton, N.J." against a Princeton elsewhere) is for the desk
+            && top.Best.QualifierAgrees != false)
         {
             if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
             return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top, AcceptedMethod: DecisionMethod.ExactSingle);
@@ -226,7 +231,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 if (await store.GetAuthorityAsync(q.Uri, ct) is { Lifespan: { IsEmpty: false } } record) { lifespan = record.Lifespan; break; }
         var provisional = e.Status == EntityStatus.Provisional;
         var queued = provisional && await store.HasValidDecisionAsync(e.Id, DecisionMethod.Queued, ct);
-        return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued);
+        // an entity's own placement is the qualifier its label carries ("Heaton, Bradford"), kept there by EntityForGroupAsync and MintAsync
+        var placement = reading.IsQualified && e.Label is not null ? Qualified.Split(e.Label).Qualifier : null;
+        return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued, Placement: placement);
     }
 
     /// <summary>Writes an evaluation: the decision with its evidence and, where needed, the entity.</summary>
@@ -294,8 +301,18 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             if (reading.Nationalities.Count > 0 && c.Nationalities is { Count: > 0 } cn && cn.Intersect(reading.Nationalities, StringComparer.Ordinal).Any())
             { score = Math.Min(1, score + 0.03); reasons.Add("nationality agrees"); }
-            list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree));
+            var qualifierAgrees = Qualified.Agrees(reading.Qualifier, c.Placement);
+            switch (qualifierAgrees)
+            {
+                case true: score = Math.Min(1, score + 0.05); reasons.Add($"qualifier places it ({c.Placement})"); break;
+                case false: reasons.Add($"qualifier not placed ({reading.Qualifier} vs {c.Placement})"); break;
+            }
+            list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees));
         }
+        // when the qualifier places one candidate, the namesakes it does not place are not what the string names
+        if (list.Any(m => m.QualifierAgrees == true))
+            for (var i = 0; i < list.Count; i++)
+                if (list[i].QualifierAgrees == false && !list[i].Veto) list[i] = list[i] with { Veto = true, Reason = list[i].Reason + "; the qualifier places another candidate" };
         return list;
     }
 
@@ -339,7 +356,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (group.Sources.Count >= _options.MinIndependentSources) return true;
         if (group.Members.Any(m => !m.Veto && m.Candidate.EntityId is not null && !m.Candidate.Provisional)) return true;
         var best = group.Best;
-        return _options.AcceptSingleSourceWithDates && best.DatesAgree && best.Candidate.NameScore >= 0.97;
+        return _options.AcceptSingleSourceWithDates && (best.DatesAgree || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97;
     }
 
     // ---- entities ------------------------------------------------------------------------------------------------
@@ -368,7 +385,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var labels = external.Select(c => c.Label).OfType<string>().Append(reading.Text).Distinct(StringComparer.Ordinal).ToList();
             // the record's dates when they date it; otherwise the string's own, since a record's loose window (ULAN's 1850-2080) is not a lifespan to publish
             var lifespan = best.Lifespan is { IsDated: true } ? best.Lifespan : reading.Lifespan ?? best.Lifespan;
-            entity = await store.AddEntityAsync(dataset, new NewEntity(cls, best.Label ?? reading.Text, labels, lifespan, reading.Nationalities, reading.Roles, EntityStatus.Aligned, RunId: runId), scheme, ct);
+            // a placed qualified name keeps its qualifier as the label ("Heaton, Bradford"), which is also how the store stage tells it from namesakes later
+            var label = reading.Qualifier is not null && group.Best.QualifierAgrees == true ? reading.Label : best.Label ?? reading.Text;
+            entity = await store.AddEntityAsync(dataset, new NewEntity(cls, label, labels, lifespan, reading.Nationalities, reading.Roles, EntityStatus.Aligned, RunId: runId), scheme, ct);
         }
         var present = entity.Equivalents.Select(q => q.Uri).ToHashSet(StringComparer.Ordinal);
         foreach (var c in external)
@@ -406,7 +425,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     }
 
     private Task<Entity> MintAsync(string dataset, StringReading reading, string? runId, CancellationToken ct) =>
-        store.AddEntityAsync(dataset, new NewEntity(reading.Classes[0], reading.Text, [reading.String.Raw], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Provisional, RunId: runId), scheme, ct);
+        store.AddEntityAsync(dataset, new NewEntity(reading.Classes[0], reading.Label, [reading.String.Raw], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Provisional, RunId: runId), scheme, ct);
 
     // ---- evidence and parsers ----------------------------------------------------------------------------------
 
@@ -416,7 +435,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         JsonSerializer.Serialize(new
         {
             stage,
-            reading = new { reading.Text, reading.Key, classes = reading.Classes.Select(c => c.ToString()), lifespan = reading.Lifespan?.Text, nationalities = reading.Nationalities.Count == 0 ? null : reading.Nationalities, roles = reading.Roles.Count == 0 ? null : reading.Roles },
+            reading = new { reading.Text, reading.Key, reading.Qualifier, classes = reading.Classes.Select(c => c.ToString()), lifespan = reading.Lifespan?.Text, nationalities = reading.Nationalities.Count == 0 ? null : reading.Nationalities, roles = reading.Roles.Count == 0 ? null : reading.Roles },
             groups = groups.Take(5).Select(g => new
             {
                 g.Score, g.Sources, vetoed = g.Vetoed ? true : (bool?)null,

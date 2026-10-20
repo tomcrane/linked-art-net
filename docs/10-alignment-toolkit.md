@@ -304,7 +304,7 @@ Open for the owner: keep the `unrec_` identifiers for headings now that they car
 them), or remint. Order of work: after step 3b (remote sources), since the LCSH index and the LUX mapping both
 matter here.
 
-### 7.6 Strings made of parts (designed 2026-10-20, not built; generalises 7.5)
+### 7.6 Strings made of parts (designed 2026-10-20; the qualified shape built the same day, the rest not; generalises 7.5)
 
 The first full corpus runs with all five indexes loaded (ulan, loc, aat, lcsh, tgn; 14.5M records) left 26,594 of
 36,823 PMC strings minted. Samples by context (run-20261019-193430-gm5vtp and run-20261020-090207-x7q3sw) show that
@@ -362,6 +362,15 @@ Shape in the store and the reconciler:
 Order of work: the qualified reading first (no schema change, measurable on the 934 places at once), then derived
 strings with the list shape for places, then the compound shape for keywords with the home-vocabulary rule. Each step
 is measured by the by-context table of a fresh corpus run and a shadow sample.
+
+Built 2026-10-20, the qualified shape: `ContextRule.Qualified` (the PMC `place` rule sets it; the manifest writes it
+as `qualified`), `Qualified.Split` (name before the first comma, parentheticals as qualifiers), `Candidate.Placement`
+(TGN's `parentString`, else the parentheticals of a LoC or LCSH label), `ScoredCandidate.QualifierAgrees` (a word of
+three letters or more of the qualifier among the placement's words; "N.J." places nothing). A placed candidate lifts
+by 0.05 and vetoes the namesakes the qualifier does not place; a placed exact single-source match carries like one
+with agreeing dates; an unplaced qualifier bars the exact-single policy; a minted or aligned qualified name keeps its
+qualifier as the entity label, and in a qualified context the store stage answers only when qualifiers agree or
+neither side has one, so a bare "Heaton" meets both Heatons in the indexes rather than the one aligned first.
 
 ## 8. Identifiers and publishing
 

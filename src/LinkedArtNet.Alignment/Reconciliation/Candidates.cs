@@ -6,7 +6,8 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 /// <summary>How strings in one context are read: what they may name, and whether the agent-string parser separates the name from dates, roles and honorifics first.</summary>
 /// <param name="Classes">The entity classes a string in this context may name, in order of preference; the first is what a new entity is minted as, and the agent parser's reading of the kind moves that class to the front.</param>
 /// <param name="AgentProfile">The agent parser profile to read the string with, or null to take the text as the whole name.</param>
-public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null)
+/// <param name="Qualified">Strings here name one thing with where it is or what tells it from namesakes ("Hammersmith, London"): the name is looked up and the qualifier checked against the records (see <see cref="Reconciliation.Qualified"/>).</param>
+public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false)
 {
     public static readonly ContextRule Anything = new([EntityClass.Person, EntityClass.Group, EntityClass.Place, EntityClass.Type]);
 }
@@ -23,10 +24,14 @@ public sealed record StringReading(
     Lifespan? Lifespan,
     IReadOnlyList<string> Nationalities,
     IReadOnlyList<string> Roles,
-    ParsedAgent? Agent)
+    ParsedAgent? Agent,
+    string? Qualifier = null,
+    bool IsQualified = false)
 {
     public string Key => Keys.Count > 0 ? Keys[0] : "";
     public bool HasLifespan => Lifespan is { IsEmpty: false };
+    /// <summary>The label a new entity gets: the name with its qualifier, so a minted "Heaton, Bradford" is not a bare "Heaton" that captures every other Heaton.</summary>
+    public string Label => Qualifier is null ? Text : $"{Text}, {Qualifier}";
 
     /// <summary>Reads a string under its context's rule, through the agent parser when the rule names a profile.</summary>
     public static StringReading Read(SourceString s, ContextRule rule, AgentStringParser? parser)
@@ -37,6 +42,8 @@ public sealed record StringReading(
         Lifespan? lifespan = null;
         IReadOnlyList<string> nationalities = [];
         IReadOnlyList<string> roles = [];
+        string? qualifier = null;
+        if (rule.Qualified && parser is null) (text, qualifier) = Qualified.Split(s.Raw);
         if (parser is not null)
         {
             agent = parser.Parse(s.Raw);
@@ -49,7 +56,7 @@ public sealed record StringReading(
             nationalities = agent.Nationalities.Select(n => n.AatUri ?? n.Label).Distinct(StringComparer.Ordinal).ToArray();
             roles = agent.Roles.Where(r => r.IsOccupation).Select(r => r.Label).Distinct(StringComparer.Ordinal).ToArray();
         }
-        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent);
+        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified);
     }
 }
 
@@ -72,11 +79,13 @@ public sealed record Candidate(
     IReadOnlyList<string>? Nationalities = null,
     bool Provisional = false,
     bool ProvisionalQueued = false,
-    bool Disambiguated = false);
+    bool Disambiguated = false,
+    string? Placement = null);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
-public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false);
+/// <param name="QualifierAgrees">The string's qualifier was found in the record's placement (true), looked for and not found (false), or there was nothing to compare (null).</param>
+public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null);
 
 /// <summary>Candidates that are the same real-world thing across sources, joined through their mutual sameAs links, voting as one.</summary>
 /// <param name="Vetoed">Every member is vetoed, or a vetoed member is the same thing as a live one by the authorities' own links: the group cannot be the answer.</param>
@@ -125,11 +134,13 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         var cls = Enum.TryParse<EntityClass>(r.Type, true, out var c) ? c : (EntityClass?)null;
         IReadOnlyList<string>? nationalities = null;
         var disambiguated = false;
+        string? parentString = null;
         if (r.DataJson is not null)
         {
             try
             {
                 using var doc = System.Text.Json.JsonDocument.Parse(r.DataJson);
+                if (doc.RootElement.TryGetProperty("parentString", out var ps) && ps.ValueKind == System.Text.Json.JsonValueKind.String) parentString = ps.GetString();
                 if (doc.RootElement.TryGetProperty("nationalities", out var n) && n.ValueKind == System.Text.Json.JsonValueKind.Array)
                     nationalities = n.EnumerateArray().Select(e => e.GetString()).OfType<string>().ToArray();
                 // a LoC heading carries dates ("Taylor, Desmond, 1930-") when the cataloguer had namesakes to tell apart: the record is disambiguated
@@ -138,6 +149,7 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
             catch (System.Text.Json.JsonException) { }
         }
         var labels = r.Label is null ? r.Labels : r.Labels.Prepend(r.Label);
-        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, r.SameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities, Disambiguated: disambiguated);
+        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, r.SameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities, Disambiguated: disambiguated,
+            Placement: reading.Qualifier is null ? null : Qualified.PlacementOf(parentString, labels));
     }
 }

@@ -46,14 +46,14 @@ public sealed record ProjectManifest
             ["persauthorfull"] = new([EntityClass.Person], "default"),
             ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default"),
             ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default"),
-            ["place"] = new([EntityClass.Place]),
+            ["place"] = new([EntityClass.Place], Qualified: true),
             ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place]),
         },
     };
 }
 
 /// <summary>A <see cref="ContextRule"/> as the manifest writes it.</summary>
-public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null)
+public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null)
 {
-    public ContextRule ToRule() => new(Classes, AgentProfile);
+    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false);
 }

@@ -231,6 +231,43 @@ public class GroupingTests
         var diedBefore = new Candidate("u5", "loc", "Dürer, Albrecht", EntityClass.Person, new Lifespan(null, null, new DateTimeOffset(1400, 1, 1, 0, 0, 0, TimeSpan.Zero), null, "-1400"), [], "local", 1.0);
         Assert.True(Reconciler.Score(reading, [diedBefore], 120)[0].Veto); // died before the string's birth
     }
+
+    [Theory]
+    [InlineData("Hammersmith, London", "Hammersmith", "London")]
+    [InlineData("Piltown, County Kilkenny", "Piltown", "County Kilkenny")]
+    [InlineData("Fountains Hall (Yorkshire)", "Fountains Hall", "Yorkshire")]
+    [InlineData("Kedleston Hall (Derbyshire), England", "Kedleston Hall", "England, Derbyshire")]
+    [InlineData("Moggerhanger", "Moggerhanger", null)]
+    [InlineData("Mainz/Rhein", "Mainz/Rhein", null)]
+    public void A_qualified_place_splits_into_name_and_qualifier(string raw, string name, string? qualifier)
+    {
+        var (n, q) = Qualified.Split(raw);
+        Assert.Equal(name, n); Assert.Equal(qualifier, q);
+    }
+
+    [Fact]
+    public void A_qualifier_places_a_candidate_by_its_parent_string_and_vetoes_the_namesakes_it_does_not_place()
+    {
+        Assert.True(Qualified.Agrees("Bradford", "Heaton, Bradford, West Yorkshire, England, United Kingdom, Europe, World"));
+        Assert.True(Qualified.Agrees("Isle of Wight", "Shorwell, Isle of Wight, England, United Kingdom, Europe, World")); // "of" is noise, "wight" places it
+        Assert.True(Qualified.Agrees("S. Australia", "Kent Town, South Australia, Australia, Oceania, World"));
+        Assert.False(Qualified.Agrees("Bradford", "Heaton, Newcastle upon Tyne, England, United Kingdom, Europe, World"));
+        Assert.Null(Qualified.Agrees("N.J.", "Princeton, New Jersey, United States, North and Central America, World")); // an abbreviation places nothing
+        Assert.Null(Qualified.Agrees("Bradford", null));
+        Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
+
+        var reading = Reading("Heaton", EntityClass.Place) with { Qualifier = "Bradford" };
+        var bradford = new Candidate("t1", "tgn", "Heaton", EntityClass.Place, null, [], "local", 1.0, Placement: "Heaton, Bradford, West Yorkshire, England, United Kingdom, Europe, World");
+        var newcastle = new Candidate("t2", "tgn", "Heaton", EntityClass.Place, null, [], "local", 1.0, Placement: "Heaton, Newcastle upon Tyne, England, United Kingdom, Europe, World");
+        var unknown = new Candidate("t3", "tgn", "Heaton", EntityClass.Place, null, [], "local", 1.0);
+        var scored = Reconciler.Score(reading, [bradford, newcastle, unknown], 120);
+        Assert.True(scored[0].QualifierAgrees); Assert.False(scored[0].Veto); Assert.Equal(1.0, scored[0].Score);
+        Assert.False(scored[1].QualifierAgrees); Assert.True(scored[1].Veto); Assert.Contains("places another", scored[1].Reason);
+        Assert.Null(scored[2].QualifierAgrees); Assert.False(scored[2].Veto);
+        // with nothing placed, namesakes stay rivals
+        var open = Reconciler.Score(reading with { Qualifier = "N.J." }, [bradford, newcastle], 120);
+        Assert.All(open, m => Assert.False(m.Veto));
+    }
 }
 
 [Collection("postgres")]
@@ -433,6 +470,37 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Contains("http://vocab.getty.edu/tgn/7002445", gb.SameAs);
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["angiotensin ii"], "lcsh", "Type")); // its own index and source row
         Assert.Contains(await pg.Store.AuthoritySourcesAsync(), s => s.Source == "lcsh" && s.Records == 4);
+    }
+
+    [PostgresFact]
+    public async Task Qualified_places_are_placed_by_tgn_parent_strings()
+    {
+        var ds = Dataset();
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        static AuthorityRecord Tgn(string id, string label, string parent) => new($"http://vocab.getty.edu/tgn/{id}", "tgn", label, [label], "Place", null, [], $"{{\"parentString\":\"{parent}\"}}", DateTimeOffset.UtcNow, "test");
+        await pg.Store.PutAuthorityAsync(Tgn("7011781", "Hammersmith", "London, Greater London, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("7000001", "Heaton", "Bradford, West Yorkshire, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("7000002", "Heaton", "Newcastle upon Tyne, Tyne and Wear, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("7000003", "Princeton", "Mercer, New Jersey, United States, North and Central America, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("7000004", "Princeton", "Gibson, Indiana, United States, North and Central America, World"));
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn")], ProjectManifest.PmcDefault.ToOptions());
+
+        var hammersmith = await pg.Store.CollectAsync(ds, "place", "Hammersmith, London");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, hammersmith)); // one source, name exact, qualifier placed
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Hammersmith, London"))!.Equivalents, q => q.Uri.EndsWith("7011781"));
+        var heaton = await pg.Store.CollectAsync(ds, "place", "Heaton, Bradford");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, heaton)); // the Newcastle namesake is vetoed by the qualifier
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Heaton, Bradford"))!.Equivalents, q => q.Uri.EndsWith("7000001"));
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Princeton, N.J."))); // an abbreviation places nothing: two rivals
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Heaton"))); // no qualifier, two namesakes: the aligned Bradford entity does not answer silently
+        Assert.Equal("Heaton, Bradford", (await pg.Store.ResolveAsync(ds, "place", "Heaton, Bradford"))!.Label);
+        Assert.Equal(Outcome.MatchedStore, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Heaton, Bradford, Yorkshire"))); // the same place again, by its qualifier
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Heaton, Newcastle"))); // the other one, past the aligned Bradford entity
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Heaton, Newcastle"))!.Equivalents, q => q.Uri.EndsWith("7000002"));
+        // a minted qualified place keeps its qualifier in the label, so it does not become a bare name that captures namesakes
+        var minted = await pg.Store.CollectAsync(ds, "place", "Moggerhanger, Bedfordshire");
+        Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, minted));
+        Assert.Equal("Moggerhanger, Bedfordshire", (await pg.Store.ResolveAsync(ds, "place", "Moggerhanger, Bedfordshire"))!.Label);
     }
 
     [PostgresFact]

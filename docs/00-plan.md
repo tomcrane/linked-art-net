@@ -454,10 +454,29 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       (RunAsync passes over a string already decided, and says how many). Measured on run-20261020-150054-tzm64p (doc
       10 7.6 "Measured ... tzm64p"): keywords:sub queued 632 -> 581, vote 46 -> 88; the rule works where it applies,
       and what remains queued is AAT's qualified terms (finding 5, next) and TGN place namesakes (below).
-    - AAT qualified terms (finding 5, next build): index the AAT term without its parenthetical qualifier (the
-      qualifier kept as placement) so "catalogs (documents)" is exact on "catalogs"; and the home rule carries another
-      source's term only when that source has exactly one exact record (AAT has two "private collections"). Needs an
-      aat reload (57,322 records, minutes) and a manifest refresh if PmcDefault changes.
+    - ~~AAT qualified terms (finding 5)~~: built 2026-10-20 night (doc 10 7.6 "Built ... finding 5"): `BareTerm` in
+      the AAT loader, `JoinToHome` decisive. To measure, the owner: `load-getty <the aat files> --vocab aat` (the same
+      files as before), `undo-run --run run-20261020-150054-tzm64p`, `reconcile`, `decisions --run <id> --context
+      keywords:sub --limit 10`; expect "Catalogs", "20th century", "21st century", "Biography" accepted (vote with AAT
+      carried, or exact-single), "Private collections" accepted on LCSH with AAT's two set aside. No manifest refresh.
+    - Place agreement by placement (finding 9, doc 10 7.6 after finding 5's Built paragraph; the largest class in the
+      owner's exports: 248 of 843 queued place-like strings have one live exact TGN record and are queued because
+      LoC's qualified heading "Abbeyleix (Ireland)" scores 0.85 beside it): compute `Candidate.Placement` for every
+      candidate and generalise placed-through to any string, so a candidate whose placement sits inside exactly one
+      other-source candidate's placement joins it and TGN and LoC vote together. Confirm first, the owner runs:
+      `with q as (select d.id, ss.raw, d.evidence from decisions d join source_strings ss on ss.id =
+      d.source_string_id where d.run_id = 'run-20261020-150054-tzm64p' and d.valid and d.method = 'queued' and
+      ss.context in ('place', 'keywords:sub')), members as (select q.id, q.raw, m->>'source' as source, m->>'label' as
+      label, (m->>'score')::numeric as score, (m->>'veto') is not null as veto from q cross join lateral
+      jsonb_array_elements(q.evidence->'groups') g cross join lateral jsonb_array_elements(g->'members') m), single as
+      (select id from members where source = 'tgn' and score >= 0.97 and not veto group by id having count(*) = 1)
+      select m.source, round(m.score, 2) as score, count(distinct m.id) as strings, (array_agg(m.raw || ' ~ ' ||
+      m.label order by m.raw))[1:3] as examples from members m join single s on s.id = m.id where not m.veto and
+      m.source <> 'tgn' group by m.source, round(m.score, 2) order by strings desc;` (the rivals of the 248, by
+      source and score, with examples; expect loc at 0.85 to dominate).
+    - Place-type preference for the nation shape ("Canada", "England", "China": TGN's nation beside hamlets, and LoC's
+      heading unqualified): join an unqualified LoC heading to TGN's record of the highest level among namesakes of
+      differing type. Design after finding 9 is in; the exports hold the type combinations.
     - TGN place namesakes among subdivisions and places ("Canada", "England", "Cornwall", "London", "Kent", "Norfolk",
       "Austria": 8 of 15 sampled queued subdivisions): the place-type preference item. TGN's `placeType` is in each
       record's data (an AAT URI). Measure first, the owner runs:

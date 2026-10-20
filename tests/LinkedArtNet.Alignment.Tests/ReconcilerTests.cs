@@ -325,6 +325,21 @@ public class GroupingTests
         var mixed = Reconciler.Score(dance, [topic, george], 120);
         Assert.Null(mixed[1].JoinedTo);
         Assert.Equal(2, Reconciler.Groups(mixed).Count);
+        // a vocabulary with several exact terms of the name carries none of them, and they are set aside: the home record stands
+        var collections = Reading("Private collections", EntityClass.Type) with { Home = "lcsh" };
+        var lcshPc = new Candidate("http://id.loc.gov/authorities/subjects/sh2002006524", "lcsh", "Private collections", EntityClass.Type, null, [], "local", 1.0);
+        var repositories = new Candidate("http://vocab.getty.edu/aat/300443967", "aat", "private collections (repositories)", EntityClass.Type, null, [], "local", 1.0);
+        var groupings = new Candidate("http://vocab.getty.edu/aat/300146236", "aat", "private collections (object groupings)", EntityClass.Type, null, [], "local", 1.0);
+        var several = Reconciler.Score(collections, [lcshPc, repositories, groupings], 120);
+        Assert.False(several[0].Veto);
+        Assert.True(several[1].Veto); Assert.Contains("aat has 2 exact terms of the name, none carried", several[1].Reason);
+        Assert.True(several[2].Veto);
+        var decided = Reconciler.Groups(several);
+        Assert.Equal(lcshPc.Uri, decided[0].Best.Candidate.Uri); Assert.Equal(["lcsh"], decided[0].Sources); Assert.False(decided[0].Vetoed);
+        // a term the home record's links say is the same thing is in the group already and is left alone
+        var linked = Reconciler.Score(collections, [lcshPc with { SameAs = [repositories.Uri] }, repositories, groupings], 120);
+        Assert.False(linked[1].Veto); Assert.Null(linked[1].JoinedTo); Assert.True(linked[2].Veto);
+        Assert.Equal(lcshPc.Uri, Reconciler.Groups(linked)[0].Best.Candidate.Uri); Assert.False(Reconciler.Groups(linked)[0].Vetoed);
     }
 
     [Fact]
@@ -372,6 +387,15 @@ public class ReconcilerStoreTests(PostgresFixture pg)
     private static string Dataset() => "ds-" + IdMinter.Generate(6);
 
     // A sliver of ULAN in the shapes the Getty N-Triples use (checked against vocab.getty.edu 2026-10-18).
+    private const string AatSample = """
+        <http://vocab.getty.edu/aat/300026059> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://vocab.getty.edu/ontology#Concept> .
+        <http://vocab.getty.edu/aat/300026059> <http://www.w3.org/2008/05/skos-xl#prefLabel> <http://vocab.getty.edu/aat/term/1000026059-en> .
+        <http://vocab.getty.edu/aat/300026059> <http://www.w3.org/2008/05/skos-xl#altLabel> <http://vocab.getty.edu/aat/term/1000026060-en> .
+        <http://vocab.getty.edu/aat/300026059> <http://vocab.getty.edu/ontology#prefLabelGVP> <http://vocab.getty.edu/aat/term/1000026059-en> .
+        <http://vocab.getty.edu/aat/term/1000026059-en> <http://www.w3.org/2008/05/skos-xl#literalForm> "catalogs (documents)"@en .
+        <http://vocab.getty.edu/aat/term/1000026060-en> <http://www.w3.org/2008/05/skos-xl#literalForm> "catalogues (documents)"@en .
+        """;
+
     private const string UlanSample = """
         <http://vocab.getty.edu/ulan/500115493> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://vocab.getty.edu/ontology#PersonConcept> .
         <http://vocab.getty.edu/ulan/500115493> <http://www.w3.org/2008/05/skos-xl#prefLabel> <http://vocab.getty.edu/ulan/term/1500065078-en> .
@@ -427,6 +451,14 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["albrecht durer"], "ulan"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500301417", "ulan", "Thomas Agnew & Sons", ["Agnew's"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys("Thos. Agnew & Sons Ltd"), "ulan", "Group"));
+        // an AAT term is indexed without its parenthetical qualifier too, so a bare "catalogs" is exact on "catalogs (documents)"
+        Assert.Equal(1, (await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(AatSample), GettyVocabulary.Aat, "test-sample")).Records);
+        var catalogs = (await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/aat/300026059"))!;
+        Assert.Equal("catalogs (documents)", catalogs.Label);
+        Assert.Equal(["catalogs", "catalogs (documents)", "catalogues", "catalogues (documents)"], catalogs.Labels.Order(StringComparer.Ordinal));
+        Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["catalogs"], "aat", "Type"));
+        Assert.Equal(1.0, NameMatcher.Score("Catalogs", catalogs.Labels));
+        Assert.Null(GettyVocabLoader.BareTerm("diaries")); Assert.Equal("twentieth century", GettyVocabLoader.BareTerm("twentieth century (dates CE)"));
         // a reload without a record retires it; a stale key is recomputed by reindexing
         await using (var cmd = pg.DataSource.CreateCommand("update authority_records set normalised_labels = '{stale}' where uri = 'http://vocab.getty.edu/ulan/500115493'")) await cmd.ExecuteNonQueryAsync();
         Assert.Empty(await pg.Store.FindAuthoritiesByLabelsAsync(["durer, albrecht"], "ulan", "Person"));

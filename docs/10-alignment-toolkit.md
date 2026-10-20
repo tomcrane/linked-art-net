@@ -568,6 +568,37 @@ Place moved slightly with no rule touching it (exact-name 146 -> 128, vote 116 -
 32), not yet explained: the undo and redo of a run are not exactly idempotent on the store side (legacy entities
 reverted and realigned), to look at with the store-stage work.
 
+Built 2026-10-20 (night), finding 5 with the home rule made decisive. The AAT loader indexes each term without its
+parenthetical qualifier as well (`GettyVocabLoader.BareTerm`: "catalogs" beside "catalogs (documents)"), so a bare
+"catalogs" is exact on it and the qualifier is read as the record's placement by the qualified shape. The name
+scorer had put such a term at 0.85 ("equal only once parenthesised qualifiers go"), a near rival that blocked the
+exact-single policy without being able to vote. And `JoinToHome` now decides outright: when the home vocabulary has
+exactly one exact record, another vocabulary's one exact term of the same class is carried as its equivalent, and a
+vocabulary with several exact terms of the name (AAT's two "private collections") carries none of them and they are
+set aside with the reason recorded ("lcsh Private collections decides: aat has 2 exact terms of the name, none
+carried"), so indexing AAT's bare terms cannot make a string LCSH knows ambiguous; a term the home record's own links
+say is the same thing is left in the group; the store's own entities under the label are carried as before. AAT
+records are Type class and only the keyword contexts allow Type, so no other context sees the change. It takes an aat
+reload (57,322 records) to measure; PmcDefault is unchanged.
+
+The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
+and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
+The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",
+"Bedford"; nation beside hamlets "Canada", "China"; "England" beside a TGN namesake), but the largest class, 248 of
+843, is strings with exactly one live exact TGN record ("Abbeyleix", "Arbroath", "Avebury", "Berkhamsted",
+"Buckinghamshire", "Aldeburgh, Suffolk"), queued all the same. The reconciler explains it without more data (finding
+9): LoC's qualified heading "Abbeyleix (Ireland)" scores 0.85 against the bare name, so TGN's one record is not an
+exact-single (the policy wants no other group at all) and not a vote (TGN and LoC never link to each other), though
+the two records are the same place: LoC's qualifier "Ireland" sits inside TGN's parent string "Abbeyleix, Laois,
+Ireland, Europe, World". Design: compute `Candidate.Placement` for every candidate, not only when the string has a
+qualifier, and generalise placed-through so that a candidate whose placement sits inside exactly one other-source
+candidate's placement is joined to it whatever the string carries; TGN and LoC then agree and the string is a vote.
+It leaves the nation shape ("Canada": LoC's heading has no qualifier) to a type preference, measured from the same
+exports: among TGN namesakes of differing type, an unqualified LoC heading, which LoC gives only to a place unique in
+its world, would be joined to TGN's record of the highest level (nation, state, county) rather than an inhabited
+place of the name. To confirm the 248 before building, the owner runs the query in the plan, which lists the live
+rivals of those strings by source and score.
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

@@ -420,25 +420,37 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     /// <summary>
     /// The context's home vocabulary decides: when exactly one of its records matches the name exactly, another vocabulary's
-    /// exact term on the same name (or the store's own entity under that label) is that concept's equivalent, not a rival
-    /// group: "Juvenile literature" is LCSH sh85071184 carrying AAT's "children's literature", where the two were rival
-    /// groups and the string was queued. Two exact home records stay rivals for the desk. Only a record of the home
-    /// record's own class is carried: LCSH's topic "Dance" carries AAT's concept, not ULAN's George Dance or LoC's
-    /// Dance Association, which match the name exactly through a variant and are rivals of another kind.
+    /// one exact term on the same name (or the store's own entities under that label) is that concept's equivalent, not a
+    /// rival group: "Juvenile literature" is LCSH sh85071184 carrying AAT's "children's literature", where the two were
+    /// rival groups and the string was queued. A vocabulary with several exact terms of the name (AAT's two "private
+    /// collections") carries none of them, and they are set aside: the home record stands whatever the other holds, so
+    /// indexing AAT's bare terms cannot make a string the home vocabulary knows ambiguous. Two exact home records stay
+    /// rivals for the desk, and so does a record of another class: LCSH's topic "Dance" carries AAT's concept, not ULAN's
+    /// George Dance or LoC's Dance Association, which match the name exactly through a variant and are rivals of another
+    /// kind. A record the home record's own links say is the same thing is left as it is: it is in the group already.
     /// </summary>
     private static void JoinToHome(string home, List<ScoredCandidate> list)
     {
         var exact = list.Where(m => !m.Veto && m.Candidate.Source == home && m.Candidate.NameScore >= 0.97).ToList();
         if (exact.Count != 1) return;
         var h = exact[0];
-        for (var i = 0; i < list.Count; i++)
+        bool Eligible(ScoredCandidate b) => !b.Veto && b.Candidate.Source != home && b.Candidate.NameScore >= 0.97 && b.JoinedTo is null
+            && !(b.Candidate.Class is { } cls && h.Candidate.Class is { } homeClass && cls != homeClass);
+        foreach (var source in list.Where(Eligible).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
         {
-            var b = list[i];
-            if (b.Veto || b.Candidate.Source == home || b.Candidate.NameScore < 0.97 || b.JoinedTo is not null) continue;
-            if (b.Candidate.Class is { } cls && h.Candidate.Class is { } homeClass && cls != homeClass) continue;
-            list[i] = b with { JoinedTo = h.Candidate.Uri, Reason = b.Reason + $"; carried by {home} {h.Candidate.Label}" };
+            var terms = list.Select((m, i) => (m, i)).Where(x => Eligible(x.m) && x.m.Candidate.Source == source).ToList();
+            foreach (var (b, i) in terms)
+            {
+                if (SameThing(b, h)) continue;
+                list[i] = terms.Count == 1 || source == "store"
+                    ? b with { JoinedTo = h.Candidate.Uri, Reason = b.Reason + $"; carried by {home} {h.Candidate.Label}" }
+                    : b with { Veto = true, Reason = b.Reason + $"; {home} {h.Candidate.Label} decides: {source} has {terms.Count} exact terms of the name, none carried" };
+            }
         }
     }
+
+    private static bool SameThing(ScoredCandidate a, ScoredCandidate b) =>
+        a.Candidate.SameAs.Contains(b.Candidate.Uri, StringComparer.Ordinal) || b.Candidate.SameAs.Contains(a.Candidate.Uri, StringComparer.Ordinal);
 
     /// <summary>
     /// Joins candidates through their URIs and sameAs links (union-find) and ranks the groups by their best non-vetoed

@@ -153,6 +153,16 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         left join extra on extra.uri = c.uri
         """;
 
+    private static readonly System.Text.RegularExpressions.Regex Qualifier = new(@"\s*\([^()]*\)", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    /// <summary>An AAT term without its parenthetical qualifier ("catalogs" from "catalogs (documents)"), or null when it has none.</summary>
+    internal static string? BareTerm(string term)
+    {
+        if (!term.Contains('(')) return null;
+        var bare = System.Text.RegularExpressions.Regex.Replace(Qualifier.Replace(term, " "), @"\s+", " ").Trim();
+        return bare.Length > 0 && bare != term ? bare : null;
+    }
+
     private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, GettyVocabulary vocabulary, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
     {
         var source = SourceName(vocabulary);
@@ -177,6 +187,9 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
             var agentType = Str(r, 12); var placeType = Str(r, 13); var broader = Str(r, 14); var parentString = Str(r, 15);
 
             label ??= labels.FirstOrDefault();
+            // AAT tells homographs apart in parentheses ("catalogs (documents)", "painting (visual works)"): the term without its
+            // qualifier is indexed too, so a bare "catalogs" is exact on it, and the qualifier is read as the record's placement
+            if (vocabulary == GettyVocabulary.Aat) labels = labels.Concat(labels.Select(BareTerm).OfType<string>()).Distinct(StringComparer.Ordinal).ToArray();
             type = ClassFor(type, agentType);
             var lifespan = LifespanFromYears(estStart, estEnd, description);
             var data = new Dictionary<string, object?>();

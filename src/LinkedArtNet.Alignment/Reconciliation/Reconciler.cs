@@ -37,11 +37,12 @@ public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minte
 
 /// <param name="Lists">Strings decided as lists of parts; their parts' outcomes are counted with everything else, so the outcome counts add up to Considered minus Lists plus Parts.</param>
 /// <param name="Parts">Parts reconciled for the first time in this run (a part already decided by an earlier string is not counted again).</param>
-public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0)
+/// <param name="Single">Accepted on one source carried by the string's own dates or placed qualifier (DecisionMethod.Single).</param>
+public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0)
 {
-    /// <summary>Accepted by independent sources agreeing (or one with dates), as opposed to the single-source policy.</summary>
-    public int Voted => Accepted - ExactSingle;
-    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists > 0 ? $", lists {Lists} (as {Parts} new parts)" : "");
+    /// <summary>Accepted by independent sources agreeing, as opposed to one source carried by the string or the single-source policy.</summary>
+    public int Voted => Accepted - ExactSingle - Single;
+    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists > 0 ? $", lists {Lists} (as {Parts} new parts)" : "");
 }
 
 /// <summary>
@@ -91,14 +92,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<ReconcileReport> RunAsync(string dataset, int limit = 0, string? runId = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var strings = await store.UndecidedAsync(dataset, limit > 0 ? limit : int.MaxValue, ct);
-        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, parts = 0, n = 0;
+        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, single = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, parts = 0, n = 0;
         void Count(Evaluation e)
         {
             switch (e.Outcome)
             {
                 case Outcome.Overridden: overridden++; break;
                 case Outcome.MatchedStore: matched++; break;
-                case Outcome.Accepted: accepted++; if (e.AcceptedMethod == DecisionMethod.ExactSingle) exactSingle++; break;
+                case Outcome.Accepted: accepted++; if (e.AcceptedMethod == DecisionMethod.ExactSingle) exactSingle++; else if (e.AcceptedMethod == DecisionMethod.Single) single++; break;
                 case Outcome.Queued: queued++; break;
                 case Outcome.Minted: minted++; break;
                 case Outcome.Deferred: deferred++; break;
@@ -216,11 +217,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // a rival at acceptance score is a disagreement: another authority, or another provisional lookalike when the top is only a lookalike itself
         var topIsFirm = top is not null && top.Members.Any(m => !m.Veto && !m.Candidate.Provisional);
         var second = live.Skip(1).FirstOrDefault(g => !topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional));
-        if (top is not null && top.Score >= _options.AcceptScore && !truncated && Carries(reading, top) && (second is null || second.Score < _options.AcceptScore))
+        var carried = top is null ? null : CarriedBy(top);
+        if (top is not null && top.Score >= _options.AcceptScore && !truncated && carried is not null && (second is null || second.Score < _options.AcceptScore))
         {
             // the group's ids already on two different entities of ours means the store disagrees with itself: review, not a vote onto the first
             if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
-            return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top);
+            return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top, AcceptedMethod: carried);
         }
         // policy: one source's exact match, the only candidate there is (vetoed or not), authority records only, and
         // nothing on the string to check it against (an undated string); see ReconcilerOptions.AcceptUniqueExactSingleSource
@@ -340,10 +342,28 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees));
         }
+        var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto).ToList();
+        if (placed.Count == 0) return list;
+        // a record of another source whose placement sits inside a placed candidate's is the same place at less depth (LoC's
+        // "Princes Risborough (England)", the store's entity labelled from it, under TGN's Princes Risborough in Buckinghamshire,
+        // England): it is placed through that candidate and grouped with it. Inside two placed candidates of one source (a city
+        // and its district with the same parent string) it is placed through neither; the desk tells them apart.
+        var inside = new HashSet<int>();
+        for (var i = 0; i < list.Count; i++)
+        {
+            var b = list[i];
+            if (b.Veto || b.QualifierAgrees is null) continue;
+            var words = Qualified.Tokens(b.Candidate.Placement);
+            var through = placed.Where(a => a.Candidate.Uri != b.Candidate.Uri && a.Candidate.Source != b.Candidate.Source && Qualified.Contains(a.Candidate.Placement, words)).ToList();
+            if (through.Count == 0) continue;
+            inside.Add(i);
+            list[i] = through.Count == 1
+                ? b with { PlacedThrough = through[0].Candidate.Uri, Reason = b.Reason + $"; placed through {through[0].Candidate.Source} {through[0].Candidate.Label}" }
+                : b with { Reason = b.Reason + $"; inside {through.Count} placed candidates" };
+        }
         // when the qualifier places one candidate, the namesakes it does not place are not what the string names
-        if (list.Any(m => m.QualifierAgrees == true))
-            for (var i = 0; i < list.Count; i++)
-                if (list[i].QualifierAgrees == false && !list[i].Veto) list[i] = list[i] with { Veto = true, Reason = list[i].Reason + "; the qualifier places another candidate" };
+        for (var i = 0; i < list.Count; i++)
+            if (list[i].QualifierAgrees == false && !inside.Contains(i) && !list[i].Veto) list[i] = list[i] with { Veto = true, Reason = list[i].Reason + "; the qualifier places another candidate" };
         return list;
     }
 
@@ -361,6 +381,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             Find(c.Candidate.Uri);
             foreach (var same in c.Candidate.SameAs) Union(c.Candidate.Uri, same);
+            if (c.PlacedThrough is not null) Union(c.Candidate.Uri, c.PlacedThrough);
         }
         return scored.GroupBy(c => Find(c.Candidate.Uri))
             .Select(g =>
@@ -381,13 +402,17 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     private static CandidateGroup Group(IReadOnlyList<ScoredCandidate> members) => Groups(members)[0];
 
-    /// <summary>Whether an acceptable-scoring group has enough behind it: independent sources agreeing, or an entity already in the store that has authority behind it, or one source with an exact name and dates that agree.</summary>
-    private bool Carries(StringReading reading, CandidateGroup group)
+    /// <summary>
+    /// What carries an acceptable-scoring group, as the decision method it is recorded under: independent sources agreeing, or an
+    /// entity already in the store with authority behind it (vote); one source with an exact name carried by the string's own
+    /// dates or placed qualifier (single); or nothing (null).
+    /// </summary>
+    private string? CarriedBy(CandidateGroup group)
     {
-        if (group.Sources.Count >= _options.MinIndependentSources) return true;
-        if (group.Members.Any(m => !m.Veto && m.Candidate.EntityId is not null && !m.Candidate.Provisional)) return true;
+        if (group.Sources.Count >= _options.MinIndependentSources) return DecisionMethod.Vote;
+        if (group.Members.Any(m => !m.Veto && m.Candidate.EntityId is not null && !m.Candidate.Provisional)) return DecisionMethod.Vote;
         var best = group.Best;
-        return _options.AcceptSingleSourceWithDates && (best.DatesAgree || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97;
+        return _options.AcceptSingleSourceWithDates && (best.DatesAgree || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97 ? DecisionMethod.Single : null;
     }
 
     // ---- entities ------------------------------------------------------------------------------------------------

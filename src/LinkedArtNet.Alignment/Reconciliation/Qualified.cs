@@ -49,6 +49,18 @@ public static class Qualified
         return q.Any(p.Contains);
     }
 
+    /// <summary>
+    /// Whether a placement contains every one of the given words: a coarser placement ("England", or LoC's "London, England")
+    /// inside a finer one (TGN's "Hammersmith, London, England, United Kingdom, Europe, World") names the same place at less
+    /// depth; a word outside it ("Dumfries and Galloway") makes it another place.
+    /// </summary>
+    public static bool Contains(string? placement, IReadOnlyList<string> words)
+    {
+        if (words.Count == 0) return false;
+        var p = Tokens(placement);
+        return p.Count > 0 && words.All(p.Contains);
+    }
+
     /// <summary>What a record says about where it is: TGN's parent string when present, else the parentheticals of its labels.</summary>
     public static string? PlacementOf(string? parentString, IEnumerable<string?> labels)
     {

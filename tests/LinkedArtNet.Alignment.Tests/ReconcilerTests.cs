@@ -268,6 +268,40 @@ public class GroupingTests
         var open = Reconciler.Score(reading with { Qualifier = "N.J." }, [bradford, newcastle], 120);
         Assert.All(open, m => Assert.False(m.Veto));
     }
+
+    [Fact]
+    public void A_coarser_placement_inside_the_placed_one_is_the_same_place_and_joins_its_group()
+    {
+        var reading = Reading("Princes Risborough", EntityClass.Place) with { Qualifier = "Buckinghamshire" };
+        var tgn = new Candidate("t1", "tgn", "Princes Risborough", EntityClass.Place, null, [], "local", 1.0, Placement: "Buckinghamshire, England, United Kingdom, Europe, World");
+        var loc = new Candidate("l1", "loc", "Princes Risborough (England)", EntityClass.Place, null, [], "local", 0.85, Placement: "England");
+        var store = new Candidate("e1", "store", "Princes Risborough (England)", EntityClass.Place, null, ["l1"], "store", 0.85, "e1", Placement: "England");
+        var maine = new Candidate("l2", "loc", "Princes Risborough (Me.)", EntityClass.Place, null, [], "local", 0.85, Placement: "Me.");
+        var indiana = new Candidate("t2", "tgn", "Princes Risborough", EntityClass.Place, null, [], "local", 1.0, Placement: "Gibson, Indiana, United States, North and Central America, World");
+        var scored = Reconciler.Score(reading, [tgn, loc, store, maine, indiana], 120);
+        Assert.Equal("t1", scored[1].PlacedThrough); Assert.False(scored[1].Veto); Assert.Contains("placed through tgn", scored[1].Reason);
+        Assert.Equal("t1", scored[2].PlacedThrough); Assert.False(scored[2].Veto);
+        Assert.Null(scored[3].PlacedThrough); Assert.False(scored[3].Veto); // "Me." places nothing either way
+        Assert.True(scored[4].Veto); // a namesake the qualifier does not place
+        var groups = Reconciler.Groups(scored);
+        Assert.Equal(["loc", "tgn"], groups[0].Sources.OrderBy(x => x, StringComparer.Ordinal)); // two sources now agree: a vote, and the LoC id travels with the TGN one
+        Assert.Contains("l1", groups[0].Uris); Assert.Contains("e1", groups[0].Uris);
+        // inside two placed records of one source with the same parent string (a city and its district) the coarser record is placed through neither
+        var district = new Candidate("t3", "tgn", "Landkreis Princes Risborough", EntityClass.Place, null, [], "local", 1.0, Placement: tgn.Placement);
+        var ambiguous = Reconciler.Score(reading, [tgn, district, loc], 120);
+        Assert.Null(ambiguous[2].PlacedThrough); Assert.False(ambiguous[2].Veto);
+        Assert.Equal(3, Reconciler.Groups(ambiguous).Count);
+    }
+
+    [Fact]
+    public void A_loc_subdivision_id_is_the_heading_it_was_made_from()
+    {
+        var reading = Reading("Massachusetts", EntityClass.Place);
+        var record = new AuthorityRecord("http://id.loc.gov/authorities/names/n79007084-781", "loc", "Massachusetts", ["Massachusetts"], "Place", null, [], null, DateTimeOffset.UtcNow, "test");
+        Assert.Contains("http://id.loc.gov/authorities/names/n79007084", LocalIndexSource.ToCandidate(record, reading, "local").SameAs);
+        var plain = record with { Uri = "http://id.loc.gov/authorities/names/n79007084" };
+        Assert.Empty(LocalIndexSource.ToCandidate(plain, reading, "local").SameAs);
+    }
 }
 
 [Collection("postgres")]
@@ -517,11 +551,25 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(Tgn("7000002", "Heaton", "Newcastle upon Tyne, Tyne and Wear, England, United Kingdom, Europe, World"));
         await pg.Store.PutAuthorityAsync(Tgn("7000003", "Princeton", "Mercer, New Jersey, United States, North and Central America, World"));
         await pg.Store.PutAuthorityAsync(Tgn("7000004", "Princeton", "Gibson, Indiana, United States, North and Central America, World"));
-        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn")], ProjectManifest.PmcDefault.ToOptions());
+        await pg.Store.PutAuthorityAsync(Tgn("1030371", "Princes Risborough", "Buckinghamshire, England, United Kingdom, Europe, World"));
+        const string risboroughLoc = "http://id.loc.gov/authorities/names/n82118681";
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord(risboroughLoc, "loc", "Princes Risborough (England)", ["Princes Risborough (England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        // a place the earlier system identified by its LoC heading, as the imported PMC places are
+        var legacy = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Princes Risborough (England)", ["Princes Risborough (England)", "Princes Risborough"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(legacy.Id, new Equivalent(risboroughLoc, "loc", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
 
         var hammersmith = await pg.Store.CollectAsync(ds, "place", "Hammersmith, London");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, hammersmith)); // one source, name exact, qualifier placed
         Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Hammersmith, London"))!.Equivalents, q => q.Uri.EndsWith("7011781"));
+        Assert.Equal(DecisionMethod.Single, (await pg.Store.DecisionForAsync(hammersmith.Id))!.Method); // carried by the qualifier alone: recorded as such
+        // the coarser LoC placement is the same village: the legacy entity is matched and gains the TGN id, and two sources make it a vote
+        var risborough = await pg.Store.CollectAsync(ds, "place", "Princes Risborough, Buckinghamshire");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, risborough));
+        var resolved = (await pg.Store.ResolveAsync(ds, "place", "Princes Risborough, Buckinghamshire"))!;
+        Assert.Equal(legacy.Id, resolved.Id);
+        Assert.Contains(resolved.Equivalents, q => q.Uri.EndsWith("1030371"));
+        Assert.Equal(DecisionMethod.Vote, (await pg.Store.DecisionForAsync(risborough.Id))!.Method);
         var heaton = await pg.Store.CollectAsync(ds, "place", "Heaton, Bradford");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, heaton)); // the Newcastle namesake is vetoed by the qualifier
         Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Heaton, Bradford"))!.Equivalents, q => q.Uri.EndsWith("7000001"));

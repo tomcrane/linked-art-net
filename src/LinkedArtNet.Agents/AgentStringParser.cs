@@ -123,8 +123,9 @@ public sealed partial class AgentStringParser
         // 4. Qualifiers wrapped round the name: "attributed to Rembrandt", "Rembrandt and others", "Anonymous".
         core = StripQualifiers(core, qualifiers, notes);
 
-        // 5. Honorifics inside the name: "Sir John Smith", "Smith, Sir John".
-        core = StripHonorifics(core, honorifics);
+        // 5. Honorifics inside the name: "Sir John Smith", "Smith, Sir John". A body keeps its words: "Queen Victoria Museum" is
+        //    not the Victoria Museum (the 2026-10-20 shadow matched it to one), nor "Sir John Soane's Museum" John Soane's.
+        if (!IsCorporate(core)) core = StripHonorifics(core, honorifics);
 
         // 6. Name parts.
         string? name = core.Length == 0 ? null : core;

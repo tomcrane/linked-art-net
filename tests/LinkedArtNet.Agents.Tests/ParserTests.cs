@@ -18,6 +18,17 @@ public class ParserTests
     }
 
     [Fact]
+    public void A_body_keeps_the_title_in_its_name()
+    {
+        var museum = Parse("Queen Victoria Museum", "dscribe"); // the 2026-10-20 shadow run read this as "Victoria Museum" and matched another museum
+        Assert.Equal(AgentKind.Group, museum.Kind);
+        Assert.Equal("Queen Victoria Museum", museum.Name);
+        Assert.Empty(museum.Honorifics);
+        Assert.Equal("Sir John Soane's Museum", Parse("Sir John Soane's Museum", "dscribe").Name);
+        Assert.Equal("John Smith", Parse("Sir John Smith", "default").Name); // a person still gives up the title
+    }
+
+    [Fact]
     public void A_single_letter_is_an_initial_not_a_title()
     {
         Assert.Equal("Larsen, Ruth M", Parse("Larsen, Ruth M (editor)", "dscribe").Name); // "M" is Monsieur in the table, an initial here

@@ -52,7 +52,8 @@ a time; a new decision replaces the old one, and *undo* brings the old one back.
 | method | meaning |
 |---|---|
 | override | a curated rule said this spelling always means this |
-| vote | authority records agreed, or one agreed closely enough with dates |
+| vote | authority records of two or more sources agreed, or an entity already in the project with authority behind it did |
+| single | one source's exact match, carried by the string itself: its dates agreed with the record's, or its qualifier ("Hammersmith, London") was borne out by the record's placement; reviewable as a set |
 | exact-single | one source's exact match was the only candidate and the string had no dates to check: accepted by project policy, reviewable as a set |
 | exact-name | an entity already in the project matched |
 | human | a person decided it on the desk or in the variants view |

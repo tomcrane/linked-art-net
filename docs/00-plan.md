@@ -431,15 +431,24 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       again 2026-10-20 with the qualified and list shapes built (run-20261020-100906-ccv3h8): accepted 1,632 (vote
       531, exact-single 1,101), queued 7,005, minted 25,866, 404 lists as 160 new parts; place minted 931 -> 203.
       Numbers and the two findings in doc 10 section 7.6 "Measured".
-    - "Placed through" (doc 10 section 7.6 finding 1, owner's decision owed, 2026-10-20): a candidate whose
-      placement is coarser than but contained in the placed candidate's parent string (LoC "Princes Risborough
-      (England)" beside TGN's Princes Risborough in Buckinghamshire, England) is the same place and should join the
-      placed group, not be vetoed as a namesake; today it leaves a duplicate entity beside the legacy LoC-identified
-      one. The store stage should hold such an entity for the index stage rather than refuse it.
-    - A single-source match carried by dates or a placed qualifier is recorded as method `vote` (doc 10 section
-      7.6 finding 2); give it a method of its own (`single`) so the desk can review carried singles as a set.
-    - Shadow of run ccv3h8 owed (`shadow --sample 2000`): the qualified and list shapes changed what places
-      resolve to; the run before them (a2wv6z) had nine disagreements, none on places.
+    - ~~"Placed through" (doc 10 section 7.6 finding 1)~~ and ~~the `single` method (finding 2)~~: both built
+      2026-10-20 after the owner's yes; the rerun measures them (expect place votes up, place minted down, the
+      legacy LoC-identified places gaining TGN ids rather than duplicates).
+    - Shadow of run ccv3h8 (run-20261020-111213-rpb925, 2000 strings): Agree 1,022, Disagree 4 (three already
+      classified: the de Young lumping, the Eastlake nephew, the Carlisle museum; the fourth, "Queen Victoria
+      Museum" read as "Victoria Museum", was the agent parser stripping a title from a body's name, fixed the same
+      day), OldOnly 100, Unverifiable 17. No place string agreed or disagreed: the 2024 places carry VIAF, Wikidata
+      and LUX ids, never TGN, so they are Unverifiable where the new run accepted TGN; a place shadow needs the LUX
+      self-echo (3b) or a Wikidata-to-TGN bridge to say anything. Among the queued places: "United States", "Spain",
+      "Ontario" meet a TGN namesake at 1.00 (a hamlet or a county with the nation's name); TGN's place type is in
+      the records' data and a bare string could prefer the nation or region over an inhabited place of the same name,
+      to measure before building. "Dunedin" and "Passau" (city vs Landkreis) are genuine desk work.
+    - Parser gap, the hyphenated "Country-City" form: "Portugal-Lisbon", "Italy-Vercelli", "Spain-Madrid",
+      "England-Coventry" were minted (4 of 92 place strings in the rpb925 shadow, all OldOnly). A qualified context
+      could try the whole string first and, when no index has it and it splits on one hyphen into two capitalised
+      parts, read it again with the first part as the qualifier ("Lisbon" placed by "Portugal"). Hyphenated names
+      proper ("Clermont-Ferrand", "Saint-Denis") survive because the first lookup finds them; three-part names
+      ("Stoke-on-Trent") are never split.
 
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:

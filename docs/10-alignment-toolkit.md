@@ -407,6 +407,20 @@ right in every case, and showed two things to settle:
    which it is not; the desk cannot review carried singles as a set the way it reviews `exact-single`. A method
    of its own (`single`) for both carriers, written by `Carries()`.
 
+Built 2026-10-20 (the owner's "yes" to both), placed through: in `Reconciler.Score`, after the qualifier has placed
+one or more candidates, a candidate of another source whose placement words all sit inside a placed candidate's
+placement (`Qualified.Contains`) is `ScoredCandidate.PlacedThrough` that candidate and `Groups` unions the two, so
+LoC's "Princes Risborough (England)" and the store's legacy entity labelled from it join TGN's record: two sources
+agree, the decision is a vote, and the legacy entity gains the TGN id instead of a duplicate being minted. Inside
+two placed candidates of one source with the same parent string (a city and its district) the coarser record is
+placed through neither and left unvetoed; those rivals go to the desk. Records of one source never place through
+each other. The method `single` (`DecisionMethod.Single`, `CarriedBy()`) now records a single-source match carried
+by agreeing dates or a placed qualifier; the report prints "accepted N (vote V, single S, exact-single E)". From the
+same day's shadow: a LoC names id ending `-781` (the heading's geographic-subdivision form, MARC field 781) is given
+the base id as a sameAs when read as a candidate, so "Massachusetts" and "South Africa" no longer meet themselves as
+rivals; and the agent parser leaves a body's words alone ("Queen Victoria Museum" had lost its "Queen" and matched
+the Victoria Museum).
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

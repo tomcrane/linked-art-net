@@ -100,7 +100,8 @@ public sealed record Candidate(
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
 /// <param name="QualifierAgrees">The string's qualifier was found in the record's placement (true), looked for and not found (false), or there was nothing to compare (null).</param>
-public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null);
+/// <param name="PlacedThrough">The URI of the placed candidate of another source whose placement contains this one's: the same place at less depth (LoC's "Princes Risborough (England)" through TGN's in Buckinghamshire, England), so the two are grouped as one thing.</param>
+public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? PlacedThrough = null);
 
 /// <summary>Candidates that are the same real-world thing across sources, joined through their mutual sameAs links, voting as one.</summary>
 /// <param name="Vetoed">Every member is vetoed, or a vetoed member is the same thing as a live one by the authorities' own links: the group cannot be the answer.</param>
@@ -164,7 +165,10 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
             catch (System.Text.Json.JsonException) { }
         }
         var labels = r.Label is null ? r.Labels : r.Labels.Prepend(r.Label);
-        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, r.SameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities, Disambiguated: disambiguated,
+        // a LoC names id ending -781 is the heading's geographic-subdivision form (from the MARC 781 field), the same place as
+        // the id without it: the two were rival groups for "Massachusetts" and "South Africa" in the 2026-10-20 shadow
+        var sameAs = r.Source == "loc" && r.Uri.EndsWith("-781", StringComparison.Ordinal) ? r.SameAs.Append(r.Uri[..^4]).ToArray() : r.SameAs;
+        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities, Disambiguated: disambiguated,
             Placement: reading.Qualifier is null ? null : Qualified.PlacementOf(parentString, labels));
     }
 }

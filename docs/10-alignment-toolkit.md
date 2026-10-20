@@ -382,6 +382,31 @@ entity. The report counts lists and newly reconciled parts; the shadow verdict f
 `Decomposed`. Also here: the exact-single policy's two-word rule now applies to people and bodies only, since a
 one-word place or subject ("Lampeter", "Sculpture") is whole.
 
+Measured 2026-10-20 (run-20261020-100906-ccv3h8, all five sources, both shapes): accepted 1,632 (vote 531,
+exact-single 1,101), queued 7,005, minted 25,866, lists 404 as 160 newly reconciled parts; against the baseline
+run x7q3sw, 728 strings left minted. The place context: minted 931 -> 491 (qualified shape alone, run zwc3gb) ->
+203; list 404; vote 3 -> 120; exact-single 14 -> 32; queued 302 -> 626, the namesakes the qualifier does not
+settle ("Princeton, N.J.") now reaching the desk instead of being minted. Keywords exact-single 327 -> 353 from the
+one-word rule; the rest of keywords waits on the compound shape. A fifteen-string sample of the placed votes was
+right in every case, and showed two things to settle:
+
+1. A coarser placement that agrees is treated as a namesake. "Princes Risborough, Buckinghamshire" is placed on
+   TGN 1030371 (parent string "Buckinghamshire, England, ..."); LoC n82118681 "Princes Risborough (England)" and
+   the store's own entity labelled from it fail the qualifier ("Buckinghamshire vs England") and are vetoed as
+   namesakes the qualifier does not place. They are the same village: LoC qualifies with the country unless a
+   namesake forces the county, so "(England)" is a claim of uniqueness at that level, not a different place. The
+   cost is a second entity for one place (the new TGN-placed one beside the legacy LoC-identified one) and a
+   lost equivalent. Proposed rule, "placed through": when the qualifier places candidate A, any candidate B whose
+   placement words (three letters or more, not noise) are all found in A's placement is the same thing as A and
+   joins A's group, so the entity carries both ids and an existing store entity is matched rather than
+   duplicated; B's placement that is not contained ("Me.", "Dumfries and Galloway") stays a namesake. The store
+   stage needs the same courtesy: a store entity whose qualifier is coarser than the string's is not refused
+   outright but held for the index stage to place through. Owner's decision before building; the shadow of
+   this run will show how many old LoC-identified places it touches.
+2. A single-source match carried by a placed qualifier (or by agreeing dates) is recorded under method `vote`,
+   which it is not; the desk cannot review carried singles as a set the way it reviews `exact-single`. A method
+   of its own (`single`) for both carriers, written by `Carries()`.
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

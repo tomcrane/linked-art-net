@@ -427,7 +427,19 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       place lists, qualified places): qualified reading first, then derived strings (list shape for places), then
       the compound shape for keywords with the home-vocabulary rule. Then the remote sources (3b), LUX self-echo
       first. Measured baseline 2026-10-20 (run-20261020-090207-x7q3sw, all five sources): accepted 1,468 (vote 412,
-      exact-single 1,056), queued 6,674, minted 26,594; LCSH alone moved ~650 strings out of minted.
+      exact-single 1,056), queued 6,674, minted 26,594; LCSH alone moved ~650 strings out of minted. Measured
+      again 2026-10-20 with the qualified and list shapes built (run-20261020-100906-ccv3h8): accepted 1,632 (vote
+      531, exact-single 1,101), queued 7,005, minted 25,866, 404 lists as 160 new parts; place minted 931 -> 203.
+      Numbers and the two findings in doc 10 section 7.6 "Measured".
+    - "Placed through" (doc 10 section 7.6 finding 1, owner's decision owed, 2026-10-20): a candidate whose
+      placement is coarser than but contained in the placed candidate's parent string (LoC "Princes Risborough
+      (England)" beside TGN's Princes Risborough in Buckinghamshire, England) is the same place and should join the
+      placed group, not be vetoed as a namesake; today it leaves a duplicate entity beside the legacy LoC-identified
+      one. The store stage should hold such an entity for the index stage rather than refuse it.
+    - A single-source match carried by dates or a placed qualifier is recorded as method `vote` (doc 10 section
+      7.6 finding 2); give it a method of its own (`single`) so the desk can review carried singles as a set.
+    - Shadow of run ccv3h8 owed (`shadow --sample 2000`): the qualified and list shapes changed what places
+      resolve to; the run before them (a2wv6z) had nine disagreements, none on places.
 
 Status review (2026-10-17): Phases 0-3 are complete and live; Phase 2's leftovers are closed except benchmarks.
 Remaining, in rough order of value:

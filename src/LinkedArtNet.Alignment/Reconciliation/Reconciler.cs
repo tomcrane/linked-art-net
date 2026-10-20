@@ -115,8 +115,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // a part string from an earlier run is a row of its own and undecided when the list is made; its parent, earlier in the
             // list, decides it on the way, and deciding it again here would supersede that decision and count it twice
             n++;
-            if (await store.DecisionForAsync(s.Id, ct) is not null) { decidedEarlier++; continue; }
-            Count(await ReconcileOneDetailedAsync(dataset, s, runId, ct));
+            if (await store.DecisionForAsync(s.Id, ct) is not null) decidedEarlier++;
+            else Count(await ReconcileOneDetailedAsync(dataset, s, runId, ct));
             if (n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists + compounds > 0 ? $", lists {lists}, compounds {compounds}" : ""));
         }
         return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier);

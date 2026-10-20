@@ -8,12 +8,43 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 /// indexes are asked for; the qualifier is checked against what each candidate record says about its own place:
 /// TGN's parent string ("Hammersmith, London, England, United Kingdom, Europe, World") or the parenthetical a LoC
 /// heading carries ("Heaton (Bradford, England)"). Agreement is a token of the qualifier found among the record's
-/// placement tokens; abbreviations ("N.J.") place nothing and leave the string to the desk.
+/// placement tokens. The cataloguers' abbreviations for states, provinces and territories ("N.J.", "Me.", "N.S.W.")
+/// are read as their names, and a name of several words is one token, so "Jersey" is not "New Jersey".
 /// </summary>
 public static class Qualified
 {
     private static readonly HashSet<string> Noise = new(StringComparer.Ordinal) { "county", "the", "of", "and", "near", "upon", "on", "in", "co", "st", "saint", "city", "town", "district" };
     private static readonly Regex Parenthetical = new(@"\(([^()]*)\)", RegexOptions.Compiled);
+
+    // The abbreviations library cataloguers qualify place names with: the AACR2 Appendix B forms for the United States,
+    // Canada and Australia, which LoC headings use ("Secaucus (N.J.)", "Tulita (N.W.T.)", "Kent Town (S. Aust.)"). Written
+    // from the assistant's knowledge of that list, not loaded from a file; check a doubted form against the LoC's own
+    // headings. Keys are as they appear after folding (lower case, periods kept).
+    private static readonly (string Abbreviation, string Name)[] Regions =
+    [
+        ("ala.", "alabama"), ("ariz.", "arizona"), ("ark.", "arkansas"), ("calif.", "california"), ("colo.", "colorado"),
+        ("conn.", "connecticut"), ("del.", "delaware"), ("d.c.", "district of columbia"), ("fla.", "florida"), ("ga.", "georgia"),
+        ("ill.", "illinois"), ("ind.", "indiana"), ("kan.", "kansas"), ("ky.", "kentucky"), ("la.", "louisiana"), ("me.", "maine"),
+        ("md.", "maryland"), ("mass.", "massachusetts"), ("mich.", "michigan"), ("minn.", "minnesota"), ("miss.", "mississippi"),
+        ("mo.", "missouri"), ("mont.", "montana"), ("neb.", "nebraska"), ("nev.", "nevada"), ("n.h.", "new hampshire"),
+        ("n.j.", "new jersey"), ("n.m.", "new mexico"), ("n.y.", "new york"), ("n.c.", "north carolina"), ("n.d.", "north dakota"),
+        ("okla.", "oklahoma"), ("or.", "oregon"), ("pa.", "pennsylvania"), ("r.i.", "rhode island"), ("s.c.", "south carolina"),
+        ("s.d.", "south dakota"), ("tenn.", "tennessee"), ("tex.", "texas"), ("vt.", "vermont"), ("va.", "virginia"),
+        ("wash.", "washington"), ("w. va.", "west virginia"), ("w.va.", "west virginia"), ("wis.", "wisconsin"), ("wyo.", "wyoming"),
+        ("alta.", "alberta"), ("b.c.", "british columbia"), ("man.", "manitoba"), ("n.b.", "new brunswick"), ("nfld.", "newfoundland"),
+        ("n.s.", "nova scotia"), ("n.w.t.", "northwest territories"), ("ont.", "ontario"), ("p.e.i.", "prince edward island"),
+        ("que.", "quebec"), ("sask.", "saskatchewan"),
+        ("a.c.t.", "australian capital territory"), ("n.s.w.", "new south wales"), ("n.t.", "northern territory"), ("qld.", "queensland"),
+        ("s. aust.", "south australia"), ("s.a.", "south australia"), ("tas.", "tasmania"), ("vic.", "victoria"), ("w.a.", "western australia"),
+    ];
+    // the normaliser drops a trailing period ("Princeton, N.J." folds to "princeton, n.j"), so the last one is optional at the end of
+    // the text and required elsewhere: "La Paz" is not Louisiana, "Baton Rouge, La." is
+    private static readonly (Regex Pattern, string Token)[] Expansions = Regions
+        .Select(r => (new Regex(@"(?<![a-z])" + Regex.Escape(r.Abbreviation.TrimEnd('.')) + @"(?:\.(?![a-z])|$)", RegexOptions.Compiled), r.Name.Replace(" ", "")))
+        .ToArray();
+    private static readonly (Regex Pattern, string Token)[] Phrases = Regions.Select(r => r.Name).Where(n => n.Contains(' ')).Distinct()
+        .Select(n => (new Regex(@"(?<![a-z])" + Regex.Escape(n) + @"(?![a-z])", RegexOptions.Compiled), n.Replace(" ", "")))
+        .ToArray();
 
     /// <summary>Splits "Name, Qualifier" or "Name (Qualifier)" into the name and the qualifier; a name alone has no qualifier.</summary>
     public static (string Name, string? Qualifier) Split(string text)
@@ -37,6 +68,8 @@ public static class Qualified
     {
         if (string.IsNullOrWhiteSpace(text)) return [];
         var folded = StringKey.Fold(StringKey.Normalise(text));
+        foreach (var (pattern, token) in Expansions) folded = pattern.Replace(folded, token);
+        foreach (var (pattern, token) in Phrases) folded = pattern.Replace(folded, token);
         return folded.Split([' ', ',', ';', '.', '(', ')', '/', ':', '-', '\''], StringSplitOptions.RemoveEmptyEntries)
             .Where(t => t.Length >= 3 && !Noise.Contains(t)).Distinct(StringComparer.Ordinal).ToArray();
     }

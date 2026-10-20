@@ -252,7 +252,14 @@ public class GroupingTests
         Assert.True(Qualified.Agrees("Isle of Wight", "Shorwell, Isle of Wight, England, United Kingdom, Europe, World")); // "of" is noise, "wight" places it
         Assert.True(Qualified.Agrees("S. Australia", "Kent Town, South Australia, Australia, Oceania, World"));
         Assert.False(Qualified.Agrees("Bradford", "Heaton, Newcastle upon Tyne, England, United Kingdom, Europe, World"));
-        Assert.Null(Qualified.Agrees("N.J.", "Princeton, New Jersey, United States, North and Central America, World")); // an abbreviation places nothing
+        // the cataloguers' abbreviations are read as the names they stand for, and a name of several words is one word
+        Assert.True(Qualified.Agrees("N.J.", "Princeton, Mercer, New Jersey, United States, North and Central America, World"));
+        Assert.False(Qualified.Agrees("N.J.", "Princeton, Gibson, Indiana, United States, North and Central America, World"));
+        Assert.False(Qualified.Agrees("N.Y.", "Secaucus, Hudson, New Jersey, United States, North and Central America, World"));
+        Assert.False(Qualified.Agrees("Jersey", "Secaucus, Hudson, New Jersey, United States, North and Central America, World")); // the Channel Island is not the state
+        Assert.True(Qualified.Agrees("N.W.T.", "Tulita, Northwest Territories, Canada, North and Central America, World"));
+        Assert.Equal(["kent", "southaustralia"], Qualified.Tokens("Kent Town (S. Aust.)").Order()); // "town" is noise
+        Assert.Null(Qualified.Agrees("W.", "Princeton, New Jersey, United States, North and Central America, World")); // an initial places nothing
         Assert.Null(Qualified.Agrees("Bradford", null));
         Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
 
@@ -265,7 +272,7 @@ public class GroupingTests
         Assert.False(scored[1].QualifierAgrees); Assert.True(scored[1].Veto); Assert.Contains("places another", scored[1].Reason);
         Assert.Null(scored[2].QualifierAgrees); Assert.False(scored[2].Veto);
         // with nothing placed, namesakes stay rivals
-        var open = Reconciler.Score(reading with { Qualifier = "N.J." }, [bradford, newcastle], 120);
+        var open = Reconciler.Score(reading with { Qualifier = "W." }, [bradford, newcastle], 120);
         Assert.All(open, m => Assert.False(m.Veto));
     }
 
@@ -281,7 +288,7 @@ public class GroupingTests
         var scored = Reconciler.Score(reading, [tgn, loc, store, maine, indiana], 120);
         Assert.Equal("t1", scored[1].PlacedThrough); Assert.False(scored[1].Veto); Assert.Contains("placed through tgn", scored[1].Reason);
         Assert.Equal("t1", scored[2].PlacedThrough); Assert.False(scored[2].Veto);
-        Assert.Null(scored[3].PlacedThrough); Assert.False(scored[3].Veto); // "Me." places nothing either way
+        Assert.Null(scored[3].PlacedThrough); Assert.True(scored[3].Veto); // "Me." is Maine: a namesake the qualifier does not place
         Assert.True(scored[4].Veto); // a namesake the qualifier does not place
         var groups = Reconciler.Groups(scored);
         Assert.Equal(["loc", "tgn"], groups[0].Sources.OrderBy(x => x, StringComparer.Ordinal)); // two sources now agree: a vote, and the LoC id travels with the TGN one
@@ -573,7 +580,9 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var heaton = await pg.Store.CollectAsync(ds, "place", "Heaton, Bradford");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, heaton)); // the Newcastle namesake is vetoed by the qualifier
         Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Heaton, Bradford"))!.Equivalents, q => q.Uri.EndsWith("7000001"));
-        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Princeton, N.J."))); // an abbreviation places nothing: two rivals
+        var princeton = await pg.Store.CollectAsync(ds, "place", "Princeton, N.J.");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, princeton)); // "N.J." is New Jersey: the Indiana namesake is vetoed
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Princeton, N.J."))!.Equivalents, q => q.Uri.EndsWith("7000003"));
         Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Heaton"))); // no qualifier, two namesakes: the aligned Bradford entity does not answer silently
         Assert.Equal("Heaton, Bradford", (await pg.Store.ResolveAsync(ds, "place", "Heaton, Bradford"))!.Label);
         Assert.Equal(Outcome.MatchedStore, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Heaton, Bradford, Yorkshire"))); // the same place again, by its qualifier

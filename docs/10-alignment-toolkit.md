@@ -366,7 +366,10 @@ is measured by the by-context table of a fresh corpus run and a shadow sample.
 Built 2026-10-20, the qualified shape: `ContextRule.Qualified` (the PMC `place` rule sets it; the manifest writes it
 as `qualified`), `Qualified.Split` (name before the first comma, parentheticals as qualifiers), `Candidate.Placement`
 (TGN's `parentString`, else the parentheticals of a LoC or LCSH label), `ScoredCandidate.QualifierAgrees` (a word of
-three letters or more of the qualifier among the placement's words; "N.J." places nothing). A placed candidate lifts
+three letters or more of the qualifier among the placement's words; since the evening of the same day the cataloguers' abbreviations for states, provinces and
+territories, the AACR2 Appendix B forms LoC uses, are read as their names, "N.J." as New Jersey, and a name of several
+words is one word, so "Jersey" is not New Jersey; the table is in `Qualified.Regions`, written from the assistant's
+knowledge of the list). A placed candidate lifts
 by 0.05 and vetoes the namesakes the qualifier does not place; a placed exact single-source match carries like one
 with agreeing dates; an unplaced qualifier bars the exact-single policy; a minted or aligned qualified name keeps its
 qualifier as the entity label, and in a qualified context the store stage answers only when qualifiers agree or
@@ -420,6 +423,16 @@ same day's shadow: a LoC names id ending `-781` (the heading's geographic-subdiv
 the base id as a sameAs when read as a candidate, so "Massachusetts" and "South Africa" no longer meet themselves as
 rivals; and the agent parser leaves a body's words alone ("Queen Victoria Museum" had lost its "Queen" and matched
 the Victoria Museum).
+
+Measured 2026-10-20 (run-20261020-112520-sxyxbc, placed through and `single` in play): accepted 1,658 (vote 441,
+single 110, exact-single 1,102; the report line printed "single 0" because the count was never handed to the
+report record, fixed), queued 7,063, minted 25,858. Place: single 44 and vote 98 against 120 votes before, so 22
+more places accepted; minted 198; queued 598; exact-name 136. The vote sample showed the legacy LoC-identified
+entities ("Princes Risborough (England)", "Saxmundham (England)", "Billingshurst (England)") matched and given
+their TGN ids rather than duplicated, and LoC's finer headings ("Godshill (Hampshire, England)", "Tal-y-bont
+(Ceredigion, Wales)") placed through TGN's. It also showed "Secaucus, New Jersey" minting a new entity beside the
+legacy "Secaucus (N.J.)", because "N.J." placed nothing: hence the abbreviation table above. The next corpus run
+measures it.
 
 ## 8. Identifiers and publishing
 

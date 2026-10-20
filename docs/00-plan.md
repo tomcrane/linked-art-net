@@ -412,7 +412,11 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     - Per-context redo (for the jobs step, noted 2026-10-20): a change to one context's rule today costs a full
       undo and a twenty-minute corpus rerun. Wanted: `redo --context place [--method minted]`, which invalidates the
       valid decisions matching the filter, removes the provisional entities only those decisions held, and
-      reconciles those strings again; the same operation is a job on the runs page.
+      reconciles those strings again; the same operation is a job on the runs page. Constraint found 2026-10-20:
+      equivalents carry the run id, not the decision id, so a redo by context cannot take back the ids the other
+      contexts' decisions added in the same run, and the entities it leaves aligned would answer at the store stage
+      and pollute the measurement. Either equivalents get a decision id (schema change) or the redo is measured
+      with the store hidden, as the shadow is.
     - The Align tool reads the sources from the project's saved manifest but the context rules from the code's PMC
       default (`PmcContexts()`), so the two can disagree; the workbench reads both from the saved manifest. Make the
       tool read the saved manifest for both, with the code default only when the project has none (noted 2026-10-20).
@@ -430,7 +434,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       exact-single 1,056), queued 6,674, minted 26,594; LCSH alone moved ~650 strings out of minted. Measured
       again 2026-10-20 with the qualified and list shapes built (run-20261020-100906-ccv3h8): accepted 1,632 (vote
       531, exact-single 1,101), queued 7,005, minted 25,866, 404 lists as 160 new parts; place minted 931 -> 203.
-      Numbers and the two findings in doc 10 section 7.6 "Measured".
+      Numbers and the two findings in doc 10 section 7.6 "Measured". Both built and measured the same day
+      (run-20261020-112520-sxyxbc: place single 44 + vote 98, minted 198, legacy LoC places gaining TGN ids); the
+      state and province abbreviations ("Secaucus (N.J.)") then read as names, to measure on the next run.
     - ~~"Placed through" (doc 10 section 7.6 finding 1)~~ and ~~the `single` method (finding 2)~~: both built
       2026-10-20 after the owner's yes; the rerun measures them (expect place votes up, place minted down, the
       legacy LoC-identified places gaining TGN ids rather than duplicates).

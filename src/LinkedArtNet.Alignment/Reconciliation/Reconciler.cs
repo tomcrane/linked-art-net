@@ -113,7 +113,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             Count(await ReconcileOneDetailedAsync(dataset, s, runId, ct));
             if (++n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists > 0 ? $", lists {lists}" : ""));
         }
-        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts);
+        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single);
     }
 
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>

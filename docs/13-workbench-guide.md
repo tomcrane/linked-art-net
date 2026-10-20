@@ -59,6 +59,8 @@ a time; a new decision replaces the old one, and *undo* brings the old one back.
 | human | a person decided it on the desk or in the variants view |
 | queued | candidates exist but none was good enough: waiting for a person |
 | minted | nothing was found; a provisional entity was created |
+| list | the string names several things ("Dublin; New York"); each is a string of its own with its own decision, and the list has no entity |
+| composite | a compound heading ("Painting--Canada") nothing holds whole; its head and subdivisions are strings of their own, and the heading is a concept entity of the project coordinated from them |
 | imported | carried over from the earlier system |
 
 **The queue.** The queued strings. Each already points at a provisional entity so that publishing is never blocked;
@@ -133,6 +135,14 @@ The manifest is the project's reading rules, shown and edited on the project pag
   only candidate there is. On by default, since the alternative is a queue too long to work; such decisions carry the
   method `exact-single` and the project page offers them for review as a set.
 - `sources`: which indexes to consult, in order.
+
+Above the editor, *In effect now* says what the project is being read with: no manifest (anything goes), the PMC
+library rules as the toolkit currently defines them, or the project's own rules and how they differ from those. The
+library rules are built into the toolkit and change as it grows; *Replace with the PMC library rules* copies the
+current version over the saved manifest, and the command line does the same with `manifest --use-default`. A context
+may also set `qualified` (place names with their container, "Hammersmith, London"), `parts` (a list or a compound
+heading made of strings of their own), `home` (the vocabulary whose exact term decides) and `parseDatedOnly` (the agent
+profile only for strings carrying dates).
 
 An example for a project whose records come from a library catalogue:
 

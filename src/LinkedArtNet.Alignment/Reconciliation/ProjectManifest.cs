@@ -47,19 +47,41 @@ public sealed record ProjectManifest
             ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default"),
             ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default"),
             ["place"] = new([EntityClass.Place], Qualified: true, Parts: new(PartsShape.List, ";")),
-            ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place]),
+            // a precoordinated LCSH heading: looked up whole, else decided as its parts; the head may be a dated name heading
+            ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], Home: "lcsh", Parts: new(PartsShape.Compound, "--", Context: "keywords:sub", HeadContext: "keywords:head")),
+            ["keywords:head"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true),
+            ["keywords:sub"] = new([EntityClass.Type, EntityClass.Place, EntityClass.Period], Home: "lcsh"),
         },
     };
+
+    /// <summary>
+    /// What differs from another manifest, in words for a page or a console (contexts present on one side only or read
+    /// differently, the sources, the thresholds and policies), naming the two sides as the caller says.
+    /// </summary>
+    public IReadOnlyList<string> Differences(ProjectManifest other, string thisName = "this manifest", string otherName = "the other")
+    {
+        var d = new List<string>();
+        var cmp = StringComparer.OrdinalIgnoreCase;
+        foreach (var k in Contexts.Keys.Except(other.Contexts.Keys, cmp).OrderBy(x => x, cmp)) d.Add($"context {k} is in {thisName} only");
+        foreach (var k in other.Contexts.Keys.Except(Contexts.Keys, cmp).OrderBy(x => x, cmp)) d.Add($"context {k} is in {otherName} only");
+        foreach (var k in Contexts.Keys.Intersect(other.Contexts.Keys, cmp).OrderBy(x => x, cmp))
+            if (JsonSerializer.Serialize(Contexts[k], JsonOptions) != JsonSerializer.Serialize(other.Contexts[k], JsonOptions)) d.Add($"context {k} is read differently");
+        if (!Sources.SequenceEqual(other.Sources, cmp)) d.Add($"the sources ({string.Join(", ", Sources)} against {string.Join(", ", other.Sources)})");
+        if (AcceptScore != other.AcceptScore || ReviewScore != other.ReviewScore || MinIndependentSources != other.MinIndependentSources
+            || AcceptSingleSourceWithDates != other.AcceptSingleSourceWithDates || AcceptUniqueExactSingleSource != other.AcceptUniqueExactSingleSource || MintWhenNothingFound != other.MintWhenNothingFound)
+            d.Add("the thresholds or policies");
+        return d;
+    }
 }
 
 /// <summary>A <see cref="ContextRule"/> as the manifest writes it.</summary>
-public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null)
+public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null)
 {
-    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule());
+    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule(), Home, ParseDatedOnly ?? false);
 }
 
-/// <summary>A <see cref="PartsRule"/> as the manifest writes it: <c>{ "shape": "list", "separator": ";" }</c>.</summary>
-public sealed record PartsRuleJson(PartsShape Shape, string Separator, string? Context = null)
+/// <summary>A <see cref="PartsRule"/> as the manifest writes it: <c>{ "shape": "list", "separator": ";" }</c> or <c>{ "shape": "compound", "separator": "--", "context": "keywords:sub", "headContext": "keywords:head" }</c>.</summary>
+public sealed record PartsRuleJson(PartsShape Shape, string Separator, string? Context = null, string? HeadContext = null)
 {
-    public PartsRule ToRule() => new(Shape, Separator, Context);
+    public PartsRule ToRule() => new(Shape, Separator, Context, HeadContext);
 }

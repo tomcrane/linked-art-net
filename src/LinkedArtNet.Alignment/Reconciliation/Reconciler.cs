@@ -38,11 +38,12 @@ public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minte
 /// <param name="Lists">Strings decided as lists of parts; their parts' outcomes are counted with everything else, so the outcome counts add up to Considered minus Lists plus Parts.</param>
 /// <param name="Parts">Parts reconciled for the first time in this run (a part already decided by an earlier string is not counted again).</param>
 /// <param name="Single">Accepted on one source carried by the string's own dates or placed qualifier (DecisionMethod.Single).</param>
-public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0)
+/// <param name="Compounds">Compound headings decided as concepts coordinated from their parts (DecisionMethod.Composite); counted like lists.</param>
+public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0, int Compounds = 0)
 {
     /// <summary>Accepted by independent sources agreeing, as opposed to one source carried by the string or the single-source policy.</summary>
     public int Voted => Accepted - ExactSingle - Single;
-    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists > 0 ? $", lists {Lists} (as {Parts} new parts)" : "");
+    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (as {Parts} new parts)" : "");
 }
 
 /// <summary>
@@ -92,7 +93,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<ReconcileReport> RunAsync(string dataset, int limit = 0, string? runId = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var strings = await store.UndecidedAsync(dataset, limit > 0 ? limit : int.MaxValue, ct);
-        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, single = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, parts = 0, n = 0;
+        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, single = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, compounds = 0, parts = 0, n = 0;
         void Count(Evaluation e)
         {
             switch (e.Outcome)
@@ -103,7 +104,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 case Outcome.Queued: queued++; break;
                 case Outcome.Minted: minted++; break;
                 case Outcome.Deferred: deferred++; break;
-                case Outcome.Decomposed: lists++; foreach (var p in e.Parts ?? []) { parts++; Count(p); } break;
+                case Outcome.Decomposed: if (e.Reading.Shape == PartsShape.Compound) compounds++; else lists++; foreach (var p in e.Parts ?? []) { parts++; Count(p); } break;
                 default: skipped++; break;
             }
         }
@@ -111,9 +112,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             ct.ThrowIfCancellationRequested();
             Count(await ReconcileOneDetailedAsync(dataset, s, runId, ct));
-            if (++n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists > 0 ? $", lists {lists}" : ""));
+            if (++n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists + compounds > 0 ? $", lists {lists}, compounds {compounds}" : ""));
         }
-        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single);
+        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds);
     }
 
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>
@@ -131,24 +132,41 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     }
 
     /// <summary>
-    /// A list string is decided as its parts: each part is collected as a string of its own (shared with every other
-    /// parent naming it, and not counted as a new occurrence), linked in order, and reconciled when it has no decision
-    /// yet; the parent's decision is the list, with no entity.
+    /// A string made of parts is decided as its parts: each part is collected as a string of its own (shared with every
+    /// other parent naming it, and not counted as a new occurrence; a compound's head in the head context, the rest in
+    /// the parts context), linked in order, and reconciled when it has no decision yet. A list's decision is the list,
+    /// with no entity; a compound heading's is composite, with the heading's own Type entity (doc 10, section 7.5).
     /// </summary>
     private async Task<Evaluation> DecomposeAsync(string dataset, SourceString s, Evaluation e, string? runId, CancellationToken ct)
     {
         var reading = e.Reading;
+        var compound = reading.Shape == PartsShape.Compound;
         var decided = new List<Evaluation>();
         var ids = new List<long>();
         for (var i = 0; i < reading.Parts!.Count; i++)
         {
-            var part = await store.CollectAsync(dataset, reading.PartContext ?? s.Context, reading.Parts[i], ct: ct, count: false);
-            await store.LinkPartAsync(s.Id, i, part.Id, "member", ct);
+            var part = await store.CollectAsync(dataset, reading.PartContext(i, s.Context), reading.Parts[i], ct: ct, count: false);
+            await store.LinkPartAsync(s.Id, i, part.Id, compound ? (i == 0 ? "head" : "sub") : "member", ct);
             ids.Add(part.Id);
             if (await store.DecisionForAsync(part.Id, ct) is null) decided.Add(await ReconcileOneDetailedAsync(dataset, part, runId, ct));
         }
-        await store.DecideAsync(s.Id, null, DecisionMethod.List, Evidence("list", reading, [], new { parts = ids, texts = reading.Parts }), runId: runId, ct: ct);
+        if (compound)
+        {
+            var entity = await CompositeEntityAsync(dataset, reading, runId, ct);
+            await store.DecideAsync(s.Id, entity.Id, DecisionMethod.Composite, Evidence("composite", reading, e.Groups, new { parts = ids, texts = reading.Parts }), runId: runId, ct: ct);
+        }
+        else
+            await store.DecideAsync(s.Id, null, DecisionMethod.List, Evidence("list", reading, [], new { parts = ids, texts = reading.Parts }), runId: runId, ct: ct);
         return e with { Parts = decided };
+    }
+
+    /// <summary>The heading's own concept: the project's existing Type entity under that label when it has one (the imported headings keep their identifiers), else a new one under the project's identifiers. Its parts are the decisions of its part strings, read at export.</summary>
+    private async Task<Entity> CompositeEntityAsync(string dataset, StringReading reading, string? runId, CancellationToken ct)
+    {
+        foreach (var key in reading.Keys)
+            foreach (var found in await store.FindEntitiesByLabelAsync(key, dataset, EntityClass.Type, ct))
+                if (found.MergedInto is null && NameMatcher.Score(reading.Text, found.Label is null ? found.Labels : found.Labels.Prepend(found.Label)) >= 0.97) return found;
+        return await store.AddEntityAsync(dataset, new NewEntity(EntityClass.Type, reading.Text, [reading.String.Raw], null, [], [], EntityStatus.Provisional, RunId: runId), scheme, ct);
     }
 
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>
@@ -171,8 +189,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (over is null && reading.Key != s.Normalised) over = await store.OverrideForAsync(dataset, s.Context, reading.Key, ct);
         Time("overrides", sw);
         if (over is not null) return new Evaluation(Outcome.Overridden, reading, [], Override: over);
-        // a string made of parts is not looked up itself (an override on the whole still wins above): its parts are, by DecomposeAsync
-        if (reading.Parts is not null) return new Evaluation(Outcome.Decomposed, reading, []);
+        // a list is not looked up itself (an override on the whole still wins above): its parts are, by DecomposeAsync. A compound
+        // heading is looked up whole first, and decomposes below when nothing holds it
+        if (reading.Shape == PartsShape.List) return new Evaluation(Outcome.Decomposed, reading, []);
 
         // 2. the store: entities already minted whose labels match
         var candidates = new List<Candidate>();
@@ -239,6 +258,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
             return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top, AcceptedMethod: DecisionMethod.ExactSingle);
         }
+        // nothing holds a compound heading whole: its parts decide it
+        if (reading.Parts is not null) return new Evaluation(Outcome.Decomposed, reading, groups, Truncated: truncated);
         if (top is not null && top.Score >= _options.ReviewScore)
             return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
         return new Evaluation(_options.MintWhenNothingFound ? Outcome.Minted : Outcome.Deferred, reading, groups, Truncated: truncated);
@@ -342,6 +363,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees));
         }
+        if (reading.Home is not null) JoinToHome(reading.Home, list);
         var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto).ToList();
         if (placed.Count == 0) return list;
         // a record of another source whose placement sits inside a placed candidate's is the same place at less depth (LoC's
@@ -358,13 +380,32 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (through.Count == 0) continue;
             inside.Add(i);
             list[i] = through.Count == 1
-                ? b with { PlacedThrough = through[0].Candidate.Uri, Reason = b.Reason + $"; placed through {through[0].Candidate.Source} {through[0].Candidate.Label}" }
+                ? b with { JoinedTo = through[0].Candidate.Uri, Reason = b.Reason + $"; placed through {through[0].Candidate.Source} {through[0].Candidate.Label}" }
                 : b with { Reason = b.Reason + $"; inside {through.Count} placed candidates" };
         }
         // when the qualifier places one candidate, the namesakes it does not place are not what the string names
         for (var i = 0; i < list.Count; i++)
             if (list[i].QualifierAgrees == false && !inside.Contains(i) && !list[i].Veto) list[i] = list[i] with { Veto = true, Reason = list[i].Reason + "; the qualifier places another candidate" };
         return list;
+    }
+
+    /// <summary>
+    /// The context's home vocabulary decides: when exactly one of its records matches the name exactly, another vocabulary's
+    /// exact term on the same name (or the store's own entity under that label) is that concept's equivalent, not a rival
+    /// group: "Juvenile literature" is LCSH sh85071184 carrying AAT's "children's literature", where the two were rival
+    /// groups and the string was queued. Two exact home records stay rivals for the desk.
+    /// </summary>
+    private static void JoinToHome(string home, List<ScoredCandidate> list)
+    {
+        var exact = list.Where(m => !m.Veto && m.Candidate.Source == home && m.Candidate.NameScore >= 0.97).ToList();
+        if (exact.Count != 1) return;
+        var h = exact[0];
+        for (var i = 0; i < list.Count; i++)
+        {
+            var b = list[i];
+            if (b.Veto || b.Candidate.Source == home || b.Candidate.NameScore < 0.97 || b.JoinedTo is not null) continue;
+            list[i] = b with { JoinedTo = h.Candidate.Uri, Reason = b.Reason + $"; carried by {home} {h.Candidate.Label}" };
+        }
     }
 
     /// <summary>
@@ -381,7 +422,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             Find(c.Candidate.Uri);
             foreach (var same in c.Candidate.SameAs) Union(c.Candidate.Uri, same);
-            if (c.PlacedThrough is not null) Union(c.Candidate.Uri, c.PlacedThrough);
+            if (c.JoinedTo is not null) Union(c.Candidate.Uri, c.JoinedTo);
         }
         return scored.GroupBy(c => Find(c.Candidate.Uri))
             .Select(g =>

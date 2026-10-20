@@ -389,7 +389,8 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       reconcile report should split accepted into vote and exact-single. A run that dies should be marked
       interrupted at the next start, not sit as "running or interrupted".
     - ~~Loads: LCSH, then TGN.~~ Both loaded 2026-10-19 (lcsh 513,362; tgn 2,991,010); five sources, 14.5M records.
-    - Home vocabularies per context. The evening shadow (run-20261019-195509-a2wv6z, 2000 strings, 9 disagreements)
+    - ~~Home vocabularies per context~~ (built 2026-10-20 with the compound shape: `home: lcsh` on the keyword contexts,
+      `Reconciler.JoinToHome`; measure on the next run). The evening shadow (run-20261019-195509-a2wv6z, 2000 strings, 9 disagreements)
       had one that is design rather than data: "Juvenile literature", which the 2024 process linked to LCSH
       sh85071184, was accepted on AAT "children's literature" alone, because lcsh was not yet in the manifest. With
       lcsh in play the two become rival groups and the string is queued, and so will most keywords: AAT and LCSH both
@@ -417,9 +418,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       contexts' decisions added in the same run, and the entities it leaves aligned would answer at the store stage
       and pollute the measurement. Either equivalents get a decision id (schema change) or the redo is measured
       with the store hidden, as the shadow is.
-    - The Align tool reads the sources from the project's saved manifest but the context rules from the code's PMC
-      default (`PmcContexts()`), so the two can disagree; the workbench reads both from the saved manifest. Make the
-      tool read the saved manifest for both, with the code default only when the project has none (noted 2026-10-20).
+    - ~~The Align tool reads the sources from the project's saved manifest but the context rules from the code's PMC
+      default~~ (done 2026-10-20: both from the saved manifest, a "manifest:" line on every run saying whether it
+      still equals the library rules, `manifest --use-default`, and the project page's "In effect now" sentence).
     - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
       Art prizes" read as Person; "McSloy, Tom, op 1946" (a working date written "op"); "Mainz/Rhein" (a slash
       variant for name-forms).
@@ -436,7 +437,12 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       531, exact-single 1,101), queued 7,005, minted 25,866, 404 lists as 160 new parts; place minted 931 -> 203.
       Numbers and the two findings in doc 10 section 7.6 "Measured". Both built and measured the same day
       (run-20261020-112520-sxyxbc: place single 44 + vote 98, minted 198, legacy LoC places gaining TGN ids); the
-      state and province abbreviations ("Secaucus (N.J.)") then read as names, to measure on the next run.
+      state and province abbreviations ("Secaucus (N.J.)") then read as names, to measure on the next run. The
+      compound shape with the home vocabulary built the same evening (doc 10 section 7.6 "Built ... (evening)"): the
+      next run should move most of the 17,849 minted keywords into composites whose parts are a few hundred strings;
+      watch the keywords:head and keywords:sub rows, and sample `--method composite` and the two part contexts.
+      Still to come for compounds: export as coordinated concepts (7.5 item 2), the entity page listing a heading's
+      parts and the desk showing a part's parents (7.5 item 4), and whether `unrec_` identifiers are kept (owner).
     - ~~"Placed through" (doc 10 section 7.6 finding 1)~~ and ~~the `single` method (finding 2)~~: both built
       2026-10-20 after the owner's yes; the rerun measures them (expect place votes up, place minted down, the
       legacy LoC-identified places gaining TGN ids rather than duplicates).

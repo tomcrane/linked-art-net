@@ -114,7 +114,7 @@ switch (args[0])
             ReviewScore = double.TryParse(Option("--review"), System.Globalization.CultureInfo.InvariantCulture, out var rv) ? rv : 0.6,
             AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact"),
             MintWhenNothingFound = !args.Contains("--no-mint"),
-            Contexts = PmcContexts(),
+            Contexts = (await ManifestAsync(store, dataset)).ToOptions().Contexts,
         };
         var sources = await SourcesAsync(store, dataset);
         var run = await store.StartRunAsync(dataset, System.Text.Json.JsonSerializer.Serialize(options));
@@ -156,7 +156,7 @@ switch (args[0])
     case "shadow":
     {
         await store.InitialiseAsync();
-        var options = new ReconcilerOptions { Contexts = PmcContexts(), AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact") };
+        var options = new ReconcilerOptions { Contexts = (await ManifestAsync(store, dataset)).ToOptions().Contexts, AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact") };
         var sources = await SourcesAsync(store, dataset);
         var reconciler = new Reconciler(store, scheme, sources, options);
         var sample = int.TryParse(Option("--sample"), out var sn) ? sn : 0;
@@ -221,6 +221,21 @@ switch (args[0])
         return 0;
     }
 
+    case "manifest":
+    {
+        if (args.Contains("--use-default"))
+        {
+            var project = await store.GetProjectAsync(dataset);
+            var now = DateTimeOffset.UtcNow;
+            var json = ProjectManifest.PmcDefault.ToJson();
+            await store.UpsertProjectAsync(project is null ? new Project(dataset, dataset, null, scheme.Base, json, now, now) : project with { ManifestJson = json, UpdatedAt = now });
+            Console.WriteLine($"project {dataset}: the PMC library rules are now its saved manifest");
+            return 0;
+        }
+        Console.WriteLine((await ManifestAsync(store, dataset)).ToJson());
+        return 0;
+    }
+
     case "undo-run":
     {
         var runId = Option("--run");
@@ -235,8 +250,19 @@ switch (args[0])
         return 2;
 }
 
-// How the PMC library's fields are read: the manifest's PMC default until the project's own manifest in the store carries it.
-static IReadOnlyDictionary<string, ContextRule> PmcContexts() => ProjectManifest.PmcDefault.ToOptions().Contexts;
+// The manifest in force: the project's saved one, the PMC default when the project has none. Says so, and says when the
+// saved one has drifted from the library's default, which grows with the toolkit (manifest --use-default brings it up to date).
+static async Task<ProjectManifest> ManifestAsync(IAlignmentStore store, string dataset)
+{
+    var project = await store.GetProjectAsync(dataset);
+    if (project?.ManifestJson is null) { Console.Error.WriteLine("  manifest: none saved; the PMC library rules apply"); return ProjectManifest.PmcDefault; }
+    var manifest = ProjectManifest.FromJson(project.ManifestJson);
+    var differences = manifest.Differences(ProjectManifest.PmcDefault, "the saved manifest", "the library rules");
+    Console.Error.WriteLine(differences.Count == 0
+        ? "  manifest: the project's saved manifest, equal to the PMC library rules"
+        : $"  manifest: the project's saved manifest, which differs from the PMC library rules: {string.Join("; ", differences)} (manifest --use-default replaces it)");
+    return manifest;
+}
 
 // The local indexes to ask: the project's manifest names them (the default list when the project has none), and only
 // those with records loaded are asked. The 2026-10-19 corpus run never asked lcsh because this list was written by hand.
@@ -274,6 +300,8 @@ static void Usage() => Console.WriteLine(
       audit [--dataset] [--out reports] [--all]
                                              check entities against the local ULAN index, by their ULAN id or through LoC/Wikidata/VIAF links; CSV of the
                                              flagged ones (--all includes the clean gains too)
+      manifest [--dataset] [--use-default]   print the manifest in force and whether it matches the PMC library rules;
+                                             --use-default saves the library rules as the project's manifest
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
       reindex-labels [--source s]            recompute lookup keys after the key rules change; --source limits the records to one
                                              index (ulan, loc, aat, tgn); rows already current are not rewritten

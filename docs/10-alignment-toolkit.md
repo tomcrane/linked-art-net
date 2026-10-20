@@ -266,7 +266,7 @@ loads; its `equivalent` list is read as a candidate group.
 Whether to ask LUX to withdraw or merge the premature records is the owner's conversation and independent of this
 design; the design makes a clean re-export possible either way.
 
-### 7.5 Compound subjects (designed 2026-10-19, not built)
+### 7.5 Compound subjects (designed 2026-10-19; built 2026-10-20 as the compound shape of 7.6)
 
 The PMC library's `keywords` field holds precoordinated LCSH-style headings: "Art, Modern--18th century--Great
 Britain", "Cotman, Frederick George, 1850-1920--Exhibitions". The 2024 export treated each heading as one opaque
@@ -304,7 +304,7 @@ Open for the owner: keep the `unrec_` identifiers for headings now that they car
 them), or remint. Order of work: after step 3b (remote sources), since the LCSH index and the LUX mapping both
 matter here.
 
-### 7.6 Strings made of parts (designed 2026-10-20; the qualified and list shapes built the same day, compound not yet; generalises 7.5)
+### 7.6 Strings made of parts (designed and built 2026-10-20; generalises 7.5)
 
 The first full corpus runs with all five indexes loaded (ulan, loc, aat, lcsh, tgn; 14.5M records) left 26,594 of
 36,823 PMC strings minted. Samples by context (run-20261019-193430-gm5vtp and run-20261020-090207-x7q3sw) show that
@@ -412,7 +412,7 @@ right in every case, and showed two things to settle:
 
 Built 2026-10-20 (the owner's "yes" to both), placed through: in `Reconciler.Score`, after the qualifier has placed
 one or more candidates, a candidate of another source whose placement words all sit inside a placed candidate's
-placement (`Qualified.Contains`) is `ScoredCandidate.PlacedThrough` that candidate and `Groups` unions the two, so
+placement (`Qualified.Contains`) is `ScoredCandidate.JoinedTo` that candidate and `Groups` unions the two, so
 LoC's "Princes Risborough (England)" and the store's legacy entity labelled from it join TGN's record: two sources
 agree, the decision is a vote, and the legacy entity gains the TGN id instead of a duplicate being minted. Inside
 two placed candidates of one source with the same parent string (a city and its district) the coarser record is
@@ -433,6 +433,32 @@ their TGN ids rather than duplicated, and LoC's finer headings ("Godshill (Hamps
 (Ceredigion, Wales)") placed through TGN's. It also showed "Secaucus, New Jersey" minting a new entity beside the
 legacy "Secaucus (N.J.)", because "N.J." placed nothing: hence the abbreviation table above. The next corpus run
 measures it.
+
+Built 2026-10-20 (evening), the compound shape and the home vocabulary. `PartsShape.Compound`; the PMC `keywords`
+rule is `parts: { shape: compound, separator: "--", context: "keywords:sub", headContext: "keywords:head" }` with
+`home: lcsh`, and the two derived contexts have rules of their own: `keywords:head` may name a type, person, group or
+place, reads through the `marc` agent profile only when the head carries dates (`parseDatedOnly`, so "Tuke, Henry
+Scott, 1858-1929" meets ULAN and LoC as a dated person while "Art, Modern" stays a topic), home lcsh; `keywords:sub`
+may name a type, place or period, home lcsh. A compound heading is looked up whole first, since LCSH holds some
+precoordinated headings as records ("Art, Modern--20th century" is accepted whole), and evaluates to `Decomposed`
+only when nothing holds it; `DecomposeAsync` then collects the head and subdivisions as strings in their contexts
+(roles `head` and `sub` in `source_string_parts`), reconciles the new ones, and decides the heading as `composite`
+with the heading's own Type entity (the project's existing entity under that label when it has one, so imported
+headings keep their identifiers, else one minted under the project's scheme). The home vocabulary rule
+(`Reconciler.JoinToHome`): when exactly one record of the context's home source matches the name exactly, another
+source's exact term on the same name, or the store's entity under that label, is joined to it (`ScoredCandidate.JoinedTo`,
+the field placed-through also uses) and grouped with it, so "Juvenile literature" is LCSH sh85071184 carrying AAT's
+"children's literature" as an equivalent and the vote has two sources; two exact home records stay rivals for the
+desk. The report counts compounds beside lists. Export (item 5) is still to come: it reads a composite's parts from
+`source_string_parts` and the parts' current decisions.
+
+Also that evening, from the owner's question "how often do I need to re-press the manifest button": the Align tool
+now reads the context rules from the project's saved manifest, as it already read the sources (the PMC default only
+when the project has none), prints a "manifest:" line saying whether the saved manifest still equals the library
+rules and in what it differs (`ProjectManifest.Differences`), and `manifest --use-default` saves the library rules
+from the command line; the project page shows the same "In effect now" sentence above the manifest editor, and the
+button reads "Replace with the PMC library rules". The answer is: after any commit that changes `PmcDefault`, which
+the line now tells you.
 
 ## 8. Identifiers and publishing
 

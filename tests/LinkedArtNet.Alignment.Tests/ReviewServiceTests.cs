@@ -123,7 +123,7 @@ public class ReviewServiceTests(PostgresFixture pg)
         await pg.Store.UpsertProjectAsync(new Project(ds, "Test project", "a description", "https://data.example.org/" + ds, ProjectManifest.PmcDefault.ToJson(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow));
         var project = (await pg.Store.GetProjectAsync(ds))!;
         Assert.Equal("Test project", project.Name);
-        Assert.Equal(5, ProjectManifest.FromJson(project.ManifestJson).Contexts.Count);
+        Assert.Equal(7, ProjectManifest.FromJson(project.ManifestJson).Contexts.Count); // the five PMC fields and the two derived keyword contexts
         Assert.Contains(await pg.Store.ListProjectsAsync(), p => p.Dataset == ds);
 
         await pg.Store.UpsertUserAsync("alice", "Alice");

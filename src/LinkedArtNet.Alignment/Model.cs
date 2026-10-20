@@ -22,6 +22,8 @@ public static class DecisionMethod
     public const string Single = "single";
     /// <summary>The string names several things ("Dublin; New York"): decided as its parts, which are strings of their own (source_string_parts); no entity of its own.</summary>
     public const string List = "list";
+    /// <summary>A compound heading ("Painting--Canada") decided as a concept coordinated from its parts, which are strings of their own (source_string_parts); the entity is the heading's own Type (doc 10, section 7.5).</summary>
+    public const string Composite = "composite";
     /// <summary>A person decided it in the workbench; the evidence says what they chose and why.</summary>
     public const string Human = "human";
     public const string LlmProposedThenHuman = "llm-proposed-then-human";

@@ -8,16 +8,18 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 /// <param name="AgentProfile">The agent parser profile to read the string with, or null to take the text as the whole name.</param>
 /// <param name="Qualified">Strings here name one thing with where it is or what tells it from namesakes ("Hammersmith, London"): the name is looked up and the qualifier checked against the records (see <see cref="Reconciliation.Qualified"/>).</param>
 /// <param name="Parts">Strings here may be made of parts ("Dublin; New York"), each a string of its own (doc 10, section 7.6).</param>
-public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false, PartsRule? Parts = null)
+/// <param name="Home">The vocabulary whose exact term decides a string here (keywords: lcsh): another vocabulary's exact term on the same name is carried as that concept's equivalent rather than a rival (doc 10, section 7.6 item 4).</param>
+/// <param name="ParseDatedOnly">Use the agent profile only for strings that carry dates ("Tuke, Henry Scott, 1858-1929"), so a topical heading ("Art, Modern") in the same context is not read as a person.</param>
+public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false, PartsRule? Parts = null, string? Home = null, bool ParseDatedOnly = false)
 {
     public static readonly ContextRule Anything = new([EntityClass.Person, EntityClass.Group, EntityClass.Place, EntityClass.Type]);
 }
 
-/// <summary>The shapes a string made of parts can take (doc 10, section 7.6). <c>List</c>: several things, each complete, decided as its parts with no entity of its own. (Compound, parts coordinating into one concept, is designed and not yet built.)</summary>
-public enum PartsShape { List }
+/// <summary>The shapes a string made of parts can take (doc 10, section 7.6). <c>List</c>: several things, each complete, decided as its parts with no entity of its own. <c>Compound</c>: parts coordinating into one concept ("Painting--Canada"), looked up whole first and otherwise decided as its parts under a Type entity of its own.</summary>
+public enum PartsShape { List, Compound }
 
-/// <summary>How strings in a context split into parts: the shape, the separator, and the context the parts are collected in (the same context when null).</summary>
-public sealed record PartsRule(PartsShape Shape, string Separator, string? Context = null);
+/// <summary>How strings in a context split into parts: the shape, the separator, the context the parts are collected in (the same context when null), and for a compound the context of its first part when that differs (keywords:head against keywords:sub).</summary>
+public sealed record PartsRule(PartsShape Shape, string Separator, string? Context = null, string? HeadContext = null);
 
 /// <summary>
 /// What the reconciler understood of a source string before looking anywhere: the name part, its lookup keys, the
@@ -36,9 +38,15 @@ public sealed record StringReading(
     string? Qualifier = null,
     bool IsQualified = false,
     IReadOnlyList<string>? Parts = null,
-    string? PartContext = null)
+    PartsRule? PartsRule = null,
+    string? Home = null)
 {
     public string Key => Keys.Count > 0 ? Keys[0] : "";
+    /// <summary>The shape of a string made of parts, null for a string that is not.</summary>
+    public PartsShape? Shape => Parts is null ? null : PartsRule?.Shape;
+    /// <summary>The context a part at this position is collected in: a compound's head may have its own, otherwise the rule's parts context, otherwise the parent's.</summary>
+    public string PartContext(int position, string parentContext) =>
+        (position == 0 && PartsRule?.Shape == PartsShape.Compound ? PartsRule.HeadContext ?? PartsRule.Context : PartsRule?.Context) ?? parentContext;
     public bool HasLifespan => Lifespan is { IsEmpty: false };
     /// <summary>The label a new entity gets: the name with its qualifier, so a minted "Heaton, Bradford" is not a bare "Heaton" that captures every other Heaton.</summary>
     public string Label => Qualifier is null ? Text : $"{Text}, {Qualifier}";
@@ -46,10 +54,18 @@ public sealed record StringReading(
     /// <summary>Reads a string under its context's rule, through the agent parser when the rule names a profile.</summary>
     public static StringReading Read(SourceString s, ContextRule rule, AgentStringParser? parser)
     {
+        IReadOnlyList<string>? parts = null;
         if (rule.Parts is { } pr)
         {
             var pieces = s.Raw.Split(pr.Separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            if (pieces.Length >= 2) return new StringReading(s, s.Raw.Trim(), NameMatcher.Keys(s.Raw), rule.Classes, null, [], [], null, Parts: pieces, PartContext: pr.Context);
+            if (pieces.Length >= 2)
+            {
+                // a list is never looked up whole; a compound heading is, since LCSH holds some precoordinated headings as
+                // records, and it decomposes only when nothing holds it. Neither goes through the agent parser whole.
+                if (pr.Shape == PartsShape.List) return new StringReading(s, s.Raw.Trim(), NameMatcher.Keys(s.Raw), rule.Classes, null, [], [], null, Parts: pieces, PartsRule: pr, Home: rule.Home);
+                parts = pieces;
+                parser = null;
+            }
         }
         ParsedAgent? agent = null;
         var text = s.Raw;
@@ -58,10 +74,15 @@ public sealed record StringReading(
         IReadOnlyList<string> nationalities = [];
         IReadOnlyList<string> roles = [];
         string? qualifier = null;
-        if (rule.Qualified && parser is null) (text, qualifier) = Qualified.Split(s.Raw);
+        if (rule.Qualified && parser is null && parts is null) (text, qualifier) = Qualified.Split(s.Raw);
         if (parser is not null)
         {
             agent = parser.Parse(s.Raw);
+            // a context whose name headings carry dates but whose other strings are topics uses the parser only where it found dates
+            if (rule.ParseDatedOnly && agent.Dates is null) agent = null;
+        }
+        if (agent is not null)
+        {
             if (agent.HasName) text = agent.Name!;
             // the parser's reading of the kind puts that class first; the rule still says what is allowed at all
             if (agent.Kind == AgentKind.Group && classes.Contains(EntityClass.Group)) classes = [EntityClass.Group, .. classes.Where(c => c != EntityClass.Group)];
@@ -71,7 +92,7 @@ public sealed record StringReading(
             nationalities = agent.Nationalities.Select(n => n.AatUri ?? n.Label).Distinct(StringComparer.Ordinal).ToArray();
             roles = agent.Roles.Where(r => r.IsOccupation).Select(r => r.Label).Distinct(StringComparer.Ordinal).ToArray();
         }
-        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified);
+        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified, parts, rule.Parts, rule.Home);
     }
 }
 
@@ -100,8 +121,8 @@ public sealed record Candidate(
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
 /// <param name="QualifierAgrees">The string's qualifier was found in the record's placement (true), looked for and not found (false), or there was nothing to compare (null).</param>
-/// <param name="PlacedThrough">The URI of the placed candidate of another source whose placement contains this one's: the same place at less depth (LoC's "Princes Risborough (England)" through TGN's in Buckinghamshire, England), so the two are grouped as one thing.</param>
-public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? PlacedThrough = null);
+/// <param name="JoinedTo">The URI of a candidate this one is grouped with though no sameAs links them: a placed candidate of another source whose placement contains this one's (LoC's "Princes Risborough (England)" through TGN's in Buckinghamshire, England), or the context's home vocabulary's exact term that this exact term of another vocabulary is carried by (AAT's "children's literature" by LCSH's "Juvenile literature").</param>
+public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null);
 
 /// <summary>Candidates that are the same real-world thing across sources, joined through their mutual sameAs links, voting as one.</summary>
 /// <param name="Vetoed">Every member is vetoed, or a vetoed member is the same thing as a live one by the authorities' own links: the group cannot be the answer.</param>

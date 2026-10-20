@@ -286,9 +286,9 @@ public class GroupingTests
         var maine = new Candidate("l2", "loc", "Princes Risborough (Me.)", EntityClass.Place, null, [], "local", 0.85, Placement: "Me.");
         var indiana = new Candidate("t2", "tgn", "Princes Risborough", EntityClass.Place, null, [], "local", 1.0, Placement: "Gibson, Indiana, United States, North and Central America, World");
         var scored = Reconciler.Score(reading, [tgn, loc, store, maine, indiana], 120);
-        Assert.Equal("t1", scored[1].PlacedThrough); Assert.False(scored[1].Veto); Assert.Contains("placed through tgn", scored[1].Reason);
-        Assert.Equal("t1", scored[2].PlacedThrough); Assert.False(scored[2].Veto);
-        Assert.Null(scored[3].PlacedThrough); Assert.True(scored[3].Veto); // "Me." is Maine: a namesake the qualifier does not place
+        Assert.Equal("t1", scored[1].JoinedTo); Assert.False(scored[1].Veto); Assert.Contains("placed through tgn", scored[1].Reason);
+        Assert.Equal("t1", scored[2].JoinedTo); Assert.False(scored[2].Veto);
+        Assert.Null(scored[3].JoinedTo); Assert.True(scored[3].Veto); // "Me." is Maine: a namesake the qualifier does not place
         Assert.True(scored[4].Veto); // a namesake the qualifier does not place
         var groups = Reconciler.Groups(scored);
         Assert.Equal(["loc", "tgn"], groups[0].Sources.OrderBy(x => x, StringComparer.Ordinal)); // two sources now agree: a vote, and the LoC id travels with the TGN one
@@ -296,8 +296,27 @@ public class GroupingTests
         // inside two placed records of one source with the same parent string (a city and its district) the coarser record is placed through neither
         var district = new Candidate("t3", "tgn", "Landkreis Princes Risborough", EntityClass.Place, null, [], "local", 1.0, Placement: tgn.Placement);
         var ambiguous = Reconciler.Score(reading, [tgn, district, loc], 120);
-        Assert.Null(ambiguous[2].PlacedThrough); Assert.False(ambiguous[2].Veto);
+        Assert.Null(ambiguous[2].JoinedTo); Assert.False(ambiguous[2].Veto);
         Assert.Equal(3, Reconciler.Groups(ambiguous).Count);
+    }
+
+    [Fact]
+    public void A_home_vocabulary_carries_another_vocabulary_s_exact_term_as_an_equivalent()
+    {
+        var reading = Reading("Juvenile literature", EntityClass.Type) with { Home = "lcsh" };
+        var lcsh = new Candidate("http://id.loc.gov/authorities/subjects/sh85071184", "lcsh", "Juvenile literature", EntityClass.Type, null, [], "local", 1.0);
+        var aat = new Candidate("http://vocab.getty.edu/aat/300263209", "aat", "children's literature", EntityClass.Type, null, [], "local", 1.0); // an exact variant label
+        var near = new Candidate("http://vocab.getty.edu/aat/300000001", "aat", "Juvenile fiction", EntityClass.Type, null, [], "local", 0.8);
+        var scored = Reconciler.Score(reading, [lcsh, aat, near], 120);
+        Assert.Equal(lcsh.Uri, scored[1].JoinedTo); Assert.Contains("carried by lcsh", scored[1].Reason);
+        Assert.Null(scored[2].JoinedTo); // not exact: a rival still, below the margin
+        var groups = Reconciler.Groups(scored);
+        Assert.Equal(["aat", "lcsh"], groups[0].Sources.OrderBy(x => x, StringComparer.Ordinal)); // two sources: a vote, with the AAT id as an equivalent
+        // two exact home records are rivals for the desk, and carry nothing
+        var twice = Reconciler.Score(reading, [lcsh, lcsh with { Uri = "http://id.loc.gov/authorities/subjects/sh2" }, aat], 120);
+        Assert.All(twice, m => Assert.Null(m.JoinedTo));
+        // without a home vocabulary the exact terms stay rival groups
+        Assert.Equal(2, Reconciler.Groups(Reconciler.Score(reading with { Home = null }, [lcsh, aat], 120)).Count);
     }
 
     [Fact]
@@ -511,6 +530,57 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Contains("http://vocab.getty.edu/tgn/7002445", gb.SameAs);
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["angiotensin ii"], "lcsh", "Type")); // its own index and source row
         Assert.Contains(await pg.Store.AuthoritySourcesAsync(), s => s.Source == "lcsh" && s.Records == 4);
+    }
+
+    [PostgresFact]
+    public async Task A_compound_heading_is_held_whole_or_decided_as_its_parts()
+    {
+        var ds = Dataset();
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var now = DateTimeOffset.UtcNow;
+        static AuthorityRecord Lcsh(string id, string label, string type) => new($"http://id.loc.gov/authorities/subjects/{id}", "lcsh", label, [label], type, null, [], null, DateTimeOffset.UtcNow, "test");
+        await pg.Store.PutAuthorityAsync(Lcsh("sh85096661", "Painting", "Type"));
+        await pg.Store.PutAuthorityAsync(Lcsh("sh85018869", "Canada", "Place"));
+        await pg.Store.PutAuthorityAsync(Lcsh("sh2001000001", "Art, Modern--20th century", "Type")); // a precoordinated heading LCSH holds whole
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/aat/300033618", "aat", "painting (visual works)", ["painting (visual works)", "Painting"], "Type", null, [], null, now, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/tgn/7005685", "tgn", "Canada", ["Canada"], "Place", null, [], "{\"parentString\":\"North and Central America, World\"}", now, "test"));
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "lcsh"), new LocalIndexSource(pg.Store, "aat"), new LocalIndexSource(pg.Store, "tgn")], ProjectManifest.PmcDefault.ToOptions());
+
+        // the head context reads a dated name heading through the MARC profile and leaves a topical head alone
+        var tuke = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Tuke, Henry Scott, 1858-1929"));
+        Assert.Equal(EntityClass.Person, tuke.Classes[0]); Assert.Equal("Tuke, Henry Scott", tuke.Text); Assert.True(tuke.HasLifespan);
+        var modern = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Art, Modern"));
+        Assert.Equal(EntityClass.Type, modern.Classes[0]); Assert.Null(modern.Agent);
+
+        var heading = await pg.Store.CollectAsync(ds, "keywords", "Painting--Canada");
+        var e = await reconciler.ReconcileOneDetailedAsync(ds, heading);
+        Assert.Equal(Outcome.Decomposed, e.Outcome);
+        var decision = (await pg.Store.DecisionForAsync(heading.Id))!;
+        Assert.Equal(DecisionMethod.Composite, decision.Method);
+        var concept = (await pg.Store.GetEntityAsync(decision.EntityId!))!;
+        Assert.Equal(EntityClass.Type, concept.Class); Assert.Equal("Painting--Canada", concept.Label);
+        var parts = await pg.Store.PartsAsync(heading.Id);
+        Assert.Equal(["keywords:head", "keywords:sub"], parts.Select(p => p.Context).ToArray());
+        Assert.Equal(["Painting", "Canada"], parts.Select(p => p.Raw).ToArray());
+        // the head: LCSH is the home vocabulary, AAT's exact term travels with it as an equivalent
+        var painting = (await pg.Store.ResolveAsync(ds, "keywords:head", "Painting"))!;
+        Assert.Equal(DecisionMethod.Vote, (await pg.Store.DecisionForAsync(parts[0].Id))!.Method);
+        Assert.Equal(["http://id.loc.gov/authorities/subjects/sh85096661", "http://vocab.getty.edu/aat/300033618"], painting.Equivalents.Select(q => q.Uri).OrderBy(x => x, StringComparer.Ordinal));
+        // the subdivision: a place, LCSH's geographic heading carrying TGN's
+        var canada = (await pg.Store.ResolveAsync(ds, "keywords:sub", "Canada"))!;
+        Assert.Equal(EntityClass.Place, canada.Class);
+        Assert.Contains(canada.Equivalents, q => q.Uri.EndsWith("7005685"));
+        // a heading LCSH holds whole is accepted whole, not decomposed
+        var whole = await pg.Store.CollectAsync(ds, "keywords", "Art, Modern--20th century");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, whole));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(whole.Id))!.Method);
+        Assert.Empty(await pg.Store.PartsAsync(whole.Id));
+        // a second heading sharing the head reconciles only its new subdivision, and the run report counts compounds apart from lists
+        var again = await reconciler.ReconcileOneDetailedAsync(ds, await pg.Store.CollectAsync(ds, "keywords", "Painting--Exhibitions"));
+        Assert.Equal(Outcome.Decomposed, again.Outcome);
+        Assert.Single(again.Parts!);
+        Assert.Equal(Outcome.Minted, again.Parts![0].Outcome);
+        Assert.Equal(0, (await reconciler.RunAsync(ds)).Compounds);
     }
 
     [PostgresFact]

@@ -99,8 +99,9 @@ switch (args[0])
         if (path is null || !(File.Exists(path) || Directory.Exists(path))) { Console.Error.WriteLine("Give the LC Name Authority File MADS/RDF N-Triples download (.nt or .nt.gz)."); return 2; }
         await store.InitialiseAsync();
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {DateTime.Now:HH:mm:ss} {m}"));
-        var result = await new LocNamesLoader(store).LoadAsync(path, string.Equals(Option("--vocab"), "subjects", StringComparison.OrdinalIgnoreCase) ? LocFile.Subjects : LocFile.Names, Option("--version"), progress);
-        Console.WriteLine($"LoC names: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
+        var file = string.Equals(Option("--vocab"), "subjects", StringComparison.OrdinalIgnoreCase) ? LocFile.Subjects : LocFile.Names;
+        var result = await new LocNamesLoader(store).LoadAsync(path, file, Option("--version"), progress);
+        Console.WriteLine($"{(file == LocFile.Subjects ? "LoC subjects" : "LoC names")}: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
         return 0;
     }
 

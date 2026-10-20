@@ -39,11 +39,12 @@ public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minte
 /// <param name="Parts">Parts reconciled for the first time in this run (a part already decided by an earlier string is not counted again).</param>
 /// <param name="Single">Accepted on one source carried by the string's own dates or placed qualifier (DecisionMethod.Single).</param>
 /// <param name="Compounds">Compound headings decided as concepts coordinated from their parts (DecisionMethod.Composite); counted like lists.</param>
-public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0, int Compounds = 0)
+/// <param name="DecidedEarlier">Strings in the undecided list that were decided before the run reached them, as parts of an earlier string (part strings outlive an undo as rows), and so were passed over rather than decided twice.</param>
+public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0, int Compounds = 0, int DecidedEarlier = 0)
 {
     /// <summary>Accepted by independent sources agreeing, as opposed to one source carried by the string or the single-source policy.</summary>
     public int Voted => Accepted - ExactSingle - Single;
-    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (between them {Parts} new part strings)" : "");
+    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (between them {Parts} part strings)" : "") + (DecidedEarlier > 0 ? $"; {DecidedEarlier} of those considered were decided as parts before the run reached them" : "");
 }
 
 /// <summary>
@@ -93,7 +94,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<ReconcileReport> RunAsync(string dataset, int limit = 0, string? runId = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var strings = await store.UndecidedAsync(dataset, limit > 0 ? limit : int.MaxValue, ct);
-        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, single = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, compounds = 0, parts = 0, n = 0;
+        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, single = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, compounds = 0, parts = 0, decidedEarlier = 0, n = 0;
         void Count(Evaluation e)
         {
             switch (e.Outcome)
@@ -111,10 +112,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         foreach (var s in strings)
         {
             ct.ThrowIfCancellationRequested();
+            // a part string from an earlier run is a row of its own and undecided when the list is made; its parent, earlier in the
+            // list, decides it on the way, and deciding it again here would supersede that decision and count it twice
+            n++;
+            if (await store.DecisionForAsync(s.Id, ct) is not null) { decidedEarlier++; continue; }
             Count(await ReconcileOneDetailedAsync(dataset, s, runId, ct));
-            if (++n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists + compounds > 0 ? $", lists {lists}, compounds {compounds}" : ""));
+            if (n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists + compounds > 0 ? $", lists {lists}, compounds {compounds}" : ""));
         }
-        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds);
+        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier);
     }
 
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>

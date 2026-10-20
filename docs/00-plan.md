@@ -449,7 +449,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       keyword contexts. To measure, the owner: reload lcsh (`load-loc <subjects file> --vocab subjects --version <as
       before>`, the same file as 2026-10-19), `manifest --use-default`, `undo-run --run run-20261020-124120-aqn6dz`,
       `reconcile`; expect keywords:sub queued (632) to fall and "Catalogs", "Diaries", "20th century" to be accepted on
-      LCSH, "Catalogs" carrying AAT.
+      LCSH, "Catalogs" carrying AAT. The first attempt (run-20261020-140820-q7jhh7) decided every part string twice,
+      because part rows outlive an undo and the main loop reached them after their parents had decided them; fixed
+      (RunAsync passes over a string already decided, and says how many), to be undone and run again.
     - Dated string, undated namesake (finding 3; owner's decision owed): when the string's dates agree with a
       record's, veto the same source's records that have no dates ("Doyle, Richard, 1824-1883" vs LoC's undated
       "Doyle, Richard"). Measured 2026-10-20 (ceiling, run aqn6dz): keywords:head 754, persauthorfull 29, publisher 50

@@ -620,6 +620,15 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Single(again.Parts!);
         Assert.Equal(Outcome.Minted, again.Parts![0].Outcome);
         Assert.Equal(0, (await reconciler.RunAsync(ds)).Compounds);
+        // a part string that already exists as a row (it outlived an undo) and follows its parent in the undecided list is decided
+        // once, by the parent, and passed over when the run reaches it: not decided a second time and counted twice
+        var sculptures = await pg.Store.CollectAsync(ds, "keywords", "Sculpture--Canada");
+        var sculpture = await pg.Store.CollectAsync(ds, "keywords:head", "Sculpture", count: false);
+        var report = await reconciler.RunAsync(ds);
+        Assert.Equal(1, report.Compounds); Assert.Equal(1, report.Parts); Assert.Equal(1, report.DecidedEarlier); Assert.Equal(2, report.Considered);
+        Assert.Equal(DecisionMethod.Composite, (await pg.Store.DecisionForAsync(sculptures.Id))!.Method);
+        Assert.Equal(DecisionMethod.Minted, (await pg.Store.DecisionForAsync(sculpture.Id))!.Method);
+        Assert.Null(await pg.Store.RevertDecisionAsync(sculpture.Id)); // one decision only: nothing superseded stands behind it
     }
 
     [PostgresFact]

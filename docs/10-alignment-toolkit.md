@@ -530,6 +530,14 @@ collections and sources without them are left alone. So the home rule then sees 
 AAT's term. The rule is general: any vocabulary whose loader keeps collections can be sorted by them. It takes an
 lcsh reload (the loader change) and a manifest refresh (PmcDefault changed) to measure.
 
+The first measuring run (run-20261020-140820-q7jhh7, after the lcsh reload) could not be read: it considered 46,207
+strings, the 36,930 of the corpus and the 9,277 part strings of the run before, which outlive an undo as rows and were
+undecided when the list was made. Each was decided by its parent heading on the way and then again when the loop
+reached it, the second decision superseding the first (a minted part met its own entity in the store and became
+exact-name), and the counts doubled (matched in store 4,371 -> 10,204, store stage 1,310 s). Fixed the same evening:
+`RunAsync` passes over a string that has a decision by the time it is reached and reports them ("N of those
+considered were decided as parts before the run reached them"). Undo q7jhh7 and run again to measure.
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

@@ -208,3 +208,17 @@ create index if not exists entity_equivalents_run on entity_equivalents (run_id)
 create index if not exists source_strings_dataset_context on source_strings (dataset, context);
 
 insert into schema_version (version) values (6) on conflict do nothing;
+
+-- version 7 (2026-10-20): strings made of parts (design doc 10, section 7.6). A list string ("Dublin; New York") is
+-- decided as its parts: each part is a source string of its own, shared by every parent that names it, linked here in
+-- order. The parent's decision has method 'list' and no entity.
+create table if not exists source_string_parts (
+    parent_id   bigint not null references source_strings(id) on delete cascade,
+    position    integer not null,
+    part_id     bigint not null references source_strings(id) on delete cascade,
+    role        text,
+    primary key (parent_id, position)
+);
+create index if not exists source_string_parts_part on source_string_parts (part_id);
+
+insert into schema_version (version) values (7) on conflict do nothing;

@@ -446,7 +446,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     private const string StringColumns = "s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences";
 
-    public async Task<SourceString> CollectAsync(string dataset, string context, string raw, string? parsedJson = null, CancellationToken ct = default)
+    public async Task<SourceString> CollectAsync(string dataset, string context, string raw, string? parsedJson = null, CancellationToken ct = default, bool count = true)
     {
         var normalised = StringKey.Normalise(raw);
         if (normalised.Length == 0) throw new ArgumentException("An empty string cannot be collected.", nameof(raw));
@@ -454,7 +454,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             $"""
             insert into source_strings as s (dataset, context, raw, normalised, parsed, first_seen, last_seen, occurrences)
             values (@dataset, @context, @raw, @normalised, @parsed, @now, @now, 1)
-            on conflict (dataset, context, normalised) do update set last_seen = @now, occurrences = s.occurrences + 1, parsed = coalesce(excluded.parsed, s.parsed)
+            on conflict (dataset, context, normalised) do update set last_seen = @now, occurrences = s.occurrences + {(count ? 1 : 0)}, parsed = coalesce(excluded.parsed, s.parsed)
             returning {StringColumns}
             """);
         Add(cmd, "dataset", dataset); Add(cmd, "context", context); Add(cmd, "raw", raw.Trim()); Add(cmd, "normalised", normalised); AddJson(cmd, "parsed", parsedJson); Add(cmd, "now", DateTimeOffset.UtcNow);
@@ -585,6 +585,29 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18), r.IsDBNull(19) ? null : r.GetInt64(19));
             list.Add(new DecidedString(s, d));
         }
+        return list;
+    }
+
+    public async Task LinkPartAsync(long parentId, int position, long partId, string? role = null, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("insert into source_string_parts (parent_id, position, part_id, role) values (@parent, @position, @part, @role) on conflict (parent_id, position) do update set part_id = excluded.part_id, role = excluded.role");
+        Add(cmd, "parent", parentId); Add(cmd, "position", position); Add(cmd, "part", partId); Add(cmd, "role", role);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public Task<IReadOnlyList<SourceString>> PartsAsync(long parentId, CancellationToken ct = default) =>
+        StringsAsync($"select {StringColumns} from source_string_parts p join source_strings s on s.id = p.part_id where p.parent_id = @id order by p.position", parentId, ct);
+
+    public Task<IReadOnlyList<SourceString>> ParentsAsync(long partId, CancellationToken ct = default) =>
+        StringsAsync($"select {StringColumns} from source_string_parts p join source_strings s on s.id = p.parent_id where p.part_id = @id order by s.id", partId, ct);
+
+    private async Task<IReadOnlyList<SourceString>> StringsAsync(string sql, long id, CancellationToken ct)
+    {
+        await using var cmd = _db.CreateCommand(sql);
+        Add(cmd, "id", id);
+        var list = new List<SourceString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(ReadString(r));
         return list;
     }
 

@@ -304,7 +304,7 @@ Open for the owner: keep the `unrec_` identifiers for headings now that they car
 them), or remint. Order of work: after step 3b (remote sources), since the LCSH index and the LUX mapping both
 matter here.
 
-### 7.6 Strings made of parts (designed 2026-10-20; the qualified shape built the same day, the rest not; generalises 7.5)
+### 7.6 Strings made of parts (designed 2026-10-20; the qualified and list shapes built the same day, compound not yet; generalises 7.5)
 
 The first full corpus runs with all five indexes loaded (ulan, loc, aat, lcsh, tgn; 14.5M records) left 26,594 of
 36,823 PMC strings minted. Samples by context (run-20261019-193430-gm5vtp and run-20261020-090207-x7q3sw) show that
@@ -371,6 +371,16 @@ by 0.05 and vetoes the namesakes the qualifier does not place; a placed exact si
 with agreeing dates; an unplaced qualifier bars the exact-single policy; a minted or aligned qualified name keeps its
 qualifier as the entity label, and in a qualified context the store stage answers only when qualifiers agree or
 neither side has one, so a bare "Heaton" meets both Heatons in the indexes rather than the one aligned first.
+
+Built 2026-10-20, the list shape: schema v7 `source_string_parts (parent_id, position, part_id, role)`;
+`ContextRule.Parts` = `PartsRule(shape, separator, context)` (the PMC `place` rule: list, `;`; the manifest writes
+`"parts": { "shape": "list", "separator": ";" }`); a string that splits into two or more parts reads as
+`StringReading.Parts` and evaluates to `Outcome.Decomposed` (an override on the whole string still wins first);
+`Reconciler.DecomposeAsync` collects each part as a string in the parts' context without counting an occurrence,
+links it in order, reconciles it when it has no decision yet, and decides the parent with method `list` and no
+entity. The report counts lists and newly reconciled parts; the shadow verdict for a decomposed string is
+`Decomposed`. Also here: the exact-single policy's two-word rule now applies to people and bodies only, since a
+one-word place or subject ("Lampeter", "Sculpture") is whole.
 
 ## 8. Identifiers and publishing
 

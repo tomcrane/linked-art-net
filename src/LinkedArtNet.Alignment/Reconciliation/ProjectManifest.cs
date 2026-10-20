@@ -46,14 +46,20 @@ public sealed record ProjectManifest
             ["persauthorfull"] = new([EntityClass.Person], "default"),
             ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default"),
             ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default"),
-            ["place"] = new([EntityClass.Place], Qualified: true),
+            ["place"] = new([EntityClass.Place], Qualified: true, Parts: new(PartsShape.List, ";")),
             ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place]),
         },
     };
 }
 
 /// <summary>A <see cref="ContextRule"/> as the manifest writes it.</summary>
-public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null)
+public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null)
 {
-    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false);
+    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule());
+}
+
+/// <summary>A <see cref="PartsRule"/> as the manifest writes it: <c>{ "shape": "list", "separator": ";" }</c>.</summary>
+public sealed record PartsRuleJson(PartsShape Shape, string Separator, string? Context = null)
+{
+    public PartsRule ToRule() => new(Shape, Separator, Context);
 }

@@ -7,14 +7,22 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 /// <param name="Classes">The entity classes a string in this context may name, in order of preference; the first is what a new entity is minted as, and the agent parser's reading of the kind moves that class to the front.</param>
 /// <param name="AgentProfile">The agent parser profile to read the string with, or null to take the text as the whole name.</param>
 /// <param name="Qualified">Strings here name one thing with where it is or what tells it from namesakes ("Hammersmith, London"): the name is looked up and the qualifier checked against the records (see <see cref="Reconciliation.Qualified"/>).</param>
-public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false)
+/// <param name="Parts">Strings here may be made of parts ("Dublin; New York"), each a string of its own (doc 10, section 7.6).</param>
+public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false, PartsRule? Parts = null)
 {
     public static readonly ContextRule Anything = new([EntityClass.Person, EntityClass.Group, EntityClass.Place, EntityClass.Type]);
 }
 
+/// <summary>The shapes a string made of parts can take (doc 10, section 7.6). <c>List</c>: several things, each complete, decided as its parts with no entity of its own. (Compound, parts coordinating into one concept, is designed and not yet built.)</summary>
+public enum PartsShape { List }
+
+/// <summary>How strings in a context split into parts: the shape, the separator, and the context the parts are collected in (the same context when null).</summary>
+public sealed record PartsRule(PartsShape Shape, string Separator, string? Context = null);
+
 /// <summary>
 /// What the reconciler understood of a source string before looking anywhere: the name part, its lookup keys, the
-/// classes it may be, and the lifespan, nationalities and roles the string itself carried.
+/// classes it may be, and the lifespan, nationalities and roles the string itself carried. A string made of parts
+/// (<see cref="Parts"/>) is not looked up itself: its parts are, each as a string of its own.
 /// </summary>
 public sealed record StringReading(
     SourceString String,
@@ -26,7 +34,9 @@ public sealed record StringReading(
     IReadOnlyList<string> Roles,
     ParsedAgent? Agent,
     string? Qualifier = null,
-    bool IsQualified = false)
+    bool IsQualified = false,
+    IReadOnlyList<string>? Parts = null,
+    string? PartContext = null)
 {
     public string Key => Keys.Count > 0 ? Keys[0] : "";
     public bool HasLifespan => Lifespan is { IsEmpty: false };
@@ -36,6 +46,11 @@ public sealed record StringReading(
     /// <summary>Reads a string under its context's rule, through the agent parser when the rule names a profile.</summary>
     public static StringReading Read(SourceString s, ContextRule rule, AgentStringParser? parser)
     {
+        if (rule.Parts is { } pr)
+        {
+            var pieces = s.Raw.Split(pr.Separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            if (pieces.Length >= 2) return new StringReading(s, s.Raw.Trim(), NameMatcher.Keys(s.Raw), rule.Classes, null, [], [], null, Parts: pieces, PartContext: pr.Context);
+        }
         ParsedAgent? agent = null;
         var text = s.Raw;
         var classes = rule.Classes;

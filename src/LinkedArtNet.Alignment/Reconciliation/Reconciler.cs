@@ -33,13 +33,15 @@ public sealed record ReconcilerOptions
     public int MaxPersonLifetimeYears { get; init; } = 120;
 }
 
-public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minted, Deferred }
+public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minted, Deferred, Decomposed }
 
-public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0)
+/// <param name="Lists">Strings decided as lists of parts; their parts' outcomes are counted with everything else, so the outcome counts add up to Considered minus Lists plus Parts.</param>
+/// <param name="Parts">Parts reconciled for the first time in this run (a part already decided by an earlier string is not counted again).</param>
+public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0)
 {
     /// <summary>Accepted by independent sources agreeing (or one with dates), as opposed to the single-source policy.</summary>
     public int Voted => Accepted - ExactSingle;
-    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}";
+    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists > 0 ? $", lists {Lists} (as {Parts} new parts)" : "");
 }
 
 /// <summary>
@@ -47,7 +49,8 @@ public sealed record ReconcileReport(int Considered, int Overridden, int Matched
 /// candidate groups, and whichever of an override, a store entity or an accepted group decided it.
 /// </summary>
 /// <param name="Truncated">A local index returned more candidates than it was asked for, so the best may not have been seen; such a string is never accepted, only queued.</param>
-public sealed record Evaluation(Outcome Outcome, StringReading Reading, IReadOnlyList<CandidateGroup> Groups, Override? Override = null, Entity? StoreMatch = null, CandidateGroup? Accepted = null, ScoredCandidate? StoreChoice = null, bool Truncated = false, string? AcceptedMethod = null)
+/// <param name="Parts">For a decomposed string, the evaluations of the parts reconciled for the first time under it.</param>
+public sealed record Evaluation(Outcome Outcome, StringReading Reading, IReadOnlyList<CandidateGroup> Groups, Override? Override = null, Entity? StoreMatch = null, CandidateGroup? Accepted = null, ScoredCandidate? StoreChoice = null, bool Truncated = false, string? AcceptedMethod = null, IReadOnlyList<Evaluation>? Parts = null)
 {
     /// <summary>The URIs the evaluation points at: the override target, the store entity and its equivalents, or the accepted group's URIs; for a queued string the top group's.</summary>
     public IReadOnlyList<string> TargetUris => Outcome switch
@@ -88,11 +91,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<ReconcileReport> RunAsync(string dataset, int limit = 0, string? runId = null, IProgress<string>? progress = null, CancellationToken ct = default)
     {
         var strings = await store.UndecidedAsync(dataset, limit > 0 ? limit : int.MaxValue, ct);
-        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, n = 0;
-        foreach (var s in strings)
+        int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, parts = 0, n = 0;
+        void Count(Evaluation e)
         {
-            ct.ThrowIfCancellationRequested();
-            var e = await ReconcileOneDetailedAsync(dataset, s, runId, ct);
             switch (e.Outcome)
             {
                 case Outcome.Overridden: overridden++; break;
@@ -101,11 +102,17 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 case Outcome.Queued: queued++; break;
                 case Outcome.Minted: minted++; break;
                 case Outcome.Deferred: deferred++; break;
+                case Outcome.Decomposed: lists++; foreach (var p in e.Parts ?? []) { parts++; Count(p); } break;
                 default: skipped++; break;
             }
-            if (++n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}");
         }
-        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle);
+        foreach (var s in strings)
+        {
+            ct.ThrowIfCancellationRequested();
+            Count(await ReconcileOneDetailedAsync(dataset, s, runId, ct));
+            if (++n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists > 0 ? $", lists {lists}" : ""));
+        }
+        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts);
     }
 
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>
@@ -115,10 +122,32 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Evaluation> ReconcileOneDetailedAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default)
     {
         var evaluation = await EvaluateAsync(dataset, s, includeStore: true, ct);
+        if (evaluation.Outcome == Outcome.Decomposed) return await DecomposeAsync(dataset, s, evaluation, runId, ct);
         var sw = System.Diagnostics.Stopwatch.StartNew();
         await CommitAsync(dataset, s, evaluation, runId, ct);
         Time("commit", sw);
         return evaluation;
+    }
+
+    /// <summary>
+    /// A list string is decided as its parts: each part is collected as a string of its own (shared with every other
+    /// parent naming it, and not counted as a new occurrence), linked in order, and reconciled when it has no decision
+    /// yet; the parent's decision is the list, with no entity.
+    /// </summary>
+    private async Task<Evaluation> DecomposeAsync(string dataset, SourceString s, Evaluation e, string? runId, CancellationToken ct)
+    {
+        var reading = e.Reading;
+        var decided = new List<Evaluation>();
+        var ids = new List<long>();
+        for (var i = 0; i < reading.Parts!.Count; i++)
+        {
+            var part = await store.CollectAsync(dataset, reading.PartContext ?? s.Context, reading.Parts[i], ct: ct, count: false);
+            await store.LinkPartAsync(s.Id, i, part.Id, "member", ct);
+            ids.Add(part.Id);
+            if (await store.DecisionForAsync(part.Id, ct) is null) decided.Add(await ReconcileOneDetailedAsync(dataset, part, runId, ct));
+        }
+        await store.DecideAsync(s.Id, null, DecisionMethod.List, Evidence("list", reading, [], new { parts = ids, texts = reading.Parts }), runId: runId, ct: ct);
+        return e with { Parts = decided };
     }
 
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>
@@ -141,6 +170,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (over is null && reading.Key != s.Normalised) over = await store.OverrideForAsync(dataset, s.Context, reading.Key, ct);
         Time("overrides", sw);
         if (over is not null) return new Evaluation(Outcome.Overridden, reading, [], Override: over);
+        // a string made of parts is not looked up itself (an override on the whole still wins above): its parts are, by DecomposeAsync
+        if (reading.Parts is not null) return new Evaluation(Outcome.Decomposed, reading, []);
 
         // 2. the store: entities already minted whose labels match
         var candidates = new List<Candidate>();
@@ -195,7 +226,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // nothing on the string to check it against (an undated string); see ReconcilerOptions.AcceptUniqueExactSingleSource
         // a name of one word ("Mr Farebrother" read as "Farebrother") is not exact enough to carry this alone: a person decides
         if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count == 1 && reading.Lifespan is null
-            && StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2
+            && (reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
             && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
             // a heading that carries dates was disambiguated from namesakes by its cataloguer: an undated string cannot claim it alone

@@ -473,6 +473,40 @@ public class ReconcilerStoreTests(PostgresFixture pg)
     }
 
     [PostgresFact]
+    public async Task A_list_string_is_decided_as_its_parts()
+    {
+        var ds = Dataset();
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        static AuthorityRecord Tgn(string id, string label, string parent) => new($"http://vocab.getty.edu/tgn/{id}", "tgn", label, [label], "Place", null, [], $"{{\"parentString\":\"{parent}\"}}", DateTimeOffset.UtcNow, "test");
+        await pg.Store.PutAuthorityAsync(Tgn("7011781", "Hammersmith", "London, Greater London, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("7000005", "Lampeter", "Ceredigion, Wales, United Kingdom, Europe, World"));
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn")], ProjectManifest.PmcDefault.ToOptions());
+
+        var list = await pg.Store.CollectAsync(ds, "place", "Hammersmith, London; Lampeter");
+        var e = await reconciler.ReconcileOneDetailedAsync(ds, list);
+        Assert.Equal(Outcome.Decomposed, e.Outcome);
+        Assert.Equal(DecisionMethod.List, (await pg.Store.DecisionForAsync(list.Id))!.Method);
+        var parts = await pg.Store.PartsAsync(list.Id);
+        Assert.Equal(["Hammersmith, London", "Lampeter"], parts.Select(p => p.Raw).ToArray());
+        Assert.Equal(2, e.Parts!.Count);
+        Assert.Equal(Outcome.Accepted, e.Parts[0].Outcome); // placed by its qualifier, one source
+        Assert.Equal(Outcome.Accepted, e.Parts[1].Outcome); // a one-word place is whole: the exact-single policy's two-word rule is for people and bodies
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(parts[1].Id))!.Method);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Lampeter"))!.Equivalents, q => q.Uri.EndsWith("7000005"));
+        // a second list naming Lampeter shares the part string, already decided, and reconciles only the new one
+        var again = await reconciler.ReconcileOneDetailedAsync(ds, await pg.Store.CollectAsync(ds, "place", "Lampeter; Moggerhanger"));
+        Assert.Equal(Outcome.Decomposed, again.Outcome);
+        Assert.Single(again.Parts!);
+        Assert.Equal(Outcome.Minted, again.Parts![0].Outcome);
+        Assert.Equal(2, (await pg.Store.ParentsAsync(parts[1].Id)).Count);
+        Assert.Equal(1, (await pg.Store.CollectAsync(ds, "place", "Lampeter", ct: default, count: false)).Occurrences); // parts are not occurrences
+        // a run counts the list and its new parts
+        var report = await reconciler.RunAsync(ds);
+        Assert.Equal(0, report.Lists); // both lists were decided above
+        Assert.Equal(Verdict.Decomposed, ShadowRun.Judge(null, e));
+    }
+
+    [PostgresFact]
     public async Task Qualified_places_are_placed_by_tgn_parent_strings()
     {
         var ds = Dataset();

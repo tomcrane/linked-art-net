@@ -63,7 +63,14 @@ public interface IAlignmentStore
     // ---- source strings
 
     /// <summary>Records a string occurrence: inserts it or bumps last_seen and occurrences. The parsed JSON, when given, replaces what was stored.</summary>
-    Task<SourceString> CollectAsync(string dataset, string context, string raw, string? parsedJson = null, CancellationToken ct = default);
+    /// <param name="count">Whether this is an occurrence of the string in the data (the default); a part derived from another string is not counted again on every run.</param>
+    Task<SourceString> CollectAsync(string dataset, string context, string raw, string? parsedJson = null, CancellationToken ct = default, bool count = true);
+    /// <summary>Records that a string is made of parts: <paramref name="partId"/> is the part at <paramref name="position"/> of <paramref name="parentId"/> (doc 10, section 7.6).</summary>
+    Task LinkPartAsync(long parentId, int position, long partId, string? role = null, CancellationToken ct = default);
+    /// <summary>The parts of a string, in order; empty when it has none.</summary>
+    Task<IReadOnlyList<SourceString>> PartsAsync(long parentId, CancellationToken ct = default);
+    /// <summary>The strings a string is a part of.</summary>
+    Task<IReadOnlyList<SourceString>> ParentsAsync(long partId, CancellationToken ct = default);
 
     Task<SourceString?> GetSourceStringAsync(long id, CancellationToken ct = default);
 

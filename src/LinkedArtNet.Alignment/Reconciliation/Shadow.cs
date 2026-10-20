@@ -21,6 +21,8 @@ public enum Verdict
     QueuedUnlinked,
     /// <summary>The new run found nothing; the old run had an answer with authority ids.</summary>
     OldOnly,
+    /// <summary>The new run reads the string as a list of parts, each decided on its own; the old run had one answer for the whole.</summary>
+    Decomposed,
     /// <summary>The old entity has no authority ids, so there is nothing to compare: a local entity then, and a provisional one now.</summary>
     OldLocal,
     /// <summary>The string could not be read.</summary>
@@ -105,6 +107,8 @@ public sealed class ShadowRun(IAlignmentStore store, Reconciler reconciler)
                 var oldSources = oldExternal.Select(AuthorityUris.SourceOf).Where(s => s != "other").ToHashSet(StringComparer.Ordinal);
                 return target.Select(AuthorityUris.SourceOf).Any(oldSources.Contains) ? Verdict.QueuedConflict : Verdict.QueuedUnlinked;
             }
+            case Outcome.Decomposed:
+                return Verdict.Decomposed;
             default:
                 return oldExternal.Count == 0 ? Verdict.OldLocal : Verdict.OldOnly;
         }

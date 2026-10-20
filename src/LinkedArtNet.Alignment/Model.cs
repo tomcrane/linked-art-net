@@ -18,6 +18,8 @@ public static class DecisionMethod
     public const string Vote = "vote";
     /// <summary>One source alone, an exact name, no rival candidate at any score, and no dates on the string to check: accepted by policy (ReconcilerOptions.AcceptUniqueExactSingleSource), kept apart so these can be reviewed or reversed as a set.</summary>
     public const string ExactSingle = "exact-single";
+    /// <summary>The string names several things ("Dublin; New York"): decided as its parts, which are strings of their own (source_string_parts); no entity of its own.</summary>
+    public const string List = "list";
     /// <summary>A person decided it in the workbench; the evidence says what they chose and why.</summary>
     public const string Human = "human";
     public const string LlmProposedThenHuman = "llm-proposed-then-human";

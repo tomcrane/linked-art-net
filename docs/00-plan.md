@@ -409,6 +409,16 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       (1,552) and stale LUX ids; the reports-outward step (doc 12 step 5) sends the ULAN findings to Getty.
     - Measure again: a shadow sample after today's stricter date agreement, and the human sample through the desk's
       "review single-source acceptances".
+    - Per-context redo (for the jobs step, noted 2026-10-20): a change to one context's rule today costs a full
+      undo and a twenty-minute corpus rerun. Wanted: `redo --context place [--method minted]`, which invalidates the
+      valid decisions matching the filter, removes the provisional entities only those decisions held, and
+      reconciles those strings again; the same operation is a job on the runs page.
+    - The Align tool reads the sources from the project's saved manifest but the context rules from the code's PMC
+      default (`PmcContexts()`), so the two can disagree; the workbench reads both from the saved manifest. Make the
+      tool read the saved manifest for both, with the code default only when the project has none (noted 2026-10-20).
+    - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
+      Art prizes" read as Person; "McSloy, Tom, op 1946" (a working date written "op"); "Mainz/Rhein" (a slash
+      variant for name-forms).
     - Workbench step 3 (jobs): runs, loads and indexes pages (authority_sources is the indexes table), a schedule,
       the counters list; step 4 as extended by doc 14 section 4 (sources and uploaded dumps, the profile job,
       contexts namespaced by source, role routing, mapping tables as overrides, the brief's tables imported as

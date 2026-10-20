@@ -581,6 +581,12 @@ say is the same thing is left in the group; the store's own entities under the l
 records are Type class and only the keyword contexts allow Type, so no other context sees the change. It takes an aat
 reload (57,322 records) to measure; PmcDefault is unchanged.
 
+Measured 2026-10-20 (run-20261020-160811-e2xu8x, AAT bare terms and the decisive home rule, against tzm64p):
+accepted 4,836 -> 4,862 (vote 2,068 -> 2,085, exact-single 2,121 -> 2,130), queued 8,518 -> 8,483, minted 12,290
+unchanged; store stage 873 s. A gain of 26 strings, as small as the sample of 15 foretold: the AAT near rival was
+the only block on a few dozen subdivisions, and the places are the larger remainder (finding 9). The keywords:sub
+sample is to be read when pasted.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

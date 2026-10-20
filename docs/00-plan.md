@@ -17,9 +17,11 @@ workbench test pinning the PMC context count). Five authority sources loaded (14
 collections and aat reloaded with bare terms on 2026-10-20. Doc 10 section 7.6 is built in full: the qualified, list
 and compound shapes, placed through, the `single` method, the cataloguers' abbreviations, the home vocabulary (now
 decisive), a vocabulary's collections, AAT's bare terms. The last measured run is run-20261020-150054-tzm64p
-(accepted 4,836, queued 8,518, minted 12,290, lists 404, compounds 15,749); a run with AAT's bare terms was started
-that night and its report and `--context keywords:sub` sample are to be pasted and read (expect "Catalogs", "20th
-century", "21st century", "Biography" accepted and "Private collections" on LCSH with AAT's two set aside).
+(accepted 4,836, queued 8,518, minted 12,290, lists 404, compounds 15,749), and the night's run with AAT's bare
+terms, run-20261020-160811-e2xu8x, stands on top of it: accepted 4,862 (vote 2,085, single 647, exact-single 2,130),
+queued 8,483, minted 12,290; a gain of 26, as the sample foretold. Its `--context keywords:sub --limit 10` sample is
+still to be pasted and read (expect "Catalogs", "20th century", "21st century", "Biography" accepted and "Private
+collections" on LCSH with AAT's two set aside).
 
 **Decisions owed by the owner**, each with the assistant's recommendation:
 
@@ -54,8 +56,8 @@ century", "21st century", "Biography" accepted and "Private collections" on LCSH
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- decisions --run <the night's run id> --context keywords:sub --limit 10
-    dotnet run --project tools/Align -- decisions --run <the night's run id> --method minted --limit 1
+    dotnet run --project tools/Align -- decisions --run run-20261020-160811-e2xu8x --context keywords:sub --limit 10
+    dotnet run --project tools/Align -- decisions --run run-20261020-160811-e2xu8x --method minted --limit 1
 
 Then paste both and say which of the builds above to start; each build ends with `undo-run --run <last run>` and
 `reconcile`, and the assistant says when a reload or `manifest --use-default` is needed too (neither is for

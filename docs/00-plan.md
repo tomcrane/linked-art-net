@@ -19,9 +19,9 @@ and compound shapes, placed through, the `single` method, the cataloguers' abbre
 decisive), a vocabulary's collections, AAT's bare terms. The last measured run is run-20261020-150054-tzm64p
 (accepted 4,836, queued 8,518, minted 12,290, lists 404, compounds 15,749), and the night's run with AAT's bare
 terms, run-20261020-160811-e2xu8x, stands on top of it: accepted 4,862 (vote 2,085, single 647, exact-single 2,130),
-queued 8,483, minted 12,290; a gain of 26, as the sample foretold. Its `--context keywords:sub --limit 10` sample is
-still to be pasted and read (expect "Catalogs", "20th century", "21st century", "Biography" accepted and "Private
-collections" on LCSH with AAT's two set aside).
+queued 8,483, minted 12,290; a gain of 26, as the sample foretold. Its keywords:sub sample is read: "Catalogs" and
+"Diaries" are votes with AAT carried; "20th century" is still queued because AAT's centuries are typed Type and
+LCSH's Period (finding 11, a loader change below).
 
 **Decisions owed by the owner**, each with the assistant's recommendation:
 
@@ -49,17 +49,19 @@ collections" on LCSH with AAT's two set aside).
    hyphen and looked up whole; 101 of 1,536 subdivisions.
 3. TGN level preference for the nation shape ("Canada", "England", "China": LoC's unqualified heading joined to TGN's
    record of the highest level among namesakes of differing type), designed after finding 9 is in.
-4. Hyphen and space in keys (finding 8, "Stage setting and scenery" against "Stage-setting and scenery"): needs a full
+4. AAT's Styles and Periods facet typed Period (finding 11): "20th century" meets AAT's "twentieth century (dates CE)"
+   as the same class and the home rule carries it; the chronological subdivisions are a good part of keywords:sub's
+   579 queued. Loader change and an aat reload by the owner.
+5. Hyphen and space in keys (finding 8, "Stage setting and scenery" against "Stage-setting and scenery"): needs a full
    reload of all five sources, so it waits for the next one.
-5. Decision 1 above, if yes; decision 2, if yes after measuring.
+6. Decision 1 above, if yes; decision 2, if yes after measuring.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- decisions --run run-20261020-160811-e2xu8x --context keywords:sub --limit 10
     dotnet run --project tools/Align -- decisions --run run-20261020-160811-e2xu8x --method minted --limit 1
 
-Then paste both and say which of the builds above to start; each build ends with `undo-run --run <last run>` and
+Then say which of the builds above to start; each build ends with `undo-run --run <last run>` and
 `reconcile`, and the assistant says when a reload or `manifest --use-default` is needed too (neither is for
 findings 9 and 10).
 
@@ -546,6 +548,11 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     - Place-type preference for the nation shape ("Canada", "England", "China": TGN's nation beside hamlets, and LoC's
       heading unqualified): join an unqualified LoC heading to TGN's record of the highest level among namesakes of
       differing type. Design after finding 9 is in; the exports hold the type combinations.
+    - AAT's Styles and Periods facet as Period (finding 11, doc 10 7.6 "Measured ... e2xu8x"): "20th century" stays
+      queued because LCSH's chronological subdivision is a Period and AAT's "twentieth century (dates CE)" a Type. The
+      AAT loader walks `gvp:broaderPreferred` up to the facet (aat 300264088) in the staged triples and types those
+      concepts Period. Loader change and aat reload (minutes). Reaches the chronological subdivisions, a good part of
+      keywords:sub's 579 queued.
     - TGN place namesakes among subdivisions and places ("Canada", "England", "Cornwall", "London", "Kent", "Norfolk",
       "Austria": 8 of 15 sampled queued subdivisions): the place-type preference item. TGN's `placeType` is in each
       record's data (an AAT URI). Measure first, the owner runs:

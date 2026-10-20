@@ -584,8 +584,17 @@ reload (57,322 records) to measure; PmcDefault is unchanged.
 Measured 2026-10-20 (run-20261020-160811-e2xu8x, AAT bare terms and the decisive home rule, against tzm64p):
 accepted 4,836 -> 4,862 (vote 2,068 -> 2,085, exact-single 2,121 -> 2,130), queued 8,518 -> 8,483, minted 12,290
 unchanged; store stage 873 s. A gain of 26 strings, as small as the sample of 15 foretold: the AAT near rival was
-the only block on a few dozen subdivisions, and the places are the larger remainder (finding 9). The keywords:sub
-sample is to be read when pasted.
+the only block on a few dozen subdivisions, and the places are the larger remainder (finding 9). The sample read:
+"Catalogs" and "Diaries" are votes on the LCSH form subdivision carrying AAT's term, as designed. But the gain fell
+in keywords (exact-single 346 -> 352, vote 237 -> 241, queued 2,075 -> 2,062) and keywords:head (vote 1,462 -> 1,479,
+queued 2,078 -> 2,058), hardly in keywords:sub (queued 581 -> 579), and the sample says why (finding 11): "20th
+century" is still queued because LCSH's sh2002012476 is Temporal, read as a Period, while AAT's "twentieth century
+(dates CE)", now exact, is a Type like every AAT concept, and the home rule carries only a record of the home
+record's own class. The chronological subdivisions ("19th century", "20th century", "21st century") are a good part
+of what remains queued in keywords:sub. Design: the AAT loader types a concept under the Styles and Periods facet
+(aat 300264088, reached by walking `gvp:broaderPreferred` in the staged triples) as a Period, so AAT's centuries meet
+LCSH's as the same class. Loader change and aat reload; not built. "Stage" now also meets AAT's "stages (performance
+spaces)" exactly, which changes nothing: it is finding 4's mis-keyed heading.
 
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.

@@ -472,8 +472,15 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       (select id from members where source = 'tgn' and score >= 0.97 and not veto group by id having count(*) = 1)
       select m.source, round(m.score, 2) as score, count(distinct m.id) as strings, (array_agg(m.raw || ' ~ ' ||
       m.label order by m.raw))[1:3] as examples from members m join single s on s.id = m.id where not m.veto and
-      m.source <> 'tgn' group by m.source, round(m.score, 2) order by strings desc;` (the rivals of the 248, by
-      source and score, with examples; expect loc at 0.85 to dominate).
+      m.source <> 'tgn' group by m.source, round(m.score, 2) order by strings desc;` Confirmed 2026-10-20 (doc 10
+      7.6 "Confirmed"): loc 0.85 on 148, store 1.00 on 59, store 0.85 on 41, loc 0.90 on 39, loc 1.00 on 25, lcsh 0.85
+      on 12, another class 25; finding 9 reaches about 226 of 248. Build on the owner's word, with finding 10.
+    - Finding 10, the project's one bare entity of the name (59 strings: "Adelaide, South Australia" beside the
+      project's "Adelaide"): in a qualified reading with a placed candidate, a store entity exact on the name with no
+      placement of its own, the only store entity of that name, joins the placed group. Build with finding 9.
+    - "Outvoted rivals" (owner's decision; doc 10 7.6 "Confirmed"): at a tie at acceptance score, a group carried by
+      two independent sources beats a rival carried by one; two two-source groups stay queued. Reaches "Finance" and
+      "Aberdeen" shapes. Measure after finding 9.
     - Place-type preference for the nation shape ("Canada", "England", "China": TGN's nation beside hamlets, and LoC's
       heading unqualified): join an unqualified LoC heading to TGN's record of the highest level among namesakes of
       differing type. Design after finding 9 is in; the exports hold the type combinations.

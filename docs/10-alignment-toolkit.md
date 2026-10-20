@@ -599,6 +599,23 @@ its world, would be joined to TGN's record of the highest level (nation, state, 
 place of the name. To confirm the 248 before building, the owner runs the query in the plan, which lists the live
 rivals of those strings by source and score.
 
+Confirmed 2026-10-20 (the owner's run of that query, rivals of the 248 by source and score): loc at 0.85, 148 strings
+("Abbeyleix (Ireland)", "Acton Bridge (England)"); store at 1.00, 59 ("Adelaide, South Australia" beside the project's
+own bare entity "Adelaide"); store at 0.85, 41 (legacy entities labelled from LoC, "Arbroath (Scotland)"); loc at
+0.90, 39 (a placed LoC heading, "Adelaide (S.A.)", on the same strings as the bare store entity); loc at 1.00, 25
+("Buckinghamshire (England)", exact through a variant); lcsh at 0.85, 12 ("Black Country (England)"); and 25 of
+another class, aat and lcsh at 1.00 on subdivision strings that are topics ("Cult", "Exile", "Finance") or places
+("Ethiopia", "European", "Oceania") beside a TGN hamlet or nation of the name. So finding 9 reaches about 226 of the
+248 (every rival that carries a placement inside TGN's parent string: LoC's and LCSH's qualified headings, and the
+store's legacy entities labelled from them). The 59 bare store entities are finding 10: in a qualified reading with
+a placed candidate, the project's one entity exact on the name that has no placement of its own ("Adelaide", the
+only Adelaide the project has) joins the placed group and gains the authority id, as the LoC-labelled ones do. The 25
+of another class are a policy question for the owner, "outvoted rivals": at a tie at acceptance score, a group two
+independent sources carry would beat a rival one source carries ("Finance": LCSH's topic with AAT's term carried,
+against a TGN hamlet called Finance; "Aberdeen": TGN's Scottish city with LoC's "Aberdeen (Scotland)" joined,
+against four TGN namesakes no LoC heading reaches). Two two-source groups ("Cambridge" in England and in
+Massachusetts) stay queued. Not built; to measure once finding 9 is in.
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

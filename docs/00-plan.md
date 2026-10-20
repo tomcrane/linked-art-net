@@ -32,7 +32,10 @@ century", "21st century", "Biography" accepted and "Private collections" on LCSH
    heading joined against four TGN namesakes). Recommendation: measure after finding 9 is in, then decide.
 3. *`unrec_` identifiers*: whether the imported headings' old identifiers are kept when compounds are exported as
    coordinated concepts (doc 10 7.5 item 2). No recommendation yet; it depends on what LUX consumes.
-4. *Key users by GitHub id* (workbench): still owed from earlier; see the open item in section 7.
+4. *Key workbench users by GitHub id* (schema: `users.login` is the primary key today, and `memberships` and
+   `notes.author` refer to it): whether to key users by the numeric GitHub id, which does not change when a
+   login is renamed. Raised in conversation earlier and not written down until now; no code depends on the
+   answer yet, so it can wait for the first user besides the owner.
 
 **Built and waiting for the owner's go** (in the order the assistant would build them):
 

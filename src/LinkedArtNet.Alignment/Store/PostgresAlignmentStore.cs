@@ -588,12 +588,12 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
-    public async Task<IReadOnlyList<DecidedString>> DecisionsForRunAsync(string runId, string? method = null, int limit = 50, CancellationToken ct = default)
+    public async Task<IReadOnlyList<DecidedString>> DecisionsForRunAsync(string runId, string? method = null, int limit = 50, string? context = null, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(
             $"select s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences, {DecisionColumns} " +
-            "from decisions d join source_strings s on s.id = d.source_string_id where d.run_id = @run and d.valid" + (method is null ? "" : " and d.method = @method") + " order by d.id limit @limit");
-        Add(cmd, "run", runId); if (method is not null) Add(cmd, "method", method); Add(cmd, "limit", limit);
+            "from decisions d join source_strings s on s.id = d.source_string_id where d.run_id = @run and d.valid" + (method is null ? "" : " and d.method = @method") + (context is null ? "" : " and s.context = @context") + " order by d.id limit @limit");
+        Add(cmd, "run", runId); if (method is not null) Add(cmd, "method", method); if (context is not null) Add(cmd, "context", context); Add(cmd, "limit", limit);
         var list = new List<DecidedString>();
         await using var r = await cmd.ExecuteReaderAsync(ct);
         while (await r.ReadAsync(ct))

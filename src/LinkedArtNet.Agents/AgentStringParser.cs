@@ -316,8 +316,16 @@ public sealed partial class AgentStringParser
     /// </summary>
     private bool IsHonorificWord(string word) => word.TrimEnd('.').Length > 1 && _tables.IsHonorific(word);
 
-    private bool IsCorporate(string name) =>
-        name.Split([' ', ',', '.', ';', '/'], StringSplitOptions.RemoveEmptyEntries).Any(_tables.IsCorporateWord);
+    private bool IsCorporate(string name)
+    {
+        var words = name.Split([' ', ',', '.', ';', '/'], StringSplitOptions.RemoveEmptyEntries);
+        if (words.Any(_tables.IsCorporateWord)) return true;
+        // an ampersand joins partners, or a founder and his son: a firm ("Crews & Son", "Edward Jas Carter & Banks"), never one person
+        if (name.Contains('&')) return true;
+        for (var i = 1; i < words.Length; i++)
+            if (words[i].Equals("son", StringComparison.OrdinalIgnoreCase) && words[i - 1].Equals("and", StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
 
     // ---- text mechanics ---------------------------------------------------------------------------------------
 

@@ -135,7 +135,7 @@ switch (args[0])
         Console.WriteLine("by context and method:");
         foreach (var row in await store.RunBreakdownAsync(runId)) Console.WriteLine($"  {row.Context,-16} {row.Method,-12} {row.Count}");
         Console.WriteLine();
-        foreach (var item in await store.DecisionsForRunAsync(runId, Option("--method"), limit))
+        foreach (var item in await store.DecisionsForRunAsync(runId, Option("--method"), limit, Option("--context")))
         {
             Console.WriteLine($"[{item.String.Context}] {item.String.Raw}");
             Console.WriteLine($"   -> {item.Decision.Method}  {item.Decision.EntityId}");
@@ -267,7 +267,7 @@ static void Usage() => Console.WriteLine(
                                              load the LC Name Authority File (MADS/RDF N-Triples) into the local authority index
       reconcile [--dataset] [--limit n] (all undecided strings unless limited) [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-unique-exact] [--no-mint]
                                              decide undecided strings from overrides, the store and the local indexes
-      decisions --run <id> [--method m] [--limit 20]
+      decisions --run <id> [--method m] [--context c] [--limit 20]
                                              a run's decisions by context and method, then a sample with evidence
       shadow [--dataset] [--method imported] [--context c] [--limit n | --sample n] [--out reports]
                                              re-judge old decisions from scratch (store entities hidden) and compare; CSV of the differences

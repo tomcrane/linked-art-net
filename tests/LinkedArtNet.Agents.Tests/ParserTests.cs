@@ -9,6 +9,15 @@ public class ParserTests
         new AgentStringParser(AgentProfileCatalog.BuiltIn.Get(profile)).Parse(text);
 
     [Fact]
+    public void An_ampersand_or_and_son_makes_a_firm()
+    {
+        Assert.Equal(AgentKind.Group, Parse("Crews & Son", "dscribe").Kind); // 2026-10-19 corpus run minted this as a person
+        Assert.Equal(AgentKind.Group, Parse("Edward Jas Carter & Banks", "dscribe").Kind);
+        Assert.Equal(AgentKind.Group, Parse("Thomas Agnew and Son", "dscribe").Kind);
+        Assert.Equal(AgentKind.Person, Parse("Anderson, Edward", "dscribe").Kind); // "son" inside a word is not the word
+    }
+
+    [Fact]
     public void A_single_letter_is_an_initial_not_a_title()
     {
         Assert.Equal("Larsen, Ruth M", Parse("Larsen, Ruth M (editor)", "dscribe").Name); // "M" is Monsieur in the table, an initial here

@@ -5,6 +5,63 @@ review in §7). Branch `de-pmc` is the working branch and `main` is what is depl
 releases"). The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this folder are the
 committed record.
 
+## 0. Resume point (written 2026-10-20 night; the one place to read first)
+
+This section is rewritten at the end of every working day. It lists what stands, what the owner has to decide, what
+is built and waiting for a go, and the commands to run on return. The detail behind each line is in
+[10-alignment-toolkit.md](10-alignment-toolkit.md) section 7.6 (the findings, each dated) and in the open items of
+section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
+
+**Where things stand.** Branch `de-pmc`, all work committed; CI green again from 07fcaff (three pushes had failed on a
+workbench test pinning the PMC context count). Five authority sources loaded (14.5M records), lcsh reloaded with
+collections and aat reloaded with bare terms on 2026-10-20. Doc 10 section 7.6 is built in full: the qualified, list
+and compound shapes, placed through, the `single` method, the cataloguers' abbreviations, the home vocabulary (now
+decisive), a vocabulary's collections, AAT's bare terms. The last measured run is run-20261020-150054-tzm64p
+(accepted 4,836, queued 8,518, minted 12,290, lists 404, compounds 15,749); a run with AAT's bare terms was started
+that night and its report and `--context keywords:sub` sample are to be pasted and read (expect "Catalogs", "20th
+century", "21st century", "Biography" accepted and "Private collections" on LCSH with AAT's two set aside).
+
+**Decisions owed by the owner**, each with the assistant's recommendation:
+
+1. *Undated same-source namesake* (doc 10 7.6 aqn6dz finding 3): when a string's dates agree with a record's, veto the
+   same source's undated records of the name ("Doyle, Richard, 1824-1883" against LoC's undated "Doyle, Richard").
+   Ceiling measured: 754 keywords:head, 29 persauthorfull, 50 publisher queued strings. Recommendation: yes, it is
+   LoC's own uniqueness rule.
+2. *Outvoted rivals* (doc 10 7.6 "Confirmed"): at a tie at acceptance score, a group two independent sources carry
+   beats a rival one source carries ("Finance" the topic against a hamlet called Finance; "Aberdeen" with LoC's
+   heading joined against four TGN namesakes). Recommendation: measure after finding 9 is in, then decide.
+3. *`unrec_` identifiers*: whether the imported headings' old identifiers are kept when compounds are exported as
+   coordinated concepts (doc 10 7.5 item 2). No recommendation yet; it depends on what LUX consumes.
+4. *Key users by GitHub id* (workbench): still owed from earlier; see the open item in section 7.
+
+**Built and waiting for the owner's go** (in the order the assistant would build them):
+
+1. Findings 9 and 10 together: placed-through for every string with a placement on every candidate (about 226 of 248
+   single-TGN queued places become votes: LoC's "Abbeyleix (Ireland)" joins TGN's Abbeyleix), and the project's one
+   bare entity of the name joining the placed group (59 more: "Adelaide, South Australia" reusing the project's
+   "Adelaide"). One rerun measures both.
+2. The mis-keyed compound separator (finding 4): a lower-case part ("Stage--setting and scenery") rejoined with one
+   hyphen and looked up whole; 101 of 1,536 subdivisions.
+3. TGN level preference for the nation shape ("Canada", "England", "China": LoC's unqualified heading joined to TGN's
+   record of the highest level among namesakes of differing type), designed after finding 9 is in.
+4. Hyphen and space in keys (finding 8, "Stage setting and scenery" against "Stage-setting and scenery"): needs a full
+   reload of all five sources, so it waits for the next one.
+5. Decision 1 above, if yes; decision 2, if yes after measuring.
+
+**Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
+
+    git push
+    dotnet run --project tools/Align -- decisions --run <the night's run id> --context keywords:sub --limit 10
+    dotnet run --project tools/Align -- decisions --run <the night's run id> --method minted --limit 1
+
+Then paste both and say which of the builds above to start; each build ends with `undo-run --run <last run>` and
+`reconcile`, and the assistant says when a reload or `manifest --use-default` is needed too (neither is for
+findings 9 and 10).
+
+**Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
+place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)
+are in section 7 under "Open items from the day"; none blocks the list above.
+
 ## 1. Objectives (in priority order)
 
 1. **Model library**: a top-class Linked Art 1.0 implementation in .NET, fluent to write, able to

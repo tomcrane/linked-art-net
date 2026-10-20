@@ -538,6 +538,36 @@ exact-name), and the counts doubled (matched in store 4,371 -> 10,204, store sta
 `RunAsync` passes over a string that has a decision by the time it is reached and reports them ("N of those
 considered were decided as parts before the run reached them"). Undo q7jhh7 and run again to measure.
 
+Measured 2026-10-20 (run-20261020-150054-tzm64p, the collections rule and the "Dance" class fix in play, against
+aqn6dz): accepted 4,827 -> 4,836 (vote 2,059 -> 2,068), queued 8,657 -> 8,518, minted 12,287 -> 12,290; store stage
+788 s. keywords:sub: queued 632 -> 581, vote 46 -> 88, exact-name 269 -> 273, minted 510 -> 515. keywords:head: vote
+1,497 -> 1,462 and queued 2,050 -> 2,078, the class fix undoing 35 cross-class joins like "Dance", which is now queued
+as a concept with its four rivals. The collections rule does what it was built for where it applies: "Diaries" is a
+vote on sh99001602 (the form subdivision) carrying AAT's "diaries", the topic heading vetoed; "Biography" is down to one
+live LCSH record of three. Why the fall in queued subdivisions is 51 and not hundreds, from the sample of 15 still
+queued:
+
+- 5 of 15 are blocked only by AAT's qualified terms near but not at 1.00 ("Catalogs" by "catalogs (documents)" at 0.85,
+  "20th century", "21st century", "Biography", "Private collections" by "private collections (repositories)" at 0.93):
+  the one live LCSH record is not an exact-single because a near rival stands, and not a vote because AAT's term is not
+  exact. Finding 5 (AAT qualifier indexing) is now the main blocker for subdivisions. Its design gains a refinement:
+  the home rule should carry another source's term only when that source too has exactly one exact record, or AAT's
+  two "private collections" concepts would both become one entity's equivalents.
+- 8 of 15 are places with TGN namesakes ("Canada", "England", "Cornwall", "Orkney", "London", "Kent", "Norfolk",
+  "Austria"): the open place-type preference item, now the larger half of what remains in keywords:sub, with the
+  measuring query in the plan. "England" also meets two of the project's own legacy entities under that label
+  (xscu7bkr, ppaajaj9), duplicates in the imported data.
+- "Stage" (finding 4, the mis-keyed separator) and, finding 8, "Stage setting and scenery": LCSH's heading is
+  "Stage-setting and scenery" and the keys keep hyphens (`StringKey.Normalise` folds dash forms to "-" but does not
+  equate a hyphen with a space), so the record is not retrieved; a key with hyphens as spaces on both sides needs the
+  index rebuilt, so this waits for the next full reload.
+- The `decisions` printer shows three groups of three members, and tied groups keep the sources' consulting order, so
+  the home vocabulary's record ("Dance", "Catalogs") can be the fourth group and unprinted; the evidence holds five.
+
+Place moved slightly with no rule touching it (exact-name 146 -> 128, vote 116 -> 125, minted 198 -> 204, single 31 ->
+32), not yet explained: the undo and redo of a run are not exactly idempotent on the store side (legacy entities
+reverted and realigned), to look at with the store-stage work.
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

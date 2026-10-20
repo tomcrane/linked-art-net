@@ -451,7 +451,32 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       `reconcile`; expect keywords:sub queued (632) to fall and "Catalogs", "Diaries", "20th century" to be accepted on
       LCSH, "Catalogs" carrying AAT. The first attempt (run-20261020-140820-q7jhh7) decided every part string twice,
       because part rows outlive an undo and the main loop reached them after their parents had decided them; fixed
-      (RunAsync passes over a string already decided, and says how many), to be undone and run again.
+      (RunAsync passes over a string already decided, and says how many). Measured on run-20261020-150054-tzm64p (doc
+      10 7.6 "Measured ... tzm64p"): keywords:sub queued 632 -> 581, vote 46 -> 88; the rule works where it applies,
+      and what remains queued is AAT's qualified terms (finding 5, next) and TGN place namesakes (below).
+    - AAT qualified terms (finding 5, next build): index the AAT term without its parenthetical qualifier (the
+      qualifier kept as placement) so "catalogs (documents)" is exact on "catalogs"; and the home rule carries another
+      source's term only when that source has exactly one exact record (AAT has two "private collections"). Needs an
+      aat reload (57,322 records, minutes) and a manifest refresh if PmcDefault changes.
+    - TGN place namesakes among subdivisions and places ("Canada", "England", "Cornwall", "London", "Kent", "Norfolk",
+      "Austria": 8 of 15 sampled queued subdivisions): the place-type preference item. TGN's `placeType` is in each
+      record's data (an AAT URI). Measure first, the owner runs:
+      `select ss.raw, string_agg(coalesce(t.label, r.data->>'placeType'), ' | ' order by t.label) as tgn_types from
+      decisions d join source_strings ss on ss.id = d.source_string_id cross join lateral
+      jsonb_array_elements(d.evidence->'groups') g cross join lateral jsonb_array_elements(g->'members') m join
+      authority_records r on r.uri = m->>'uri' and r.source = 'tgn' left join authority_records t on t.uri =
+      r.data->>'placeType' where d.run_id = 'run-20261020-150054-tzm64p' and d.valid and d.method = 'queued' and
+      ss.context in ('place', 'keywords:sub') and (m->>'score')::numeric >= 0.97 and (m->>'veto') is null group by
+      ss.id, ss.raw order by ss.raw;` (one row per queued string with its live exact TGN namesakes' types; the
+      design follows from which type combinations recur).
+    - Hyphen and space in keys (finding 8): "Stage setting and scenery" does not retrieve LCSH's "Stage-setting and
+      scenery" because keys keep hyphens. Equating them needs the index rebuilt: `StringKey.Normalise` with hyphens as
+      spaces and a full reload of all five sources, so it waits for the next full reload.
+    - Place drift between aqn6dz and tzm64p with no rule change on places (exact-name 146 -> 128, vote 116 -> 125,
+      minted 198 -> 204): undo and redo are not exactly idempotent on the store side; look at it with the store-stage
+      work.
+    - The `decisions` printer shows three groups of three members; order tied groups with the context's home source
+      first, or print the home record always, so "Dance" and "Catalogs" show their LCSH record.
     - Dated string, undated namesake (finding 3; owner's decision owed): when the string's dates agree with a
       record's, veto the same source's records that have no dates ("Doyle, Richard, 1824-1883" vs LoC's undated
       "Doyle, Richard"). Measured 2026-10-20 (ceiling, run aqn6dz): keywords:head 754, persauthorfull 29, publisher 50

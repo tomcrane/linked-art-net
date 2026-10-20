@@ -328,6 +328,34 @@ public class GroupingTests
     }
 
     [Fact]
+    public void A_context_s_collections_choose_among_a_vocabulary_s_namesakes()
+    {
+        // LCSH holds "Catalogs" three times (checked against id.loc.gov, 2026-10-20): the topic heading, a topical subdivision and a form subdivision
+        static Candidate Lcsh(string id, string label, params string[] collections) => new($"http://id.loc.gov/authorities/subjects/{id}", "lcsh", label, EntityClass.Type, null, [], "local", 1.0, Collections: collections);
+        var heading = Lcsh("sh85020898", "Catalogs", "LCSHAuthorizedHeadings", "LCSH_General", "SubdivideGeographically");
+        var topical = Lcsh("sh2005003411", "Catalogs", "Subdivisions", "TopicSubdivisions", "LCSH_General");
+        var form = Lcsh("sh99001246", "Catalogs", "Subdivisions", "GenreFormSubdivisions", "LCSH_General");
+        var aat = new Candidate("http://vocab.getty.edu/aat/300026059", "aat", "catalogs (documents)", EntityClass.Type, null, [], "local", 1.0); // no collections: left alone
+        var sub = Reading("Catalogs", EntityClass.Type) with { Home = "lcsh", Collections = ["GenreFormSubdivisions", "Subdivisions"] };
+        var scored = Reconciler.Score(sub, [heading, topical, form, aat], 120);
+        Assert.True(scored[0].Veto); Assert.Contains("GenreFormSubdivisions record of the name is the one wanted here", scored[0].Reason);
+        Assert.True(scored[1].Veto); // in Subdivisions, but the form subdivision is wanted first
+        Assert.False(scored[2].Veto);
+        Assert.Equal(form.Uri, scored[3].JoinedTo); // one exact home record left: the home rule carries AAT's term
+        Assert.Equal(form.Uri, Reconciler.Groups(scored)[0].Best.Candidate.Uri);
+        // the heads want the heading
+        var head = Reading("Catalogs", EntityClass.Type) with { Home = "lcsh", Collections = ["LCSHAuthorizedHeadings"] };
+        var heads = Reconciler.Score(head, [heading, topical, form], 120);
+        Assert.False(heads[0].Veto); Assert.True(heads[1].Veto); Assert.True(heads[2].Veto);
+        // a lone record stands whatever its collection, and without a wanted collection all three are rivals
+        Assert.False(Reconciler.Score(head, [form], 120)[0].Veto);
+        Assert.All(Reconciler.Score(sub with { Collections = null }, [heading, topical, form], 120), m => Assert.False(m.Veto));
+        // the collections reach a candidate from the record's data
+        var record = new AuthorityRecord(form.Uri, "lcsh", "Catalogs", ["Catalogs"], "Type", null, [], "{\"collections\":[\"GenreFormSubdivisions\",\"Subdivisions\"]}", DateTimeOffset.UtcNow, "test");
+        Assert.Equal(["GenreFormSubdivisions", "Subdivisions"], LocalIndexSource.ToCandidate(record, sub, "local").Collections);
+    }
+
+    [Fact]
     public void A_loc_subdivision_id_is_the_heading_it_was_made_from()
     {
         var reading = Reading("Massachusetts", EntityClass.Place);
@@ -500,6 +528,8 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Topic> .
         <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Authority> .
         <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Angiotensin II"@en .
+        <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.loc.gov/mads/rdf/v1#isMemberOfMADSCollection> <http://id.loc.gov/authorities/subjects/collection_LCSHAuthorizedHeadings> .
+        <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.loc.gov/mads/rdf/v1#isMemberOfMADSCollection> <http://id.loc.gov/authorities/subjects/collection_LCSH_General> .
         <http://id.loc.gov/authorities/subjects/sh00000074> <http://www.loc.gov/mads/rdf/v1#hasVariant> _:v1 .
         _:v1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Topic> .
         _:v1 <http://www.loc.gov/mads/rdf/v1#variantLabel> "Angiotensin 2"@en .
@@ -528,6 +558,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal("Type", topic.Type);
         Assert.Contains("Angiotensin 2", topic.Labels);
         Assert.Null(topic.Lifespan);
+        Assert.Contains("\"collections\": [\"LCSHAuthorizedHeadings\", \"LCSH_General\"]", topic.DataJson); // the memberships by short name, sorted
         var complex = (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/subjects/sh00000071"))!;
         Assert.Equal("Angiotensin II--Antagonists", complex.Label);
         Assert.Contains("\"components\": [\"http://id.loc.gov/authorities/subjects/sh00000074\", \"http://id.loc.gov/authorities/subjects/sh99002348\"]", complex.DataJson); // jsonb spacing

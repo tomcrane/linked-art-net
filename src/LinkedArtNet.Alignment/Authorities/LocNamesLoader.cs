@@ -34,8 +34,12 @@ public enum LocFile { Names, Subjects }
 /// few name classes; <c>madsrdf:hasBroaderAuthority</c> gives the hierarchy, and a <c>ComplexSubject</c> (a
 /// precoordinated heading such as "Angiotensin II--Antagonists") has a <c>madsrdf:componentList</c>, an RDF list of
 /// the component headings' URIs, kept in the record's data as <c>components</c> for the compound-subjects work.
-/// Subject headings carry no RWO dates and their embedded numbers are not lifespans, so only personal-name
-/// headings are split for dates.
+/// A subject record's <c>madsrdf:isMemberOfMADSCollection</c> memberships are kept as <c>collections</c>, by their
+/// short names (<c>LCSHAuthorizedHeadings</c>, <c>Subdivisions</c>, <c>GenreFormSubdivisions</c>, <c>TopicSubdivisions</c>,
+/// <c>TemporalSubdivisions</c>, the pattern-heading lists; checked against id.loc.gov records on 2026-10-20): LCSH holds
+/// "Catalogs" three times, as a topic heading, a topical subdivision and a form subdivision, and a context rule's
+/// <c>collections</c> says which of them its strings mean. Subject headings carry no RWO dates and their embedded
+/// numbers are not lifespans, so only personal-name headings are split for dates.
 /// </para>
 /// </remarks>
 public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
@@ -48,7 +52,7 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
     private const string RdfNil = "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil";
 
     /// <summary>What differs between the two files: where the headings live, which classes they take, which index they fill, and whether personal headings carry dates to split off.</summary>
-    private sealed record Profile(string Prefix, Dictionary<string, string> Types, string Source, bool Components);
+    private sealed record Profile(string Prefix, Dictionary<string, string> Types, string Source, bool Components, bool Collections = false);
 
     private static readonly Profile Names = new("http://id.loc.gov/authorities/names/", new(StringComparer.Ordinal)
     {
@@ -71,7 +75,7 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
         [Mads + "CorporateName"] = nameof(EntityClass.Group),
         [Mads + "ConferenceName"] = nameof(EntityClass.Event),
         [Mads + "FamilyName"] = nameof(EntityClass.Group),
-    }, "lcsh", Components: true);
+    }, "lcsh", Components: true, Collections: true);
 
     private static Profile For(LocFile file) => file == LocFile.Subjects ? Subjects : Names;
 
@@ -107,7 +111,7 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
             // types are kept only for headings under the file's prefix (variants are typed too, as blank nodes); labels of
             // headings and variants, the links, the RWO's dates and occupations, and for subjects the component lists
             var (read, kept) = await TripleStaging.StageAsync(store, table, triples,
-                t => (WantedAlways.Contains(t.Predicate) || (profile.Components && WantedForComponents.Contains(t.Predicate)))
+                t => (WantedAlways.Contains(t.Predicate) || (profile.Components && WantedForComponents.Contains(t.Predicate)) || (profile.Collections && t.Predicate == Mads + "isMemberOfMADSCollection"))
                      && (t.Predicate != RdfType || (profile.Types.ContainsKey(t.Object) && t.Subject.StartsWith(profile.Prefix, StringComparison.Ordinal))),
                 progress, ct);
             progress?.Report("building records");
@@ -124,6 +128,7 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
         ),
         auth as (select s as uri, min(o) as label from {table} where p = '{Mads}authoritativeLabel' and s like '{profile.Prefix}%' group by s),
         broader as (select s as uri, array_agg(distinct o) as broader from {table} where p = '{Mads}hasBroaderAuthority' group by s),
+        collections as (select s as uri, array_agg(distinct o) as collections from {table} where p = '{Mads}isMemberOfMADSCollection' group by s),
         listwalk as (
             select cl.s as uri, cl.o as node, 0 as pos from {table} cl where cl.p = '{Mads}componentList'
             union all
@@ -149,7 +154,7 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
                    array_remove(array_agg(distinct case when x.p = '{Mads}occupation' then x.o end), null) as occupations
             from rwo join {table} x on x.s = rwo.rwo group by rwo.uri
         )
-        select h.uri, h.type, auth.label, variants.labels, links.same_as, rwoinfo.birth, rwoinfo.death, rwoinfo.occupations, broader.broader, components.components
+        select h.uri, h.type, auth.label, variants.labels, links.same_as, rwoinfo.birth, rwoinfo.death, rwoinfo.occupations, broader.broader, components.components, collections.collections
         from headings h
         left join auth on auth.uri = h.uri
         left join variants on variants.uri = h.uri
@@ -157,6 +162,7 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
         left join rwoinfo on rwoinfo.uri = h.uri
         left join broader on broader.uri = h.uri
         left join components on components.uri = h.uri
+        left join collections on collections.uri = h.uri
         """;
 
     private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, Profile profile, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
@@ -182,6 +188,7 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
             var occupations = r.IsDBNull(7) ? [] : r.GetFieldValue<string[]>(7);
             var broader = r.IsDBNull(8) ? [] : r.GetFieldValue<string[]>(8);
             var components = r.IsDBNull(9) ? [] : r.GetFieldValue<string[]>(9);
+            var collections = r.IsDBNull(10) ? [] : r.GetFieldValue<string[]>(10);
             if (label is null) continue;
 
             // only a personal-name heading embeds dates; a subject heading's numbers ("Great Britain--History--1800-1837") are not a lifespan
@@ -197,9 +204,17 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
             if (heading.Dates is not null) data["headingDates"] = heading.Dates;
             if (broader.Length > 0) data["broader"] = broader;
             if (components.Length > 0) data["components"] = components;
+            if (collections.Length > 0) data["collections"] = collections.Select(CollectionName).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
             data["madsClass"] = madsClass[Mads.Length..];
             yield return new AuthorityRecord(uri, profile.Source, label, labels.Distinct(StringComparer.Ordinal).ToList(), type, lifespan, sameAs, data.Count == 0 ? null : JsonSerializer.Serialize(data), now, sourceVersion);
         }
+    }
+
+    /// <summary>The short name of a MADS collection: "LCSHAuthorizedHeadings" from <c>http://id.loc.gov/authorities/subjects/collection_LCSHAuthorizedHeadings</c>.</summary>
+    internal static string CollectionName(string uri)
+    {
+        var i = uri.LastIndexOf("collection_", StringComparison.Ordinal);
+        return i >= 0 ? uri[(i + "collection_".Length)..] : uri[(uri.LastIndexOf('/') + 1)..];
     }
 
     /// <summary>A link worth keeping: a VIAF cluster, a Wikidata entity, a Getty or ISNI id; not VIAF's <c>sourceID</c> form, which is LoC's own id reflected back.</summary>

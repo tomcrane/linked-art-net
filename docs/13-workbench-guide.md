@@ -141,8 +141,9 @@ library rules as the toolkit currently defines them, or the project's own rules 
 library rules are built into the toolkit and change as it grows; *Replace with the PMC library rules* copies the
 current version over the saved manifest, and the command line does the same with `manifest --use-default`. A context
 may also set `qualified` (place names with their container, "Hammersmith, London"), `parts` (a list or a compound
-heading made of strings of their own), `home` (the vocabulary whose exact term decides) and `parseDatedOnly` (the agent
-profile only for strings carrying dates).
+heading made of strings of their own), `home` (the vocabulary whose exact term decides), `parseDatedOnly` (the agent
+profile only for strings carrying dates) and `collections` (the vocabulary's own collections the strings belong to, in
+order of preference: LCSH's `Subdivisions` for a heading's subdivisions, `LCSHAuthorizedHeadings` for its heads).
 
 An example for a project whose records come from a library catalogue:
 

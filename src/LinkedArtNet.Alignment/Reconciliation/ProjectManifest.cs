@@ -48,9 +48,10 @@ public sealed record ProjectManifest
             ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default"),
             ["place"] = new([EntityClass.Place], Qualified: true, Parts: new(PartsShape.List, ";")),
             // a precoordinated LCSH heading: looked up whole, else decided as its parts; the head may be a dated name heading
-            ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], Home: "lcsh", Parts: new(PartsShape.Compound, "--", Context: "keywords:sub", HeadContext: "keywords:head")),
-            ["keywords:head"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true),
-            ["keywords:sub"] = new([EntityClass.Type, EntityClass.Place, EntityClass.Period], Home: "lcsh"),
+            ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], Home: "lcsh", Parts: new(PartsShape.Compound, "--", Context: "keywords:sub", HeadContext: "keywords:head"), Collections: ["LCSHAuthorizedHeadings"]),
+            ["keywords:head"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true, Collections: ["LCSHAuthorizedHeadings"]),
+            // a library's subdivisions are more often forms ("--Catalogs", "--Exhibitions") than topics where LCSH has both
+            ["keywords:sub"] = new([EntityClass.Type, EntityClass.Place, EntityClass.Period], Home: "lcsh", Collections: ["GenreFormSubdivisions", "Subdivisions"]),
         },
     };
 
@@ -75,9 +76,9 @@ public sealed record ProjectManifest
 }
 
 /// <summary>A <see cref="ContextRule"/> as the manifest writes it.</summary>
-public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null)
+public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null, List<string>? Collections = null)
 {
-    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule(), Home, ParseDatedOnly ?? false);
+    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule(), Home, ParseDatedOnly ?? false, Collections);
 }
 
 /// <summary>A <see cref="PartsRule"/> as the manifest writes it: <c>{ "shape": "list", "separator": ";" }</c> or <c>{ "shape": "compound", "separator": "--", "context": "keywords:sub", "headContext": "keywords:head" }</c>.</summary>

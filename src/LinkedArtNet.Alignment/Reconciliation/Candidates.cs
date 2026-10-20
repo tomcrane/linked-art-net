@@ -10,7 +10,8 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 /// <param name="Parts">Strings here may be made of parts ("Dublin; New York"), each a string of its own (doc 10, section 7.6).</param>
 /// <param name="Home">The vocabulary whose exact term decides a string here (keywords: lcsh): another vocabulary's exact term on the same name is carried as that concept's equivalent rather than a rival (doc 10, section 7.6 item 4).</param>
 /// <param name="ParseDatedOnly">Use the agent profile only for strings that carry dates ("Tuke, Henry Scott, 1858-1929"), so a topical heading ("Art, Modern") in the same context is not read as a person.</param>
-public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false, PartsRule? Parts = null, string? Home = null, bool ParseDatedOnly = false)
+/// <param name="Collections">The vocabulary's own collections the strings here belong to, in order of preference: LCSH holds "Catalogs" as a topic heading (LCSHAuthorizedHeadings), a topical subdivision and a form subdivision (GenreFormSubdivisions, both in Subdivisions), and among a source's exact matches those in the earliest named collection stand while the rest are vetoed.</param>
+public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false, PartsRule? Parts = null, string? Home = null, bool ParseDatedOnly = false, IReadOnlyList<string>? Collections = null)
 {
     public static readonly ContextRule Anything = new([EntityClass.Person, EntityClass.Group, EntityClass.Place, EntityClass.Type]);
 }
@@ -39,7 +40,8 @@ public sealed record StringReading(
     bool IsQualified = false,
     IReadOnlyList<string>? Parts = null,
     PartsRule? PartsRule = null,
-    string? Home = null)
+    string? Home = null,
+    IReadOnlyList<string>? Collections = null)
 {
     public string Key => Keys.Count > 0 ? Keys[0] : "";
     /// <summary>The shape of a string made of parts, null for a string that is not.</summary>
@@ -62,7 +64,7 @@ public sealed record StringReading(
             {
                 // a list is never looked up whole; a compound heading is, since LCSH holds some precoordinated headings as
                 // records, and it decomposes only when nothing holds it. Neither goes through the agent parser whole.
-                if (pr.Shape == PartsShape.List) return new StringReading(s, s.Raw.Trim(), NameMatcher.Keys(s.Raw), rule.Classes, null, [], [], null, Parts: pieces, PartsRule: pr, Home: rule.Home);
+                if (pr.Shape == PartsShape.List) return new StringReading(s, s.Raw.Trim(), NameMatcher.Keys(s.Raw), rule.Classes, null, [], [], null, Parts: pieces, PartsRule: pr, Home: rule.Home, Collections: rule.Collections);
                 parts = pieces;
                 parser = null;
             }
@@ -92,7 +94,7 @@ public sealed record StringReading(
             nationalities = agent.Nationalities.Select(n => n.AatUri ?? n.Label).Distinct(StringComparer.Ordinal).ToArray();
             roles = agent.Roles.Where(r => r.IsOccupation).Select(r => r.Label).Distinct(StringComparer.Ordinal).ToArray();
         }
-        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified, parts, rule.Parts, rule.Home);
+        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified, parts, rule.Parts, rule.Home, rule.Collections);
     }
 }
 
@@ -102,6 +104,8 @@ public sealed record StringReading(
 /// <param name="EntityId">Set when the candidate is an entity in the store rather than an external record.</param>
 /// <param name="Provisional">A store entity minted for an earlier string without any authority behind it: a lookalike that must not make a known entity ambiguous or contradict a vote.</param>
 /// <param name="ProvisionalQueued">A provisional entity whose own string is awaiting review: it never answers another string silently.</param>
+/// <param name="Placement">Where the record's own vocabulary puts it (TGN's parent string, a LoC heading's parenthetical), for a qualified string to check against.</param>
+/// <param name="Collections">The record's own vocabulary's collections it belongs to, by short name (LCSH's "Subdivisions"), for a context that wants some of them (<see cref="ContextRule.Collections"/>).</param>
 public sealed record Candidate(
     string Uri,
     string Source,
@@ -116,7 +120,8 @@ public sealed record Candidate(
     bool Provisional = false,
     bool ProvisionalQueued = false,
     bool Disambiguated = false,
-    string? Placement = null);
+    string? Placement = null,
+    IReadOnlyList<string>? Collections = null);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
@@ -172,12 +177,15 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         IReadOnlyList<string>? nationalities = null;
         var disambiguated = false;
         string? parentString = null;
+        IReadOnlyList<string>? collections = null;
         if (r.DataJson is not null)
         {
             try
             {
                 using var doc = System.Text.Json.JsonDocument.Parse(r.DataJson);
                 if (doc.RootElement.TryGetProperty("parentString", out var ps) && ps.ValueKind == System.Text.Json.JsonValueKind.String) parentString = ps.GetString();
+                if (doc.RootElement.TryGetProperty("collections", out var col) && col.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    collections = col.EnumerateArray().Select(e => e.GetString()).OfType<string>().ToArray();
                 if (doc.RootElement.TryGetProperty("nationalities", out var n) && n.ValueKind == System.Text.Json.JsonValueKind.Array)
                     nationalities = n.EnumerateArray().Select(e => e.GetString()).OfType<string>().ToArray();
                 // a LoC heading carries dates ("Taylor, Desmond, 1930-") when the cataloguer had namesakes to tell apart: the record is disambiguated
@@ -190,6 +198,6 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // the id without it: the two were rival groups for "Massachusetts" and "South Africa" in the 2026-10-20 shadow
         var sameAs = r.Source == "loc" && r.Uri.EndsWith("-781", StringComparison.Ordinal) ? r.SameAs.Append(r.Uri[..^4]).ToArray() : r.SameAs;
         return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities, Disambiguated: disambiguated,
-            Placement: reading.Qualifier is null ? null : Qualified.PlacementOf(parentString, labels));
+            Placement: reading.Qualifier is null ? null : Qualified.PlacementOf(parentString, labels), Collections: collections);
     }
 }

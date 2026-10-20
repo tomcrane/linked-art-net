@@ -444,21 +444,21 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       strings (keywords:head 7,741, mostly dated personal names; keywords:sub 1,536); accepted 4,827, queued 8,657,
       minted 12,287; store stage 968 s. Seven findings in doc 10 section 7.6 "Measured ... aqn6dz", of which the
       "Dance" person bug and the report wording were fixed that evening. The rest, in order of value:
-    - LCSH subdivision records (doc 10 7.6 aqn6dz finding 2): "Catalogs", "Diaries", "20th century" meet the topic
-      and the subdivision record of the same words and are queued (most of keywords:sub's 632 queued). Keep
-      `madsrdf:isMemberOfMADSCollection` in the LCSH record data at load (reload lcsh), add a `collection` field to
-      the context rule (keywords:sub: subdivisions; keywords:head: headings), veto a home record outside the named
-      collection when one inside matches as well. Needs the owner to reload lcsh after the loader change.
-    - Dated string, undated namesake (finding 3; owner's decision): when the string's dates agree with a record's,
-      veto the same source's records that have no dates ("Doyle, Richard, 1824-1883" vs LoC's undated "Doyle,
-      Richard"). Reaches persauthorfull too. Ceiling to measure first, the owner runs:
-      `select ss.context, count(*) from decisions d join source_strings ss on ss.id = d.source_string_id where
-      d.run_id = 'run-20261020-124120-aqn6dz' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan'
-      is not null and d.evidence::text like '%dates agree%' group by 1;`
+    - ~~LCSH subdivision records (doc 10 7.6 aqn6dz finding 2)~~: built 2026-10-20 night (doc 10 7.6 "Built ...
+      (night)"): the loader keeps `collections`, `ContextRule.Collections`, `Reconciler.PreferCollections`, PmcDefault
+      keyword contexts. To measure, the owner: reload lcsh (`load-loc <subjects file> --vocab subjects --version <as
+      before>`, the same file as 2026-10-19), `manifest --use-default`, `undo-run --run run-20261020-124120-aqn6dz`,
+      `reconcile`; expect keywords:sub queued (632) to fall and "Catalogs", "Diaries", "20th century" to be accepted on
+      LCSH, "Catalogs" carrying AAT.
+    - Dated string, undated namesake (finding 3; owner's decision owed): when the string's dates agree with a
+      record's, veto the same source's records that have no dates ("Doyle, Richard, 1824-1883" vs LoC's undated
+      "Doyle, Richard"). Measured 2026-10-20 (ceiling, run aqn6dz): keywords:head 754, persauthorfull 29, publisher 50
+      queued strings with a date-agreeing record. The assistant recommends making it policy (doc 10 7.6, after
+      finding 7: LoC's own uniqueness rule says the undated namesake is another person); not built until the owner
+      says so.
     - Mis-keyed compound separator (finding 4): a part beginning in lower case ("Stage--setting and scenery" for
       LCSH's "Stage-setting and scenery") is rejoined to the part before it with one hyphen and the whole looked up
-      again before decomposing. Count first, the owner runs: `select count(*) filter (where raw ~ '^[a-z]') as
-      lower_case, count(*) as subdivisions from source_strings where dataset = 'pmc' and context = 'keywords:sub';`
+      again before decomposing. Counted 2026-10-20: 101 of 1,536 keywords:sub strings begin in lower case. Not built.
     - AAT qualified terms (finding 5): index the AAT term without its parenthetical qualifier, qualifier kept as
       placement, so "dance (performing arts genre)" is exact on "dance" and the home rule carries it. Loader change
       and aat reload.

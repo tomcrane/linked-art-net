@@ -507,6 +507,29 @@ persauthorfull does (Tuke and Hewlett voted ULAN with LoC on dates; "Clanbrassil
 7. The report line read "compounds 15749 (as 9437 new parts)" though the parts count covers the list parts too (160
    of them); it now reads "between them N new part strings".
 
+The owner's two counts (2026-10-20, run aqn6dz): finding 3's ceiling is 754 queued keywords:head strings, 29
+persauthorfull and 50 publisher whose dates agree with some record; finding 4's lower-case subdivisions are 101 of
+1,536. The assistant's recommendation on finding 3, for the owner: make it policy. LoC headings must be unique, so
+when LoC holds both "Doyle, Richard, 1824-1883" and an undated "Doyle, Richard" it is saying they are two people;
+vetoing the undated same-source namesake when the string's dates agree with the dated record applies LoC's own rule.
+The risk is a wrongly dated string, which every date agreement already carries, and the decision is recorded as
+single or vote and reviewable as a set. Same source only: an undated record of a source with no dated record of the
+name stays a rival.
+
+Built 2026-10-20 (night), finding 2: the LCSH loader keeps a subject record's `madsrdf:isMemberOfMADSCollection`
+memberships in its data as `collections`, by short name, checked against id.loc.gov that day: "Catalogs" sh85020898 is
+in LCSHAuthorizedHeadings, sh2005003411 in Subdivisions and TopicSubdivisions, sh99001246 in Subdivisions and
+GenreFormSubdivisions; "20th century" sh2002012476 in Subdivisions and TemporalSubdivisions. The record's collections
+reach the candidate (`Candidate.Collections`), and a context rule's `collections` lists the ones its strings mean, in
+order of preference: `keywords` and `keywords:head` want `LCSHAuthorizedHeadings`; `keywords:sub` wants
+`GenreFormSubdivisions` then `Subdivisions`, since a library's subdivisions are more often forms ("--Catalogs",
+"--Exhibitions") than topics where LCSH has both. `Reconciler.PreferCollections`, before the home rule: among one
+source's exact matches that carry collections, those in the earliest wanted collection stand and the rest are vetoed
+("lcsh's GenreFormSubdivisions record of the name is the one wanted here"); a lone record, records without
+collections and sources without them are left alone. So the home rule then sees one exact LCSH record and carries
+AAT's term. The rule is general: any vocabulary whose loader keeps collections can be sorted by them. It takes an
+lcsh reload (the loader change) and a manifest refresh (PmcDefault changed) to measure.
+
 ## 8. Identifiers and publishing
 
 - Entities and records get URIs under one configurable hostname per dataset (PMC keeps its current one), minted once

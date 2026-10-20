@@ -363,6 +363,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees));
         }
+        if (reading.Collections is { Count: > 0 } wanted) PreferCollections(wanted, list);
         if (reading.Home is not null) JoinToHome(reading.Home, list);
         var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto).ToList();
         if (placed.Count == 0) return list;
@@ -387,6 +388,29 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         for (var i = 0; i < list.Count; i++)
             if (list[i].QualifierAgrees == false && !inside.Contains(i) && !list[i].Veto) list[i] = list[i] with { Veto = true, Reason = list[i].Reason + "; the qualifier places another candidate" };
         return list;
+    }
+
+    /// <summary>
+    /// A vocabulary's own sorting of its records decides among its namesakes: LCSH holds "Catalogs" as a topic heading (in
+    /// its collection LCSHAuthorizedHeadings), a topical subdivision (TopicSubdivisions) and a form subdivision
+    /// (GenreFormSubdivisions, both also in Subdivisions), and the context says which it wants, in order (the subdivisions
+    /// of a heading: GenreFormSubdivisions then Subdivisions; the heads: LCSHAuthorizedHeadings). Among one source's exact
+    /// matches that carry collections, those in the earliest wanted collection stand and the others are vetoed; a lone
+    /// record, records without collections and sources without them are left alone. Runs before the home rule, so the
+    /// home vocabulary's one exact record is the one wanted here.
+    /// </summary>
+    private static void PreferCollections(IReadOnlyList<string> wanted, List<ScoredCandidate> list)
+    {
+        int Rank(Candidate c) { for (var i = 0; i < wanted.Count; i++) if (c.Collections!.Contains(wanted[i], StringComparer.OrdinalIgnoreCase)) return i; return wanted.Count; }
+        foreach (var source in list.Where(m => m.Candidate.Collections is { Count: > 0 }).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
+        {
+            var exact = list.Select((m, i) => (m, i)).Where(x => !x.m.Veto && x.m.Candidate.Source == source && x.m.Candidate.Collections is { Count: > 0 } && x.m.Candidate.NameScore >= 0.97).ToList();
+            if (exact.Count < 2) continue;
+            var best = exact.Min(x => Rank(x.m.Candidate));
+            if (best == wanted.Count) continue;
+            foreach (var (m, i) in exact)
+                if (Rank(m.Candidate) > best) list[i] = m with { Veto = true, Reason = m.Reason + $"; {source}'s {wanted[best]} record of the name is the one wanted here" };
+        }
     }
 
     /// <summary>

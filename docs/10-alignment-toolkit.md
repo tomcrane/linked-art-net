@@ -614,6 +614,14 @@ undated record stays a rival, the store's entities are untouched. One rerun meas
 (584) and keywords:sub queued (579) to fall by the placement shapes, and keywords:head queued (2,058),
 persauthorfull (1,584) and publisher (1,257) by the undated namesakes (ceilings 754, 29, 50).
 
+Built 2026-10-21, finding 4: in `StringReading.Read`, a compound's part that begins in lower case is the tail of a
+hyphenated heading whose hyphen was keyed as the separator (LCSH's subdivisions begin with a capital), so it is
+rejoined to the part before it with one hyphen and the whole read from the rejoined text: "Stage--setting and
+scenery" is "Stage-setting and scenery", one heading looked up whole; "Theaters--Stage--setting and scenery--Great
+Britain" is three parts; "Art, Modern--20th century" is untouched, a digit not being lower case. 101 of 1,536
+subdivision strings began in lower case in run tzm64p; the rerun says how many headings LCSH then holds whole. No
+reload.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

@@ -57,9 +57,20 @@ public sealed record StringReading(
     public static StringReading Read(SourceString s, ContextRule rule, AgentStringParser? parser)
     {
         IReadOnlyList<string>? parts = null;
+        var whole = s.Raw;
         if (rule.Parts is { } pr)
         {
             var pieces = s.Raw.Split(pr.Separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            if (pr.Shape == PartsShape.Compound && pieces.Length >= 2)
+            {
+                // a subdivision begins with a capital (LCSH's own rule), so a part in lower case is the tail of a hyphenated heading
+                // whose hyphen was keyed as the separator: "Stage--setting and scenery" is "Stage-setting and scenery", rejoined and
+                // looked up whole (doc 10, section 7.6 finding 4)
+                var joined = new List<string> { pieces[0] };
+                foreach (var piece in pieces.Skip(1))
+                    if (char.IsLower(piece[0])) joined[^1] = joined[^1] + "-" + piece; else joined.Add(piece);
+                if (joined.Count != pieces.Length) { pieces = joined.ToArray(); whole = string.Join(pr.Separator, pieces); }
+            }
             if (pieces.Length >= 2)
             {
                 // a list is never looked up whole; a compound heading is, since LCSH holds some precoordinated headings as
@@ -70,7 +81,7 @@ public sealed record StringReading(
             }
         }
         ParsedAgent? agent = null;
-        var text = s.Raw;
+        var text = whole;
         var classes = rule.Classes;
         Lifespan? lifespan = null;
         IReadOnlyList<string> nationalities = [];

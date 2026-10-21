@@ -36,21 +36,20 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
 2. *`unrec_` identifiers* at export (doc 10 7.5 item 2): deferred until what LUX consumes is seen.
 
 **Built 2026-10-21 and waiting for a rerun to measure:** findings 9 and 10 (placed-through for every string, with a
-placement on every place record; the project's one bare entity joins the placed group) and finding 3 as policy (the
-undated same-source namesake vetoed). Neither needs a reload nor a manifest refresh.
+placement on every place record; the project's one bare entity joins the placed group), finding 3 as policy (the
+undated same-source namesake vetoed), and finding 4 (a lower-case compound part rejoined with one hyphen, "Stage-setting
+and scenery" looked up whole). None needs a reload or a manifest refresh.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
 
-1. The mis-keyed compound separator (finding 4): a lower-case part ("Stage--setting and scenery") rejoined with one
-   hyphen and looked up whole; 101 of 1,536 subdivisions. No reload.
-2. AAT's Styles and Periods facet typed Period (finding 11): "20th century" meets AAT's "twentieth century (dates CE)"
+1. AAT's Styles and Periods facet typed Period (finding 11): "20th century" meets AAT's "twentieth century (dates CE)"
    as the same class and the home rule carries it; a good part of keywords:sub's 579 queued. Loader change and an
    aat reload by the owner.
-3. TGN level preference for the nation shape ("Canada", "England", "China": LoC's unqualified heading joined to TGN's
+2. TGN level preference for the nation shape ("Canada", "England", "China": LoC's unqualified heading joined to TGN's
    record of the highest level among namesakes of differing type), designed from the exports once 9 is measured.
-4. "Outvoted rivals", if the owner says yes after measuring.
-5. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
+3. "Outvoted rivals", if the owner says yes after measuring.
+4. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
@@ -62,7 +61,8 @@ says "continue with the list"):
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
 
 Paste the three outputs; expect place queued (584) and keywords:sub queued (579) to fall, keywords:head queued
-(2,058) to fall by up to 754, persauthorfull (1,584) and publisher (1,257) a little.
+(2,058) to fall by up to 754, persauthorfull (1,584) and publisher (1,257) a little, and a few of the 3,033 minted
+keywords to be held whole by LCSH (finding 4).
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)
@@ -577,9 +577,8 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       queued strings with a date-agreeing record. The assistant recommends making it policy (doc 10 7.6, after
       finding 7: LoC's own uniqueness rule says the undated namesake is another person); not built until the owner
       says so.
-    - Mis-keyed compound separator (finding 4): a part beginning in lower case ("Stage--setting and scenery" for
-      LCSH's "Stage-setting and scenery") is rejoined to the part before it with one hyphen and the whole looked up
-      again before decomposing. Counted 2026-10-20: 101 of 1,536 keywords:sub strings begin in lower case. Not built.
+    - ~~Mis-keyed compound separator (finding 4)~~: built 2026-10-21 in `StringReading.Read` (a lower-case part
+      rejoined with one hyphen; 101 of 1,536 subdivisions began in lower case); the rerun measures it in keywords.
     - AAT qualified terms (finding 5): index the AAT term without its parenthetical qualifier, qualifier kept as
       placement, so "dance (performing arts genre)" is exact on "dance" and the home rule carries it. Loader change
       and aat reload.

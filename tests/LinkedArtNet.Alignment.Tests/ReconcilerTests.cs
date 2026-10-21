@@ -374,6 +374,19 @@ public class GroupingTests
     }
 
     [Fact]
+    public void A_lower_case_part_is_a_hyphenated_heading_keyed_with_the_separator()
+    {
+        var rule = ProjectManifest.PmcDefault.ToOptions().Contexts["keywords"];
+        static SourceString Keyword(string raw) => new(1, "ds", "keywords", raw, StringKey.Normalise(raw), null, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1);
+        var rejoined = StringReading.Read(Keyword("Stage--setting and scenery"), rule, null);
+        Assert.Null(rejoined.Parts); Assert.Equal("Stage-setting and scenery", rejoined.Text); // one heading, looked up whole
+        var mixed = StringReading.Read(Keyword("Theaters--Stage--setting and scenery--Great Britain"), rule, null);
+        Assert.Equal(["Theaters", "Stage-setting and scenery", "Great Britain"], mixed.Parts); Assert.Equal("Theaters--Stage-setting and scenery--Great Britain", mixed.Text);
+        var plain = StringReading.Read(Keyword("Art, Modern--20th century"), rule, null);
+        Assert.Equal(["Art, Modern", "20th century"], plain.Parts); Assert.Equal("Art, Modern--20th century", plain.Text); // a digit is not lower case
+    }
+
+    [Fact]
     public void A_context_s_collections_choose_among_a_vocabulary_s_namesakes()
     {
         // LCSH holds "Catalogs" three times (checked against id.loc.gov, 2026-10-20): the topic heading, a topical subdivision and a form subdivision

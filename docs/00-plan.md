@@ -41,14 +41,7 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    g) x where d.run_id = 'run-20261021-093102-pqe98w' and d.valid and d.method = 'queued' and x.multi = 1 and
    x.single >= 1 group by 1 order by 2 desc;`
 2. *`unrec_` identifiers* at export (doc 10 7.5 item 2): deferred until what LUX consumes is seen.
-3. *Lone undated namesake of another source* (finding 14, doc 10 7.6 "Measured ... pqe98w"): "Aschan, Marit
-   Guinness, 1919-2004" has ULAN agreeing on the dates and LoC's one record of the name undated, unlinked, so two
-   single-source groups tie. Proposed: an undated record that is its source's only exact record of the name joins
-   the dated-agreeing record of another source and the two vote. Recommendation: yes, with the uniqueness condition
-   ("Smith, John" has many LoC records and would not qualify). Ceiling, the owner runs: `select ss.context, count(*)
-   from decisions d join source_strings ss on ss.id = d.source_string_id where d.run_id =
-   'run-20261021-093102-pqe98w' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is not
-   null and d.evidence::text like '%dates agree%' and jsonb_array_length(d.evidence->'groups') = 2 group by 1;`
+3. ~~*Lone undated namesake of another source* (finding 14)~~: the owner's yes 2026-10-21, built that day (below).
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -71,7 +64,8 @@ accepted 4,862 -> 5,492, queued 8,483 -> 7,889 (place 584 -> 499, keywords:sub 5
 (LoC's " : Parish" type dropped from placements, "Hammersmith, London"); finding 13 (a heading's own parenthetical
 read as its qualifier in the keyword contexts, "Cornwall (England : County)", "National Gallery of Canada (Ottawa,
 Canada)"); finding 15 (a parenthetical after initials is MARC's fuller form, "Oppé, A. P. (Adolf Paul)"); finding 4
-extended to prefix parts ("Pre--Raphaelitism"). No reload, no manifest refresh.
+extended to prefix parts ("Pre--Raphaelitism"); and finding 14 (an undated record that is its source's only exact
+record of the name joins the record another source dates, "Aschan, Marit Guinness"). No reload, no manifest refresh.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
@@ -81,8 +75,7 @@ says "continue with the list"):
    the city, "Arrondissement", "Kreis"), TGN's `placeType` says the record's, and the heading holds the namesake
    whose level it names; an unqualified LoC heading holds the highest level (the nation). Designed from the pqe98w
    samples; to build next.
-2. Finding 14 (lone undated namesake of another source), if the owner says yes; "outvoted rivals", if yes after
-   measuring.
+2. "Outvoted rivals", if the owner says yes after running its ceiling query against pqe98w.
 3. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
 4. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
    the owner.

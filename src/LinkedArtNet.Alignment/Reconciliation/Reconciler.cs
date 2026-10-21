@@ -380,6 +380,19 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                     if (b.Veto || b.Candidate.Source != source || b.Candidate.Lifespan is { IsEmpty: false } || b.Candidate.EntityId is not null) continue;
                     list[i] = b with { Veto = true, Reason = b.Reason + $"; {source}'s dated record of the name agrees with the string's dates: this undated one is a namesake" };
                 }
+        // an undated record that is its source's only exact record of the name is the person another source dates: "LoC knows one
+        // Marit Guinness Aschan; ULAN dates her", and the two vote (doc 10, section 7.6 finding 14; the owner's policy, 2026-10-21)
+        if (reading.HasLifespan && list.FirstOrDefault(m => m.DatesAgree && !m.Veto && !m.SetAside) is { } dated)
+            foreach (var source in list.Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
+            {
+                if (source == dated.Candidate.Source || source == "store") continue;
+                var exact = list.Select((m, i) => (m, i)).Where(x => x.m.Candidate.Source == source && x.m.Candidate.NameScore >= 0.97).ToList();
+                if (exact.Count != 1) continue;
+                var (lone, at) = exact[0];
+                if (lone.Veto || lone.SetAside || lone.JoinedTo is not null || lone.Candidate.Lifespan is { IsEmpty: false }) continue;
+                if (lone.Candidate.Class is { } cls && dated.Candidate.Class is { } datedClass && cls != datedClass) continue;
+                list[at] = lone with { JoinedTo = dated.Candidate.Uri, Reason = lone.Reason + $"; {source}'s one record of the name, which {dated.Candidate.Source} dates" };
+            }
         if (reading.Collections is { Count: > 0 } wanted) PreferCollections(wanted, list);
         if (reading.Home is not null) JoinToHome(reading.Home, list);
         // a record of another source whose placement sits inside a holding record's is the same place at less depth (LoC's

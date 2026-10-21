@@ -668,7 +668,9 @@ composite 15,749 -> 15,675 (finding 4: 74 headings rejoined, most held whole by 
   two are not linked, so two single-source groups tie and the string is queued. Finding 14, a policy question for
   the owner: an undated record that is its source's only exact record of the name joins the record of another
   source whose dates agree with the string's ("LoC knows one Marit Guinness Aschan; ULAN dates her"), and the two
-  vote. Not built; ceiling to measure with the query in the plan.
+  vote. The owner's yes and built 2026-10-21 (`Reconciler.Score`, after the undated-namesake veto): the joining
+  record must be its source's only exact record of the name, dated or not, undated, of the dated record's class, and
+  not the store's; "Smith, John" with many LoC records does not qualify. Ceiling from the query in the plan.
 - "Paris", "Aix-en-Provence", "Bottrop, Essen", "China", "Canada": TGN namesakes of differing level (the city and
   its arrondissement or Kreis, the nation and a hamlet), LoC's placed heading "inside 3 placed candidates" and so
   joining none: the TGN level preference, next on the list, now with its shape clear from these. LoC's own

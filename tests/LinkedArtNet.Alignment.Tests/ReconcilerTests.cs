@@ -227,6 +227,13 @@ public class GroupingTests
         Assert.True(scored[2].Veto); Assert.Contains("this undated one is a namesake", scored[2].Reason);
         var locUndated = new Candidate("l9", "loc", "Dürer, Albrecht", EntityClass.Person, null, [], "local", 1.0);
         Assert.False(Reconciler.Score(reading, [agrees, locUndated], 120)[1].Veto);
+        // and when it is its source's only exact record of the name, it is the person the other source dates: the two vote (the
+        // owner's policy, 2026-10-21, finding 14); beside a second LoC record of the name it is not, and nor is a record of another class
+        var lone = Reconciler.Score(reading, [agrees, locUndated], 120);
+        Assert.Equal("u1", lone[1].JoinedTo); Assert.Contains("loc's one record of the name, which ulan dates", lone[1].Reason);
+        Assert.Equal(["loc", "ulan"], Reconciler.Groups(lone)[0].Sources.OrderBy(x => x, StringComparer.Ordinal));
+        Assert.All(Reconciler.Score(reading, [agrees, locUndated, locUndated with { Uri = "l10" }], 120).Skip(1), m => Assert.Null(m.JoinedTo));
+        Assert.Null(Reconciler.Score(reading with { Classes = [EntityClass.Person, EntityClass.Group] }, [agrees, locUndated with { Class = EntityClass.Group }], 120)[1].JoinedTo);
         var ownUndated = new Candidate("e9", "store", "Dürer, Albrecht", EntityClass.Person, null, [], "store", 1.0, "e9");
         Assert.False(Reconciler.Score(reading, [agrees, ownUndated], 120)[1].Veto);
         // dates on different sides are not comparable: no lift, no veto, and no single-source acceptance

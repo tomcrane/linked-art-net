@@ -438,6 +438,11 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         <http://vocab.getty.edu/aat/300026059> <http://vocab.getty.edu/ontology#prefLabelGVP> <http://vocab.getty.edu/aat/term/1000026059-en> .
         <http://vocab.getty.edu/aat/term/1000026059-en> <http://www.w3.org/2008/05/skos-xl#literalForm> "catalogs (documents)"@en .
         <http://vocab.getty.edu/aat/term/1000026060-en> <http://www.w3.org/2008/05/skos-xl#literalForm> "catalogues (documents)"@en .
+        <http://vocab.getty.edu/aat/300404514> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://vocab.getty.edu/ontology#Concept> .
+        <http://vocab.getty.edu/aat/300404514> <http://vocab.getty.edu/ontology#prefLabelGVP> <http://vocab.getty.edu/aat/term/1000644183-en> .
+        <http://vocab.getty.edu/aat/300404514> <http://www.w3.org/2008/05/skos-xl#prefLabel> <http://vocab.getty.edu/aat/term/1000644183-en> .
+        <http://vocab.getty.edu/aat/term/1000644183-en> <http://www.w3.org/2008/05/skos-xl#literalForm> "twentieth century (dates CE)"@en .
+        <http://vocab.getty.edu/aat/300404514> <http://vocab.getty.edu/ontology#parentString> "<dates by century or millennium>, dates (spans of time), <dates and dating systems>, multidisciplinary concepts, Associated Concepts (hierarchy name), Associated Concepts Facet" .
         """;
 
     private const string UlanSample = """
@@ -496,7 +501,11 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500301417", "ulan", "Thomas Agnew & Sons", ["Agnew's"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys("Thos. Agnew & Sons Ltd"), "ulan", "Group"));
         // an AAT term is indexed without its parenthetical qualifier too, so a bare "catalogs" is exact on "catalogs (documents)"
-        Assert.Equal(1, (await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(AatSample), GettyVocabulary.Aat, "test-sample")).Records);
+        Assert.Equal(2, (await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(AatSample), GettyVocabulary.Aat, "test-sample")).Records);
+        // a span of time is a Period, as LCSH's chronological subdivisions are, so the home rule can carry it for "20th century"
+        var century = (await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/aat/300404514"))!;
+        Assert.Equal("Period", century.Type); Assert.Contains("twentieth century", century.Labels);
+        Assert.Single(await pg.Store.FindAuthoritiesByLabelsAsync(["twentieth century"], "aat", "Period"));
         var catalogs = (await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/aat/300026059"))!;
         Assert.Equal("catalogs (documents)", catalogs.Label);
         Assert.Equal(["catalogs", "catalogs (documents)", "catalogues", "catalogues (documents)"], catalogs.Labels.Order(StringComparer.Ordinal));

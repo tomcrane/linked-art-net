@@ -37,32 +37,34 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
 
 **Built 2026-10-21 and waiting for a rerun to measure:** findings 9 and 10 (placed-through for every string, with a
 placement on every place record; the project's one bare entity joins the placed group), finding 3 as policy (the
-undated same-source namesake vetoed), and finding 4 (a lower-case compound part rejoined with one hyphen, "Stage-setting
-and scenery" looked up whole). None needs a reload or a manifest refresh.
+undated same-source namesake vetoed), finding 4 (a lower-case compound part rejoined with one hyphen, "Stage-setting
+and scenery" looked up whole), and finding 11 (AAT's spans of time typed Period, which needs the aat reload below).
+No manifest refresh.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
 
-1. AAT's Styles and Periods facet typed Period (finding 11): "20th century" meets AAT's "twentieth century (dates CE)"
-   as the same class and the home rule carries it; a good part of keywords:sub's 579 queued. Loader change and an
-   aat reload by the owner.
-2. TGN level preference for the nation shape ("Canada", "England", "China": LoC's unqualified heading joined to TGN's
+1. TGN level preference for the nation shape ("Canada", "England", "China": LoC's unqualified heading joined to TGN's
    record of the highest level among namesakes of differing type), designed from the exports once 9 is measured.
-3. "Outvoted rivals", if the owner says yes after measuring.
-4. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
+2. "Outvoted rivals", if the owner says yes after measuring.
+3. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
+4. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
+   the owner.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
+    dotnet run --project tools/Align -- load-getty <the aat files as before> --vocab aat
     dotnet run --project tools/Align -- undo-run --run run-20261020-160811-e2xu8x
     dotnet run --project tools/Align -- reconcile
     dotnet run --project tools/Align -- decisions --run <new run id> --method minted --limit 1
     dotnet run --project tools/Align -- decisions --run <new run id> --context place --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
 
-Paste the three outputs; expect place queued (584) and keywords:sub queued (579) to fall, keywords:head queued
-(2,058) to fall by up to 754, persauthorfull (1,584) and publisher (1,257) a little, and a few of the 3,033 minted
-keywords to be held whole by LCSH (finding 4).
+Paste the four outputs. Expect, against run e2xu8x: place queued (584) and keywords:sub queued (579) to fall by the
+placement shapes and the centuries; keywords:head queued (2,058) to fall by up to 754, persauthorfull (1,584) and
+publisher (1,257) a little, by the undated namesakes; a few of the 3,033 minted keywords held whole by LCSH.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)
@@ -547,11 +549,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     - Place-type preference for the nation shape ("Canada", "England", "China": TGN's nation beside hamlets, and LoC's
       heading unqualified): join an unqualified LoC heading to TGN's record of the highest level among namesakes of
       differing type. Design after finding 9 is in; the exports hold the type combinations.
-    - AAT's Styles and Periods facet as Period (finding 11, doc 10 7.6 "Measured ... e2xu8x"): "20th century" stays
-      queued because LCSH's chronological subdivision is a Period and AAT's "twentieth century (dates CE)" a Type. The
-      AAT loader walks `gvp:broaderPreferred` up to the facet (aat 300264088) in the staged triples and types those
-      concepts Period. Loader change and aat reload (minutes). Reaches the chronological subdivisions, a good part of
-      keywords:sub's 579 queued.
+    - ~~AAT's spans of time as Period (finding 11)~~: built 2026-10-21 (the design's facet was wrong, checked against
+      vocab.getty.edu: the centuries sit under "dates (spans of time)" in the Associated Concepts facet, and the loader
+      types those by parent string). Needs the owner's aat reload before the rerun.
     - TGN place namesakes among subdivisions and places ("Canada", "England", "Cornwall", "London", "Kent", "Norfolk",
       "Austria": 8 of 15 sampled queued subdivisions): the place-type preference item. TGN's `placeType` is in each
       record's data (an AAT URI). Measure first, the owner runs:

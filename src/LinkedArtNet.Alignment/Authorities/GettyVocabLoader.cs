@@ -191,6 +191,10 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
             // qualifier is indexed too, so a bare "catalogs" is exact on it, and the qualifier is read as the record's placement
             if (vocabulary == GettyVocabulary.Aat) labels = labels.Concat(labels.Select(BareTerm).OfType<string>()).Distinct(StringComparer.Ordinal).ToArray();
             type = ClassFor(type, agentType);
+            // AAT's spans of time ("twentieth century (dates CE)", under "dates (spans of time)" in the Associated Concepts facet,
+            // checked at vocab.getty.edu on 2026-10-21) are periods, as LCSH's chronological subdivisions are, so the two meet as
+            // one class; styles and periods proper (Baroque, Georgian) stay types, as Linked Art classifies them
+            if (vocabulary == GettyVocabulary.Aat && parentString is not null && parentString.Contains("dates (spans of time)", StringComparison.Ordinal)) type = nameof(EntityClass.Period);
             var lifespan = LifespanFromYears(estStart, estEnd, description);
             var data = new Dictionary<string, object?>();
             if (nationalities.Length > 0) data["nationalities"] = nationalities;

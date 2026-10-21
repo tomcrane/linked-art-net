@@ -591,9 +591,13 @@ queued 2,078 -> 2,058), hardly in keywords:sub (queued 581 -> 579), and the samp
 century" is still queued because LCSH's sh2002012476 is Temporal, read as a Period, while AAT's "twentieth century
 (dates CE)", now exact, is a Type like every AAT concept, and the home rule carries only a record of the home
 record's own class. The chronological subdivisions ("19th century", "20th century", "21st century") are a good part
-of what remains queued in keywords:sub. Design: the AAT loader types a concept under the Styles and Periods facet
-(aat 300264088, reached by walking `gvp:broaderPreferred` in the staged triples) as a Period, so AAT's centuries meet
-LCSH's as the same class. Loader change and aat reload; not built. "Stage" now also meets AAT's "stages (performance
+of what remains queued in keywords:sub. Design, as first written: type the Styles and Periods facet as Period. Checked
+against vocab.getty.edu on 2026-10-21 before building, and wrong: "twentieth century (dates CE)" (aat 300404514) is
+not under Styles and Periods (300264088) but under "dates (spans of time)" in the Associated Concepts facet, as its
+parent string says. Built 2026-10-21 from that: the AAT loader types a concept whose parent string contains "dates
+(spans of time)" as a Period, so AAT's centuries meet LCSH's chronological subdivisions as one class and the home rule
+carries them; styles and periods proper (Baroque, Georgian) stay types, as Linked Art classifies them. Needs an aat
+reload (57,322 records, minutes) before the rerun. "Stage" now also meets AAT's "stages (performance
 spaces)" exactly, which changes nothing: it is finding 4's mis-keyed heading.
 
 Built 2026-10-21, findings 9 and 10 and the owner's decision on finding 3 (the owner's answers that morning: finding 3
@@ -620,7 +624,8 @@ rejoined to the part before it with one hyphen and the whole read from the rejoi
 scenery" is "Stage-setting and scenery", one heading looked up whole; "Theaters--Stage--setting and scenery--Great
 Britain" is three parts; "Art, Modern--20th century" is untouched, a digit not being lower case. 101 of 1,536
 subdivision strings began in lower case in run tzm64p; the rerun says how many headings LCSH then holds whole. No
-reload.
+reload. Finding 11 built the same morning (see its paragraph above): an aat reload, then the one rerun measures
+findings 9, 10, 3, 4 and 11 together, each readable in its own context's rows.
 
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.

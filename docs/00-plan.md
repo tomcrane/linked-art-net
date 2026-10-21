@@ -34,6 +34,18 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    beats a rival one source carries ("Finance" the topic against a hamlet called Finance; "Aberdeen" with LoC's
    heading joined against four TGN namesakes). To measure on the run after findings 9 and 10, then decide.
 2. *`unrec_` identifiers* at export (doc 10 7.5 item 2): deferred until what LUX consumes is seen.
+3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
+   parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
+   string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
+   place reading's name and qualifier; the subject reading's head and subdivisions) and then *aligned* (candidates,
+   scoring, a decision with evidence, an entity), in three tiers: read only; align through the vocabularies' own
+   APIs (remote sources 3b, no setup, slow); align against the local indexes (14.5M records, fast). Objective 2
+   would become "Parsers", the TimeSpan parser the first and the Agent parser the second, each with the same four
+   pieces (library, service endpoint, playground on the examples site, corpus of ground truth): the date parser has
+   all four, the Agent parser the library and 94 tests only. Objective 6 would name the toolkit as the consumer of
+   every parser with its three tiers. If the owner says yes: rewrite objectives 2 and 6 so, and add a Phase 5 item
+   (size S) for the Agent parser's endpoint beside the dates one, a playground page, and a corpus folder seeded from
+   the PMC strings.
 
 **Built 2026-10-21 and waiting for a rerun to measure:** findings 9 and 10 (placed-through for every string, with a
 placement on every place record; the project's one bare entity joins the placed group), finding 3 as policy (the

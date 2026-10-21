@@ -48,6 +48,12 @@ public class DuplicatesTests(PostgresFixture pg)
         Assert.Empty(otherDates.Merge);
         var sharedId = DuplicateMerger.Plan([E("h7", EntityClass.Person, "Smith, John", ids: [("ulan", "u9")]), E("h8", EntityClass.Person, "Smith, John", ids: [("ulan", "u9"), ("loc", "n9")])]);
         Assert.Equal("h8", sharedId.Survivor.Id); Assert.Single(sharedId.Merge);
+        // people and bodies are twins by the words of the name in any order too, under the same rules
+        Assert.Equal(DuplicateMerger.WordKey("Piper, John"), DuplicateMerger.WordKey("John Piper")); Assert.Equal("", DuplicateMerger.WordKey("Abbott"));
+        var inverted = DuplicateMerger.Plan([E("h11", EntityClass.Person, "Piper, John", ids: [("viaf", "v5"), ("lux", "x5")]), E("h12", EntityClass.Person, "John Piper", ids: [("viaf", "v5")])]);
+        Assert.Equal("h11", inverted.Survivor.Id); Assert.Single(inverted.Merge);
+        Assert.Contains("merge h12 \"John Piper\" (provisional; viaf)", new DuplicateReport([inverted]).ToString());
+        Assert.Empty(DuplicateMerger.Plan([E("h13", EntityClass.Person, "Piper, John"), E("h14", EntityClass.Person, "John Piper")]).Merge);
         // three twins: each is judged against the survivor
         var three = DuplicateMerger.Plan([E("p5", EntityClass.Place, "Paris", ids: [("tgn", "t1")]), E("p6", EntityClass.Place, "Paris"), E("p7", EntityClass.Place, "Paris", ids: [("tgn", "t2")])]);
         Assert.Equal("p5", three.Survivor.Id); Assert.Equal(["p6"], three.Merge.Select(e => e.Id)); Assert.Equal("p7", three.Kept.Single().Entity.Id);
@@ -70,6 +76,8 @@ public class DuplicatesTests(PostgresFixture pg)
         await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "England", ["England"]), scheme); // another class: not a twin of the places
         var smith1 = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Smith, John", ["Smith, John"]), scheme);
         await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Smith, John", ["Smith, John"]), scheme);
+        await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Agnew, Thomas", ["Agnew, Thomas"]), scheme); // inverted-form twins of a body, no ids: merge
+        await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Thomas Agnew", ["Thomas Agnew"]), scheme);
         var s = await pg.Store.CollectAsync(ds, "place", "England");
         await pg.Store.DecideAsync(s.Id, bare.Id, "minted");
 
@@ -79,13 +87,14 @@ public class DuplicatesTests(PostgresFixture pg)
 
         var merger = new DuplicateMerger(pg.Store);
         var plan = await merger.PlanAsync(ds);
-        Assert.Equal(2, plan.Twins.Count); Assert.Equal(1, plan.Merges); Assert.Equal(1, plan.KeptApart);
+        Assert.Equal(3, plan.Twins.Count); Assert.Equal(2, plan.Merges); Assert.Equal(1, plan.KeptApart);
+        Assert.Single(plan.Twins.Single(t => t.Class == EntityClass.Group).Merge);
         Assert.Equal(placed.Id, plan.Twins.Single(t => t.Class == EntityClass.Place).Survivor.Id);
         Assert.Single((await merger.PlanAsync(ds, [EntityClass.Person])).Twins); // limited to a class
         Assert.NotNull(await pg.Store.GetEntityAsync(bare.Id)); // a plan changes nothing
         Assert.Null((await pg.Store.GetEntityAsync(bare.Id))!.MergedInto);
 
-        Assert.Equal(1, await merger.ApplyAsync(plan, "test"));
+        Assert.Equal(2, await merger.ApplyAsync(plan, "test"));
         var merged = (await pg.Store.GetEntityAsync(bare.Id))!;
         Assert.Equal(placed.Id, merged.MergedInto); // the identifier stays, pointing at the survivor, for the export to write as an equivalent
         Assert.Equal(placed.Id, (await pg.Store.ResolveAsync(ds, "place", "England"))!.Id); // the string's decision follows

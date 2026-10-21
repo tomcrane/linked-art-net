@@ -207,7 +207,8 @@ table), since keys are computed when a row is written. `merge-duplicates [--clas
 one-off pass over the earlier pipeline's duplicate entities (`DuplicateMerger`): twins of one class and label, case
 folded, merge where their external ids do not conflict (none on one side, or an id shared with no authoritative
 source differing; VIAF and LUX are clusters, so a differing VIAF or LUX id beside a shared Wikidata or TGN id is not
-a conflict), a person's twins only with a shared id or the same dates; a confirmed entity survives first, then the one with the
+a conflict), people and bodies twins by the words of the name in any order as well ("Piper, John" and "John
+Piper"), a person's twins only with a shared id or the same dates; a confirmed entity survives first, then the one with the
 most ids, then the oldest; a dry run lists every label with what would merge and what is kept apart, and `--apply`
 carries it out through the store's merge, so the merged-away identifiers stay as `merged_into` for the export to
 write as equivalents of the survivor. The PMC context rules live in the tool for now (persauthorfull:

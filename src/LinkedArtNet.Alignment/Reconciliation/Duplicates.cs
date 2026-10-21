@@ -21,10 +21,10 @@ public sealed record DuplicateReport(IReadOnlyList<DuplicateTwins> Twins)
         var sb = new StringBuilder();
         foreach (var t in Twins)
         {
-            sb.Append(t.Class).Append(" \"").Append(t.Label).Append("\": keep ").Append(Describe(t.Survivor));
-            if (t.Merge.Count > 0) sb.Append("; merge ").Append(string.Join(", ", t.Merge.Select(Describe)));
+            sb.Append(t.Class).Append(" \"").Append(t.Label).Append("\": keep ").Append(Describe(t.Survivor, t.Label));
+            if (t.Merge.Count > 0) sb.Append("; merge ").Append(string.Join(", ", t.Merge.Select(e => Describe(e, t.Label))));
             sb.AppendLine();
-            foreach (var (e, reason) in t.Kept) sb.Append("  kept apart ").Append(Describe(e)).Append(": ").Append(reason).AppendLine();
+            foreach (var (e, reason) in t.Kept) sb.Append("  kept apart ").Append(Describe(e, t.Label)).Append(": ").Append(reason).AppendLine();
         }
         sb.AppendLine();
         sb.AppendLine("class    labels  entities  merges  kept apart");
@@ -34,11 +34,12 @@ public sealed record DuplicateReport(IReadOnlyList<DuplicateTwins> Twins)
         return sb.ToString();
     }
 
-    private static string Describe(Entity e)
+    private static string Describe(Entity e, string twinsLabel)
     {
         var ids = e.Equivalents.Count == 0 ? "no ids" : string.Join(" ", e.Equivalents.GroupBy(q => q.Source, StringComparer.Ordinal).OrderBy(g => g.Key, StringComparer.Ordinal).Select(g => g.Count() == 1 ? g.Key : $"{g.Key} x{g.Count()}"));
         var dates = e.Lifespan is { IsEmpty: false } l ? $"; {l.Text ?? $"{l.BeginEarliest?.Year}-{l.EndEarliest?.Year}"}" : "";
-        return $"{e.Id} ({e.Status.ToString().ToLowerInvariant()}; {ids}{dates})";
+        var label = DuplicateMerger.Fold(e.Label) == DuplicateMerger.Fold(twinsLabel) ? "" : $" \"{e.Label}\"";
+        return $"{e.Id}{label} ({e.Status.ToString().ToLowerInvariant()}; {ids}{dates})";
     }
 }
 
@@ -57,18 +58,48 @@ public sealed record DuplicateReport(IReadOnlyList<DuplicateTwins> Twins)
 /// </summary>
 public sealed class DuplicateMerger(IAlignmentStore store)
 {
-    /// <summary>What the pass would do for the dataset, for the classes given (every class when none): nothing is changed.</summary>
+    /// <summary>
+    /// What the pass would do for the dataset, for the classes given (every class when none): nothing is changed. Places and
+    /// concepts are twins by label; people and bodies also by the words of the name in any order ("Piper, John" and "John
+    /// Piper", the legacy import's inverted forms, which blocked the store match for "Piper, John, 1903-1992" on 2026-10-21),
+    /// under the same rules, so a bare name twice still stays apart.
+    /// </summary>
     public async Task<DuplicateReport> PlanAsync(string dataset, IReadOnlyCollection<EntityClass>? classes = null, CancellationToken ct = default)
     {
-        var entities = await store.EntitiesSharingLabelAsync(dataset, ct);
-        var twins = entities
-            .Where(e => classes is null || classes.Count == 0 || classes.Contains(e.Class))
-            .GroupBy(e => (e.Class, Label: Fold(e.Label)))
+        bool Wanted(EntityClass cls) => classes is null || classes.Count == 0 || classes.Contains(cls);
+        var byLabel = (await store.EntitiesSharingLabelAsync(dataset, ct))
+            .Where(e => Wanted(e.Class) && e.Class is not (EntityClass.Person or EntityClass.Group))
+            .GroupBy(e => (e.Class, Key: Fold(e.Label)));
+        var byWords = (await AllAsync(dataset, ct))
+            .Where(e => Wanted(e.Class) && e.Class is EntityClass.Person or EntityClass.Group && e.MergedInto is null)
+            .GroupBy(e => (e.Class, Key: WordKey(e.Label)))
+            .Where(g => g.Key.Key.Length > 0);
+        var twins = byLabel.Concat(byWords)
             .Where(g => g.Count() > 1)
             .Select(g => Plan(g.ToList()))
             .OrderBy(t => t.Class).ThenBy(t => t.Label, StringComparer.Ordinal)
             .ToList();
         return new DuplicateReport(twins);
+    }
+
+    private async Task<List<Entity>> AllAsync(string dataset, CancellationToken ct)
+    {
+        var all = new List<Entity>();
+        string? after = null;
+        while (true)
+        {
+            var page = await store.ListEntitiesAsync(dataset, null, after, 500, ct);
+            if (page.Count == 0) return all;
+            all.AddRange(page);
+            after = page[^1].Id;
+        }
+    }
+
+    /// <summary>The words of a name in a fixed order, folded and without punctuation, so "Piper, John" and "John Piper" share a key; a name of one word has none (too little to go on).</summary>
+    public static string WordKey(string? label)
+    {
+        var words = StringKey.Bare(StringKey.Fold(StringKey.Normalise(label))).Split(' ', StringSplitOptions.RemoveEmptyEntries).Order(StringComparer.Ordinal).ToArray();
+        return words.Length < 2 ? "" : string.Join(' ', words);
     }
 
     /// <summary>Carries out a plan: every entity to merge goes into its survivor through the store's merge (its decisions re-pointed, its ids and labels carried). Returns how many merged.</summary>

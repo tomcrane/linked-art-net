@@ -187,8 +187,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (LegacyIdentifier(reading.String) is { } legacy)
         {
             var id = scheme.Uri(entity.Class, legacy);
-            if (await store.ResolveEntityAsync(id, ct) is { } kept) return kept;
-            return await store.AddEntityAsync(dataset, entity with { Id = id }, scheme, ct);
+            // the earlier pipeline's column held tentative mappings to real authorities as well as placeholders ("Athens" to the
+            // aligned legacy Athens): an aligned or confirmed entity is not reused for a queued or minted string, which would make
+            // a tentative decision look settled (finding 29, 2026-10-21); only a provisional one is, and an absent one is created
+            var kept = await store.ResolveEntityAsync(id, ct);
+            if (kept is { Status: EntityStatus.Provisional }) return kept;
+            if (kept is null) return await store.AddEntityAsync(dataset, entity with { Id = id }, scheme, ct);
         }
         return await store.AddEntityAsync(dataset, entity, scheme, ct);
     }
@@ -342,7 +346,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var queued = provisional && await store.HasValidDecisionAsync(e.Id, DecisionMethod.Queued, ct);
         // an entity's own placement is the qualifier its label carries ("Heaton, Bradford"), kept there by EntityForGroupAsync and MintAsync
         var placement = reading.IsQualified && e.Label is not null ? Qualified.Split(e.Label).Qualifier : null;
-        return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued, Placement: placement);
+        return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued, Placement: placement,
+            PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null);
     }
 
     /// <summary>Writes an evaluation: the decision with its evidence and, where needed, the entity.</summary>
@@ -489,10 +494,33 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var through = holders.Where(a => a.Candidate.Uri != b.Candidate.Uri && a.Candidate.Source != b.Candidate.Source && Qualified.Contains(a.Candidate.Placement, words)).ToList();
             if (through.Count == 0) continue;
             inside.Add(i);
-            list[i] = through.Count == 1
-                ? b with { JoinedTo = through[0].Candidate.Uri, Reason = b.Reason + $"; placed through {through[0].Candidate.Source} {through[0].Candidate.Label}" }
+            if (through.Count == 1) { list[i] = b with { JoinedTo = through[0].Candidate.Uri, Reason = b.Reason + $"; placed through {through[0].Candidate.Source} {through[0].Candidate.Label}" }; continue; }
+            // inside several holders (TGN's New York the state and New York the city, both in New York): the heading's level decides.
+            // LoC's type word after " : " names it ("County", "Township"); a qualified heading without one is the inhabited place,
+            // LoC's default; TGN's placeType says each holder's level, and the heading joins the one holder at its level
+            // (the TGN level preference, doc 10 section 7.6, built 2026-10-21)
+            var level = HeadingLevel(b.Candidate);
+            var atLevel = through.Where(a => level is not null && Qualified.LevelOf(a.Candidate.PlaceType) == level).ToList();
+            list[i] = atLevel.Count == 1
+                ? b with { JoinedTo = atLevel[0].Candidate.Uri, Reason = b.Reason + $"; placed through {atLevel[0].Candidate.Source} {atLevel[0].Candidate.Label}, the {Qualified.LevelName(level!.Value)} among {through.Count}" }
                 : b with { Reason = b.Reason + $"; inside {through.Count} placed candidates" };
         }
+        // an unqualified LoC heading of a place ("China", "Canada") is one LoC gives to a place unique in its world: among TGN
+        // namesakes of differing level it is the nation, or the highest level present when there is no nation and that level is
+        // held by one record (the TGN level preference; hamlets called China and Canada lose)
+        if (reading.Qualifier is null)
+            for (var i = 0; i < list.Count; i++)
+            {
+                var b = list[i];
+                if (b.Veto || b.SetAside || b.JoinedTo is not null || b.Candidate.Placement is not null || b.Candidate.Source is not ("loc" or "lcsh") || b.Candidate.Class != EntityClass.Place || b.Candidate.NameScore < 0.97) continue;
+                var levelled = holders.Where(a => a.Candidate.Source == "tgn" && Qualified.LevelOf(a.Candidate.PlaceType) is not null).Select(a => (Holder: a, Level: Qualified.LevelOf(a.Candidate.PlaceType)!.Value)).ToList();
+                if (levelled.Select(x => x.Level).Distinct().Count() < 2) continue;
+                var top = levelled.Max(x => x.Level);
+                if (top < 4) continue;
+                var highest = levelled.Where(x => x.Level == top).ToList();
+                if (highest.Count != 1) continue;
+                list[i] = b with { JoinedTo = highest[0].Holder.Candidate.Uri, Reason = b.Reason + $"; an unqualified heading: the {Qualified.LevelName(top)} among {levelled.Count} TGN namesakes" };
+            }
         if (reading.Qualifier is null) return list;
         // the project's one entity of the name with no placement of its own ("Adelaide" beside "Adelaide, South Australia") is the
         // placed record's own entity: it joins the placed group and gains the id, as the project's LoC-labelled entities do
@@ -564,10 +592,15 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         for (var i = 0; i < list.Count; i++)
         {
             var b = list[i];
-            if (b.Veto || b.SetAside || b.JoinedTo is not null || b.Candidate.Source == home || b.Candidate.Source == "store" || b.Candidate.NameScore >= 0.97 || SameThing(b, h)) continue;
+            // the home vocabulary's own inexact headings too ("Drugs" beside LCSH's "Medicine", through a variant): its headings are unique
+            if (b.Veto || b.SetAside || b.JoinedTo is not null || b.Candidate.Source == "store" || b.Candidate.NameScore >= 0.97 || SameThing(b, h)) continue;
             list[i] = b with { SetAside = true, Reason = b.Reason + $"; {home} {h.Candidate.Label} decides: not the exact name" };
         }
     }
+
+    /// <summary>A qualified heading's level: its type word's, or an inhabited place when it has none (LoC's default); null for a record that is not a heading with a placement (TGN's own records say their level in <see cref="Candidate.PlaceType"/>).</summary>
+    private static int? HeadingLevel(Candidate c) =>
+        c.Source is "loc" or "lcsh" or "store" && c.Placement is not null ? Qualified.LevelOf(c.PlaceType) ?? 2 : null;
 
     private static bool SameThing(ScoredCandidate a, ScoredCandidate b) =>
         a.Candidate.SameAs.Contains(b.Candidate.Uri, StringComparer.Ordinal) || b.Candidate.SameAs.Contains(a.Candidate.Uri, StringComparer.Ordinal);

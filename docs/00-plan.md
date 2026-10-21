@@ -5,148 +5,47 @@ review in §7). Branch `de-pmc` is the working branch and `main` is what is depl
 releases"). The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this folder are the
 committed record.
 
-## 0. Resume point (written 2026-10-20 night; the one place to read first)
+## 0. Resume point (written 2026-10-21 night; the one place to read first)
 
 This section is rewritten at the end of every working day. It lists what stands, what the owner has to decide, what
 is built and waiting for a go, and the commands to run on return. The detail behind each line is in
 [10-alignment-toolkit.md](10-alignment-toolkit.md) section 7.6 (the findings, each dated) and in the open items of
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
-**Where things stand.** Branch `de-pmc`, all work committed; CI green again from 07fcaff (three pushes had failed on a
-workbench test pinning the PMC context count). Five authority sources loaded (14.5M records), lcsh reloaded with
-collections and aat reloaded with bare terms on 2026-10-20. Doc 10 section 7.6 is built in full: the qualified, list
-and compound shapes, placed through, the `single` method, the cataloguers' abbreviations, the home vocabulary (now
-decisive), a vocabulary's collections, AAT's bare terms. The last measured run is run-20261020-150054-tzm64p
-(accepted 4,836, queued 8,518, minted 12,290, lists 404, compounds 15,749), and the night's run with AAT's bare
-terms, run-20261020-160811-e2xu8x, stands on top of it: accepted 4,862 (vote 2,085, single 647, exact-single 2,130),
-queued 8,483, minted 12,290; a gain of 26, as the sample foretold. Its keywords:sub sample is read: "Catalogs" and
-"Diaries" are votes with AAT carried; "20th century" is still queued because AAT's centuries are typed Type and
-LCSH's Period (finding 11, a loader change below).
+**Where things stand.** Branch `de-pmc`, all work committed, CI green. Five authority sources loaded (14.5M records);
+the LoC "-781" subdivision forms deleted from both files on 2026-10-21 (2,392 names, 45,258 subjects) and the loader
+leaves them out. The store has had its duplicate pass (292 merges, 2026-10-21 evening) and two hand merges ("England",
+"London"); four imported strings ("Great Britain", "UK", "United Kingdom", "England and Wales") were reopened from
+the England entity. The last measured run is run-20261021-165615-qr7fbx: accepted 6,633 (vote 3,130, single 1,176,
+exact-single 2,327), queued 5,763, matched in store 5,388, minted 12,359, lists 404, compounds 15,668; by context
+queued keywords:head 777, keywords 1,376, keywords:sub 273, place 418, persauthorfull 1,533, publisher 1,112,
+corpauthor 274. The day's path: epenbw (queued 6,647) -> qr7fbx (5,763). Doc 10 7.6 "Measured ... qr7fbx" has the
+reading of the keywords:head and place queues.
 
-**Decisions taken by the owner on 2026-10-21** (the morning's answers): finding 3, the undated same-source namesake
-veto, yes (built that day); "outvoted rivals", deferred until measured after finding 9; `unrec_` identifiers,
-deferred until LUX's needs are seen; keying workbench users by GitHub id, agreed in principle, with the local user to
-be keyed as `local:<name>` since it has no GitHub id, to build with the first user besides the owner.
+**Decisions taken by the owner on 2026-10-21:** finding 3 (undated same-source namesake veto) yes; outvoted rivals
+yes for places and concepts, not people and bodies; `unrec_` identifiers kept; finding 14 (lone undated namesake)
+yes; keying workbench users by GitHub id agreed in principle (`local:<name>` for the local user); the duplicate pass
+(decision 5) built, dry-run, applied; decision 6 (the home vocabulary sets aside inexact rivals) yes; decision 7 (a
+dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) confirmed and done. All built.
 
 **Decisions still owed by the owner:**
 
-1. *Outvoted rivals* (doc 10 7.6 "Confirmed"): at a tie at acceptance score, a group two independent sources carry
-   beats a rival one source carries ("Finance" the topic against a hamlet called Finance; "Aberdeen" with LoC's
-   heading joined against four TGN namesakes). Run pqe98w is the run to measure it on; the owner runs (a ceiling:
-   queued strings with exactly one live two-source group at acceptance score and single-source rivals beside it):
-   `select ss.context, count(*) from decisions d join source_strings ss on ss.id = d.source_string_id cross join
-   lateral (select count(*) filter (where jsonb_array_length(g->'sources') >= 2 and (g->>'score')::numeric >= 0.9
-   and g->'vetoed' is null) as multi, count(*) filter (where jsonb_array_length(g->'sources') = 1 and
-   (g->>'score')::numeric >= 0.9 and g->'vetoed' is null) as single from jsonb_array_elements(d.evidence->'groups')
-   g) x where d.run_id = 'run-20261021-093102-pqe98w' and d.valid and d.method = 'queued' and x.multi = 1 and
-   x.single >= 1 group by 1 order by 2 desc;` Measured 2026-10-21: 510 strings (persauthorfull 144, keywords:head
-   115, keywords:sub 83, place 68, publisher 51, keywords 34, corpauthor 15). Recommendation: yes for Place, Type and
-   Period (up to 185: hamlets and homonymous topics are the rivals), not yet for Person and Group (325: an undated
-   "Smith, John" with a ULAN-linked LoC record beside another John Smith LoC knows is desk work, and two vocabularies
-   knowing a name is prominence, not identity); never over one of the project's own aligned entities; rivals marked
-   "outvoted" in the evidence. People to revisit against the 2024 shadow. The owner's yes as recommended,
-   2026-10-21, built that day (doc 10 7.6 "Outvoted rivals"); the rerun measures it in place, keywords:sub and
-   keywords.
-2. ~~*`unrec_` identifiers*~~: the owner's "keep", 2026-10-21, built that day (doc 10 7.5, last paragraph): a heading's
-   composite entity and the provisional entity of a queued or minted string take the legacy identifier the import
-   kept in the string's parsed JSON as `legacyUnreconciled`, placed under the class's segment, instead of a fresh
-   one; the rerun shows it as entity ids ending `unrec_…` in the minted sample. The owner's question
-   (2026-10-21), how a fresh PMC dump cleans up what LUX holds: by the same PMC URIs (LUX updates its copies rather
-   than adding islands), by `equivalent` links on every aligned entity (LUX merges records sharing an external id, so
-   a PMC concept with an LCSH id joins the shared LUX entity), and by composites carrying their parts. A dump cannot
-   retire records: an entity merged away on our side (the two legacy "England") keeps its identifier as an
-   `equivalent` on the survivor so LUX merges the twins. Before the export (doc 10 7.5 item 2) is designed in detail,
-   ask the LUX team whether a source reload replaces by URI and whether records absent from a full dump are retired;
-   the answers decide the export's shape and how merges are written.
-3. ~~*Lone undated namesake of another source* (finding 14)~~: the owner's yes 2026-10-21, built that day (below).
-4. *Prominence among tied places* (finding 17, doc 10 7.6 "Measured ... uhwjq5"): "Paris", "Dublin", "Athens",
-   "Cornwall", "London" tie between several two-source groups (each TGN namesake with its own LoC heading placed
-   through). Proposed: among tied two-source groups of places, prefer the TGN record with the most names, or the LoC
-   heading with the most variants; only among groups two sources already carry. Crude but measurable from the
-   exports. Recommendation: measure first (the per-string export lists the ties), then decide.
-5. *Legacy duplicate entities*: two of the project's own "Evanston" and two "England" block finding 10 and queue
-   their strings. Counted by the owner 2026-10-21 (entities of one dataset and class sharing a label, case folded):
-   Place 53 labels in 122 entities, Type 122 in 251, Group 122 in 246, Person 328 in 721; 625 labels, 1,340
-   entities in all. Recommendation: a one-off `merge-duplicates` command in tools/Align, dry run by default (it
-   lists every label with its entities, their statuses and equivalents, and says which it would merge), merging only
-   where the twins' equivalents do not conflict (none on one side, or the same external ids), the survivor the
-   entity with the most equivalents then the oldest, every merged-away identifier kept as an `equivalent` on the
-   survivor so LUX merges the twins (the plan's rule above). For Place, Type and Group a shared label is the same
-   thing in a library's own authority table. For Person, only where the twins carry the same lifespan or share an
-   external id; a bare "Smith, John" twice stays two entities for the desk. The owner's order 2026-10-21 (run first,
-   then this, then the TGN level preference); built that day as `merge-duplicates` (doc 11; dry run by default,
-   `--apply` to carry it out, `--class` to limit, `--out` to write the list to a file). The owner runs the dry run
-   and reads the list, then runs it live, then an undo and reconcile ("Evanston" and "England" leave the place queue
-   by finding 10). The merged-away identifiers stay as `merged_into`; the export (doc 10 7.5 item 2) writes them as
-   equivalents of the survivor. The first dry run (2026-10-21 evening, `reports/merge-duplicates.txt`): 659 labels,
-   1,407 entities, 292 merges (Type 157, Group 115, Place 13, Person 7), 456 kept apart, of them 375 bare personal
-   names and 61 "different viaf ids": the legacy import's two copies of one place ("Evanston", "Birmingham",
-   "Winchester"), each aligned with LUX, VIAF and Wikidata ids, the Wikidata id the same and the VIAF cluster
-   different. VIAF and LUX are clusters and hold duplicates, so the rule was refined that evening: a differing VIAF
-   or LUX id beside a shared id is not a conflict; a differing authoritative id (Wikidata, TGN, LoC, ULAN) still is;
-   differing VIAF ids with nothing else shared still keep the twins apart. The second dry run (16:48) gave the same
-   counts: the 61 place twins carry *different Wikidata ids* (29 pairs) or two VIAF clusters with nothing else
-   shared (26), so Wikidata itself says "Evanston" and "Evanston", "Birmingham" and "Birmingham", "Cambridge" and
-   "Cambridge" are two places (the English city and the American one, or the old pipeline's second-run choice): the
-   pass rightly leaves them, and the desk decides each from its Wikidata ids on the entity page. So the merge does
-   not take "Evanston, Illinois" out of the place queue; "England" and "London" are two aligned entities with ids
-   from different sources and nothing shared ("England": LoC and LUX beside TGN; "Italy", "Dumfries", "Kolkata"
-   likewise), the owner's hand merges on the workbench entity page, "England" and "London" first since they block
-   finding 10. The 292 merges are Types (157) and Groups (115) almost entirely, plus 13 places and 7 people whose
-   twins share an id or have none; safe to apply as listed.
-6. *Home vocabulary sets aside inexact rivals* (finding 21, doc 10 7.6 "Measured ... epenbw"): "Porcelain" has
-   LCSH's exact heading, AAT's two exact terms set aside, and LoC's "Porcelain (Musical group)" at 0.85 as the one
-   live rival, which blocks exact-single. Proposed: when the home vocabulary has exactly one exact record of the
-   name, another source's record below 0.97 is set aside (a lookalike, not a rival), and the home record is an
-   exact-single. Recommendation: yes; the home rule already trusts that one record over other sources' exact
-   terms. Ceiling (queued undated strings with exactly one live group holding an exact record and another live
-   group beside it), the owner runs: `select ss.context, x.src, count(*) from decisions d join source_strings ss
-   on ss.id = d.source_string_id cross join lateral (select count(*) filter (where g.exact) as exact_groups,
-   min(g.src) filter (where g.exact) as src, count(*) as live from (select (g->>'score')::numeric as score, exists
-   (select 1 from jsonb_array_elements(g->'members') m where (m->>'reason' like 'name 1.00%' or m->>'reason' like
-   'name 0.97%') and m->'veto' is null and m->'setAside' is null) as exact, (select min(m->>'source') from
-   jsonb_array_elements(g->'members') m where (m->>'reason' like 'name 1.00%' or m->>'reason' like 'name 0.97%')
-   and m->'veto' is null and m->'setAside' is null) as src from jsonb_array_elements(d.evidence->'groups') g where
-   g->'vetoed' is null and (g->>'score')::numeric >= 0.6) g) x where d.run_id = 'run-20261021-142134-epenbw' and
-   d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null and x.exact_groups = 1 and x.live
-   >= 2 group by 1, 2 order by 3 desc;` Measured 2026-10-21 (717 strings): where the exact record is the home
-   vocabulary's, keywords:head lcsh 103, keywords:sub lcsh 31, keywords lcsh 24 (158 strings; place has no home);
-   the rest are exact store entities (publisher 113, persauthorfull 21: the project's own entity beside lookalikes,
-   another shape), LoC and ULAN exact records in contexts without a home (publisher loc 58, persauthorfull loc 45,
-   corpauthor ulan 31) and TGN in keywords (41). Recommendation unchanged: yes, for the home vocabulary only (158),
-   the other shapes to be looked at from their samples later. The owner's yes 2026-10-21, built that evening (doc 10
-   7.6 "Measured ... epenbw", "Porcelain").
-7. *A dated string's one undated exact record* (finding 24): "Coventry, Terence, 1938-" has LoC's one "Coventry,
-   Terence", undated, as its only candidate, and exact-single stands aside for dated strings. Proposed: when a dated
-   string's only candidate is a source's one exact record of the name, undated, it is carried as a single (LoC's
-   headings are unique: the one Terence Coventry LoC knows is this one unless LoC dates another). Recommendation:
-   measure first; if the ceiling is mostly persauthorfull, yes, with the uniqueness condition. Ceiling, the owner
-   runs: `select ss.context, count(*) from decisions d join source_strings ss on ss.id = d.source_string_id where
-   d.run_id = 'run-20261021-142134-epenbw' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan'
-   is not null and jsonb_array_length(d.evidence->'groups') = 1 and
-   jsonb_array_length(d.evidence->'groups'->0->'members') = 1 and d.evidence->'groups'->0->'members'->0->>'reason'
-   like 'name 1.00%' and d.evidence->'groups'->0->'members'->0->>'reason' not like '%dates%' group by 1 order by 2
-   desc;` Measured 2026-10-21: 45 strings (keywords:head 42, persauthorfull 2, corpauthor 1): the dated name
-   headings of the keywords field, whose LoC record carries no dates in its label. Recommendation: yes; small, and
-   the reasoning is finding 14's. The owner's yes 2026-10-21, built that evening as an exact-single (doc 10 7.6
-   "Measured ... epenbw", "Coventry, Terence").
-8. *LoC's "-781" twins* (finding 23): "China" met LoC's `n79091151` and `n79091151-781`, two exact records of one
-   heading. The assistant reads the suffix as the heading's geographic-subdivision form (MARC 781), published as a
-   resource of its own; unverified against id.loc.gov, which refuses automated fetches. The owner confirms from the
-   index: `select count(*) from authority_records where source = 'loc' and uri like '%-781';` and `select uri,
-   label, type from authority_records where source = 'loc' and uri like '%-781' limit 5;`. If they are twins of the
-   plain heading (same label, type Geographic), the build: the loader skips them, and a one-off `delete from
-   authority_records where source = 'loc' and uri like '%-781';` clears the index without a reload (size S). Every
-   such twin blocks exact-single and finding 14's uniqueness test for a place LoC uses as a subdivision. Confirmed
-   by the owner 2026-10-21 (2,392 records, typed Place, labelled as headings) and built that evening: the loader
-   leaves them out. The owner runs the delete (commands below). The subjects file has them too, 45,258 (the owner's
-   count, 2026-10-21 evening: LCSH's own geographic headings each with a subdivision form); before the lcsh delete
-   the owner checks that each has its parent record: `select count(*) from authority_records r where r.source =
-   'lcsh' and r.uri like '%-781' and not exists (select 1 from authority_records p where p.uri = left(r.uri,
-   length(r.uri) - 4));` (expected 0 or near it), then `delete from authority_records where source = 'lcsh' and uri
-   like '%-781';`. Done 2026-10-21 evening: every one had its parent (count 0), the labels are the heading written
-   under its country as a subdivision ("Oregon--Trail Creek Watershed (Jackson County)"), and both deletes have run;
-   the index is clean of them and the loader keeps it so.
+1. *Prominence among tied places* (finding 17, doc 10 7.6 "Measured ... uhwjq5"): "Paris", "Dublin", "Athens",
+   "London" tie between several two-source groups (each TGN namesake with its own LoC heading placed through).
+   Proposed: among tied two-source groups of places, prefer the TGN record with the most names, or the LoC heading
+   with the most variants; only among groups two sources already carry. A local Wikidata extract (next builds, item
+   4) would give a better signal (sitelinks). Recommendation: wait for the extract rather than build the crude
+   version; the strings are few and famous.
+2. *A bare string among TGN namesakes of differing level* (decision 9, doc 10 7.6 "Built 2026-10-21 night"):
+   "Pisa" meets TGN's city and province and no LoC heading, so the level preference, which reads LoC's heading, has
+   nothing to go on. Proposed: with no heading at all, prefer the inhabited place when exactly one TGN record is one
+   and the rest are higher levels (a province or county named after its city), and the nation when one is a nation
+   and the rest hamlets. Recommendation: measure first. Ceiling (queued strings whose live groups are all TGN-only),
+   the owner runs: `select ss.context, count(*) from decisions d join source_strings ss on ss.id =
+   d.source_string_id where d.run_id = 'run-20261021-165615-qr7fbx' and d.valid and d.method = 'queued' and
+   (select count(*) from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) >= 2 and not
+   exists (select 1 from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null and g->'sources' <>
+   '["tgn"]'::jsonb) group by 1 order by 2 desc;`
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -159,37 +58,32 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    every parser with its three tiers. If the owner says yes: rewrite objectives 2 and 6 so, and add a Phase 5 item
    (size S) for the Agent parser's endpoint beside the dates one, a playground page, and a corpus folder seeded from
    the PMC strings.
+4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
+   replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
+   `merged_into` on 292 entities and the two hand merges) are written as equivalents of the survivor so LUX merges
+   its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
+   builds, item 4).
 
-**Measured 2026-10-21 on run-20261021-142134-epenbw (stands):** against uhwjq5, accepted 6,088 -> 6,333, queued
-6,969 -> 6,647, matched in store 4,730 -> 4,763; keywords:head queued 1,448 -> 1,142 (the finding 13 fix), the
-other contexts within a few. "Sporting Gallery" minted as `group/unrec_t85jgf5s`: the placeholders are kept. Doc 10
-7.6 "Measured ... epenbw" has the reading of the keywords:head queue.
-
-**Built 2026-10-21 evening from that run's samples, waiting for the next rerun:** finding 19 (a split heading is
-exact for the record whose label is the whole heading, "Loire River (France)"); finding 20 (a qualified heading the
-string's qualifier places is exact on its name, so the single rule carries "Carlton House (London)"); finding 22
-(a qualifier places a record only when one side's words are all among the other's: "Lambeth, England" no longer
-places every English parish, "Turkey and Greece" no longer places Ilía); finding 21 (the home vocabulary's one exact
-record sets aside other vocabularies' inexact records, "Porcelain" an exact-single; 158 strings); finding 24 (a dated
-string whose only candidate is one undated exact record is an exact-single, "Coventry, Terence, 1938-"; 45); the
-LoC "-781" twins left out by the loader (the owner's one-off delete clears the index). No reload, no manifest
-refresh. Expect keywords:head queued down again (the placed single headings, the set-aside lookalikes, the dated
-headings), and a few place strings moving either way from finding 22.
+**Built 2026-10-21 night from qr7fbx's samples, waiting for the next rerun** (no reload, no manifest refresh):
+the TGN level preference (doc 10 7.6 "Built 2026-10-21 night": a LoC heading joins the TGN namesake at its level,
+"New York (N.Y.)" the city, "Cornwall (England : County)" the county, an unqualified "China" the nation); finding 25
+("St." and "Saint" one word, so "St. Mary (Lambeth, England : Parish)" is a single); finding 21 extended to the home
+vocabulary's own inexact headings ("Medicine" beside "Drugs"); finding 28 (a name matched only through an acronym
+variant is a lookalike: "SCOTS"); finding 29 (a legacy identifier naming an aligned entity is not reused for a
+queued or minted string: "Athens"); the duplicate pass finds people and bodies by the words of the name in any order
+("Piper, John" and "John Piper"), which needs another dry run and apply before the reconcile. Expect: place queued
+(418) down by the level shapes ("New York", "Cornwall", "China", "Canada", "Aix-en-Provence", "Pisa" not), keywords:head
+(777) down a little, "Piper, John, 1903-1992" matched in the store or a vote after the merge.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
 
-1. TGN level preference ("Aix-en-Provence", "China", "Canada": TGN namesakes of differing level, LoC's placed
-   heading inside several and joining none): LoC's heading says the level in its type after " : " (none for the
-   city, "Arrondissement", "Kreis"), TGN's `placeType` says the record's, and the heading holds the namesake whose
-   level it names; an unqualified LoC heading holds the highest level (the nation). Designed from the pqe98w
-   samples; to build next. The famous-city ties ("Paris") are decision 4 above, not this.
-2. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
-3. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
+1. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
+2. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
    the owner.
-4. Outvoted rivals for people and bodies, only after a shadow against the 2024 alignment says what it would do to
+3. Outvoted rivals for people and bodies, only after a shadow against the 2024 alignment says what it would do to
    them.
-5. A local Wikidata extract as a sixth index (the owner's question, 2026-10-21 evening): not the full dump (over a
+4. A local Wikidata extract as a sixth index (the owner's question, 2026-10-21 evening): not the full dump (over a
    hundred gigabytes compressed) but the items carrying a ULAN, TGN, LoC, VIAF, AAT or GND id or typed human,
    organisation or place, with labels, aliases, dates, those ids and a sitelink count; a few million rows, CC0. What
    it adds: prominence for tied places (finding 17: sitelinks, not TGN name counts), dates for LoC's undated records
@@ -202,27 +96,26 @@ says "continue with the list"):
    project and, in time, by VIAF and LUX. A contribution export (a QuickStatements batch of label, dates, roles,
    nationality and the archive's URI as the reference, for a person to review and submit; confirmed entities only,
    never provisional ones) belongs beside the LUX export in doc 10 7.5 item 2 when that is designed.
+5. Finding 26, the working-date gaps (doc 10 7.6 "Measured ... qr7fbx"): the MARC profile does not read "fl.
+   1775-1795" or a lone "1730?", and the LoC loader does not read "active 1840-1876" in a heading, so namesakes
+   whose working dates cannot overlap do not conflict. A working span is "born no later than its start, died no
+   earlier than its end" (the `Lifespan` record can say so: BeginLatest and EndEarliest) and the lifetime bound then
+   applies. Size S in the parser, S in the loader; with the parser-gaps open item below.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    git push
-    dotnet run --project tools/Align -- merge-duplicates --out reports/merge-duplicates.txt
-    (the refined rule: the place twins with a shared Wikidata id should now merge; read the list, then)
+    dotnet run --project tools/Align -- merge-duplicates --out reports/merge-duplicates-2.txt
+    (the inverted-form twins of people and bodies; read the list, then)
     dotnet run --project tools/Align -- merge-duplicates --apply
-    (in DataGrip)  delete from authority_records where source = 'loc' and uri like '%-781';
-    (in DataGrip)  the lcsh parent check in decision 8, then: delete from authority_records where source = 'lcsh' and uri like '%-781';
-    (on the workbench, by hand: merge the two "England" and the two "London" place entities)
-    dotnet run --project tools/Align -- undo-run --run run-20261021-142134-epenbw
+    dotnet run --project tools/Align -- undo-run --run run-20261021-165615-qr7fbx
     dotnet run --project tools/Align -- reconcile
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
 
-Expect, against epenbw: "England" out of the place queue once merged by hand ("Evanston" stays: two Wikidata
-ids), "Loire River
-(France)", "Carlton House (London)", "Grand tours (Education)", "Ionia (Turkey and Greece)" out of the keywords:head
-queue (findings 19, 20, 22). Run the three ceiling queries of decisions 6, 7 and 8 against epenbw at any time; they
-read the run's evidence, which the undo keeps. Then the TGN level preference is built (next builds, item 1).
+Run decision 2's ceiling query against qr7fbx at any time; the undo keeps the evidence. The persauthorfull queue
+(1,533, the largest) has not been sampled since pqe98w and is the next to read.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)
@@ -647,7 +540,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       still equals the library rules, `manifest --use-default`, and the project page's "In effect now" sentence).
     - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
       Art prizes" read as Person; "McSloy, Tom, op 1946" (a working date written "op"); "Mainz/Rhein" (a slash
-      variant for name-forms).
+      variant for name-forms). From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
+      Oliver, 1730?" read undated by the MARC profile; LoC's "Bolton, James, active 1840-1876" undated by the loader
+      (section 0, next builds, item 5).
     - Workbench step 3 (jobs): runs, loads and indexes pages (authority_sources is the indexes table), a schedule,
       the counters list; step 4 as extended by doc 14 section 4 (sources and uploaded dumps, the profile job,
       contexts namespaced by source, role routing, mapping tables as overrides, the brief's tables imported as

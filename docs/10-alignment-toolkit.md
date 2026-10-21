@@ -784,6 +784,62 @@ Gallery" took `group/unrec_t85jgf5s`, so the placeholders are kept as decided. T
 - "Drury" (a ULAN person and two TGN places under a bare surname), "Paintings, European" (ULAN's "European
   Paintings", a department, at 0.93): the desk's work.
 
+Measured 2026-10-21 (run-20261021-165615-qr7fbx: findings 19 to 24, the "-781" deletes, the duplicate pass and the
+two hand merges, against epenbw): accepted 6,333 -> 6,633 (vote 3,217 -> 3,130, single 888 -> 1,176, exact-single
+2,228 -> 2,327), queued 6,647 -> 5,763, matched in store 4,763 -> 5,388 (the duplicate pass: twins no longer block
+the store's silent match), minted 12,395 -> 12,359. By context: keywords:head queued 1,142 -> 777, single 652 ->
+780 (findings 19 and 20), exact-single 958 -> 1,040 (21 and 24); keywords queued 1,646 -> 1,376 and single 78 ->
+223; keywords:sub 325 -> 273; corpauthor 359 -> 274 and publisher 1,202 -> 1,112 (the duplicate pass, through the
+store); place 433 -> 418; persauthorfull 1,540 -> 1,533. The samples, read:
+
+- "St. Mary (Lambeth, England : Parish)": finding 22 did its work (the three churches elsewhere are gone, and LoC's
+  own "Saint Mary (Lambeth, England : Parish)" is placed), but "St. Mary" against "Saint Mary" scored 0.85, so
+  finding 20 could not call the name exact and the single rule did not carry it. Finding 25, built the same night:
+  "St." and "Saint", "Ste." and "Sainte", "Mt." and "Mount" are one word to `NameMatcher` (the assistant's own
+  list of the English place-name abbreviations).
+- "Medicine": LCSH's exact heading beside LCSH's own "Drugs" at 0.85 through a variant; finding 21 set aside other
+  vocabularies' inexact records only. Extended the same night to the home vocabulary's own inexact headings, whose
+  headings are unique.
+- "Scots": LoC's "Shoreline Cleanup Oversight Team" exact through its acronym variant "SCOTS", and ULAN's "unknown
+  Scottish" through a variant of its own, beside LCSH's "Scots". Finding 28, built: a name matched only through an
+  all-capitals acronym variant scores 0.85 unless the string is itself written in capitals ("RIBA" still meets the
+  Royal Institute of British Architects). ULAN's attribution record stays a rival; the desk.
+- "Athens" (place) was queued to the aligned legacy Athens, not a provisional: the earlier pipeline's
+  `unreconciled_authority` column held tentative mappings to real authorities as well as `unrec_` placeholders, and
+  the `unrec_` build reused whatever the column named. Finding 29, fixed: an aligned or confirmed entity under a
+  legacy identifier is not reused for a queued or minted string, which would make a tentative decision look
+  settled; a provisional one is reused and an absent one created, as before.
+- "Piper, John, 1903-1992" (keywords:head): ULAN and LoC agree on the dates and join (finding 16), but two of the
+  project's own entities of the name, "Piper, John" and "John Piper", both aligned (LUX and VIAF ids from the legacy
+  import, no ULAN or LoC), stand beside them: two acceptable firm entities, so neither answers silently in the store
+  stage, and the firm rival queues the vote. The duplicate pass folded labels only. Built: people and bodies are
+  twins by the words of the name in any order as well, under the same rules (a person's twins need a shared id or
+  the same dates). The next dry run says how many.
+- "Bolton, James, fl. 1775-1795" and "Goldsmith, Oliver, 1730?": the string's dates were not read ("fl." and a lone
+  "1730?" fall out of the MARC profile), and LoC's "active 1840-1876" is not read by the loader either, so namesakes
+  whose working dates cannot overlap did not conflict. Finding 26, parser and loader gaps, in the plan's open items;
+  not built.
+- "Kirby, John", "Drury", "Hughs", "Paintings, European": the desk's.
+- Place: "New York, N.Y" (TGN's two New Yorks both placed by "N.Y.", LoC's heading inside both), "Pisa" (three TGN
+  Pisas), "Cornwall" (LoC's county heading inside two TGN Cornwalls in England), "China": the TGN level preference,
+  built that night (below). "Paris", "Dublin", "Athens": finding 17, the owner's decision 4. "Evanston, Illinois":
+  the two legacy Evanstons carry different Wikidata ids and stand, so finding 10 does not apply; the desk. "Bottrop,
+  Essen", "Heaton, Bradford", "Donnington": the data's.
+
+Built 2026-10-21 night, the TGN level preference (`Candidate.PlaceType`, `Qualified.TypeOf`, `Qualified.LevelOf`,
+`LocalIndexSource.FindAsync`, `Reconciler.Score`): TGN's `placeType` (an AAT concept; its label is read from the local
+AAT index once per concept) says a record's level, and a LoC heading's type after " : " says the heading's, with no
+type meaning the inhabited place, LoC's practice. A heading inside several holders joins the one holder at its level
+("New York (N.Y.)" the city, not the county; "Cornwall (England : County)" the county, not the hamlet in Devon), and
+the vote then outvotes the other TGN namesake. An unqualified LoC heading of a place, which LoC gives to a place
+unique in its world, joins the nation among TGN namesakes of differing level, or the highest level present when one
+record holds it and it is a state or above ("China" the nation, not the hamlet in Nuevo León). The level ladder
+(nation 5; state, province, region, département, Land, canton 4; county, district, arrondissement, Kreis 3; city,
+town, village, borough, township, parish 2; rivers, islands and continents off it) is the assistant's own table of
+the AAT place-type labels TGN uses and LoC's type words, not a published list. Left for the owner (decision 9): a
+bare string with TGN namesakes of differing level and no LoC heading at all ("Pisa": the city and the province),
+where the ladder alone would have to prefer the inhabited place; ceiling query in the plan.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

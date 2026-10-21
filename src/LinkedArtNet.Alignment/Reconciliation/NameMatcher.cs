@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 namespace LinkedArtNet.Alignment.Reconciliation;
 
 /// <summary>
@@ -37,26 +38,36 @@ public static class NameMatcher
     }
 
     /// <summary>The best score of the name against any of the labels.</summary>
-    public static double Score(string name, IEnumerable<string> labels)
+    public static double Score(string name, IEnumerable<string> labels) => Best(name, labels).Score;
+
+    /// <summary>The best score of the name against any of the labels, and the label that gave it.</summary>
+    public static (double Score, string? Label) Best(string name, IEnumerable<string> labels)
     {
         var key = StringKey.Normalise(name);
-        if (key.Length == 0) return 0;
-        var best = 0.0;
+        if (key.Length == 0) return (0, null);
+        var best = 0.0; string? bestLabel = null;
         foreach (var label in labels)
         {
             var s = Score(key, StringKey.Normalise(label));
-            if (s > best) best = s;
+            if (s > best) { best = s; bestLabel = label; }
             if (best >= 1) break;
         }
-        return best;
+        return (best, bestLabel);
     }
+
+    // "St." and "Saint", "Ste." and "Sainte", "Mt." and "Mount" are one word in a place or church name ("St. Mary" is LoC's
+    // "Saint Mary (Lambeth, England : Parish)"): expanded before the folded forms are compared (finding 25, 2026-10-21)
+    private static readonly Regex SaintAbbreviation = new(@"\bst\.?(?=\s|$)", RegexOptions.Compiled);
+    private static readonly Regex SainteAbbreviation = new(@"\bste\.?(?=\s|$)", RegexOptions.Compiled);
+    private static readonly Regex MountAbbreviation = new(@"\bmt\.?(?=\s|$)", RegexOptions.Compiled);
+    private static string Saints(string folded) => MountAbbreviation.Replace(SainteAbbreviation.Replace(SaintAbbreviation.Replace(folded, "saint"), "sainte"), "mount");
 
     /// <summary>The score of two normalised keys.</summary>
     public static double Score(string a, string b)
     {
         if (a.Length == 0 || b.Length == 0) return 0;
         if (a == b) return 1.0;
-        var fa = StringKey.Fold(a); var fb = StringKey.Fold(b);
+        var fa = Saints(StringKey.Fold(a)); var fb = Saints(StringKey.Fold(b));
         if (fa == fb) return 0.97;
         var ca = NameForms.Canonical(fa, dropQualifiers: false); var cb = NameForms.Canonical(fb, dropQualifiers: false);
         if (ca.Length > 0 && ca == cb) return 0.95;

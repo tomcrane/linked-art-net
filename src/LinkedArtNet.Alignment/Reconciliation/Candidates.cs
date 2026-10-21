@@ -147,7 +147,8 @@ public sealed record Candidate(
     bool ProvisionalQueued = false,
     bool Disambiguated = false,
     string? Placement = null,
-    IReadOnlyList<string>? Collections = null);
+    IReadOnlyList<string>? Collections = null,
+    string? PlaceType = null);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
@@ -195,7 +196,26 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
             if (page.Count > limit) truncated = true;
             foreach (var r in page.Take(limit)) found[r.Uri] = r;
         }
-        return new CandidateSet(found.Values.Select(r => ToCandidate(r, reading, "local")).ToList(), truncated);
+        var candidates = new List<Candidate>(found.Count);
+        foreach (var r in found.Values)
+        {
+            var c = ToCandidate(r, reading, "local");
+            // TGN's placeType is an AAT concept: its label ("inhabited places", "counties", "nations") is read from the local AAT
+            // index once per concept and kept, so the level preference compares words, not URIs
+            if (c.PlaceType is { } uri && uri.StartsWith("http", StringComparison.Ordinal)) c = c with { PlaceType = await PlaceTypeLabelAsync(uri, ct) ?? uri };
+            candidates.Add(c);
+        }
+        return new CandidateSet(candidates, truncated);
+    }
+
+    private readonly Dictionary<string, string?> _placeTypes = new(StringComparer.Ordinal);
+
+    private async Task<string?> PlaceTypeLabelAsync(string uri, CancellationToken ct)
+    {
+        if (_placeTypes.TryGetValue(uri, out var known)) return known;
+        var label = (await store.GetAuthorityAsync(uri, ct))?.Label;
+        _placeTypes[uri] = label;
+        return label;
     }
 
     public static Candidate ToCandidate(AuthorityRecord r, StringReading reading, string stage)
@@ -204,6 +224,7 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         IReadOnlyList<string>? nationalities = null;
         var disambiguated = false;
         string? parentString = null;
+        string? placeTypeUri = null;
         IReadOnlyList<string>? collections = null;
         if (r.DataJson is not null)
         {
@@ -211,6 +232,7 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
             {
                 using var doc = System.Text.Json.JsonDocument.Parse(r.DataJson);
                 if (doc.RootElement.TryGetProperty("parentString", out var ps) && ps.ValueKind == System.Text.Json.JsonValueKind.String) parentString = ps.GetString();
+                if (doc.RootElement.TryGetProperty("placeType", out var pt) && pt.ValueKind == System.Text.Json.JsonValueKind.String) placeTypeUri = pt.GetString();
                 if (doc.RootElement.TryGetProperty("collections", out var col) && col.ValueKind == System.Text.Json.JsonValueKind.Array)
                     collections = col.EnumerateArray().Select(e => e.GetString()).OfType<string>().ToArray();
                 if (doc.RootElement.TryGetProperty("nationalities", out var n) && n.ValueKind == System.Text.Json.JsonValueKind.Array)
@@ -224,10 +246,21 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // a LoC names id ending -781 is the heading's geographic-subdivision form (from the MARC 781 field), the same place as
         // the id without it: the two were rival groups for "Massachusetts" and "South Africa" in the 2026-10-20 shadow
         var sameAs = r.Source == "loc" && r.Uri.EndsWith("-781", StringComparison.Ordinal) ? r.SameAs.Append(r.Uri[..^4]).ToArray() : r.SameAs;
+        // the record's level as a place: TGN's placeType (an AAT URI here, the index source replaces it with the AAT label), a
+        // LoC heading's type after " : " ("Cornwall (England : County)"); doc 10 section 7.6, the TGN level preference
+        var placeType = cls == EntityClass.Place ? (placeTypeUri ?? Qualified.TypeOf(labels)) : null;
+        // a name that matches only through an acronym the record lists as a variant ("SCOTS" for the Shoreline Cleanup Oversight
+        // Team, against the string "Scots") is a lookalike, not the name: scored 0.85 unless the string is itself written in
+        // capitals (finding 28, 2026-10-21)
+        var (nameScore, matched) = NameMatcher.Best(reading.Text, labels);
+        if (nameScore >= 0.97 && matched is not null && IsAcronym(matched) && !AllCapitals(reading.String.Raw)) nameScore = 0.85;
         // a place record always says where it is (TGN's parent string, a LoC heading's parenthetical), so that records of
         // different sources can be told to be the same place whether or not the string carries a qualifier; other records
         // only when there is a qualifier to check them against
-        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities, Disambiguated: disambiguated,
-            Placement: cls == EntityClass.Place || reading.Qualifier is not null ? Qualified.PlacementOf(parentString, labels) : null, Collections: collections);
+        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, nameScore, null, nationalities, Disambiguated: disambiguated,
+            Placement: cls == EntityClass.Place || reading.Qualifier is not null ? Qualified.PlacementOf(parentString, labels) : null, Collections: collections, PlaceType: placeType);
     }
+
+    private static bool IsAcronym(string label) => label.Length is >= 2 and <= 8 && label.All(char.IsLetter) && label.All(char.IsUpper);
+    private static bool AllCapitals(string raw) { var letters = raw.Where(char.IsLetter).ToList(); return letters.Count > 0 && letters.All(char.IsUpper); }
 }

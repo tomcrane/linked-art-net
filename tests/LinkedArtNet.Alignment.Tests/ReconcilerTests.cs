@@ -297,6 +297,14 @@ public class GroupingTests
         Assert.False(Qualified.Agrees("Turkey and Greece", "Ilía, Region of Western Greece, Greece, Europe, World"));
         Assert.True(Qualified.Agrees("Turkey and Greece", "Turkey and Greece"));
         Assert.True(Qualified.Agrees("London, England", "Hammersmith and Fulham, London, Greater London, England, United Kingdom, Europe, World"));
+        // a heading's type word and a record's level (the TGN level preference)
+        Assert.Equal("County", Qualified.TypeOf(["Cornwall (England : County)"]));
+        Assert.Equal("City", Qualified.TypeOf(["New York (N.Y.)", "New York (N.Y. : City)"]));
+        Assert.Null(Qualified.TypeOf(["Hammersmith (London, England)"]));
+        Assert.Equal(5, Qualified.LevelOf("nations")); Assert.Equal(4, Qualified.LevelOf("regions (administrative divisions)")); Assert.Equal(3, Qualified.LevelOf("counties"));
+        Assert.Equal(2, Qualified.LevelOf("inhabited places")); Assert.Equal(3, Qualified.LevelOf("County")); Assert.Equal(2, Qualified.LevelOf("City")); Assert.Equal(2, Qualified.LevelOf("county seats")); Assert.Null(Qualified.LevelOf("rivers")); Assert.Null(Qualified.LevelOf(null));
+        // "St." and "Saint" are one word (finding 25)
+        Assert.Equal(0.97, NameMatcher.Score("St. Mary", ["Saint Mary"])); Assert.Equal(0.97, NameMatcher.Score("Mt. Pleasant", ["Mount Pleasant"]));
         Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
 
         var reading = Reading("Heaton", EntityClass.Place) with { Qualifier = "Bradford" };
@@ -759,6 +767,19 @@ public class ReconcilerStoreTests(PostgresFixture pg)
             new Candidate("https://data.example.org/x/concept/abcd2345", "store", "Porcelain (Musical group)", EntityClass.Type, null, [], "store", 0.85, EntityId: "https://data.example.org/x/concept/abcd2345")], 120);
         Assert.True(porcelainScored[1].SetAside); Assert.Contains("lcsh Porcelain decides: not the exact name", porcelainScored[1].Reason);
         Assert.False(porcelainScored[2].SetAside);
+        // the home vocabulary's own inexact heading is set aside too ("Drugs" beside "Medicine", through a variant)
+        var medicine = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Medicine"));
+        var medicineScored = Reconciler.Score(medicine, [
+            new Candidate("http://id.loc.gov/authorities/subjects/sh85083064", "lcsh", "Medicine", EntityClass.Type, null, [], "local", 1.0),
+            new Candidate("http://id.loc.gov/authorities/subjects/sh85039719", "lcsh", "Drugs", EntityClass.Type, null, [], "local", 0.85)], 120);
+        Assert.True(medicineScored[1].SetAside);
+        // a record matched only through an acronym variant is a lookalike (finding 28): "SCOTS" for a cleanup team, against "Scots"
+        var scots = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Scots"));
+        var team = new AuthorityRecord("http://id.loc.gov/authorities/names/no2016167587", "loc", "Shoreline Cleanup Oversight Team", ["Shoreline Cleanup Oversight Team", "SCOTS"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
+        Assert.Equal(0.85, LocalIndexSource.ToCandidate(team, scots, "local").NameScore);
+        var riba = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "RIBA"));
+        var institute = new AuthorityRecord("http://id.loc.gov/authorities/names/n79063909", "loc", "Royal Institute of British Architects", ["Royal Institute of British Architects", "RIBA"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
+        Assert.Equal(1.0, LocalIndexSource.ToCandidate(institute, riba, "local").NameScore); // the string is the acronym itself
         Assert.Equal(1, Reconciler.Groups(porcelainScored.Take(2).ToList()).Count(g => g.Members.Any(m => !m.SetAside)));
         // and so LCSH's one placed heading carries the string as a single
         await pg.Store.PutAuthorityAsync(Lcsh("sh85078154", "Loire River (France)", "Place"));
@@ -853,7 +874,8 @@ public class ReconcilerStoreTests(PostgresFixture pg)
     {
         var ds = Dataset();
         var scheme = new IdentifierScheme("https://data.example.org/" + ds);
-        static AuthorityRecord Tgn(string id, string label, string parent) => new($"http://vocab.getty.edu/tgn/{id}", "tgn", label, [label], "Place", null, [], $"{{\"parentString\":\"{parent}\"}}", DateTimeOffset.UtcNow, "test");
+        static AuthorityRecord Tgn(string id, string label, string parent, string? placeType = null) => new($"http://vocab.getty.edu/tgn/{id}", "tgn", label, [label], "Place", null, [],
+            placeType is null ? $"{{\"parentString\":\"{parent}\"}}" : $"{{\"parentString\":\"{parent}\",\"placeType\":\"http://vocab.getty.edu/aat/{placeType}\"}}", DateTimeOffset.UtcNow, "test");
         await pg.Store.PutAuthorityAsync(Tgn("7011781", "Hammersmith", "London, Greater London, England, United Kingdom, Europe, World"));
         await pg.Store.PutAuthorityAsync(Tgn("7000001", "Heaton", "Bradford, West Yorkshire, England, United Kingdom, Europe, World"));
         await pg.Store.PutAuthorityAsync(Tgn("7000002", "Heaton", "Newcastle upon Tyne, Tyne and Wear, England, United Kingdom, Europe, World"));
@@ -878,6 +900,33 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(legacy.Id, resolved.Id);
         Assert.Contains(resolved.Equivalents, q => q.Uri.EndsWith("1030371"));
         Assert.Equal(DecisionMethod.Vote, (await pg.Store.DecisionForAsync(risborough.Id))!.Method);
+        // the TGN level preference: the qualifier "N.Y." places TGN's county (Manhattan) and TGN's city alike, both in New York, and
+        // LoC's "New York (N.Y.)" sits inside both; the heading has no type word, so it is the inhabited place, and the city's two
+        // sources outvote the county
+        static AuthorityRecord Aat(string id, string label) => new($"http://vocab.getty.edu/aat/{id}", "aat", label, [label], "Type", null, [], null, DateTimeOffset.UtcNow, "test");
+        await pg.Store.PutAuthorityAsync(Aat("300008347", "inhabited places")); await pg.Store.PutAuthorityAsync(Aat("300000776", "states")); await pg.Store.PutAuthorityAsync(Aat("300000771", "counties")); await pg.Store.PutAuthorityAsync(Aat("300128207", "nations"));
+        await pg.Store.PutAuthorityAsync(Tgn("7007567", "New York", "New York, United States, North and Central America, World", "300000771"));
+        await pg.Store.PutAuthorityAsync(Tgn("1002715", "New York", "New York, United States, North and Central America, World", "300008347"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79007751", "loc", "New York (N.Y.)", ["New York (N.Y.)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var newYork = await pg.Store.CollectAsync(ds, "place", "New York, N.Y.");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, newYork));
+        Assert.Contains("the inhabited place among 2", (await pg.Store.DecisionForAsync(newYork.Id))!.EvidenceJson);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "New York, N.Y."))!.Equivalents, q => q.Uri.EndsWith("1002715"));
+        // a type word names the level: "Cornwall (England : County)" is the county, not the hamlet, both in England
+        await pg.Store.PutAuthorityAsync(Tgn("7008116", "Cornwall", "England, United Kingdom, Europe, World", "300000771"));
+        await pg.Store.PutAuthorityAsync(Tgn("1014693", "Cornwall", "Devon, England, United Kingdom, Europe, World", "300008347"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n80106711", "loc", "Cornwall (England : County)", ["Cornwall (England : County)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var cornwall = await pg.Store.CollectAsync(ds, "place", "Cornwall");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, cornwall));
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Cornwall"))!.Equivalents, q => q.Uri.EndsWith("7008116"));
+        // an unqualified LoC heading is the nation among TGN namesakes of differing level
+        await pg.Store.PutAuthorityAsync(Tgn("1000111", "Zhongguo", "Asia, World", "300128207") with { Labels = ["Zhongguo", "China"] });
+        await pg.Store.PutAuthorityAsync(Tgn("1017189", "China", "Nuevo León, Mexico, North and Central America, World", "300008347"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79091151", "loc", "China", ["China"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var china = await pg.Store.CollectAsync(ds, "place", "China");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, china));
+        Assert.Contains("an unqualified heading: the nation among 2", (await pg.Store.DecisionForAsync(china.Id))!.EvidenceJson);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "China"))!.Equivalents, q => q.Uri.EndsWith("1000111"));
         var heaton = await pg.Store.CollectAsync(ds, "place", "Heaton, Bradford");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, heaton)); // the Newcastle namesake is vetoed by the qualifier
         Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Heaton, Bradford"))!.Equivalents, q => q.Uri.EndsWith("7000001"));
@@ -923,6 +972,12 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, placeholderAgain));
         Assert.Equal(scheme.Uri(EntityClass.Place, "unrec_zzzz9999"), (await pg.Store.ResolveAsync(ds, "place", "Wyck Rissington, Glos."))!.Id);
         Assert.Null(Reconciler.LegacyIdentifier(placeholder with { ParsedJson = "{\"legacyUnreconciled\":\"a/b c\"}" }));
+        // a legacy identifier that names an aligned entity (the earlier pipeline's tentative mapping) is not reused for a minted string (finding 29)
+        var tentative = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Rissington Parva", ["Rissington Parva"], Status: EntityStatus.Aligned, Id: scheme.Uri(EntityClass.Place, "abcd3456")), scheme); // the old pipeline's guess, under another name
+        await pg.Store.AddEquivalentAsync(tentative.Id, new Equivalent("http://vocab.getty.edu/tgn/7000099", "tgn", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var guessed = await pg.Store.CollectAsync(ds, "place", "Little Rissington, Glos.", "{\"legacyUnreconciled\":\"abcd3456\"}");
+        Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, guessed));
+        Assert.NotEqual(tentative.Id, (await pg.Store.ResolveAsync(ds, "place", "Little Rissington, Glos."))!.Id);
         Assert.Null(Reconciler.LegacyIdentifier(placeholder with { ParsedJson = "not json" }));
     }
 

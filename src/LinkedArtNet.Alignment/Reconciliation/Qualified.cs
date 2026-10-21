@@ -118,6 +118,58 @@ public static class Qualified
     }
 
     /// <summary>What a record says about where it is: TGN's parent string when present, else the parentheticals of its labels.</summary>
+    /// <summary>
+    /// The type a LoC heading gives a place after " : " ("Cornwall (England : County)" gives "County"; "New York (N.Y.)" none), or a
+    /// parenthetical that is nothing but a level word ("(City)"). LoC adds the type only to tell a place from another of the
+    /// name at a different level; the heading without one is the inhabited place (LoC practice, as the assistant knows it).
+    /// </summary>
+    public static string? TypeOf(IEnumerable<string?> labels)
+    {
+        foreach (var label in labels.OfType<string>())
+            foreach (System.Text.RegularExpressions.Match m in Parenthetical.Matches(label))
+            {
+                var p = m.Groups[1].Value.Trim();
+                var colon = p.IndexOf(" : ", StringComparison.Ordinal);
+                if (colon > 0 && colon + 3 < p.Length) return p[(colon + 3)..].Trim();
+                if (!p.Contains(' ') && LevelOf(p) is not null) return p;
+            }
+        return null;
+    }
+
+    /// <summary>
+    /// A place's level from the words of its type, TGN's AAT placeType label ("inhabited places", "counties", "provinces",
+    /// "nations") or LoC's type word ("City", "County", "Province"): 5 a nation, 4 a first-level division (state, province,
+    /// region, département, Land, canton), 3 a second-level one (county, district, arrondissement, Kreis), 2 an inhabited place
+    /// (city, town, village, borough, township, parish), null for anything else (rivers, islands, continents, regions of no
+    /// administrative kind are not on the ladder). The word table is the assistant's own, from the AAT place-type labels TGN
+    /// uses and LoC's type words; not a published list.
+    /// </summary>
+    public static int? LevelOf(string? type)
+    {
+        if (string.IsNullOrWhiteSpace(type)) return null;
+        var lower = type.ToLowerInvariant();
+        if (lower.Contains("county seat")) return 2;
+        foreach (var token in lower.Split([' ', ',', '(', ')', '/', '-', ';'], StringSplitOptions.RemoveEmptyEntries))
+            if (Levels.TryGetValue(token, out var level)) return level;
+        return null;
+    }
+
+    public static string LevelName(int level) => level switch { 5 => "nation", 4 => "state or province", 3 => "county or district", 2 => "inhabited place", _ => "place" };
+
+    private static readonly Dictionary<string, int> Levels = new(StringComparer.Ordinal)
+    {
+        ["nation"] = 5, ["nations"] = 5, ["country"] = 5, ["countries"] = 5, ["kingdom"] = 5, ["kingdoms"] = 5, ["republic"] = 5, ["republics"] = 5, ["empire"] = 5, ["empires"] = 5, ["sovereign"] = 5,
+        ["state"] = 4, ["states"] = 4, ["province"] = 4, ["provinces"] = 4, ["region"] = 4, ["regions"] = 4, ["territory"] = 4, ["territories"] = 4,
+        ["department"] = 4, ["departments"] = 4, ["département"] = 4, ["départements"] = 4, ["departement"] = 4, ["departements"] = 4, ["land"] = 4, ["länder"] = 4, ["lander"] = 4,
+        ["canton"] = 4, ["cantons"] = 4, ["prefecture"] = 4, ["prefectures"] = 4, ["oblast"] = 4, ["oblasts"] = 4, ["emirate"] = 4, ["emirates"] = 4, ["autonomous"] = 4,
+        ["county"] = 3, ["counties"] = 3, ["district"] = 3, ["districts"] = 3, ["arrondissement"] = 3, ["arrondissements"] = 3, ["kreis"] = 3, ["kreise"] = 3,
+        ["shire"] = 3, ["shires"] = 3, ["municipality"] = 3, ["municipalities"] = 3, ["comarca"] = 3, ["comarcas"] = 3, ["unitary"] = 3,
+        ["inhabited"] = 2, ["city"] = 2, ["cities"] = 2, ["town"] = 2, ["towns"] = 2, ["village"] = 2, ["villages"] = 2, ["hamlet"] = 2, ["hamlets"] = 2,
+        ["borough"] = 2, ["boroughs"] = 2, ["township"] = 2, ["townships"] = 2, ["parish"] = 2, ["parishes"] = 2, ["commune"] = 2, ["communes"] = 2,
+        ["neighborhood"] = 2, ["neighborhoods"] = 2, ["neighbourhood"] = 2, ["neighbourhoods"] = 2, ["suburb"] = 2, ["suburbs"] = 2,
+        ["settlement"] = 2, ["settlements"] = 2, ["locality"] = 2, ["localities"] = 2, ["capital"] = 2, ["capitals"] = 2, ["metropolis"] = 2, ["metropolises"] = 2,
+    };
+
     public static string? PlacementOf(string? parentString, IEnumerable<string?> labels)
     {
         if (!string.IsNullOrWhiteSpace(parentString)) return parentString;

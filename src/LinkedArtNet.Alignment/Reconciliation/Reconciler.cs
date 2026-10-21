@@ -368,27 +368,52 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees));
         }
+        // a string that carries dates and a record of a source that agrees with them: that source's undated records of the name
+        // are namesakes the cataloguer could not date, not the dated person (LoC's headings are unique, so its undated "Doyle,
+        // Richard" beside "Doyle, Richard, 1824-1883" is another Richard Doyle by LoC's own rule); the owner's policy, 2026-10-21
+        if (reading.HasLifespan)
+            foreach (var source in list.Where(m => m.DatesAgree && !m.Veto).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
+                for (var i = 0; i < list.Count; i++)
+                {
+                    var b = list[i];
+                    if (b.Veto || b.Candidate.Source != source || b.Candidate.Lifespan is { IsEmpty: false } || b.Candidate.EntityId is not null) continue;
+                    list[i] = b with { Veto = true, Reason = b.Reason + $"; {source}'s dated record of the name agrees with the string's dates: this undated one is a namesake" };
+                }
         if (reading.Collections is { Count: > 0 } wanted) PreferCollections(wanted, list);
         if (reading.Home is not null) JoinToHome(reading.Home, list);
-        var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto).ToList();
-        if (placed.Count == 0) return list;
-        // a record of another source whose placement sits inside a placed candidate's is the same place at less depth (LoC's
+        // a record of another source whose placement sits inside a holding record's is the same place at less depth (LoC's
         // "Princes Risborough (England)", the store's entity labelled from it, under TGN's Princes Risborough in Buckinghamshire,
-        // England): it is placed through that candidate and grouped with it. Inside two placed candidates of one source (a city
-        // and its district with the same parent string) it is placed through neither; the desk tells them apart.
+        // England): it is placed through that record and grouped with it. The holders are the candidates the string's qualifier
+        // placed, or, when the string carries no qualifier, every exact place record that says where it is: LoC's "Abbeyleix
+        // (Ireland)" is TGN's Abbeyleix in Laois, Ireland whether the string says so or not, and TGN and LoC then agree. Inside
+        // two holders of one source (a city and its district with the same parent string) it is placed through neither; the
+        // desk tells them apart.
+        var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto).ToList();
+        var holders = reading.Qualifier is not null ? placed
+            : list.Where(m => !m.Veto && m.Candidate.Placement is not null && m.Candidate.Class is EntityClass.Place or null && m.Candidate.NameScore >= 0.97).ToList();
+        if (holders.Count == 0) return list;
         var inside = new HashSet<int>();
         for (var i = 0; i < list.Count; i++)
         {
             var b = list[i];
-            if (b.Veto || b.QualifierAgrees is null) continue;
+            if (b.Veto || b.Candidate.Placement is null || b.JoinedTo is not null) continue;
+            if (reading.Qualifier is null && (b.Candidate.Class is not (EntityClass.Place or null) || b.Candidate.NameScore < 0.85)) continue;
             var words = Qualified.Tokens(b.Candidate.Placement);
-            var through = placed.Where(a => a.Candidate.Uri != b.Candidate.Uri && a.Candidate.Source != b.Candidate.Source && Qualified.Contains(a.Candidate.Placement, words)).ToList();
+            if (words.Count == 0) continue;
+            var through = holders.Where(a => a.Candidate.Uri != b.Candidate.Uri && a.Candidate.Source != b.Candidate.Source && Qualified.Contains(a.Candidate.Placement, words)).ToList();
             if (through.Count == 0) continue;
             inside.Add(i);
             list[i] = through.Count == 1
                 ? b with { JoinedTo = through[0].Candidate.Uri, Reason = b.Reason + $"; placed through {through[0].Candidate.Source} {through[0].Candidate.Label}" }
                 : b with { Reason = b.Reason + $"; inside {through.Count} placed candidates" };
         }
+        if (reading.Qualifier is null) return list;
+        // the project's one entity of the name with no placement of its own ("Adelaide" beside "Adelaide, South Australia") is the
+        // placed record's own entity: it joins the placed group and gains the id, as the project's LoC-labelled entities do
+        var anchors = list.Where(m => !m.Veto && m.QualifierAgrees == true && m.JoinedTo is null).ToList();
+        var own = list.Select((m, i) => (m, i)).Where(x => !x.m.Veto && x.m.Candidate.EntityId is not null && x.m.Candidate.Placement is null && x.m.Candidate.NameScore >= 0.97 && x.m.JoinedTo is null && !x.m.Candidate.ProvisionalQueued).ToList();
+        if (anchors.Count == 1 && own.Count == 1)
+            list[own[0].i] = own[0].m with { JoinedTo = anchors[0].Candidate.Uri, Reason = own[0].m.Reason + $"; the project's one {reading.Text} joins the placed {anchors[0].Candidate.Source} record" };
         // when the qualifier places one candidate, the namesakes it does not place are not what the string names
         for (var i = 0; i < list.Count; i++)
             if (list[i].QualifierAgrees == false && !inside.Contains(i) && !list[i].Veto) list[i] = list[i] with { Veto = true, Reason = list[i].Reason + "; the qualifier places another candidate" };

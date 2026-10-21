@@ -221,6 +221,14 @@ public class GroupingTests
         Assert.True(scored[1].Veto);
         Assert.Equal(0.9, scored[2].Score);
         Assert.False(scored[2].DatesAgree);
+        // the owner's policy (2026-10-21): a source whose dated record agrees with the string's dates has its undated namesakes
+        // vetoed (LoC's headings are unique: the undated "Doyle, Richard" beside "Doyle, Richard, 1824-1883" is another man);
+        // another source's undated record, with no dated record of its own to agree, stays a rival; the store's entities are untouched
+        Assert.True(scored[2].Veto); Assert.Contains("this undated one is a namesake", scored[2].Reason);
+        var locUndated = new Candidate("l9", "loc", "Dürer, Albrecht", EntityClass.Person, null, [], "local", 1.0);
+        Assert.False(Reconciler.Score(reading, [agrees, locUndated], 120)[1].Veto);
+        var ownUndated = new Candidate("e9", "store", "Dürer, Albrecht", EntityClass.Person, null, [], "store", 1.0, "e9");
+        Assert.False(Reconciler.Score(reading, [agrees, ownUndated], 120)[1].Veto);
         // dates on different sides are not comparable: no lift, no veto, and no single-source acceptance
         var diedOnly = new Candidate("u4", "loc", "Dürer, Albrecht", EntityClass.Person, new Lifespan(null, null, new DateTimeOffset(1520, 1, 1, 0, 0, 0, TimeSpan.Zero), null, "-1520"), [], "local", 1.0);
         var incomparable = Reconciler.Score(reading, [diedOnly], 120)[0];
@@ -292,6 +300,29 @@ public class GroupingTests
         Assert.True(scored[4].Veto); // a namesake the qualifier does not place
         var groups = Reconciler.Groups(scored);
         Assert.Equal(["loc", "tgn"], groups[0].Sources.OrderBy(x => x, StringComparer.Ordinal)); // two sources now agree: a vote, and the LoC id travels with the TGN one
+        // without a qualifier on the string, a record that says where it is still joins the one other-source record that holds it:
+        // LoC's "Abbeyleix (Ireland)" at 0.85 is TGN's Abbeyleix in Laois, Ireland, and the two sources agree
+        var bare = Reading("Abbeyleix", EntityClass.Place);
+        var abbeyleix = new Candidate("t3", "tgn", "Abbeyleix", EntityClass.Place, null, [], "local", 1.0, Placement: "Laois, Ireland, Europe, World");
+        var locAbbeyleix = new Candidate("l3", "loc", "Abbeyleix (Ireland)", EntityClass.Place, null, [], "local", 0.85, Placement: "Ireland");
+        var joined = Reconciler.Score(bare, [abbeyleix, locAbbeyleix], 120);
+        Assert.Equal("t3", joined[1].JoinedTo); Assert.False(joined[1].Veto);
+        Assert.Equal(["loc", "tgn"], Reconciler.Groups(joined)[0].Sources.OrderBy(x => x, StringComparer.Ordinal));
+        // inside two namesakes of another source it joins neither, and a record of another class is not a place to hold
+        var second = abbeyleix with { Uri = "t4", Placement = "Offaly, Ireland, Europe, World" };
+        Assert.Null(Reconciler.Score(bare, [abbeyleix, second, locAbbeyleix], 120)[2].JoinedTo);
+        var clergyman = new Candidate("l4", "loc", "Abbeyleix, John (Clergyman)", EntityClass.Person, null, [], "local", 0.85, Placement: "Clergyman");
+        Assert.Null(Reconciler.Score(bare with { Classes = [EntityClass.Place, EntityClass.Person] }, [abbeyleix, clergyman], 120)[1].JoinedTo);
+        // the project's one entity of the name with no placement of its own joins the placed group ("Adelaide" for "Adelaide, South Australia")
+        var adelaide = Reading("Adelaide", EntityClass.Place) with { Qualifier = "South Australia" };
+        var tgnAdelaide = new Candidate("t5", "tgn", "Adelaide", EntityClass.Place, null, [], "local", 1.0, Placement: "Adelaide, South Australia, Australia, Oceania, World");
+        var own = new Candidate("e2", "store", "Adelaide", EntityClass.Place, null, [], "store", 1.0, "e2");
+        var reused = Reconciler.Score(adelaide, [tgnAdelaide, own], 120);
+        Assert.Equal("t5", reused[1].JoinedTo); Assert.Contains("the project's one Adelaide", reused[1].Reason);
+        Assert.Equal("t5", Reconciler.Groups(reused)[0].Best.Candidate.Uri); Assert.Equal(2, Reconciler.Groups(reused)[0].Members.Count);
+        // two of the project's own, or two placed records, and neither is chosen for it
+        Assert.All(Reconciler.Score(adelaide, [tgnAdelaide, own, own with { Uri = "e3", EntityId = "e3" }], 120).Skip(1), m => Assert.Null(m.JoinedTo));
+        Assert.Null(Reconciler.Score(adelaide, [tgnAdelaide, tgnAdelaide with { Uri = "t6" }, own], 120)[2].JoinedTo);
         Assert.Contains("l1", groups[0].Uris); Assert.Contains("e1", groups[0].Uris);
         // inside two placed records of one source with the same parent string (a city and its district) the coarser record is placed through neither
         var district = new Candidate("t3", "tgn", "Landkreis Princes Risborough", EntityClass.Place, null, [], "local", 1.0, Placement: tgn.Placement);

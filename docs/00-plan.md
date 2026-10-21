@@ -23,47 +23,46 @@ queued 8,483, minted 12,290; a gain of 26, as the sample foretold. Its keywords:
 "Diaries" are votes with AAT carried; "20th century" is still queued because AAT's centuries are typed Type and
 LCSH's Period (finding 11, a loader change below).
 
-**Decisions owed by the owner**, each with the assistant's recommendation:
+**Decisions taken by the owner on 2026-10-21** (the morning's answers): finding 3, the undated same-source namesake
+veto, yes (built that day); "outvoted rivals", deferred until measured after finding 9; `unrec_` identifiers,
+deferred until LUX's needs are seen; keying workbench users by GitHub id, agreed in principle, with the local user to
+be keyed as `local:<name>` since it has no GitHub id, to build with the first user besides the owner.
 
-1. *Undated same-source namesake* (doc 10 7.6 aqn6dz finding 3): when a string's dates agree with a record's, veto the
-   same source's undated records of the name ("Doyle, Richard, 1824-1883" against LoC's undated "Doyle, Richard").
-   Ceiling measured: 754 keywords:head, 29 persauthorfull, 50 publisher queued strings. Recommendation: yes, it is
-   LoC's own uniqueness rule.
-2. *Outvoted rivals* (doc 10 7.6 "Confirmed"): at a tie at acceptance score, a group two independent sources carry
+**Decisions still owed by the owner:**
+
+1. *Outvoted rivals* (doc 10 7.6 "Confirmed"): at a tie at acceptance score, a group two independent sources carry
    beats a rival one source carries ("Finance" the topic against a hamlet called Finance; "Aberdeen" with LoC's
-   heading joined against four TGN namesakes). Recommendation: measure after finding 9 is in, then decide.
-3. *`unrec_` identifiers*: whether the imported headings' old identifiers are kept when compounds are exported as
-   coordinated concepts (doc 10 7.5 item 2). No recommendation yet; it depends on what LUX consumes.
-4. *Key workbench users by GitHub id* (schema: `users.login` is the primary key today, and `memberships` and
-   `notes.author` refer to it): whether to key users by the numeric GitHub id, which does not change when a
-   login is renamed. Raised in conversation earlier and not written down until now; no code depends on the
-   answer yet, so it can wait for the first user besides the owner.
+   heading joined against four TGN namesakes). To measure on the run after findings 9 and 10, then decide.
+2. *`unrec_` identifiers* at export (doc 10 7.5 item 2): deferred until what LUX consumes is seen.
 
-**Built and waiting for the owner's go** (in the order the assistant would build them):
+**Built 2026-10-21 and waiting for a rerun to measure:** findings 9 and 10 (placed-through for every string, with a
+placement on every place record; the project's one bare entity joins the placed group) and finding 3 as policy (the
+undated same-source namesake vetoed). Neither needs a reload nor a manifest refresh.
 
-1. Findings 9 and 10 together: placed-through for every string with a placement on every candidate (about 226 of 248
-   single-TGN queued places become votes: LoC's "Abbeyleix (Ireland)" joins TGN's Abbeyleix), and the project's one
-   bare entity of the name joining the placed group (59 more: "Adelaide, South Australia" reusing the project's
-   "Adelaide"). One rerun measures both.
-2. The mis-keyed compound separator (finding 4): a lower-case part ("Stage--setting and scenery") rejoined with one
-   hyphen and looked up whole; 101 of 1,536 subdivisions.
+**Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
+says "continue with the list"):
+
+1. The mis-keyed compound separator (finding 4): a lower-case part ("Stage--setting and scenery") rejoined with one
+   hyphen and looked up whole; 101 of 1,536 subdivisions. No reload.
+2. AAT's Styles and Periods facet typed Period (finding 11): "20th century" meets AAT's "twentieth century (dates CE)"
+   as the same class and the home rule carries it; a good part of keywords:sub's 579 queued. Loader change and an
+   aat reload by the owner.
 3. TGN level preference for the nation shape ("Canada", "England", "China": LoC's unqualified heading joined to TGN's
-   record of the highest level among namesakes of differing type), designed after finding 9 is in.
-4. AAT's Styles and Periods facet typed Period (finding 11): "20th century" meets AAT's "twentieth century (dates CE)"
-   as the same class and the home rule carries it; the chronological subdivisions are a good part of keywords:sub's
-   579 queued. Loader change and an aat reload by the owner.
-5. Hyphen and space in keys (finding 8, "Stage setting and scenery" against "Stage-setting and scenery"): needs a full
-   reload of all five sources, so it waits for the next one.
-6. Decision 1 above, if yes; decision 2, if yes after measuring.
+   record of the highest level among namesakes of differing type), designed from the exports once 9 is measured.
+4. "Outvoted rivals", if the owner says yes after measuring.
+5. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- decisions --run run-20261020-160811-e2xu8x --method minted --limit 1
+    dotnet run --project tools/Align -- undo-run --run run-20261020-160811-e2xu8x
+    dotnet run --project tools/Align -- reconcile
+    dotnet run --project tools/Align -- decisions --run <new run id> --method minted --limit 1
+    dotnet run --project tools/Align -- decisions --run <new run id> --context place --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
 
-Then say which of the builds above to start; each build ends with `undo-run --run <last run>` and
-`reconcile`, and the assistant says when a reload or `manifest --use-default` is needed too (neither is for
-findings 9 and 10).
+Paste the three outputs; expect place queued (584) and keywords:sub queued (579) to fall, keywords:head queued
+(2,058) to fall by up to 754, persauthorfull (1,584) and publisher (1,257) a little.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

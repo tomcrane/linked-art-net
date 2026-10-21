@@ -197,7 +197,10 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // a LoC names id ending -781 is the heading's geographic-subdivision form (from the MARC 781 field), the same place as
         // the id without it: the two were rival groups for "Massachusetts" and "South Africa" in the 2026-10-20 shadow
         var sameAs = r.Source == "loc" && r.Uri.EndsWith("-781", StringComparison.Ordinal) ? r.SameAs.Append(r.Uri[..^4]).ToArray() : r.SameAs;
+        // a place record always says where it is (TGN's parent string, a LoC heading's parenthetical), so that records of
+        // different sources can be told to be the same place whether or not the string carries a qualifier; other records
+        // only when there is a qualifier to check them against
         return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, NameMatcher.Score(reading.Text, labels), null, nationalities, Disambiguated: disambiguated,
-            Placement: reading.Qualifier is null ? null : Qualified.PlacementOf(parentString, labels), Collections: collections);
+            Placement: cls == EntityClass.Place || reading.Qualifier is not null ? Qualified.PlacementOf(parentString, labels) : null, Collections: collections);
     }
 }

@@ -596,6 +596,24 @@ of what remains queued in keywords:sub. Design: the AAT loader types a concept u
 LCSH's as the same class. Loader change and aat reload; not built. "Stage" now also meets AAT's "stages (performance
 spaces)" exactly, which changes nothing: it is finding 4's mis-keyed heading.
 
+Built 2026-10-21, findings 9 and 10 and the owner's decision on finding 3 (the owner's answers that morning: finding 3
+yes; "outvoted rivals" deferred until measured; `unrec_` deferred until LUX's needs are seen; users by GitHub id agreed
+in principle). Finding 9: a place record always carries its placement (`LocalIndexSource.ToCandidate` computes it for
+every Place-class record, TGN's parent string or a LoC heading's parenthetical; other classes only when the string has
+a qualifier to check), and the placed-through step of `Reconciler.Score` holds for every string: when the string has a
+qualifier the holders are the records it placed, as before; when it has none, every exact place record that says where
+it is, so LoC's "Abbeyleix (Ireland)" at 0.85 joins TGN's Abbeyleix in Laois, Ireland and the two sources agree,
+whereas inside two TGN namesakes of the name it joins neither, and a record of another class ("Abbeyleix, John
+(Clergyman)") holds nothing. Finding 10: in a qualified reading whose placed records form one group, the project's one
+entity exact on the name with no placement of its own (not awaiting review) joins that group ("the project's one
+Adelaide joins the placed tgn record"), so "Adelaide, South Australia" reuses the project's "Adelaide" and gives it
+the TGN id; two such entities, or two placed groups, and nothing is chosen for it. Finding 3 as policy: when the
+string carries dates and a record of a source agrees with them, that source's undated records of the name are vetoed
+("loc's dated record of the name agrees with the string's dates: this undated one is a namesake"); another source's
+undated record stays a rival, the store's entities are untouched. One rerun measures all three: expect place queued
+(584) and keywords:sub queued (579) to fall by the placement shapes, and keywords:head queued (2,058),
+persauthorfull (1,584) and publisher (1,257) by the undated namesakes (ceilings 754, 29, 50).
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

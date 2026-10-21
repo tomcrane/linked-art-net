@@ -731,6 +731,50 @@ and finding 12); persauthorfull queued 1,576 -> 1,542 (findings 14 and 15). The 
   arrondissement, so the heading's type after " : " (finding 12 drops it from the placement, but it can be kept
   beside it) and TGN's `placeType` decide which namesake the heading holds.
 
+Measured 2026-10-21 (run-20261021-142134-epenbw, the finding 13 fix, finding 16, the abbreviations and the `unrec_`
+identifiers in play, against uhwjq5): accepted 6,088 -> 6,333 (vote 2,921 -> 3,217, single 881 -> 888, exact-single
+2,286 -> 2,228), queued 6,969 -> 6,647, matched in store 4,730 -> 4,763, minted 12,361 -> 12,395. By context:
+keywords:head queued 1,448 -> 1,142 and vote 1,772 -> 2,184 (the finding 13 fix: the parenthetical headings, split
+at last, placed through and voted; some exact-singles became votes, hence the fall there); keywords:sub queued 330
+-> 325; place 438 -> 433; keywords 1,648 -> 1,646; persauthorfull 1,542 -> 1,540. The minted sample's "Sporting
+Gallery" took `group/unrec_t85jgf5s`, so the placeholders are kept as decided. The keywords:head queue, read:
+
+- "Loire River (France)", "Grand tours (Education)": the split heading met LCSH's heading of the very same label and
+  scored it 0.85 (the name against a label with a parenthetical), placed to 0.90, which neither the single rule nor
+  exact-single carries (both want 0.97). Finding 19, fixed the same day in `Reconciler.Score`: a candidate whose
+  label is the whole heading is exact ("the whole heading"). "Grand tours" also met AAT's bare "grand tours", which
+  the qualifier "Education" does not place, so AAT is vetoed and LCSH's heading is a single.
+- "Carlton House (London)": LCSH's "Carlton House (London, England)" placed by the qualifier, 0.90 again, LoC's New
+  York house vetoed, and still queued for want of 0.97. Finding 20, fixed the same day: a qualified heading the
+  string's qualifier places is exact on its name (the parenthetical is the placement, already checked), so the
+  single rule carries it.
+- "St. Mary (Lambeth, England : Parish)": three LoC churches in Prestwich, Tewkesbury and Tadcaster all "placed" by
+  the qualifier, because `Qualified.Agrees` asked for one shared word and "England" is in every English placement.
+  "Ionia (Turkey and Greece)" likewise placed TGN's Ilía (in Greece) by "Greece". Finding 22, fixed the same day:
+  agreement is one side's words all among the other's (the coarser side inside the finer); a word on each side the
+  other lacks is another place. St. Mary's three are not placed and the string stays with the desk; Ionia's LCSH
+  heading, exact by finding 19 and placed by its own parenthetical, is a single once TGN's Ilía is vetoed.
+- "Porcelain": LCSH's "Porcelain" exact, AAT's two exact terms set aside by the home rule, and LoC's "Porcelain
+  (Musical group)" at 0.85 the one live rival, which blocks exact-single (the policy wants no other group at all).
+  Finding 21, a policy for the owner: when the home vocabulary has exactly one exact record of the name, another
+  source's inexact record (below 0.97) is set aside as a lookalike, not a rival; the home record is then an
+  exact-single. Ceiling query in the plan (decision 6).
+- "Coventry, Terence, 1938-": LoC's one "Coventry, Terence", undated, the only candidate; exact-single stands aside
+  for a dated string by design (the dates are there to check and nothing checks them). Finding 24, a policy for the
+  owner: a dated string whose only candidate is a source's one exact undated record is carried as a single, LoC's
+  uniqueness of headings being the evidence (as finding 14 reasons). Ceiling query in the plan (decision 7).
+- "China": TGN's nation ("Zhongguo") beside two TGN hamlets and LoC's unqualified "China", with LoC's Mexican and
+  Maine Chinas placed through the hamlets: the TGN level preference, next on the list. It also shows two LoC
+  records of the exact name, `n79091151` and `n79091151-781`. Finding 23: id.loc.gov publishes a "-781" resource
+  beside a geographic heading, the heading's form as a geographic subdivision (MARC field 781), typed Geographic
+  with the same label (this is the assistant's reading of the identifier pattern, not yet checked against the
+  site, which refuses automated fetches; the owner's query in the plan confirms it from the local index). Every
+  such twin makes LoC's one heading two exact records, which blocks exact-single and finding 14's uniqueness test
+  for every place LoC uses as a subdivision. Remedy once confirmed: the loader skips "-781" resources, and a one-off
+  delete clears them from the index without a reload.
+- "Drury" (a ULAN person and two TGN places under a bare surname), "Paintings, European" (ULAN's "European
+  Paintings", a department, at 0.93): the desk's work.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

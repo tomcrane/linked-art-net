@@ -79,6 +79,41 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    and reads the list, then runs it live, then an undo and reconcile ("Evanston" and "England" leave the place queue
    by finding 10). The merged-away identifiers stay as `merged_into`; the export (doc 10 7.5 item 2) writes them as
    equivalents of the survivor.
+6. *Home vocabulary sets aside inexact rivals* (finding 21, doc 10 7.6 "Measured ... epenbw"): "Porcelain" has
+   LCSH's exact heading, AAT's two exact terms set aside, and LoC's "Porcelain (Musical group)" at 0.85 as the one
+   live rival, which blocks exact-single. Proposed: when the home vocabulary has exactly one exact record of the
+   name, another source's record below 0.97 is set aside (a lookalike, not a rival), and the home record is an
+   exact-single. Recommendation: yes; the home rule already trusts that one record over other sources' exact
+   terms. Ceiling (queued undated strings with exactly one live group holding an exact record and another live
+   group beside it), the owner runs: `select ss.context, x.src, count(*) from decisions d join source_strings ss
+   on ss.id = d.source_string_id cross join lateral (select count(*) filter (where g.exact) as exact_groups,
+   min(g.src) filter (where g.exact) as src, count(*) as live from (select (g->>'score')::numeric as score, exists
+   (select 1 from jsonb_array_elements(g->'members') m where (m->>'reason' like 'name 1.00%' or m->>'reason' like
+   'name 0.97%') and m->'veto' is null and m->'setAside' is null) as exact, (select min(m->>'source') from
+   jsonb_array_elements(g->'members') m where (m->>'reason' like 'name 1.00%' or m->>'reason' like 'name 0.97%')
+   and m->'veto' is null and m->'setAside' is null) as src from jsonb_array_elements(d.evidence->'groups') g where
+   g->'vetoed' is null and (g->>'score')::numeric >= 0.6) g) x where d.run_id = 'run-20261021-142134-epenbw' and
+   d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null and x.exact_groups = 1 and x.live
+   >= 2 group by 1, 2 order by 3 desc;`
+7. *A dated string's one undated exact record* (finding 24): "Coventry, Terence, 1938-" has LoC's one "Coventry,
+   Terence", undated, as its only candidate, and exact-single stands aside for dated strings. Proposed: when a dated
+   string's only candidate is a source's one exact record of the name, undated, it is carried as a single (LoC's
+   headings are unique: the one Terence Coventry LoC knows is this one unless LoC dates another). Recommendation:
+   measure first; if the ceiling is mostly persauthorfull, yes, with the uniqueness condition. Ceiling, the owner
+   runs: `select ss.context, count(*) from decisions d join source_strings ss on ss.id = d.source_string_id where
+   d.run_id = 'run-20261021-142134-epenbw' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan'
+   is not null and jsonb_array_length(d.evidence->'groups') = 1 and
+   jsonb_array_length(d.evidence->'groups'->0->'members') = 1 and d.evidence->'groups'->0->'members'->0->>'reason'
+   like 'name 1.00%' and d.evidence->'groups'->0->'members'->0->>'reason' not like '%dates%' group by 1 order by 2
+   desc;`
+8. *LoC's "-781" twins* (finding 23): "China" met LoC's `n79091151` and `n79091151-781`, two exact records of one
+   heading. The assistant reads the suffix as the heading's geographic-subdivision form (MARC 781), published as a
+   resource of its own; unverified against id.loc.gov, which refuses automated fetches. The owner confirms from the
+   index: `select count(*) from authority_records where source = 'loc' and uri like '%-781';` and `select uri,
+   label, type from authority_records where source = 'loc' and uri like '%-781' limit 5;`. If they are twins of the
+   plain heading (same label, type Geographic), the build: the loader skips them, and a one-off `delete from
+   authority_records where source = 'loc' and uri like '%-781';` clears the index without a reload (size S). Every
+   such twin blocks exact-single and finding 14's uniqueness test for a place LoC uses as a subdivision.
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -92,16 +127,18 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    (size S) for the Agent parser's endpoint beside the dates one, a playground page, and a corpus folder seeded from
    the PMC strings.
 
-**Measured 2026-10-21 on run-20261021-112513-uhwjq5 (stands):** the day's seven changes together: accepted 5,492
--> 6,088, queued 7,889 -> 6,969, matched in store 4,399 -> 4,730 (keywords:sub queued 508 -> 330, keywords 2,071 ->
-1,648, keywords:head 1,659 -> 1,448, place 499 -> 438). Doc 10 7.6 "Measured ... uhwjq5" has the per-context reading.
+**Measured 2026-10-21 on run-20261021-142134-epenbw (stands):** against uhwjq5, accepted 6,088 -> 6,333, queued
+6,969 -> 6,647, matched in store 4,730 -> 4,763; keywords:head queued 1,448 -> 1,142 (the finding 13 fix), the
+other contexts within a few. "Sporting Gallery" minted as `group/unrec_t85jgf5s`: the placeholders are kept. Doc 10
+7.6 "Measured ... epenbw" has the reading of the keywords:head queue.
 
-**Built 2026-10-21 afternoon from that run's samples, waiting for the next rerun:** finding 13 fixed for contexts
-that keep a parser for dated strings (keywords:head never split "Cornwall (England : County)"); finding 16 (two
-sources that each date one record of the name as the string does date the same person, "Friedmann, Gloria, 1950-");
-"S. Australia" and "W. Australia" in the abbreviations; and, on the owner's "keep", the `unrec_` identifiers
-(decision 2 above): the minted sample's entity ids should end `unrec_…` for strings that had one. No reload, no
-manifest refresh.
+**Built 2026-10-21 evening from that run's samples, waiting for the next rerun:** finding 19 (a split heading is
+exact for the record whose label is the whole heading, "Loire River (France)"); finding 20 (a qualified heading the
+string's qualifier places is exact on its name, so the single rule carries "Carlton House (London)"); finding 22
+(a qualifier places a record only when one side's words are all among the other's: "Lambeth, England" no longer
+places every English parish, "Turkey and Greece" no longer places Ilía). No reload, no manifest refresh. Expect
+keywords:head queued down again (the placed single headings), and a few place strings moving either way from
+finding 22.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
@@ -120,22 +157,19 @@ says "continue with the list"):
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261021-112513-uhwjq5
-    dotnet run --project tools/Align -- reconcile
-    dotnet run --project tools/Align -- decisions --run <new run id> --method minted --limit 1
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-
-Expect, against uhwjq5: "Cornwall (England : County)" and "National Gallery of Canada (Ottawa, Canada)" out of the
-keywords:head queue, "Friedmann, Gloria" a vote, keywords:head queued (1,448) down again, "Kent Town, S. Australia"
-a single, and the minted sample's entity id ending `unrec_…`. Then the duplicate pass (decision 5), after the run:
-
+    git push
     dotnet run --project tools/Align -- merge-duplicates --out reports/merge-duplicates.txt
     (read the list; then)
     dotnet run --project tools/Align -- merge-duplicates --apply
-    dotnet run --project tools/Align -- undo-run --run <the new run id>
+    dotnet run --project tools/Align -- undo-run --run run-20261021-142134-epenbw
     dotnet run --project tools/Align -- reconcile
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
 
-Then the TGN level preference is built (next builds, item 1).
+Expect, against epenbw: "Evanston, Illinois" and "England" out of the place queue (the merge), "Loire River
+(France)", "Carlton House (London)", "Grand tours (Education)", "Ionia (Turkey and Greece)" out of the keywords:head
+queue (findings 19, 20, 22). Run the three ceiling queries of decisions 6, 7 and 8 against epenbw at any time; they
+read the run's evidence, which the undo keeps. Then the TGN level preference is built (next builds, item 1).
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

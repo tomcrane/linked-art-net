@@ -387,10 +387,18 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public static IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates, int maxPersonLifetimeYears)
     {
         var list = new List<ScoredCandidate>();
-        foreach (var c in candidates)
+        foreach (var candidate in candidates)
         {
+            var c = candidate;
+            var notes = new List<string>();
+            // a heading split by its parenthetical (finding 13) still names the record whose label is the whole heading: LCSH's
+            // "Grand tours (Education)" is exact for the string "Grand tours (Education)", not an 0.85 lookalike of "Grand tours"
+            // (doc 10 section 7.6 finding 19)
+            if (reading.LabelOverride is { } whole && c.NameScore < 0.97 && c.Label is not null && NameMatcher.Score(whole, [c.Label]) >= 0.97)
+            { c = c with { NameScore = 1.0 }; notes.Add("the whole heading"); }
             var score = c.NameScore;
             var reasons = new List<string> { $"name {c.NameScore:0.00}" };
+            reasons.AddRange(notes);
             var veto = false;
             var datesAgree = false;
             if (c.Class is { } cls && !reading.Classes.Contains(cls)) { veto = true; reasons.Add($"type {cls} not allowed here"); }
@@ -409,7 +417,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var qualifierAgrees = Qualified.Agrees(reading.Qualifier, c.Placement);
             switch (qualifierAgrees)
             {
-                case true: score = Math.Min(1, score + 0.05); reasons.Add($"qualifier places it ({c.Placement})"); break;
+                case true:
+                    score = Math.Min(1, score + 0.05); reasons.Add($"qualifier places it ({c.Placement})");
+                    // a qualified heading the string's qualifier places is exact on its name: "Carlton House (London, England)" for
+                    // "Carlton House (London)" is the name exact and the parenthetical read as the placement, which the single-source
+                    // rule may carry, not an 0.85 lookalike (finding 20)
+                    if (c.NameScore < 0.97 && c.Label is not null && Qualified.SplitParenthetical(c.Label) is var (bare, inParentheses) && inParentheses is not null && NameMatcher.Score(reading.Text, [bare]) >= 0.97)
+                    { c = c with { NameScore = 0.97 }; score = 1.0; reasons.Add("the name exact once its parenthetical is read as the placement"); }
+                    break;
                 case false: reasons.Add($"qualifier not placed ({reading.Qualifier} vs {c.Placement})"); break;
             }
             list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees));

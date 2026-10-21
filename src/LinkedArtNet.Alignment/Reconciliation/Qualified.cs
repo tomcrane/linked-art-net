@@ -91,12 +91,18 @@ public static class Qualified
             .Where(t => t.Length >= 3 && !Noise.Contains(t)).Distinct(StringComparer.Ordinal).ToArray();
     }
 
-    /// <summary>Whether the qualifier places the candidate: null when either side has nothing to compare, true when a word of the qualifier is among the placement's words.</summary>
+    /// <summary>
+    /// Whether the qualifier places the candidate: null when either side has nothing to compare; true when one side's words are all
+    /// among the other's ("Bradford, Yorkshire" against TGN's "Heaton, Bradford, West Yorkshire, England, ..."; "Bradford, Yorkshire"
+    /// against the project's coarser "Bradford"). A word on each side the other lacks is another place: "Lambeth, England" does not
+    /// place a record in "Prestwich, England", nor "Turkey and Greece" one in Greece alone (finding 22; one shared word was enough
+    /// before, and England placed every English parish).
+    /// </summary>
     public static bool? Agrees(string? qualifier, string? placement)
     {
         var q = Tokens(qualifier); var p = Tokens(placement);
         if (q.Count == 0 || p.Count == 0) return null;
-        return q.Any(p.Contains);
+        return q.All(p.Contains) || p.All(q.Contains);
     }
 
     /// <summary>

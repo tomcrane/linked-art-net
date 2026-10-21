@@ -289,6 +289,14 @@ public class GroupingTests
         Assert.Equal(("National Gallery of Canada", "Ottawa, Canada"), Qualified.SplitParenthetical("National Gallery of Canada (Ottawa, Canada)"));
         Assert.Equal(("Art, Modern", (string?)null), Qualified.SplitParenthetical("Art, Modern")); // commas are left alone
         Assert.Null(Qualified.Agrees("Bradford", null));
+        // one side's words all among the other's; a word on each side the other lacks is another place (finding 22)
+        Assert.True(Qualified.Agrees("Bradford, Yorkshire", "Heaton, Bradford, West Yorkshire, England, United Kingdom, Europe, World")); // "west yorkshire" is one word, "yorkshire" another; Bradford places it
+        Assert.True(Qualified.Agrees("Bradford, Yorkshire", "Bradford")); // the project's coarser entity
+        Assert.False(Qualified.Agrees("Lambeth, England", "Prestwich, England; Church"));
+        Assert.False(Qualified.Agrees("Lambeth, England", "Tewkesbury, England"));
+        Assert.False(Qualified.Agrees("Turkey and Greece", "Ilía, Region of Western Greece, Greece, Europe, World"));
+        Assert.True(Qualified.Agrees("Turkey and Greece", "Turkey and Greece"));
+        Assert.True(Qualified.Agrees("London, England", "Hammersmith and Fulham, London, Greater London, England, United Kingdom, Europe, World"));
         Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
 
         var reading = Reading("Heaton", EntityClass.Place) with { Qualifier = "Bradford" };
@@ -728,6 +736,22 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal("Cornwall", cornwall.Text); Assert.Equal("England", cornwall.Qualifier); Assert.Equal("Cornwall (England : County)", cornwall.Label);
         var oppe = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Oppé, A. P. (Adolf Paul), 1878-1957"));
         Assert.NotNull(oppe.Agent); Assert.Null(oppe.Qualifier); // a dated name goes through the parser, and its fuller form is not a qualifier
+        // a split heading still names the record whose label is the whole heading (finding 19), and a qualified heading the string's
+        // qualifier places is exact on its name (finding 20); one the qualifier does not place stays a lookalike
+        var grandTours = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Grand tours (Education)"));
+        var wholeHeading = Reconciler.Score(grandTours, [new Candidate("http://id.loc.gov/authorities/subjects/sh00002558", "lcsh", "Grand tours (Education)", EntityClass.Type, null, [], "local", 0.85, Placement: "Education")], 120)[0];
+        Assert.Equal(1.0, wholeHeading.Candidate.NameScore); Assert.Equal(1.0, wholeHeading.Score); Assert.Contains("the whole heading", wholeHeading.Reason);
+        var carltonHouse = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Carlton House (London)"));
+        var carlton = Reconciler.Score(carltonHouse, [
+            new Candidate("http://id.loc.gov/authorities/subjects/sh2008009002", "lcsh", "Carlton House (London, England)", EntityClass.Place, null, [], "local", 0.85, Placement: "London, England"),
+            new Candidate("http://id.loc.gov/authorities/names/nr92026602", "loc", "Carlton House (New York, N.Y.)", EntityClass.Place, null, [], "local", 0.85, Placement: "New York, N.Y.")], 120);
+        Assert.Equal(0.97, carlton[0].Candidate.NameScore); Assert.Equal(1.0, carlton[0].Score); Assert.Contains("the name exact once its parenthetical", carlton[0].Reason);
+        Assert.Equal(0.85, carlton[1].Candidate.NameScore); Assert.True(carlton[1].Veto); // the qualifier places another candidate
+        // and so LCSH's one placed heading carries the string as a single
+        await pg.Store.PutAuthorityAsync(Lcsh("sh85078154", "Loire River (France)", "Place"));
+        var loire = await pg.Store.CollectAsync(ds, "keywords:head", "Loire River (France)");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, loire));
+        Assert.Equal(DecisionMethod.Single, (await pg.Store.DecisionForAsync(loire.Id))!.Method);
 
         var heading = await pg.Store.CollectAsync(ds, "keywords", "Painting--Canada", "{\"legacyUnreconciled\":\"unrec_abcd2345\"}");
         var e = await reconciler.ReconcileOneDetailedAsync(ds, heading);

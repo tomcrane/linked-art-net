@@ -729,11 +729,12 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var oppe = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Oppé, A. P. (Adolf Paul), 1878-1957"));
         Assert.NotNull(oppe.Agent); Assert.Null(oppe.Qualifier); // a dated name goes through the parser, and its fuller form is not a qualifier
 
-        var heading = await pg.Store.CollectAsync(ds, "keywords", "Painting--Canada");
+        var heading = await pg.Store.CollectAsync(ds, "keywords", "Painting--Canada", "{\"legacyUnreconciled\":\"unrec_abcd2345\"}");
         var e = await reconciler.ReconcileOneDetailedAsync(ds, heading);
         Assert.Equal(Outcome.Decomposed, e.Outcome);
         var decision = (await pg.Store.DecisionForAsync(heading.Id))!;
         Assert.Equal(DecisionMethod.Composite, decision.Method);
+        Assert.Equal(scheme.Uri(EntityClass.Type, "unrec_abcd2345"), decision.EntityId); // the heading's concept keeps the identifier LUX holds (the owner's decision 2026-10-21)
         var concept = (await pg.Store.GetEntityAsync(decision.EntityId!))!;
         Assert.Equal(EntityClass.Type, concept.Class); Assert.Equal("Painting--Canada", concept.Label);
         var parts = await pg.Store.PartsAsync(heading.Id);
@@ -875,6 +876,17 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var minted = await pg.Store.CollectAsync(ds, "place", "Moggerhanger, Bedfordshire");
         Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, minted));
         Assert.Equal("Moggerhanger, Bedfordshire", (await pg.Store.ResolveAsync(ds, "place", "Moggerhanger, Bedfordshire"))!.Label);
+        // a string the earlier pipeline gave an unreconciled identifier (kept by the import in its parsed JSON) is minted under that
+        // identifier, so the record LUX already holds is updated by the re-export (the owner's decision 2026-10-21); the same
+        // placeholder on a second string reuses the entity, and a malformed one is ignored
+        var placeholder = await pg.Store.CollectAsync(ds, "place", "Wyck Rissington, Gloucestershire", "{\"legacyUnreconciled\":\"unrec_zzzz9999\"}");
+        Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, placeholder));
+        Assert.Equal(scheme.Uri(EntityClass.Place, "unrec_zzzz9999"), (await pg.Store.ResolveAsync(ds, "place", "Wyck Rissington, Gloucestershire"))!.Id);
+        var placeholderAgain = await pg.Store.CollectAsync(ds, "place", "Wyck Rissington, Glos.", "{\"legacyUnreconciled\":\"unrec_zzzz9999\"}");
+        Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, placeholderAgain));
+        Assert.Equal(scheme.Uri(EntityClass.Place, "unrec_zzzz9999"), (await pg.Store.ResolveAsync(ds, "place", "Wyck Rissington, Glos."))!.Id);
+        Assert.Null(Reconciler.LegacyIdentifier(placeholder with { ParsedJson = "{\"legacyUnreconciled\":\"a/b c\"}" }));
+        Assert.Null(Reconciler.LegacyIdentifier(placeholder with { ParsedJson = "not json" }));
     }
 
     [PostgresFact]

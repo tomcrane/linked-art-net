@@ -47,13 +47,10 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    "outvoted" in the evidence. People to revisit against the 2024 shadow. The owner's yes as recommended,
    2026-10-21, built that day (doc 10 7.6 "Outvoted rivals"); the rerun measures it in place, keywords:sub and
    keywords.
-2. *`unrec_` identifiers* at export (doc 10 7.5 item 2). The owner recalls (2026-10-21) that the `unrec_` identifiers
-   reached LUX, from outputs run before the owner was happy with them; doc 10 7.5 found the same against the LUX API
-   on 2026-10-19 (53 PMC concepts for one stem). So LUX holds them and they are published identifiers: the
-   recommendation is to keep them. The build, on the owner's word: a heading's composite entity (and a minted
-   entity for a string that only had a placeholder) takes the legacy identifier the import kept in the string's
-   parsed JSON as `legacyUnreconciled`, instead of a fresh one, so the concept LUX already has keeps its id and
-   gains its parts; `CompositeEntityAsync` and `MintAsync` read it. Size S, no reload. The owner's question
+2. ~~*`unrec_` identifiers*~~: the owner's "keep", 2026-10-21, built that day (doc 10 7.5, last paragraph): a heading's
+   composite entity and the provisional entity of a queued or minted string take the legacy identifier the import
+   kept in the string's parsed JSON as `legacyUnreconciled`, placed under the class's segment, instead of a fresh
+   one; the rerun shows it as entity ids ending `unrec_…` in the minted sample. The owner's question
    (2026-10-21), how a fresh PMC dump cleans up what LUX holds: by the same PMC URIs (LUX updates its copies rather
    than adding islands), by `equivalent` links on every aligned entity (LUX merges records sharing an external id, so
    a PMC concept with an LCSH id joins the shared LUX entity), and by composites carrying their parts. A dump cannot
@@ -68,10 +65,17 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    heading with the most variants; only among groups two sources already carry. Crude but measurable from the
    exports. Recommendation: measure first (the per-string export lists the ties), then decide.
 5. *Legacy duplicate entities*: two of the project's own "Evanston" and two "England" block finding 10 and queue
-   their strings. A merge pass for entities of one dataset, label and class with no conflicting equivalents, run
-   once; count first, the owner runs: `select class, count(*) as labels, sum(n) as entities from (select class,
-   lower(label) as l, count(*) as n from entities where dataset = 'pmc' and merged_into is null group by class,
-   lower(label) having count(*) > 1) d group by class;`
+   their strings. Counted by the owner 2026-10-21 (entities of one dataset and class sharing a label, case folded):
+   Place 53 labels in 122 entities, Type 122 in 251, Group 122 in 246, Person 328 in 721; 625 labels, 1,340
+   entities in all. Recommendation: a one-off `merge-duplicates` command in tools/Align, dry run by default (it
+   lists every label with its entities, their statuses and equivalents, and says which it would merge), merging only
+   where the twins' equivalents do not conflict (none on one side, or the same external ids), the survivor the
+   entity with the most equivalents then the oldest, every merged-away identifier kept as an `equivalent` on the
+   survivor so LUX merges the twins (the plan's rule above). For Place, Type and Group a shared label is the same
+   thing in a library's own authority table. For Person, only where the twins carry the same lifespan or share an
+   external id; a bare "Smith, John" twice stays two entities for the desk. Size S. On the owner's go: build the
+   command, the owner runs the dry run and reads the list, then runs it live; then rerun the reconcile ("Evanston"
+   and "England" leave the place queue by finding 10).
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -92,7 +96,9 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
 **Built 2026-10-21 afternoon from that run's samples, waiting for the next rerun:** finding 13 fixed for contexts
 that keep a parser for dated strings (keywords:head never split "Cornwall (England : County)"); finding 16 (two
 sources that each date one record of the name as the string does date the same person, "Friedmann, Gloria, 1950-");
-"S. Australia" and "W. Australia" in the abbreviations. No reload, no manifest refresh.
+"S. Australia" and "W. Australia" in the abbreviations; and, on the owner's "keep", the `unrec_` identifiers
+(decision 2 above): the minted sample's entity ids should end `unrec_…` for strings that had one. No reload, no
+manifest refresh.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
@@ -116,9 +122,10 @@ says "continue with the list"):
     dotnet run --project tools/Align -- decisions --run <new run id> --method minted --limit 1
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
 
-Run the duplicate-entities query (decision 5) at any time. Expect, against uhwjq5: "Cornwall (England : County)"
-and "National Gallery of Canada (Ottawa, Canada)" out of the keywords:head queue, "Friedmann, Gloria" a vote,
-keywords:head queued (1,448) down again, "Kent Town, S. Australia" a single.
+Expect, against uhwjq5: "Cornwall (England : County)" and "National Gallery of Canada (Ottawa, Canada)" out of the
+keywords:head queue, "Friedmann, Gloria" a vote, keywords:head queued (1,448) down again, "Kent Town, S. Australia"
+a single, and the minted sample's entity id ending `unrec_…`. Then, if decision 5 is a go, the `merge-duplicates`
+build, its dry run, its live run, and another reconcile.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)
@@ -637,7 +644,8 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       placement, so "dance (performing arts genre)" is exact on "dance" and the home rule carries it. Loader change
       and aat reload.
     - Still to come for compounds: export as coordinated concepts (7.5 item 2), the entity page listing a heading's
-      parts and the desk showing a part's parents (7.5 item 4), and whether `unrec_` identifiers are kept (owner).
+      parts and the desk showing a part's parents (7.5 item 4). ~~Whether `unrec_` identifiers are kept~~: kept, the
+      owner's decision 2026-10-21, built that day.
     - ~~"Placed through" (doc 10 section 7.6 finding 1)~~ and ~~the `single` method (finding 2)~~: both built
       2026-10-20 after the owner's yes; the rerun measures them (expect place votes up, place minted down, the
       legacy LoC-identified places gaining TGN ids rather than duplicates).

@@ -165,13 +165,48 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return e with { Parts = decided };
     }
 
-    /// <summary>The heading's own concept: the project's existing Type entity under that label when it has one (the imported headings keep their identifiers), else a new one under the project's identifiers. Its parts are the decisions of its part strings, read at export.</summary>
+    /// <summary>The heading's own concept: the project's existing Type entity under that label when it has one (the imported headings keep their identifiers), else a new one under the identifier the earlier pipeline gave the string, else under a fresh one. Its parts are the decisions of its part strings, read at export.</summary>
     private async Task<Entity> CompositeEntityAsync(string dataset, StringReading reading, string? runId, CancellationToken ct)
     {
         foreach (var key in reading.Keys)
             foreach (var found in await store.FindEntitiesByLabelAsync(key, dataset, EntityClass.Type, ct))
                 if (found.MergedInto is null && NameMatcher.Score(reading.Text, found.Label is null ? found.Labels : found.Labels.Prepend(found.Label)) >= 0.97) return found;
-        return await store.AddEntityAsync(dataset, new NewEntity(EntityClass.Type, reading.Text, [reading.String.Raw], null, [], [], EntityStatus.Provisional, RunId: runId), scheme, ct);
+        return await OwnEntityAsync(dataset, reading, new NewEntity(EntityClass.Type, reading.Text, [reading.String.Raw], null, [], [], EntityStatus.Provisional, RunId: runId), ct);
+    }
+
+    /// <summary>
+    /// A new entity of the project's own for a string: under the identifier the owner's earlier pipeline gave the string when it had
+    /// no authority (<c>unrec_…</c>, kept by the import in the string's parsed JSON as <c>legacyUnreconciled</c>), since LUX holds
+    /// records under those identifiers and a re-export under the same ones updates them rather than adding islands (doc 10 section
+    /// 7.5; the owner's decision 2026-10-21, "keep"); under a fresh identifier otherwise. The identifier is placed under the class's
+    /// segment as the import places the <c>authorities</c> identifiers; an entity already there (the same placeholder on a string in
+    /// two contexts, or a run not undone) is reused.
+    /// </summary>
+    private async Task<Entity> OwnEntityAsync(string dataset, StringReading reading, NewEntity entity, CancellationToken ct)
+    {
+        if (LegacyIdentifier(reading.String) is { } legacy)
+        {
+            var id = scheme.Uri(entity.Class, legacy);
+            if (await store.ResolveEntityAsync(id, ct) is { } kept) return kept;
+            return await store.AddEntityAsync(dataset, entity with { Id = id }, scheme, ct);
+        }
+        return await store.AddEntityAsync(dataset, entity, scheme, ct);
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex IdentifierShape = new(@"^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    /// <summary>The identifier the earlier pipeline gave a string that had no authority, from the import's <c>legacyUnreconciled</c> in the string's parsed JSON; null when there is none or it would not make a path segment.</summary>
+    public static string? LegacyIdentifier(SourceString s)
+    {
+        if (string.IsNullOrWhiteSpace(s.ParsedJson)) return null;
+        try
+        {
+            using var doc = JsonDocument.Parse(s.ParsedJson);
+            if (doc.RootElement.ValueKind != JsonValueKind.Object || !doc.RootElement.TryGetProperty("legacyUnreconciled", out var v) || v.ValueKind != JsonValueKind.String) return null;
+            var id = v.GetString()?.Trim();
+            return id is not null && IdentifierShape.IsMatch(id) ? id : null;
+        }
+        catch (JsonException) { return null; }
     }
 
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>
@@ -623,8 +658,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
+    /// <summary>The provisional entity for a queued or minted string, under the earlier pipeline's identifier for the string when it had one (<see cref="OwnEntityAsync"/>).</summary>
     private Task<Entity> MintAsync(string dataset, StringReading reading, string? runId, CancellationToken ct) =>
-        store.AddEntityAsync(dataset, new NewEntity(reading.Classes[0], reading.Label, [reading.String.Raw], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Provisional, RunId: runId), scheme, ct);
+        OwnEntityAsync(dataset, reading, new NewEntity(reading.Classes[0], reading.Label, [reading.String.Raw], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Provisional, RunId: runId), ct);
 
     // ---- evidence and parsers ----------------------------------------------------------------------------------
 

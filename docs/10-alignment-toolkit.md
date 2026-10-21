@@ -300,9 +300,15 @@ The design:
 4. **Workbench.** The entity page of a heading lists its parts with their lozenges and links to the part entities; the
    desk shows a part string with the headings it occurs in as context; the project page counts parts separately.
 
-Open for the owner: keep the `unrec_` identifiers for headings now that they carry structure (recommended: LUX holds
-them), or remint. Order of work: after step 3b (remote sources), since the LCSH index and the LUX mapping both
-matter here.
+The `unrec_` identifiers are kept: the owner's decision 2026-10-21 ("keep"; the owner recalls the 2024 outputs
+reached LUX before the alignment was settled, and the LUX check above found them there). Built that day: a string
+the earlier pipeline gave an unreconciled identifier carries it in its parsed JSON as `legacyUnreconciled` (the
+import keeps it), and `Reconciler.OwnEntityAsync` mints the string's own entity under that identifier, placed under
+the class's segment as the import places the `authorities` identifiers (`…/concept/unrec_…` for a heading's
+composite, the string's class for a queued or minted string); the same placeholder on a second string reuses the
+entity, and an identifier that would not make a path segment is ignored. Part strings carry no legacy identifier and
+mint fresh. One assumption to check against LUX before the export is designed: that the 2024 export placed the
+`unrec_` identifiers under the same class segments. Export of the coordinated concept itself waits for 7.5 item 2.
 
 ### 7.6 Strings made of parts (designed and built 2026-10-20; generalises 7.5)
 

@@ -94,14 +94,6 @@ public sealed record StringReading(
         string? qualifier = null;
         string? labelOverride = null;
         if (rule.Qualified && parser is null && parts is null) (text, qualifier) = Qualified.Split(s.Raw);
-        // a heading in a context that is not qualified may still carry a cataloguer's parenthetical ("Cornwall (England : County)",
-        // "National Gallery of Canada (Ottawa, Canada)"): the parenthetical alone is read as the qualifier, commas left alone ("Art,
-        // Modern"), and the entity keeps the whole heading as its label (doc 10, section 7.6 finding 13)
-        else if (!rule.Qualified && parser is null && parts is null && text.EndsWith(')'))
-        {
-            var (name, inParentheses) = Qualified.SplitParenthetical(text);
-            if (inParentheses is not null) { text = name; qualifier = inParentheses; labelOverride = s.Raw.Trim(); }
-        }
         if (parser is not null)
         {
             agent = parser.Parse(s.Raw);
@@ -118,6 +110,15 @@ public sealed record StringReading(
                 lifespan = Lifespan.From(d.Begin, d.End, agent.DateText);
             nationalities = agent.Nationalities.Select(n => n.AatUri ?? n.Label).Distinct(StringComparer.Ordinal).ToArray();
             roles = agent.Roles.Where(r => r.IsOccupation).Select(r => r.Label).Distinct(StringComparer.Ordinal).ToArray();
+        }
+        // a heading in a context that is not qualified may still carry a cataloguer's parenthetical ("Cornwall (England : County)",
+        // "National Gallery of Canada (Ottawa, Canada)"): when the agent parser has not read it (none for the context, or one kept
+        // for dated strings only), the parenthetical alone is read as the qualifier, commas left alone ("Art, Modern"), and the
+        // entity keeps the whole heading as its label (doc 10, section 7.6 finding 13)
+        if (agent is null && !rule.Qualified && parts is null && text.EndsWith(')'))
+        {
+            var (name, inParentheses) = Qualified.SplitParenthetical(text);
+            if (inParentheses is not null) { text = name; qualifier = inParentheses; labelOverride = s.Raw.Trim(); }
         }
         return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified, parts, rule.Parts, rule.Home, rule.Collections, labelOverride);
     }

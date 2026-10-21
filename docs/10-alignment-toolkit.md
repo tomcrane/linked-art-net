@@ -681,6 +681,43 @@ composite 15,749 -> 15,675 (finding 4: 74 headings rejoined, most held whole by 
   or a body ("Smith, John" with a ULAN-linked LoC record beside another John Smith LoC knows) the tie goes to the
   desk as before: sameness of name is weak evidence there, and two vocabularies knowing a name is prominence, not
   identity. Up to 185 strings; people to revisit against the 2024 shadow.
+
+Measured 2026-10-21 (run-20261021-112513-uhwjq5, the seven changes above, against pqe98w): accepted 5,492 -> 6,088
+(vote 2,533 -> 2,921, single 773 -> 881, exact-single 2,186 -> 2,286), queued 7,889 -> 6,969, matched in store 4,399
+-> 4,730, minted 12,361 unchanged; store stage 800 s. By context: keywords queued 2,071 -> 1,648 and exact-name 294
+-> 537 (finding 13: whole headings with a parenthetical answering from the store, and 79 singles placed by their own
+parenthetical); keywords:sub queued 508 -> 330, vote 151 -> 237, exact-single 80 -> 149 (set-aside and finding 11:
+the centuries); keywords:head queued 1,659 -> 1,448; place queued 499 -> 438 and vote 207 -> 264 (outvoted rivals
+and finding 12); persauthorfull queued 1,576 -> 1,542 (findings 14 and 15). The samples, read:
+
+- "Cornwall (England : County)", "Istanbul (Turkey)", "National Gallery of Canada (Ottawa, Canada)" were still
+  queued, and the reading showed why: finding 13 ran only when the context had no agent parser, and keywords:head
+  keeps the MARC parser for dated strings, so an undated heading there was never split. The unit test had passed
+  with no parser. Fixed the same day: the split runs after the parser step, whenever the parser has not read the
+  string; the store test reads "Cornwall (England : County)" through the real rule.
+- "Friedmann, Gloria, 1950-": ULAN and LoC each have one record of the name, both agreeing with the string's dates,
+  unlinked, so two single-source groups tied. Finding 16, built the same day: two sources that each date one record
+  of the name as the string does date the same person, and the record joins ("dated as ulan's record is") for a
+  vote; two agreeing records in one source still go to the desk.
+- "Kent Town, S. Australia": the string's own half-abbreviation "S. Australia" placed nothing against LoC's "S.A."
+  and "S. Aust.", which the table expands. "S. Australia" and "W. Australia" added to it the same day.
+- "Paris", "Dublin", "Athens", "Cornwall", "london" (place): several TGN namesakes each carrying its own LoC heading
+  placed through ("Paris (Ont.)", "Paris (Idaho)", "Paris (Ill.)" and, unprinted, "Paris (France)"), so several
+  two-source groups tie and outvoting rightly stands aside. What tells Paris from Paris is prominence, which no rule
+  so far reads. Finding 17, a design for the owner: among tied two-source groups of places, prefer the TGN record
+  with the most names (TGN gives the famous city dozens of names in as many languages, a hamlet one or two), or the
+  LoC heading with the most variants; crude, measurable from the exports, and only among groups two sources already
+  carry. Not built.
+- "Evanston, Illinois": TGN placed and LoC placed through it, but two of the project's own entities "Evanston"
+  stand beside them, so finding 10 (the project's one bare entity) does not apply and the string queues; "England"
+  had two as well. The legacy import carries duplicates. A merge pass for the project's own entities of one label
+  and class with no conflicting equivalents is the remedy, with a count first (query in the plan). Not built.
+- "Ionia (Turkey and Greece)": once split, LCSH's heading is placed by its own parenthetical and TGN's Ionia by
+  "Turkey", but the heading's two-part placement is not contained in TGN's parent string ("Turkey, Asia, World"
+  has no Greece), so the two are not joined. A known gap of placed-through's containment test; few strings.
+- "Drury", "Paintings, European", "Donnington", "Heaton, Bradford" (TGN has no Heaton in Bradford), "Bottrop,
+  Essen" (the data's qualifier is a neighbouring city): the desk's work.
+
 - "Paris", "Aix-en-Provence", "Bottrop, Essen", "China", "Canada": TGN namesakes of differing level (the city and
   its arrondissement or Kreis, the nation and a hamlet), LoC's placed heading "inside 3 placed candidates" and so
   joining none: the TGN level preference, next on the list, now with its shape clear from these. LoC's own

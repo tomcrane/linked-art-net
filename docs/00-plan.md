@@ -62,6 +62,16 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    ask the LUX team whether a source reload replaces by URI and whether records absent from a full dump are retired;
    the answers decide the export's shape and how merges are written.
 3. ~~*Lone undated namesake of another source* (finding 14)~~: the owner's yes 2026-10-21, built that day (below).
+4. *Prominence among tied places* (finding 17, doc 10 7.6 "Measured ... uhwjq5"): "Paris", "Dublin", "Athens",
+   "Cornwall", "London" tie between several two-source groups (each TGN namesake with its own LoC heading placed
+   through). Proposed: among tied two-source groups of places, prefer the TGN record with the most names, or the LoC
+   heading with the most variants; only among groups two sources already carry. Crude but measurable from the
+   exports. Recommendation: measure first (the per-string export lists the ties), then decide.
+5. *Legacy duplicate entities*: two of the project's own "Evanston" and two "England" block finding 10 and queue
+   their strings. A merge pass for entities of one dataset, label and class with no conflicting equivalents, run
+   once; count first, the owner runs: `select class, count(*) as labels, sum(n) as entities from (select class,
+   lower(label) as l, count(*) as n from entities where dataset = 'pmc' and merged_into is null group by class,
+   lower(label) having count(*) > 1) d group by class;`
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -75,27 +85,23 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    (size S) for the Agent parser's endpoint beside the dates one, a playground page, and a corpus folder seeded from
    the PMC strings.
 
-**Measured 2026-10-21 on run-20261021-093102-pqe98w (stands):** findings 9, 10, 3-as-policy, 4 and 11 together:
-accepted 4,862 -> 5,492, queued 8,483 -> 7,889 (place 584 -> 499, keywords:sub 579 -> 508, keywords:head 2,078 ->
-1,659). Doc 10 7.6 "Measured ... pqe98w" has the per-context reading.
+**Measured 2026-10-21 on run-20261021-112513-uhwjq5 (stands):** the day's seven changes together: accepted 5,492
+-> 6,088, queued 7,889 -> 6,969, matched in store 4,399 -> 4,730 (keywords:sub queued 508 -> 330, keywords 2,071 ->
+1,648, keywords:head 1,659 -> 1,448, place 499 -> 438). Doc 10 7.6 "Measured ... uhwjq5" has the per-context reading.
 
-**Built 2026-10-21 from that run's samples, waiting for the next rerun:** set-aside as a state distinct from veto
-(the collections rule had poisoned "20th century" through AAT's link to the set-aside topic heading); finding 12
-(LoC's " : Parish" type dropped from placements, "Hammersmith, London"); finding 13 (a heading's own parenthetical
-read as its qualifier in the keyword contexts, "Cornwall (England : County)", "National Gallery of Canada (Ottawa,
-Canada)"); finding 15 (a parenthetical after initials is MARC's fuller form, "Oppé, A. P. (Adolf Paul)"); finding 4
-extended to prefix parts ("Pre--Raphaelitism"); and finding 14 (an undated record that is its source's only exact
-record of the name joins the record another source dates, "Aschan, Marit Guinness"); and outvoted rivals for places
-and concepts (a two-source group beats single-source rivals at a tie, "Aberdeen"). No reload, no manifest refresh.
+**Built 2026-10-21 afternoon from that run's samples, waiting for the next rerun:** finding 13 fixed for contexts
+that keep a parser for dated strings (keywords:head never split "Cornwall (England : County)"); finding 16 (two
+sources that each date one record of the name as the string does date the same person, "Friedmann, Gloria, 1950-");
+"S. Australia" and "W. Australia" in the abbreviations. No reload, no manifest refresh.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
 
-1. TGN level preference ("Paris", "Aix-en-Provence", "China", "Canada": TGN namesakes of differing level, LoC's
-   placed heading inside several and joining none): LoC's heading says the level in its type after " : " (none for
-   the city, "Arrondissement", "Kreis"), TGN's `placeType` says the record's, and the heading holds the namesake
-   whose level it names; an unqualified LoC heading holds the highest level (the nation). Designed from the pqe98w
-   samples; to build next.
+1. TGN level preference ("Aix-en-Provence", "China", "Canada": TGN namesakes of differing level, LoC's placed
+   heading inside several and joining none): LoC's heading says the level in its type after " : " (none for the
+   city, "Arrondissement", "Kreis"), TGN's `placeType` says the record's, and the heading holds the namesake whose
+   level it names; an unqualified LoC heading holds the highest level (the nation). Designed from the pqe98w
+   samples; to build next. The famous-city ties ("Paris") are decision 4 above, not this.
 2. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
 3. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
    the owner.
@@ -105,15 +111,14 @@ says "continue with the list"):
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261021-093102-pqe98w
+    dotnet run --project tools/Align -- undo-run --run run-20261021-112513-uhwjq5
     dotnet run --project tools/Align -- reconcile
     dotnet run --project tools/Align -- decisions --run <new run id> --method minted --limit 1
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
 
-Run the two ceiling queries above against pqe98w before the undo (or drop `and d.valid` after it). Expect, against
-pqe98w: "20th century" and its kind accepted in keywords:sub, "Hammersmith, London" a single, the parenthetical
-heads voting or answering from the store, keywords:head queued (1,659) down again.
+Run the duplicate-entities query (decision 5) at any time. Expect, against uhwjq5: "Cornwall (England : County)"
+and "National Gallery of Canada (Ottawa, Canada)" out of the keywords:head queue, "Friedmann, Gloria" a vote,
+keywords:head queued (1,448) down again, "Kent Town, S. Australia" a single.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

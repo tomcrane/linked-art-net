@@ -36,6 +36,7 @@ public static class Qualified
         ("que.", "quebec"), ("sask.", "saskatchewan"),
         ("a.c.t.", "australian capital territory"), ("n.s.w.", "new south wales"), ("n.t.", "northern territory"), ("qld.", "queensland"),
         ("s. aust.", "south australia"), ("s.a.", "south australia"), ("tas.", "tasmania"), ("vic.", "victoria"), ("w.a.", "western australia"),
+        ("s. australia", "south australia"), ("w. australia", "western australia"), // the cataloguers' own half-abbreviations ("Kent Town, S. Australia")
     ];
     // the normaliser drops a trailing period ("Princeton, N.J." folds to "princeton, n.j"), so the last one is optional at the end of
     // the text and required elsewhere: "La Paz" is not Louisiana, "Baton Rouge, La." is

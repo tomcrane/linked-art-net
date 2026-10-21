@@ -392,10 +392,18 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 }
         // an undated record that is its source's only exact record of the name is the person another source dates: "LoC knows one
         // Marit Guinness Aschan; ULAN dates her", and the two vote (doc 10, section 7.6 finding 14; the owner's policy, 2026-10-21)
+        // and two sources that each date one record of the name as the string does date the same person ("Friedmann, Gloria, 1950-"
+        // in ULAN and LoC, unlinked), so the two vote (finding 16, 2026-10-21)
         if (reading.HasLifespan && list.FirstOrDefault(m => m.DatesAgree && !m.Veto && !m.SetAside) is { } dated)
             foreach (var source in list.Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
             {
                 if (source == dated.Candidate.Source || source == "store") continue;
+                var agreeing = list.Select((m, i) => (m, i)).Where(x => x.m.Candidate.Source == source && x.m.DatesAgree && !x.m.Veto && !x.m.SetAside && x.m.JoinedTo is null && x.m.Candidate.NameScore >= 0.97).ToList();
+                if (agreeing.Count == 1 && !SameThing(agreeing[0].m, dated) && !(agreeing[0].m.Candidate.Class is { } ac && dated.Candidate.Class is { } dc && ac != dc))
+                {
+                    list[agreeing[0].i] = agreeing[0].m with { JoinedTo = dated.Candidate.Uri, Reason = agreeing[0].m.Reason + $"; dated as {dated.Candidate.Source}'s record is" };
+                    continue;
+                }
                 var exact = list.Select((m, i) => (m, i)).Where(x => x.m.Candidate.Source == source && x.m.Candidate.NameScore >= 0.97).ToList();
                 if (exact.Count != 1) continue;
                 var (lone, at) = exact[0];

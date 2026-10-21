@@ -234,6 +234,12 @@ public class GroupingTests
         Assert.Equal(["loc", "ulan"], Reconciler.Groups(lone)[0].Sources.OrderBy(x => x, StringComparer.Ordinal));
         Assert.All(Reconciler.Score(reading, [agrees, locUndated, locUndated with { Uri = "l10" }], 120).Skip(1), m => Assert.Null(m.JoinedTo));
         Assert.Null(Reconciler.Score(reading with { Classes = [EntityClass.Person, EntityClass.Group] }, [agrees, locUndated with { Class = EntityClass.Group }], 120)[1].JoinedTo);
+        // two sources that each date one record of the name as the string does date the same person, linked or not (finding 16)
+        var locDated = new Candidate("l11", "loc", "Dürer, Albrecht, 1471-1528", EntityClass.Person, GettyVocabLoader.LifespanFromYears("1471", "1528"), [], "local", 1.0);
+        var both = Reconciler.Score(reading, [agrees, locDated], 120);
+        Assert.Equal("u1", both[1].JoinedTo); Assert.Contains("dated as ulan's record is", both[1].Reason);
+        Assert.Equal(["loc", "ulan"], Reconciler.Groups(both)[0].Sources.OrderBy(x => x, StringComparer.Ordinal));
+        Assert.All(Reconciler.Score(reading, [agrees, locDated, locDated with { Uri = "l12" }], 120).Skip(1), m => Assert.Null(m.JoinedTo)); // two agreeing LoC records: the desk
         var ownUndated = new Candidate("e9", "store", "Dürer, Albrecht", EntityClass.Person, null, [], "store", 1.0, "e9");
         Assert.False(Reconciler.Score(reading, [agrees, ownUndated], 120)[1].Veto);
         // dates on different sides are not comparable: no lift, no veto, and no single-source acceptance
@@ -274,6 +280,7 @@ public class GroupingTests
         Assert.False(Qualified.Agrees("Jersey", "Secaucus, Hudson, New Jersey, United States, North and Central America, World")); // the Channel Island is not the state
         Assert.True(Qualified.Agrees("N.W.T.", "Tulita, Northwest Territories, Canada, North and Central America, World"));
         Assert.Equal(["kent", "southaustralia"], Qualified.Tokens("Kent Town (S. Aust.)").Order()); // "town" is noise
+        Assert.True(Qualified.Agrees("S. Australia", "Kent Town, South Australia, Australia, Oceania, World")); // the cataloguers' half-abbreviation
         Assert.Null(Qualified.Agrees("W.", "Princeton, New Jersey, United States, North and Central America, World")); // an initial places nothing
         // LoC's type after " : " is not a place: "Hammersmith (London, England : Parish)" is placed by London and England
         Assert.Equal("London, England", Qualified.PlacementOf(null, ["Hammersmith (London, England : Parish)"]));
@@ -716,6 +723,11 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(EntityClass.Person, tuke.Classes[0]); Assert.Equal("Tuke, Henry Scott", tuke.Text); Assert.True(tuke.HasLifespan);
         var modern = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Art, Modern"));
         Assert.Equal(EntityClass.Type, modern.Classes[0]); Assert.Null(modern.Agent);
+        // and, with the parser kept for dated strings only, an undated heading's parenthetical is still read as its qualifier (finding 13)
+        var cornwall = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Cornwall (England : County)"));
+        Assert.Equal("Cornwall", cornwall.Text); Assert.Equal("England", cornwall.Qualifier); Assert.Equal("Cornwall (England : County)", cornwall.Label);
+        var oppe = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Oppé, A. P. (Adolf Paul), 1878-1957"));
+        Assert.NotNull(oppe.Agent); Assert.Null(oppe.Qualifier); // a dated name goes through the parser, and its fuller form is not a qualifier
 
         var heading = await pg.Store.CollectAsync(ds, "keywords", "Painting--Canada");
         var e = await reconciler.ReconcileOneDetailedAsync(ds, heading);

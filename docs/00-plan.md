@@ -47,7 +47,13 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    "outvoted" in the evidence. People to revisit against the 2024 shadow. The owner's yes as recommended,
    2026-10-21, built that day (doc 10 7.6 "Outvoted rivals"); the rerun measures it in place, keywords:sub and
    keywords.
-2. *`unrec_` identifiers* at export (doc 10 7.5 item 2): deferred until what LUX consumes is seen.
+2. *`unrec_` identifiers* at export (doc 10 7.5 item 2). The owner recalls (2026-10-21) that the `unrec_` identifiers
+   reached LUX, from outputs run before the owner was happy with them; doc 10 7.5 found the same against the LUX API
+   on 2026-10-19 (53 PMC concepts for one stem). So LUX holds them and they are published identifiers: the
+   recommendation is to keep them. The build, on the owner's word: a heading's composite entity (and a minted
+   entity for a string that only had a placeholder) takes the legacy identifier the import kept in the string's
+   parsed JSON as `legacyUnreconciled`, instead of a fresh one, so the concept LUX already has keeps its id and
+   gains its parts; `CompositeEntityAsync` and `MintAsync` read it. Size S, no reload.
 3. ~~*Lone undated namesake of another source* (finding 14)~~: the owner's yes 2026-10-21, built that day (below).
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a

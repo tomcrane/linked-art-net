@@ -637,6 +637,8 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         <http://id.loc.gov/authorities/names/n50063091> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Tate Gallery" .
         <http://id.loc.gov/authorities/names/n79021164> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Geographic> .
         <http://id.loc.gov/authorities/names/n79021164> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Siena (Italy)" .
+        <http://id.loc.gov/authorities/names/n79021164-781> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Geographic> .
+        <http://id.loc.gov/authorities/names/n79021164-781> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Siena (Italy)" .
         <http://id.loc.gov/authorities/names/n80000000> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.loc.gov/mads/rdf/v1#Title> .
         <http://id.loc.gov/authorities/names/n80000000> <http://www.loc.gov/mads/rdf/v1#authoritativeLabel> "Some anonymous work" .
         """;
@@ -645,7 +647,8 @@ public class ReconcilerStoreTests(PostgresFixture pg)
     public async Task Loc_names_load_with_headings_split_variants_dates_and_usable_links()
     {
         var result = await new LocNamesLoader(pg.Store).LoadAsync(NTriples.ReadText(LocSample), "test-sample");
-        Assert.Equal(3, result.Records); // the title heading is left out
+        Assert.Equal(3, result.Records); // the title heading is left out, and so is the "-781" subdivision form of Siena (finding 23)
+        Assert.Null(await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/names/n79021164-781"));
         var durer = (await pg.Store.GetAuthorityAsync("http://id.loc.gov/authorities/names/n79118011"))!;
         Assert.Equal("loc", durer.Source);
         Assert.Equal("Person", durer.Type);

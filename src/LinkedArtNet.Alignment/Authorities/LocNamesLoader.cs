@@ -124,7 +124,10 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
 
     private static string RecordsSql(string table, Profile profile) => $"""
         with recursive headings as (
-            select s as uri, min(o) as type from {table} where p = '{RdfType}' and s like '{profile.Prefix}%' group by s
+            -- a "-781" resource is a geographic heading's form as a subdivision (MARC field 781), a twin of the heading under
+            -- its own URI with the same label and type (2,392 in the names file, 2026-10-21): it is not a record of its own
+            -- and would make LoC's one heading two exact records (doc 10 section 7.6 finding 23)
+            select s as uri, min(o) as type from {table} where p = '{RdfType}' and s like '{profile.Prefix}%' and s not like '%-781' group by s
         ),
         auth as (select s as uri, min(o) as label from {table} where p = '{Mads}authoritativeLabel' and s like '{profile.Prefix}%' group by s),
         broader as (select s as uri, array_agg(distinct o) as broader from {table} where p = '{Mads}hasBroaderAuthority' group by s),

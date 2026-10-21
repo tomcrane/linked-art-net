@@ -770,8 +770,10 @@ Gallery" took `group/unrec_t85jgf5s`, so the placeholders are kept as decided. T
   with the same label (this is the assistant's reading of the identifier pattern, not yet checked against the
   site, which refuses automated fetches; the owner's query in the plan confirms it from the local index). Every
   such twin makes LoC's one heading two exact records, which blocks exact-single and finding 14's uniqueness test
-  for every place LoC uses as a subdivision. Remedy once confirmed: the loader skips "-781" resources, and a one-off
-  delete clears them from the index without a reload.
+  for every place LoC uses as a subdivision. Confirmed by the owner from the index the same evening: 2,392 such
+  records in the names file, typed Place, labelled as headings ("Kosovo (Republic)", "Riau-Lingga (Sultanate)",
+  "Pueblo of Isleta, New Mexico"). Built that evening: `LocNamesLoader` leaves "-781" resources out, and the owner
+  runs the one-off delete in the plan so the index is clean without a reload.
 - "Drury" (a ULAN person and two TGN places under a bare surname), "Paintings, European" (ULAN's "European
   Paintings", a department, at 0.93): the desk's work.
 

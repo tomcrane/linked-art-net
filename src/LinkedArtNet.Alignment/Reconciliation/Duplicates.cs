@@ -46,8 +46,11 @@ public sealed record DuplicateReport(IReadOnlyList<DuplicateTwins> Twins)
 /// The one-off pass over a dataset's duplicate entities (plan, resume point decision 5, the owner's decision 2026-10-21):
 /// the earlier pipeline minted two entities for one label more than once (two "England", two "Evanston"), and the twins
 /// block the rule that reuses the project's one bare entity for a place. Twins of one class and label (case folded) are
-/// merged where their external ids do not conflict: none on one side, or ids shared and no source with differing ids on
-/// the two sides. For a person a shared label is weak evidence, so the twins must also share an id or carry the same
+/// merged where their external ids do not conflict: none on one side, or an id shared and no authoritative source (one record
+/// per thing: TGN, ULAN, AAT, LoC, LCSH, Wikidata) with differing ids on the two sides. VIAF and LUX are clusters and hold
+/// duplicates, so differing VIAF or LUX ids beside a shared id are not a conflict (the dry run of 2026-10-21 showed the legacy
+/// import's twins of "Evanston" and forty other places with the same Wikidata id and two VIAF clusters); differing VIAF or LUX
+/// ids with nothing shared leave the twins apart. For a person a shared label is weak evidence, so the twins must also share an id or carry the same
 /// dates; a bare "Smith, John" twice stays two entities for the desk. The survivor is a confirmed entity first, then
 /// the one with the most ids, then the oldest. The merged-away identifiers stay on the entities table as
 /// <c>merged_into</c> and the export writes them as equivalents of the survivor so LUX merges its copies.
@@ -100,6 +103,9 @@ public sealed class DuplicateMerger(IAlignmentStore store)
         return new DuplicateTwins(survivor.Class, survivor.Label ?? "", survivor, merge, kept);
     }
 
+    /// <summary>Sources that are clusters of other sources' records and hold duplicates of one thing; a difference there is not a conflict when an id is shared elsewhere.</summary>
+    private static readonly HashSet<string> Clustered = new(StringComparer.Ordinal) { "viaf", "lux" };
+
     /// <summary>Whether two entities of one label are the same thing by their ids (and, for a person, dates); the reason when not.</summary>
     public static bool Compatible(Entity a, Entity b, out string? reason)
     {
@@ -109,13 +115,17 @@ public sealed class DuplicateMerger(IAlignmentStore store)
         var shared = idsA.Overlaps(idsB);
         if (idsA.Count > 0 && idsB.Count > 0)
         {
-            foreach (var source in a.Equivalents.Select(q => q.Source).Intersect(b.Equivalents.Select(q => q.Source), StringComparer.Ordinal))
+            var both = a.Equivalents.Select(q => q.Source).Intersect(b.Equivalents.Select(q => q.Source), StringComparer.Ordinal).OrderBy(s => Clustered.Contains(s)).ThenBy(s => s, StringComparer.Ordinal).ToList();
+            var clustersDiffer = new List<string>();
+            foreach (var source in both)
             {
                 var ofA = a.Equivalents.Where(q => q.Source == source).Select(q => q.Uri).ToHashSet(StringComparer.Ordinal);
                 var ofB = b.Equivalents.Where(q => q.Source == source).Select(q => q.Uri);
-                if (!ofA.SetEquals(ofB)) { reason = $"different {source} ids"; return false; }
+                if (ofA.SetEquals(ofB)) continue;
+                if (!Clustered.Contains(source)) { reason = $"different {source} ids"; return false; }
+                clustersDiffer.Add(source);
             }
-            if (!shared) { reason = "ids from different sources, none shared"; return false; }
+            if (!shared) { reason = clustersDiffer.Count > 0 ? $"different {string.Join(" and ", clustersDiffer)} ids, nothing else shared" : "ids from different sources, none shared"; return false; }
         }
         if (a.Class == EntityClass.Person && !shared && !SameDates(a.Lifespan, b.Lifespan))
         {

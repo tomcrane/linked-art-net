@@ -27,6 +27,14 @@ public class DuplicatesTests(PostgresFixture pg)
         Assert.Empty(conflict.Merge); Assert.Equal("different ulan ids", conflict.Kept.Single().Reason);
         var disjoint = DuplicateMerger.Plan([E("g3", EntityClass.Group, "Agnew's", ids: [("ulan", "u1")]), E("g4", EntityClass.Group, "Agnew's", ids: [("loc", "n1")])]);
         Assert.Empty(disjoint.Merge); Assert.Equal("ids from different sources, none shared", disjoint.Kept.Single().Reason);
+        // VIAF and LUX are clusters: differing VIAF ids beside a shared Wikidata id are not a conflict (the legacy twins of "Evanston"),
+        // differing VIAF ids with nothing else shared keep the twins apart, and a differing authoritative id is a conflict whatever is shared
+        var evanstonTwins = DuplicateMerger.Plan([E("p8", EntityClass.Place, "Evanston", EntityStatus.Aligned, ids: [("lux", "x1"), ("viaf", "v1"), ("wikidata", "q1")]), E("p9", EntityClass.Place, "Evanston", EntityStatus.Aligned, age: 1, ids: [("lux", "x2"), ("viaf", "v2"), ("wikidata", "q1")])]);
+        Assert.Equal("p8", evanstonTwins.Survivor.Id); Assert.Equal(["p9"], evanstonTwins.Merge.Select(e => e.Id));
+        var viafOnly = DuplicateMerger.Plan([E("p10", EntityClass.Place, "Newbury", ids: [("lux", "x1"), ("viaf", "v1")]), E("p11", EntityClass.Place, "Newbury", ids: [("lux", "x2"), ("viaf", "v2")])]);
+        Assert.Empty(viafOnly.Merge); Assert.Equal("different lux and viaf ids, nothing else shared", viafOnly.Kept.Single().Reason);
+        var wikidataDiffers = DuplicateMerger.Plan([E("p12", EntityClass.Place, "Washington", ids: [("viaf", "v1"), ("wikidata", "q1")]), E("p13", EntityClass.Place, "Washington", ids: [("viaf", "v1"), ("wikidata", "q2")])]);
+        Assert.Empty(wikidataDiffers.Merge); Assert.Equal("different wikidata ids", wikidataDiffers.Kept.Single().Reason);
         // shared id with extra ids on one side is the same thing
         var superset = DuplicateMerger.Plan([E("g5", EntityClass.Group, "Agnew's", ids: [("ulan", "u1"), ("loc", "n1")]), E("g6", EntityClass.Group, "Agnew's", ids: [("ulan", "u1")])]);
         Assert.Equal("g5", superset.Survivor.Id); Assert.Equal(["g6"], superset.Merge.Select(e => e.Id));

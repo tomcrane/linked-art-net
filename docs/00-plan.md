@@ -78,7 +78,16 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    `--apply` to carry it out, `--class` to limit, `--out` to write the list to a file). The owner runs the dry run
    and reads the list, then runs it live, then an undo and reconcile ("Evanston" and "England" leave the place queue
    by finding 10). The merged-away identifiers stay as `merged_into`; the export (doc 10 7.5 item 2) writes them as
-   equivalents of the survivor.
+   equivalents of the survivor. The first dry run (2026-10-21 evening, `reports/merge-duplicates.txt`): 659 labels,
+   1,407 entities, 292 merges (Type 157, Group 115, Place 13, Person 7), 456 kept apart, of them 375 bare personal
+   names and 61 "different viaf ids": the legacy import's two copies of one place ("Evanston", "Birmingham",
+   "Winchester"), each aligned with LUX, VIAF and Wikidata ids, the Wikidata id the same and the VIAF cluster
+   different. VIAF and LUX are clusters and hold duplicates, so the rule was refined that evening: a differing VIAF
+   or LUX id beside a shared id is not a conflict; a differing authoritative id (Wikidata, TGN, LoC, ULAN) still is;
+   differing VIAF ids with nothing else shared still keep the twins apart. Rerun the dry run before applying. Five
+   places are two aligned entities with ids from different sources and nothing shared ("England": LoC and LUX
+   beside TGN; "Italy", "London", "Dumfries", "Kolkata" likewise): the pass leaves them, and they are the owner's
+   hand merges on the workbench entity page, "England" and "London" first since they block finding 10.
 6. *Home vocabulary sets aside inexact rivals* (finding 21, doc 10 7.6 "Measured ... epenbw"): "Porcelain" has
    LCSH's exact heading, AAT's two exact terms set aside, and LoC's "Porcelain (Musical group)" at 0.85 as the one
    live rival, which blocks exact-single. Proposed: when the home vocabulary has exactly one exact record of the
@@ -94,7 +103,12 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    and m->'veto' is null and m->'setAside' is null) as src from jsonb_array_elements(d.evidence->'groups') g where
    g->'vetoed' is null and (g->>'score')::numeric >= 0.6) g) x where d.run_id = 'run-20261021-142134-epenbw' and
    d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null and x.exact_groups = 1 and x.live
-   >= 2 group by 1, 2 order by 3 desc;`
+   >= 2 group by 1, 2 order by 3 desc;` Measured 2026-10-21 (717 strings): where the exact record is the home
+   vocabulary's, keywords:head lcsh 103, keywords:sub lcsh 31, keywords lcsh 24 (158 strings; place has no home);
+   the rest are exact store entities (publisher 113, persauthorfull 21: the project's own entity beside lookalikes,
+   another shape), LoC and ULAN exact records in contexts without a home (publisher loc 58, persauthorfull loc 45,
+   corpauthor ulan 31) and TGN in keywords (41). Recommendation unchanged: yes, for the home vocabulary only (158),
+   the other shapes to be looked at from their samples later. Awaiting the owner's word.
 7. *A dated string's one undated exact record* (finding 24): "Coventry, Terence, 1938-" has LoC's one "Coventry,
    Terence", undated, as its only candidate, and exact-single stands aside for dated strings. Proposed: when a dated
    string's only candidate is a source's one exact record of the name, undated, it is carried as a single (LoC's
@@ -105,7 +119,9 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    is not null and jsonb_array_length(d.evidence->'groups') = 1 and
    jsonb_array_length(d.evidence->'groups'->0->'members') = 1 and d.evidence->'groups'->0->'members'->0->>'reason'
    like 'name 1.00%' and d.evidence->'groups'->0->'members'->0->>'reason' not like '%dates%' group by 1 order by 2
-   desc;`
+   desc;` Measured 2026-10-21: 45 strings (keywords:head 42, persauthorfull 2, corpauthor 1): the dated name
+   headings of the keywords field, whose LoC record carries no dates in its label. Recommendation: yes; small, and
+   the reasoning is finding 14's. Awaiting the owner's word.
 8. *LoC's "-781" twins* (finding 23): "China" met LoC's `n79091151` and `n79091151-781`, two exact records of one
    heading. The assistant reads the suffix as the heading's geographic-subdivision form (MARC 781), published as a
    resource of its own; unverified against id.loc.gov, which refuses automated fetches. The owner confirms from the
@@ -113,7 +129,11 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    label, type from authority_records where source = 'loc' and uri like '%-781' limit 5;`. If they are twins of the
    plain heading (same label, type Geographic), the build: the loader skips them, and a one-off `delete from
    authority_records where source = 'loc' and uri like '%-781';` clears the index without a reload (size S). Every
-   such twin blocks exact-single and finding 14's uniqueness test for a place LoC uses as a subdivision.
+   such twin blocks exact-single and finding 14's uniqueness test for a place LoC uses as a subdivision. Confirmed
+   by the owner 2026-10-21 (2,392 records, typed Place, labelled as headings) and built that evening: the loader
+   leaves them out. The owner runs the delete (commands below) and checks the subjects file too: `select count(*)
+   from authority_records where source = 'lcsh' and uri like '%-781';` (expected 0; if not, the same delete for
+   lcsh).
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -159,8 +179,10 @@ says "continue with the list"):
     git push
     git push
     dotnet run --project tools/Align -- merge-duplicates --out reports/merge-duplicates.txt
-    (read the list; then)
+    (the refined rule: the place twins with a shared Wikidata id should now merge; read the list, then)
     dotnet run --project tools/Align -- merge-duplicates --apply
+    (in DataGrip)  delete from authority_records where source = 'loc' and uri like '%-781';
+    (on the workbench, by hand: merge the two "England" and the two "London" place entities)
     dotnet run --project tools/Align -- undo-run --run run-20261021-142134-epenbw
     dotnet run --project tools/Align -- reconcile
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10

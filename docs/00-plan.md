@@ -195,7 +195,13 @@ says "continue with the list"):
    it adds: prominence for tied places (finding 17: sitelinks, not TGN name counts), dates for LoC's undated records
    (finding 24 checked rather than trusted), a crosswalk between TGN and LoC, which never link to each other, and a
    check on VIAF clusters. ULAN and LoC already vote through their own Wikidata links, so the gain is in the
-   residue. Size M; remote Wikidata lookups by external id (step 3b) are the cheap first step.
+   residue. Size M; remote Wikidata lookups by external id (step 3b) are the cheap first step. The owner's
+   further thought the same evening: Wikidata is the one authority an archive can contribute to, so an entity
+   confirmed on the desk as a local authority with no identifiers (an obscure sitter, printer or dealer the
+   archive's own catalogue documents) can be given an item there, gain an external id, and be found by every other
+   project and, in time, by VIAF and LUX. A contribution export (a QuickStatements batch of label, dates, roles,
+   nationality and the archive's URI as the reference, for a person to review and submit; confirmed entities only,
+   never provisional ones) belongs beside the LUX export in doc 10 7.5 item 2 when that is designed.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 

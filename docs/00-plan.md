@@ -139,9 +139,12 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    authority_records where source = 'loc' and uri like '%-781';` clears the index without a reload (size S). Every
    such twin blocks exact-single and finding 14's uniqueness test for a place LoC uses as a subdivision. Confirmed
    by the owner 2026-10-21 (2,392 records, typed Place, labelled as headings) and built that evening: the loader
-   leaves them out. The owner runs the delete (commands below) and checks the subjects file too: `select count(*)
-   from authority_records where source = 'lcsh' and uri like '%-781';` (expected 0; if not, the same delete for
-   lcsh).
+   leaves them out. The owner runs the delete (commands below). The subjects file has them too, 45,258 (the owner's
+   count, 2026-10-21 evening: LCSH's own geographic headings each with a subdivision form); before the lcsh delete
+   the owner checks that each has its parent record: `select count(*) from authority_records r where r.source =
+   'lcsh' and r.uri like '%-781' and not exists (select 1 from authority_records p where p.uri = left(r.uri,
+   length(r.uri) - 4));` (expected 0 or near it), then `delete from authority_records where source = 'lcsh' and uri
+   like '%-781';`.
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -193,6 +196,7 @@ says "continue with the list"):
     (the refined rule: the place twins with a shared Wikidata id should now merge; read the list, then)
     dotnet run --project tools/Align -- merge-duplicates --apply
     (in DataGrip)  delete from authority_records where source = 'loc' and uri like '%-781';
+    (in DataGrip)  the lcsh parent check in decision 8, then: delete from authority_records where source = 'lcsh' and uri like '%-781';
     (on the workbench, by hand: merge the two "England" and the two "London" place entities)
     dotnet run --project tools/Align -- undo-run --run run-20261021-142134-epenbw
     dotnet run --project tools/Align -- reconcile

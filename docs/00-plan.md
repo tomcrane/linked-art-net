@@ -53,7 +53,14 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    recommendation is to keep them. The build, on the owner's word: a heading's composite entity (and a minted
    entity for a string that only had a placeholder) takes the legacy identifier the import kept in the string's
    parsed JSON as `legacyUnreconciled`, instead of a fresh one, so the concept LUX already has keeps its id and
-   gains its parts; `CompositeEntityAsync` and `MintAsync` read it. Size S, no reload.
+   gains its parts; `CompositeEntityAsync` and `MintAsync` read it. Size S, no reload. The owner's question
+   (2026-10-21), how a fresh PMC dump cleans up what LUX holds: by the same PMC URIs (LUX updates its copies rather
+   than adding islands), by `equivalent` links on every aligned entity (LUX merges records sharing an external id, so
+   a PMC concept with an LCSH id joins the shared LUX entity), and by composites carrying their parts. A dump cannot
+   retire records: an entity merged away on our side (the two legacy "England") keeps its identifier as an
+   `equivalent` on the survivor so LUX merges the twins. Before the export (doc 10 7.5 item 2) is designed in detail,
+   ask the LUX team whether a source reload replaces by URI and whether records absent from a full dump are retired;
+   the answers decide the export's shape and how merges are written.
 3. ~~*Lone undated namesake of another source* (finding 14)~~: the owner's yes 2026-10-21, built that day (below).
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a

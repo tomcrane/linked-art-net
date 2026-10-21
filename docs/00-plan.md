@@ -84,10 +84,16 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    "Winchester"), each aligned with LUX, VIAF and Wikidata ids, the Wikidata id the same and the VIAF cluster
    different. VIAF and LUX are clusters and hold duplicates, so the rule was refined that evening: a differing VIAF
    or LUX id beside a shared id is not a conflict; a differing authoritative id (Wikidata, TGN, LoC, ULAN) still is;
-   differing VIAF ids with nothing else shared still keep the twins apart. Rerun the dry run before applying. Five
-   places are two aligned entities with ids from different sources and nothing shared ("England": LoC and LUX
-   beside TGN; "Italy", "London", "Dumfries", "Kolkata" likewise): the pass leaves them, and they are the owner's
-   hand merges on the workbench entity page, "England" and "London" first since they block finding 10.
+   differing VIAF ids with nothing else shared still keep the twins apart. The second dry run (16:48) gave the same
+   counts: the 61 place twins carry *different Wikidata ids* (29 pairs) or two VIAF clusters with nothing else
+   shared (26), so Wikidata itself says "Evanston" and "Evanston", "Birmingham" and "Birmingham", "Cambridge" and
+   "Cambridge" are two places (the English city and the American one, or the old pipeline's second-run choice): the
+   pass rightly leaves them, and the desk decides each from its Wikidata ids on the entity page. So the merge does
+   not take "Evanston, Illinois" out of the place queue; "England" and "London" are two aligned entities with ids
+   from different sources and nothing shared ("England": LoC and LUX beside TGN; "Italy", "Dumfries", "Kolkata"
+   likewise), the owner's hand merges on the workbench entity page, "England" and "London" first since they block
+   finding 10. The 292 merges are Types (157) and Groups (115) almost entirely, plus 13 places and 7 people whose
+   twins share an id or have none; safe to apply as listed.
 6. *Home vocabulary sets aside inexact rivals* (finding 21, doc 10 7.6 "Measured ... epenbw"): "Porcelain" has
    LCSH's exact heading, AAT's two exact terms set aside, and LoC's "Porcelain (Musical group)" at 0.85 as the one
    live rival, which blocks exact-single. Proposed: when the home vocabulary has exactly one exact record of the
@@ -193,7 +199,8 @@ says "continue with the list"):
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
 
-Expect, against epenbw: "Evanston, Illinois" and "England" out of the place queue (the merge), "Loire River
+Expect, against epenbw: "England" out of the place queue once merged by hand ("Evanston" stays: two Wikidata
+ids), "Loire River
 (France)", "Carlton House (London)", "Grand tours (Education)", "Ionia (Turkey and Greece)" out of the keywords:head
 queue (findings 19, 20, 22). Run the three ceiling queries of decisions 6, 7 and 8 against epenbw at any time; they
 read the run's evidence, which the undo keeps. Then the TGN level preference is built (next builds, item 1).

@@ -8,7 +8,7 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 public sealed record EvidenceView(string? Stage, EvidenceReading? Reading, List<EvidenceGroup> Groups, JsonElement? Extra);
 public sealed record EvidenceReading(string? Text, string? Key, List<string>? Classes, string? Lifespan, List<string>? Nationalities, List<string>? Roles);
 public sealed record EvidenceGroup(double Score, List<string> Sources, List<EvidenceMember> Members);
-public sealed record EvidenceMember(string Uri, string Source, string? Label, string? Stage, double Score, bool? Veto, string? Reason)
+public sealed record EvidenceMember(string Uri, string Source, string? Label, string? Stage, double Score, bool? Veto, string? Reason, bool? SetAside = null)
 {
     public bool IsStore => Stage == "store";
 }

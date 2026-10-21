@@ -50,7 +50,7 @@ public static class Qualified
     public static (string Name, string? Qualifier) Split(string text)
     {
         var parts = new List<string>();
-        var name = Parenthetical.Replace(text, m => { if (m.Groups[1].Value.Trim().Length > 0) parts.Add(m.Groups[1].Value.Trim()); return " "; });
+        var name = Parenthetical.Replace(text, m => { var q = Qualifying(m.Groups[1].Value); if (q.Length > 0) parts.Add(q); return " "; });
         var comma = name.IndexOf(',');
         if (comma > 0)
         {
@@ -61,6 +61,22 @@ public static class Qualified
         name = Regex.Replace(name, @"\s+", " ").Trim();
         if (name.Length == 0) return (text.Trim(), null);
         return (name, parts.Count == 0 ? null : string.Join(", ", parts));
+    }
+
+    /// <summary>The name and what its parentheticals say, commas left alone: "Cornwall (England : County)" is "Cornwall" placed by "England"; "Art, Modern" is itself.</summary>
+    public static (string Name, string? Qualifier) SplitParenthetical(string text)
+    {
+        var parts = new List<string>();
+        var name = Regex.Replace(Parenthetical.Replace(text, m => { var q = Qualifying(m.Groups[1].Value); if (q.Length > 0) parts.Add(q); return " "; }), @"\s+", " ").Trim();
+        return name.Length == 0 || parts.Count == 0 ? (text.Trim(), null) : (name, string.Join(", ", parts));
+    }
+
+    /// <summary>What a parenthetical says about place: LoC's type after " : " ("London, England : Parish", "England : County") is not a place and is dropped.</summary>
+    private static string Qualifying(string parenthetical)
+    {
+        var p = parenthetical.Trim();
+        var colon = p.IndexOf(" : ", StringComparison.Ordinal);
+        return (colon > 0 ? p[..colon] : p).Trim();
     }
 
     /// <summary>The words a qualifier or a placement is compared by: folded, three letters or more, and not a generic word.</summary>
@@ -98,7 +114,7 @@ public static class Qualified
     public static string? PlacementOf(string? parentString, IEnumerable<string?> labels)
     {
         if (!string.IsNullOrWhiteSpace(parentString)) return parentString;
-        var parts = labels.OfType<string>().SelectMany(l => Parenthetical.Matches(l).Select(m => m.Groups[1].Value.Trim())).Where(x => x.Length > 0).Distinct(StringComparer.Ordinal).ToList();
+        var parts = labels.OfType<string>().SelectMany(l => Parenthetical.Matches(l).Select(m => Qualifying(m.Groups[1].Value))).Where(x => x.Length > 0).Distinct(StringComparer.Ordinal).ToList();
         return parts.Count == 0 ? null : string.Join("; ", parts);
     }
 }

@@ -60,6 +60,10 @@ public static class NameMatcher
         if (fa == fb) return 0.97;
         var ca = NameForms.Canonical(fa, dropQualifiers: false); var cb = NameForms.Canonical(fb, dropQualifiers: false);
         if (ca.Length > 0 && ca == cb) return 0.95;
+        // a parenthetical right after initials is the fuller form of the name, not a qualifier ("Oppé, A. P. (Adolf Paul)", MARC 100 $q):
+        // without it the two are the same name at the folded level
+        var ua = FullerFormDropped(fa); var ub = FullerFormDropped(fb);
+        if ((ua != fa || ub != fb) && ua == ub) return 0.97;
         // equal only once parenthesised qualifiers go: in LoC those are the disambiguators ("Smith, John (Clergyman)"), so this is review territory, not acceptance
         var qa = NameForms.Canonical(fa); var qb = NameForms.Canonical(fb);
         if (qa.Length > 0 && qa == qb) return 0.85;
@@ -74,6 +78,9 @@ public static class NameMatcher
     }
 
     private static string[] Tokens(string key) => key.Split([' ', ',', '.', '-', '\'', '(', ')', '/', ';', ':'], StringSplitOptions.RemoveEmptyEntries);
+
+    private static readonly System.Text.RegularExpressions.Regex FullerForm = new(@"(?<=(?:^|[\s,])[a-z]\.?)\s*\([^()]*\)", System.Text.RegularExpressions.RegexOptions.Compiled);
+    private static string FullerFormDropped(string key) => FullerForm.IsMatch(key) ? FullerForm.Replace(key, "").TrimEnd('.', ' ') : key;
 
     private static bool SameMultiset(string[] a, string[] b)
     {

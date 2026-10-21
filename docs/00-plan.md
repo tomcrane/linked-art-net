@@ -32,8 +32,23 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
 
 1. *Outvoted rivals* (doc 10 7.6 "Confirmed"): at a tie at acceptance score, a group two independent sources carry
    beats a rival one source carries ("Finance" the topic against a hamlet called Finance; "Aberdeen" with LoC's
-   heading joined against four TGN namesakes). To measure on the run after findings 9 and 10, then decide.
+   heading joined against four TGN namesakes). Run pqe98w is the run to measure it on; the owner runs (a ceiling:
+   queued strings with exactly one live two-source group at acceptance score and single-source rivals beside it):
+   `select ss.context, count(*) from decisions d join source_strings ss on ss.id = d.source_string_id cross join
+   lateral (select count(*) filter (where jsonb_array_length(g->'sources') >= 2 and (g->>'score')::numeric >= 0.9
+   and g->'vetoed' is null) as multi, count(*) filter (where jsonb_array_length(g->'sources') = 1 and
+   (g->>'score')::numeric >= 0.9 and g->'vetoed' is null) as single from jsonb_array_elements(d.evidence->'groups')
+   g) x where d.run_id = 'run-20261021-093102-pqe98w' and d.valid and d.method = 'queued' and x.multi = 1 and
+   x.single >= 1 group by 1 order by 2 desc;`
 2. *`unrec_` identifiers* at export (doc 10 7.5 item 2): deferred until what LUX consumes is seen.
+3. *Lone undated namesake of another source* (finding 14, doc 10 7.6 "Measured ... pqe98w"): "Aschan, Marit
+   Guinness, 1919-2004" has ULAN agreeing on the dates and LoC's one record of the name undated, unlinked, so two
+   single-source groups tie. Proposed: an undated record that is its source's only exact record of the name joins
+   the dated-agreeing record of another source and the two vote. Recommendation: yes, with the uniqueness condition
+   ("Smith, John" has many LoC records and would not qualify). Ceiling, the owner runs: `select ss.context, count(*)
+   from decisions d join source_strings ss on ss.id = d.source_string_id where d.run_id =
+   'run-20261021-093102-pqe98w' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is not
+   null and d.evidence::text like '%dates agree%' and jsonb_array_length(d.evidence->'groups') = 2 group by 1;`
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -47,18 +62,27 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    (size S) for the Agent parser's endpoint beside the dates one, a playground page, and a corpus folder seeded from
    the PMC strings.
 
-**Built 2026-10-21 and waiting for a rerun to measure:** findings 9 and 10 (placed-through for every string, with a
-placement on every place record; the project's one bare entity joins the placed group), finding 3 as policy (the
-undated same-source namesake vetoed), finding 4 (a lower-case compound part rejoined with one hyphen, "Stage-setting
-and scenery" looked up whole), and finding 11 (AAT's spans of time typed Period, which needs the aat reload below).
-No manifest refresh.
+**Measured 2026-10-21 on run-20261021-093102-pqe98w (stands):** findings 9, 10, 3-as-policy, 4 and 11 together:
+accepted 4,862 -> 5,492, queued 8,483 -> 7,889 (place 584 -> 499, keywords:sub 579 -> 508, keywords:head 2,078 ->
+1,659). Doc 10 7.6 "Measured ... pqe98w" has the per-context reading.
+
+**Built 2026-10-21 from that run's samples, waiting for the next rerun:** set-aside as a state distinct from veto
+(the collections rule had poisoned "20th century" through AAT's link to the set-aside topic heading); finding 12
+(LoC's " : Parish" type dropped from placements, "Hammersmith, London"); finding 13 (a heading's own parenthetical
+read as its qualifier in the keyword contexts, "Cornwall (England : County)", "National Gallery of Canada (Ottawa,
+Canada)"); finding 15 (a parenthetical after initials is MARC's fuller form, "Oppé, A. P. (Adolf Paul)"); finding 4
+extended to prefix parts ("Pre--Raphaelitism"). No reload, no manifest refresh.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
 
-1. TGN level preference for the nation shape ("Canada", "England", "China": LoC's unqualified heading joined to TGN's
-   record of the highest level among namesakes of differing type), designed from the exports once 9 is measured.
-2. "Outvoted rivals", if the owner says yes after measuring.
+1. TGN level preference ("Paris", "Aix-en-Provence", "China", "Canada": TGN namesakes of differing level, LoC's
+   placed heading inside several and joining none): LoC's heading says the level in its type after " : " (none for
+   the city, "Arrondissement", "Kreis"), TGN's `placeType` says the record's, and the heading holds the namesake
+   whose level it names; an unqualified LoC heading holds the highest level (the nation). Designed from the pqe98w
+   samples; to build next.
+2. Finding 14 (lone undated namesake of another source), if the owner says yes; "outvoted rivals", if yes after
+   measuring.
 3. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
 4. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
    the owner.
@@ -66,17 +90,15 @@ says "continue with the list"):
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- load-getty <the aat files as before> --vocab aat
-    dotnet run --project tools/Align -- undo-run --run run-20261020-160811-e2xu8x
+    dotnet run --project tools/Align -- undo-run --run run-20261021-093102-pqe98w
     dotnet run --project tools/Align -- reconcile
     dotnet run --project tools/Align -- decisions --run <new run id> --method minted --limit 1
-    dotnet run --project tools/Align -- decisions --run <new run id> --context place --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
 
-Paste the four outputs. Expect, against run e2xu8x: place queued (584) and keywords:sub queued (579) to fall by the
-placement shapes and the centuries; keywords:head queued (2,058) to fall by up to 754, persauthorfull (1,584) and
-publisher (1,257) a little, by the undated namesakes; a few of the 3,033 minted keywords held whole by LCSH.
+Run the two ceiling queries above against pqe98w before the undo (or drop `and d.valid` after it). Expect, against
+pqe98w: "20th century" and its kind accepted in keywords:sub, "Hammersmith, London" a single, the parenthetical
+heads voting or answering from the store, keywords:head queued (1,659) down again.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

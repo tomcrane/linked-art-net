@@ -627,6 +627,55 @@ subdivision strings began in lower case in run tzm64p; the rerun says how many h
 reload. Finding 11 built the same morning (see its paragraph above): an aat reload, then the one rerun measures
 findings 9, 10, 3, 4 and 11 together, each readable in its own context's rows.
 
+Measured 2026-10-21 (run-20261021-093102-pqe98w, after the aat reload, against e2xu8x): accepted 4,862 -> 5,492
+(vote 2,085 -> 2,533, single 647 -> 773, exact-single 2,130 -> 2,186), queued 8,483 -> 7,889, minted 12,290 ->
+12,361, compounds 15,749 -> 15,675 over 9,328 part strings; store stage 823 s. By context: place queued 584 -> 499
+and vote 125 -> 207 (finding 9: "Piltown, County Kilkenny" a vote with LoC's "Piltown (Ireland)" placed through TGN);
+keywords:sub queued 579 -> 508 and vote 84 -> 151 (the collections rule and finding 11); keywords:head queued 2,078
+-> 1,659, vote 1,479 -> 1,772, single 549 -> 635 (finding 3 as policy: 419 of its ceiling of 754); persauthorfull
+queued 1,584 -> 1,576 and publisher 1,257 -> 1,217 (ceilings 29 and 50); keywords exact-single 352 -> 388 and
+composite 15,749 -> 15,675 (finding 4: 74 headings rejoined, most held whole by LCSH). The samples, read:
+
+- "20th century" was still queued, and it is a flaw in the collections rule (finding 2's build): AAT's "twentieth
+  century (dates CE)" is `skos:exactMatch` to LCSH's topic "Twentieth century" (checked at vocab.getty.edu), the
+  record the rule had vetoed for the subdivision "20th century"; the group's union-find put all three together and
+  a vetoed member linked to a live one marks the whole group vetoed, so the Express train at 0.85 ranked first.
+  Fixed 2026-10-21: a preference is not a contradiction. `ScoredCandidate.SetAside` is the new state for a record
+  not wanted here (outside the wanted collections, or another vocabulary's second exact term), distinct from a veto
+  (dates or type conflict, a namesake the qualifier rejects): a set-aside member is not live and cannot be the
+  answer, but it does not poison its group, and a group of set-aside records is not a namesake for the exact-single
+  policy ("Evaluation" with AAT's two exact terms set aside is an exact-single on LCSH). The evidence writes
+  `setAside` beside `veto`, and the desk dims both.
+- "Hammersmith, London" was queued: LoC's "Hammersmith (London, England : Parish)" was placed by the string's
+  qualifier but not placed through TGN, because its placement carried "Parish", which TGN's parent string does not.
+  Finding 12, fixed the same day: LoC's type after " : " (Parish, County, Town) is not a place; `Qualified` drops it
+  from a parenthetical when reading a placement or a qualifier.
+- "Cornwall (England : County)", "Istanbul (Turkey)", "St. Mary (Lambeth, England : Parish)" and "National Gallery
+  of Canada (Ottawa, Canada)" (keywords:head) were queued: the heading's own LoC-style parenthetical was part of the
+  name, so LoC's heading matched at 1.00 and every other record at 0.85, and nothing could be a vote. Finding 13,
+  built the same day: in a context that is not qualified, a heading ending in a parenthetical is read with the
+  parenthetical as its qualifier and commas left alone ("Art, Modern" is itself), the entity keeping the whole
+  heading as its label (`StringReading.LabelOverride`); so TGN's Cornwall is placed by England and LoC's heading
+  joins it, and the project's "National Gallery of Canada" answers from the store.
+- "Oppé, A. P. (Adolf Paul), 1878-1957" was queued on LoC alone at 0.90: the heading's "(Adolf Paul)" is MARC's
+  fuller form of the name (100 $q), not a qualifier, and the scorer had put it at 0.85. Finding 15, built the same
+  day in `NameMatcher.Score`: a parenthetical right after initials is dropped before comparing, and the names are
+  the same at the folded level (0.97), so the dates then carry a single.
+- "Pre" was a head: "Pre--Raphaelitism" keyed with the separator, which finding 4 did not catch because
+  "Raphaelitism" is capitalised. Finding 4 extended: a part that is only a prefix (pre, post, anti, neo, non, proto,
+  pseudo, semi, mid, ex; from the assistant's knowledge, not a file) is rejoined to the next with a hyphen.
+- "Aschan, Marit Guinness, 1919-2004": ULAN agrees on the dates, LoC's one record of the name is undated, and the
+  two are not linked, so two single-source groups tie and the string is queued. Finding 14, a policy question for
+  the owner: an undated record that is its source's only exact record of the name joins the record of another
+  source whose dates agree with the string's ("LoC knows one Marit Guinness Aschan; ULAN dates her"), and the two
+  vote. Not built; ceiling to measure with the query in the plan.
+- "Paris", "Aix-en-Provence", "Bottrop, Essen", "China", "Canada": TGN namesakes of differing level (the city and
+  its arrondissement or Kreis, the nation and a hamlet), LoC's placed heading "inside 3 placed candidates" and so
+  joining none: the TGN level preference, next on the list, now with its shape clear from these. LoC's own
+  heading says the level: "Aix-en-Provence (France)" is the city, "(France : Arrondissement)" would be the
+  arrondissement, so the heading's type after " : " (finding 12 drops it from the placement, but it can be kept
+  beside it) and TGN's `placeType` decide which namesake the heading holds.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

@@ -213,7 +213,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // one acceptable entity, or one acceptable entity with authority behind it among provisional lookalikes. An entity
             // minted for a string that is itself awaiting review never answers silently; an entity minted because nothing
             // was found anywhere does, so the same unknown name across contexts becomes one local authority.
-            var storeScored = Score(reading, candidates).Where(c => !c.Veto && c.Score >= _options.AcceptScore).ToList();
+            var storeScored = Score(reading, candidates).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore).ToList();
             // in a qualified context ("Heaton, Bradford") an entity answers silently only when its qualifier agrees with the string's, or
             // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
@@ -251,7 +251,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // policy: one source's exact match, the only candidate there is (vetoed or not), authority records only, and
         // nothing on the string to check it against (an undated string); see ReconcilerOptions.AcceptUniqueExactSingleSource
         // a name of one word ("Mr Farebrother" read as "Farebrother") is not exact enough to carry this alone: a person decides
-        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count == 1 && reading.Lifespan is null
+        // a group of records set aside by preference (another vocabulary's two exact terms, a record outside the wanted collections) is not a namesake
+        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => g.Members.Any(m => !m.SetAside)) == 1 && reading.Lifespan is null
             && (reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
             && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
@@ -388,15 +389,15 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // (Ireland)" is TGN's Abbeyleix in Laois, Ireland whether the string says so or not, and TGN and LoC then agree. Inside
         // two holders of one source (a city and its district with the same parent string) it is placed through neither; the
         // desk tells them apart.
-        var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto).ToList();
+        var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto && !m.SetAside).ToList();
         var holders = reading.Qualifier is not null ? placed
-            : list.Where(m => !m.Veto && m.Candidate.Placement is not null && m.Candidate.Class is EntityClass.Place or null && m.Candidate.NameScore >= 0.97).ToList();
+            : list.Where(m => !m.Veto && !m.SetAside && m.Candidate.Placement is not null && m.Candidate.Class is EntityClass.Place or null && m.Candidate.NameScore >= 0.97).ToList();
         if (holders.Count == 0) return list;
         var inside = new HashSet<int>();
         for (var i = 0; i < list.Count; i++)
         {
             var b = list[i];
-            if (b.Veto || b.Candidate.Placement is null || b.JoinedTo is not null) continue;
+            if (b.Veto || b.SetAside || b.Candidate.Placement is null || b.JoinedTo is not null) continue;
             if (reading.Qualifier is null && (b.Candidate.Class is not (EntityClass.Place or null) || b.Candidate.NameScore < 0.85)) continue;
             var words = Qualified.Tokens(b.Candidate.Placement);
             if (words.Count == 0) continue;
@@ -434,12 +435,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         int Rank(Candidate c) { for (var i = 0; i < wanted.Count; i++) if (c.Collections!.Contains(wanted[i], StringComparer.OrdinalIgnoreCase)) return i; return wanted.Count; }
         foreach (var source in list.Where(m => m.Candidate.Collections is { Count: > 0 }).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
         {
-            var exact = list.Select((m, i) => (m, i)).Where(x => !x.m.Veto && x.m.Candidate.Source == source && x.m.Candidate.Collections is { Count: > 0 } && x.m.Candidate.NameScore >= 0.97).ToList();
+            var exact = list.Select((m, i) => (m, i)).Where(x => !x.m.Veto && !x.m.SetAside && x.m.Candidate.Source == source && x.m.Candidate.Collections is { Count: > 0 } && x.m.Candidate.NameScore >= 0.97).ToList();
             if (exact.Count < 2) continue;
             var best = exact.Min(x => Rank(x.m.Candidate));
             if (best == wanted.Count) continue;
             foreach (var (m, i) in exact)
-                if (Rank(m.Candidate) > best) list[i] = m with { Veto = true, Reason = m.Reason + $"; {source}'s {wanted[best]} record of the name is the one wanted here" };
+                if (Rank(m.Candidate) > best) list[i] = m with { SetAside = true, Reason = m.Reason + $"; {source}'s {wanted[best]} record of the name is the one wanted here" };
         }
     }
 
@@ -456,10 +457,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// </summary>
     private static void JoinToHome(string home, List<ScoredCandidate> list)
     {
-        var exact = list.Where(m => !m.Veto && m.Candidate.Source == home && m.Candidate.NameScore >= 0.97).ToList();
+        var exact = list.Where(m => !m.Veto && !m.SetAside && m.Candidate.Source == home && m.Candidate.NameScore >= 0.97).ToList();
         if (exact.Count != 1) return;
         var h = exact[0];
-        bool Eligible(ScoredCandidate b) => !b.Veto && b.Candidate.Source != home && b.Candidate.NameScore >= 0.97 && b.JoinedTo is null
+        bool Eligible(ScoredCandidate b) => !b.Veto && !b.SetAside && b.Candidate.Source != home && b.Candidate.NameScore >= 0.97 && b.JoinedTo is null
             && !(b.Candidate.Class is { } cls && h.Candidate.Class is { } homeClass && cls != homeClass);
         foreach (var source in list.Where(Eligible).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
         {
@@ -469,7 +470,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 if (SameThing(b, h)) continue;
                 list[i] = terms.Count == 1 || source == "store"
                     ? b with { JoinedTo = h.Candidate.Uri, Reason = b.Reason + $"; carried by {home} {h.Candidate.Label}" }
-                    : b with { Veto = true, Reason = b.Reason + $"; {home} {h.Candidate.Label} decides: {source} has {terms.Count} exact terms of the name, none carried" };
+                    : b with { SetAside = true, Reason = b.Reason + $"; {home} {h.Candidate.Label} decides: {source} has {terms.Count} exact terms of the name, none carried" };
             }
         }
     }
@@ -497,7 +498,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             .Select(g =>
             {
                 var members = g.OrderByDescending(m => m.Score).ToList();
-                var live = members.Where(m => !m.Veto).ToList();
+                // set-aside members are not live, but unlike vetoed ones they do not poison a group the authorities' links put them in
+                var live = members.Where(m => !m.Veto && !m.SetAside).ToList();
                 var uris = members.Select(m => m.Candidate.Uri).Concat(members.SelectMany(m => m.Candidate.SameAs)).Distinct(StringComparer.Ordinal).ToArray();
                 var liveUris = live.Select(m => m.Candidate.Uri).ToHashSet(StringComparer.Ordinal);
                 var linkedVeto = members.Any(m => m.Veto && (m.Candidate.SameAs.Any(liveUris.Contains) || live.Any(l => l.Candidate.SameAs.Contains(m.Candidate.Uri, StringComparer.Ordinal))));
@@ -520,7 +522,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     private string? CarriedBy(CandidateGroup group)
     {
         if (group.Sources.Count >= _options.MinIndependentSources) return DecisionMethod.Vote;
-        if (group.Members.Any(m => !m.Veto && m.Candidate.EntityId is not null && !m.Candidate.Provisional)) return DecisionMethod.Vote;
+        if (group.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional)) return DecisionMethod.Vote;
         var best = group.Best;
         return _options.AcceptSingleSourceWithDates && (best.DatesAgree || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97 ? DecisionMethod.Single : null;
     }
@@ -605,7 +607,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             groups = groups.Take(5).Select(g => new
             {
                 g.Score, g.Sources, vetoed = g.Vetoed ? true : (bool?)null,
-                members = g.Members.Take(8).Select(m => new { m.Candidate.Uri, m.Candidate.Source, m.Candidate.Label, m.Candidate.Stage, m.Score, veto = m.Veto ? true : (bool?)null, m.Reason }),
+                members = g.Members.Take(8).Select(m => new { m.Candidate.Uri, m.Candidate.Source, m.Candidate.Label, m.Candidate.Stage, m.Score, veto = m.Veto ? true : (bool?)null, setAside = m.SetAside ? true : (bool?)null, m.Reason }),
             }),
             extra,
         }, EvidenceJson);

@@ -54,7 +54,7 @@ else
     var first = true;
     foreach (var group in ev.Groups)
     {
-        var live = group.Members.Where(m => m.Veto != true).ToList();
+        var live = group.Members.Where(m => m.Veto != true && m.SetAside != true).ToList();
         var allVeto = live.Count == 0;
         <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")">
             <div class="row">
@@ -65,7 +65,7 @@ else
             @foreach (var m in group.Members)
             {
                 item.Records.TryGetValue(m.Uri, out var record);
-                <div class="row" style="margin-top:.5rem; @(m.Veto == true ? "opacity:.6" : "")">
+                <div class="row" style="margin-top:.5rem; @(m.Veto == true || m.SetAside == true ? "opacity:.6" : "")">
                     <div style="flex:1">
                         <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong>
                         @if (record?.Lifespan?.Text is { } life) { <span class="muted">@life</span> }

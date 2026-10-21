@@ -41,7 +41,8 @@ public sealed record StringReading(
     IReadOnlyList<string>? Parts = null,
     PartsRule? PartsRule = null,
     string? Home = null,
-    IReadOnlyList<string>? Collections = null)
+    IReadOnlyList<string>? Collections = null,
+    string? LabelOverride = null)
 {
     public string Key => Keys.Count > 0 ? Keys[0] : "";
     /// <summary>The shape of a string made of parts, null for a string that is not.</summary>
@@ -51,7 +52,11 @@ public sealed record StringReading(
         (position == 0 && PartsRule?.Shape == PartsShape.Compound ? PartsRule.HeadContext ?? PartsRule.Context : PartsRule?.Context) ?? parentContext;
     public bool HasLifespan => Lifespan is { IsEmpty: false };
     /// <summary>The label a new entity gets: the name with its qualifier, so a minted "Heaton, Bradford" is not a bare "Heaton" that captures every other Heaton.</summary>
-    public string Label => Qualifier is null ? Text : $"{Text}, {Qualifier}";
+    public string Label => LabelOverride ?? (Qualifier is null ? Text : $"{Text}, {Qualifier}");
+
+    // a part that is only a prefix was split from its word at the hyphen ("Pre--Raphaelitism"); from the assistant's knowledge of
+    // English prefixes that LCSH joins with a hyphen, not from a file
+    private static readonly HashSet<string> Prefixes = new(StringComparer.OrdinalIgnoreCase) { "pre", "post", "anti", "neo", "non", "proto", "pseudo", "semi", "mid", "ex" };
 
     /// <summary>Reads a string under its context's rule, through the agent parser when the rule names a profile.</summary>
     public static StringReading Read(SourceString s, ContextRule rule, AgentStringParser? parser)
@@ -68,7 +73,7 @@ public sealed record StringReading(
                 // looked up whole (doc 10, section 7.6 finding 4)
                 var joined = new List<string> { pieces[0] };
                 foreach (var piece in pieces.Skip(1))
-                    if (char.IsLower(piece[0])) joined[^1] = joined[^1] + "-" + piece; else joined.Add(piece);
+                    if (char.IsLower(piece[0]) || Prefixes.Contains(joined[^1])) joined[^1] = joined[^1] + "-" + piece; else joined.Add(piece);
                 if (joined.Count != pieces.Length) { pieces = joined.ToArray(); whole = string.Join(pr.Separator, pieces); }
             }
             if (pieces.Length >= 2)
@@ -87,7 +92,16 @@ public sealed record StringReading(
         IReadOnlyList<string> nationalities = [];
         IReadOnlyList<string> roles = [];
         string? qualifier = null;
+        string? labelOverride = null;
         if (rule.Qualified && parser is null && parts is null) (text, qualifier) = Qualified.Split(s.Raw);
+        // a heading in a context that is not qualified may still carry a cataloguer's parenthetical ("Cornwall (England : County)",
+        // "National Gallery of Canada (Ottawa, Canada)"): the parenthetical alone is read as the qualifier, commas left alone ("Art,
+        // Modern"), and the entity keeps the whole heading as its label (doc 10, section 7.6 finding 13)
+        else if (!rule.Qualified && parser is null && parts is null && text.EndsWith(')'))
+        {
+            var (name, inParentheses) = Qualified.SplitParenthetical(text);
+            if (inParentheses is not null) { text = name; qualifier = inParentheses; labelOverride = s.Raw.Trim(); }
+        }
         if (parser is not null)
         {
             agent = parser.Parse(s.Raw);
@@ -105,7 +119,7 @@ public sealed record StringReading(
             nationalities = agent.Nationalities.Select(n => n.AatUri ?? n.Label).Distinct(StringComparer.Ordinal).ToArray();
             roles = agent.Roles.Where(r => r.IsOccupation).Select(r => r.Label).Distinct(StringComparer.Ordinal).ToArray();
         }
-        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified, parts, rule.Parts, rule.Home, rule.Collections);
+        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified, parts, rule.Parts, rule.Home, rule.Collections, labelOverride);
     }
 }
 
@@ -138,7 +152,8 @@ public sealed record Candidate(
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
 /// <param name="QualifierAgrees">The string's qualifier was found in the record's placement (true), looked for and not found (false), or there was nothing to compare (null).</param>
 /// <param name="JoinedTo">The URI of a candidate this one is grouped with though no sameAs links them: a placed candidate of another source whose placement contains this one's (LoC's "Princes Risborough (England)" through TGN's in Buckinghamshire, England), or the context's home vocabulary's exact term that this exact term of another vocabulary is carried by (AAT's "children's literature" by LCSH's "Juvenile literature").</param>
-public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null);
+/// <param name="SetAside">Not wanted here by a preference rather than a contradiction (a record outside the context's collections, another vocabulary's second exact term): it is not the answer, but unlike a veto it does not poison a group that the authorities' own links put it in.</param>
+public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null, bool SetAside = false);
 
 /// <summary>Candidates that are the same real-world thing across sources, joined through their mutual sameAs links, voting as one.</summary>
 /// <param name="Vetoed">Every member is vetoed, or a vetoed member is the same thing as a live one by the authorities' own links: the group cannot be the answer.</param>

@@ -268,6 +268,12 @@ public class GroupingTests
         Assert.True(Qualified.Agrees("N.W.T.", "Tulita, Northwest Territories, Canada, North and Central America, World"));
         Assert.Equal(["kent", "southaustralia"], Qualified.Tokens("Kent Town (S. Aust.)").Order()); // "town" is noise
         Assert.Null(Qualified.Agrees("W.", "Princeton, New Jersey, United States, North and Central America, World")); // an initial places nothing
+        // LoC's type after " : " is not a place: "Hammersmith (London, England : Parish)" is placed by London and England
+        Assert.Equal("London, England", Qualified.PlacementOf(null, ["Hammersmith (London, England : Parish)"]));
+        Assert.True(Qualified.Contains("Hammersmith and Fulham, London, Greater London, England, United Kingdom, Europe, World", Qualified.Tokens(Qualified.PlacementOf(null, ["Hammersmith (London, England : Parish)"]))));
+        Assert.Equal(("Cornwall", "England"), Qualified.SplitParenthetical("Cornwall (England : County)"));
+        Assert.Equal(("National Gallery of Canada", "Ottawa, Canada"), Qualified.SplitParenthetical("National Gallery of Canada (Ottawa, Canada)"));
+        Assert.Equal(("Art, Modern", (string?)null), Qualified.SplitParenthetical("Art, Modern")); // commas are left alone
         Assert.Null(Qualified.Agrees("Bradford", null));
         Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
 
@@ -362,14 +368,14 @@ public class GroupingTests
         var repositories = new Candidate("http://vocab.getty.edu/aat/300443967", "aat", "private collections (repositories)", EntityClass.Type, null, [], "local", 1.0);
         var groupings = new Candidate("http://vocab.getty.edu/aat/300146236", "aat", "private collections (object groupings)", EntityClass.Type, null, [], "local", 1.0);
         var several = Reconciler.Score(collections, [lcshPc, repositories, groupings], 120);
-        Assert.False(several[0].Veto);
-        Assert.True(several[1].Veto); Assert.Contains("aat has 2 exact terms of the name, none carried", several[1].Reason);
-        Assert.True(several[2].Veto);
+        Assert.False(several[0].SetAside);
+        Assert.True(several[1].SetAside); Assert.False(several[1].Veto); Assert.Contains("aat has 2 exact terms of the name, none carried", several[1].Reason);
+        Assert.True(several[2].SetAside);
         var decided = Reconciler.Groups(several);
         Assert.Equal(lcshPc.Uri, decided[0].Best.Candidate.Uri); Assert.Equal(["lcsh"], decided[0].Sources); Assert.False(decided[0].Vetoed);
         // a term the home record's links say is the same thing is in the group already and is left alone
         var linked = Reconciler.Score(collections, [lcshPc with { SameAs = [repositories.Uri] }, repositories, groupings], 120);
-        Assert.False(linked[1].Veto); Assert.Null(linked[1].JoinedTo); Assert.True(linked[2].Veto);
+        Assert.False(linked[1].SetAside); Assert.Null(linked[1].JoinedTo); Assert.True(linked[2].SetAside);
         Assert.Equal(lcshPc.Uri, Reconciler.Groups(linked)[0].Best.Candidate.Uri); Assert.False(Reconciler.Groups(linked)[0].Vetoed);
     }
 
@@ -384,6 +390,23 @@ public class GroupingTests
         Assert.Equal(["Theaters", "Stage-setting and scenery", "Great Britain"], mixed.Parts); Assert.Equal("Theaters--Stage-setting and scenery--Great Britain", mixed.Text);
         var plain = StringReading.Read(Keyword("Art, Modern--20th century"), rule, null);
         Assert.Equal(["Art, Modern", "20th century"], plain.Parts); Assert.Equal("Art, Modern--20th century", plain.Text); // a digit is not lower case
+        // a part that is only a prefix was split from its word at the hyphen
+        Assert.Null(StringReading.Read(Keyword("Pre--Raphaelitism"), rule, null).Parts);
+        Assert.Equal("Pre-Raphaelitism", StringReading.Read(Keyword("Pre--Raphaelitism"), rule, null).Text);
+        Assert.Equal(["Pre-Raphaelites", "Exhibitions"], StringReading.Read(Keyword("Pre--Raphaelites--Exhibitions"), rule, null).Parts);
+        // a heading's parenthetical is read as its qualifier in a context that is not qualified, commas left alone, the whole heading kept as the label
+        var headRule = ProjectManifest.PmcDefault.ToOptions().Contexts["keywords:head"];
+        var cornwall = StringReading.Read(Keyword("Cornwall (England : County)"), headRule, null);
+        Assert.Equal("Cornwall", cornwall.Text); Assert.Equal("England", cornwall.Qualifier); Assert.Equal("Cornwall (England : County)", cornwall.Label); Assert.False(cornwall.IsQualified);
+        var modern = StringReading.Read(Keyword("Art, Modern"), headRule, null);
+        Assert.Null(modern.Qualifier); Assert.Equal("Art, Modern", modern.Label);
+    }
+
+    [Fact]
+    public void A_parenthetical_after_initials_is_the_fuller_form_of_the_name()
+    {
+        Assert.Equal(0.97, NameMatcher.Score("Oppé, A. P.", ["Oppé, A. P. (Adolf Paul)"])); // MARC 100 $q: the same name
+        Assert.Equal(0.85, NameMatcher.Score("Smith, John", ["Smith, John (Clergyman)"])); // a qualifier after a full name: review territory
     }
 
     [Fact]
@@ -397,18 +420,29 @@ public class GroupingTests
         var aat = new Candidate("http://vocab.getty.edu/aat/300026059", "aat", "catalogs (documents)", EntityClass.Type, null, [], "local", 1.0); // no collections: left alone
         var sub = Reading("Catalogs", EntityClass.Type) with { Home = "lcsh", Collections = ["GenreFormSubdivisions", "Subdivisions"] };
         var scored = Reconciler.Score(sub, [heading, topical, form, aat], 120);
-        Assert.True(scored[0].Veto); Assert.Contains("GenreFormSubdivisions record of the name is the one wanted here", scored[0].Reason);
-        Assert.True(scored[1].Veto); // in Subdivisions, but the form subdivision is wanted first
-        Assert.False(scored[2].Veto);
+        Assert.True(scored[0].SetAside); Assert.False(scored[0].Veto); Assert.Contains("GenreFormSubdivisions record of the name is the one wanted here", scored[0].Reason);
+        Assert.True(scored[1].SetAside); // in Subdivisions, but the form subdivision is wanted first
+        Assert.False(scored[2].SetAside);
         Assert.Equal(form.Uri, scored[3].JoinedTo); // one exact home record left: the home rule carries AAT's term
         Assert.Equal(form.Uri, Reconciler.Groups(scored)[0].Best.Candidate.Uri);
         // the heads want the heading
         var head = Reading("Catalogs", EntityClass.Type) with { Home = "lcsh", Collections = ["LCSHAuthorizedHeadings"] };
         var heads = Reconciler.Score(head, [heading, topical, form], 120);
-        Assert.False(heads[0].Veto); Assert.True(heads[1].Veto); Assert.True(heads[2].Veto);
+        Assert.False(heads[0].SetAside); Assert.True(heads[1].SetAside); Assert.True(heads[2].SetAside);
         // a lone record stands whatever its collection, and without a wanted collection all three are rivals
-        Assert.False(Reconciler.Score(head, [form], 120)[0].Veto);
-        Assert.All(Reconciler.Score(sub with { Collections = null }, [heading, topical, form], 120), m => Assert.False(m.Veto));
+        Assert.False(Reconciler.Score(head, [form], 120)[0].SetAside);
+        Assert.All(Reconciler.Score(sub with { Collections = null }, [heading, topical, form], 120), m => Assert.False(m.SetAside));
+        // a record set aside by preference does not poison the group another vocabulary's links put it in: AAT's "twentieth century
+        // (dates CE)" is exactMatch to LCSH's topic "Twentieth century" (checked at vocab.getty.edu, 2026-10-21), which is set aside for
+        // the subdivision "20th century"; the group of the three still stands, with two sources
+        var sub20 = Reading("20th century", EntityClass.Period) with { Home = "lcsh", Collections = ["Subdivisions"] };
+        var subdivision = new Candidate("http://id.loc.gov/authorities/subjects/sh2002012476", "lcsh", "20th century", EntityClass.Period, null, [], "local", 1.0, Collections: ["Subdivisions", "TemporalSubdivisions"]);
+        var topic20 = new Candidate("http://id.loc.gov/authorities/subjects/sh85139020", "lcsh", "Twentieth century", EntityClass.Period, null, [], "local", 1.0, Collections: ["LCSHAuthorizedHeadings"]);
+        var aat20 = new Candidate("http://vocab.getty.edu/aat/300404514", "aat", "twentieth century (dates CE)", EntityClass.Period, null, [topic20.Uri], "local", 1.0);
+        var century = Reconciler.Groups(Reconciler.Score(sub20, [subdivision, topic20, aat20], 120));
+        Assert.False(century[0].Vetoed); Assert.Equal(3, century[0].Members.Count);
+        Assert.Equal(["aat", "lcsh"], century[0].Sources.OrderBy(x => x, StringComparer.Ordinal));
+        Assert.Equal(subdivision.Uri, century[0].Best.Candidate.Uri);
         // the collections reach a candidate from the record's data
         var record = new AuthorityRecord(form.Uri, "lcsh", "Catalogs", ["Catalogs"], "Type", null, [], "{\"collections\":[\"GenreFormSubdivisions\",\"Subdivisions\"]}", DateTimeOffset.UtcNow, "test");
         Assert.Equal(["GenreFormSubdivisions", "Subdivisions"], LocalIndexSource.ToCandidate(record, sub, "local").Collections);
@@ -714,6 +748,13 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(DecisionMethod.Composite, (await pg.Store.DecisionForAsync(sculptures.Id))!.Method);
         Assert.Equal(DecisionMethod.Minted, (await pg.Store.DecisionForAsync(sculpture.Id))!.Method);
         Assert.Null(await pg.Store.RevertDecisionAsync(sculpture.Id)); // one decision only: nothing superseded stands behind it
+        // another vocabulary's two exact terms, set aside by the home rule, are not namesakes: the one LCSH record is an exact-single
+        await pg.Store.PutAuthorityAsync(Lcsh("sh00005674", "Evaluation", "Type"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/aat/300027474", "aat", "appraisals (financial records)", ["appraisals (financial records)", "evaluation"], "Type", null, [], null, now, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/aat/300379340", "aat", "evaluation (assessment)", ["evaluation (assessment)", "evaluation"], "Type", null, [], null, now, "test"));
+        var evaluation = await pg.Store.CollectAsync(ds, "keywords:sub", "Evaluation");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, evaluation));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(evaluation.Id))!.Method);
     }
 
     [PostgresFact]

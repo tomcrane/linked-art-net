@@ -39,7 +39,12 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    and g->'vetoed' is null) as multi, count(*) filter (where jsonb_array_length(g->'sources') = 1 and
    (g->>'score')::numeric >= 0.9 and g->'vetoed' is null) as single from jsonb_array_elements(d.evidence->'groups')
    g) x where d.run_id = 'run-20261021-093102-pqe98w' and d.valid and d.method = 'queued' and x.multi = 1 and
-   x.single >= 1 group by 1 order by 2 desc;`
+   x.single >= 1 group by 1 order by 2 desc;` Measured 2026-10-21: 510 strings (persauthorfull 144, keywords:head
+   115, keywords:sub 83, place 68, publisher 51, keywords 34, corpauthor 15). Recommendation: yes for Place, Type and
+   Period (up to 185: hamlets and homonymous topics are the rivals), not yet for Person and Group (325: an undated
+   "Smith, John" with a ULAN-linked LoC record beside another John Smith LoC knows is desk work, and two vocabularies
+   knowing a name is prominence, not identity); never over one of the project's own aligned entities; rivals marked
+   "outvoted" in the evidence. People to revisit against the 2024 shadow. Owner's word awaited.
 2. *`unrec_` identifiers* at export (doc 10 7.5 item 2): deferred until what LUX consumes is seen.
 3. ~~*Lone undated namesake of another source* (finding 14)~~: the owner's yes 2026-10-21, built that day (below).
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan

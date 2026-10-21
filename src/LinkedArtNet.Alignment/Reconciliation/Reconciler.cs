@@ -242,7 +242,17 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var topIsFirm = top is not null && top.Members.Any(m => !m.Veto && !m.Candidate.Provisional);
         var second = live.Skip(1).FirstOrDefault(g => !topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional));
         var carried = top is null ? null : CarriedBy(top);
-        if (top is not null && top.Score >= _options.AcceptScore && !truncated && carried is not null && (second is null || second.Score < _options.AcceptScore))
+        // outvoted rivals (the owner's policy, 2026-10-21, doc 10 section 7.6): for a place or a concept, a group two independent sources
+        // carry beats rivals one source carries at the same score (TGN's Scottish Aberdeen with LoC's "Aberdeen (Scotland)" joined,
+        // against four TGN namesakes no LoC heading reaches); never over one of the project's own aligned entities or another
+        // two-source group, and never for people and bodies, where sameness of name is weak evidence and the desk decides
+        var rivals = top is null ? [] : live.Skip(1).Where(g => g.Score >= _options.AcceptScore).ToList();
+        var outvoted = top is not null && second is not null && second.Score >= _options.AcceptScore && top.Sources.Count >= 2
+            && (top.Best.Candidate.Class ?? reading.Classes[0]) is EntityClass.Place or EntityClass.Type or EntityClass.Period
+            && rivals.All(g => g.Sources.Count <= 1 && !g.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional));
+        if (outvoted)
+            groups = groups.Select(g => rivals.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; outvoted by a group of {top!.Sources.Count} sources" }).ToList() } : g).ToList();
+        if (top is not null && top.Score >= _options.AcceptScore && !truncated && carried is not null && (second is null || second.Score < _options.AcceptScore || outvoted))
         {
             // the group's ids already on two different entities of ours means the store disagrees with itself: review, not a vote onto the first
             if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);

@@ -44,7 +44,9 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    Period (up to 185: hamlets and homonymous topics are the rivals), not yet for Person and Group (325: an undated
    "Smith, John" with a ULAN-linked LoC record beside another John Smith LoC knows is desk work, and two vocabularies
    knowing a name is prominence, not identity); never over one of the project's own aligned entities; rivals marked
-   "outvoted" in the evidence. People to revisit against the 2024 shadow. Owner's word awaited.
+   "outvoted" in the evidence. People to revisit against the 2024 shadow. The owner's yes as recommended,
+   2026-10-21, built that day (doc 10 7.6 "Outvoted rivals"); the rerun measures it in place, keywords:sub and
+   keywords.
 2. *`unrec_` identifiers* at export (doc 10 7.5 item 2): deferred until what LUX consumes is seen.
 3. ~~*Lone undated namesake of another source* (finding 14)~~: the owner's yes 2026-10-21, built that day (below).
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
@@ -70,7 +72,8 @@ accepted 4,862 -> 5,492, queued 8,483 -> 7,889 (place 584 -> 499, keywords:sub 5
 read as its qualifier in the keyword contexts, "Cornwall (England : County)", "National Gallery of Canada (Ottawa,
 Canada)"); finding 15 (a parenthetical after initials is MARC's fuller form, "Oppé, A. P. (Adolf Paul)"); finding 4
 extended to prefix parts ("Pre--Raphaelitism"); and finding 14 (an undated record that is its source's only exact
-record of the name joins the record another source dates, "Aschan, Marit Guinness"). No reload, no manifest refresh.
+record of the name joins the record another source dates, "Aschan, Marit Guinness"); and outvoted rivals for places
+and concepts (a two-source group beats single-source rivals at a tie, "Aberdeen"). No reload, no manifest refresh.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
@@ -80,10 +83,11 @@ says "continue with the list"):
    the city, "Arrondissement", "Kreis"), TGN's `placeType` says the record's, and the heading holds the namesake
    whose level it names; an unqualified LoC heading holds the highest level (the nation). Designed from the pqe98w
    samples; to build next.
-2. "Outvoted rivals", if the owner says yes after running its ceiling query against pqe98w.
-3. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
-4. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
+2. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
+3. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
    the owner.
+4. Outvoted rivals for people and bodies, only after a shadow against the 2024 alignment says what it would do to
+   them.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 

@@ -834,6 +834,26 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var princeton = await pg.Store.CollectAsync(ds, "place", "Princeton, N.J.");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, princeton)); // "N.J." is New Jersey: the Indiana namesake is vetoed
         Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Princeton, N.J."))!.Equivalents, q => q.Uri.EndsWith("7000003"));
+        // outvoted rivals (the owner's policy): a bare "Aberdeen" meets three TGN namesakes, and LoC's one "Aberdeen (Scotland)" joins the
+        // Scottish one by placement; for a place the two-source group beats the single-source rivals, which the evidence marks outvoted
+        await pg.Store.PutAuthorityAsync(Tgn("7000010", "Aberdeen", "Aberdeen City, Scotland, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("7000011", "Aberdeen", "Grays Harbor, Washington, United States, North and Central America, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("7000012", "Aberdeen", "Brown, South Dakota, United States, North and Central America, World"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79000010", "loc", "Aberdeen (Scotland)", ["Aberdeen (Scotland)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var aberdeen = await pg.Store.CollectAsync(ds, "place", "Aberdeen");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, aberdeen));
+        var aberdeenDecision = (await pg.Store.DecisionForAsync(aberdeen.Id))!;
+        Assert.Equal(DecisionMethod.Vote, aberdeenDecision.Method); Assert.Contains("outvoted by a group of 2 sources", aberdeenDecision.EvidenceJson);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Aberdeen"))!.Equivalents, q => q.Uri.EndsWith("7000010"));
+        // not over one of the project's own aligned entities of the name: two aligned Dundees in the store (so neither answers silently),
+        // one of them identified with TGN's Dundee in New York; the Scottish two-source group does not outvote it, and the desk decides
+        var dundeeNy = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Dundee", ["Dundee"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(dundeeNy.Id, new Equivalent("http://vocab.getty.edu/tgn/7000014", "tgn", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Dundee", ["Dundee"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.PutAuthorityAsync(Tgn("7000013", "Dundee", "Dundee City, Scotland, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79000013", "loc", "Dundee (Scotland)", ["Dundee (Scotland)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(Tgn("7000014", "Dundee", "Yates, New York, United States, North and Central America, World"));
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Dundee")));
         Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Heaton"))); // no qualifier, two namesakes: the aligned Bradford entity does not answer silently
         Assert.Equal("Heaton, Bradford", (await pg.Store.ResolveAsync(ds, "place", "Heaton, Bradford"))!.Label);
         Assert.Equal(Outcome.MatchedStore, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Heaton, Bradford, Yorkshire"))); // the same place again, by its qualifier

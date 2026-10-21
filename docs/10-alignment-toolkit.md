@@ -671,6 +671,16 @@ composite 15,749 -> 15,675 (finding 4: 74 headings rejoined, most held whole by 
   vote. The owner's yes and built 2026-10-21 (`Reconciler.Score`, after the undated-namesake veto): the joining
   record must be its source's only exact record of the name, dated or not, undated, of the dated record's class, and
   not the store's; "Smith, John" with many LoC records does not qualify. Ceiling from the query in the plan.
+- Outvoted rivals, the owner's decision 2026-10-21 after the ceiling was measured on pqe98w (510 queued strings with
+  one two-source group at acceptance score beside single-source rivals: persauthorfull 144, keywords:head 115,
+  keywords:sub 83, place 68, publisher 51, keywords 34, corpauthor 15): yes for places and concepts, not for people
+  and bodies. Built that day in `EvaluateAsync`: when the top group's class is Place, Type or Period, two independent
+  sources carry it, and every rival at acceptance score is carried by one source and is not one of the project's own
+  aligned entities, the string is accepted as a vote and the rivals' evidence reads "outvoted by a group of 2
+  sources"; a second two-source group ("Cambridge" in England and in Massachusetts) still queues it. For a person
+  or a body ("Smith, John" with a ULAN-linked LoC record beside another John Smith LoC knows) the tie goes to the
+  desk as before: sameness of name is weak evidence there, and two vocabularies knowing a name is prominence, not
+  identity. Up to 185 strings; people to revisit against the 2024 shadow.
 - "Paris", "Aix-en-Provence", "Bottrop, Essen", "China", "Canada": TGN namesakes of differing level (the city and
   its arrondissement or Kreis, the nation and a hamlet), LoC's placed heading "inside 3 placed candidates" and so
   joining none: the TGN level preference, next on the list, now with its shape clear from these. LoC's own

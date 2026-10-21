@@ -73,16 +73,17 @@
                 <div class="actions"><button type="submit">Confirm</button></div>
             </form>
         }
-        <form method="get" class="card">
-            <input type="hidden" name="id" value="@e.Id" />
+        @* the search is one form and each result's merge another, side by side, never nested: a form inside a form is dropped by
+           the browser, and its button then submits the search (the 2026-10-21 bug: "Merge into this" did nothing) *@
+        <div class="card">
             <h3 style="margin-top:0">Merge into another entity</h3>
-            <div class="row"><input type="search" name="merge" value="@Model.Merge" placeholder="Search for the survivor" style="flex:1" /><button type="submit" class="secondary">Search</button></div>
+            <form method="get" class="row"><input type="hidden" name="id" value="@e.Id" /><input type="search" name="merge" value="@Model.Merge" placeholder="Search for the survivor" style="flex:1" /><button type="submit" class="secondary">Search</button></form>
             @foreach (var other in Model.MergeCandidates)
             {
                 <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@other.Label</strong> <span class="tag">@other.Status.ToString().ToLowerInvariant()</span> <span class="small muted">@string.Join(" ", other.Equivalents.Select(q => q.Source))</span></div>
                     <form method="post" asp-page-handler="Merge" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="survivor" value="@other.Id" /><button type="submit">Merge into this</button></form></div>
             }
-        </form>
+        </div>
         <form method="post" asp-page-handler="Note" class="card">
             <input type="hidden" name="id" value="@e.Id" />
             <h3 style="margin-top:0">Notes</h3>

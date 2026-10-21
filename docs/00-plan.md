@@ -189,6 +189,13 @@ says "continue with the list"):
    the owner.
 4. Outvoted rivals for people and bodies, only after a shadow against the 2024 alignment says what it would do to
    them.
+5. A local Wikidata extract as a sixth index (the owner's question, 2026-10-21 evening): not the full dump (over a
+   hundred gigabytes compressed) but the items carrying a ULAN, TGN, LoC, VIAF, AAT or GND id or typed human,
+   organisation or place, with labels, aliases, dates, those ids and a sitelink count; a few million rows, CC0. What
+   it adds: prominence for tied places (finding 17: sitelinks, not TGN name counts), dates for LoC's undated records
+   (finding 24 checked rather than trusted), a crosswalk between TGN and LoC, which never link to each other, and a
+   check on VIAF clusters. ULAN and LoC already vote through their own Wikidata links, so the gain is in the
+   residue. Size M; remote Wikidata lookups by external id (step 3b) are the cheap first step.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 

@@ -144,7 +144,9 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    the owner checks that each has its parent record: `select count(*) from authority_records r where r.source =
    'lcsh' and r.uri like '%-781' and not exists (select 1 from authority_records p where p.uri = left(r.uri,
    length(r.uri) - 4));` (expected 0 or near it), then `delete from authority_records where source = 'lcsh' and uri
-   like '%-781';`.
+   like '%-781';`. Done 2026-10-21 evening: every one had its parent (count 0), the labels are the heading written
+   under its country as a subdivision ("Oregon--Trail Creek Watershed (Jackson County)"), and both deletes have run;
+   the index is clean of them and the loader keeps it so.
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the

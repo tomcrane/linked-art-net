@@ -777,8 +777,10 @@ Gallery" took `group/unrec_t85jgf5s`, so the placeholders are kept as decided. T
   such twin makes LoC's one heading two exact records, which blocks exact-single and finding 14's uniqueness test
   for every place LoC uses as a subdivision. Confirmed by the owner from the index the same evening: 2,392 such
   records in the names file, typed Place, labelled as headings ("Kosovo (Republic)", "Riau-Lingga (Sultanate)",
-  "Pueblo of Isleta, New Mexico"). Built that evening: `LocNamesLoader` leaves "-781" resources out, and the owner
-  runs the one-off delete in the plan so the index is clean without a reload.
+  "Pueblo of Isleta, New Mexico"), and 45,258 in the subjects file, LCSH's own geographic headings each written
+  under its country as a subdivision ("Oregon--Trail Creek Watershed (Jackson County)"), every one beside its
+  parent record. Built that evening: `LocNamesLoader` leaves "-781" resources out of both files, and the owner's
+  one-off deletes (the same evening) cleaned the index without a reload.
 - "Drury" (a ULAN person and two TGN places under a bare surname), "Paintings, European" (ULAN's "European
   Paintings", a department, at 0.93): the desk's work.
 

@@ -750,6 +750,16 @@ public class ReconcilerStoreTests(PostgresFixture pg)
             new Candidate("http://id.loc.gov/authorities/names/nr92026602", "loc", "Carlton House (New York, N.Y.)", EntityClass.Place, null, [], "local", 0.85, Placement: "New York, N.Y.")], 120);
         Assert.Equal(0.97, carlton[0].Candidate.NameScore); Assert.Equal(1.0, carlton[0].Score); Assert.Contains("the name exact once its parenthetical", carlton[0].Reason);
         Assert.Equal(0.85, carlton[1].Candidate.NameScore); Assert.True(carlton[1].Veto); // the qualifier places another candidate
+        // another vocabulary's inexact record of the name beside the home vocabulary's one exact record is a lookalike, set aside, so
+        // the home record is an exact-single (finding 21, the owner's policy); a store entity of ours is left as a rival
+        var porcelain = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Porcelain"));
+        var porcelainScored = Reconciler.Score(porcelain, [
+            new Candidate("http://id.loc.gov/authorities/subjects/sh85104937", "lcsh", "Porcelain", EntityClass.Type, null, [], "local", 1.0),
+            new Candidate("http://id.loc.gov/authorities/names/no2012015900", "loc", "Porcelain (Musical group)", EntityClass.Group, null, [], "local", 0.85),
+            new Candidate("https://data.example.org/x/concept/abcd2345", "store", "Porcelain (Musical group)", EntityClass.Type, null, [], "store", 0.85, EntityId: "https://data.example.org/x/concept/abcd2345")], 120);
+        Assert.True(porcelainScored[1].SetAside); Assert.Contains("lcsh Porcelain decides: not the exact name", porcelainScored[1].Reason);
+        Assert.False(porcelainScored[2].SetAside);
+        Assert.Equal(1, Reconciler.Groups(porcelainScored.Take(2).ToList()).Count(g => g.Members.Any(m => !m.SetAside)));
         // and so LCSH's one placed heading carries the string as a single
         await pg.Store.PutAuthorityAsync(Lcsh("sh85078154", "Loire River (France)", "Place"));
         var loire = await pg.Store.CollectAsync(ds, "keywords:head", "Loire River (France)");
@@ -974,6 +984,15 @@ public class ReconcilerStoreTests(PostgresFixture pg)
 
         // minted: nothing found. The wrongly dated string: the ULAN candidate is vetoed by its dates and takes the linked LoC record with it
         Assert.Equal(DecisionMethod.Minted, (await pg.Store.DecisionForAsync(nobody.Id))!.Method);
+        // a dated string whose only candidate is LoC's one undated record of the name is that record (finding 24, the owner's policy);
+        // two LoC records of the name, one undated and one dated (and vetoed), send a third Terence to the desk
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125105", "loc", "Coventry, Terence", ["Coventry, Terence"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var coventry = await pg.Store.CollectAsync(ds, "persauthorfull", "Coventry, Terence, 1938-");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, coventry));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(coventry.Id))!.Method);
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125106", "loc", "Blenkinsop, Terence, 1900-1950", ["Blenkinsop, Terence, 1900-1950", "Blenkinsop, Terence"], "Person", GettyVocabLoader.LifespanFromYears("1900", "1950"), [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125107", "loc", "Blenkinsop, Terence", ["Blenkinsop, Terence"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Blenkinsop, Terence, 1960-"))); // the dated namesake is vetoed, but it is a second record of the name
         var minted = (await pg.Store.ResolveAsync(ds, "persauthorfull", "Nobody, Zed, 1900-1980"))!;
         Assert.Equal("Nobody, Zed", minted.Label);
         Assert.Equal(1900, minted.Lifespan!.BeginEarliest!.Value.Year);

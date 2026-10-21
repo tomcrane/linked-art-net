@@ -108,7 +108,8 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    the rest are exact store entities (publisher 113, persauthorfull 21: the project's own entity beside lookalikes,
    another shape), LoC and ULAN exact records in contexts without a home (publisher loc 58, persauthorfull loc 45,
    corpauthor ulan 31) and TGN in keywords (41). Recommendation unchanged: yes, for the home vocabulary only (158),
-   the other shapes to be looked at from their samples later. Awaiting the owner's word.
+   the other shapes to be looked at from their samples later. The owner's yes 2026-10-21, built that evening (doc 10
+   7.6 "Measured ... epenbw", "Porcelain").
 7. *A dated string's one undated exact record* (finding 24): "Coventry, Terence, 1938-" has LoC's one "Coventry,
    Terence", undated, as its only candidate, and exact-single stands aside for dated strings. Proposed: when a dated
    string's only candidate is a source's one exact record of the name, undated, it is carried as a single (LoC's
@@ -121,7 +122,8 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    like 'name 1.00%' and d.evidence->'groups'->0->'members'->0->>'reason' not like '%dates%' group by 1 order by 2
    desc;` Measured 2026-10-21: 45 strings (keywords:head 42, persauthorfull 2, corpauthor 1): the dated name
    headings of the keywords field, whose LoC record carries no dates in its label. Recommendation: yes; small, and
-   the reasoning is finding 14's. Awaiting the owner's word.
+   the reasoning is finding 14's. The owner's yes 2026-10-21, built that evening as an exact-single (doc 10 7.6
+   "Measured ... epenbw", "Coventry, Terence").
 8. *LoC's "-781" twins* (finding 23): "China" met LoC's `n79091151` and `n79091151-781`, two exact records of one
    heading. The assistant reads the suffix as the heading's geographic-subdivision form (MARC 781), published as a
    resource of its own; unverified against id.loc.gov, which refuses automated fetches. The owner confirms from the
@@ -156,9 +158,12 @@ other contexts within a few. "Sporting Gallery" minted as `group/unrec_t85jgf5s`
 exact for the record whose label is the whole heading, "Loire River (France)"); finding 20 (a qualified heading the
 string's qualifier places is exact on its name, so the single rule carries "Carlton House (London)"); finding 22
 (a qualifier places a record only when one side's words are all among the other's: "Lambeth, England" no longer
-places every English parish, "Turkey and Greece" no longer places Ilía). No reload, no manifest refresh. Expect
-keywords:head queued down again (the placed single headings), and a few place strings moving either way from
-finding 22.
+places every English parish, "Turkey and Greece" no longer places Ilía); finding 21 (the home vocabulary's one exact
+record sets aside other vocabularies' inexact records, "Porcelain" an exact-single; 158 strings); finding 24 (a dated
+string whose only candidate is one undated exact record is an exact-single, "Coventry, Terence, 1938-"; 45); the
+LoC "-781" twins left out by the loader (the owner's one-off delete clears the index). No reload, no manifest
+refresh. Expect keywords:head queued down again (the placed single headings, the set-aside lookalikes, the dated
+headings), and a few place strings moving either way from finding 22.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):

@@ -758,11 +758,16 @@ Gallery" took `group/unrec_t85jgf5s`, so the placeholders are kept as decided. T
   (Musical group)" at 0.85 the one live rival, which blocks exact-single (the policy wants no other group at all).
   Finding 21, a policy for the owner: when the home vocabulary has exactly one exact record of the name, another
   source's inexact record (below 0.97) is set aside as a lookalike, not a rival; the home record is then an
-  exact-single. Ceiling query in the plan (decision 6).
+  exact-single. Ceiling query in the plan (decision 6): 158 strings in the keywords family, the only contexts with
+  a home. The owner's yes and built that evening in `Reconciler.JoinToHome` ("lcsh Porcelain decides: not the exact
+  name"); the project's own entities are left as rivals, since a lookalike of ours is the desk's to merge or part.
 - "Coventry, Terence, 1938-": LoC's one "Coventry, Terence", undated, the only candidate; exact-single stands aside
   for a dated string by design (the dates are there to check and nothing checks them). Finding 24, a policy for the
-  owner: a dated string whose only candidate is a source's one exact undated record is carried as a single, LoC's
-  uniqueness of headings being the evidence (as finding 14 reasons). Ceiling query in the plan (decision 7).
+  owner: a dated string whose only candidate is a source's one exact undated record is carried as an exact-single,
+  LoC's uniqueness of headings being the evidence (as finding 14 reasons). Ceiling query in the plan (decision 7):
+  45 strings, 42 of them the dated name headings of the keywords field. The owner's yes and built that evening in
+  `EvaluateAsync`: the exact-single rule, which stood aside for every dated string, now takes one whose only
+  candidate anywhere is one undated exact record; a second record of the name, dated or not, is a second group.
 - "China": TGN's nation ("Zhongguo") beside two TGN hamlets and LoC's unqualified "China", with LoC's Mexican and
   Maine Chinas placed through the hamlets: the TGN level preference, next on the list. It also shows two LoC
   records of the exact name, `n79091151` and `n79091151-781`. Finding 23: id.loc.gov publishes a "-781" resource

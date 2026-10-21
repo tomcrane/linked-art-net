@@ -297,7 +297,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // nothing on the string to check it against (an undated string); see ReconcilerOptions.AcceptUniqueExactSingleSource
         // a name of one word ("Mr Farebrother" read as "Farebrother") is not exact enough to carry this alone: a person decides
         // a group of records set aside by preference (another vocabulary's two exact terms, a record outside the wanted collections) is not a namesake
-        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => g.Members.Any(m => !m.SetAside)) == 1 && reading.Lifespan is null
+        // a dated string whose only candidate is a source's one exact record of the name, undated, is that record all the same: the
+        // source knows one of the name and dates none other (finding 24; the owner's policy, 2026-10-21, ceiling 45 strings, the dated
+        // name headings of the keywords field); a second record of the name anywhere, dated or not, is a second group and the desk's
+        var loneUndated = reading.Lifespan is not null && top is { Members.Count: 1 } && top.Best.Candidate.Lifespan is null or { IsEmpty: true };
+        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => g.Members.Any(m => !m.SetAside)) == 1 && (reading.Lifespan is null || loneUndated)
             && (reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
             && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
@@ -553,6 +557,15 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                     ? b with { JoinedTo = h.Candidate.Uri, Reason = b.Reason + $"; carried by {home} {h.Candidate.Label}" }
                     : b with { SetAside = true, Reason = b.Reason + $"; {home} {h.Candidate.Label} decides: {source} has {terms.Count} exact terms of the name, none carried" };
             }
+        }
+        // and another vocabulary's inexact record of the name is a lookalike, not a rival: LoC's "Porcelain (Musical group)" beside
+        // LCSH's "Porcelain" is set aside, so the home record is an exact-single (finding 21; the owner's policy, 2026-10-21, ceiling
+        // 158 strings in the keywords family). The project's own entities are left as they are: a lookalike of ours is desk work
+        for (var i = 0; i < list.Count; i++)
+        {
+            var b = list[i];
+            if (b.Veto || b.SetAside || b.JoinedTo is not null || b.Candidate.Source == home || b.Candidate.Source == "store" || b.Candidate.NameScore >= 0.97 || SameThing(b, h)) continue;
+            list[i] = b with { SetAside = true, Reason = b.Reason + $"; {home} {h.Candidate.Label} decides: not the exact name" };
         }
     }
 

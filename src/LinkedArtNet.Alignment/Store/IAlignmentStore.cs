@@ -57,6 +57,9 @@ public interface IAlignmentStore
     /// <summary>Removes provisional entities of the dataset that no valid decision points at, nothing merged into and that have no equivalents: the leavings of re-pointed strings. Returns how many went.</summary>
     Task<int> RemoveOrphanProvisionalsAsync(string dataset, CancellationToken ct = default);
 
+    /// <summary>The dataset's live entities whose class and label (case folded) another live entity shares, with their equivalents, ordered by class, label and age: the duplicate pass's input (<see cref="Reconciliation.DuplicateMerger"/>).</summary>
+    Task<IReadOnlyList<Entity>> EntitiesSharingLabelAsync(string dataset, CancellationToken ct = default);
+
     /// <summary>Merges the loser into the survivor: equivalents move, valid decisions re-point, the loser is marked merged and keeps resolving.</summary>
     Task MergeAsync(string loserId, string survivorId, string? reviewer, CancellationToken ct = default);
 

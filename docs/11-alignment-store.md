@@ -203,7 +203,13 @@ by context and method and a sample with evidence; `undo-run --run <id>` invalida
 equivalents it added (an entity left with none goes back to provisional) and the entities it minted that nothing
 else points at, so the same strings can be reconciled again after a change and cannot find the run's own answer;
 `reindex-labels` recomputes every lookup key after the key rules change (the comparison form, the abbreviation
-table), since keys are computed when a row is written. The PMC context rules live in the tool for now (persauthorfull:
+table), since keys are computed when a row is written. `merge-duplicates [--class Place,Type] [--apply]` is the
+one-off pass over the earlier pipeline's duplicate entities (`DuplicateMerger`): twins of one class and label, case
+folded, merge where their external ids do not conflict (none on one side, or ids shared with no source differing),
+a person's twins only with a shared id or the same dates; a confirmed entity survives first, then the one with the
+most ids, then the oldest; a dry run lists every label with what would merge and what is kept apart, and `--apply`
+carries it out through the store's merge, so the merged-away identifiers stay as `merged_into` for the export to
+write as equivalents of the survivor. The PMC context rules live in the tool for now (persauthorfull:
 Person; corpauthor and publisher: Group then Person, since sale catalogues name auctioneers and dealers there;
 place: Place; keywords: anything), and move to the dataset manifest in step 4.
 

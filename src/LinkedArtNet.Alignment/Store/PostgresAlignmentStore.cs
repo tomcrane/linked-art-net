@@ -428,6 +428,19 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return await cmd.ExecuteNonQueryAsync(ct) > 0;
     }
 
+    public Task<IReadOnlyList<Entity>> EntitiesSharingLabelAsync(string dataset, CancellationToken ct = default) =>
+        QueryEntitiesAsync(
+            $"""
+            with twins as (
+              select class, lower(trim(label)) as l from entities
+              where dataset = @dataset and merged_into is null and label is not null
+              group by class, lower(trim(label)) having count(*) > 1)
+            select {EntityColumns} from entities e
+            join twins t on t.class = e.class and t.l = lower(trim(e.label))
+            where e.dataset = @dataset and e.merged_into is null
+            order by e.class, lower(trim(e.label)), e.created_at, e.id
+            """, cmd => Add(cmd, "dataset", dataset), ct);
+
     public async Task<int> RemoveOrphanProvisionalsAsync(string dataset, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

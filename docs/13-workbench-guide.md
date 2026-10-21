@@ -175,6 +175,7 @@ store's connection string in the `LINKEDART_PG` environment variable:
 | `tools/Align reconcile --limit 500` | works through up to 500 undecided strings: override, store, indexes, then accept, queue or mint |
 | `tools/Align decisions --run <id>` | shows what a run decided, by field and method, with samples and evidence |
 | `tools/Align undo-run --run <id>` | takes a run back entirely |
+| `tools/Align merge-duplicates [--class Place] [--apply]` | lists the project's entities that share a label and class and what would merge; `--apply` merges them |
 | `tools/Align shadow --sample 2000` | re-judges earlier decisions from scratch and reports where the software now agrees or disagrees, without changing anything |
 | `tools/Align audit` | checks every entity against ULAN: missing ids, label and date mismatches, conflicting links, and ULAN's own errors |
 | `tools/Align import-overrides <file.json>` / `export-overrides` | the curated file in and out |

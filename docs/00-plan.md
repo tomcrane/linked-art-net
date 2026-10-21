@@ -73,9 +73,12 @@ be keyed as `local:<name>` since it has no GitHub id, to build with the first us
    entity with the most equivalents then the oldest, every merged-away identifier kept as an `equivalent` on the
    survivor so LUX merges the twins (the plan's rule above). For Place, Type and Group a shared label is the same
    thing in a library's own authority table. For Person, only where the twins carry the same lifespan or share an
-   external id; a bare "Smith, John" twice stays two entities for the desk. Size S. On the owner's go: build the
-   command, the owner runs the dry run and reads the list, then runs it live; then rerun the reconcile ("Evanston"
-   and "England" leave the place queue by finding 10).
+   external id; a bare "Smith, John" twice stays two entities for the desk. The owner's order 2026-10-21 (run first,
+   then this, then the TGN level preference); built that day as `merge-duplicates` (doc 11; dry run by default,
+   `--apply` to carry it out, `--class` to limit, `--out` to write the list to a file). The owner runs the dry run
+   and reads the list, then runs it live, then an undo and reconcile ("Evanston" and "England" leave the place queue
+   by finding 10). The merged-away identifiers stay as `merged_into`; the export (doc 10 7.5 item 2) writes them as
+   equivalents of the survivor.
 3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
    parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
@@ -124,8 +127,15 @@ says "continue with the list"):
 
 Expect, against uhwjq5: "Cornwall (England : County)" and "National Gallery of Canada (Ottawa, Canada)" out of the
 keywords:head queue, "Friedmann, Gloria" a vote, keywords:head queued (1,448) down again, "Kent Town, S. Australia"
-a single, and the minted sample's entity id ending `unrec_…`. Then, if decision 5 is a go, the `merge-duplicates`
-build, its dry run, its live run, and another reconcile.
+a single, and the minted sample's entity id ending `unrec_…`. Then the duplicate pass (decision 5), after the run:
+
+    dotnet run --project tools/Align -- merge-duplicates --out reports/merge-duplicates.txt
+    (read the list; then)
+    dotnet run --project tools/Align -- merge-duplicates --apply
+    dotnet run --project tools/Align -- undo-run --run <the new run id>
+    dotnet run --project tools/Align -- reconcile
+
+Then the TGN level preference is built (next builds, item 1).
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

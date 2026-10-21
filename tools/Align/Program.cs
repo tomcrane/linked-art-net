@@ -196,6 +196,22 @@ switch (args[0])
         return 0;
     }
 
+    case "merge-duplicates":
+    {
+        // the one-off pass over the earlier pipeline's duplicate entities (plan, resume point decision 5): a dry run unless --apply
+        var classes = (Option("--class") ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(c => Enum.TryParse<EntityClass>(c, true, out var cls) ? cls : throw new ArgumentException($"Unknown class {c}")).ToList();
+        var merger = new DuplicateMerger(store);
+        var plan = await merger.PlanAsync(dataset, classes);
+        var text = plan.ToString();
+        if (Option("--out") is { } outFile) { await File.WriteAllTextAsync(outFile, text); Console.WriteLine($"plan written to {Path.GetFullPath(outFile)}"); }
+        else Console.Write(text);
+        if (!args.Contains("--apply")) { Console.WriteLine($"dry run: {plan.Merges} entities would merge, {plan.KeptApart} kept apart; add --apply to carry it out"); return 0; }
+        var merged = await merger.ApplyAsync(plan, Option("--reviewer") ?? "merge-duplicates");
+        Console.WriteLine($"dataset {dataset}: {merged} entities merged into their twins ({plan.KeptApart} kept apart)");
+        return 0;
+    }
+
     case "cleanup-orphans":
     {
         var removed = await store.RemoveOrphanProvisionalsAsync(dataset);
@@ -306,6 +322,9 @@ static void Usage() => Console.WriteLine(
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
       reindex-labels [--source s]            recompute lookup keys after the key rules change; --source limits the records to one
                                              index (ulan, loc, aat, tgn); rows already current are not rewritten
+      merge-duplicates [--dataset] [--class Place,Type] [--apply] [--reviewer r] [--out f]
+                                             the one-off pass over duplicate entities of one class and label: a dry run listing every
+                                             label with what would merge and what is kept apart; --apply carries it out
       cleanup-orphans [--dataset]            remove provisional entities nothing points at any more
       export-overrides [--dataset] [--out f] the project's overrides in the pmc-lux JSON shape
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)

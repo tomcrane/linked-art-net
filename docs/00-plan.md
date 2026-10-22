@@ -22,11 +22,11 @@ queued keywords:head 777, keywords 1,376, keywords:sub 273, place 418, persautho
 corpauthor 274. The day's path: epenbw (queued 6,647) -> qr7fbx (5,763). Doc 10 7.6 "Measured ... qr7fbx" has the
 reading of the keywords:head and place queues.
 
-**Measured 2026-10-22 morning, run-20261022-085117-v9wawv (stands):** against qr7fbx, accepted 6,633 -> 6,743,
-queued 5,763 -> 5,586, matched in store 5,388 -> 5,491; keywords:head queued 777 -> 701, place 418 -> 401, publisher
-1,112 -> 1,082, keywords:sub 273 -> 250, persauthorfull 1,532. The second duplicate pass (89 merges: 51 bodies in
-two word orders, 34 concepts, 2 people, 2 places) was applied before it. Doc 10 7.6 "Measured ... v9wawv" has the
-reading of the place, keywords:head and persauthorfull queues.
+**Measured 2026-10-22, run-20261022-093942-evt3ut (stands):** against v9wawv, accepted 6,743 -> 7,132 (exact-single
+2,395 -> 2,840), queued 5,586 -> 5,296, matched in store 5,491 -> 5,510; persauthorfull queued 1,532 -> 1,396 (the
+initials), place 401 -> 373 (the level fixes), publisher 1,082 -> 1,015, corpauthor 260 -> 223, keywords:head 701 ->
+693, keywords:sub 250 -> 235, keywords 1,361. The day's path so far: v9wawv (5,586) -> evt3ut (5,296). Doc 10 7.6
+"Measured ... evt3ut" has the reading of the place, publisher and corpauthor queues.
 
 **Decisions taken by the owner on 2026-10-21:** finding 3 (undated same-source namesake veto) yes; outvoted rivals
 yes for places and concepts, not people and bodies; `unrec_` identifiers kept; finding 14 (lone undated namesake)
@@ -83,13 +83,47 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    closed.
 6. ~~*"Scots" and finding 28*~~: the label is "SCOTs", an acronym with a plural's lower-case s (the owner's query,
    2026-10-22); the rule now allows that trailing letter. Built that morning.
+7. *The project's own aligned entity breaks a tie among places* (finding 35, doc 10 7.6 "Measured ... evt3ut"):
+   "Cornwall" ties between three two-source groups (TGN's county with LoC's heading and the project's own aligned
+   entity; Ontario and Connecticut each with a LoC heading placed through). Proposed: among tied two-source place
+   groups at acceptance score, the group holding one of the project's own aligned entities wins, as the earlier
+   pipeline's identification of the name in this project; never where no tie exists. Recommendation: yes. Ceiling
+   (queued place strings with two or more two-source groups, exactly one holding a store entity), the owner runs:
+   `select count(*) from decisions d join source_strings ss on ss.id = d.source_string_id cross join lateral
+   (select count(*) filter (where jsonb_array_length(g->'sources') >= 2 and (g->>'score')::numeric >= 0.9) as
+   multi, count(*) filter (where jsonb_array_length(g->'sources') >= 2 and (g->>'score')::numeric >= 0.9 and
+   exists (select 1 from jsonb_array_elements(g->'members') m where m->>'source' = 'store' and m->'veto' is null))
+   as withstore from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
+   'run-20261022-093942-evt3ut' and d.valid and d.method = 'queued' and ss.context = 'place' and x.multi >= 2 and
+   x.withstore = 1;`
+8. *Two sources each with one exact record of a body join* (finding 40): "National Gallery London" meets ULAN's
+   "National Gallery" and LoC's "National Gallery (Great Britain)", each exact through a variant, each its source's
+   only record of the name, unlinked. Proposed: for a body (a reading whose first class is Group), two sources that
+   each have exactly one exact record of the name and no other join and vote, as finding 16 does for a dated
+   person. Recommendation: yes, bodies only; a person's namesakes are too common. Ceiling (queued undated strings
+   in corpauthor and publisher with exactly two live groups, one source each, both exact, different sources), the
+   owner runs: `select ss.context, count(*) from decisions d join source_strings ss on ss.id =
+   d.source_string_id cross join lateral (select count(*) as live, count(distinct g->'sources'->>0) as srcs,
+   count(*) filter (where jsonb_array_length(g->'sources') = 1 and exists (select 1 from
+   jsonb_array_elements(g->'members') m where (m->>'reason' like 'name 1.00%' or m->>'reason' like 'name 0.97%')
+   and m->'veto' is null and m->'setAside' is null)) as exact1 from jsonb_array_elements(d.evidence->'groups') g
+   where g->'vetoed' is null) x where d.run_id = 'run-20261022-093942-evt3ut' and d.valid and d.method = 'queued'
+   and d.evidence->'reading'->>'lifespan' is null and ss.context in ('corpauthor', 'publisher') and x.live = 2 and
+   x.exact1 = 2 and x.srcs = 2 group by 1;`
 4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
    `merged_into` on 292 entities and the two hand merges) are written as equivalents of the survivor so LUX merges
    its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
    builds, item 4).
 
-**Built 2026-10-22 morning from v9wawv's samples, waiting for the next rerun** (no reload, no manifest refresh):
+**Built 2026-10-22 from evt3ut's samples, waiting for the next rerun** (no reload, no manifest refresh): finding 36
+(a trailing "?" is not the name: "Norfolk?"); findings 37 and 39 (a body's name is exact without its legal suffix,
+courtesy prefix or LoC type qualifier: "Rowman and Littlefield, Inc.", "E. & H. Lumley (Firm)", "Remondini
+(Firm)"); finding 38 (a provisional entity of the project's own is a lookalike, not a rival group, for exact-single:
+"England & Co"). Expect publisher and corpauthor queued down (the firms with suffixes and "(Firm)" headings, the
+provisional lookalikes), and a place or two.
+
+**Built 2026-10-22 morning from v9wawv's samples, measured on evt3ut** (kept for the record):
 finding 10 among several anchors (the project's one bare entity joins the anchor a heading joined: "New York, N.Y");
 holders already joined to one another counted once ("Cornwall": LoC's county heading now joins TGN's county through
 the project's own entity); finding 30 (a body's or concept's placement is only a LoC "City, Country" parenthetical:
@@ -139,15 +173,15 @@ says "continue with the list"):
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261022-085117-v9wawv
+    dotnet run --project tools/Align -- undo-run --run run-20261022-093942-evt3ut
     dotnet run --project tools/Align -- reconcile --verbose        (or --candidates for the top candidates under each string)
-    dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context publisher --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context corpauthor --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
 
-Run decision 5's ceiling query and decision 6's labels query against v9wawv at any time; the undo keeps the evidence.
-The publisher (1,082) and corpauthor (260) queues have not been sampled since the first runs and are the next to
-read.
+Run decisions 7 and 8's ceiling queries against evt3ut at any time; the undo keeps the evidence. If the owner says
+yes to either before the run, it is built first. The keywords (1,361) and keywords:sub (235) queues have not been
+sampled since uhwjq5 and are the next to read.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

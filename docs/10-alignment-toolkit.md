@@ -885,6 +885,48 @@ differing level has a LoC heading in play. The samples, read:
   Illinois": two legacy Evanstons with different Wikidata ids; the desk. "Bottrop, Essen", "Heaton, Bradford",
   "Donnington": the data's.
 
+Measured 2026-10-22 (run-20261022-093942-evt3ut: the morning's five fixes and the widened acronym rule, against
+v9wawv): accepted 6,743 -> 7,132 (vote 3,163 -> 3,184, single 1,185 -> 1,108, exact-single 2,395 -> 2,840),
+queued 5,586 -> 5,296, matched in store 5,491 -> 5,510, minted 12,323 -> 12,299. By context: persauthorfull queued
+1,532 -> 1,396 and exact-single 352 -> 480 (finding 34: the initials); keywords exact-single 371 -> 532 and
+compounds 15,668 -> 15,574 (whole headings now exact without decomposing); corpauthor queued 260 -> 223; publisher
+1,082 -> 1,015; place 401 -> 373 and vote 286 -> 309 (the two level fixes); keywords:head 701 -> 693; keywords:sub
+250 -> 235. The samples, read:
+
+- "Cornwall": LoC's county heading now joins TGN's county through the project's own entity, so the top group is
+  tgn, loc and the store together; but TGN's Cornwalls in Ontario and Connecticut each carry a LoC heading placed
+  through too, so three two-source groups tie and outvoting stands aside. The difference between them is that the
+  project's own aligned entity sits in one: the earlier pipeline identified "Cornwall" with that county, and a
+  bare "Cornwall" in the same project is the same place. Finding 35, a policy for the owner: among tied two-source
+  place groups, the group that holds one of the project's own aligned entities wins (decision 7, ceiling query in
+  the plan). Never over a group the authorities and the project disagree about, only a tie among them.
+- "Norfolk?": read with the question mark, so TGN's Norfolks scored 0.97 and LoC's "Norfolk (Mass.)" was placed by
+  its level all the same. Finding 36, fixed: a trailing question mark is the cataloguer's doubt, not the name.
+- "Rowman and Littlefield" (publisher): LoC's "Rowman and Littlefield, Inc." at 0.95, the only candidate, short of
+  exact-single for a legal suffix. "E & H Lumley", "Remondini (Firm) (Printer)" (corpauthor): LoC's "E. & H.
+  Lumley (Firm)" and "Remondini (Firm)" at 0.85, the type qualifier read as a disambiguator. Findings 37 and 39,
+  fixed (`NameMatcher.SameBody`): for a body, a name is exact without its legal suffix, a courtesy prefix
+  ("Messrs"), connectives and a type qualifier without a comma ("(Firm)", "(Gallery)"), which tells the firm from a
+  person of the name, not from another firm; abbreviations are not expanded ("Thos." is still not "Thomas"), a
+  place qualifier stays, and a person's record ("Clark, Art") stays short of "Clark Art Ltd".
+- "England & Co", "Department of the Environment" (publisher): the project's own provisional entity, queued for the
+  same name in another context, stood beside ULAN's record as a second group and blocked exact-single. Finding 38,
+  fixed: a provisional entity of the project's own is a lookalike, not a rival group; ULAN's one "England & Co." is
+  an exact-single. "Department of the Environment" has two ULAN records and stays with the desk.
+- "National Gallery London" (corpauthor): ULAN's "National Gallery" and LoC's "National Gallery (Great Britain)"
+  each exact through a variant, each its source's only record of the name, unlinked, two single-source groups.
+  Finding 40, a policy for the owner: for a body, two sources that each have exactly one exact record of the name
+  and no other join and vote, as finding 16 does for a dated person (decision 8, ceiling query in the plan).
+- "Murray", "Sutton", "Hutchinson", "König", "Garland" (publisher), "Mr Abbott", "Mr Hodgson" (corpauthor): bare
+  surnames meeting ULAN's painters through variant names (ULAN's "Koninck, Jacob, the younger" carries "König").
+  A publisher named by a surname is a firm, and the desk's. "Waltham Forest: Libraries & Arts Department" against
+  LoC's "Waltham Forest (London, England). Libraries and Arts Department" (a subordinate body written with a colon)
+  and "Musée de l'Ermitage" against LoC's romanised Hermitage: the desk's, both right at 0.85.
+- "Nationalmuseum" (corpauthor): ULAN's Stockholm museum, the project's own "Nationalmuseum (Sweden)" with LoC's
+  heading, and ULAN's National Museum of Denmark through a variant; the desk's.
+- Place: "Paris", "Dublin", "Athens", "Winchester": prominence (waiting for Wikidata). "Evanston, Illinois": the
+  desk. "Bottrop, Essen", "Heaton, Bradford", "Donnington": the data's.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

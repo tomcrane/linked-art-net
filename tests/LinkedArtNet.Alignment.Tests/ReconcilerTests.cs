@@ -311,6 +311,8 @@ public class GroupingTests
         Assert.True(NameMatcher.SameBody("E & H Lumley", ["E. & H. Lumley (Firm)"])); Assert.True(NameMatcher.SameBody("Messrs E & H Lumley", ["E & H Lumley"]));
         Assert.True(NameMatcher.SameBody("Remondini", ["Remondini (Firm)"]));
         Assert.False(NameMatcher.SameBody("Tate Gallery", ["Tate Gallery (London, England)"])); // a place qualifier is not a type
+        Assert.False(NameMatcher.SameBody("Garland", ["Garland (Destroyer)"])); Assert.False(NameMatcher.SameBody("King's College", ["King's College (University of Cambridge)"])); // nor a vessel or an institution
+        Assert.True(NameMatcher.SameBody("Hutchinson", ["Hutchinson (Firm)"])); Assert.True(NameMatcher.SameBody("Fine Art Society", ["Fine Art Society (Gallery)"]));
         Assert.False(NameMatcher.SameBody("Thos. Agnew & Sons", ["Thomas Agnew & Sons"]));
         Assert.False(NameMatcher.SameBody("John Lane, The Bodley Head Limited", ["Bodley Head (Firm)"]));
         // "St." and "Saint" are one word (finding 25)
@@ -370,9 +372,12 @@ public class GroupingTests
         Assert.All(Reconciler.Score(adelaide, [tgnAdelaide, own, own with { Uri = "e3", EntityId = "e3" }], 120).Skip(1), m => Assert.Null(m.JoinedTo));
         Assert.Null(Reconciler.Score(adelaide, [tgnAdelaide, tgnAdelaide with { Uri = "t6" }, own], 120)[2].JoinedTo);
         Assert.Contains("l1", groups[0].Uris); Assert.Contains("e1", groups[0].Uris);
-        // inside two placed records of one source with the same parent string (a city and its district) the coarser record is placed through neither
+        // inside two placed records of one source with the same parent string (a city and its district), with no level to go by, the
+        // coarser record is placed through the one whose own name it is (finding 49); two of the same name are placed through neither
         var district = new Candidate("t3", "tgn", "Landkreis Princes Risborough", EntityClass.Place, null, [], "local", 1.0, Placement: tgn.Placement);
-        var ambiguous = Reconciler.Score(reading, [tgn, district, loc], 120);
+        var byName = Reconciler.Score(reading, [tgn, district, loc], 120);
+        Assert.Equal("t1", byName[2].JoinedTo); Assert.Contains("whose own name it is among 2", byName[2].Reason);
+        var ambiguous = Reconciler.Score(reading, [tgn, tgn with { Uri = "t3" }, loc], 120);
         Assert.Null(ambiguous[2].JoinedTo); Assert.False(ambiguous[2].Veto);
         Assert.Equal(3, Reconciler.Groups(ambiguous).Count);
     }
@@ -783,6 +788,16 @@ public class ReconcilerStoreTests(PostgresFixture pg)
             new Candidate("http://id.loc.gov/authorities/subjects/sh85083064", "lcsh", "Medicine", EntityClass.Type, null, [], "local", 1.0),
             new Candidate("http://id.loc.gov/authorities/subjects/sh85039719", "lcsh", "Drugs", EntityClass.Type, null, [], "local", 0.85)], 120);
         Assert.True(medicineScored[1].SetAside);
+        // another source's exact record of another class is set aside by the home's one exact record (finding 41): LoC's firm beside LCSH's topic
+        var hutchinson = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Hutchinson"));
+        var hutchinsonScored = Reconciler.Score(hutchinson, [
+            new Candidate("http://id.loc.gov/authorities/subjects/sh00000001", "lcsh", "Hutchinson", EntityClass.Type, null, [], "local", 1.0),
+            new Candidate("http://id.loc.gov/authorities/names/n86010548", "loc", "Hutchinson (Firm)", EntityClass.Group, null, [], "local", 0.97)], 120);
+        Assert.True(hutchinsonScored[1].SetAside); Assert.Contains("a group of the name, not the type", hutchinsonScored[1].Reason);
+        // an LCSH heading's parenthetical places it whatever its class (finding 47): LCSH's "Leeds Castle (England)", a topic, meets TGN's castle in Kent
+        var leedsCastle = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords", "Leeds Castle (Kent)"));
+        Assert.Equal("Kent", leedsCastle.Qualifier);
+        Assert.Equal("England", LocalIndexSource.ToCandidate(new AuthorityRecord("http://id.loc.gov/authorities/subjects/sh97002657", "lcsh", "Leeds Castle (England)", ["Leeds Castle (England)"], "Type", null, [], null, DateTimeOffset.UtcNow, "test"), leedsCastle, "local").Placement);
         // a record matched only through an acronym variant is a lookalike (finding 28): "SCOTS" for a cleanup team, against "Scots"
         var scots = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Scots"));
         var team = new AuthorityRecord("http://id.loc.gov/authorities/names/no2016167587", "loc", "Shoreline Cleanup Oversight Team", ["Shoreline Cleanup Oversight Team", "S.C.O.T. (Shoreline Cleanup Oversight Team)", "SCOTs"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"); // LoC's own labels, 2026-10-22
@@ -813,6 +828,8 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, loire));
         Assert.Equal(DecisionMethod.Single, (await pg.Store.DecisionForAsync(loire.Id))!.Method);
 
+        var reuss = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords", "Reuss, Albert, 1889-1975")); // a dated name heading whole, read through the MARC profile (finding 46)
+        Assert.True(reuss.HasLifespan); Assert.Equal("Reuss, Albert", reuss.Text); Assert.Equal(EntityClass.Person, reuss.Classes[0]);
         var heading = await pg.Store.CollectAsync(ds, "keywords", "Painting--Canada", "{\"legacyUnreconciled\":\"unrec_abcd2345\"}");
         var e = await reconciler.ReconcileOneDetailedAsync(ds, heading);
         Assert.Equal(Outcome.Decomposed, e.Outcome);
@@ -975,6 +992,23 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(Tgn("1017189", "China", "Nuevo León, Mexico, North and Central America, World", "300008347"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79091151", "loc", "China", ["China"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Equal("Norfolk", reconciler.Read(await pg.Store.CollectAsync(ds, "place", "Norfolk?")).Text); // the cataloguer's doubt is not part of the name (finding 36)
+        // at acceptance score a two-source group outranks one source's higher-scoring record (finding 50): TGN's Waihou through its variant
+        // "Thames River" at 1.00, against TGN's Thames with LoC's heading placed through at 0.97
+        await pg.Store.PutAuthorityAsync(Tgn("1131576", "Waihou", "Waikato, New Zealand, Oceania, World", "300008707") with { Labels = ["Waihou", "Thames River"] });
+        await pg.Store.PutAuthorityAsync(Tgn("7011913", "Thames", "England, United Kingdom, Europe, World", "300008707") with { Labels = ["Thames", "Thames, River"] });
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n80000901", "loc", "Thames River (England)", ["Thames River (England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var thames = await pg.Store.CollectAsync(ds, "place", "Thames River");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, thames));
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Thames River"))!.Equivalents, q => q.Uri.EndsWith("7011913"));
+        // no holder at the heading's level: the holder whose own name the heading is (finding 49): "Cumbria (England)" among TGN's Cumbria
+        // and Westmorland, both counties, the latter answering through a variant
+        await pg.Store.PutAuthorityAsync(Tgn("7008117", "Cumbria", "England, United Kingdom, Europe, World", "300000771"));
+        await pg.Store.PutAuthorityAsync(Tgn("5000223", "Westmorland", "England, United Kingdom, Europe, World", "300000771") with { Labels = ["Westmorland", "Cumbria"] });
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n50000578", "loc", "Cumbria (England)", ["Cumbria (England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var cumbria = await pg.Store.CollectAsync(ds, "place", "Cumbria");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, cumbria));
+        Assert.Contains("whose own name it is among 2", (await pg.Store.DecisionForAsync(cumbria.Id))!.EvidenceJson);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Cumbria"))!.Equivalents, q => q.Uri.EndsWith("7008117"));
         var china = await pg.Store.CollectAsync(ds, "place", "China");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, china));
         Assert.Contains("an unqualified heading: the nation among 2", (await pg.Store.DecisionForAsync(china.Id))!.EvidenceJson);
@@ -1048,6 +1082,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
             {
                 ["persauthorfull"] = new([EntityClass.Person], "default"),
                 ["corpauthor"] = new([EntityClass.Group], "default"),
+                ["heading"] = new([EntityClass.Person, EntityClass.Group]), // no parser: a dated heading is matched whole
             },
         };
         var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc")], options);
@@ -1099,6 +1134,15 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var englandCo = await pg.Store.CollectAsync(ds, "corpauthor", "England & Co");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, englandCo));
         Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(englandCo.Id))!.Method);
+        // groups below the review score are noise, not rivals, and a dated heading equal to LoC's dated record is not an undated string
+        // claiming a disambiguated heading (findings 44 and 45): "Williams, Peter, 1914-1995", matched whole in a context with no parser,
+        // is an exact-single beside ULAN's two "Williams, Peter" at 0.40
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/nb90018330", "loc", "Williams, Peter, 1914-1995", ["Williams, Peter, 1914-1995", "Williams, Peter"], "Person", GettyVocabLoader.LifespanFromYears("1914", "1995"), [], "{\"headingDates\":\"1914-1995\"}", DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500237103", "ulan", "Williams, Peter", ["Williams, Peter"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500333144", "ulan", "Williams, Peter", ["Williams, Peter"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var williams = await pg.Store.CollectAsync(ds, "heading", "Williams, Peter, 1914-1995");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, williams));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(williams.Id))!.Method);
         // two sources that each have exactly one exact record of a body, unlinked, join and vote (finding 40, the owner's policy); a
         // source with two exact records of the name sends it to the desk
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500125190", "ulan", "National Gallery", ["National Gallery", "National Gallery, London"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));

@@ -62,11 +62,19 @@ public static class NameMatcher
         return a.Length > 0 && labels.Any(l => BodyForm(l) == a);
     }
 
+    /// <summary>LoC's qualifiers that say what kind of body a heading names, which go when a body's name is compared; a place ("(London, England)"), an institution ("(University of Cambridge)") or a vessel ("(Destroyer)") stays. The assistant's own list of LoC's usual type qualifiers.</summary>
+    private static readonly HashSet<string> BodyTypes = new(StringComparer.Ordinal)
+    {
+        "firm", "firms", "publisher", "publishers", "publishing company", "publishing firm", "organization", "organisation", "association", "society",
+        "gallery", "galleries", "art gallery", "museum", "company", "agency", "foundation", "trust", "institute", "institution", "press",
+        "shop", "store", "studio", "workshop", "manufacturer", "manufacturers", "printer", "printers", "bookseller", "booksellers",
+        "auctioneers", "auction house", "dealer", "dealers", "art dealers", "corporation", "partnership",
+    };
+
     private static string BodyForm(string raw)
     {
         var key = StringKey.Normalise(raw);
-        // a parenthetical with a comma is a place ("(London, England)") and stays; one without ("(Firm)", "(Gallery)") is a type and goes
-        key = System.Text.RegularExpressions.Regex.Replace(key, @"\s*\(([^(),]*)\)", "");
+        key = System.Text.RegularExpressions.Regex.Replace(key, @"\s*\(([^()]*)\)", m => BodyTypes.Contains(m.Groups[1].Value.Trim()) ? "" : m.Value);
         return NameForms.Canonical(Saints(StringKey.Fold(key)), dropQualifiers: false, expandAbbreviations: false);
     }
 

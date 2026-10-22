@@ -277,6 +277,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         Time("score", sw);
         var live = groups.Where(g => !g.Vetoed).ToList();
         var top = live.FirstOrDefault();
+        // at acceptance score, a group two independent sources carry outranks one source's higher-scoring record (TGN's Waihou at 1.00
+        // through its variant "Thames River", against TGN's Thames with LCSH's heading at 0.97): the owner's outvoted-rivals policy,
+        // read at acceptance score rather than at an equal score (finding 50, 2026-10-22)
+        var strongest = live.Where(g => g.Score >= _options.AcceptScore).OrderByDescending(g => g.Sources.Count).ThenByDescending(g => g.Score).FirstOrDefault();
+        if (strongest is not null && top is not null && strongest != top && strongest.Sources.Count >= 2 && top.Sources.Count <= 1) { live.Remove(strongest); live.Insert(0, strongest); top = strongest; }
         // a rival at acceptance score is a disagreement: another authority, or another provisional lookalike when the top is only a lookalike itself
         var topIsFirm = top is not null && top.Members.Any(m => !m.Veto && !m.Candidate.Provisional);
         var second = live.Skip(1).FirstOrDefault(g => !topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional));
@@ -324,12 +329,15 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var loneUndated = reading.Lifespan is not null && top is { Members.Count: 1 } && top.Best.Candidate.Lifespan is null or { IsEmpty: true };
         // a provisional entity of the project's own (a placeholder minted for the name, awaiting review) is a lookalike, not a second
         // group: ULAN's one "England & Co." is an exact-single beside the project's queued "England & Co" (finding 38, 2026-10-22)
-        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
+        // a group below the review score is noise, not a rival (ULAN's two "Williams, Peter" at 0.40 beside LoC's exact dated heading); a
+        // vetoed group still counts, as the policy says (finding 44, 2026-10-22)
+        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= _options.ReviewScore) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
             && (reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
             && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
             // a heading that carries dates was disambiguated from namesakes by its cataloguer: an undated string cannot claim it alone
-            && !top.Members.Any(m => m.Candidate.Disambiguated)
+            // unless the string is that dated heading, dates and all ("Williams, Peter, 1914-1995" whole in the keywords field; finding 45)
+            && !top.Members.Any(m => m.Candidate.Disambiguated && NameMatcher.Score(reading.String.Raw, [m.Candidate.Label ?? ""]) < 0.97)
             // a qualifier that the record does not bear out ("Princeton, N.J." against a Princeton elsewhere) is for the desk
             && top.Best.QualifierAgrees != false)
         {
@@ -540,8 +548,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // (the TGN level preference, doc 10 section 7.6, built 2026-10-21)
             var level = HeadingLevel(b.Candidate);
             var atLevel = through.Where(a => level is not null && Qualified.LevelOf(a.Candidate.PlaceType) == level).ToList();
+            // no holder at the heading's level (LoC's "Cumbria (England)" has no type word, but Cumbria is a county and so is Westmorland,
+            // which answers through its variant): the holder whose own name the heading is, if one (finding 49, 2026-10-22)
+            var byName = atLevel.Count == 1 ? atLevel : through.Where(a => NameMatcher.Score(reading.Text, [a.Candidate.Label ?? ""]) >= 0.97).ToList();
             list[i] = atLevel.Count == 1
                 ? b with { JoinedTo = atLevel[0].Candidate.Uri, Reason = b.Reason + $"; placed through {atLevel[0].Candidate.Source} {atLevel[0].Candidate.Label}, the {Qualified.LevelName(level!.Value)} among {through.Count}" }
+                : byName.Count == 1
+                ? b with { JoinedTo = byName[0].Candidate.Uri, Reason = b.Reason + $"; placed through {byName[0].Candidate.Source} {byName[0].Candidate.Label}, whose own name it is among {through.Count}" }
                 : b with { Reason = b.Reason + $"; inside {through.Count} placed candidates" };
         }
         // an unqualified LoC heading of a place ("China", "Canada") is one LoC gives to a place unique in its world: among TGN
@@ -622,6 +635,16 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var h = exact[0];
         bool Eligible(ScoredCandidate b) => !b.Veto && !b.SetAside && b.Candidate.Source != home && b.Candidate.NameScore >= 0.97 && b.JoinedTo is null
             && !(b.Candidate.Class is { } cls && h.Candidate.Class is { } homeClass && cls != homeClass);
+        // another source's exact record of another class is another thing of the name: LoC's "Hutchinson (Firm)" beside LCSH's topic,
+        // ULAN's "Dance" beside LCSH's "Dance" (finding 41, 2026-10-22: finding 39 had made such bodies exact and queued thirty
+        // headings); set aside, not vetoed, as the "Dance" class check of 2026-10-20 intended. Not the project's own entities
+        for (var i = 0; i < list.Count; i++)
+        {
+            var b = list[i];
+            if (b.Veto || b.SetAside || b.JoinedTo is not null || b.Candidate.Source == home || b.Candidate.Source == "store" || b.Candidate.NameScore < 0.97 || SameThing(b, h)) continue;
+            if (b.Candidate.Class is { } cls && h.Candidate.Class is { } homeClass && cls != homeClass)
+                list[i] = b with { SetAside = true, Reason = b.Reason + $"; {home} {h.Candidate.Label} decides: a {cls.ToString().ToLowerInvariant()} of the name, not the {homeClass.ToString().ToLowerInvariant()}" };
+        }
         foreach (var source in list.Where(Eligible).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
         {
             var terms = list.Select((m, i) => (m, i)).Where(x => Eligible(x.m) && x.m.Candidate.Source == source).ToList();

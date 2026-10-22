@@ -48,7 +48,9 @@ public sealed record ProjectManifest
             ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default"),
             ["place"] = new([EntityClass.Place], Qualified: true, Parts: new(PartsShape.List, ";")),
             // a precoordinated LCSH heading: looked up whole, else decided as its parts; the head may be a dated name heading
-            ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], Home: "lcsh", Parts: new(PartsShape.Compound, "--", Context: "keywords:sub", HeadContext: "keywords:head"), Collections: ["LCSHAuthorizedHeadings"]),
+            // a heading without "--" is decided whole, and a dated name heading ("Atken, J, fl 1783", "Reuss, Albert, 1889-1975") reads
+            // through the MARC profile as its head would (finding 46, 2026-10-22); the manifest needs refreshing for this
+            ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true, Parts: new(PartsShape.Compound, "--", Context: "keywords:sub", HeadContext: "keywords:head"), Collections: ["LCSHAuthorizedHeadings"]),
             ["keywords:head"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true, Collections: ["LCSHAuthorizedHeadings"]),
             // a library's subdivisions are more often forms ("--Catalogs", "--Exhibitions") than topics where LCSH has both
             ["keywords:sub"] = new([EntityClass.Type, EntityClass.Place, EntityClass.Period], Home: "lcsh", Collections: ["GenreFormSubdivisions", "Subdivisions"]),

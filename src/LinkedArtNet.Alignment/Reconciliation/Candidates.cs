@@ -42,9 +42,12 @@ public sealed record StringReading(
     PartsRule? PartsRule = null,
     string? Home = null,
     IReadOnlyList<string>? Collections = null,
-    string? LabelOverride = null)
+    string? LabelOverride = null,
+    string? QualifierAncestors = null)
 {
     public string Key => Keys.Count > 0 ? Keys[0] : "";
+    /// <summary>The qualifier as a placement is checked against it: with the ancestors TGN gives its place ("Yorkshire, England, United Kingdom, Europe, World"), so a heading's coarser parenthetical agrees (finding 56).</summary>
+    public string? QualifierForPlacement => Qualifier is null ? null : QualifierAncestors is null ? Qualifier : $"{Qualifier}, {QualifierAncestors}";
     /// <summary>The shape of a string made of parts, null for a string that is not.</summary>
     public PartsShape? Shape => Parts is null ? null : PartsRule?.Shape;
     /// <summary>The context a part at this position is collected in: a compound's head may have its own, otherwise the rule's parts context, otherwise the parent's.</summary>

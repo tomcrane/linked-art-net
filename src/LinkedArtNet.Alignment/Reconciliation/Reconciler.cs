@@ -213,6 +213,43 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         catch (JsonException) { return null; }
     }
 
+    private readonly Dictionary<string, string?> _ancestors = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// The qualifier's own place in TGN, when it is a county or above and TGN has one such place of the name: "Yorkshire" is in
+    /// "England, United Kingdom, Europe, World", so LCSH's "Fountains Hall (England)" is placed by "Fountains Hall (Yorkshire)" though
+    /// its parenthetical is the coarser (finding 56, 2026-10-22). A town's name ("Bridgend") brings nothing: too many namesakes.
+    /// </summary>
+    private async Task<StringReading> WithQualifierAncestorsAsync(StringReading reading, CancellationToken ct)
+    {
+        if (reading.Qualifier is null || !sources.Any(x => x.Name == "tgn")) return reading;
+        var segment = reading.Qualifier.Split(',')[0].Trim();
+        if (segment.Length < 3) return reading;
+        if (!_ancestors.TryGetValue(segment, out var ancestors))
+        {
+            ancestors = null;
+            var records = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(segment), "tgn", nameof(EntityClass.Place), 50, ct);
+            var own = new List<string>();
+            foreach (var r in records.Where(r => r.Label is not null && NameMatcher.Score(segment, [r.Label!]) >= 0.97))
+            {
+                string? parent = null, placeType = null;
+                try
+                {
+                    using var doc = JsonDocument.Parse(r.DataJson ?? "{}");
+                    if (doc.RootElement.TryGetProperty("parentString", out var ps)) parent = ps.GetString();
+                    if (doc.RootElement.TryGetProperty("placeType", out var pt)) placeType = pt.GetString();
+                }
+                catch (JsonException) { }
+                if (parent is null || placeType is null) continue;
+                var label = (await store.GetAuthorityAsync(placeType, ct))?.Label;
+                if (Qualified.LevelOf(label) is >= 3) own.Add(parent);
+            }
+            if (own.Count == 1) ancestors = own[0];
+            _ancestors[segment] = ancestors;
+        }
+        return ancestors is null ? reading : reading with { QualifierAncestors = ancestors };
+    }
+
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>
     public StringReading Read(SourceString s)
     {
@@ -224,7 +261,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Evaluation> EvaluateAsync(string dataset, SourceString s, bool includeStore = true, CancellationToken ct = default)
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        var reading = Read(s);
+        var reading = await WithQualifierAncestorsAsync(Read(s), ct);
         Time("read", sw);
         if (reading.Key.Length == 0) return new Evaluation(Outcome.Skipped, reading, []);
 
@@ -456,7 +493,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             if (reading.Nationalities.Count > 0 && c.Nationalities is { Count: > 0 } cn && cn.Intersect(reading.Nationalities, StringComparer.Ordinal).Any())
             { score = Math.Min(1, score + 0.03); reasons.Add("nationality agrees"); }
-            var qualifierAgrees = Qualified.Agrees(reading.Qualifier, c.Placement);
+            var qualifierAgrees = Qualified.Agrees(reading.QualifierForPlacement, c.Placement);
             switch (qualifierAgrees)
             {
                 case true:
@@ -471,16 +508,19 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees));
         }
-        // a string that carries dates and a record of a source that agrees with them: that source's undated records of the name
-        // are namesakes the cataloguer could not date, not the dated person (LoC's headings are unique, so its undated "Doyle,
-        // Richard" beside "Doyle, Richard, 1824-1883" is another Richard Doyle by LoC's own rule); the owner's policy, 2026-10-21
+        // a string that carries dates and a record of a source that agrees with them: that source's other records of the name
+        // are namesakes, not the dated person (LoC's headings are unique, so its undated "Doyle, Richard" beside "Doyle, Richard,
+        // 1824-1883" is another Richard Doyle by LoC's own rule); the owner's policy, 2026-10-21, for the undated ones; widened
+        // 2026-10-22 (finding 54) to the dated ones that merely do not conflict (LoC's "Clarke, Geoffrey, -1950" beside its
+        // "Clarke, Geoffrey, 1924-2014") and to ULAN's windows of possibility (1871~-~2030), by the same rule of uniqueness
         if (reading.HasLifespan)
             foreach (var source in list.Where(m => m.DatesAgree && !m.Veto).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
                 for (var i = 0; i < list.Count; i++)
                 {
                     var b = list[i];
-                    if (b.Veto || b.Candidate.Source != source || b.Candidate.Lifespan is { IsEmpty: false } || b.Candidate.EntityId is not null) continue;
-                    list[i] = b with { Veto = true, Reason = b.Reason + $"; {source}'s dated record of the name agrees with the string's dates: this undated one is a namesake" };
+                    if (b.Veto || b.DatesAgree || b.Candidate.Source != source || b.Candidate.EntityId is not null) continue;
+                    var undated = b.Candidate.Lifespan is null || !b.Candidate.Lifespan.IsDated;
+                    list[i] = b with { Veto = true, Reason = b.Reason + $"; {source}'s dated record of the name agrees with the string's dates: this {(undated ? "undated" : "other")} one is a namesake" };
                 }
         // an undated record that is its source's only exact record of the name is the person another source dates: "LoC knows one
         // Marit Guinness Aschan; ULAN dates her", and the two vote (doc 10, section 7.6 finding 14; the owner's policy, 2026-10-21)
@@ -496,10 +536,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                     list[agreeing[0].i] = agreeing[0].m with { JoinedTo = dated.Candidate.Uri, Reason = agreeing[0].m.Reason + $"; dated as {dated.Candidate.Source}'s record is" };
                     continue;
                 }
-                var exact = list.Select((m, i) => (m, i)).Where(x => x.m.Candidate.Source == source && x.m.Candidate.NameScore >= 0.97).ToList();
+                // its source's only exact record once the namesakes vetoed by their dates are gone, and a record ULAN dates only by a
+                // window of possibility (1955~-~2035) is undated for this purpose (finding 55, 2026-10-22)
+                var exact = list.Select((m, i) => (m, i)).Where(x => x.m.Candidate.Source == source && x.m.Candidate.NameScore >= 0.97 && !x.m.Veto).ToList();
                 if (exact.Count != 1) continue;
                 var (lone, at) = exact[0];
-                if (lone.Veto || lone.SetAside || lone.JoinedTo is not null || lone.Candidate.Lifespan is { IsEmpty: false }) continue;
+                if (lone.SetAside || lone.JoinedTo is not null || lone.Candidate.Lifespan is { IsDated: true }) continue;
                 if (lone.Candidate.Class is { } cls && dated.Candidate.Class is { } datedClass && cls != datedClass) continue;
                 list[at] = lone with { JoinedTo = dated.Candidate.Uri, Reason = lone.Reason + $"; {source}'s one record of the name, which {dated.Candidate.Source} dates" };
             }

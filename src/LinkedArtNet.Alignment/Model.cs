@@ -79,20 +79,26 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
         var endsKnown = Known(EndEarliest, EndLatest) && Known(other.EndEarliest, other.EndLatest);
         if (beginsKnown && !Overlap(BeginEarliest, BeginLatest, other.BeginEarliest, other.BeginLatest)) return DateAgreement.Conflict;
         if (endsKnown && !Overlap(EndEarliest, EndLatest, other.EndEarliest, other.EndLatest)) return DateAgreement.Conflict;
-        if (CrossConflict(BeginEarliest ?? BeginLatest, other.EndLatest ?? other.EndEarliest, maxLifetimeYears)) return DateAgreement.Conflict;
-        if (CrossConflict(other.BeginEarliest ?? other.BeginLatest, EndLatest ?? EndEarliest, maxLifetimeYears)) return DateAgreement.Conflict;
+        if (CrossConflict(BeginEarliest, BeginLatest, other.EndEarliest, other.EndLatest, maxLifetimeYears)) return DateAgreement.Conflict;
+        if (CrossConflict(other.BeginEarliest, other.BeginLatest, EndEarliest, EndLatest, maxLifetimeYears)) return DateAgreement.Conflict;
         // agreement needs a tight bound on both sides: a window of possibility (ULAN's 1850-2080) overlaps anything and proves nothing
         var beginsDated = Tight(BeginEarliest, BeginLatest) && Tight(other.BeginEarliest, other.BeginLatest);
         var endsDated = Tight(EndEarliest, EndLatest) && Tight(other.EndEarliest, other.EndLatest);
         return beginsDated || endsDated ? DateAgreement.Agree : DateAgreement.Incomparable;
     }
 
-    /// <summary>A begin after the other's end, or more than a lifetime before it, cannot be the same person.</summary>
-    private static bool CrossConflict(DateTimeOffset? begin, DateTimeOffset? end, int? maxLifetimeYears)
+    /// <summary>
+    /// A begin after the other's latest possible end, or a lifetime longer than the longest allowed even between the latest possible
+    /// begin and the earliest possible end, cannot be the same person. An outer bound alone ("died no later than ~2090", ULAN's window
+    /// for a living artist) never makes a lifetime: "Gilbert, 1943-" against ULAN's 1943-~2090 is the same Gilbert (finding 52, 2026-10-22).
+    /// </summary>
+    private static bool CrossConflict(DateTimeOffset? beginEarliest, DateTimeOffset? beginLatest, DateTimeOffset? endEarliest, DateTimeOffset? endLatest, int? maxLifetimeYears)
     {
-        if (begin is null || end is null) return false;
-        if (begin > end) return true;
-        return maxLifetimeYears is { } max && end.Value.Year - begin.Value.Year > max;
+        var begin = beginEarliest ?? beginLatest;
+        if (begin is not null && endLatest is not null && begin > endLatest) return true;
+        if (begin is not null && endLatest is null && endEarliest is not null && begin > endEarliest) return true;
+        var latestBegin = beginLatest ?? beginEarliest;
+        return maxLifetimeYears is { } max && latestBegin is not null && endEarliest is not null && endEarliest.Value.Year - latestBegin.Value.Year > max;
     }
 
     /// <summary>A lifespan from two Linked Art TimeSpans, as the dates parser yields for a pair.</summary>

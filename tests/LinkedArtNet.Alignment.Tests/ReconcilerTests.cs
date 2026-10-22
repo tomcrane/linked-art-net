@@ -225,6 +225,24 @@ public class GroupingTests
         // vetoed (LoC's headings are unique: the undated "Doyle, Richard" beside "Doyle, Richard, 1824-1883" is another man);
         // another source's undated record, with no dated record of its own to agree, stays a rival; the store's entities are untouched
         Assert.True(scored[2].Veto); Assert.Contains("this undated one is a namesake", scored[2].Reason);
+        // an open-ended string against a record whose end is only a window of possibility is not a lifetime too long (finding 52)
+        var gilbert = reading with { Text = "Gilbert", Lifespan = new Lifespan(new DateTimeOffset(1943, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1943, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1943-") };
+        var proesch = new Candidate("u7", "ulan", "Proesch, Gilbert", EntityClass.Person, new Lifespan(new DateTimeOffset(1943, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1943, 12, 31, 0, 0, 0, TimeSpan.Zero), null, new DateTimeOffset(2090, 12, 31, 0, 0, 0, TimeSpan.Zero), "1943-~2090"), [], "local", 1.0);
+        var gilbertScored = Reconciler.Score(gilbert, [proesch], 120)[0];
+        Assert.False(gilbertScored.Veto); Assert.True(gilbertScored.DatesAgree);
+        Assert.Equal(DateAgreement.Conflict, gilbert.Lifespan!.Compare(new Lifespan(null, null, new DateTimeOffset(1900, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1900, 12, 31, 0, 0, 0, TimeSpan.Zero)), 120)); // died before born: still a conflict
+        // a source's agreeing record makes its other records of the name namesakes, dated or not (finding 54): LoC's "-1950" beside its "1924-2014"
+        var clarke = reading with { Text = "Clarke, Geoffrey", Lifespan = new Lifespan(new DateTimeOffset(1924, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1924, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1924-") };
+        var clarkeLoc = new Candidate("l20", "loc", "Clarke, Geoffrey, 1924-2014", EntityClass.Person, GettyVocabLoader.LifespanFromYears("1924", "2014"), [], "local", 1.0);
+        var clarkeOther = new Candidate("l21", "loc", "Clarke, Geoffrey, -1950", EntityClass.Person, new Lifespan(null, null, new DateTimeOffset(1950, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1950, 12, 31, 0, 0, 0, TimeSpan.Zero), "-1950"), [], "local", 1.0);
+        var clarkeScored = Reconciler.Score(clarke, [clarkeLoc, clarkeOther], 120);
+        Assert.True(clarkeScored[0].DatesAgree); Assert.True(clarkeScored[1].Veto); Assert.Contains("this other one is a namesake", clarkeScored[1].Reason);
+        // and a record dated only by a window of possibility is undated for finding 14 (finding 55): ULAN's "Chandra, Mohini" 1955~-~2035 joins LoC's dated record
+        var chandra = reading with { Text = "Chandra, Mohini", Lifespan = new Lifespan(new DateTimeOffset(1964, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1964, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1964-") };
+        var chandraLoc = new Candidate("l22", "loc", "Chandra, Mohini, 1964-", EntityClass.Person, new Lifespan(new DateTimeOffset(1964, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1964, 12, 31, 0, 0, 0, TimeSpan.Zero), null, null, "1964-"), [], "local", 1.0);
+        var chandraUlan = new Candidate("u8", "ulan", "Chandra, Mohini", EntityClass.Person, new Lifespan(new DateTimeOffset(1955, 1, 1, 0, 0, 0, TimeSpan.Zero), null, null, new DateTimeOffset(2035, 12, 31, 0, 0, 0, TimeSpan.Zero), "1955~-~2035"), [], "local", 1.0);
+        var chandraScored = Reconciler.Score(chandra, [chandraLoc, chandraUlan], 120);
+        Assert.Equal("l22", chandraScored[1].JoinedTo);
         var locUndated = new Candidate("l9", "loc", "Dürer, Albrecht", EntityClass.Person, null, [], "local", 1.0);
         Assert.False(Reconciler.Score(reading, [agrees, locUndated], 120)[1].Veto);
         // and when it is its source's only exact record of the name, it is the person the other source dates: the two vote (the
@@ -317,6 +335,7 @@ public class GroupingTests
         Assert.False(NameMatcher.SameBody("John Lane, The Bodley Head Limited", ["Bodley Head (Firm)"]));
         // "St." and "Saint" are one word (finding 25)
         Assert.Equal(0.97, NameMatcher.Score("St. Mary", ["Saint Mary"])); Assert.Equal(0.97, NameMatcher.Score("Mt. Pleasant", ["Mount Pleasant"]));
+        Assert.Equal(0.97, NameMatcher.Score("Jope, E M", ["Jope, E. M. (Edward Martyn)"])); // a fuller form dropped, then punctuation alone (finding 57)
         Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
 
         var reading = Reading("Heaton", EntityClass.Place) with { Qualifier = "Bradford" };
@@ -1017,6 +1036,15 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, cumbria));
         Assert.Contains("whose own name it is among 2", (await pg.Store.DecisionForAsync(cumbria.Id))!.EvidenceJson);
         Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Cumbria"))!.Equivalents, q => q.Uri.EndsWith("7008117"));
+        // a qualifier's ancestors from TGN (finding 56): "Yorkshire" is a county in England and TGN has one such, so LoC's coarser
+        // "Fountains Hall (England)" is placed by "Fountains Hall (Yorkshire)"; a town's name brings nothing
+        await pg.Store.PutAuthorityAsync(Tgn("7008171", "Yorkshire", "England, United Kingdom, Europe, World", "300000771"));
+        await pg.Store.PutAuthorityAsync(Tgn("2073379", "Yorkshire", "Cattaraugus, New York, United States, North and Central America, World", "300008347"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n2005005459", "loc", "Fountains Hall (England)", ["Fountains Hall (England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var fountains = await pg.Store.CollectAsync(ds, "place", "Fountains Hall (Yorkshire)");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, fountains));
+        Assert.Equal(DecisionMethod.Single, (await pg.Store.DecisionForAsync(fountains.Id))!.Method);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Fountains Hall (Yorkshire)"))!.Equivalents, q => q.Uri.EndsWith("n2005005459"));
         var china = await pg.Store.CollectAsync(ds, "place", "China");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, china));
         Assert.Contains("an unqualified heading: the nation among 2", (await pg.Store.DecisionForAsync(china.Id))!.EvidenceJson);

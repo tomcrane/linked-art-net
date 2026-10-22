@@ -109,7 +109,7 @@ says "continue with the list"):
     (the inverted-form twins of people and bodies; read the list, then)
     dotnet run --project tools/Align -- merge-duplicates --apply
     dotnet run --project tools/Align -- undo-run --run run-20261021-165615-qr7fbx
-    dotnet run --project tools/Align -- reconcile
+    dotnet run --project tools/Align -- reconcile --verbose        (or --candidates for the top candidates under each string)
     dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10

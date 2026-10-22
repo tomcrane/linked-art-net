@@ -12,8 +12,9 @@
 //                                                                              a Getty full N-Triples download into the local authority index
 //   dotnet run --project tools/Align -- load-loc <names.madsrdf.nt.gz> [--version 2026-10]
 //                                                                              the LC Name Authority File (MADS/RDF N-Triples bulk download) into the local index
-//   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint]
-//                                                                              decide undecided strings from overrides, the store and the local indexes
+//   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint] [--verbose | --candidates]
+//                                                                              decide undecided strings from overrides, the store and the local indexes;
+//                                                                              --verbose prints a line per string, --candidates the top candidates too
 //   dotnet run --project tools/Align -- shadow [--dataset pmc] [--method imported] [--context c] [--limit n | --sample n] [--out reports]
 //                                                                              re-judge old decisions from scratch and compare; writes a CSV, decides nothing
 //   dotnet run --project tools/Align -- audit [--dataset pmc] [--out reports]  check entities with ULAN ids against the local ULAN index; writes a CSV
@@ -121,7 +122,11 @@ switch (args[0])
         var run = await store.StartRunAsync(dataset, System.Text.Json.JsonSerializer.Serialize(options));
         var reconciler = new Reconciler(store, scheme, sources, options);
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
-        var report = await reconciler.RunAsync(dataset, limit, run.Id, progress);
+        // --verbose: one line per string as it is decided (what carried it); --candidates: the top groups' members too, as the
+        // decisions command prints them. The lines go to standard output; the progress counts stay on standard error
+        var verbose = args.Contains("--verbose") || args.Contains("--candidates");
+        var withCandidates = args.Contains("--candidates");
+        var report = await reconciler.RunAsync(dataset, limit, run.Id, progress, verbose ? e => Console.Write(EvaluationText.Narrate(e, withCandidates)) : null);
         await store.FinishRunAsync(run.Id, System.Text.Json.JsonSerializer.Serialize(report), report.ToString());
         Console.WriteLine($"run {run.Id}: {report}");
         Console.WriteLine($"time by stage: {reconciler.TimingsText}");
@@ -308,8 +313,9 @@ static void Usage() => Console.WriteLine(
                                              a Library of Congress MADS/RDF file: the Name Authority File (default, index loc)
                                              or the Subject Headings (index lcsh)
                                              load the LC Name Authority File (MADS/RDF N-Triples) into the local authority index
-      reconcile [--dataset] [--limit n] (all undecided strings unless limited) [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-unique-exact] [--no-mint]
-                                             decide undecided strings from overrides, the store and the local indexes
+      reconcile [--dataset] [--limit n] (all undecided strings unless limited) [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint]
+                [--verbose | --candidates]   decide undecided strings from overrides, the store and the local indexes; --verbose prints a
+                                             line per string as it is decided, --candidates the top candidates under each as well
       decisions --run <id> [--method m] [--context c] [--limit 20]
                                              a run's decisions by context and method, then a sample with evidence
       shadow [--dataset] [--method imported] [--context c] [--limit n | --sample n] [--out reports]

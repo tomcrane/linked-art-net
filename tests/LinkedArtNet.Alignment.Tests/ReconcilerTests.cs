@@ -792,6 +792,12 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(Outcome.Decomposed, e.Outcome);
         var decision = (await pg.Store.DecisionForAsync(heading.Id))!;
         Assert.Equal(DecisionMethod.Composite, decision.Method);
+        // the verbose narration: the heading, then its parts indented, with the candidates when asked
+        var narrated = EvaluationText.Narrate(e, candidates: true);
+        Assert.StartsWith("[keywords] Painting--Canada -> composite (2 parts, 2 new)", narrated);
+        Assert.Contains("  [keywords:head] Painting -> accepted", narrated);
+        Assert.Contains("  [keywords:sub] Canada -> accepted", narrated);
+        Assert.Contains("     1.00 tgn    Canada  <http://vocab.getty.edu/tgn/7005685>  name 1.00", narrated);
         Assert.Equal(scheme.Uri(EntityClass.Type, "unrec_abcd2345"), decision.EntityId); // the heading's concept keeps the identifier LUX holds (the owner's decision 2026-10-21)
         var concept = (await pg.Store.GetEntityAsync(decision.EntityId!))!;
         Assert.Equal(EntityClass.Type, concept.Class); Assert.Equal("Painting--Canada", concept.Label);

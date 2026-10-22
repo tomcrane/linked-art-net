@@ -172,7 +172,7 @@ store's connection string in the `LINKEDART_PG` environment variable:
 |---|---|
 | `tools/Align load-getty <folder> --vocab ulan` | loads a Getty vocabulary from its downloaded files (also `aat`, `tgn`) |
 | `tools/Align load-loc <file.nt.gz>` | loads the Library of Congress name file |
-| `tools/Align reconcile --limit 500` | works through up to 500 undecided strings: override, store, indexes, then accept, queue or mint |
+| `tools/Align reconcile --limit 500` | works through up to 500 undecided strings: override, store, indexes, then accept, queue or mint; `--verbose` shows each string as it is decided, `--candidates` the candidates too |
 | `tools/Align decisions --run <id>` | shows what a run decided, by field and method, with samples and evidence |
 | `tools/Align undo-run --run <id>` | takes a run back entirely |
 | `tools/Align merge-duplicates [--class Place] [--apply]` | lists the project's entities that share a label and class and what would merge; `--apply` merges them |

@@ -87,7 +87,7 @@ public static class Qualified
         var folded = StringKey.Fold(StringKey.Normalise(text));
         foreach (var (pattern, token) in Expansions) folded = pattern.Replace(folded, token);
         foreach (var (pattern, token) in Phrases) folded = pattern.Replace(folded, token);
-        return folded.Split([' ', ',', ';', '.', '(', ')', '/', ':', '-', '\''], StringSplitOptions.RemoveEmptyEntries)
+        return folded.Split([' ', ',', ';', '.', '(', ')', '/', ':', '-', '\'', '?', '[', ']'], StringSplitOptions.RemoveEmptyEntries)
             .Where(t => t.Length >= 3 && !Noise.Contains(t)).Distinct(StringComparer.Ordinal).ToArray();
     }
 

@@ -315,6 +315,13 @@ public class GroupingTests
         Assert.False(Qualified.Agrees("Turkey and Greece", "Ilía, Region of Western Greece, Greece, Europe, World"));
         Assert.True(Qualified.Agrees("Turkey and Greece", "Turkey and Greece"));
         Assert.True(Qualified.Agrees("London, England", "Hammersmith and Fulham, London, Greater London, England, United Kingdom, Europe, World"));
+        Assert.True(Qualified.Agrees("Buckinghamshire?", "Cuddington, Buckinghamshire, England, United Kingdom, Europe, World")); // the cataloguer's doubt is no word (finding 59)
+        // a qualifier's TGN ancestors widen agreement and never narrow it (finding 56 corrected): "Wales" agrees with "Raglan, Wales" as written
+        var raglan = Reading("Raglan Castle", EntityClass.Place) with { Qualifier = "Wales", QualifierAncestors = "United Kingdom, Europe, World" };
+        var raglanLcsh = new Candidate("http://id.loc.gov/authorities/subjects/sh86002072", "lcsh", "Raglan Castle (Raglan, Wales)", EntityClass.Type, null, [], "local", 0.85, Placement: "Raglan, Wales; Raglan, Monmouthshire");
+        Assert.True(Reconciler.Score(raglan, [raglanLcsh], 120)[0].QualifierAgrees);
+        var fountains = Reading("Fountains Hall", EntityClass.Place) with { Qualifier = "Yorkshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
+        Assert.True(Reconciler.Score(fountains, [new Candidate("l30", "lcsh", "Fountains Hall (England)", EntityClass.Type, null, [], "local", 0.85, Placement: "England")], 120)[0].QualifierAgrees); // and still widen
         // a heading's type word and a record's level (the TGN level preference)
         Assert.Equal("County", Qualified.TypeOf(["Cornwall (England : County)"]));
         Assert.Equal("City", Qualified.TypeOf(["New York (N.Y.)", "New York (N.Y. : City)"]));
@@ -838,6 +845,12 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(0.97, LocalIndexSource.ToCandidate(new AuthorityRecord("http://id.loc.gov/authorities/names/n50068390", "loc", "Rowman and Littlefield, Inc.", ["Rowman and Littlefield, Inc."], "Group", null, [], null, DateTimeOffset.UtcNow, "test"), rowman, "local").NameScore);
         var clarkArt = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Clark Art Ltd"));
         Assert.True(LocalIndexSource.ToCandidate(new AuthorityRecord("http://id.loc.gov/authorities/names/n94033176", "loc", "Clark, Art", ["Clark, Art"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"), clarkArt, "local").NameScore < 0.97);
+        // a body's LoC parenthetical that is not a type of body places it (finding 58): the Hunterian is in Glasgow
+        var hunterian = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Hunterian Art Gallery (Glasgow)"));
+        var hunterianLoc = LocalIndexSource.ToCandidate(new AuthorityRecord("http://id.loc.gov/authorities/names/n85277383", "loc", "Hunterian Art Gallery (University of Glasgow)", ["Hunterian Art Gallery (University of Glasgow)"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"), hunterian, "local");
+        Assert.Equal("University of Glasgow", hunterianLoc.Placement);
+        var hunterianScored = Reconciler.Score(hunterian, [hunterianLoc], 120)[0];
+        Assert.True(hunterianScored.QualifierAgrees); Assert.Equal(0.97, hunterianScored.Candidate.NameScore); // placed, and exact on its name (finding 20)
         var riba = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "RIBA"));
         var institute = new AuthorityRecord("http://id.loc.gov/authorities/names/n79063909", "loc", "Royal Institute of British Architects", ["Royal Institute of British Architects", "RIBA"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
         Assert.Equal(1.0, LocalIndexSource.ToCandidate(institute, riba, "local").NameScore); // the string is the acronym itself
@@ -1046,6 +1059,18 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, fountains));
         Assert.Equal(DecisionMethod.Single, (await pg.Store.DecisionForAsync(fountains.Id))!.Method);
         Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Fountains Hall (Yorkshire)"))!.Equivalents, q => q.Uri.EndsWith("n2005005459"));
+        // the cataloguer's doubt and brackets are not the name or the qualifier (finding 59)
+        Assert.Equal("Buckinghamshire", reconciler.Read(await pg.Store.CollectAsync(ds, "place", "Cuddington, Buckinghamshire?")).Qualifier);
+        Assert.Equal("Warwick", reconciler.Read(await pg.Store.CollectAsync(ds, "place", "[Warwick]")).Text);
+        // two inhabited places of the name under "(England)": the one that gives its name to the division above it (finding 61)
+        await pg.Store.PutAuthorityAsync(Tgn("7011393", "Portsmouth", "Portsmouth, England, United Kingdom, Europe, World", "300008347"));
+        await pg.Store.PutAuthorityAsync(Tgn("7026526", "Portsmouth", "England, United Kingdom, Europe, World", "300000771"));
+        await pg.Store.PutAuthorityAsync(Tgn("7459578", "Portsmouth", "Calderdale, West Yorkshire, England, United Kingdom, Europe, World", "300008347"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79043947", "loc", "Portsmouth (England)", ["Portsmouth (England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var portsmouth = await pg.Store.CollectAsync(ds, "place", "Portsmouth (England)");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, portsmouth));
+        Assert.Contains("names the division above it", (await pg.Store.DecisionForAsync(portsmouth.Id))!.EvidenceJson);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Portsmouth (England)"))!.Equivalents, q => q.Uri.EndsWith("7011393"));
         var china = await pg.Store.CollectAsync(ds, "place", "China");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, china));
         Assert.Contains("an unqualified heading: the nation among 2", (await pg.Store.DecisionForAsync(china.Id))!.EvidenceJson);

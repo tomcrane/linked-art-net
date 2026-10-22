@@ -71,10 +71,13 @@ public static class NameMatcher
         "auctioneers", "auction house", "dealer", "dealers", "art dealers", "corporation", "partnership",
     };
 
+    /// <summary>The label without a parenthetical that names a kind of body ("(Firm)", "(Gallery)"); a place or an institution in parentheses stays.</summary>
+    public static string WithoutBodyType(string label) =>
+        System.Text.RegularExpressions.Regex.Replace(label, @"\s*\(([^()]*)\)", m => BodyTypes.Contains(m.Groups[1].Value.Trim().ToLowerInvariant()) ? "" : m.Value);
+
     private static string BodyForm(string raw)
     {
-        var key = StringKey.Normalise(raw);
-        key = System.Text.RegularExpressions.Regex.Replace(key, @"\s*\(([^()]*)\)", m => BodyTypes.Contains(m.Groups[1].Value.Trim()) ? "" : m.Value);
+        var key = StringKey.Normalise(WithoutBodyType(raw));
         return NameForms.Canonical(Saints(StringKey.Fold(key)), dropQualifiers: false, expandAbbreviations: false);
     }
 

@@ -493,7 +493,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             if (reading.Nationalities.Count > 0 && c.Nationalities is { Count: > 0 } cn && cn.Intersect(reading.Nationalities, StringComparer.Ordinal).Any())
             { score = Math.Min(1, score + 0.03); reasons.Add("nationality agrees"); }
-            var qualifierAgrees = Qualified.Agrees(reading.QualifierForPlacement, c.Placement);
+            // the qualifier as written first; its TGN ancestors (finding 56) only to widen agreement, never to narrow it: "Raglan Castle
+            // (Wales)" against LCSH's "(Raglan, Wales)" agrees on "Wales" alone, ancestors or no (2026-10-22)
+            var qualifierAgrees = Qualified.Agrees(reading.Qualifier, c.Placement);
+            if (qualifierAgrees == false && reading.QualifierAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement, c.Placement) == true) qualifierAgrees = true;
             switch (qualifierAgrees)
             {
                 case true:
@@ -596,11 +599,16 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var atLevel = through.Where(a => level is not null && Qualified.LevelOf(a.Candidate.PlaceType) == level).ToList();
             // no holder at the heading's level (LoC's "Cumbria (England)" has no type word, but Cumbria is a county and so is Westmorland,
             // which answers through its variant): the holder whose own name the heading is, if one (finding 49, 2026-10-22)
-            var byName = atLevel.Count == 1 ? atLevel : through.Where(a => NameMatcher.Score(reading.Text, [a.Candidate.Label ?? ""]) >= 0.97).ToList();
+            var byName = atLevel.Count == 1 ? atLevel : (atLevel.Count > 1 ? atLevel : through).Where(a => NameMatcher.Score(reading.Text, [a.Candidate.Label ?? ""]) >= 0.97).ToList();
+            // two inhabited places of the name (Portsmouth the city and a hamlet in Calderdale): the one that gives its name to the
+            // division above it, whose parent string begins with the name ("Portsmouth, England, ..."), is the known one (finding 61)
+            var namesake = byName.Count > 1 ? byName.Where(a => a.Candidate.Placement is { } p && NameMatcher.Score(reading.Text, [p.Split(',')[0].Trim()]) >= 0.97).ToList() : [];
             list[i] = atLevel.Count == 1
                 ? b with { JoinedTo = atLevel[0].Candidate.Uri, Reason = b.Reason + $"; placed through {atLevel[0].Candidate.Source} {atLevel[0].Candidate.Label}, the {Qualified.LevelName(level!.Value)} among {through.Count}" }
                 : byName.Count == 1
                 ? b with { JoinedTo = byName[0].Candidate.Uri, Reason = b.Reason + $"; placed through {byName[0].Candidate.Source} {byName[0].Candidate.Label}, whose own name it is among {through.Count}" }
+                : namesake.Count == 1
+                ? b with { JoinedTo = namesake[0].Candidate.Uri, Reason = b.Reason + $"; placed through {namesake[0].Candidate.Source} {namesake[0].Candidate.Label}, the one of {through.Count} that names the division above it" }
                 : b with { Reason = b.Reason + $"; inside {through.Count} placed candidates" };
         }
         // an unqualified LoC heading of a place ("China", "Canada") is one LoC gives to a place unique in its world: among TGN

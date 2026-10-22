@@ -97,8 +97,11 @@ public sealed record StringReading(
         string? qualifier = null;
         string? labelOverride = null;
         if (rule.Qualified && parser is null && parts is null) (text, qualifier) = Qualified.Split(s.Raw);
-        // "Norfolk?": the cataloguer's doubt, not part of the name (finding 36, 2026-10-22); the entity keeps the raw string as a label
+        // "Norfolk?", "Cuddington, Buckinghamshire?", "[Warwick]": the cataloguer's doubt and brackets are not part of the name or the
+        // qualifier (findings 36 and 59, 2026-10-22); the entity keeps the raw string as a label
         if (text.EndsWith('?') && text.Length > 1) text = text.TrimEnd('?', ' ');
+        if (rule.Qualified && text.Length > 2 && text.StartsWith('[') && text.EndsWith(']')) text = text[1..^1].Trim();
+        if (qualifier is not null) { qualifier = qualifier.TrimEnd('?', ' ').Trim('[', ']', ' '); if (qualifier.Length == 0) qualifier = null; }
         if (parser is not null)
         {
             agent = parser.Parse(s.Raw);
@@ -273,9 +276,11 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // neither must veto a record as "not placed" (finding 30, 2026-10-22: ULAN's three Fine Art Societies against "London")
         // an LCSH heading's parenthetical is a place whatever the heading's class: "Leeds Castle (England)" is a topic to LCSH and a
         // building in Kent to TGN, and the two meet by placement (finding 47, 2026-10-22)
+        // for a body, a LoC parenthetical that is not a type of body places it: "Hunterian Art Gallery (University of Glasgow)" is in
+        // Glasgow (finding 58, 2026-10-22); "(Firm)" and "(Gallery)" still place nothing
         var placement = cls == EntityClass.Place ? Qualified.PlacementOf(parentString, labels)
             : r.Source == "lcsh" ? Qualified.PlacementOf(null, labels)
-            : reading.Qualifier is not null && r.Source == "loc" ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
+            : reading.Qualifier is not null && r.Source == "loc" ? Qualified.PlacementOf(null, labels.Select(NameMatcher.WithoutBodyType)) : null;
         return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, nameScore, null, nationalities, Disambiguated: disambiguated,
             Placement: placement, Collections: collections, PlaceType: placeType);
     }

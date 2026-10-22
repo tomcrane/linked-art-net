@@ -22,11 +22,11 @@ queued keywords:head 777, keywords 1,376, keywords:sub 273, place 418, persautho
 corpauthor 274. The day's path: epenbw (queued 6,647) -> qr7fbx (5,763). Doc 10 7.6 "Measured ... qr7fbx" has the
 reading of the keywords:head and place queues.
 
-**Measured 2026-10-22, run-20261022-093942-evt3ut (stands):** against v9wawv, accepted 6,743 -> 7,132 (exact-single
-2,395 -> 2,840), queued 5,586 -> 5,296, matched in store 5,491 -> 5,510; persauthorfull queued 1,532 -> 1,396 (the
-initials), place 401 -> 373 (the level fixes), publisher 1,082 -> 1,015, corpauthor 260 -> 223, keywords:head 701 ->
-693, keywords:sub 250 -> 235, keywords 1,361. The day's path so far: v9wawv (5,586) -> evt3ut (5,296). Doc 10 7.6
-"Measured ... evt3ut" has the reading of the place, publisher and corpauthor queues.
+**Measured 2026-10-22, run-20261022-104922-gde6k3 (stands):** against evt3ut, accepted 7,132 -> 7,394 (exact-single
+2,840 -> 3,038), queued 5,296 -> 5,009, matched in store 5,510 -> 5,542; publisher queued 1,015 -> 823, corpauthor
+223 -> 189, place 373 -> 344, keywords 1,361 -> 1,311, keywords:sub 235 -> 224, keywords:head 693 -> 723 (a
+regression, fixed: finding 41), persauthorfull 1,395. The day's path: v9wawv (5,586) -> evt3ut (5,296) -> gde6k3
+(5,009). Doc 10 7.6 "Measured ... gde6k3" has the reading of the publisher, keywords and keywords:sub queues.
 
 **Decisions taken by the owner on 2026-10-21:** finding 3 (undated same-source namesake veto) yes; outvoted rivals
 yes for places and concepts, not people and bodies; `unrec_` identifiers kept; finding 14 (lone undated namesake)
@@ -114,13 +114,47 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    x.exact1 = 2 and x.srcs = 2 group by 1;` Measured 2026-10-22: 35 strings (publisher 22, corpauthor 13). The
    owner's yes that day, built before the next run (`Reconciler.Score`, after the home rule; "loc's one record of
    the body, as ulan's one is").
+9. *Exact-single tolerating rivals below acceptance score* (finding 48, doc 10 7.6 "Measured ... gde6k3"):
+   "Decorated style" has AAT's exact term and LCSH's "Architecture, Gothic--Decorated style" at 0.85 as its one
+   rival; the policy wants no other group at all. Proposed: the unique exact record is accepted when every other
+   live group is below acceptance score (0.9), the lookalikes being lookalikes. Recommendation: measure first; this
+   is the shape behind much of the residue, and for people the namesake risk is real, so places and concepts
+   first, as with outvoted rivals. Ceiling (queued undated strings with exactly one live group at or above 0.9,
+   holding an exact record, and at least one other live group), the owner runs, by context and the exact record's
+   class: `select ss.context, x.cls, count(*) from decisions d join source_strings ss on ss.id =
+   d.source_string_id cross join lateral (select count(*) filter (where (g->>'score')::numeric >= 0.9) as strong,
+   count(*) as live, min(d.evidence->'reading'->'classes'->>0) as cls, bool_or((g->>'score')::numeric >= 0.9 and
+   exists (select 1 from jsonb_array_elements(g->'members') m where (m->>'reason' like 'name 1.00%' or
+   m->>'reason' like 'name 0.97%') and m->'veto' is null and m->'setAside' is null)) as exact from
+   jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
+   'run-20261022-104922-gde6k3' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null
+   and x.strong = 1 and x.live >= 2 and x.exact group by 1, 2 order by 3 desc;`
+10. *"Cornwall" in keywords:sub*: decision 7 should have taken it (the county group holds the project's entity) but
+   the string is queued, as "Italy" is, which means two entities of the project hold the county's ids and the
+   store disagrees with itself. The owner runs: `select e.id, e.label, e.status, q.uri from entities e join
+   entity_equivalents q on q.entity_id = e.id where e.dataset = 'pmc' and e.merged_into is null and q.uri in
+   ('http://vocab.getty.edu/tgn/7008116', 'http://id.loc.gov/authorities/names/n80106711') order by e.id;` and
+   merges by hand on the entity page if two appear; "Italy", "Dumfries" and "Kolkata" are the same shape and on
+   the hand-merge list already.
 4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
    `merged_into` on 292 entities and the two hand merges) are written as equivalents of the survivor so LUX merges
    its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
    builds, item 4).
 
-**Built 2026-10-22 from evt3ut's samples, waiting for the next rerun** (no reload, no manifest refresh): finding 35
+**Built 2026-10-22 from gde6k3's samples, waiting for the next rerun** (no reload; **manifest refresh needed**,
+finding 46): finding 41 (the home's one exact record sets aside another source's exact record of another class:
+the keywords:head regression); finding 39 tightened (only a body-type qualifier goes: "Garland (Destroyer)" and
+"King's College (University of Cambridge)" are not the bare names); finding 44 (groups below the review score are
+not rivals for exact-single: "Williams, Peter, 1914-1995") and 45 (a string equal to a dated heading is not an
+undated claim on it); finding 46 (the keywords field reads dated name headings through the MARC profile: "Thomas,
+Thomas, 1817-1888" meets its namesakes by dates); finding 47 (an LCSH heading's parenthetical places it whatever
+its class: "Leeds Castle (Kent)"); finding 49 (a heading inside holders at no decisive level joins the one whose
+own name it is: "Cumbria"); finding 50 (at acceptance score a two-source group outranks one source's higher score:
+"Thames River"). Expect keywords:head back below 693, keywords and keywords:sub down, publisher unchanged or a few
+back to the desk (the ships and colleges).
+
+**Built 2026-10-22 from evt3ut's samples, measured on gde6k3** (kept for the record): finding 35
 (the project's own aligned entity breaks a tie among two-source place groups: "Cornwall"; decision 7) and finding
 40 (two sources each with one exact record of a body join and vote: "National Gallery London"; decision 8); finding 36
 (a trailing "?" is not the name: "Norfolk?"); findings 37 and 39 (a body's name is exact without its legal suffix,
@@ -179,15 +213,15 @@ says "continue with the list"):
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261022-093942-evt3ut
-    dotnet run --project tools/Align -- reconcile --verbose        (or --candidates for the top candidates under each string)
-    dotnet run --project tools/Align -- decisions --run <new run id> --context publisher --method queued --limit 10
+    dotnet run --project tools/Align -- manifest --use-default          (finding 46: the keywords field's parser)
+    dotnet run --project tools/Align -- undo-run --run run-20261022-104922-gde6k3
+    dotnet run --project tools/Align -- reconcile --verbose
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
 
-The keywords (1,361) and keywords:sub (235) queues have not been sampled since uhwjq5 and are the next to read.
-Expect, against evt3ut: "Cornwall" and up to 25 more places out of the place queue, up to 35 bodies out of publisher
-and corpauthor, the firms with suffixes and "(Firm)" headings, and the provisional lookalikes.
+Run decision 9's ceiling query and decision 10's holders query against gde6k3 at any time; the undo keeps the
+evidence. The keywords:head queue is read again for the regression and its fix.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

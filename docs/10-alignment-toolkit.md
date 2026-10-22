@@ -930,6 +930,56 @@ compounds 15,668 -> 15,574 (whole headings now exact without decomposing); corpa
 - Place: "Paris", "Dublin", "Athens", "Winchester": prominence (waiting for Wikidata). "Evanston, Illinois": the
   desk. "Bottrop, Essen", "Heaton, Bradford", "Donnington": the data's.
 
+Measured 2026-10-22 (run-20261022-104922-gde6k3: findings 35 to 40 and the morning's others, against evt3ut):
+accepted 7,132 -> 7,394 (vote 3,184 -> 3,272, single 1,108 -> 1,084, exact-single 2,840 -> 3,038), queued 5,296 ->
+5,009, matched in store 5,510 -> 5,542. By context: publisher queued 1,015 -> 823 and exact-single 320 -> 459
+(findings 37 to 39); corpauthor 223 -> 189; place 373 -> 344 and vote 309 -> 337 (findings 35 and 36); keywords
+1,361 -> 1,311; keywords:sub 235 -> 224; keywords:head 693 -> 723, a regression (finding 41, below). The publisher,
+keywords and keywords:sub queues, read:
+
+- keywords:head up by thirty: finding 39 made LoC's bodies with a type qualifier exact ("Hutchinson (Firm)"), and
+  beside LCSH's exact topic of the name they were a second exact group of another class, which the home rule
+  neither joins (the class check of 2026-10-20) nor set aside. Finding 41, fixed: the home vocabulary's one exact
+  record sets aside another source's exact record of another class ("a group of the name, not the type"), as the
+  "Dance" case always wanted.
+- "Garland" met LoC's "Garland (Destroyer)" at 0.97 and "Sutton" a clipper ship, and "King's College" LoC's three
+  colleges through "(University of Cambridge)": finding 39 dropped every parenthetical without a comma. Tightened
+  the same day: only a qualifier naming a kind of body goes (firm, publisher, gallery, museum, society, press and
+  the like; the assistant's own list of LoC's usual ones); a vessel or an institution stays.
+- "Williams, Peter, 1914-1995", "Reuss, Albert, 1889-1975", "Thomas, Thomas, 1817-1888" (keywords, whole headings):
+  LoC's dated heading exact at 1.00, and ULAN's undated namesakes at 0.40, or LoC's at 0.83, counted as rival
+  groups. Finding 44, fixed: a group below the review score is noise, not a rival, for exact-single (a vetoed group
+  still counts, as the policy says). Finding 45, fixed: a string equal to LoC's dated heading, dates and all, is not
+  an undated claim on a disambiguated heading. Finding 46, built: the keywords field reads its dated name headings
+  through the MARC profile as its head context does ("Atken, J, fl 1783", "Horlor, George W, op 1849-1890" still
+  wait on finding 26 for their working dates), so "Thomas, Thomas" with a lifespan meets its namesakes by dates;
+  needs `manifest --use-default` before the run.
+- "Leeds Castle (Kent)": TGN's castle placed, LCSH's "Leeds Castle (England)" a topic with no placement, two
+  classes, no join. Finding 47, fixed: an LCSH heading's parenthetical places it whatever its class, and the two
+  meet by placement. "Grimsthorpe Castle (Lincolnshire)" against LCSH's "(England)" alone stays the desk's: a
+  coarser placement than the qualifier, with no TGN record to bridge them.
+- "Cumbria" (keywords:sub): LoC's "Cumbria (England)" inside TGN's Cumbria and Westmorland (through its variant),
+  both counties, and the heading has no type word, so no holder at its level. Finding 49, fixed: with no holder at
+  the level, the holder whose own name the heading is, if one.
+- "Thames River" (keywords:sub): TGN's Waihou in New Zealand at 1.00 through its variant "Thames River" outranked
+  TGN's Thames with LCSH's heading placed through at 0.97, so the owner's outvoted-rivals policy, written for an
+  equal score, did not fire. Finding 50, fixed: at acceptance score a two-source group outranks one source's
+  higher-scoring record.
+- "Italy" (keywords:sub): decision 7 fired and still queued, rightly: the two legacy "Italy" entities (TGN on one,
+  LoC and LUX on the other) both hold the group's ids and the store disagrees with itself; the hand merge on the
+  owner's list. "Cornwall" (keywords:sub) likewise queued with the county group unprinted; the owner's query in
+  the plan (decision 10) shows which entities hold the county's ids.
+- "Decorated style" (keywords:sub): AAT's exact term, and LCSH's "Architecture, Gothic--Decorated style" at 0.85
+  as the one rival, the home having no exact record. Finding 48, a policy for the owner: exact-single tolerates
+  rivals below acceptance score when the exact record is the only one at or above it (decision 9, ceiling query
+  in the plan; the shape behind much of the residue, so measure before deciding).
+- "Murray", "König", "Sutton", "Hutchinson" (publisher): bare surnames, ULAN's painters through variants and LoC's
+  firms; the one-word rule holds them for the desk, rightly. "Macmillan" against LoC's one "Macmillan, Inc." is the
+  same rule's cost (finding 42, not built: a one-word firm name against a record that is plainly a firm). "Peter
+  Lang": two LoC records of the publisher; the desk. "Clark Art Ltd": LoC's person; the desk.
+- "Norfolk", "Sheffield", "Vienna", "Yorkshire" (keywords:sub): prominence. "Dating": TGN's Chinese places through
+  pinyin variants; the desk. "Anglesey Abbey", "Newcastle (Bridgend, Wales)", "Hall, ?": the desk's or the data's.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

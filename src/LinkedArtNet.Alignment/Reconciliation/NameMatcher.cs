@@ -71,6 +71,9 @@ public static class NameMatcher
         "auctioneers", "auction house", "dealer", "dealers", "art dealers", "corporation", "partnership",
     };
 
+    /// <summary>Whether a record's own label says it is a body: a type qualifier ("Remondini (Firm)") or a legal suffix ("Macmillan, Inc.").</summary>
+    public static bool PlainlyABody(string? label) => label is not null && (WithoutBodyType(label) != label || NameForms.HasLegalSuffix(StringKey.Normalise(label)));
+
     /// <summary>The label without a parenthetical that names a kind of body ("(Firm)", "(Gallery)"); a place or an institution in parentheses stays.</summary>
     public static string WithoutBodyType(string label) =>
         System.Text.RegularExpressions.Regex.Replace(label, @"\s*\(([^()]*)\)", m => BodyTypes.Contains(m.Groups[1].Value.Trim().ToLowerInvariant()) ? "" : m.Value);

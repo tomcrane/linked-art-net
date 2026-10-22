@@ -102,8 +102,14 @@ public static class Qualified
     {
         var q = Tokens(qualifier); var p = Tokens(placement);
         if (q.Count == 0 || p.Count == 0) return null;
-        return q.All(p.Contains) || p.All(q.Contains);
+        return q.All(t => Has(p, t)) || p.All(t => Has(q, t));
     }
+
+    private static readonly string[] Directions = ["north", "south", "east", "west", "greater", "central", "upper", "lower", "inner", "outer"];
+
+    /// <summary>Whether a word is among the tokens, or a compound of it with a direction is ("west yorkshire" holds "yorkshire": finding 67); never the other way, since "york" is not "new york".</summary>
+    private static bool Has(IReadOnlyList<string> tokens, string word) =>
+        tokens.Contains(word) || tokens.Any(t => t.Length > word.Length && t.EndsWith(word, StringComparison.Ordinal) && Directions.Contains(t[..^word.Length]));
 
     /// <summary>
     /// Whether a placement contains every one of the given words: a coarser placement ("England", or LoC's "London, England")

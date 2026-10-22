@@ -367,7 +367,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // a dated string whose only candidate is a source's one exact record of the name, undated, is that record all the same: the
         // source knows one of the name and dates none other (finding 24; the owner's policy, 2026-10-21, ceiling 45 strings, the dated
         // name headings of the keywords field); a second record of the name anywhere, dated or not, is a second group and the desk's
-        var loneUndated = reading.Lifespan is not null && top is { Members.Count: 1 } && top.Best.Candidate.Lifespan is null or { IsEmpty: true };
+        // the exact-single rule reads the best group that is not the project's own provisional placeholder (finding 68, 2026-10-22: the
+        // placeholder minted for "E & H Lumley" stood above LoC's "E. & H. Lumley (Firm)" and took the rule's eye); and a record dated only
+        // by a window of possibility that holds the string's dates is undated for finding 24 (finding 65: ULAN's "MacDonald, Biddy",
+        // 1855~-~1968, for "MacDonald, Biddy, 1871-1952")
+        var exactTop = live.FirstOrDefault(g => g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) ?? top;
+        var loneUndated = reading.Lifespan is not null && exactTop is { Members.Count: 1 } && (exactTop.Best.Candidate.Lifespan is null or { IsDated: false }) && !exactTop.Best.Veto;
         // a provisional entity of the project's own (a placeholder minted for the name, awaiting review) is a lookalike, not a second
         // group: ULAN's one "England & Co." is an exact-single beside the project's queued "England & Co" (finding 38, 2026-10-22)
         // a group below the review score is noise, not a rival (ULAN's two "Williams, Peter" at 0.40 beside LoC's exact dated heading); a
@@ -375,19 +380,24 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // and for a concept or a place, a rival below acceptance score is a lookalike too: AAT's "Decorated Style" beside LCSH's
         // "Architecture, Gothic--Decorated style" at 0.85 (finding 48; the owner's policy, 2026-10-22, ceiling 180; not for people and
         // bodies, where "Smith, John" beside "Smith, John Raphael" is the namesake risk)
-        var rivalFloor = top is not null && (top.Best.Candidate.Class ?? reading.Classes[0]) is EntityClass.Type or EntityClass.Place or EntityClass.Period ? _options.AcceptScore : _options.ReviewScore;
-        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= rivalFloor) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
-            && (reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
-            && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
-            && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
+        var rivalFloor = exactTop is not null && (exactTop.Best.Candidate.Class ?? reading.Classes[0]) is EntityClass.Type or EntityClass.Place or EntityClass.Period ? _options.AcceptScore : _options.ReviewScore;
+        // a name of one word is not exact enough for a person or a body ("Mr Farebrother" read as "Farebrother"), unless the record is
+        // plainly a firm by its own label ("Remondini (Firm)", "Macmillan, Inc."): a one-word firm name is a firm's name (finding 42,
+        // 2026-10-22)
+        var wordsEnough = reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2
+            || (exactTop is not null && exactTop.Best.Candidate.Class == EntityClass.Group && NameMatcher.PlainlyABody(exactTop.Best.Candidate.Label));
+        if (_options.AcceptUniqueExactSingleSource && exactTop is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= rivalFloor) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
+            && wordsEnough
+            && exactTop.Score >= _options.AcceptScore && exactTop.Best.Candidate.NameScore >= 0.97
+            && exactTop.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
             // a heading that carries dates was disambiguated from namesakes by its cataloguer: an undated string cannot claim it alone
             // unless the string is that dated heading, dates and all ("Williams, Peter, 1914-1995" whole in the keywords field; finding 45)
-            && !top.Members.Any(m => m.Candidate.Disambiguated && NameMatcher.Score(reading.String.Raw, [m.Candidate.Label ?? ""]) < 0.97)
+            && !exactTop.Members.Any(m => m.Candidate.Disambiguated && NameMatcher.Score(reading.String.Raw, [m.Candidate.Label ?? ""]) < 0.97)
             // a qualifier that the record does not bear out ("Princeton, N.J." against a Princeton elsewhere) is for the desk
-            && top.Best.QualifierAgrees != false)
+            && exactTop.Best.QualifierAgrees != false)
         {
-            if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
-            return new Evaluation(Outcome.Accepted, reading, groups, Accepted: top, AcceptedMethod: DecisionMethod.ExactSingle);
+            if (includeStore && await HoldersAsync(dataset, exactTop.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+            return new Evaluation(Outcome.Accepted, reading, groups, Accepted: exactTop, AcceptedMethod: DecisionMethod.ExactSingle);
         }
         // nothing holds a compound heading whole: its parts decide it
         if (reading.Parts is not null) return new Evaluation(Outcome.Decomposed, reading, groups, Truncated: truncated);
@@ -504,6 +514,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // (Wales)" against LCSH's "(Raglan, Wales)" agrees on "Wales" alone, ancestors or no (2026-10-22)
             var qualifierAgrees = Qualified.Agrees(reading.Qualifier, c.Placement);
             if (qualifierAgrees == false && reading.QualifierAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement, c.Placement) == true) qualifierAgrees = true;
+            // a qualifier TGN knows as a county or above ("Herefordshire") names a real place, and a record placed elsewhere is not the
+            // string's whether or not any record is placed: "Hampton Court (Herefordshire)" is neither the Jamaican nor the Richmond
+            // one, and is minted (finding 66, 2026-10-22)
+            if (qualifierAgrees == false && reading.QualifierAncestors is not null && !veto) { veto = true; reasons.Add("the qualifier names a known place and this is elsewhere"); }
             switch (qualifierAgrees)
             {
                 case true:

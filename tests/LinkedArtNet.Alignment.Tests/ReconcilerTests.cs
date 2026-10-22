@@ -320,10 +320,18 @@ public class GroupingTests
         Assert.True(Qualified.Agrees("Turkey and Greece", "Turkey and Greece"));
         Assert.True(Qualified.Agrees("London, England", "Hammersmith and Fulham, London, Greater London, England, United Kingdom, Europe, World"));
         Assert.True(Qualified.Agrees("Buckinghamshire?", "Cuddington, Buckinghamshire, England, United Kingdom, Europe, World")); // the cataloguer's doubt is no word (finding 59)
+        Assert.True(Qualified.Agrees("Yorkshire", "Heaton, Bradford, West Yorkshire, England, United Kingdom, Europe, World")); // a compound region holds its base (finding 67)
+        Assert.False(Qualified.Agrees("York", "Albany, New York, United States, North and Central America, World")); // but York is not New York
         // a qualifier's TGN ancestors widen agreement and never narrow it (finding 56 corrected): "Wales" agrees with "Raglan, Wales" as written
         var raglan = Reading("Raglan Castle", EntityClass.Place) with { Qualifier = "Wales", QualifierAncestors = "United Kingdom, Europe, World" };
         var raglanLcsh = new Candidate("http://id.loc.gov/authorities/subjects/sh86002072", "lcsh", "Raglan Castle (Raglan, Wales)", EntityClass.Type, null, [], "local", 0.85, Placement: "Raglan, Wales; Raglan, Monmouthshire");
         Assert.True(Reconciler.Score(raglan, [raglanLcsh], 120)[0].QualifierAgrees);
+        // a qualifier TGN knows names a real place, and a record elsewhere is vetoed, placed rival or none (finding 66)
+        var herefordshire = Reading("Hampton Court", EntityClass.Place) with { Qualifier = "Herefordshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
+        var jamaica = Reconciler.Score(herefordshire, [new Candidate("t40", "tgn", "Hampton Court", EntityClass.Place, null, [], "local", 1.0, Placement: "Saint Thomas, Surrey, Jamaica, North and Central America, World")], 120)[0];
+        Assert.True(jamaica.Veto); Assert.Contains("names a known place and this is elsewhere", jamaica.Reason);
+        var bridgend = Reading("Newcastle", EntityClass.Place) with { Qualifier = "Bridgend, Wales" }; // a town's name resolves to nothing, so nothing is vetoed on its account
+        Assert.False(Reconciler.Score(bridgend, [new Candidate("t41", "tgn", "Newcastle", EntityClass.Place, null, [], "local", 1.0, Placement: "Shropshire, England, United Kingdom, Europe, World")], 120)[0].Veto);
         var fountains = Reading("Fountains Hall", EntityClass.Place) with { Qualifier = "Yorkshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
         Assert.True(Reconciler.Score(fountains, [new Candidate("l30", "lcsh", "Fountains Hall (England)", EntityClass.Type, null, [], "local", 0.85, Placement: "England")], 120)[0].QualifierAgrees); // and still widen
         // a heading's type word and a record's level (the TGN level preference)
@@ -1226,6 +1234,21 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var englandCo = await pg.Store.CollectAsync(ds, "corpauthor", "England & Co");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, englandCo));
         Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(englandCo.Id))!.Method);
+        // a one-word firm name against a record plainly a firm is an exact-single (finding 42), and the project's own provisional
+        // placeholder above it does not take the rule's eye (finding 68)
+        Assert.True(NameMatcher.PlainlyABody("Remondini (Firm)")); Assert.True(NameMatcher.PlainlyABody("Macmillan, Inc.")); Assert.False(NameMatcher.PlainlyABody("Hutchinson")); Assert.False(NameMatcher.PlainlyABody("Garland (Destroyer)"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n50064239", "loc", "Remondini (Firm)", ["Remondini (Firm)"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var remondiniPlaceholder = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Remondini", ["Remondini"]), scheme);
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "persauthorfull", "Remondini")).Id, remondiniPlaceholder.Id, DecisionMethod.Queued);
+        var remondini = await pg.Store.CollectAsync(ds, "corpauthor", "Remondini");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, remondini));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(remondini.Id))!.Method);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "corpauthor", "Remondini"))!.Equivalents, q => q.Uri.EndsWith("n50064239"));
+        // a dated string whose only record is dated by a window holding its dates is that record (finding 65)
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500017028", "ulan", "MacDonald, Biddy", ["MacDonald, Biddy"], "Person", new Lifespan(new DateTimeOffset(1855, 1, 1, 0, 0, 0, TimeSpan.Zero), null, null, new DateTimeOffset(1968, 12, 31, 0, 0, 0, TimeSpan.Zero), "1855~-~1968"), [], null, DateTimeOffset.UtcNow, "test"));
+        var biddy = await pg.Store.CollectAsync(ds, "persauthorfull", "MacDonald, Biddy, 1871-1952");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, biddy));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(biddy.Id))!.Method);
         // groups below the review score are noise, not rivals, and a dated heading equal to LoC's dated record is not an undated string
         // claiming a disambiguated heading (findings 44 and 45): "Williams, Peter, 1914-1995", matched whole in a context with no parser,
         // is an exact-single beside ULAN's two "Williams, Peter" at 0.40
@@ -1351,7 +1374,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // the audit: Dürer's entity agrees with its ULAN record; the impostor's ULAN id is not in the index
         var flagged = new List<AuditItem>();
         var audit = await new IndexAudit(pg.Store).RunAsync(ds, item => { flagged.Add(item); return Task.CompletedTask; });
-        Assert.Equal(5, audit.WithUlan); // Dürer, the impostor, the undated import above, England & Co. (finding 38) and the National Gallery (finding 40)
+        Assert.Equal(6, audit.WithUlan); // Dürer, the impostor, the undated import above, England & Co. (finding 38), the National Gallery (finding 40) and Biddy MacDonald (finding 65)
         Assert.True(audit.Clean >= 1);
         // an entity with only the LoC id is reached through ULAN's link and could gain the ULAN id
         var locOnly = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Durer, Albrecht", Status: EntityStatus.Aligned), scheme);

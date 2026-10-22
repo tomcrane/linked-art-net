@@ -15,6 +15,13 @@ public static class NameForms
     public static IReadOnlyDictionary<string, string> Abbreviations => Tables.Value.Abbreviations;
     public static IReadOnlySet<string> FirmPrefixes => Tables.Value.FirmPrefixes;
 
+    /// <summary>Whether a normalised key ends with one of the legal-form suffixes ("inc", "ltd", "limited", "& co").</summary>
+    public static bool HasLegalSuffix(string normalised)
+    {
+        var tokens = StringKey.Bare(StringKey.WithoutQualifiers(normalised)).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return tokens.Length > 1 && Tables.Value.LegalSuffixes.Any(suffix => tokens.Length > suffix.Length && tokens.Skip(tokens.Length - suffix.Length).SequenceEqual(suffix, StringComparer.Ordinal));
+    }
+
     /// <summary>
     /// The comparison form of a normalised key: parenthesised qualifiers ("(New York, N.Y.)", "(Firm)") and punctuation dropped, a leading firm prefix removed, abbreviated given
     /// names expanded, legal suffixes at the end removed, and the connective an ampersand stands for dropped so that

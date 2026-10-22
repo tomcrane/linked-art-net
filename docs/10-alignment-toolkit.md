@@ -982,6 +982,44 @@ keywords and keywords:sub queues, read:
 - "Norfolk", "Sheffield", "Vienna", "Yorkshire" (keywords:sub): prominence. "Dating": TGN's Chinese places through
   pinyin variants; the desk. "Anglesey Abbey", "Newcastle (Bridgend, Wales)", "Hall, ?": the desk's or the data's.
 
+Measured 2026-10-22 (run-20261022-121623-t8wzjm: findings 41, 44 to 50 and 48, with the keywords field's parser
+through a manifest refresh, against gde6k3): accepted 7,394 -> 8,435 (vote 3,272 -> 3,500, single 1,084 -> 1,731,
+exact-single 3,038 -> 3,204), queued 5,009 -> 4,828, matched in store 5,542 -> 5,826, minted 12,297 -> 11,164. By
+context: keywords single 181 -> 818, vote 357 -> 607, exact-single 593 -> 721, minted 3,028 -> 1,920 and queued
+1,311 -> 1,244 (finding 46: a thousand dated name headings read and carried by their dates); keywords:head queued
+723 -> 609 (the regression undone and more); keywords:sub 224 -> 183; place 344 -> 334; publisher 823 -> 867 and
+corpauthor 189 -> 198 (the ships and colleges back to the desk, as expected); persauthorfull 1,393. The samples,
+read, all three queues now mostly dated names:
+
+- "Gilbert, 1943-": ULAN's Gilbert Proesch, born 1943, "dates conflict (1943- vs 1943-~2090)". The lifetime check
+  read ULAN's window of possibility for a living artist (died no later than about 2090) as a death date, and 147
+  years is more than a lifetime. Finding 52, fixed in `Lifespan.Compare`: a lifetime too long needs the record's
+  earliest possible end against the latest possible begin; an outer bound alone never makes one. With LoC's
+  "Gilbert, 1943-" agreeing too, the two vote.
+- "Clarke, Geoffrey, 1924-", "Adams, Robert, 1917-1984": ULAN and LoC agree and join, and a third record of the
+  same source stands beside them, dated but not in conflict (LoC's "Clarke, Geoffrey, -1950") or dated only by a
+  window (ULAN's 1871~-~2030). Finding 3 vetoed a source's undated records once one of its records agreed; finding
+  54, built, widens it to every other record of that source, by the same rule of uniqueness.
+- "Thomas, Thomas, 1817-1888", "Chandra, Mohini, 1964-": LoC agrees; ULAN's one live record is undated, or dated
+  only by a window, and finding 14 did not join it, because a second ULAN record vetoed by its dates still counted
+  as a record of the name, or because a window counted as dates. Finding 55, fixed: finding 14 counts live exact
+  records only, and reads a window of possibility as undated.
+- "Fountains Hall (Yorkshire)", "Grimsthorpe Castle (Lincolnshire)" (keywords): LCSH's heading with the coarser
+  "(England)" as the only candidate, "not placed". Finding 56, built: the qualifier's own place in TGN, when it is
+  a county or above and TGN has one such place of the name, lends its ancestors ("Yorkshire" is in "England, United
+  Kingdom, Europe, World"), so the coarser parenthetical agrees and finding 20 makes the heading exact; a town's
+  name brings nothing, having too many namesakes.
+- "Jope, E M (author)": LoC's "Jope, E. M. (Edward Martyn)" at 0.85: the fuller form dropped, the names differed by
+  dots alone. Finding 57, fixed.
+- "Wheatley, John, 1892-1955", "Morgan, John, 1823-1886" (keywords): ULAN agrees; LoC's exact records of the name are
+  undated or two, and finding 14 did or did not join them; both read right on the rules as they stand after 55.
+- "Portsmouth (England)": three TGN Portsmouths placed by "England", the city, its district and a hamlet; LoC's
+  heading has no type word, and two holders are inhabited places. Prominence, or the city within its own district;
+  not built.
+- persauthorfull, the ten read again: the undated names ("Gay, John", "Ford, John", "Gray, John", "Jenkins, David")
+  with one ULAN artist and several LoC namesakes, exactly as before. The desk's, or the Wikidata extract's.
+- "Fine Art Society (London)", "Anglesey Abbey", "Hall, ?", "S. W. [(Simon Wilson)]": the desk's or the data's.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

@@ -170,10 +170,11 @@ public static class Qualified
         ["settlement"] = 2, ["settlements"] = 2, ["locality"] = 2, ["localities"] = 2, ["capital"] = 2, ["capitals"] = 2, ["metropolis"] = 2, ["metropolises"] = 2,
     };
 
-    public static string? PlacementOf(string? parentString, IEnumerable<string?> labels)
+    /// <param name="placesOnly">Keep only parentheticals of the "City, Country" shape (with a comma): a heading's type qualifier ("(Gallery)") or a lone country is left out.</param>
+    public static string? PlacementOf(string? parentString, IEnumerable<string?> labels, bool placesOnly = false)
     {
         if (!string.IsNullOrWhiteSpace(parentString)) return parentString;
-        var parts = labels.OfType<string>().SelectMany(l => Parenthetical.Matches(l).Select(m => Qualifying(m.Groups[1].Value))).Where(x => x.Length > 0).Distinct(StringComparer.Ordinal).ToList();
+        var parts = labels.OfType<string>().SelectMany(l => Parenthetical.Matches(l).Select(m => Qualifying(m.Groups[1].Value))).Where(x => x.Length > 0 && (!placesOnly || x.Contains(','))).Distinct(StringComparer.Ordinal).ToList();
         return parts.Count == 0 ? null : string.Join("; ", parts);
     }
 }

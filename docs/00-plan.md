@@ -22,6 +22,12 @@ queued keywords:head 777, keywords 1,376, keywords:sub 273, place 418, persautho
 corpauthor 274. The day's path: epenbw (queued 6,647) -> qr7fbx (5,763). Doc 10 7.6 "Measured ... qr7fbx" has the
 reading of the keywords:head and place queues.
 
+**Measured 2026-10-22 morning, run-20261022-085117-v9wawv (stands):** against qr7fbx, accepted 6,633 -> 6,743,
+queued 5,763 -> 5,586, matched in store 5,388 -> 5,491; keywords:head queued 777 -> 701, place 418 -> 401, publisher
+1,112 -> 1,082, keywords:sub 273 -> 250, persauthorfull 1,532. The second duplicate pass (89 merges: 51 bodies in
+two word orders, 34 concepts, 2 people, 2 places) was applied before it. Doc 10 7.6 "Measured ... v9wawv" has the
+reading of the place, keywords:head and persauthorfull queues.
+
 **Decisions taken by the owner on 2026-10-21:** finding 3 (undated same-source namesake veto) yes; outvoted rivals
 yes for places and concepts, not people and bodies; `unrec_` identifiers kept; finding 14 (lone undated namesake)
 yes; keying workbench users by GitHub id agreed in principle (`local:<name>` for the local user); the duplicate pass
@@ -61,13 +67,38 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    every parser with its three tiers. If the owner says yes: rewrite objectives 2 and 6 so, and add a Phase 5 item
    (size S) for the Agent parser's endpoint beside the dates one, a playground page, and a corpus folder seeded from
    the PMC strings.
+5. *A firm entity with cluster ids only, beside a dated two-source group* (finding 32, doc 10 7.6 "Measured ...
+   v9wawv"): "Piper, John, 1903-1992" has ULAN and LoC agreeing on the dates, and the project's own aligned "Piper,
+   John" (LUX and VIAF ids only, no dates) as a firm rival, so the vote queues. Proposed: such an entity joins the
+   group and gains its ids; it is the earlier pipeline's identification of the same name, and the dates are the
+   evidence it lacked. Recommendation: measure first. Ceiling (queued dated strings with a two-source group at
+   acceptance score and a live store member beside it), the owner runs: `select ss.context, count(*) from decisions
+   d join source_strings ss on ss.id = d.source_string_id where d.run_id = 'run-20261022-085117-v9wawv' and d.valid
+   and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is not null and exists (select 1 from
+   jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null and jsonb_array_length(g->'sources') >= 2
+   and (g->>'score')::numeric >= 0.9) and exists (select 1 from jsonb_array_elements(d.evidence->'groups') g cross
+   join jsonb_array_elements(g->'members') m where g->'vetoed' is null and m->>'source' = 'store' and m->'veto' is
+   null) group by 1 order by 2 desc;`
+6. *"Scots" and finding 28*: LoC's "Shoreline Cleanup Oversight Team" still scores 1.00 against "Scots", so the
+   label it matches through is not an all-capitals acronym as assumed. The owner runs: `select labels from
+   authority_records where uri = 'http://id.loc.gov/authorities/names/no2016167587';` and pastes the result; the
+   acronym rule is then widened to whatever shape it is.
 4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
    `merged_into` on 292 entities and the two hand merges) are written as equivalents of the survivor so LUX merges
    its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
    builds, item 4).
 
-**Built 2026-10-21 night from qr7fbx's samples, waiting for the next rerun** (no reload, no manifest refresh):
+**Built 2026-10-22 morning from v9wawv's samples, waiting for the next rerun** (no reload, no manifest refresh):
+finding 10 among several anchors (the project's one bare entity joins the anchor a heading joined: "New York, N.Y");
+holders already joined to one another counted once ("Cornwall": LoC's county heading now joins TGN's county through
+the project's own entity); finding 30 (a body's or concept's placement is only a LoC "City, Country" parenthetical:
+ULAN's facet and LoC's "(Gallery)" veto nothing); finding 31 (a dated heading vetoes place records: "Gilbert,
+1943-"); finding 34 (punctuation or spacing alone is the same name: "Watson, J.N.P."). Expect: "New York, N.Y" and
+"Cornwall" out of the place queue, a few bodies with a qualifier out of keywords:head, and a few persauthorfull
+singles.
+
+**Built 2026-10-21 night from qr7fbx's samples, measured on v9wawv** (kept for the record):
 the TGN level preference (doc 10 7.6 "Built 2026-10-21 night": a LoC heading joins the TGN namesake at its level,
 "New York (N.Y.)" the city, "Cornwall (England : County)" the county, an unqualified "China" the nation); finding 25
 ("St." and "Saint" one word, so "St. Mary (Lambeth, England : Parish)" is a single); finding 21 extended to the home
@@ -108,17 +139,15 @@ says "continue with the list"):
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- merge-duplicates --out reports/merge-duplicates-2.txt
-    (the inverted-form twins of people and bodies; read the list, then)
-    dotnet run --project tools/Align -- merge-duplicates --apply
-    dotnet run --project tools/Align -- undo-run --run run-20261021-165615-qr7fbx
+    dotnet run --project tools/Align -- undo-run --run run-20261022-085117-v9wawv
     dotnet run --project tools/Align -- reconcile --verbose        (or --candidates for the top candidates under each string)
     dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context publisher --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context corpauthor --method queued --limit 10
 
-Run decision 2's ceiling query against qr7fbx at any time; the undo keeps the evidence. The persauthorfull queue
-(1,533, the largest) has not been sampled since pqe98w and is the next to read.
+Run decision 5's ceiling query and decision 6's labels query against v9wawv at any time; the undo keeps the evidence.
+The publisher (1,082) and corpauthor (260) queues have not been sampled since the first runs and are the next to
+read.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

@@ -411,6 +411,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var veto = false;
             var datesAgree = false;
             if (c.Class is { } cls && !reading.Classes.Contains(cls)) { veto = true; reasons.Add($"type {cls} not allowed here"); }
+            // a heading that carries a lifespan names a person or a body: TGN's Gilbert Rivers are not "Gilbert, 1943-" (finding 31, 2026-10-22)
+            else if (reading.HasLifespan && c.Class == EntityClass.Place) { veto = true; reasons.Add("a dated heading names a person or body, not a place"); }
             if (reading.Lifespan is { IsEmpty: false } rl && c.Lifespan is { IsEmpty: false } cl)
             {
                 var person = (c.Class ?? reading.Classes[0]) == EntityClass.Person;
@@ -492,6 +494,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var words = Qualified.Tokens(b.Candidate.Placement);
             if (words.Count == 0) continue;
             var through = holders.Where(a => a.Candidate.Uri != b.Candidate.Uri && a.Candidate.Source != b.Candidate.Source && Qualified.Contains(a.Candidate.Placement, words)).ToList();
+            // a holder this loop has already joined to another holder is that holder (the project's "Cornwall (England : County)"
+            // placed through TGN's Cornwall is not a second Cornwall for LoC's heading to be "inside"): read the joins made so far
+            through = through.Select(a => list.First(m => m.Candidate.Uri == a.Candidate.Uri)).ToList();
+            through = through.Where(a => a.JoinedTo is null || !through.Any(o => o.Candidate.Uri == a.JoinedTo)).ToList();
             if (through.Count == 0) continue;
             inside.Add(i);
             if (through.Count == 1) { list[i] = b with { JoinedTo = through[0].Candidate.Uri, Reason = b.Reason + $"; placed through {through[0].Candidate.Source} {through[0].Candidate.Label}" }; continue; }
@@ -526,8 +532,16 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // placed record's own entity: it joins the placed group and gains the id, as the project's LoC-labelled entities do
         var anchors = list.Where(m => !m.Veto && m.QualifierAgrees == true && m.JoinedTo is null).ToList();
         var own = list.Select((m, i) => (m, i)).Where(x => !x.m.Veto && x.m.Candidate.EntityId is not null && x.m.Candidate.Placement is null && x.m.Candidate.NameScore >= 0.97 && x.m.JoinedTo is null && !x.m.Candidate.ProvisionalQueued).ToList();
-        if (anchors.Count == 1 && own.Count == 1)
-            list[own[0].i] = own[0].m with { JoinedTo = anchors[0].Candidate.Uri, Reason = own[0].m.Reason + $"; the project's one {reading.Text} joins the placed {anchors[0].Candidate.Source} record" };
+        // several placed records of the name ("N.Y." places TGN's New York the city and the county alike): the one a heading joined,
+        // by its level or its placement, is the place the string names, and the project's one bare entity joins it there (2026-10-22)
+        ScoredCandidate? anchor = anchors.Count == 1 ? anchors[0] : null;
+        if (anchor is null && anchors.Count > 1)
+        {
+            var ranked = anchors.Select(a => (a, joined: list.Count(m => m.JoinedTo == a.Candidate.Uri))).OrderByDescending(x => x.joined).ToList();
+            if (ranked[0].joined > ranked[1].joined) anchor = ranked[0].a;
+        }
+        if (anchor is not null && own.Count == 1)
+            list[own[0].i] = own[0].m with { JoinedTo = anchor.Candidate.Uri, Reason = own[0].m.Reason + $"; the project's one {reading.Text} joins the placed {anchor.Candidate.Source} record" + (anchors.Count > 1 ? $", the one of {anchors.Count} a heading joined" : "") };
         // when the qualifier places one candidate, the namesakes it does not place are not what the string names
         for (var i = 0; i < list.Count; i++)
             if (list[i].QualifierAgrees == false && !inside.Contains(i) && !list[i].Veto) list[i] = list[i] with { Veto = true, Reason = list[i].Reason + "; the qualifier places another candidate" };

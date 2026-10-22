@@ -69,6 +69,8 @@ public static class NameMatcher
         if (a == b) return 1.0;
         var fa = Saints(StringKey.Fold(a)); var fb = Saints(StringKey.Fold(b));
         if (fa == fb) return 0.97;
+        // the same letters with punctuation or spacing alone between them ("Watson, J.N.P." and "Watson, J. N. P.", "C Paul" and "C. Paul") are one name (finding 34, 2026-10-22)
+        if (StringKey.Bare(fa) == StringKey.Bare(fb)) return 0.97;
         var ca = NameForms.Canonical(fa, dropQualifiers: false); var cb = NameForms.Canonical(fb, dropQualifiers: false);
         if (ca.Length > 0 && ca == cb) return 0.95;
         // a parenthetical right after initials is the fuller form of the name, not a qualifier ("Oppé, A. P. (Adolf Paul)", MARC 100 $q):

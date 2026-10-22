@@ -303,6 +303,9 @@ public class GroupingTests
         Assert.Null(Qualified.TypeOf(["Hammersmith (London, England)"]));
         Assert.Equal(5, Qualified.LevelOf("nations")); Assert.Equal(4, Qualified.LevelOf("regions (administrative divisions)")); Assert.Equal(3, Qualified.LevelOf("counties"));
         Assert.Equal(2, Qualified.LevelOf("inhabited places")); Assert.Equal(3, Qualified.LevelOf("County")); Assert.Equal(2, Qualified.LevelOf("City")); Assert.Equal(2, Qualified.LevelOf("county seats")); Assert.Null(Qualified.LevelOf("rivers")); Assert.Null(Qualified.LevelOf(null));
+        // punctuation or spacing alone does not make two names (finding 34)
+        Assert.Equal(0.97, NameMatcher.Score("Watson, J.N.P.", ["Watson, J. N. P."])); Assert.Equal(0.97, NameMatcher.Score("Christianson, C Paul", ["Christianson, C. Paul"]));
+        Assert.True(NameMatcher.Score("Thos. Agnew", ["Thomas Agnew"]) < 0.97); // an abbreviation is more than punctuation
         // "St." and "Saint" are one word (finding 25)
         Assert.Equal(0.97, NameMatcher.Score("St. Mary", ["Saint Mary"])); Assert.Equal(0.97, NameMatcher.Score("Mt. Pleasant", ["Mount Pleasant"]));
         Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
@@ -777,6 +780,17 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var scots = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Scots"));
         var team = new AuthorityRecord("http://id.loc.gov/authorities/names/no2016167587", "loc", "Shoreline Cleanup Oversight Team", ["Shoreline Cleanup Oversight Team", "SCOTS"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
         Assert.Equal(0.85, LocalIndexSource.ToCandidate(team, scots, "local").NameScore);
+        // a body's placement, checked against the string's qualifier, is only a LoC heading's "City, Country" parenthetical: ULAN's facet and
+        // LoC's type qualifier are not places and veto nothing (finding 30); a dated heading names no place (finding 31)
+        var fineArt = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Fine Art Society (London)"));
+        Assert.Equal("London", fineArt.Qualifier);
+        Assert.Null(LocalIndexSource.ToCandidate(new AuthorityRecord("http://vocab.getty.edu/ulan/500301768", "ulan", "Fine Art Society", ["Fine Art Society"], "Group", null, [], "{\"parentString\":\"Corporate Bodies\"}", DateTimeOffset.UtcNow, "test"), fineArt, "local").Placement);
+        Assert.Null(LocalIndexSource.ToCandidate(new AuthorityRecord("http://id.loc.gov/authorities/names/n50029325", "loc", "Fine Art Society (Gallery)", ["Fine Art Society (Gallery)"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"), fineArt, "local").Placement);
+        Assert.Equal("London, England", LocalIndexSource.ToCandidate(new AuthorityRecord("http://id.loc.gov/authorities/names/n50029326", "loc", "Tate Gallery (London, England)", ["Tate Gallery (London, England)"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"), fineArt, "local").Placement);
+        var gilbert = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Gilbert, 1943-"));
+        Assert.True(gilbert.HasLifespan);
+        var river = Reconciler.Score(gilbert, [new Candidate("http://vocab.getty.edu/tgn/1096952", "tgn", "Gilbert River", EntityClass.Place, null, [], "local", 1.0, Placement: "Queensland, Australia, Oceania, World")], 120)[0];
+        Assert.True(river.Veto); Assert.Contains("a dated heading names a person or body", river.Reason);
         var riba = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "RIBA"));
         var institute = new AuthorityRecord("http://id.loc.gov/authorities/names/n79063909", "loc", "Royal Institute of British Architects", ["Royal Institute of British Architects", "RIBA"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
         Assert.Equal(1.0, LocalIndexSource.ToCandidate(institute, riba, "local").NameScore); // the string is the acronym itself
@@ -917,17 +931,28 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(Tgn("7007567", "New York", "New York, United States, North and Central America, World", "300000771"));
         await pg.Store.PutAuthorityAsync(Tgn("1002715", "New York", "New York, United States, North and Central America, World", "300008347"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79007751", "loc", "New York (N.Y.)", ["New York (N.Y.)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        // and the project's one bare "New York", aligned with a VIAF id only, joins the city, the one of the two anchors the heading joined
+        var bareNewYork = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "New York", ["New York"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(bareNewYork.Id, new Equivalent("http://viaf.org/viaf/123456789", "viaf", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
         var newYork = await pg.Store.CollectAsync(ds, "place", "New York, N.Y.");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, newYork));
-        Assert.Contains("the inhabited place among 2", (await pg.Store.DecisionForAsync(newYork.Id))!.EvidenceJson);
-        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "New York, N.Y."))!.Equivalents, q => q.Uri.EndsWith("1002715"));
+        var newYorkEvidence = (await pg.Store.DecisionForAsync(newYork.Id))!.EvidenceJson!;
+        Assert.Contains("the inhabited place among 2", newYorkEvidence); Assert.Contains("the one of 2 a heading joined", newYorkEvidence);
+        var newYorkEntity = (await pg.Store.ResolveAsync(ds, "place", "New York, N.Y."))!;
+        Assert.Equal(bareNewYork.Id, newYorkEntity.Id); Assert.Contains(newYorkEntity.Equivalents, q => q.Uri.EndsWith("1002715"));
         // a type word names the level: "Cornwall (England : County)" is the county, not the hamlet, both in England
         await pg.Store.PutAuthorityAsync(Tgn("7008116", "Cornwall", "England, United Kingdom, Europe, World", "300000771"));
         await pg.Store.PutAuthorityAsync(Tgn("1014693", "Cornwall", "Devon, England, United Kingdom, Europe, World", "300008347"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n80106711", "loc", "Cornwall (England : County)", ["Cornwall (England : County)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        // the project's own entity labelled from the heading is placed through TGN's county and joined to it; it and the county are one
+        // holder for LoC's heading, not two, so the heading joins them by its level
+        var cornwallLegacy = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Cornwall (England : County)", ["Cornwall (England : County)", "Cornwall"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(cornwallLegacy.Id, new Equivalent("http://viaf.org/viaf/987654321", "viaf", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
         var cornwall = await pg.Store.CollectAsync(ds, "place", "Cornwall");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, cornwall));
-        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Cornwall"))!.Equivalents, q => q.Uri.EndsWith("7008116"));
+        Assert.Contains("the county or district among", (await pg.Store.DecisionForAsync(cornwall.Id))!.EvidenceJson);
+        var cornwallEntity = (await pg.Store.ResolveAsync(ds, "place", "Cornwall"))!;
+        Assert.Equal(cornwallLegacy.Id, cornwallEntity.Id); Assert.Contains(cornwallEntity.Equivalents, q => q.Uri.EndsWith("7008116")); Assert.Contains(cornwallEntity.Equivalents, q => q.Uri.EndsWith("n80106711"));
         // an unqualified LoC heading is the nation among TGN namesakes of differing level
         await pg.Store.PutAuthorityAsync(Tgn("1000111", "Zhongguo", "Asia, World", "300128207") with { Labels = ["Zhongguo", "China"] });
         await pg.Store.PutAuthorityAsync(Tgn("1017189", "China", "Nuevo León, Mexico, North and Central America, World", "300008347"));

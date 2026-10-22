@@ -257,8 +257,14 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // a place record always says where it is (TGN's parent string, a LoC heading's parenthetical), so that records of
         // different sources can be told to be the same place whether or not the string carries a qualifier; other records
         // only when there is a qualifier to check them against
+        // where the record is: a place record's parent string or heading parenthetical, always; for a person, a body or a concept,
+        // checked against the string's qualifier, only a LoC heading's "City, Country" parenthetical ("Tate Gallery (London, England)"):
+        // ULAN's parent string is the facet ("Corporate Bodies") and a LoC type qualifier ("(Gallery)", "(Firm)") is not a place, and
+        // neither must veto a record as "not placed" (finding 30, 2026-10-22: ULAN's three Fine Art Societies against "London")
+        var placement = cls == EntityClass.Place ? Qualified.PlacementOf(parentString, labels)
+            : reading.Qualifier is not null && r.Source is "loc" or "lcsh" ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
         return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, nameScore, null, nationalities, Disambiguated: disambiguated,
-            Placement: cls == EntityClass.Place || reading.Qualifier is not null ? Qualified.PlacementOf(parentString, labels) : null, Collections: collections, PlaceType: placeType);
+            Placement: placement, Collections: collections, PlaceType: placeType);
     }
 
     private static bool IsAcronym(string label) => label.Length is >= 2 and <= 8 && label.All(char.IsLetter) && label.All(char.IsUpper);

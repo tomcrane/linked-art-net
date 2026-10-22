@@ -840,6 +840,50 @@ the AAT place-type labels TGN uses and LoC's type words, not a published list. L
 bare string with TGN namesakes of differing level and no LoC heading at all ("Pisa": the city and the province),
 where the ladder alone would have to prefer the inhabited place; ceiling query in the plan.
 
+Measured 2026-10-22 (run-20261022-085117-v9wawv: the level preference, findings 25, 28, 29, the home's own
+lookalikes, the second duplicate pass, against qr7fbx): accepted 6,633 -> 6,743 (vote 3,130 -> 3,163, single 1,176
+-> 1,185, exact-single 2,327 -> 2,395), queued 5,763 -> 5,586, matched in store 5,388 -> 5,491, minted 12,359 ->
+12,323. By context: keywords:head queued 777 -> 701 and exact-single 1,040 -> 1,086; keywords 1,376 -> 1,360;
+keywords:sub 273 -> 250; place 418 -> 401 and vote 268 -> 286; corpauthor 274 -> 260; publisher 1,112 -> 1,082;
+persauthorfull 1,533 -> 1,532. The decision 9 query returned 0 rows: every bare string among TGN namesakes of
+differing level has a LoC heading in play. The samples, read:
+
+- "New York, N.Y": LoC's heading joined the city by its level ("the inhabited place among 2") and the string was
+  still queued, because the project's own bare "New York" (aligned, VIAF only) stood beside two placed anchors and
+  finding 10 asks for one. Fixed the same morning: among several anchors, the one a heading joined (by its level or
+  its placement) is the place, and the project's one bare entity joins it there.
+- "Cornwall": LoC's "Cornwall (England : County)" was "inside 2 placed candidates" though only one TGN Cornwall is
+  in England: the project's own entity labelled from that heading, placed through TGN's county and joined to it,
+  counted as a second holder. Fixed: holders the loop has already joined to one another are one holder.
+- "Fine Art Society (London)": ULAN's three Fine Art Societies "not placed (London vs Corporate Bodies)", LoC's
+  "not placed (London vs Gallery)". Finding 30, fixed: for a person, a body or a concept, checked against the
+  string's qualifier, the placement is only a LoC heading's "City, Country" parenthetical ("Tate Gallery (London,
+  England)"); ULAN's parent string is its facet and a LoC type qualifier is not a place, and neither vetoes a
+  record as not placed. The string itself stays with the desk (three ULAN records of the name, one of them ULAN's
+  "unidentified" record).
+- "Gilbert, 1943-": a dated heading met TGN's Gilbert Rivers at 1.00. Finding 31, fixed: a reading that carries a
+  lifespan vetoes place records; a dated heading names a person or a body.
+- "Watson, J.N.P. (author)", "Christianson, C Paul (author)" (persauthorfull): LoC's "Watson, J. N. P." and
+  "Christianson, C. Paul" at 0.95, the only candidates, short of exact-single's 0.97 for a dot or a space. Finding
+  34, fixed: the same letters with punctuation or spacing alone between them are one name (0.97); an abbreviation
+  ("Thos.") still is not.
+- "Piper, John, 1903-1992" (keywords:head): still queued. The second duplicate pass kept "Piper, John" and "John
+  Piper" apart (no shared id, no dates on either), so the firm legacy entity with LUX and VIAF ids alone still
+  stands beside the ULAN and LoC group that agrees with the string's dates. Finding 32, a policy for the owner: a
+  firm entity of the project's own whose ids are all cluster sources (VIAF, LUX) and whose name is exact, beside a
+  group of two sources agreeing with the string's dates, joins that group (and gains its ids) rather than queuing
+  it; the entity is the earlier pipeline's identification of the same name, and the dates are the evidence it
+  lacked. Ceiling query in the plan (decision 10).
+- "Scots": LoC's "Shoreline Cleanup Oversight Team" still at 1.00, so the label it matched through is not an
+  all-capitals "SCOTS" as finding 28 assumed; the owner's query in the plan shows the record's labels.
+- persauthorfull, read for the first time since pqe98w: "Gay, John (author)", "Ford, John (author)", "Russell,
+  James (author)", "Gray, John (author)", "Jenkins, David (author)": undated strings with one ULAN artist and
+  several LoC namesakes, or several of each; the desk's, and the shape a Wikidata extract or the 2024 shadow would
+  help with. "S. W. [(Simon Wilson)] (editor)": the data's.
+- Place: "Paris", "Dublin", "Athens", "Winchester": prominence (decision 1, waiting for Wikidata). "Evanston,
+  Illinois": two legacy Evanstons with different Wikidata ids; the desk. "Bottrop, Essen", "Heaton, Bradford",
+  "Donnington": the data's.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

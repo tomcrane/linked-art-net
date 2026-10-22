@@ -16,11 +16,11 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser. The
-last measured run is run-20261022-141247-hspbdg: accepted 8,836 (vote 3,766, single 1,819, exact-single 3,251),
-queued 4,463, matched in store 5,861, minted 11,093, lists 404, compounds 15,558; by context queued persauthorfull
-1,325, keywords 1,074, publisher 861, keywords:head 515, place 319, corpauthor 198, keywords:sub 171. The three
-days' path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463. Doc 10 7.6 has
-a "Measured" paragraph per run with the samples read; the last is "Measured ... hspbdg". The Wikidata truthy dump
+last measured run is run-20261022-145615-gh3u6n: accepted 8,919 (vote 3,756, single 1,819, exact-single 3,344),
+queued 4,294, matched in store 5,871, minted 11,169, lists 404, compounds 15,558; by context queued persauthorfull
+1,324, keywords 977, publisher 823, keywords:head 502, place 310, corpauthor 190, keywords:sub 168. The three
+days' path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294. Doc
+10 7.6 has a "Measured" paragraph per run with the samples read; the last is "Measured ... gh3u6n". The Wikidata truthy dump
 (71.7 GB) and the sitelinks table are downloading on the owner's other machine (next builds, item 4).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -43,7 +43,16 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
     builds, item 4).
 
-**Built 2026-10-22 evening from hspbdg's samples, waiting for the next rerun** (no reload, no manifest refresh):
+**Built 2026-10-22 evening from gh3u6n's samples, waiting for the next rerun** (no reload; **manifest refresh
+needed**, finding 71): finding 69 (a string placed in a known place is not a person: "Newcastle (Bridgend, Wales)");
+finding 70 (a ULAN label's or a store entity's own place parenthetical places it whenever the string has a qualifier:
+"Hampton Court (Richmond upon Thames, London, England)"); finding 71 (the manifest's `homePlace`, "United Kingdom"
+for PMC, resolves a county name TGN knows in several countries: "Essex"); finding 72 (two sources' one record each of
+a dated name, neither at odds with the dates, join: "Carwitham, John"); finding 73 (a firm of two names is not a
+person of two names: "Adams & Dart"). Expect keywords down by the county-qualified houses and the dated names, and a
+few more minted.
+
+**Built 2026-10-22 evening from hspbdg's samples, measured on gh3u6n** (kept for the record):
 finding 68 (the exact-single rule reads the best group that is not the project's own placeholder: "E & H Lumley");
 finding 42 (a one-word firm name is exact against a record plainly a firm: "Remondini (Firm)", "Macmillan, Inc.");
 finding 65 (a window of possibility holding the string's dates is undated for finding 24: "MacDonald, Biddy");
@@ -92,14 +101,16 @@ says "continue with the list"):
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261022-141247-hspbdg
+    dotnet run --project tools/Align -- manifest --use-default          (finding 71: the home place)
+    dotnet run --project tools/Align -- undo-run --run run-20261022-145615-gh3u6n
     dotnet run --project tools/Align -- reconcile --verbose
-    dotnet run --project tools/Align -- decisions --run <new run id> --context publisher --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context corpauthor --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
 
-Run decision 14's evidence query against hspbdg at any time; the undo keeps the evidence. "Evanston" and the other
-place twins with different Wikidata ids are the desk's to judge from their ids.
+"Evanston" and the other place twins with different Wikidata ids are the desk's to judge from their ids. After this
+run's reading, the assistant's recommendation is to build finding 26 (working dates) and the second pass (finding 51)
+rather than mine the samples further.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

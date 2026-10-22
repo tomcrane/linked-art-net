@@ -1101,6 +1101,38 @@ context: keywords queued 1,122 -> 1,074 and vote 670 -> 714; keywords:head 553 -
 - keywords:sub: "Cornwall" (run order, finding 51), "Norfolk", "Yorkshire", "Sheffield", "Vienna", "Parma", "Camden",
   "Hampshire", "Cambridge": the famous-name ties, prominence; waiting for the Wikidata extract.
 
+Measured 2026-10-22 (run-20261022-145615-gh3u6n: findings 42, 63 narrowed, 65 to 68, against hspbdg): accepted 8,836
+-> 8,919 (exact-single 3,251 -> 3,344), queued 4,463 -> 4,294, minted 11,093 -> 11,169 (finding 66 clearing
+namesakes). By context: keywords queued 1,074 -> 977; publisher 861 -> 823 and exact-single 419 -> 452 (the one-word
+firms); corpauthor 198 -> 190; keywords:head 515 -> 502; place 319 -> 310; keywords:sub 171 -> 168; persauthorfull
+1,324. The day's path: 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294. The samples, read:
+
+- "Newcastle (Bridgend, Wales)": finding 66 vetoed TGN's Canadian Newcastles, "Bridgend" being a county borough TGN
+  knows, and LoC's "Captain Newcastle, approximately 1701-1756" stood alone through its variant. Finding 69, built:
+  a string placed in a known place is a place, a building or a body there, not a person.
+- "Hampton Court (Herefordshire)": TGN's two vetoed, and ULAN's "Hampton Court (Richmond upon Thames, London,
+  England)" with the project's own entity of that label at 0.85 kept it queued, neither having a placement. Finding
+  70, built: a ULAN label's own place parenthetical, and a store entity's, place it whenever the string has a
+  qualifier; both are now elsewhere, and the house is minted.
+- "Audley End (Essex)": LoC's "Audley End (England)" "not placed", because finding 56 found "Essex" as a county in
+  England, Ontario and five American states and lent nothing. Finding 71, built: the project's manifest names its
+  home place (`homePlace`, "United Kingdom" for PMC), and a county name TGN knows in several countries resolves to
+  the one there. Needs `manifest --use-default` before the run.
+- "Carwitham, John, c 1700- c1760": ULAN's one record dated by a window holding the dates, LoC's one record undated,
+  neither tight, so neither finding 14 nor 16 joined them. Finding 72, built: a dated string that no record dates
+  tightly, with two sources each holding exactly one live exact record of the name, neither at odds with the dates,
+  is their vote, as finding 24 takes one such record alone.
+- "Adams & Dart" (publisher): LoC's "Adams, Dart, 1975-" at 0.97, the person, through finding 34's bare equality
+  ("adams dart" either way); the disambiguated-heading check held it. Finding 73, fixed: a name with an ampersand
+  and one without are not the same name (0.93).
+- "Christopher Cock": ULAN's "Cock, Christopher", the project's own aligned "Christopher Cock" and LoC's "Cock, Mr.
+  (Christopher), active 1720-1749" at 0.93; the entity's ids are the clusters' (finding 32, the desk's). "Peter
+  Lang": LoC's two records of the publisher. "Hutchinson": LoC's person, LoC's firm, ULAN's. "Murray", "König",
+  "Sutton", "Mr Farebrother", "Mr Hoard": bare surnames, the desk's, the one-word rule holding as it should.
+- "Morgan, John", "Summers, S, op 1739", "Messrs Royce": finding 26 (working dates), next. "Christie, Sharp and
+  Harper", "Nationalmuseum", "Musée de l'Ermitage", "Waltham Forest", "City Museum and Art Gallery, Portsmouth",
+  "Hall, ?", "Anglesey Abbey", "Ogmore Castle", "Christian church": as before, the desk's or the data's.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

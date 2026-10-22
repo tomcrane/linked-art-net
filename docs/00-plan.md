@@ -121,11 +121,11 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    is the shape behind much of the residue, and for people the namesake risk is real, so places and concepts
    first, as with outvoted rivals. Ceiling (queued undated strings with exactly one live group at or above 0.9,
    holding an exact record, and at least one other live group), the owner runs, by context and the exact record's
-   class: `select ss.context, x.cls, count(*) from decisions d join source_strings ss on ss.id =
-   d.source_string_id cross join lateral (select count(*) filter (where (g->>'score')::numeric >= 0.9) as strong,
-   count(*) as live, min(d.evidence->'reading'->'classes'->>0) as cls, bool_or((g->>'score')::numeric >= 0.9 and
-   exists (select 1 from jsonb_array_elements(g->'members') m where (m->>'reason' like 'name 1.00%' or
-   m->>'reason' like 'name 0.97%') and m->'veto' is null and m->'setAside' is null)) as exact from
+   class: `select ss.context, d.evidence->'reading'->'classes'->>0 as cls, count(*) from decisions d join
+   source_strings ss on ss.id = d.source_string_id cross join lateral (select count(*) filter (where
+   (g->>'score')::numeric >= 0.9) as strong, count(*) as live, bool_or((g->>'score')::numeric >= 0.9 and exists
+   (select 1 from jsonb_array_elements(g->'members') m where (m->>'reason' like 'name 1.00%' or m->>'reason' like
+   'name 0.97%') and m->'veto' is null and m->'setAside' is null)) as exact from
    jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
    'run-20261022-104922-gde6k3' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null
    and x.strong = 1 and x.live >= 2 and x.exact group by 1, 2 order by 3 desc;`

@@ -873,9 +873,10 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var peersScored = Reconciler.Score(peers, [
             new Candidate("http://vocab.getty.edu/aat/300457669", "aat", "peers (aristocrats)", EntityClass.Type, null, [], "local", 1.0),
             new Candidate("http://vocab.getty.edu/tgn/1013266", "tgn", "Peers", EntityClass.Place, null, [], "local", 1.0, Placement: "Alberta, Canada, North and Central America, World", PlaceType: "inhabited places"),
-            new Candidate("http://vocab.getty.edu/tgn/2060065", "tgn", "Peers", EntityClass.Place, null, [], "local", 1.0, Placement: "Missouri, United States, North and Central America, World", PlaceType: "inhabited places")], 120);
+            new Candidate("http://vocab.getty.edu/tgn/2060065", "tgn", "Peers", EntityClass.Place, null, [], "local", 1.0, Placement: "Missouri, United States, North and Central America, World", PlaceType: "inhabited places"),
+            new Candidate("http://id.loc.gov/authorities/names/no2006042451", "loc", "Peers (Musical group)", EntityClass.Group, null, [], "local", 0.85)], 120); // a lookalike of another source does not stop the rule
         Assert.False(peersScored[0].SetAside); Assert.True(peersScored[1].SetAside); Assert.True(peersScored[2].SetAside); Assert.Contains("a place of the name, not the idea", peersScored[1].Reason);
-        Assert.Equal(1, Reconciler.Groups(peersScored).Count(g => g.Members.Any(m => !m.SetAside)));
+        Assert.Equal(1, Reconciler.Groups(peersScored).Count(g => g.Members.Any(m => !m.SetAside) && g.Score >= 0.9));
         var turkey = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:sub", "Turkey"));
         var turkeyScored = Reconciler.Score(turkey, [
             new Candidate("http://vocab.getty.edu/aat/300250423", "aat", "turkeys (birds)", EntityClass.Type, null, [], "local", 1.0),

@@ -34,7 +34,9 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     stands beside AAT's concept and TGN's two hamlets. The owner runs: `select jsonb_pretty(d.evidence) from
     decisions d join source_strings s on s.id = d.source_string_id where d.run_id = 'run-20261022-141247-hspbdg'
     and s.context = 'keywords' and s.raw = 'Peers';` and pastes the groups; the rule is then widened or the string
-    is the desk's.
+    is the desk's. Run 2026-10-22: the fourth group is LoC's "Peers (Musical group)" at 0.85, which the rule
+    counted as a rival of another source. Fixed that evening: only exact records count on either side; the
+    lookalike is finding 48's business. Closed.
 15. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
     replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
     `merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX merges

@@ -577,8 +577,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // name ("Turkey") is another matter, and so is any record of another source
         if (reading.Home is not null && reading.Qualifier is null && !reading.HasLifespan)
         {
-            var live = list.Select((m, i) => (m, i)).Where(x => !x.m.Veto && !x.m.SetAside && x.m.Candidate.NameScore >= 0.85).ToList();
-            var concepts = live.Where(x => x.m.Candidate.Source is "aat" or "lcsh" && x.m.Candidate.NameScore >= 0.97 && x.m.Candidate.Class is EntityClass.Type or EntityClass.Period or null).ToList();
+            // only exact records count on either side: LoC's "Peers (Musical group)" at 0.85 is a lookalike, finding 48's business, not a
+            // rival of another source (the owner's evidence query, 2026-10-22 evening)
+            var live = list.Select((m, i) => (m, i)).Where(x => !x.m.Veto && !x.m.SetAside && x.m.Candidate.NameScore >= 0.97).ToList();
+            var concepts = live.Where(x => x.m.Candidate.Source is "aat" or "lcsh" && x.m.Candidate.Class is EntityClass.Type or EntityClass.Period or null).ToList();
             var others = live.Where(x => !concepts.Contains(x)).ToList();
             if (concepts.Count == 1 && others.Count > 0 && others.All(x => x.m.Candidate.Source == "tgn" && x.m.Candidate.Class == EntityClass.Place && Qualified.LevelOf(x.m.Candidate.PlaceType) is null or 2))
                 foreach (var (b, i) in others)

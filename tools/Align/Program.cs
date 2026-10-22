@@ -126,7 +126,7 @@ switch (args[0])
         // decisions command prints them. The lines go to standard output; the progress counts stay on standard error
         var verbose = args.Contains("--verbose") || args.Contains("--candidates");
         var withCandidates = args.Contains("--candidates");
-        var report = await reconciler.RunAsync(dataset, limit, run.Id, progress, verbose ? e => Console.Write(EvaluationText.Narrate(e, withCandidates)) : null);
+        var report = await reconciler.RunAsync(dataset, limit, run.Id, progress, verbose ? (e, n, total) => Console.Write(EvaluationText.Narrate(e, withCandidates, prefix: $"{n}/{total} ")) : null);
         await store.FinishRunAsync(run.Id, System.Text.Json.JsonSerializer.Serialize(report), report.ToString());
         Console.WriteLine($"run {run.Id}: {report}");
         Console.WriteLine($"time by stage: {reconciler.TimingsText}");

@@ -90,8 +90,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     public ReconcilerOptions Options => _options;
 
-    /// <summary>Works through the dataset's undecided strings: all of them when <paramref name="limit"/> is 0 or less. <paramref name="onDecided"/> sees each string's evaluation as it is made (the tool's verbose mode, <see cref="EvaluationText"/>).</summary>
-    public async Task<ReconcileReport> RunAsync(string dataset, int limit = 0, string? runId = null, IProgress<string>? progress = null, Action<Evaluation>? onDecided = null, CancellationToken ct = default)
+    /// <summary>Works through the dataset's undecided strings: all of them when <paramref name="limit"/> is 0 or less. <paramref name="onDecided"/> sees each string's evaluation as it is made, with its position in the run and the run's length (the tool's verbose mode, <see cref="EvaluationText"/>).</summary>
+    public async Task<ReconcileReport> RunAsync(string dataset, int limit = 0, string? runId = null, IProgress<string>? progress = null, Action<Evaluation, int, int>? onDecided = null, CancellationToken ct = default)
     {
         var strings = await store.UndecidedAsync(dataset, limit > 0 ? limit : int.MaxValue, ct);
         int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, single = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, compounds = 0, parts = 0, decidedEarlier = 0, n = 0;
@@ -116,7 +116,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // list, decides it on the way, and deciding it again here would supersede that decision and count it twice
             n++;
             if (await store.DecisionForAsync(s.Id, ct) is not null) decidedEarlier++;
-            else { var e = await ReconcileOneDetailedAsync(dataset, s, runId, ct); Count(e); onDecided?.Invoke(e); }
+            else { var e = await ReconcileOneDetailedAsync(dataset, s, runId, ct); Count(e); onDecided?.Invoke(e, n, strings.Count); }
             if (n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists + compounds > 0 ? $", lists {lists}, compounds {compounds}" : ""));
         }
         return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier);

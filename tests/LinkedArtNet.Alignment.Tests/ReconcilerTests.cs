@@ -798,6 +798,9 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Contains("  [keywords:head] Painting -> accepted", narrated);
         Assert.Contains("  [keywords:sub] Canada -> accepted", narrated);
         Assert.Contains("     1.00 tgn    Canada  <http://vocab.getty.edu/tgn/7005685>  name 1.00", narrated);
+        var prefixed = EvaluationText.Narrate(e, prefix: "7/46299 "); // the tool's progress prefix, on the string's line only; parts indented under it
+        Assert.StartsWith("7/46299 [keywords] Painting--Canada", prefixed);
+        Assert.Contains("          [keywords:head] Painting ->", prefixed);
         Assert.Equal(scheme.Uri(EntityClass.Type, "unrec_abcd2345"), decision.EntityId); // the heading's concept keeps the identifier LUX holds (the owner's decision 2026-10-21)
         var concept = (await pg.Store.GetEntityAsync(decision.EntityId!))!;
         Assert.Equal(EntityClass.Type, concept.Class); Assert.Equal("Painting--Canada", concept.Label);

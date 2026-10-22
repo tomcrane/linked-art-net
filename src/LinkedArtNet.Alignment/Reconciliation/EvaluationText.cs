@@ -9,19 +9,20 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 /// </summary>
 public static class EvaluationText
 {
-    public static string Narrate(Evaluation e, bool candidates = false, int indent = 0)
+    /// <param name="prefix">Goes before the string's own line only ("1234/46299 "), so the run's progress shows on every line; a decomposed string's parts are indented under it without one.</param>
+    public static string Narrate(Evaluation e, bool candidates = false, int indent = 0, string? prefix = null)
     {
         var sb = new StringBuilder();
         var pad = new string(' ', indent);
         var s = e.Reading.String;
-        sb.Append(pad).Append('[').Append(s.Context).Append("] ").Append(s.Raw).Append(" -> ").Append(Outcome(e));
+        sb.Append(prefix).Append(pad).Append('[').Append(s.Context).Append("] ").Append(s.Raw).Append(" -> ").Append(Outcome(e));
         sb.AppendLine();
         if (candidates)
             foreach (var g in e.Groups.Take(3))
                 foreach (var m in g.Members.Take(3))
                     sb.Append(pad).Append("   ").Append(m.Score.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)).Append(' ').Append(m.Candidate.Source.PadRight(6)).Append(' ').Append(m.Candidate.Label)
                       .Append("  <").Append(m.Candidate.Uri).Append(">  ").Append(m.Reason).AppendLine();
-        foreach (var part in e.Parts ?? []) sb.Append(Narrate(part, candidates, indent + 2));
+        foreach (var part in e.Parts ?? []) sb.Append(Narrate(part, candidates, indent + 2 + (prefix?.Length ?? 0)));
         return sb.ToString();
     }
 

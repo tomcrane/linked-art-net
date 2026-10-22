@@ -1066,6 +1066,41 @@ keywords:head 609 -> 553 and vote 2,093 -> 2,223 (the dates rules); persauthorfu
 - Place: "Dublin", "Athens", "Winchester": prominence; "Norfolk?" now read as Norfolk, still a tie. "Evanston",
   "Bottrop", "Heaton", "Donnington": the desk's or the data's.
 
+Measured 2026-10-22 (run-20261022-141247-hspbdg: findings 56 corrected, 58 to 61, 63, 64 and the placement parts,
+against sfny58): accepted 8,737 -> 8,836 (vote 3,682 -> 3,766, single 1,792 -> 1,819), queued 4,572 -> 4,463. By
+context: keywords queued 1,122 -> 1,074 and vote 670 -> 714; keywords:head 553 -> 515; place 331 -> 319 and vote
+329 -> 344; keywords:sub 180 -> 171; publisher 863 -> 861; corpauthor 198; persauthorfull 1,325. The samples, read:
+
+- "E & H Lumley" (corpauthor): LoC's "E. & H. Lumley (Firm)" exact by finding 39, and still queued, because the
+  project's own provisional placeholder for the name stood above it at 1.00 and the exact-single rule looked at the
+  placeholder. Finding 68, fixed: the rule reads the best group that is not a provisional placeholder of the
+  project's own.
+- "Remondini (Firm) (Printer)" (corpauthor), "Macmillan" (publisher, the run before): LoC's one record, exact, held
+  by the one-word rule for people and bodies. Finding 42, built: a record plainly a firm by its own label (a type
+  qualifier, "Remondini (Firm)", or a legal suffix, "Macmillan, Inc.") is a firm's name, and the rule stands aside.
+- "MacDonald, Biddy, 1871-1952" (keywords): ULAN's one record, dated only by a window (1855~-~1968) that holds the
+  string's dates, "not comparable", and the only candidate. Finding 65, fixed: a window of possibility is undated
+  for finding 24, as it is for finding 14 since finding 55, so the string is an exact-single.
+- "Hampton Court (Herefordshire)" (keywords): TGN's Jamaican and Richmond Hampton Courts, neither placed, neither
+  vetoed, since the veto wanted a placed rival. Finding 66, built: a qualifier TGN knows as a county or above
+  (finding 56's ancestors) names a real place, and a record placed elsewhere is vetoed whether or not another is
+  placed; the string is minted as the Herefordshire house. A town's name ("Bridgend") resolves to nothing and
+  vetoes nothing.
+- Checking finding 66 showed that "Yorkshire" did not agree with "West Yorkshire", since the regions table makes the
+  compound one word. Finding 67, fixed: a compound of a direction and the word holds the word; "York" is still not
+  "New York".
+- "Peers" (keywords): still queued though finding 63 was built for it, which means a fourth group the printer does
+  not show, of another source. The owner's query in the plan (decision 14) prints the evidence.
+- "Morgan, John, 1823-1886", "Summers, S, op 1739", "Messrs Royce" against "Royce, John, active 1773-1789": the
+  working dates of finding 26, now the commonest shape among the dated names left; next builds, item 6.
+- "City Museum and Art Gallery, Portsmouth" against LoC's "Portsmouth City Museum and Art Gallery (Portsmouth,
+  England)" at 0.93: the same words in another order, which for a body may or may not be the same body ("Museum of
+  London" is not the "London Museum"); the desk's. "Christie, Sharp and Harper": three ULAN records, one the firm
+  and two through variants; the desk's. "Nationalmuseum", "Musée de l'Ermitage", "Waltham Forest: Libraries & Arts
+  Department", "Mr Abbott", "Mr Hodgson", "Christian church", "De profundis": as before.
+- keywords:sub: "Cornwall" (run order, finding 51), "Norfolk", "Yorkshire", "Sheffield", "Vienna", "Parma", "Camden",
+  "Hampshire", "Cambridge": the famous-name ties, prominence; waiting for the Wikidata extract.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

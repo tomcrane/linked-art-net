@@ -5,7 +5,7 @@ review in §7). Branch `de-pmc` is the working branch and `main` is what is depl
 releases"). The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this folder are the
 committed record.
 
-## 0. Resume point (written 2026-10-22 night; the one place to read first)
+## 0. Resume point (written 2026-10-22 evening; the one place to read first)
 
 This section is rewritten at the end of every working day. It lists what stands, what the owner has to decide, what
 is built and waiting for a go, and the commands to run on return. The detail behind each line is in
@@ -14,154 +14,90 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
 **Where things stand.** Branch `de-pmc`, all work committed, CI green. Five authority sources loaded (14.5M records),
 the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
-merges) and two hand merges ("England", "London"); the manifest was refreshed on 2026-10-22 for the keywords field's
-parser. The last measured run is run-20261022-131239-sfny58: accepted 8,737 (vote 3,682, single 1,792,
-exact-single 3,263), queued 4,572, matched in store 5,859, minted 11,085, lists 404, compounds 15,558; by context
-queued persauthorfull 1,325, keywords 1,122, publisher 863, keywords:head 553, place 331, corpauthor 198,
-keywords:sub 180. The two days' path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
-4,572. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is "Measured ... sfny58". Hand
-merges done 2026-10-22: Italy, Kolkata; Dumfries kept apart (the town and the old county) and the county relabelled
-Dumfriesshire.
+merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
+county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser. The
+last measured run is run-20261022-141247-hspbdg: accepted 8,836 (vote 3,766, single 1,819, exact-single 3,251),
+queued 4,463, matched in store 5,861, minted 11,093, lists 404, compounds 15,558; by context queued persauthorfull
+1,325, keywords 1,074, publisher 861, keywords:head 515, place 319, corpauthor 198, keywords:sub 171. The three
+days' path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463. Doc 10 7.6 has
+a "Measured" paragraph per run with the samples read; the last is "Measured ... hspbdg". The Wikidata truthy dump
+(71.7 GB) and the sitelinks table are downloading on the owner's other machine (next builds, item 4).
 
-**Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6 rewritten,
-section 7 item 34); prominence waits for the Wikidata extract; decision 9 of the morning (bare TGN-only namesakes)
-closed on a 0-row ceiling; finding 32 (a cluster-id entity beside a dated group) to the desk; findings 35 and 40
-(the project's aligned entity breaks a place tie; two sources each with one exact record of a body join) yes, built;
-finding 48 (exact-single tolerates lookalikes below acceptance score) yes for concepts and places, built; "Cornwall"
-in keywords:sub was run order, not a duplicate (finding 51, a second pass, in the next builds). Yesterday's: finding
-3 yes, outvoted rivals for places and concepts yes, `unrec_` kept, finding 14 yes, the duplicate pass, decisions 6
-to 8 (home sets aside inexact rivals; a dated string's lone undated record; the "-781" twins).
+**Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
+34); prominence waits for the Wikidata extract; findings 35, 40, 48 (concepts and places), 60 and 63 yes, all built;
+finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:sub closed as run order (finding 51);
+"Thomas, Thomas" explained by ULAN's class (finding 64 built). Yesterday's are in doc 10 section 13 and section 7.6.
 
 **Decisions still owed by the owner:**
 
-11. *Outvoted rivals for bodies when the qualifier places the winner* (finding 60, doc 10 7.6 "Measured ... sfny58"):
-    "National Maritime Museum (London)" has TGN's museum placed by "London" with LoC's heading placed through it,
-    and ULAN's three records of the museum unplaced beside them; the outvoted-rivals policy excludes bodies, since
-    a name-only tie is weak evidence, but a qualifier that places the winner is not name-only. Proposed: for a body,
-    a two-source group one of whose members the string's qualifier places outvotes single-source rivals at
-    acceptance score, as for places. Recommendation: yes. Ceiling (queued strings with a qualifier, exactly one
-    two-source group at acceptance score with a placed member, and a single-source rival at acceptance score), the
-    owner runs: `select ss.context, count(*) from decisions d join source_strings ss on ss.id = d.source_string_id
-    cross join lateral (select count(*) filter (where jsonb_array_length(g->'sources') >= 2 and
-    (g->>'score')::numeric >= 0.9 and exists (select 1 from jsonb_array_elements(g->'members') m where m->>'reason'
-    like '%qualifier places it%')) as placedmulti, count(*) filter (where jsonb_array_length(g->'sources') = 1 and
-    (g->>'score')::numeric >= 0.9) as single from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is
-    null) x where d.run_id = 'run-20261022-131239-sfny58' and d.valid and d.method = 'queued' and
-    d.evidence->'reading'->>'qualifier' is not null and x.placedmulti = 1 and x.single >= 1 group by 1 order by 2
-    desc;` Measured 2026-10-22: 18 strings (keywords:head 15, place 2, keywords:sub 1). The owner's yes that
-    evening, built before the next run (`EvaluateAsync`: a placed member of the winning group lets a body's rivals
-    be outvoted).
-12. *A concept against TGN hamlets alone* (finding 63): "Peers" has AAT's "peers (aristocrats)" exact and two TGN
-    hamlets called Peers; "Dating", "Hall" and "Cross" are the same shape. Proposed: in the keywords family, when the
-    only exact concept record (AAT or LCSH) stands against TGN-only groups, the concept wins; a bare common noun in a
-    subject field names the idea, and a place would carry its qualifier. Recommendation: yes. Ceiling (queued
-    undated keywords-family strings with exactly one live non-TGN group, exact, and every other live group TGN-only),
-    the owner runs: `select ss.context, count(*) from decisions d join source_strings ss on ss.id =
-    d.source_string_id cross join lateral (select count(*) filter (where g->'sources' <> '["tgn"]'::jsonb) as
-    others, bool_and(g->'sources' = '["tgn"]'::jsonb or exists (select 1 from jsonb_array_elements(g->'members') m
-    where m->>'source' in ('aat', 'lcsh') and (m->>'reason' like 'name 1.00%' or m->>'reason' like 'name 0.97%')))
-    as shape from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
-    'run-20261022-131239-sfny58' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null
-    and ss.context in ('keywords', 'keywords:head', 'keywords:sub') and x.others = 1 and x.shape group by 1 order by
-    2 desc;` Measured 2026-10-22: 20 strings (keywords:sub 11, keywords:head 8, keywords 1). The owner's yes that
-    evening, built before the next run (`Reconciler.Score`, after the home rule: the one exact AAT or LCSH concept
-    sets aside TGN's inhabited places of the name; a nation or county of the name does not count as a hamlet).
-13. *"Thomas, Thomas"*: ULAN's undated record should join LoC's dated one by finding 14 and does not; the one
-    condition left is the class. The owner runs: `select uri, label, type, lifespan_text from authority_records
-    where uri in ('http://vocab.getty.edu/ulan/500451686', 'http://vocab.getty.edu/ulan/500077832');` If the first
-    is a Group, the join is rightly stopped and the string is the desk's; if it is a Person, the assistant looks
-    again. Run 2026-10-22: 500451686 is a Group (a firm), 500077832 a Person dated 1824~-~1926. The join rightly
-    stopped; but a firm is no rival to a dated personal heading either, so finding 64 was built that evening: a
-    heading the profile read as a person with a lifespan vetoes a body of the name whose dates do not agree, as
-    finding 31 does for places. Closed.
-14. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed):
-ask the LUX team whether a source reload replaces by URI and whether records absent from a full dump are retired;
-the merged-away identifiers (now `merged_into` on 381 entities and the two hand merges) are written as equivalents
-of the survivor so LUX merges its copies. A reviewed Wikidata contribution export of confirmed local authorities
-belongs beside it (next builds, item 4).
+14. *"Peers"*: finding 63 was built for it and it is still queued, so a fourth group the printer does not show
+    stands beside AAT's concept and TGN's two hamlets. The owner runs: `select jsonb_pretty(d.evidence) from
+    decisions d join source_strings s on s.id = d.source_string_id where d.run_id = 'run-20261022-141247-hspbdg'
+    and s.context = 'keywords' and s.raw = 'Peers';` and pastes the groups; the rule is then widened or the string
+    is the desk's.
+15. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
+    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
+    `merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX merges
+    its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
+    builds, item 4).
 
-**Built 2026-10-22 night from sfny58's samples, waiting for the next rerun** (no reload, no manifest refresh):
-finding 60 (decision 11: bodies outvoted when the qualifier places the winner, "National Maritime Museum (London)");
-finding 63 (decision 12: a concept against TGN hamlets alone, "Peers", "Dating", "Hall"); finding 64 (a heading read
-as a person with a lifespan vetoes a body of the name, "Thomas, Thomas"); a heading's several parentheticals are
-each a placement of their own in the placed-through check (finding 58 had joined them);
-finding 56 corrected (a qualifier's TGN ancestors widen agreement and never narrow it: "Raglan Castle (Wales)");
-finding 58 (a body's LoC parenthetical that is not a type of body places it: "Hunterian Art Gallery (University of
-Glasgow)"); finding 59 (the cataloguer's doubt and brackets are not the name or the qualifier: "Cuddington,
-Buckinghamshire?", "[Warwick]"); finding 61 (among inhabited places of one name under a country heading, the one that
-names the division above it: Portsmouth the city). Expect keywords and keywords:head down by the castles and halls
-with county qualifiers that finding 56's fault held back, and a few places.
+**Built 2026-10-22 evening from hspbdg's samples, waiting for the next rerun** (no reload, no manifest refresh):
+finding 68 (the exact-single rule reads the best group that is not the project's own placeholder: "E & H Lumley");
+finding 42 (a one-word firm name is exact against a record plainly a firm: "Remondini (Firm)", "Macmillan, Inc.");
+finding 65 (a window of possibility holding the string's dates is undated for finding 24: "MacDonald, Biddy");
+finding 66 (a qualifier TGN knows as a county or above vetoes records placed elsewhere: "Hampton Court
+(Herefordshire)" minted); finding 67 ("West Yorkshire" holds "Yorkshire"). Expect publisher and corpauthor down by
+the one-word firms and the placeholders, keywords by the dated names and the county-qualified halls, minted up a
+little where finding 66 clears namesakes.
 
-**Built 2026-10-22 night from t8wzjm's samples, measured on sfny58** (kept for the record):
-finding 52 (a record's outer end bound never makes a lifetime too long: "Gilbert, 1943-" against ULAN's
-1943-~2090); finding 54 (a source's agreeing record makes its other records of the name namesakes, dated or not:
-"Clarke, Geoffrey, -1950"); finding 55 (finding 14 counts live exact records only and reads a window of possibility
-as undated: "Thomas, Thomas", "Chandra, Mohini"); finding 56 (a qualifier's ancestors from TGN place a heading's
-coarser parenthetical: "Fountains Hall (Yorkshire)" against "(England)"); finding 57 (a fuller form dropped, then
-punctuation alone, is the same name: "Jope, E M"). Expect: keywords and keywords:head queued down by the dated
-names, a few castles and halls out of keywords, persauthorfull down a little.
-
-**Where the cycles stand** (the owner's question, 2026-10-22): each cycle now gives two or three hundred, and each
-sample of ten has three or four entries that are the desk's. Two or three cycles more at most, to a stopping point
-around 4,000 to 4,500 queued, where a sample yields no new rule; then the levers change: the Wikidata extract
-(prominence, dates for LoC's undated records), the 2024 shadow (what the old pipeline knew), the desk, the LUX export
-so the work reaches anyone, and the Wellcome instance as the test of whether the rules are general. What remains is
-mostly: persauthorfull's undated names with one ULAN artist and several LoC namesakes (1,400); headings LCSH does
-not hold whole (keywords 1,200, keywords:head 600); publisher's bare surnames and small firms (900); the famous-name
-place ties (about a hundred of place's 334).
+**Where the cycles stand.** The stopping point the assistant expected (around 4,000 to 4,500 queued, a sample of
+ten yielding no new rule) is close: hspbdg's samples gave five fixes, but three of them were corrections to the
+day's own rules, and the queues are now dated names waiting on finding 26 (working dates), famous-name place ties
+waiting on Wikidata, bare surnames and small firms for the desk, and headings LCSH does not hold whole, which are
+the project's own concepts. After the next run, one more reading; then the levers change: finding 26, the Wikidata
+extract, the second pass (finding 51), the 2024 shadow, the LUX export, the Wellcome instance.
 
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
 
-1. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
-2. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
+1. Finding 26, the working-date gaps (doc 10 7.6 "Measured ... qr7fbx"): the MARC profile does not read "fl.
+   1775-1795", "op 1739" or a lone "1730?", and the LoC loader does not read "active 1840-1876" in a heading, so
+   namesakes whose working dates cannot overlap do not conflict ("Morgan, John, 1823-1886" against "Morgan, John,
+   active 1635"; "Bolton, James, fl. 1775-1795"; "Summers, S, op 1739"; "Royce, John, active 1773-1789"). A working
+   span is "born no later than its start, died no earlier than its end" (the `Lifespan` record can say so:
+   BeginLatest and EndEarliest) and the lifetime bound then applies. Size S in the parser, S in the loader; the
+   commonest shape among the dated names left.
+2. Finding 51, a second pass: at the end of a run, re-evaluate the strings it queued, since entities it created
+   later in the run can settle them ("Cornwall" in keywords:sub, decision 7). Size S; its own line in the report.
+3. A local Wikidata extract as a sixth index, from the two files downloading (the truthy N-Triples dump
+   `dumps.wikimedia.org/other/wikibase/wikidatawiki/latest-truthy.nt.gz`, 71.7 GB, with labels, aliases,
+   instance-of, dates and the ids P214 VIAF, P244 LoC, P245 ULAN, P1667 TGN, P1014 AAT, P227 GND; and the sitelinks
+   table `dumps.wikimedia.org/wikidatawiki/latest/wikidatawiki-latest-wb_items_per_site.sql.gz`, counted for
+   prominence). Items carrying one of those ids or typed human, organisation or place; a few million rows, CC0.
+   What it adds: prominence for the famous-name ties (finding 17), dates for LoC's undated records, a crosswalk
+   between TGN and LoC, a check on VIAF clusters. Size M. The load runs where the tool runs, reading the file from
+   local disk: either the file comes to the store's machine or the tool runs on the download machine against
+   `LINKEDART_PG` over the network. Beside it, when the LUX export is designed: a reviewed Wikidata contribution
+   export of confirmed local authorities (a QuickStatements batch of label, dates, roles, nationality and the
+   archive's URI as the reference, for a person to review and submit; confirmed entities only).
+4. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
+5. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
    the owner.
-3. Outvoted rivals for people and bodies, only after a shadow against the 2024 alignment says what it would do to
-   them.
-4. A local Wikidata extract as a sixth index (the owner's question, 2026-10-21 evening): not the full dump (over a
-   hundred gigabytes compressed) but the items carrying a ULAN, TGN, LoC, VIAF, AAT or GND id or typed human,
-   organisation or place, with labels, aliases, dates, those ids and a sitelink count; a few million rows, CC0. What
-   it adds: prominence for tied places (finding 17: sitelinks, not TGN name counts), dates for LoC's undated records
-   (finding 24 checked rather than trusted), a crosswalk between TGN and LoC, which never link to each other, and a
-   check on VIAF clusters. ULAN and LoC already vote through their own Wikidata links, so the gain is in the
-   residue. Size M; remote Wikidata lookups by external id (step 3b) are the cheap first step. The files to
-   download ahead (the owner's question, 2026-10-22; sizes approximate, from the assistant's memory): the truthy
-   RDF dump `dumps.wikimedia.org/other/wikibase/wikidatawiki/latest-truthy.nt.gz` (71.7 GB on 2026-10-22; N-Triples as the Getty
-   loader reads, with labels, aliases, instance-of, dates and the external ids P214 VIAF, P244 LoC, P245 ULAN,
-   P1667 TGN, P1014 AAT, P227 GND) and the sitelinks table
-   `dumps.wikimedia.org/wikidatawiki/latest/wikidatawiki-latest-wb_items_per_site.sql.gz` (a few GB; one row per
-   item per Wikipedia, counted for prominence). Not the full JSON dump. The owner's
-   further thought the same evening: Wikidata is the one authority an archive can contribute to, so an entity
-   confirmed on the desk as a local authority with no identifiers (an obscure sitter, printer or dealer the
-   archive's own catalogue documents) can be given an item there, gain an external id, and be found by every other
-   project and, in time, by VIAF and LUX. A contribution export (a QuickStatements batch of label, dates, roles,
-   nationality and the archive's URI as the reference, for a person to review and submit; confirmed entities only,
-   never provisional ones) belongs beside the LUX export in doc 10 7.5 item 2 when that is designed.
-5. Finding 51, a second pass: at the end of a run, re-evaluate the strings it queued, since entities it created
-   later in the run (the keywords:head "Cornwall (England : County)") can settle them ("Cornwall" in keywords:sub,
-   decision 7 of 2026-10-22). Size S; counts as its own line in the report.
-6. Finding 26, the working-date gaps (doc 10 7.6 "Measured ... qr7fbx"): the MARC profile does not read "fl.
-   1775-1795", "op 1849-1890" or a lone "1730?", and the LoC loader does not read "active 1840-1876" in a heading,
-   so namesakes whose working dates cannot overlap do not conflict. A working span is "born no later than its
-   start, died no earlier than its end" (the `Lifespan` record can say so: BeginLatest and EndEarliest) and the
-   lifetime bound then applies. Size S in the parser, S in the loader; with the parser-gaps open item below.
-7. Finding 42, a one-word firm name against a record that is plainly a firm ("Macmillan" against LoC's one
-   "Macmillan, Inc."): the one-word rule for bodies could stand aside when the record's own label carries a legal
-   suffix or a body-type qualifier. Not measured; small.
-8. The Agent parser's endpoint, playground and corpus (section 7, item 34), after the alignment list.
+6. Outvoted rivals for people and bodies on name alone, only after a shadow against the 2024 alignment says what it
+   would do to them.
+7. The Agent parser's endpoint, playground and corpus (section 7, item 34), after the alignment list.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261022-131239-sfny58
+    dotnet run --project tools/Align -- undo-run --run run-20261022-141247-hspbdg
     dotnet run --project tools/Align -- reconcile --verbose
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context publisher --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context corpauthor --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
 
-Run decisions 11 and 12's ceiling queries and decision 13's record query against sfny58 at any time; the undo keeps
-the evidence. If the owner says yes to 11 or 12 before the run, it is built first. "Evanston" and the other place
-twins with different Wikidata ids are the desk's to judge from their ids.
+Run decision 14's evidence query against hspbdg at any time; the undo keeps the evidence. "Evanston" and the other
+place twins with different Wikidata ids are the desk's to judge from their ids.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

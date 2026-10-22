@@ -110,13 +110,14 @@ switch (args[0])
     {
         await store.InitialiseAsync();
         var limit = int.TryParse(Option("--limit"), out var l) ? l : 0; // no limit: every undecided string
+        var manifestOptions = (await ManifestAsync(store, dataset)).ToOptions();
         var options = new ReconcilerOptions
         {
             AcceptScore = double.TryParse(Option("--accept"), System.Globalization.CultureInfo.InvariantCulture, out var a) ? a : 0.9,
             ReviewScore = double.TryParse(Option("--review"), System.Globalization.CultureInfo.InvariantCulture, out var rv) ? rv : 0.6,
             AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact"),
             MintWhenNothingFound = !args.Contains("--no-mint"),
-            Contexts = (await ManifestAsync(store, dataset)).ToOptions().Contexts,
+            Contexts = manifestOptions.Contexts, HomePlace = manifestOptions.HomePlace,
         };
         var sources = await SourcesAsync(store, dataset);
         var run = await store.StartRunAsync(dataset, System.Text.Json.JsonSerializer.Serialize(options));
@@ -162,7 +163,8 @@ switch (args[0])
     case "shadow":
     {
         await store.InitialiseAsync();
-        var options = new ReconcilerOptions { Contexts = (await ManifestAsync(store, dataset)).ToOptions().Contexts, AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact") };
+        var shadowManifest = (await ManifestAsync(store, dataset)).ToOptions();
+        var options = new ReconcilerOptions { Contexts = shadowManifest.Contexts, HomePlace = shadowManifest.HomePlace, AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact") };
         var sources = await SourcesAsync(store, dataset);
         var reconciler = new Reconciler(store, scheme, sources, options);
         var sample = int.TryParse(Option("--sample"), out var sn) ? sn : 0;

@@ -280,7 +280,10 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // Glasgow (finding 58, 2026-10-22); "(Firm)" and "(Gallery)" still place nothing
         var placement = cls == EntityClass.Place ? Qualified.PlacementOf(parentString, labels)
             : r.Source == "lcsh" ? Qualified.PlacementOf(null, labels)
-            : reading.Qualifier is not null && r.Source == "loc" ? Qualified.PlacementOf(null, labels.Select(NameMatcher.WithoutBodyType)) : null;
+            : reading.Qualifier is not null && r.Source == "loc" ? Qualified.PlacementOf(null, labels.Select(NameMatcher.WithoutBodyType))
+            // ULAN's parent string is its facet, but a ULAN label may carry a place of its own ("Hampton Court (Richmond upon Thames,
+            // London, England)"), which places the body when the string has a qualifier (finding 70)
+            : reading.Qualifier is not null && r.Source == "ulan" ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
         return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, nameScore, null, nationalities, Disambiguated: disambiguated,
             Placement: placement, Collections: collections, PlaceType: placeType);
     }

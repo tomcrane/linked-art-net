@@ -18,6 +18,8 @@ public sealed record ProjectManifest
     /// <summary>Accept an undated string's single exact match in one source when it is the only candidate at any score (policy; see ReconcilerOptions).</summary>
     public bool AcceptUniqueExactSingleSource { get; init; } = true;
     public bool MintWhenNothingFound { get; init; } = true;
+    /// <summary>Where the dataset's places mostly are, for a qualifier TGN knows in several countries (finding 71).</summary>
+    public string? HomePlace { get; init; }
     /// <summary>The local indexes to consult, in order.</summary>
     public List<string> Sources { get; init; } = ["ulan", "aat", "tgn", "loc", "lcsh"];
 
@@ -35,12 +37,14 @@ public sealed record ProjectManifest
         AcceptSingleSourceWithDates = AcceptSingleSourceWithDates,
         AcceptUniqueExactSingleSource = AcceptUniqueExactSingleSource,
         MintWhenNothingFound = MintWhenNothingFound,
+        HomePlace = HomePlace,
         Contexts = Contexts.ToDictionary(kv => kv.Key, kv => kv.Value.ToRule(), StringComparer.OrdinalIgnoreCase),
     };
 
     /// <summary>How the PMC library's fields are read: the old source_string_map sources. Sale catalogues name auctioneers and dealers in corpauthor and publisher, some of them people.</summary>
     public static ProjectManifest PmcDefault => new()
     {
+        HomePlace = "United Kingdom", // a British art library's places (finding 71)
         Contexts = new Dictionary<string, ContextRuleJson>(StringComparer.OrdinalIgnoreCase)
         {
             ["persauthorfull"] = new([EntityClass.Person], "default"),
@@ -73,6 +77,7 @@ public sealed record ProjectManifest
         if (AcceptScore != other.AcceptScore || ReviewScore != other.ReviewScore || MinIndependentSources != other.MinIndependentSources
             || AcceptSingleSourceWithDates != other.AcceptSingleSourceWithDates || AcceptUniqueExactSingleSource != other.AcceptUniqueExactSingleSource || MintWhenNothingFound != other.MintWhenNothingFound)
             d.Add("the thresholds or policies");
+        if (!string.Equals(HomePlace, other.HomePlace, StringComparison.Ordinal)) d.Add($"the home place ({HomePlace ?? "none"} against {other.HomePlace ?? "none"})");
         return d;
     }
 }

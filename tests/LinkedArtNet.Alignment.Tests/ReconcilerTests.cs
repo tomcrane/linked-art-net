@@ -247,6 +247,13 @@ public class GroupingTests
         var thomasReading = reading with { Text = "Thomas, Thomas", Lifespan = GettyVocabLoader.LifespanFromYears("1817", "1888") };
         var thomasFirm = Reconciler.Score(thomasReading with { Classes = [EntityClass.Person, EntityClass.Type, EntityClass.Group, EntityClass.Place] }, [new Candidate("u9", "ulan", "Thomas, Thomas", EntityClass.Group, null, [], "local", 1.0)], 120)[0];
         Assert.True(thomasFirm.Veto); Assert.Contains("names a person, not a body", thomasFirm.Reason);
+        // two sources' one record each of a dated name, neither at odds with the dates and neither tight, join (finding 72)
+        var carwitham = reading with { Text = "Carwitham, John", Lifespan = new Lifespan(new DateTimeOffset(1695, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1705, 12, 31, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1755, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1765, 12, 31, 0, 0, 0, TimeSpan.Zero), "c 1700- c1760") };
+        var carwithamUlan = new Candidate("u10", "ulan", "Carwitham, John", EntityClass.Person, new Lifespan(new DateTimeOffset(1683, 1, 1, 0, 0, 0, TimeSpan.Zero), null, null, new DateTimeOffset(1783, 12, 31, 0, 0, 0, TimeSpan.Zero), "1683~-~1783"), [], "local", 1.0);
+        var carwithamLoc = new Candidate("l23", "loc", "Carwitham, J. (John)", EntityClass.Person, null, [], "local", 1.0);
+        var carwithamScored = Reconciler.Score(carwitham, [carwithamUlan, carwithamLoc], 120);
+        Assert.Equal("u10", carwithamScored[1].JoinedTo); Assert.Contains("neither at odds with the dates", carwithamScored[1].Reason);
+        Assert.All(Reconciler.Score(carwitham, [carwithamUlan, carwithamLoc, carwithamLoc with { Uri = "l24" }], 120), m => Assert.Null(m.JoinedTo)); // two LoC records: the desk
         var locUndated = new Candidate("l9", "loc", "Dürer, Albrecht", EntityClass.Person, null, [], "local", 1.0);
         Assert.False(Reconciler.Score(reading, [agrees, locUndated], 120)[1].Veto);
         // and when it is its source's only exact record of the name, it is the person the other source dates: the two vote (the
@@ -330,6 +337,9 @@ public class GroupingTests
         var herefordshire = Reading("Hampton Court", EntityClass.Place) with { Qualifier = "Herefordshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
         var jamaica = Reconciler.Score(herefordshire, [new Candidate("t40", "tgn", "Hampton Court", EntityClass.Place, null, [], "local", 1.0, Placement: "Saint Thomas, Surrey, Jamaica, North and Central America, World")], 120)[0];
         Assert.True(jamaica.Veto); Assert.Contains("names a known place and this is elsewhere", jamaica.Reason);
+        // and a string placed in a known place is not a person (finding 69): LoC's Captain Newcastle through his variant
+        var captain = Reconciler.Score(Reading("Newcastle", EntityClass.Place, EntityClass.Person) with { Qualifier = "Bridgend, Wales", QualifierAncestors = "Wales, United Kingdom, Europe, World" }, [new Candidate("l42", "loc", "Captain Newcastle, approximately 1701-1756", EntityClass.Person, null, [], "local", 1.0)], 120)[0];
+        Assert.True(captain.Veto); Assert.Contains("is not a person", captain.Reason);
         var bridgend = Reading("Newcastle", EntityClass.Place) with { Qualifier = "Bridgend, Wales" }; // a town's name resolves to nothing, so nothing is vetoed on its account
         Assert.False(Reconciler.Score(bridgend, [new Candidate("t41", "tgn", "Newcastle", EntityClass.Place, null, [], "local", 1.0, Placement: "Shropshire, England, United Kingdom, Europe, World")], 120)[0].Veto);
         var fountains = Reading("Fountains Hall", EntityClass.Place) with { Qualifier = "Yorkshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
@@ -356,6 +366,7 @@ public class GroupingTests
         // "St." and "Saint" are one word (finding 25)
         Assert.Equal(0.97, NameMatcher.Score("St. Mary", ["Saint Mary"])); Assert.Equal(0.97, NameMatcher.Score("Mt. Pleasant", ["Mount Pleasant"]));
         Assert.Equal(0.97, NameMatcher.Score("Jope, E M", ["Jope, E. M. (Edward Martyn)"])); // a fuller form dropped, then punctuation alone (finding 57)
+        Assert.Equal(0.93, NameMatcher.Score("Adams & Dart", ["Adams, Dart"])); // a firm of two names is not a person of two names (finding 73)
         Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
 
         var reading = Reading("Heaton", EntityClass.Place) with { Qualifier = "Bradford" };
@@ -863,6 +874,10 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal("University of Glasgow", hunterianLoc.Placement);
         var hunterianScored = Reconciler.Score(hunterian, [hunterianLoc], 120)[0];
         Assert.True(hunterianScored.QualifierAgrees); Assert.Equal(0.97, hunterianScored.Candidate.NameScore); // placed, and exact on its name (finding 20)
+        // a ULAN label's own place parenthetical places the body when the string has a qualifier (finding 70): Hampton Court the palace is not in Herefordshire
+        var hamptonCourt = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords", "Hampton Court (Herefordshire)"));
+        var palace = LocalIndexSource.ToCandidate(new AuthorityRecord("http://vocab.getty.edu/ulan/500221967", "ulan", "Hampton Court (Richmond upon Thames, London, England)", ["Hampton Court (Richmond upon Thames, London, England)"], "Group", null, [], "{\"parentString\":\"Corporate Bodies\"}", DateTimeOffset.UtcNow, "test"), hamptonCourt, "local");
+        Assert.Equal("Richmond upon Thames, London, England", palace.Placement);
         var riba = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "RIBA"));
         var institute = new AuthorityRecord("http://id.loc.gov/authorities/names/n79063909", "loc", "Royal Institute of British Architects", ["Royal Institute of British Architects", "RIBA"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
         Assert.Equal(1.0, LocalIndexSource.ToCandidate(institute, riba, "local").NameScore); // the string is the acronym itself
@@ -1094,6 +1109,14 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(Tgn("7008171", "Yorkshire", "England, United Kingdom, Europe, World", "300000771"));
         await pg.Store.PutAuthorityAsync(Tgn("2073379", "Yorkshire", "Cattaraugus, New York, United States, North and Central America, World", "300008347"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n2005005459", "loc", "Fountains Hall (England)", ["Fountains Hall (England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        // a county name TGN knows in several countries ("Essex") resolves by the project's home place (finding 71; the PMC manifest says
+        // United Kingdom), so "Audley End (Essex)" is placed by LoC's coarser "(England)"
+        await pg.Store.PutAuthorityAsync(Tgn("7008124", "Essex", "England, United Kingdom, Europe, World", "300000771"));
+        await pg.Store.PutAuthorityAsync(Tgn("2001906", "Essex", "Massachusetts, United States, North and Central America, World", "300000771"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n95001920", "loc", "Audley End (England)", ["Audley End (England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var audley = await pg.Store.CollectAsync(ds, "place", "Audley End (Essex)");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, audley));
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Audley End (Essex)"))!.Equivalents, q => q.Uri.EndsWith("n95001920"));
         var fountains = await pg.Store.CollectAsync(ds, "place", "Fountains Hall (Yorkshire)");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, fountains));
         Assert.Equal(DecisionMethod.Single, (await pg.Store.DecisionForAsync(fountains.Id))!.Method);

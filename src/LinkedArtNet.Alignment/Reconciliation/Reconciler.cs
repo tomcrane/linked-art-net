@@ -31,6 +31,8 @@ public sealed record ReconcilerOptions
     public bool MintWhenNothingFound { get; init; } = true;
     /// <summary>The longest lifetime a person is allowed when one side's birth is compared with the other's death.</summary>
     public int MaxPersonLifetimeYears { get; init; } = 120;
+    /// <summary>Where the dataset's places mostly are ("United Kingdom"): when a qualifier's name is a county in several countries ("Essex"), the one here is meant (finding 71).</summary>
+    public string? HomePlace { get; init; }
 }
 
 public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minted, Deferred, Decomposed }
@@ -244,6 +246,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 var label = (await store.GetAuthorityAsync(placeType, ct))?.Label;
                 if (Qualified.LevelOf(label) is >= 3) own.Add(parent);
             }
+            // several counties of the name ("Essex" in England, Ontario and five American states): the project's home place decides
+            // (finding 71, 2026-10-22; the PMC manifest says United Kingdom)
+            if (own.Count > 1 && _options.HomePlace is { } home) own = own.Where(p => Qualified.Contains(p, Qualified.Tokens(home))).ToList();
             if (own.Count == 1) ancestors = own[0];
             _ancestors[segment] = ancestors;
         }
@@ -427,7 +432,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var provisional = e.Status == EntityStatus.Provisional;
         var queued = provisional && await store.HasValidDecisionAsync(e.Id, DecisionMethod.Queued, ct);
         // an entity's own placement is the qualifier its label carries ("Heaton, Bradford"), kept there by EntityForGroupAsync and MintAsync
-        var placement = reading.IsQualified && e.Label is not null ? Qualified.Split(e.Label).Qualifier : null;
+        // an entity's own placement is the qualifier its label carries ("Heaton, Bradford", "Hampton Court (Richmond upon Thames, London,
+        // England)"), whenever the string has a qualifier to check it against (finding 70, 2026-10-22)
+        var placement = e.Label is null ? null
+            : reading.IsQualified ? Qualified.Split(e.Label).Qualifier
+            : reading.Qualifier is not null ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
         return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued, Placement: placement,
             PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null);
     }
@@ -518,6 +527,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // string's whether or not any record is placed: "Hampton Court (Herefordshire)" is neither the Jamaican nor the Richmond
             // one, and is minted (finding 66, 2026-10-22)
             if (qualifierAgrees == false && reading.QualifierAncestors is not null && !veto) { veto = true; reasons.Add("the qualifier names a known place and this is elsewhere"); }
+            // and a string placed in a known place ("Newcastle (Bridgend, Wales)") is a place, a building or a body there, not a person:
+            // LoC's "Captain Newcastle, approximately 1701-1756" through its variant is not it (finding 69, 2026-10-22)
+            if (reading.QualifierAncestors is not null && c.Class == EntityClass.Person && !veto) { veto = true; reasons.Add("a string placed in a known place is not a person"); }
             switch (qualifierAgrees)
             {
                 case true:
@@ -569,6 +581,22 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 if (lone.Candidate.Class is { } cls && dated.Candidate.Class is { } datedClass && cls != datedClass) continue;
                 list[at] = lone with { JoinedTo = dated.Candidate.Uri, Reason = lone.Reason + $"; {source}'s one record of the name, which {dated.Candidate.Source} dates" };
             }
+        // a dated string that no record dates tightly, with two sources each holding exactly one live exact record of the name, neither
+        // at odds with the dates (ULAN's "Carwitham, John" by a window of 1683~-~1783, LoC's "Carwitham, J. (John)" undated, for
+        // "Carwitham, John, c 1700- c1760"): the two name the same person and vote, as finding 24 takes one such record alone
+        // (finding 72, 2026-10-22). Not when any record agrees tightly: findings 14 and 16 have that
+        if (reading.HasLifespan && !list.Any(m => m.DatesAgree && !m.Veto && !m.SetAside))
+        {
+            var bySource = list.Select((m, i) => (m, i))
+                .Where(x => !x.m.Veto && !x.m.SetAside && x.m.JoinedTo is null && x.m.Candidate.Source != "store" && x.m.Candidate.NameScore >= 0.97 && x.m.Candidate.Class is EntityClass.Person or null)
+                .GroupBy(x => x.m.Candidate.Source, StringComparer.Ordinal).ToList();
+            var exactBySource = list.Where(m => m.Candidate.Source != "store" && m.Candidate.NameScore >= 0.97).GroupBy(m => m.Candidate.Source, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+            if (bySource.Count == 2 && bySource.All(g => g.Count() == 1 && exactBySource[g.Key] == 1))
+            {
+                var (a, _) = bySource[0].Single(); var (b, at) = bySource[1].Single();
+                if (!SameThing(a, b)) list[at] = b with { JoinedTo = a.Candidate.Uri, Reason = b.Reason + $"; {b.Candidate.Source}'s one record of the name, as {a.Candidate.Source}'s one is, neither at odds with the dates" };
+            }
+        }
         if (reading.Collections is { Count: > 0 } wanted) PreferCollections(wanted, list);
         if (reading.Home is not null) JoinToHome(reading.Home, list);
         // in a subject field a bare common noun names the idea, and a place would carry its qualifier: AAT's "peers (aristocrats)"

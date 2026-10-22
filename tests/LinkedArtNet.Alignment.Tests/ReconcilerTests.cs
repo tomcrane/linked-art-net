@@ -822,6 +822,14 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var institute = new AuthorityRecord("http://id.loc.gov/authorities/names/n79063909", "loc", "Royal Institute of British Architects", ["Royal Institute of British Architects", "RIBA"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
         Assert.Equal(1.0, LocalIndexSource.ToCandidate(institute, riba, "local").NameScore); // the string is the acronym itself
         Assert.Equal(1, Reconciler.Groups(porcelainScored.Take(2).ToList()).Count(g => g.Members.Any(m => !m.SetAside)));
+        // for a concept, a rival below acceptance score is a lookalike (finding 48, the owner's policy): AAT's exact "Decorated Style"
+        // beside LCSH's "Architecture, Gothic--Decorated style" at 0.85 is an exact-single
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/aat/300020799", "aat", "Decorated Style", ["Decorated Style", "Decorated style"], "Type", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(Lcsh("sh95003278", "Architecture, Gothic--Decorated style", "Type") with { Labels = ["Architecture, Gothic--Decorated style", "Decorated style (Gothic architecture)"] });
+        var decorated = await pg.Store.CollectAsync(ds, "keywords:sub", "Decorated style");
+        var decoratedEvaluation = await reconciler.EvaluateAsync(ds, decorated);
+        Assert.Equal(Outcome.Accepted, decoratedEvaluation.Outcome); Assert.Equal(DecisionMethod.ExactSingle, decoratedEvaluation.AcceptedMethod);
+        Assert.True(decoratedEvaluation.Groups.Count >= 2, EvaluationText.Narrate(decoratedEvaluation, candidates: true)); // the lookalike was there
         // and so LCSH's one placed heading carries the string as a single
         await pg.Store.PutAuthorityAsync(Lcsh("sh85078154", "Loire River (France)", "Place"));
         var loire = await pg.Store.CollectAsync(ds, "keywords:head", "Loire River (France)");
@@ -1143,6 +1151,14 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var williams = await pg.Store.CollectAsync(ds, "heading", "Williams, Peter, 1914-1995");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, williams));
         Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(williams.Id))!.Method);
+        // not for a person: ULAN's one "Jones, Evan" beside LoC's "Jones, Evan (Clergyman)" at 0.85 stays with the desk (finding 48 is for concepts and places)
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500999001", "ulan", "Jones, Evan", ["Jones, Evan"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n99900001", "loc", "Jones, Evan (Clergyman)", ["Jones, Evan (Clergyman)"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var jones = await pg.Store.CollectAsync(ds, "persauthorfull", "Jones, Evan");
+        var jonesEvaluation = await reconciler.EvaluateAsync(ds, jones);
+        Assert.Equal(Outcome.Queued, jonesEvaluation.Outcome);
+        Assert.Contains(jonesEvaluation.Groups, g => g.Score >= 0.6 && g.Score < 0.9); // the lookalike that holds it
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, jones)); // decided, so the counts below are unchanged
         // two sources that each have exactly one exact record of a body, unlinked, join and vote (finding 40, the owner's policy); a
         // source with two exact records of the name sends it to the desk
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500125190", "ulan", "National Gallery", ["National Gallery", "National Gallery, London"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));

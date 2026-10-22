@@ -331,7 +331,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // group: ULAN's one "England & Co." is an exact-single beside the project's queued "England & Co" (finding 38, 2026-10-22)
         // a group below the review score is noise, not a rival (ULAN's two "Williams, Peter" at 0.40 beside LoC's exact dated heading); a
         // vetoed group still counts, as the policy says (finding 44, 2026-10-22)
-        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= _options.ReviewScore) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
+        // and for a concept or a place, a rival below acceptance score is a lookalike too: AAT's "Decorated Style" beside LCSH's
+        // "Architecture, Gothic--Decorated style" at 0.85 (finding 48; the owner's policy, 2026-10-22, ceiling 180; not for people and
+        // bodies, where "Smith, John" beside "Smith, John Raphael" is the namesake risk)
+        var rivalFloor = top is not null && (top.Best.Candidate.Class ?? reading.Classes[0]) is EntityClass.Type or EntityClass.Place or EntityClass.Period ? _options.AcceptScore : _options.ReviewScore;
+        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= rivalFloor) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
             && (reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
             && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)

@@ -972,7 +972,9 @@ keywords and keywords:sub queues, read:
 - "Decorated style" (keywords:sub): AAT's exact term, and LCSH's "Architecture, Gothic--Decorated style" at 0.85
   as the one rival, the home having no exact record. Finding 48, a policy for the owner: exact-single tolerates
   rivals below acceptance score when the exact record is the only one at or above it (decision 9, ceiling query
-  in the plan; the shape behind much of the residue, so measure before deciding).
+  in the plan; the shape behind much of the residue, so measure before deciding). Ceiling 322: concepts and places
+  180, people 125, bodies 17. The owner's yes for concepts and places, built the same day in `EvaluateAsync`;
+  people and bodies keep the review-score floor.
 - "Murray", "König", "Sutton", "Hutchinson" (publisher): bare surnames, ULAN's painters through variants and LoC's
   firms; the one-word rule holds them for the desk, rightly. "Macmillan" against LoC's one "Macmillan, Inc." is the
   same rule's cost (finding 42, not built: a one-word firm name against a record that is plainly a firm). "Peter

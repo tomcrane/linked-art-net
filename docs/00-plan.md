@@ -131,8 +131,9 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    and x.strong = 1 and x.live >= 2 and x.exact group by 1, 2 order by 3 desc;` Measured 2026-10-22: 322 strings;
    Type and Place 180 (keywords 129, place 26, keywords:sub 16, keywords:head 9), Person 125 (persauthorfull 99,
    publisher 19, corpauthor 6, keywords:head 1), Group 17. Recommendation: yes for concepts and places (180), as
-   with outvoted rivals; not yet for people (the namesake risk) or bodies (too few to matter). Awaiting the owner's
-   word.
+   with outvoted rivals; not yet for people (the namesake risk) or bodies (too few to matter). The owner's yes for
+   concepts and places that day, built before the next run (`EvaluateAsync`: the rival floor is the acceptance
+   score for a Type, Place or Period reading, the review score for a person or a body).
 10. *"Cornwall" in keywords:sub*: decision 7 should have taken it (the county group holds the project's entity) but
    the string is queued, as "Italy" is, which means two entities of the project hold the county's ids and the
    store disagrees with itself. The owner runs: `select e.id, e.label, e.status, q.uri from entities e join
@@ -152,7 +153,8 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    builds, item 4).
 
 **Built 2026-10-22 from gde6k3's samples, waiting for the next rerun** (no reload; **manifest refresh needed**,
-finding 46): finding 41 (the home's one exact record sets aside another source's exact record of another class:
+finding 46): finding 48 (decision 9: for a concept or a place, a unique exact record beside lookalikes below
+acceptance score is an exact-single, "Decorated style"; up to 180 strings); finding 41 (the home's one exact record sets aside another source's exact record of another class:
 the keywords:head regression); finding 39 tightened (only a body-type qualifier goes: "Garland (Destroyer)" and
 "King's College (University of Cambridge)" are not the bare names); finding 44 (groups below the review score are
 not rivals for exact-single: "Williams, Peter, 1914-1995") and 45 (a string equal to a dated heading is not an

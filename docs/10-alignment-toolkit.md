@@ -874,8 +874,9 @@ differing level has a LoC heading in play. The samples, read:
   group of two sources agreeing with the string's dates, joins that group (and gains its ids) rather than queuing
   it; the entity is the earlier pipeline's identification of the same name, and the dates are the evidence it
   lacked. Ceiling query in the plan (decision 10).
-- "Scots": LoC's "Shoreline Cleanup Oversight Team" still at 1.00, so the label it matched through is not an
-  all-capitals "SCOTS" as finding 28 assumed; the owner's query in the plan shows the record's labels.
+- "Scots": LoC's "Shoreline Cleanup Oversight Team" still at 1.00: the label it matched through is "SCOTs", an
+  acronym with a plural's lower-case s (the owner's query, 2026-10-22). Finding 28 widened that morning to allow
+  the trailing letter.
 - persauthorfull, read for the first time since pqe98w: "Gay, John (author)", "Ford, John (author)", "Russell,
   James (author)", "Gray, John (author)", "Jenkins, David (author)": undated strings with one ULAN artist and
   several LoC namesakes, or several of each; the desk's, and the shape a Wikidata extract or the 2024 shadow would

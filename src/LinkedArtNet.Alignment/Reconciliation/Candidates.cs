@@ -267,6 +267,12 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
             Placement: placement, Collections: collections, PlaceType: placeType);
     }
 
-    private static bool IsAcronym(string label) => label.Length is >= 2 and <= 8 && label.All(char.IsLetter) && label.All(char.IsUpper);
+    /// <summary>Letters only, two to eight, all capitals but for a plural's trailing "s": "SCOTS", "RIBA", and LoC's "SCOTs" (2026-10-22, the owner's query).</summary>
+    private static bool IsAcronym(string label)
+    {
+        if (label.Length is < 2 or > 9 || !label.All(char.IsLetter)) return false;
+        var stem = label.Length > 2 && label[^1] == 's' ? label[..^1] : label;
+        return stem.Length >= 2 && stem.All(char.IsUpper);
+    }
     private static bool AllCapitals(string raw) { var letters = raw.Where(char.IsLetter).ToList(); return letters.Count > 0 && letters.All(char.IsUpper); }
 }

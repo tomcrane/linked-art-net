@@ -78,11 +78,11 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null and jsonb_array_length(g->'sources') >= 2
    and (g->>'score')::numeric >= 0.9) and exists (select 1 from jsonb_array_elements(d.evidence->'groups') g cross
    join jsonb_array_elements(g->'members') m where g->'vetoed' is null and m->>'source' = 'store' and m->'veto' is
-   null) group by 1 order by 2 desc;`
-6. *"Scots" and finding 28*: LoC's "Shoreline Cleanup Oversight Team" still scores 1.00 against "Scots", so the
-   label it matches through is not an all-capitals acronym as assumed. The owner runs: `select labels from
-   authority_records where uri = 'http://id.loc.gov/authorities/names/no2016167587';` and pastes the result; the
-   acronym rule is then widened to whatever shape it is.
+   null) group by 1 order by 2 desc;` Measured 2026-10-22: 12 strings, all keywords:head. Recommendation: too few
+   for a rule that reaches into the project's own aligned entities; the desk's. Closed unless the owner says
+   otherwise.
+6. ~~*"Scots" and finding 28*~~: the label is "SCOTs", an acronym with a plural's lower-case s (the owner's query,
+   2026-10-22); the rule now allows that trailing letter. Built that morning.
 4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
    `merged_into` on 292 entities and the two hand merges) are written as equivalents of the survivor so LUX merges

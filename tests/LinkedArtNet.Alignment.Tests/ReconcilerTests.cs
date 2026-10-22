@@ -778,7 +778,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.True(medicineScored[1].SetAside);
         // a record matched only through an acronym variant is a lookalike (finding 28): "SCOTS" for a cleanup team, against "Scots"
         var scots = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Scots"));
-        var team = new AuthorityRecord("http://id.loc.gov/authorities/names/no2016167587", "loc", "Shoreline Cleanup Oversight Team", ["Shoreline Cleanup Oversight Team", "SCOTS"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
+        var team = new AuthorityRecord("http://id.loc.gov/authorities/names/no2016167587", "loc", "Shoreline Cleanup Oversight Team", ["Shoreline Cleanup Oversight Team", "S.C.O.T. (Shoreline Cleanup Oversight Team)", "SCOTs"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"); // LoC's own labels, 2026-10-22
         Assert.Equal(0.85, LocalIndexSource.ToCandidate(team, scots, "local").NameScore);
         // a body's placement, checked against the string's qualifier, is only a LoC heading's "City, Country" parenthetical: ULAN's facet and
         // LoC's type qualifier are not places and veto nothing (finding 30); a dated heading names no place (finding 31)

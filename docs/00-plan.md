@@ -46,8 +46,8 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    (select count(*) from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) >= 2 and not
    exists (select 1 from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null and g->'sources' <>
    '["tgn"]'::jsonb) group by 1 order by 2 desc;`
-3. *The Agent parser as a first-class output* (the owner's thought, 2026-10-21): the objectives name the TimeSpan
-   parser but not the Agent parser, which has two expressions. Proposed framing, in the reconciler's own words: a
+3. ~~*The Agent parser as a first-class output*~~: the owner's go 2026-10-22; objectives 2 and 6 rewritten and
+   section 7 item 34 added (endpoint, playground, corpus). The framing as proposed, kept here for the record: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the
    place reading's name and qualifier; the subject reading's head and subdivisions) and then *aligned* (candidates,
    scoring, a decision with evidence, an entity), in three tiers: read only; align through the vocabularies' own
@@ -125,13 +125,22 @@ are in section 7 under "Open items from the day"; none blocks the list above.
 
 1. **Model library**: a top-class Linked Art 1.0 implementation in .NET, fluent to write, able to
    generate every example on linked.art, with comprehensive tests. ([02-model-library.md](02-model-library.md))
-2. **TimeSpan parser**: a clean-slate, standalone library turning free-text dates into Linked Art
-   TimeSpans with confidence, one-or-two-span intent, domain profiles, pluggable LLM fallback, deep
-   time and BCE. ([03-timespan-parser.md](03-timespan-parser.md), [03-timespan-prior-art.md](03-timespan-prior-art.md))
+2. **Parsers**: standalone libraries that *read* a string with no data behind them. The **TimeSpan parser** turns
+   free-text dates into Linked Art TimeSpans with confidence, one-or-two-span intent, domain profiles, pluggable
+   LLM fallback, deep time and BCE ([03-timespan-parser.md](03-timespan-parser.md),
+   [03-timespan-prior-art.md](03-timespan-prior-art.md)). The **Agent parser** reads a name string under a profile
+   (a MARC heading, an inverted personal name, a firm) into a name, lifespan, roles, nationalities and kind, and
+   hands the date substring to the TimeSpan parser ([10-alignment-toolkit.md](10-alignment-toolkit.md) section 6).
+   Each parser has the same four pieces: the library, a service endpoint, a playground on the examples site, and a
+   corpus of ground truth with a trainer. The TimeSpan parser has all four; the Agent parser has the library and its
+   tests, the rest is Phase 5 (section 7, item 34).
 3. **Corpus**: a large ground-truth set of date strings, plus a trainer UI to grow it. ([06-corpus-and-testing.md](06-corpus-and-testing.md))
 4. **Service**: a Kestrel API returning rich TimeSpan results for GET/POST. ([04-timespan-service.md](04-timespan-service.md))
 5. **Examples site**: C# code for every site example, generated vs site JSON, parser playground. ([05-examples-site.md](05-examples-site.md))
-6. Later: transformation and alignment toolkit. ([07-later-alignment-toolkit.md](07-later-alignment-toolkit.md))
+6. **Alignment toolkit**: the consumer of every parser, in three tiers. *Read only*: the parsers, no data. *Align
+   through the vocabularies' own APIs*: remote sources, no setup, slow. *Align against local indexes*: the loaded
+   authority files, fast, with a store of entities, strings and decisions, a review workbench and exports. Docs 10
+   to 14; doc 07 holds the earlier notes.
 
 ## 2. Phases
 
@@ -215,7 +224,10 @@ done first in Phase 1.
 Designed 2026-10-17 in [10-alignment-toolkit.md](10-alignment-toolkit.md) (doc 07 holds the earlier notes). Order of
 work there, section 12: the agent-string parser first, then the store with entities, strings and decisions, then
 authority sources and the reconciler, then the pipeline runner with PMC as the first instance, the review UI, the
-Wellcome instance, publishing and the QLever loader. Open questions for the owner in its section 13.
+Wellcome instance, publishing and the QLever loader. Open questions for the owner in its section 13. The Agent
+parser is an objective of its own (objective 2), so Phase 5 also gives it the TimeSpan parser's other three pieces:
+a service endpoint beside the dates one, a playground page on the examples site, and a corpus of ground truth
+seeded from the PMC strings, with the trainer (section 7, item 34).
 
 ## 3. Decisions (ADR-style, short)
 
@@ -666,3 +678,12 @@ Remaining, in rough order of value:
 - Housekeeping: the axe accessibility lint; renaming `de-pmc` to `main` is a deliberate later sweep (19 references
   across CI, compose, the trainer's base branch, docs and site links).
 - The owner's: filing upstream issues (docs/upstream-issues.md), open question 7 (PMC strings), NuGet when ready.
+
+34. The Agent parser as a first-class output (the owner's thought 2026-10-21, the go 2026-10-22; objectives 2 and 6
+    rewritten that day). To build, size S each: (a) a service endpoint beside the dates one, taking a string and a
+    profile name and returning the parsed agent (name, lifespan with the dates parser's result nested, roles,
+    nationalities, kind, confidence) in the shape the reconciler reads; (b) a playground page on the examples site
+    beside the dates playground, with the profiles to choose from and the PMC-shaped examples; (c) a corpus folder
+    for agent strings in the dates corpus's shape, each entry nesting a dates expectation for its date substring
+    (doc 10 section 13, decision 5), seeded from the PMC strings the reconciler has read, and the trainer page
+    extended to it. Not yet started; after the alignment list in section 0.

@@ -124,7 +124,13 @@ says "continue with the list"):
    it adds: prominence for tied places (finding 17: sitelinks, not TGN name counts), dates for LoC's undated records
    (finding 24 checked rather than trusted), a crosswalk between TGN and LoC, which never link to each other, and a
    check on VIAF clusters. ULAN and LoC already vote through their own Wikidata links, so the gain is in the
-   residue. Size M; remote Wikidata lookups by external id (step 3b) are the cheap first step. The owner's
+   residue. Size M; remote Wikidata lookups by external id (step 3b) are the cheap first step. The files to
+   download ahead (the owner's question, 2026-10-22; sizes approximate, from the assistant's memory): the truthy
+   RDF dump `dumps.wikimedia.org/wikidatawiki/entities/latest-truthy.nt.gz` (about 60 GB; N-Triples as the Getty
+   loader reads, with labels, aliases, instance-of, dates and the external ids P214 VIAF, P244 LoC, P245 ULAN,
+   P1667 TGN, P1014 AAT, P227 GND) and the sitelinks table
+   `dumps.wikimedia.org/wikidatawiki/latest/wikidatawiki-latest-wb_items_per_site.sql.gz` (a few GB; one row per
+   item per Wikipedia, counted for prominence). Not the full JSON dump. The owner's
    further thought the same evening: Wikidata is the one authority an archive can contribute to, so an entity
    confirmed on the desk as a local authority with no identifiers (an obscure sitter, printer or dealer the
    archive's own catalogue documents) can be given an item there, gain an external id, and be found by every other

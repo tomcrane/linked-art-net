@@ -79,8 +79,8 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    and (g->>'score')::numeric >= 0.9) and exists (select 1 from jsonb_array_elements(d.evidence->'groups') g cross
    join jsonb_array_elements(g->'members') m where g->'vetoed' is null and m->>'source' = 'store' and m->'veto' is
    null) group by 1 order by 2 desc;` Measured 2026-10-22: 12 strings, all keywords:head. Recommendation: too few
-   for a rule that reaches into the project's own aligned entities; the desk's. Closed unless the owner says
-   otherwise.
+   for a rule that reaches into the project's own aligned entities; the desk's. The owner agrees, 2026-10-22:
+   closed.
 6. ~~*"Scots" and finding 28*~~: the label is "SCOTs", an acronym with a plural's lower-case s (the owner's query,
    2026-10-22); the rule now allows that trailing letter. Built that morning.
 4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload

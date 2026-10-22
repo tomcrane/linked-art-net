@@ -35,7 +35,7 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    Proposed: among tied two-source groups of places, prefer the TGN record with the most names, or the LoC heading
    with the most variants; only among groups two sources already carry. A local Wikidata extract (next builds, item
    4) would give a better signal (sitelinks). Recommendation: wait for the extract rather than build the crude
-   version; the strings are few and famous.
+   version; the strings are few and famous. The owner agrees, 2026-10-22: wait for the local Wikidata extract.
 2. *A bare string among TGN namesakes of differing level* (decision 9, doc 10 7.6 "Built 2026-10-21 night"):
    "Pisa" meets TGN's city and province and no LoC heading, so the level preference, which reads LoC's heading, has
    nothing to go on. Proposed: with no heading at all, prefer the inhabited place when exactly one TGN record is one
@@ -45,7 +45,10 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    d.source_string_id where d.run_id = 'run-20261021-165615-qr7fbx' and d.valid and d.method = 'queued' and
    (select count(*) from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) >= 2 and not
    exists (select 1 from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null and g->'sources' <>
-   '["tgn"]'::jsonb) group by 1 order by 2 desc;`
+   '["tgn"]'::jsonb) group by 1 order by 2 desc;` Run by the owner 2026-10-22: 0 rows. Every such string has a LoC
+   heading in play (for "Pisa", "Pisa (Italy)" placed through, in a group the printer did not show), and the level
+   preference built that night covers it: a heading with no type word takes the inhabited place. Closed; nothing to
+   build. The next run should show "Pisa" accepted.
 3. ~~*The Agent parser as a first-class output*~~: the owner's go 2026-10-22; objectives 2 and 6 rewritten and
    section 7 item 34 added (endpoint, playground, corpus). The framing as proposed, kept here for the record: a
    string is *read* (no data: the Agent parser's name, lifespan, roles, nationalities and kind under a profile; the

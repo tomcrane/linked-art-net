@@ -48,7 +48,8 @@ to 8 (home sets aside inexact rivals; a dated string's lone undated record; the 
     (g->>'score')::numeric >= 0.9) as single from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is
     null) x where d.run_id = 'run-20261022-131239-sfny58' and d.valid and d.method = 'queued' and
     d.evidence->'reading'->>'qualifier' is not null and x.placedmulti = 1 and x.single >= 1 group by 1 order by 2
-    desc;`
+    desc;` Measured 2026-10-22: 18 strings (keywords:head 15, place 2, keywords:sub 1). Recommendation unchanged:
+    yes. Awaiting the owner's word.
 12. *A concept against TGN hamlets alone* (finding 63): "Peers" has AAT's "peers (aristocrats)" exact and two TGN
     hamlets called Peers; "Dating", "Hall" and "Cross" are the same shape. Proposed: in the keywords family, when the
     only exact concept record (AAT or LCSH) stands against TGN-only groups, the concept wins; a bare common noun in a
@@ -61,12 +62,16 @@ to 8 (home sets aside inexact rivals; a dated string's lone undated record; the 
     as shape from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
     'run-20261022-131239-sfny58' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null
     and ss.context in ('keywords', 'keywords:head', 'keywords:sub') and x.others = 1 and x.shape group by 1 order by
-    2 desc;`
+    2 desc;` Measured 2026-10-22: 20 strings (keywords:sub 11, keywords:head 8, keywords 1). Recommendation
+    unchanged: yes. Awaiting the owner's word.
 13. *"Thomas, Thomas"*: ULAN's undated record should join LoC's dated one by finding 14 and does not; the one
     condition left is the class. The owner runs: `select uri, label, type, lifespan_text from authority_records
     where uri in ('http://vocab.getty.edu/ulan/500451686', 'http://vocab.getty.edu/ulan/500077832');` If the first
     is a Group, the join is rightly stopped and the string is the desk's; if it is a Person, the assistant looks
-    again.
+    again. Run 2026-10-22: 500451686 is a Group (a firm), 500077832 a Person dated 1824~-~1926. The join rightly
+    stopped; but a firm is no rival to a dated personal heading either, so finding 64 was built that evening: a
+    heading the profile read as a person with a lifespan vetoes a body of the name whose dates do not agree, as
+    finding 31 does for places. Closed.
 14. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed):
 ask the LUX team whether a source reload replaces by URI and whether records absent from a full dump are retired;
 the merged-away identifiers (now `merged_into` on 381 entities and the two hand merges) are written as equivalents

@@ -491,6 +491,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                     default: reasons.Add($"dates not comparable ({rl.Text} vs {cl.Text})"); break;
                 }
             }
+            // a heading the profile read as a person with a lifespan names a person: ULAN's firm "Thomas, Thomas" is not "Thomas, Thomas,
+            // 1817-1888" unless its own dates agree (finding 64, 2026-10-22; finding 31 did the same for places)
+            if (!veto && reading.HasLifespan && reading.Classes[0] == EntityClass.Person && c.Class == EntityClass.Group && !datesAgree) { veto = true; reasons.Add("a dated personal heading names a person, not a body"); }
             if (reading.Nationalities.Count > 0 && c.Nationalities is { Count: > 0 } cn && cn.Intersect(reading.Nationalities, StringComparer.Ordinal).Any())
             { score = Math.Min(1, score + 0.03); reasons.Add("nationality agrees"); }
             // the qualifier as written first; its TGN ancestors (finding 56) only to widen agreement, never to narrow it: "Raglan Castle

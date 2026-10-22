@@ -243,6 +243,10 @@ public class GroupingTests
         var chandraUlan = new Candidate("u8", "ulan", "Chandra, Mohini", EntityClass.Person, new Lifespan(new DateTimeOffset(1955, 1, 1, 0, 0, 0, TimeSpan.Zero), null, null, new DateTimeOffset(2035, 12, 31, 0, 0, 0, TimeSpan.Zero), "1955~-~2035"), [], "local", 1.0);
         var chandraScored = Reconciler.Score(chandra, [chandraLoc, chandraUlan], 120);
         Assert.Equal("l22", chandraScored[1].JoinedTo);
+        // a heading read as a person with a lifespan vetoes a body of the name whose dates do not agree (finding 64): ULAN's firm "Thomas, Thomas"
+        var thomasReading = reading with { Text = "Thomas, Thomas", Lifespan = GettyVocabLoader.LifespanFromYears("1817", "1888") };
+        var thomasFirm = Reconciler.Score(thomasReading with { Classes = [EntityClass.Person, EntityClass.Type, EntityClass.Group, EntityClass.Place] }, [new Candidate("u9", "ulan", "Thomas, Thomas", EntityClass.Group, null, [], "local", 1.0)], 120)[0];
+        Assert.True(thomasFirm.Veto); Assert.Contains("names a person, not a body", thomasFirm.Reason);
         var locUndated = new Candidate("l9", "loc", "Dürer, Albrecht", EntityClass.Person, null, [], "local", 1.0);
         Assert.False(Reconciler.Score(reading, [agrees, locUndated], 120)[1].Veto);
         // and when it is its source's only exact record of the name, it is the person the other source dates: the two vote (the

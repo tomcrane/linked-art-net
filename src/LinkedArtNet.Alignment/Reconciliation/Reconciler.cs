@@ -291,6 +291,23 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             && rivals.All(g => g.Sources.Count <= 1 && !g.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional));
         if (outvoted)
             groups = groups.Select(g => rivals.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; outvoted by a group of {top!.Sources.Count} sources" }).ToList() } : g).ToList();
+        // the project's own aligned entity breaks a tie among places (finding 35; the owner's policy, 2026-10-22, ceiling 26): "Cornwall"
+        // ties between TGN's county with LoC's heading and the project's own entity, and Ontario's and Connecticut's Cornwalls each
+        // with a LoC heading placed through; the earlier pipeline identified the name with the county in this project, and a bare
+        // "Cornwall" here is that place. Only among two-source groups at acceptance score, only when one of them holds the entity
+        static bool Firm(ScoredCandidate m) => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional;
+        if (top is not null && (top.Best.Candidate.Class ?? reading.Classes[0]) == EntityClass.Place)
+        {
+            var tied = live.Where(g => g.Score >= _options.AcceptScore && g.Sources.Count >= 2).ToList();
+            var withEntity = tied.Where(g => g.Members.Any(Firm)).ToList();
+            if (tied.Count >= 2 && withEntity.Count == 1 && !live.Any(g => g != withEntity[0] && g.Score >= _options.AcceptScore && g.Members.Any(Firm)))
+            {
+                var prior = withEntity[0];
+                groups = groups.Select(g => g != prior && !g.Vetoed && g.Score >= _options.AcceptScore ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + "; the project's own aligned entity breaks the tie" }).ToList() } : g).ToList();
+                if (includeStore && await HoldersAsync(dataset, prior.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+                return new Evaluation(Outcome.Accepted, reading, groups, Accepted: prior, AcceptedMethod: DecisionMethod.Vote);
+            }
+        }
         if (top is not null && top.Score >= _options.AcceptScore && !truncated && carried is not null && (second is null || second.Score < _options.AcceptScore || outvoted))
         {
             // the group's ids already on two different entities of ours means the store disagrees with itself: review, not a vote onto the first
@@ -476,6 +493,20 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
         if (reading.Collections is { Count: > 0 } wanted) PreferCollections(wanted, list);
         if (reading.Home is not null) JoinToHome(reading.Home, list);
+        // for a body, two sources that each have exactly one exact record of the name, and no other, name the same body and vote:
+        // ULAN's "National Gallery" and LoC's "National Gallery (Great Britain)" for "National Gallery London" (finding 40; the
+        // owner's policy, 2026-10-22, ceiling 35). Bodies only: a person's namesakes are too common. As finding 16 does with dates
+        if (!reading.HasLifespan && reading.Classes.Count > 0 && reading.Classes[0] == EntityClass.Group)
+        {
+            var exactBySource = list.Select((m, i) => (m, i))
+                .Where(x => !x.m.Veto && !x.m.SetAside && x.m.JoinedTo is null && x.m.Candidate.Source != "store" && x.m.Candidate.NameScore >= 0.97 && x.m.Candidate.Class is null or EntityClass.Group)
+                .GroupBy(x => x.m.Candidate.Source, StringComparer.Ordinal).ToList();
+            if (exactBySource.Count == 2 && exactBySource.All(g => g.Count() == 1))
+            {
+                var (a, _) = exactBySource[0].Single(); var (b, at) = exactBySource[1].Single();
+                if (!SameThing(a, b)) list[at] = b with { JoinedTo = a.Candidate.Uri, Reason = b.Reason + $"; {b.Candidate.Source}'s one record of the body, as {a.Candidate.Source}'s one is" };
+            }
+        }
         // a record of another source whose placement sits inside a holding record's is the same place at less depth (LoC's
         // "Princes Risborough (England)", the store's entity labelled from it, under TGN's Princes Risborough in Buckinghamshire,
         // England): it is placed through that record and grouped with it. The holders are the candidates the string's qualifier

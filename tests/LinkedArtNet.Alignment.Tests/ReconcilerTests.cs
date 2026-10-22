@@ -960,9 +960,14 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // holder for LoC's heading, not two, so the heading joins them by its level
         var cornwallLegacy = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Cornwall (England : County)", ["Cornwall (England : County)", "Cornwall"], Status: EntityStatus.Aligned), scheme);
         await pg.Store.AddEquivalentAsync(cornwallLegacy.Id, new Equivalent("http://viaf.org/viaf/987654321", "viaf", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        // and Ontario's Cornwall with its own LoC heading placed through makes a second two-source group: a tie, which the project's own
+        // aligned entity breaks (finding 35, the owner's policy)
+        await pg.Store.PutAuthorityAsync(Tgn("2016737", "Cornwall", "Ontario, Canada, North and Central America, World", "300008347"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n81086426", "loc", "Cornwall (Ont.)", ["Cornwall (Ont.)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
         var cornwall = await pg.Store.CollectAsync(ds, "place", "Cornwall");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, cornwall));
-        Assert.Contains("the county or district among", (await pg.Store.DecisionForAsync(cornwall.Id))!.EvidenceJson);
+        var cornwallEvidence = (await pg.Store.DecisionForAsync(cornwall.Id))!.EvidenceJson!;
+        Assert.Contains("the county or district among", cornwallEvidence); Assert.Contains("the project's own aligned entity breaks the tie", cornwallEvidence);
         var cornwallEntity = (await pg.Store.ResolveAsync(ds, "place", "Cornwall"))!;
         Assert.Equal(cornwallLegacy.Id, cornwallEntity.Id); Assert.Contains(cornwallEntity.Equivalents, q => q.Uri.EndsWith("7008116")); Assert.Contains(cornwallEntity.Equivalents, q => q.Uri.EndsWith("n80106711"));
         // an unqualified LoC heading is the nation among TGN namesakes of differing level
@@ -1094,6 +1099,18 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var englandCo = await pg.Store.CollectAsync(ds, "corpauthor", "England & Co");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, englandCo));
         Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(englandCo.Id))!.Method);
+        // two sources that each have exactly one exact record of a body, unlinked, join and vote (finding 40, the owner's policy); a
+        // source with two exact records of the name sends it to the desk
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500125190", "ulan", "National Gallery", ["National Gallery", "National Gallery, London"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n80081622", "loc", "National Gallery (Great Britain)", ["National Gallery (Great Britain)", "National Gallery, London"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var nationalGallery = await pg.Store.CollectAsync(ds, "corpauthor", "National Gallery London");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, nationalGallery));
+        var nationalGalleryDecision = (await pg.Store.DecisionForAsync(nationalGallery.Id))!;
+        Assert.Equal(DecisionMethod.Vote, nationalGalleryDecision.Method); Assert.Contains("one record of the body, as ulan's one is", nationalGalleryDecision.EvidenceJson);
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500251424", "ulan", "Department of the Environment", ["Department of the Environment"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500301747", "ulan", "Department of the Environment", ["Department of the Environment"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79000400", "loc", "Great Britain. Department of the Environment", ["Great Britain. Department of the Environment", "Department of the Environment"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "corpauthor", "Department of the Environment")));
         // a dated string whose only candidate is LoC's one undated record of the name is that record (finding 24, the owner's policy);
         // two LoC records of the name, one undated and one dated (and vetoed), send a third Terence to the desk
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125105", "loc", "Coventry, Terence", ["Coventry, Terence"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
@@ -1175,8 +1192,8 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // the shadow run re-judges the decisions with the store hidden: the voted Dürer agrees with itself through its ULAN id,
         // the override agrees through its target, the minted ones have nothing to compare
         var shadow = await new ShadowRun(pg.Store, reconciler).RunAsync(ds, method: DecisionMethod.Vote);
-        Assert.Equal(1, shadow[Verdict.Agree]);
-        Assert.Equal(1, shadow.Considered);
+        Assert.Equal(2, shadow[Verdict.Agree]); // Dürer, and the National Gallery vote above (finding 40)
+        Assert.Equal(2, shadow.Considered);
         var shadowAll = await new ShadowRun(pg.Store, reconciler).RunAsync(ds, method: DecisionMethod.Minted);
         Assert.Equal(shadowAll.Considered, shadowAll[Verdict.OldLocal]);
         // a wrong old answer is caught: give Dürer's string a decision to an entity with a different ULAN id
@@ -1190,7 +1207,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // the audit: Dürer's entity agrees with its ULAN record; the impostor's ULAN id is not in the index
         var flagged = new List<AuditItem>();
         var audit = await new IndexAudit(pg.Store).RunAsync(ds, item => { flagged.Add(item); return Task.CompletedTask; });
-        Assert.Equal(4, audit.WithUlan); // Dürer, the impostor, the undated import above, and England & Co. (finding 38, above)
+        Assert.Equal(5, audit.WithUlan); // Dürer, the impostor, the undated import above, England & Co. (finding 38) and the National Gallery (finding 40)
         Assert.True(audit.Clean >= 1);
         // an entity with only the LoC id is reached through ULAN's link and could gain the ULAN id
         var locOnly = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Durer, Albrecht", Status: EntityStatus.Aligned), scheme);

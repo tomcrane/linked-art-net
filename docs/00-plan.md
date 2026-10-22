@@ -675,9 +675,11 @@ Remaining, in rough order of value:
 - The owner's: filing upstream issues (docs/upstream-issues.md), open question 7 (PMC strings), NuGet when ready.
 
 34. The Agent parser as a first-class output (the owner's thought 2026-10-21, the go 2026-10-22; objectives 2 and 6
-    rewritten that day). To build, size S each: (a) a service endpoint beside the dates one, taking a string and a
-    profile name and returning the parsed agent (name, lifespan with the dates parser's result nested, roles,
-    nationalities, kind, confidence) in the shape the reconciler reads; (b) a playground page on the examples site
+    rewritten that day). To build, size S each: (a) a service endpoint beside the dates one, taking a string, a
+    profile name and an optional class hint in the manifest's three strengths (none: read blind; an ordered list:
+    expect the first, allow the rest; one class: only that), returning the parsed agent (name, lifespan with the
+    dates parser's result nested, roles, nationalities, kind, confidence) in the shape the reconciler reads, and
+    saying when the parser's kind contradicts a hard hint (the owner's question, 2026-10-22); (b) a playground page on the examples site
     beside the dates playground, with the profiles to choose from and the PMC-shaped examples; (c) a corpus folder
     for agent strings in the dates corpus's shape, each entry nesting a dates expectation for its date substring
     (doc 10 section 13, decision 5), seeded from the PMC strings the reconciler has read, and the trainer page

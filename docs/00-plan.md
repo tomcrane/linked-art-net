@@ -139,7 +139,12 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    entity_equivalents q on q.entity_id = e.id where e.dataset = 'pmc' and e.merged_into is null and q.uri in
    ('http://vocab.getty.edu/tgn/7008116', 'http://id.loc.gov/authorities/names/n80106711') order by e.id;` and
    merges by hand on the entity page if two appear; "Italy", "Dumfries" and "Kolkata" are the same shape and on
-   the hand-merge list already.
+   the hand-merge list already. Run 2026-10-22: one entity, `place/msp4b839`, created by the run itself when it
+   accepted the keywords:head heading "Cornwall (England : County)" (no legacy id, so it is remade every run). The
+   keywords:sub "Cornwall" was evaluated before that, with no entity to break the tie, and the place "Cornwall"
+   after. Closed as a merge; open as finding 51, run order: a second pass at the end of a run over the strings it
+   queued, since entities the run created in between may settle them (the per-context redo in a cheaper form).
+   Size S; in the open items, not built.
 4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
    `merged_into` on 292 entities and the two hand merges) are written as equivalents of the survivor so LUX merges
@@ -208,7 +213,10 @@ says "continue with the list"):
    project and, in time, by VIAF and LUX. A contribution export (a QuickStatements batch of label, dates, roles,
    nationality and the archive's URI as the reference, for a person to review and submit; confirmed entities only,
    never provisional ones) belongs beside the LUX export in doc 10 7.5 item 2 when that is designed.
-5. Finding 26, the working-date gaps (doc 10 7.6 "Measured ... qr7fbx"): the MARC profile does not read "fl.
+5. Finding 51, a second pass (decision 10 above): at the end of a run, re-evaluate the strings it queued, since
+   entities it created later in the run (the keywords:head "Cornwall (England : County)") can settle them ("Cornwall"
+   in keywords:sub, decision 7). Size S; counts as its own line in the report.
+6. Finding 26, the working-date gaps (doc 10 7.6 "Measured ... qr7fbx"): the MARC profile does not read "fl.
    1775-1795" or a lone "1730?", and the LoC loader does not read "active 1840-1876" in a heading, so namesakes
    whose working dates cannot overlap do not conflict. A working span is "born no later than its start, died no
    earlier than its end" (the `Lifespan` record can say so: BeginLatest and EndEarliest) and the lifetime bound then

@@ -126,7 +126,7 @@ says "continue with the list"):
    check on VIAF clusters. ULAN and LoC already vote through their own Wikidata links, so the gain is in the
    residue. Size M; remote Wikidata lookups by external id (step 3b) are the cheap first step. The files to
    download ahead (the owner's question, 2026-10-22; sizes approximate, from the assistant's memory): the truthy
-   RDF dump `dumps.wikimedia.org/wikidatawiki/entities/latest-truthy.nt.gz` (about 60 GB; N-Triples as the Getty
+   RDF dump `dumps.wikimedia.org/other/wikibase/wikidatawiki/latest-truthy.nt.gz` (71.7 GB on 2026-10-22; N-Triples as the Getty
    loader reads, with labels, aliases, instance-of, dates and the external ids P214 VIAF, P244 LoC, P245 ULAN,
    P1667 TGN, P1014 AAT, P227 GND) and the sitelinks table
    `dumps.wikimedia.org/wikidatawiki/latest/wikidatawiki-latest-wb_items_per_site.sql.gz` (a few GB; one row per

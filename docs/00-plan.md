@@ -95,7 +95,8 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    exists (select 1 from jsonb_array_elements(g->'members') m where m->>'source' = 'store' and m->'veto' is null))
    as withstore from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
    'run-20261022-093942-evt3ut' and d.valid and d.method = 'queued' and ss.context = 'place' and x.multi >= 2 and
-   x.withstore = 1;`
+   x.withstore = 1;` Measured 2026-10-22: 26 strings. Recommendation unchanged: yes; small, safe, and the project's
+   own prior. Awaiting the owner's word.
 8. *Two sources each with one exact record of a body join* (finding 40): "National Gallery London" meets ULAN's
    "National Gallery" and LoC's "National Gallery (Great Britain)", each exact through a variant, each its source's
    only record of the name, unlinked. Proposed: for a body (a reading whose first class is Group), two sources that
@@ -109,7 +110,8 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    and m->'veto' is null and m->'setAside' is null)) as exact1 from jsonb_array_elements(d.evidence->'groups') g
    where g->'vetoed' is null) x where d.run_id = 'run-20261022-093942-evt3ut' and d.valid and d.method = 'queued'
    and d.evidence->'reading'->>'lifespan' is null and ss.context in ('corpauthor', 'publisher') and x.live = 2 and
-   x.exact1 = 2 and x.srcs = 2 group by 1;`
+   x.exact1 = 2 and x.srcs = 2 group by 1;` Measured 2026-10-22: 35 strings (publisher 22, corpauthor 13).
+   Recommendation unchanged: yes, bodies only. Awaiting the owner's word.
 4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
    `merged_into` on 292 entities and the two hand merges) are written as equivalents of the survivor so LUX merges

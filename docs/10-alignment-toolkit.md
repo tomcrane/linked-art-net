@@ -1020,6 +1020,45 @@ read, all three queues now mostly dated names:
   with one ULAN artist and several LoC namesakes, exactly as before. The desk's, or the Wikidata extract's.
 - "Fine Art Society (London)", "Anglesey Abbey", "Hall, ?", "S. W. [(Simon Wilson)]": the desk's or the data's.
 
+Measured 2026-10-22 (run-20261022-131239-sfny58: findings 52 to 57 and the hand merges of Italy and Kolkata, against
+t8wzjm): accepted 8,435 -> 8,737 (vote 3,500 -> 3,682, single 1,731 -> 1,792, exact-single 3,204 -> 3,263), queued
+4,828 -> 4,572, matched in store 5,826 -> 5,859. By context: keywords queued 1,244 -> 1,122 and vote 607 -> 670;
+keywords:head 609 -> 553 and vote 2,093 -> 2,223 (the dates rules); persauthorfull 1,393 -> 1,325; place 334 ->
+331; the rest within a few. The samples, read:
+
+- "Raglan Castle (Wales)": LCSH's "Raglan Castle (Raglan, Wales)" "not placed (Wales vs Raglan, Wales)", which
+  agrees on "Wales" as written. Finding 56's ancestors had been appended to the qualifier before the check, and
+  "United Kingdom, Europe, World" is not in LCSH's parenthetical. Corrected the same day: the qualifier as written
+  first, the ancestors only to widen agreement.
+- "Cuddington, Buckinghamshire?", "[Warwick]" (place): the cataloguer's doubt inside the qualifier and the brackets
+  of a supplied place were read as the name. Finding 59, fixed, with finding 36's trailing question mark.
+- "Hunterian Art Gallery (Glasgow)": LoC's "Hunterian Art Gallery (University of Glasgow)" at 0.85 with no placement,
+  since finding 30 took a body's placement only from a parenthetical with a comma. Finding 58, built: for a body, any
+  LoC parenthetical that is not a type of body places it, so "Glasgow" is found in "University of Glasgow", and
+  finding 20 makes the name exact.
+- "Portsmouth (England)": TGN's city, its district and a hamlet in Calderdale all placed by "England", LoC's heading
+  inside all three, two of them inhabited places. Finding 61, built: among inhabited places of the name, the one
+  that gives its name to the division above it (the city's parent string begins "Portsmouth, England") is the known
+  one; the vote then outvotes the hamlet and the district.
+- "National Maritime Museum (London)": TGN's museum placed, LoC's heading placed through it, and ULAN's three records
+  of the museum unplaced beside them; a body, so the outvoted-rivals policy stands aside and the string queues.
+  Finding 60, a policy for the owner (decision 11): when the string's qualifier places the winning group, the tie is
+  not a name-only tie, and bodies could be outvoted as places are. Ceiling query in the plan.
+- "Peers" (keywords): AAT's "peers (aristocrats)" exact beside two TGN hamlets called Peers; "Dating", "Hall" and
+  "Cross" are the same shape. Finding 63, a policy for the owner (decision 12): in the keywords family, an exact
+  AAT or LCSH concept against TGN hamlets alone is the concept; a bare common noun in a subject field names the idea,
+  and a place would carry its qualifier. Ceiling query in the plan.
+- "Thomas, Thomas, 1817-1888" (keywords): LoC agrees, ULAN's second record is vetoed by its dates, and ULAN's first,
+  undated, still does not join by finding 14 though finding 55 made it eligible. The one condition left is the
+  class: if ULAN types that record as a body, the join rightly stops. The owner's query in the plan (decision 13)
+  shows the two records' types.
+- "Summers, S, op 1739": LoC's "Summers, S. (Steve)" and "(Samuel)", both exact through their fuller forms; the
+  desk's, and "op 1739" is finding 26. "Hampton Court (Herefordshire)": TGN has no Hampton Court in Herefordshire,
+  and the ancestors rule rightly placed neither the Jamaican nor the Richmond one; minted. "Christian church", "Hall,
+  ?", "Anglesey Abbey", "Newcastle (Bridgend, Wales)", "Morgan, John": as before.
+- Place: "Dublin", "Athens", "Winchester": prominence; "Norfolk?" now read as Norfolk, still a tie. "Evanston",
+  "Bottrop", "Heaton", "Donnington": the desk's or the data's.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

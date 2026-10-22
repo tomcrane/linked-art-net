@@ -15,11 +15,13 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 **Where things stand.** Branch `de-pmc`, all work committed, CI green. Five authority sources loaded (14.5M records),
 the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
 merges) and two hand merges ("England", "London"); the manifest was refreshed on 2026-10-22 for the keywords field's
-parser. The last measured run is run-20261022-121623-t8wzjm: accepted 8,435 (vote 3,500, single 1,731,
-exact-single 3,204), queued 4,828, matched in store 5,826, minted 11,164, lists 404, compounds 15,558; by context
-queued persauthorfull 1,393, keywords 1,244, publisher 867, keywords:head 609, place 334, corpauthor 198,
-keywords:sub 183. The two days' path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828. Doc 10
-7.6 has a "Measured" paragraph per run with the samples read; the last is "Measured ... t8wzjm".
+parser. The last measured run is run-20261022-131239-sfny58: accepted 8,737 (vote 3,682, single 1,792,
+exact-single 3,263), queued 4,572, matched in store 5,859, minted 11,085, lists 404, compounds 15,558; by context
+queued persauthorfull 1,325, keywords 1,122, publisher 863, keywords:head 553, place 331, corpauthor 198,
+keywords:sub 180. The two days' path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
+4,572. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is "Measured ... sfny58". Hand
+merges done 2026-10-22: Italy, Kolkata; Dumfries kept apart (the town and the old county) and the county relabelled
+Dumfriesshire.
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6 rewritten,
 section 7 item 34); prominence waits for the Wikidata extract; decision 9 of the morning (bare TGN-only namesakes)
@@ -30,13 +32,56 @@ in keywords:sub was run order, not a duplicate (finding 51, a second pass, in th
 3 yes, outvoted rivals for places and concepts yes, `unrec_` kept, finding 14 yes, the duplicate pass, decisions 6
 to 8 (home sets aside inexact rivals; a dated string's lone undated record; the "-781" twins).
 
-**Decisions still owed by the owner:** one. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed):
+**Decisions still owed by the owner:**
+
+11. *Outvoted rivals for bodies when the qualifier places the winner* (finding 60, doc 10 7.6 "Measured ... sfny58"):
+    "National Maritime Museum (London)" has TGN's museum placed by "London" with LoC's heading placed through it,
+    and ULAN's three records of the museum unplaced beside them; the outvoted-rivals policy excludes bodies, since
+    a name-only tie is weak evidence, but a qualifier that places the winner is not name-only. Proposed: for a body,
+    a two-source group one of whose members the string's qualifier places outvotes single-source rivals at
+    acceptance score, as for places. Recommendation: yes. Ceiling (queued strings with a qualifier, exactly one
+    two-source group at acceptance score with a placed member, and a single-source rival at acceptance score), the
+    owner runs: `select ss.context, count(*) from decisions d join source_strings ss on ss.id = d.source_string_id
+    cross join lateral (select count(*) filter (where jsonb_array_length(g->'sources') >= 2 and
+    (g->>'score')::numeric >= 0.9 and exists (select 1 from jsonb_array_elements(g->'members') m where m->>'reason'
+    like '%qualifier places it%')) as placedmulti, count(*) filter (where jsonb_array_length(g->'sources') = 1 and
+    (g->>'score')::numeric >= 0.9) as single from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is
+    null) x where d.run_id = 'run-20261022-131239-sfny58' and d.valid and d.method = 'queued' and
+    d.evidence->'reading'->>'qualifier' is not null and x.placedmulti = 1 and x.single >= 1 group by 1 order by 2
+    desc;`
+12. *A concept against TGN hamlets alone* (finding 63): "Peers" has AAT's "peers (aristocrats)" exact and two TGN
+    hamlets called Peers; "Dating", "Hall" and "Cross" are the same shape. Proposed: in the keywords family, when the
+    only exact concept record (AAT or LCSH) stands against TGN-only groups, the concept wins; a bare common noun in a
+    subject field names the idea, and a place would carry its qualifier. Recommendation: yes. Ceiling (queued
+    undated keywords-family strings with exactly one live non-TGN group, exact, and every other live group TGN-only),
+    the owner runs: `select ss.context, count(*) from decisions d join source_strings ss on ss.id =
+    d.source_string_id cross join lateral (select count(*) filter (where g->'sources' <> '["tgn"]'::jsonb) as
+    others, bool_and(g->'sources' = '["tgn"]'::jsonb or exists (select 1 from jsonb_array_elements(g->'members') m
+    where m->>'source' in ('aat', 'lcsh') and (m->>'reason' like 'name 1.00%' or m->>'reason' like 'name 0.97%')))
+    as shape from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
+    'run-20261022-131239-sfny58' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null
+    and ss.context in ('keywords', 'keywords:head', 'keywords:sub') and x.others = 1 and x.shape group by 1 order by
+    2 desc;`
+13. *"Thomas, Thomas"*: ULAN's undated record should join LoC's dated one by finding 14 and does not; the one
+    condition left is the class. The owner runs: `select uri, label, type, lifespan_text from authority_records
+    where uri in ('http://vocab.getty.edu/ulan/500451686', 'http://vocab.getty.edu/ulan/500077832');` If the first
+    is a Group, the join is rightly stopped and the string is the desk's; if it is a Person, the assistant looks
+    again.
+14. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed):
 ask the LUX team whether a source reload replaces by URI and whether records absent from a full dump are retired;
 the merged-away identifiers (now `merged_into` on 381 entities and the two hand merges) are written as equivalents
 of the survivor so LUX merges its copies. A reviewed Wikidata contribution export of confirmed local authorities
 belongs beside it (next builds, item 4).
 
-**Built 2026-10-22 night from t8wzjm's samples, waiting for the next rerun** (no reload, no manifest refresh):
+**Built 2026-10-22 night from sfny58's samples, waiting for the next rerun** (no reload, no manifest refresh):
+finding 56 corrected (a qualifier's TGN ancestors widen agreement and never narrow it: "Raglan Castle (Wales)");
+finding 58 (a body's LoC parenthetical that is not a type of body places it: "Hunterian Art Gallery (University of
+Glasgow)"); finding 59 (the cataloguer's doubt and brackets are not the name or the qualifier: "Cuddington,
+Buckinghamshire?", "[Warwick]"); finding 61 (among inhabited places of one name under a country heading, the one that
+names the division above it: Portsmouth the city). Expect keywords and keywords:head down by the castles and halls
+with county qualifiers that finding 56's fault held back, and a few places.
+
+**Built 2026-10-22 night from t8wzjm's samples, measured on sfny58** (kept for the record):
 finding 52 (a record's outer end bound never makes a lifetime too long: "Gilbert, 1943-" against ULAN's
 1943-~2090); finding 54 (a source's agreeing record makes its other records of the name namesakes, dated or not:
 "Clarke, Geoffrey, -1950"); finding 55 (finding 14 counts live exact records only and reads a window of possibility
@@ -91,15 +136,15 @@ says "continue with the list"):
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261022-121623-t8wzjm
+    dotnet run --project tools/Align -- undo-run --run run-20261022-131239-sfny58
     dotnet run --project tools/Align -- reconcile --verbose
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context corpauthor --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
 
-Hand merges still on the owner's list, on the workbench entity page: "Italy" (TGN on one, LoC and LUX on the other;
-it blocks decision 7 for "Italy" in keywords:sub), "Dumfries", "Kolkata"; "Evanston" and the other place twins with
-different Wikidata ids are the desk's to judge from their ids.
+Run decisions 11 and 12's ceiling queries and decision 13's record query against sfny58 at any time; the undo keeps
+the evidence. If the owner says yes to 11 or 12 before the run, it is built first. "Evanston" and the other place
+twins with different Wikidata ids are the desk's to judge from their ids.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

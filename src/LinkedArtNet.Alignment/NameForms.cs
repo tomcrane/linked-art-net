@@ -21,7 +21,7 @@ public static class NameForms
     /// "&amp;" and "and" compare equal. "thos. agnew &amp; sons ltd", "thomas agnew &amp; sons" and "thomas agnew and sons" all
     /// give "thomas agnew sons".
     /// </summary>
-    public static string Canonical(string normalised, bool dropQualifiers = true)
+    public static string Canonical(string normalised, bool dropQualifiers = true, bool expandAbbreviations = true)
     {
         var tokens = StringKey.Bare(dropQualifiers ? StringKey.WithoutQualifiers(normalised) : normalised).Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
         if (tokens.Count == 0) return "";
@@ -37,8 +37,9 @@ public static class NameForms
                 if (tokens.Count > suffix.Length && tokens.Skip(tokens.Count - suffix.Length).SequenceEqual(suffix, StringComparer.Ordinal))
                 { tokens.RemoveRange(tokens.Count - suffix.Length, suffix.Length); trimmed = true; break; }
         }
-        for (var i = 0; i < tokens.Count; i++)
-            if (abbreviations.TryGetValue(tokens[i], out var full)) tokens[i] = full;
+        if (expandAbbreviations)
+            for (var i = 0; i < tokens.Count; i++)
+                if (abbreviations.TryGetValue(tokens[i], out var full)) tokens[i] = full;
         return string.Join(' ', tokens);
     }
 

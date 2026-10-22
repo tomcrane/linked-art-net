@@ -55,6 +55,21 @@ public static class NameMatcher
         return (best, bestLabel);
     }
 
+    /// <summary>Whether a body's name and one of a record's labels are the same once legal suffixes, a courtesy prefix, connectives and a type qualifier without a comma ("(Firm)") go; abbreviations are not expanded, so "Thos." is still not "Thomas".</summary>
+    public static bool SameBody(string name, IEnumerable<string> labels)
+    {
+        var a = BodyForm(name);
+        return a.Length > 0 && labels.Any(l => BodyForm(l) == a);
+    }
+
+    private static string BodyForm(string raw)
+    {
+        var key = StringKey.Normalise(raw);
+        // a parenthetical with a comma is a place ("(London, England)") and stays; one without ("(Firm)", "(Gallery)") is a type and goes
+        key = System.Text.RegularExpressions.Regex.Replace(key, @"\s*\(([^(),]*)\)", "");
+        return NameForms.Canonical(Saints(StringKey.Fold(key)), dropQualifiers: false, expandAbbreviations: false);
+    }
+
     // "St." and "Saint", "Ste." and "Sainte", "Mt." and "Mount" are one word in a place or church name ("St. Mary" is LoC's
     // "Saint Mary (Lambeth, England : Parish)"): expanded before the folded forms are compared (finding 25, 2026-10-21)
     private static readonly Regex SaintAbbreviation = new(@"\bst\.?(?=\s|$)", RegexOptions.Compiled);

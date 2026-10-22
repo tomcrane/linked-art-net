@@ -306,6 +306,13 @@ public class GroupingTests
         // punctuation or spacing alone does not make two names (finding 34)
         Assert.Equal(0.97, NameMatcher.Score("Watson, J.N.P.", ["Watson, J. N. P."])); Assert.Equal(0.97, NameMatcher.Score("Christianson, C Paul", ["Christianson, C. Paul"]));
         Assert.True(NameMatcher.Score("Thos. Agnew", ["Thomas Agnew"]) < 0.97); // an abbreviation is more than punctuation
+        // a body's name is exact without its legal suffix, courtesy prefix or LoC type qualifier (findings 37 and 39); abbreviations still count
+        Assert.True(NameMatcher.SameBody("Rowman and Littlefield", ["Rowman and Littlefield, Inc."]));
+        Assert.True(NameMatcher.SameBody("E & H Lumley", ["E. & H. Lumley (Firm)"])); Assert.True(NameMatcher.SameBody("Messrs E & H Lumley", ["E & H Lumley"]));
+        Assert.True(NameMatcher.SameBody("Remondini", ["Remondini (Firm)"]));
+        Assert.False(NameMatcher.SameBody("Tate Gallery", ["Tate Gallery (London, England)"])); // a place qualifier is not a type
+        Assert.False(NameMatcher.SameBody("Thos. Agnew & Sons", ["Thomas Agnew & Sons"]));
+        Assert.False(NameMatcher.SameBody("John Lane, The Bodley Head Limited", ["Bodley Head (Firm)"]));
         // "St." and "Saint" are one word (finding 25)
         Assert.Equal(0.97, NameMatcher.Score("St. Mary", ["Saint Mary"])); Assert.Equal(0.97, NameMatcher.Score("Mt. Pleasant", ["Mount Pleasant"]));
         Assert.Equal("Bradford, England", Qualified.PlacementOf(null, ["Heaton (Bradford, England)"])); // a LoC heading's parenthetical stands in for a parent string
@@ -791,6 +798,11 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.True(gilbert.HasLifespan);
         var river = Reconciler.Score(gilbert, [new Candidate("http://vocab.getty.edu/tgn/1096952", "tgn", "Gilbert River", EntityClass.Place, null, [], "local", 1.0, Placement: "Queensland, Australia, Oceania, World")], 120)[0];
         Assert.True(river.Veto); Assert.Contains("a dated heading names a person or body", river.Reason);
+        // a body's record is exact for the firm's name without its suffix or type qualifier (findings 37, 39); a person's record is not
+        var rowman = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Rowman and Littlefield"));
+        Assert.Equal(0.97, LocalIndexSource.ToCandidate(new AuthorityRecord("http://id.loc.gov/authorities/names/n50068390", "loc", "Rowman and Littlefield, Inc.", ["Rowman and Littlefield, Inc."], "Group", null, [], null, DateTimeOffset.UtcNow, "test"), rowman, "local").NameScore);
+        var clarkArt = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Clark Art Ltd"));
+        Assert.True(LocalIndexSource.ToCandidate(new AuthorityRecord("http://id.loc.gov/authorities/names/n94033176", "loc", "Clark, Art", ["Clark, Art"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"), clarkArt, "local").NameScore < 0.97);
         var riba = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "RIBA"));
         var institute = new AuthorityRecord("http://id.loc.gov/authorities/names/n79063909", "loc", "Royal Institute of British Architects", ["Royal Institute of British Architects", "RIBA"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
         Assert.Equal(1.0, LocalIndexSource.ToCandidate(institute, riba, "local").NameScore); // the string is the acronym itself
@@ -957,6 +969,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(Tgn("1000111", "Zhongguo", "Asia, World", "300128207") with { Labels = ["Zhongguo", "China"] });
         await pg.Store.PutAuthorityAsync(Tgn("1017189", "China", "Nuevo León, Mexico, North and Central America, World", "300008347"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79091151", "loc", "China", ["China"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Equal("Norfolk", reconciler.Read(await pg.Store.CollectAsync(ds, "place", "Norfolk?")).Text); // the cataloguer's doubt is not part of the name (finding 36)
         var china = await pg.Store.CollectAsync(ds, "place", "China");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, china));
         Assert.Contains("an unqualified heading: the nation among 2", (await pg.Store.DecisionForAsync(china.Id))!.EvidenceJson);
@@ -1073,6 +1086,14 @@ public class ReconcilerStoreTests(PostgresFixture pg)
 
         // minted: nothing found. The wrongly dated string: the ULAN candidate is vetoed by its dates and takes the linked LoC record with it
         Assert.Equal(DecisionMethod.Minted, (await pg.Store.DecisionForAsync(nobody.Id))!.Method);
+        // a provisional entity of the project's own, queued for another string of the name, is a lookalike, not a rival group: ULAN's
+        // one "England & Co." is an exact-single (finding 38)
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500302086", "ulan", "England & Co.", ["England & Co.", "England & Co"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var englandCoQueued = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "England & Co", ["England & Co"]), scheme);
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "persauthorfull", "England & Co")).Id, englandCoQueued.Id, DecisionMethod.Queued);
+        var englandCo = await pg.Store.CollectAsync(ds, "corpauthor", "England & Co");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, englandCo));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(englandCo.Id))!.Method);
         // a dated string whose only candidate is LoC's one undated record of the name is that record (finding 24, the owner's policy);
         // two LoC records of the name, one undated and one dated (and vetoed), send a third Terence to the desk
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125105", "loc", "Coventry, Terence", ["Coventry, Terence"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
@@ -1169,7 +1190,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // the audit: Dürer's entity agrees with its ULAN record; the impostor's ULAN id is not in the index
         var flagged = new List<AuditItem>();
         var audit = await new IndexAudit(pg.Store).RunAsync(ds, item => { flagged.Add(item); return Task.CompletedTask; });
-        Assert.Equal(3, audit.WithUlan); // Dürer, the impostor, and the undated import above
+        Assert.Equal(4, audit.WithUlan); // Dürer, the impostor, the undated import above, and England & Co. (finding 38, above)
         Assert.True(audit.Clean >= 1);
         // an entity with only the LoC id is reached through ULAN's link and could gain the ULAN id
         var locOnly = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Durer, Albrecht", Status: EntityStatus.Aligned), scheme);

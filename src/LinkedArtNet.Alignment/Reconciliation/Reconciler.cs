@@ -305,7 +305,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // source knows one of the name and dates none other (finding 24; the owner's policy, 2026-10-21, ceiling 45 strings, the dated
         // name headings of the keywords field); a second record of the name anywhere, dated or not, is a second group and the desk's
         var loneUndated = reading.Lifespan is not null && top is { Members.Count: 1 } && top.Best.Candidate.Lifespan is null or { IsEmpty: true };
-        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => g.Members.Any(m => !m.SetAside)) == 1 && (reading.Lifespan is null || loneUndated)
+        // a provisional entity of the project's own (a placeholder minted for the name, awaiting review) is a lookalike, not a second
+        // group: ULAN's one "England & Co." is an exact-single beside the project's queued "England & Co" (finding 38, 2026-10-22)
+        if (_options.AcceptUniqueExactSingleSource && top is not null && !truncated && groups.Count(g => g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
             && (reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
             && top.Score >= _options.AcceptScore && top.Best.Candidate.NameScore >= 0.97
             && top.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)

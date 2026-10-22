@@ -94,6 +94,8 @@ public sealed record StringReading(
         string? qualifier = null;
         string? labelOverride = null;
         if (rule.Qualified && parser is null && parts is null) (text, qualifier) = Qualified.Split(s.Raw);
+        // "Norfolk?": the cataloguer's doubt, not part of the name (finding 36, 2026-10-22); the entity keeps the raw string as a label
+        if (text.EndsWith('?') && text.Length > 1) text = text.TrimEnd('?', ' ');
         if (parser is not null)
         {
             agent = parser.Parse(s.Raw);
@@ -254,6 +256,11 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // capitals (finding 28, 2026-10-21)
         var (nameScore, matched) = NameMatcher.Best(reading.Text, labels);
         if (nameScore >= 0.97 && matched is not null && IsAcronym(matched) && !AllCapitals(reading.String.Raw)) nameScore = 0.85;
+        // a body's name is exact without its legal suffix or a courtesy prefix ("Rowman and Littlefield" is "Rowman and Littlefield,
+        // Inc."; "Messrs E & H Lumley" is "E & H Lumley"), and without LoC's type qualifier ("E. & H. Lumley (Firm)", "Remondini
+        // (Firm)"), which tells the firm from a person of the name, not from another firm; a person's record ("Clark, Art") stays
+        // short of "Clark Art Ltd" (findings 37 and 39, 2026-10-22)
+        if (nameScore < 0.97 && cls == EntityClass.Group && reading.Classes.Contains(EntityClass.Group) && NameMatcher.SameBody(reading.Text, labels.Where(l => !IsAcronym(l)))) nameScore = 0.97;
         // a place record always says where it is (TGN's parent string, a LoC heading's parenthetical), so that records of
         // different sources can be told to be the same place whether or not the string carries a qualifier; other records
         // only when there is a qualifier to check them against

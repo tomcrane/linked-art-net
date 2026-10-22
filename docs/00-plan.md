@@ -128,7 +128,11 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    'name 0.97%') and m->'veto' is null and m->'setAside' is null)) as exact from
    jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
    'run-20261022-104922-gde6k3' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null
-   and x.strong = 1 and x.live >= 2 and x.exact group by 1, 2 order by 3 desc;`
+   and x.strong = 1 and x.live >= 2 and x.exact group by 1, 2 order by 3 desc;` Measured 2026-10-22: 322 strings;
+   Type and Place 180 (keywords 129, place 26, keywords:sub 16, keywords:head 9), Person 125 (persauthorfull 99,
+   publisher 19, corpauthor 6, keywords:head 1), Group 17. Recommendation: yes for concepts and places (180), as
+   with outvoted rivals; not yet for people (the namesake risk) or bodies (too few to matter). Awaiting the owner's
+   word.
 10. *"Cornwall" in keywords:sub*: decision 7 should have taken it (the county group holds the project's entity) but
    the string is queued, as "Italy" is, which means two entities of the project hold the county's ids and the
    store disagrees with itself. The owner runs: `select e.id, e.label, e.status, q.uri from entities e join

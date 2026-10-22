@@ -95,8 +95,9 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    exists (select 1 from jsonb_array_elements(g->'members') m where m->>'source' = 'store' and m->'veto' is null))
    as withstore from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
    'run-20261022-093942-evt3ut' and d.valid and d.method = 'queued' and ss.context = 'place' and x.multi >= 2 and
-   x.withstore = 1;` Measured 2026-10-22: 26 strings. Recommendation unchanged: yes; small, safe, and the project's
-   own prior. Awaiting the owner's word.
+   x.withstore = 1;` Measured 2026-10-22: 26 strings. The owner's yes that day, built before the next run
+   (`EvaluateAsync`, after outvoted rivals; the rivals' evidence reads "the project's own aligned entity breaks the
+   tie").
 8. *Two sources each with one exact record of a body join* (finding 40): "National Gallery London" meets ULAN's
    "National Gallery" and LoC's "National Gallery (Great Britain)", each exact through a variant, each its source's
    only record of the name, unlinked. Proposed: for a body (a reading whose first class is Group), two sources that
@@ -110,15 +111,18 @@ dated string's one undated exact record) yes; decision 8 (LoC "-781" twins) conf
    and m->'veto' is null and m->'setAside' is null)) as exact1 from jsonb_array_elements(d.evidence->'groups') g
    where g->'vetoed' is null) x where d.run_id = 'run-20261022-093942-evt3ut' and d.valid and d.method = 'queued'
    and d.evidence->'reading'->>'lifespan' is null and ss.context in ('corpauthor', 'publisher') and x.live = 2 and
-   x.exact1 = 2 and x.srcs = 2 group by 1;` Measured 2026-10-22: 35 strings (publisher 22, corpauthor 13).
-   Recommendation unchanged: yes, bodies only. Awaiting the owner's word.
+   x.exact1 = 2 and x.srcs = 2 group by 1;` Measured 2026-10-22: 35 strings (publisher 22, corpauthor 13). The
+   owner's yes that day, built before the next run (`Reconciler.Score`, after the home rule; "loc's one record of
+   the body, as ulan's one is").
 4. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
    `merged_into` on 292 entities and the two hand merges) are written as equivalents of the survivor so LUX merges
    its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
    builds, item 4).
 
-**Built 2026-10-22 from evt3ut's samples, waiting for the next rerun** (no reload, no manifest refresh): finding 36
+**Built 2026-10-22 from evt3ut's samples, waiting for the next rerun** (no reload, no manifest refresh): finding 35
+(the project's own aligned entity breaks a tie among two-source place groups: "Cornwall"; decision 7) and finding
+40 (two sources each with one exact record of a body join and vote: "National Gallery London"; decision 8); finding 36
 (a trailing "?" is not the name: "Norfolk?"); findings 37 and 39 (a body's name is exact without its legal suffix,
 courtesy prefix or LoC type qualifier: "Rowman and Littlefield, Inc.", "E. & H. Lumley (Firm)", "Remondini
 (Firm)"); finding 38 (a provisional entity of the project's own is a lookalike, not a rival group, for exact-single:
@@ -181,9 +185,9 @@ says "continue with the list"):
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
 
-Run decisions 7 and 8's ceiling queries against evt3ut at any time; the undo keeps the evidence. If the owner says
-yes to either before the run, it is built first. The keywords (1,361) and keywords:sub (235) queues have not been
-sampled since uhwjq5 and are the next to read.
+The keywords (1,361) and keywords:sub (235) queues have not been sampled since uhwjq5 and are the next to read.
+Expect, against evt3ut: "Cornwall" and up to 25 more places out of the place queue, up to 35 bodies out of publisher
+and corpauthor, the firms with suffixes and "(Firm)" headings, and the provisional lookalikes.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

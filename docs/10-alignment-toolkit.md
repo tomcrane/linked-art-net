@@ -899,7 +899,8 @@ compounds 15,668 -> 15,574 (whole headings now exact without decomposing); corpa
   project's own aligned entity sits in one: the earlier pipeline identified "Cornwall" with that county, and a
   bare "Cornwall" in the same project is the same place. Finding 35, a policy for the owner: among tied two-source
   place groups, the group that holds one of the project's own aligned entities wins (decision 7, ceiling query in
-  the plan). Never over a group the authorities and the project disagree about, only a tie among them.
+  the plan). Never over a group the authorities and the project disagree about, only a tie among them. Ceiling 26;
+  the owner's yes and built the same day in `EvaluateAsync`.
 - "Norfolk?": read with the question mark, so TGN's Norfolks scored 0.97 and LoC's "Norfolk (Mass.)" was placed by
   its level all the same. Finding 36, fixed: a trailing question mark is the cataloguer's doubt, not the name.
 - "Rowman and Littlefield" (publisher): LoC's "Rowman and Littlefield, Inc." at 0.95, the only candidate, short of
@@ -917,6 +918,8 @@ compounds 15,668 -> 15,574 (whole headings now exact without decomposing); corpa
   each exact through a variant, each its source's only record of the name, unlinked, two single-source groups.
   Finding 40, a policy for the owner: for a body, two sources that each have exactly one exact record of the name
   and no other join and vote, as finding 16 does for a dated person (decision 8, ceiling query in the plan).
+  Ceiling 35 (publisher 22, corpauthor 13); the owner's yes and built the same day in `Reconciler.Score`, bodies
+  only (a reading whose first class is Group), Group-class records only.
 - "Murray", "Sutton", "Hutchinson", "König", "Garland" (publisher), "Mr Abbott", "Mr Hodgson" (corpauthor): bare
   surnames meeting ULAN's painters through variant names (ULAN's "Koninck, Jacob, the younger" carries "König").
   A publisher named by a surname is a firm, and the desk's. "Waltham Forest: Libraries & Arts Department" against

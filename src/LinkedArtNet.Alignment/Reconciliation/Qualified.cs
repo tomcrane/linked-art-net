@@ -164,6 +164,7 @@ public static class Qualified
         ["canton"] = 4, ["cantons"] = 4, ["prefecture"] = 4, ["prefectures"] = 4, ["oblast"] = 4, ["oblasts"] = 4, ["emirate"] = 4, ["emirates"] = 4, ["autonomous"] = 4,
         ["county"] = 3, ["counties"] = 3, ["district"] = 3, ["districts"] = 3, ["arrondissement"] = 3, ["arrondissements"] = 3, ["kreis"] = 3, ["kreise"] = 3,
         ["shire"] = 3, ["shires"] = 3, ["municipality"] = 3, ["municipalities"] = 3, ["comarca"] = 3, ["comarcas"] = 3, ["unitary"] = 3,
+        ["administrative"] = 3, // TGN's "former administrative divisions" (Dumfries, the old county; the owner's query, 2026-10-22)
         ["inhabited"] = 2, ["city"] = 2, ["cities"] = 2, ["town"] = 2, ["towns"] = 2, ["village"] = 2, ["villages"] = 2, ["hamlet"] = 2, ["hamlets"] = 2,
         ["borough"] = 2, ["boroughs"] = 2, ["township"] = 2, ["townships"] = 2, ["parish"] = 2, ["parishes"] = 2, ["commune"] = 2, ["communes"] = 2,
         ["neighborhood"] = 2, ["neighborhoods"] = 2, ["neighbourhood"] = 2, ["neighbourhoods"] = 2, ["suburb"] = 2, ["suburbs"] = 2,

@@ -320,6 +320,7 @@ public class GroupingTests
         Assert.Equal("City", Qualified.TypeOf(["New York (N.Y.)", "New York (N.Y. : City)"]));
         Assert.Null(Qualified.TypeOf(["Hammersmith (London, England)"]));
         Assert.Equal(5, Qualified.LevelOf("nations")); Assert.Equal(4, Qualified.LevelOf("regions (administrative divisions)")); Assert.Equal(3, Qualified.LevelOf("counties"));
+        Assert.Equal(3, Qualified.LevelOf("former administrative divisions")); // TGN's type for Dumfries the old county
         Assert.Equal(2, Qualified.LevelOf("inhabited places")); Assert.Equal(3, Qualified.LevelOf("County")); Assert.Equal(2, Qualified.LevelOf("City")); Assert.Equal(2, Qualified.LevelOf("county seats")); Assert.Null(Qualified.LevelOf("rivers")); Assert.Null(Qualified.LevelOf(null));
         // punctuation or spacing alone does not make two names (finding 34)
         Assert.Equal(0.97, NameMatcher.Score("Watson, J.N.P.", ["Watson, J. N. P."])); Assert.Equal(0.97, NameMatcher.Score("Christianson, C Paul", ["Christianson, C. Paul"]));

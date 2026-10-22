@@ -859,6 +859,20 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var institute = new AuthorityRecord("http://id.loc.gov/authorities/names/n79063909", "loc", "Royal Institute of British Architects", ["Royal Institute of British Architects", "RIBA"], "Group", null, [], null, DateTimeOffset.UtcNow, "test");
         Assert.Equal(1.0, LocalIndexSource.ToCandidate(institute, riba, "local").NameScore); // the string is the acronym itself
         Assert.Equal(1, Reconciler.Groups(porcelainScored.Take(2).ToList()).Count(g => g.Members.Any(m => !m.SetAside)));
+        // a bare common noun in a subject field names the idea: AAT's "peers (aristocrats)" against TGN's hamlets alone (finding 63, the
+        // owner's policy); a nation of the name is another matter
+        var peers = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:sub", "Peers"));
+        var peersScored = Reconciler.Score(peers, [
+            new Candidate("http://vocab.getty.edu/aat/300457669", "aat", "peers (aristocrats)", EntityClass.Type, null, [], "local", 1.0),
+            new Candidate("http://vocab.getty.edu/tgn/1013266", "tgn", "Peers", EntityClass.Place, null, [], "local", 1.0, Placement: "Alberta, Canada, North and Central America, World", PlaceType: "inhabited places"),
+            new Candidate("http://vocab.getty.edu/tgn/2060065", "tgn", "Peers", EntityClass.Place, null, [], "local", 1.0, Placement: "Missouri, United States, North and Central America, World", PlaceType: "inhabited places")], 120);
+        Assert.False(peersScored[0].SetAside); Assert.True(peersScored[1].SetAside); Assert.True(peersScored[2].SetAside); Assert.Contains("a place of the name, not the idea", peersScored[1].Reason);
+        Assert.Equal(1, Reconciler.Groups(peersScored).Count(g => g.Members.Any(m => !m.SetAside)));
+        var turkey = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:sub", "Turkey"));
+        var turkeyScored = Reconciler.Score(turkey, [
+            new Candidate("http://vocab.getty.edu/aat/300250423", "aat", "turkeys (birds)", EntityClass.Type, null, [], "local", 1.0),
+            new Candidate("http://vocab.getty.edu/tgn/1000144", "tgn", "Turkey", EntityClass.Place, null, [], "local", 1.0, Placement: "Asia, World", PlaceType: "nations")], 120);
+        Assert.False(turkeyScored[1].SetAside);
         // for a concept, a rival below acceptance score is a lookalike (finding 48, the owner's policy): AAT's exact "Decorated Style"
         // beside LCSH's "Architecture, Gothic--Decorated style" at 0.85 is an exact-single
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/aat/300020799", "aat", "Decorated Style", ["Decorated Style", "Decorated style"], "Type", null, [], null, DateTimeOffset.UtcNow, "test"));
@@ -867,6 +881,18 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var decoratedEvaluation = await reconciler.EvaluateAsync(ds, decorated);
         Assert.Equal(Outcome.Accepted, decoratedEvaluation.Outcome); Assert.Equal(DecisionMethod.ExactSingle, decoratedEvaluation.AcceptedMethod);
         Assert.True(decoratedEvaluation.Groups.Count >= 2, EvaluationText.Narrate(decoratedEvaluation, candidates: true)); // the lookalike was there
+        // a body outvoted when the qualifier places the winner (finding 60, the owner's policy): TGN's National Maritime Museum in
+        // Greenwich with LoC's heading placed through it, against ULAN's three unplaced records of the museum
+        var bodies = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn"), new LocalIndexSource(pg.Store, "loc"), new LocalIndexSource(pg.Store, "ulan")], ProjectManifest.PmcDefault.ToOptions());
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/tgn/1100813", "tgn", "National Maritime Museum", ["National Maritime Museum"], "Place", null, [], "{\"parentString\":\"Greenwich, Greenwich, London, Greater London, England, United Kingdom, Europe, World\"}", now, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n80126325", "loc", "National Maritime Museum (Great Britain)", ["National Maritime Museum (Great Britain)", "National Maritime Museum (London, England)"], "Group", null, [], null, now, "test"));
+        foreach (var id in new[] { "500262910", "500307460", "500309238" })
+            await pg.Store.PutAuthorityAsync(new AuthorityRecord($"http://vocab.getty.edu/ulan/{id}", "ulan", "National Maritime Museum", ["National Maritime Museum"], "Group", null, [], "{\"parentString\":\"Corporate Bodies\"}", now, "test"));
+        var maritime = await pg.Store.CollectAsync(ds, "keywords:head", "National Maritime Museum (London)");
+        var maritimeEvaluation = await bodies.EvaluateAsync(ds, maritime);
+        Assert.Equal(Outcome.Accepted, maritimeEvaluation.Outcome); Assert.Equal(DecisionMethod.Vote, maritimeEvaluation.AcceptedMethod);
+        Assert.Contains(maritimeEvaluation.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("outvoted by a group of 2 sources"));
+        Assert.Contains(maritimeEvaluation.Accepted!.Uris, u => u.EndsWith("1100813")); Assert.Contains(maritimeEvaluation.Accepted.Uris, u => u.EndsWith("n80126325"));
         // and so LCSH's one placed heading carries the string as a single
         await pg.Store.PutAuthorityAsync(Lcsh("sh85078154", "Loire River (France)", "Place"));
         var loire = await pg.Store.CollectAsync(ds, "keywords:head", "Loire River (France)");

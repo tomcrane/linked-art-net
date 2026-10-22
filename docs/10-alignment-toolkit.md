@@ -1043,15 +1043,22 @@ keywords:head 609 -> 553 and vote 2,093 -> 2,223 (the dates rules); persauthorfu
 - "National Maritime Museum (London)": TGN's museum placed, LoC's heading placed through it, and ULAN's three records
   of the museum unplaced beside them; a body, so the outvoted-rivals policy stands aside and the string queues.
   Finding 60, a policy for the owner (decision 11): when the string's qualifier places the winning group, the tie is
-  not a name-only tie, and bodies could be outvoted as places are. Ceiling query in the plan.
+  not a name-only tie, and bodies could be outvoted as places are. Ceiling 18; the owner's yes and built the same
+  evening in `EvaluateAsync`. Building it showed that finding 58 had joined a heading's several parentheticals into
+  one placement ("Great Britain; London, England"), which no parent string contains whole; each part is now a
+  placement of its own in the placed-through check.
 - "Peers" (keywords): AAT's "peers (aristocrats)" exact beside two TGN hamlets called Peers; "Dating", "Hall" and
   "Cross" are the same shape. Finding 63, a policy for the owner (decision 12): in the keywords family, an exact
   AAT or LCSH concept against TGN hamlets alone is the concept; a bare common noun in a subject field names the idea,
-  and a place would carry its qualifier. Ceiling query in the plan.
+  and a place would carry its qualifier. Ceiling 20; the owner's yes and built the same evening in
+  `Reconciler.Score`, for the one exact AAT or LCSH concept against TGN's inhabited places alone; a nation or a
+  county of the name ("Turkey") is not set aside, nor is any record of another source.
 - "Thomas, Thomas, 1817-1888" (keywords): LoC agrees, ULAN's second record is vetoed by its dates, and ULAN's first,
   undated, still does not join by finding 14 though finding 55 made it eligible. The one condition left is the
   class: if ULAN types that record as a body, the join rightly stops. The owner's query in the plan (decision 13)
-  shows the two records' types.
+  shows the two records' types: it is a Group, a firm. The join was right to stop, and finding 64, built that
+  evening, vetoes a body of the name against a heading read as a person with a lifespan unless its own dates
+  agree, as finding 31 does for places; the string is LoC's single.
 - "Summers, S, op 1739": LoC's "Summers, S. (Steve)" and "(Samuel)", both exact through their fuller forms; the
   desk's, and "op 1739" is finding 26. "Hampton Court (Herefordshire)": TGN has no Hampton Court in Herefordshire,
   and the ancestors rule rightly placed neither the Jamaican nor the Richmond one; minted. "Christian church", "Hall,

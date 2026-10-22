@@ -328,8 +328,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // against four TGN namesakes no LoC heading reaches); never over one of the project's own aligned entities or another
         // two-source group, and never for people and bodies, where sameness of name is weak evidence and the desk decides
         var rivals = top is null ? [] : live.Skip(1).Where(g => g.Score >= _options.AcceptScore).ToList();
+        // and for a body when the string's qualifier places a member of the winning group (TGN's National Maritime Museum in London,
+        // with LoC's heading through it, against ULAN's three unplaced records): not a name-only tie (finding 60; the owner's
+        // policy, 2026-10-22, ceiling 18)
+        var placedWinner = reading.Qualifier is not null && top is not null && top.Members.Any(m => !m.Veto && !m.SetAside && m.QualifierAgrees == true);
         var outvoted = top is not null && second is not null && second.Score >= _options.AcceptScore && top.Sources.Count >= 2
-            && (top.Best.Candidate.Class ?? reading.Classes[0]) is EntityClass.Place or EntityClass.Type or EntityClass.Period
+            && ((top.Best.Candidate.Class ?? reading.Classes[0]) is EntityClass.Place or EntityClass.Type or EntityClass.Period || placedWinner)
             && rivals.All(g => g.Sources.Count <= 1 && !g.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional));
         if (outvoted)
             groups = groups.Select(g => rivals.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; outvoted by a group of {top!.Sources.Count} sources" }).ToList() } : g).ToList();
@@ -553,6 +557,19 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
         if (reading.Collections is { Count: > 0 } wanted) PreferCollections(wanted, list);
         if (reading.Home is not null) JoinToHome(reading.Home, list);
+        // in a subject field a bare common noun names the idea, and a place would carry its qualifier: AAT's "peers (aristocrats)"
+        // against TGN's two hamlets called Peers is the concept, the hamlets set aside (finding 63; the owner's policy, 2026-10-22,
+        // ceiling 20). Only when the one exact concept record stands against inhabited places alone: a nation or a county of the
+        // name ("Turkey") is another matter, and so is any record of another source
+        if (reading.Home is not null && reading.Qualifier is null && !reading.HasLifespan)
+        {
+            var live = list.Select((m, i) => (m, i)).Where(x => !x.m.Veto && !x.m.SetAside && x.m.Candidate.NameScore >= 0.85).ToList();
+            var concepts = live.Where(x => x.m.Candidate.Source is "aat" or "lcsh" && x.m.Candidate.NameScore >= 0.97 && x.m.Candidate.Class is EntityClass.Type or EntityClass.Period or null).ToList();
+            var others = live.Where(x => !concepts.Contains(x)).ToList();
+            if (concepts.Count == 1 && others.Count > 0 && others.All(x => x.m.Candidate.Source == "tgn" && x.m.Candidate.Class == EntityClass.Place && Qualified.LevelOf(x.m.Candidate.PlaceType) is null or 2))
+                foreach (var (b, i) in others)
+                    list[i] = b with { SetAside = true, Reason = b.Reason + $"; {concepts[0].m.Candidate.Source} {concepts[0].m.Candidate.Label} decides: a place of the name, not the idea" };
+        }
         // for a body, two sources that each have exactly one exact record of the name, and no other, name the same body and vote:
         // ULAN's "National Gallery" and LoC's "National Gallery (Great Britain)" for "National Gallery London" (finding 40; the
         // owner's policy, 2026-10-22, ceiling 35). Bodies only: a person's namesakes are too common. As finding 16 does with dates
@@ -584,9 +601,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var b = list[i];
             if (b.Veto || b.SetAside || b.Candidate.Placement is null || b.JoinedTo is not null) continue;
             if (reading.Qualifier is null && (b.Candidate.Class is not (EntityClass.Place or null) || b.Candidate.NameScore < 0.85)) continue;
-            var words = Qualified.Tokens(b.Candidate.Placement);
-            if (words.Count == 0) continue;
-            var through = holders.Where(a => a.Candidate.Uri != b.Candidate.Uri && a.Candidate.Source != b.Candidate.Source && Qualified.Contains(a.Candidate.Placement, words)).ToList();
+            // a heading's placement may be several parentheticals ("Great Britain; London, England", since finding 58): each is a
+            // placement of its own, and the record is inside a holder when any one of them is
+            var parts = b.Candidate.Placement.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(Qualified.Tokens).Where(w => w.Count > 0).ToList();
+            if (parts.Count == 0) continue;
+            var through = holders.Where(a => a.Candidate.Uri != b.Candidate.Uri && a.Candidate.Source != b.Candidate.Source && parts.Any(words => Qualified.Contains(a.Candidate.Placement, words))).ToList();
             // a holder this loop has already joined to another holder is that holder (the project's "Cornwall (England : County)"
             // placed through TGN's Cornwall is not a second Cornwall for LoC's heading to be "inside"): read the joins made so far
             through = through.Select(a => list.First(m => m.Candidate.Uri == a.Candidate.Uri)).ToList();

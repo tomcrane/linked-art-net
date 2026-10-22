@@ -48,8 +48,9 @@ to 8 (home sets aside inexact rivals; a dated string's lone undated record; the 
     (g->>'score')::numeric >= 0.9) as single from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is
     null) x where d.run_id = 'run-20261022-131239-sfny58' and d.valid and d.method = 'queued' and
     d.evidence->'reading'->>'qualifier' is not null and x.placedmulti = 1 and x.single >= 1 group by 1 order by 2
-    desc;` Measured 2026-10-22: 18 strings (keywords:head 15, place 2, keywords:sub 1). Recommendation unchanged:
-    yes. Awaiting the owner's word.
+    desc;` Measured 2026-10-22: 18 strings (keywords:head 15, place 2, keywords:sub 1). The owner's yes that
+    evening, built before the next run (`EvaluateAsync`: a placed member of the winning group lets a body's rivals
+    be outvoted).
 12. *A concept against TGN hamlets alone* (finding 63): "Peers" has AAT's "peers (aristocrats)" exact and two TGN
     hamlets called Peers; "Dating", "Hall" and "Cross" are the same shape. Proposed: in the keywords family, when the
     only exact concept record (AAT or LCSH) stands against TGN-only groups, the concept wins; a bare common noun in a
@@ -62,8 +63,9 @@ to 8 (home sets aside inexact rivals; a dated string's lone undated record; the 
     as shape from jsonb_array_elements(d.evidence->'groups') g where g->'vetoed' is null) x where d.run_id =
     'run-20261022-131239-sfny58' and d.valid and d.method = 'queued' and d.evidence->'reading'->>'lifespan' is null
     and ss.context in ('keywords', 'keywords:head', 'keywords:sub') and x.others = 1 and x.shape group by 1 order by
-    2 desc;` Measured 2026-10-22: 20 strings (keywords:sub 11, keywords:head 8, keywords 1). Recommendation
-    unchanged: yes. Awaiting the owner's word.
+    2 desc;` Measured 2026-10-22: 20 strings (keywords:sub 11, keywords:head 8, keywords 1). The owner's yes that
+    evening, built before the next run (`Reconciler.Score`, after the home rule: the one exact AAT or LCSH concept
+    sets aside TGN's inhabited places of the name; a nation or county of the name does not count as a hamlet).
 13. *"Thomas, Thomas"*: ULAN's undated record should join LoC's dated one by finding 14 and does not; the one
     condition left is the class. The owner runs: `select uri, label, type, lifespan_text from authority_records
     where uri in ('http://vocab.getty.edu/ulan/500451686', 'http://vocab.getty.edu/ulan/500077832');` If the first
@@ -79,6 +81,10 @@ of the survivor so LUX merges its copies. A reviewed Wikidata contribution expor
 belongs beside it (next builds, item 4).
 
 **Built 2026-10-22 night from sfny58's samples, waiting for the next rerun** (no reload, no manifest refresh):
+finding 60 (decision 11: bodies outvoted when the qualifier places the winner, "National Maritime Museum (London)");
+finding 63 (decision 12: a concept against TGN hamlets alone, "Peers", "Dating", "Hall"); finding 64 (a heading read
+as a person with a lifespan vetoes a body of the name, "Thomas, Thomas"); a heading's several parentheticals are
+each a placement of their own in the placed-through check (finding 58 had joined them);
 finding 56 corrected (a qualifier's TGN ancestors widen agreement and never narrow it: "Raglan Castle (Wales)");
 finding 58 (a body's LoC parenthetical that is not a type of body places it: "Hunterian Art Gallery (University of
 Glasgow)"); finding 59 (the cataloguer's doubt and brackets are not the name or the qualifier: "Cuddington,

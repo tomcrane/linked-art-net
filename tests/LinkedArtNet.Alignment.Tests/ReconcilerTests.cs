@@ -171,6 +171,27 @@ public class LocHeadingTests
     }
 
     [Fact]
+    public void A_heading_the_home_vocabulary_holds_whole_beats_its_bare_form()
+    {
+        // finding 81 (2026-10-23): "Surrealism (Literature)" in keywords:head, LCSH holding both "Surrealism (Literature)" and "Surrealism";
+        // the whole heading's record is the one, the bare heading is set aside, and AAT's exact term is carried to the whole heading
+        var rule = ProjectManifest.PmcDefault.ToOptions().Contexts["keywords:head"];
+        var reading = StringReading.Read(new SourceString(1, "ds", "keywords:head", "Surrealism (Literature)", StringKey.Normalise("Surrealism (Literature)"), null, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1), rule, null);
+        Assert.Equal("Surrealism (Literature)", reading.LabelOverride); Assert.Equal("lcsh", reading.Home);
+        var bare = new Candidate("http://id.loc.gov/authorities/subjects/sh85130846", "lcsh", "Surrealism", EntityClass.Type, null, [], "local", 1.0);
+        var whole = new Candidate("http://id.loc.gov/authorities/subjects/sh85130847", "lcsh", "Surrealism (Literature)", EntityClass.Type, null, [], "local", 0.85);
+        var aat = new Candidate("http://vocab.getty.edu/aat/300021512", "aat", "Surrealist", EntityClass.Type, null, [], "local", 1.0);
+        var scored = Reconciler.Score(reading, [bare, whole, aat], 120);
+        Assert.True(scored[0].SetAside); Assert.Contains("holds the whole heading", scored[0].Reason);
+        Assert.False(scored[1].SetAside); Assert.Equal(1.0, scored[1].Candidate.NameScore); Assert.Contains("the whole heading", scored[1].Reason);
+        Assert.Equal(whole.Uri, scored[2].JoinedTo);
+        var groups = Reconciler.Groups(scored);
+        Assert.Equal(whole.Uri, groups[0].Best.Candidate.Uri); Assert.Equal(["aat", "lcsh"], groups[0].Sources.OrderBy(x => x, StringComparer.Ordinal));
+        // with no whole-heading record there is nothing to set aside: two LCSH exact terms stay the desk's
+        Assert.All(Reconciler.Score(reading, [bare, bare with { Uri = "sh2", Label = "Surrealism (Art)" }, aat], 120), m => Assert.False(m.SetAside));
+    }
+
+    [Fact]
     public void Working_dates_rule_namesakes_out_and_agree_when_the_same()
     {
         // finding 26 (2026-10-23): "Morgan, John, 1823-1886" is not LoC's "Morgan, John, active 1635"
@@ -216,7 +237,13 @@ public class LocHeadingTests
         Assert.True(summers.Lifespan!.IsWorking); Assert.Equal(1739, summers.Lifespan.BeginLatest!.Value.Year); Assert.Equal(1739, summers.Lifespan.EndEarliest!.Value.Year);
         var goldsmith = StringReading.Read(S("Goldsmith, Oliver, 1730?"), rule, parser);
         Assert.Equal("Goldsmith, Oliver", goldsmith.Text);
-        Assert.True(goldsmith.Lifespan!.IsWorking); Assert.Equal(1730, goldsmith.Lifespan.BeginLatest!.Value.Year);
+        // a lone year is the birth year, widened when uncertain (finding 82): "1730?" is born 1726 to 1734, which meets LoC's 1728-1774
+        Assert.False(goldsmith.Lifespan!.IsWorking); Assert.True(goldsmith.Lifespan.IsDated);
+        Assert.Equal(1726, goldsmith.Lifespan.BeginEarliest!.Value.Year); Assert.Equal(1734, goldsmith.Lifespan.BeginLatest!.Value.Year); Assert.Null(goldsmith.Lifespan.EndLatest);
+        Assert.Equal(DateAgreement.Agree, goldsmith.Lifespan.Compare(GettyVocabLoader.LifespanFromYears("1728", "1774")!, 120));
+        var charlton = StringReading.Read(S("Charlton, Alan, 1948"), rule, parser);
+        Assert.Equal(1948, charlton.Lifespan!.BeginEarliest!.Value.Year); Assert.Equal(1948, charlton.Lifespan.BeginLatest!.Value.Year);
+        Assert.Equal(DateAgreement.Agree, charlton.Lifespan.Compare(GettyVocabLoader.LifespanFromYears("1948", null)!, 120));
         Assert.Equal("Royce, John", StringReading.Read(S("Royce, John, active 1773-1789"), rule, parser).Text);
         Assert.Equal("Hall", StringReading.Read(S("Hall, ?"), rule, null).Text); // finding 76: the cataloguer's "?" and its comma go together
         Assert.True(StringReading.Read(S("Royce, John, active 1773-1789"), rule, parser).Lifespan!.IsWorking);

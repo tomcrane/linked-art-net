@@ -117,13 +117,17 @@ public sealed record StringReading(
             else if (agent.Kind == AgentKind.Person && classes.Contains(EntityClass.Person)) classes = [EntityClass.Person, .. classes.Where(c => c != EntityClass.Person)];
             if (agent.Dates is { Kind: Dates.ResultKind.BirthDeath or Dates.ResultKind.FormationDissolution } d)
                 lifespan = Lifespan.From(d.Begin, d.End, agent.DateText);
-            // "fl. 1775-1795", "active 1640-1660", "op 1739" are working dates; and a lone year or decade ("1730?", "1730s") says no more
-            // than that the person was alive then, which is the same shape (finding 26, 2026-10-23)
+            // "fl. 1775-1795", "active 1640-1660", "op 1739" are working dates (finding 26, 2026-10-23)
             else if (agent.Dates is { Kind: Dates.ResultKind.Floruit } f)
                 lifespan = Lifespan.Working(f.Begin ?? f.TimeSpan, f.End ?? f.TimeSpan, agent.DateText);
+            // a lone year after a name ("Charlton, Alan, 1948"; "Goldsmith, Oliver, 1730?") is the birth year with its dash dropped, as the
+            // headings write it, not a year the person was alive (finding 82, 2026-10-23, reading finding 26's lone year again from the
+            // samples: both were birth years); an uncertain or approximate one is widened by four years each way and is still tight
             else if (agent.Dates is { Kind: Dates.ResultKind.Single, Status: Dates.ParseStatus.Parsed or Dates.ParseStatus.Partial, TimeSpan: { } single }
-                     && Lifespan.Working(single, single, agent.DateText) is { } alive && Lifespan.Tight(alive.EndEarliest, alive.BeginLatest))
-                lifespan = alive;
+                     && Lifespan.From(single, null, agent.DateText) is { IsDated: true } born)
+                lifespan = agent.Dates.Flags.Contains(Dates.DateFlag.Uncertain) || agent.Dates.Flags.Contains(Dates.DateFlag.Approximate)
+                    ? born with { BeginEarliest = born.BeginEarliest?.AddYears(-4), BeginLatest = born.BeginLatest?.AddYears(4) }
+                    : born;
             nationalities = agent.Nationalities.Select(n => n.AatUri ?? n.Label).Distinct(StringComparer.Ordinal).ToArray();
             roles = agent.Roles.Where(r => r.IsOccupation).Select(r => r.Label).Distinct(StringComparer.Ordinal).ToArray();
         }

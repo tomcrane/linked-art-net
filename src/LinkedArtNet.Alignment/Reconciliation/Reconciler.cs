@@ -351,6 +351,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
             var firm = storeScored.Where(c => !c.Candidate.Provisional).ToList();
             var chosen = storeScored.Count == 1 ? storeScored[0] : firm.Count == 1 ? firm[0] : null;
+            // two of the project's entities, one labelled with the whole heading as written ("Surrealism (Literature)") and one with its
+            // bare form ("Surrealism"): the heading names the first (finding 81, 2026-10-23)
+            if (chosen is null && reading.LabelOverride is { } wholeLabel && firm.Count > 1)
+            {
+                var wholeKey = StringKey.Normalise(wholeLabel);
+                var ofWhole = firm.Where(c => storeMatches[c.Candidate.EntityId!].Label is { } l && StringKey.Normalise(l) == wholeKey).ToList();
+                if (ofWhole.Count == 1) chosen = ofWhole[0];
+            }
             if (chosen is not null && chosen.Candidate.ProvisionalQueued) chosen = null;
             if (chosen is not null)
                 return new Evaluation(Outcome.MatchedStore, reading, [Group([chosen])], StoreMatch: storeMatches[chosen.Candidate.EntityId!], StoreChoice: chosen);
@@ -659,6 +667,20 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
         }
         if (reading.Collections is { Count: > 0 } wanted) PreferCollections(wanted, list);
+        // a heading the home vocabulary holds whole beside its bare form ("Surrealism (Literature)" beside "Surrealism" in LCSH) names the
+        // whole heading's record; the home vocabulary's other records exact only on the bare name are its other concepts, set aside, so
+        // that the home join below has one term to carry the others to (finding 81, 2026-10-23)
+        if (reading.LabelOverride is { } wholeHeading && reading.Home is { } homeVocabulary)
+        {
+            var wholeExact = list.Where(m => !m.Veto && !m.SetAside && m.Candidate.Source == homeVocabulary && m.Candidate.Label is not null && NameMatcher.Score(wholeHeading, [m.Candidate.Label]) >= 0.97).ToList();
+            if (wholeExact.Count == 1)
+                for (var i = 0; i < list.Count; i++)
+                {
+                    var b = list[i];
+                    if (b.Veto || b.SetAside || b.Candidate.Source != homeVocabulary || b.Candidate.NameScore < 0.97 || b.Candidate.Uri == wholeExact[0].Candidate.Uri) continue;
+                    list[i] = b with { SetAside = true, Reason = b.Reason + $"; {homeVocabulary} holds the whole heading as {wholeExact[0].Candidate.Label}: this bare heading is another concept" };
+                }
+        }
         if (reading.Home is not null) JoinToHome(reading.Home, list);
         // in a subject field a bare common noun names the idea, and a place would carry its qualifier: AAT's "peers (aristocrats)"
         // against TGN's two hamlets called Peers is the concept, the hamlets set aside (finding 63; the owner's policy, 2026-10-22,

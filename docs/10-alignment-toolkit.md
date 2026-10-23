@@ -1259,6 +1259,36 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-10-23 (run-20261023-140352-z5vp74: findings 79 and 80, against eetp4h; the slow first run of them, ace2wt,
+stopped and undone): accepted 9,124 -> 9,139 (vote 3,867 -> 3,874, single 1,936, exact-single 3,321 -> 3,329), queued
+3,964 -> 3,955, minted 11,329 -> 11,318, matched in store 5,836 -> 5,841. By context: persauthorfull queued 1,306 ->
+1,303, keywords 761 -> 759, keywords:head 469 -> 465; the rest unchanged. Small, as the two findings were. The path:
+4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955. The samples, read:
+
+- "Piper, John, 1903-1992" and "Blake, Peter, 1932-": LoC's dated record now joins ULAN's ("loc's one record of the
+  name, which ulan dates", finding 79's wording for the dated lone record), and the pair is held only by the project's
+  two legacy twins of each name, both aligned: finding 32, the desk's.
+- "Surrealism (Literature)" (keywords:head): LCSH holds the whole heading and the bare "Surrealism" as two headings, the
+  project holds both as concepts, and AAT's "Surrealist" is exact through a variant: five records at 1.00 and the string
+  queued. Finding 81, built: a heading the home vocabulary holds whole beside its bare form names the whole heading's
+  record; the home vocabulary's records exact only on the bare name are its other concepts, set aside, so the home join
+  carries AAT's term to the whole heading; and in the store, of two of the project's entities the one labelled with the
+  whole heading as written answers the heading. LCSH's qualified topics ("Realism (Art)", "Romanticism (Literature)")
+  are this shape.
+- "Charlton, Alan, 1948" (keywords:head): read by finding 26 as alive in 1948, "not comparable" with ULAN's 1948~-~2048
+  and LoC's "1948-"; as the birth year it agrees with both, LoC's undated "Charlton, Alan" is the namesake (finding 54),
+  and the two vote. "Goldsmith, Oliver, 1730?" was a birth year too. Finding 82, built: a lone year after a name is the
+  birth year with its dash dropped, as the headings write it, not a year the person was alive; an uncertain or
+  approximate one ("1730?") is widened by four years each way, still tight, so it meets LoC's 1728. The floruit forms
+  stay working dates.
+- "Paintings, European" (ULAN's department at 0.93), "Kirby, John", "Hughs", "Fine Art Society (London)", "York
+  (England)", "Art, Primitive": as before. publisher: "Murray", "König", "Sutton", "Hutchinson", "Garland", "Christopher
+  Cock", "Adams & Dart", "Clark Art Ltd": the bare surnames and the one-word firms, the desk's; "Department of the
+  Environment" (ULAN's two); "Peter Lang" (LoC's two imprints, Bern and New York). keywords:sub: "Cornwall", "Norfolk",
+  "Yorkshire", "Sheffield", "Vienna", "Parma", "Camden", "Hampshire", "Cambridge": the famous-name ties, prominence,
+  waiting for the Wikidata index; "De profundis" against LCSH's "Psalms (Music)--130th Psalm" through a variant at
+  0.85: the desk's.
+
 Built 2026-10-23, finding 51 (the second pass), while the owner's run went. A string queued early in a run may be
 settled by what the run does later: "Cornwall" in keywords:sub was queued before the place field's "Cornwall" made the
 entity that would have answered it from the store (decision 7, 2026-10-22, closed as run order). At the end of a run

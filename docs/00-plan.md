@@ -22,12 +22,12 @@ the LoC "-781" subdivision forms deleted from both files. The store has had two 
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
-SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-124010-eetp4h: accepted 9,124 (vote
-3,867, single 1,936, exact-single 3,321), queued 3,964, matched in store 5,836, minted 11,329, lists 404, compounds
-15,558; by context queued persauthorfull 1,306, keywords 761, publisher 798, keywords:head 469, place 277, corpauthor
+SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-140352-z5vp74: accepted 9,139 (vote
+3,874, single 1,936, exact-single 3,329), queued 3,955, matched in store 5,841, minted 11,318, lists 404, compounds
+15,558; by context queued persauthorfull 1,303, keywords 759, publisher 798, keywords:head 465, place 277, corpauthor
 182, keywords:sub 171. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 ->
-4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the
-last is "Measured ... eetp4h". The Wikidata truthy dump
+4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955. Doc 10 7.6 has a "Measured" paragraph per run with the samples
+read; the last is "Measured ... z5vp74". The Wikidata truthy dump
 (71.7 GB) and the sitelinks table are downloading on the owner's other machine (next builds, item 4).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -76,12 +76,17 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-23 afternoon, finding 51 (the second pass), waiting for the rerun after the one in progress** (doc 10
+**Built 2026-10-23 afternoon from z5vp74's samples, waiting for the next run** (doc 10 7.6 "Measured ... z5vp74"):
+finding 81 (a heading the home vocabulary holds whole beside its bare form names the whole heading's record, in the
+indexes and in the store: "Surrealism (Literature)"); finding 82 (a lone year after a name is the birth year, widened by
+four years when uncertain: "Charlton, Alan, 1948", "Goldsmith, Oliver, 1730?"; finding 26's reading of it reversed).
+
+**Built 2026-10-23 afternoon, finding 51 (the second pass), waiting for the next run** (doc 10
 7.6 "Built 2026-10-23, finding 51"): every string a run queues is evaluated again at the run's end with the store as it
 stands, and one now matched in store or accepted is decided afresh, its placeholder removed; the report ends "second
 pass: n reconsidered, m settled". Expect "Cornwall" in keywords:sub and its kind to settle; the count says how many.
 
-**Built 2026-10-23 from eetp4h's samples, waiting for the rerun** (doc 10 7.6 "Measured ... eetp4h"): finding 79 (a
+**Built 2026-10-23 from eetp4h's samples, measured on z5vp74** (kept for the record): finding 79 (a
 source's lone exact record dated without conflict joins the record another source dates as the string does: ULAN's
 "Bolton, James" 1699~-1799 beside LoC's agreeing "active 1775-1795"); finding 80 (a dated heading that is a concept,
 period or event whole in any index is not a person: "World War, 1939-1945"). Expect a few more votes among the dated
@@ -179,18 +184,19 @@ says "continue with the list"):
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
-Runs ygjx75, p9g534 and eetp4h (2026-10-23) are measured and read. The rerun measures findings 79 and 80 (the tool
-rebuilds itself on `dotnet run`):
+Runs ygjx75, p9g534, eetp4h and z5vp74 (2026-10-23) are measured and read. The queue is in the band the assistant
+expected the cycles to stop in (3,955). The levers now change: the Wikidata load, then the run that measures the second
+pass (finding 51) and findings 81 and 82 together, then the Wikidata index's use, then the 2024 shadow. In order:
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261023-124010-eetp4h
+    dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
+    dotnet run --project tools/Align -- undo-run --run run-20261023-140352-z5vp74
     dotnet run --project tools/Align -- reconcile --verbose
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context publisher --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
 
-The queue is in the band the assistant expected the cycles to stop in (3,964). After this run's reading the levers
-change: the second pass (finding 51) is the next build, then the Wikidata index's use, then the 2024 shadow.
+The run's summary line ends with the second pass's counts. The Wikidata index is not among the manifest's sources, so
+that run is unchanged by it; its record count and a look at a few records start the design of its use.
 
 **The Wikidata load** (built 2026-10-23 while the run went; doc 11 section 8.10). When the run has finished, and not
 while it runs (the tool rebuilds itself and the running process holds its files), the owner runs:

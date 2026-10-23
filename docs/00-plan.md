@@ -218,11 +218,18 @@ table now has; a reload would type them the same way):
     update authority_records set type = 'Language' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q34770','Q1288568'];
     select type, count(*) from authority_records where source = 'wikidata' group by type order by 2 desc;
 
-Then the next forty untyped classes, to see how fast the tail falls (the subclass walk at the next reload is the full
-fix):
+Run (2026-10-23 evening): Place 105,829 -> 204,776, Group 152,373 -> 170,609, Event 2,217 -> 5,360, Language 2,188;
+untyped 519,152 -> 396,638. The second forty (32 new classes, about 40 thousand rows: the tail flattens, and the
+subclass walk at the next reload is the full fix), the same way:
 
-    select q, count(*) from authority_records, jsonb_array_elements_text(data->'instanceOf') q
-    where source = 'wikidata' and type is null group by q order by 2 desc limit 40;
+    update authority_records set type = 'Place' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q1134686','Q12284','Q5153359','Q42744322','Q3055118','Q54050','Q79007','Q3184121','Q131681','Q473972','Q102496','Q6784672','Q11755880','Q811979','Q317557'];
+    update authority_records set type = 'Group' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q56351315','Q13417114','Q15911314','Q748019','Q483242','Q2088357','Q1762059','Q18127','Q176799','Q178790','Q18706073','Q14350','Q5741069','Q9212979','Q4671277','Q131186'];
+    update authority_records set type = 'Material' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q113145171'];
+    select type, count(*) from authority_records where source = 'wikidata' group by type order by 2 desc;
+
+Stream (Q47521) still showed 2,320 untyped rows after the first Place update that listed it; the check is
+`select count(*) filter (where type is null), count(*) from authority_records where source = 'wikidata' and
+data->'instanceOf' ? 'Q47521'`, unresolved at the time of writing.
 
 If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
 are still queued, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the

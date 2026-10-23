@@ -60,6 +60,9 @@ public class WikidataLoaderTests(PostgresFixture pg)
         Assert.Equal("Group", WikidataLoader.ClassOf(["Q47258130"]));         // academic conference series: a conference heading, as LoC has it
         Assert.Equal("Event", WikidataLoader.ClassOf(["Q2020153"]));          // academic conference
         Assert.Equal("Language", WikidataLoader.ClassOf(["Q34770"]));
+        Assert.Equal("Place", WikidataLoader.ClassOf(["Q317557"]));           // parish church: a building is a place, as the project's houses are
+        Assert.Equal("Group", WikidataLoader.ClassOf(["Q131186"]));           // choir
+        Assert.Equal("Material", WikidataLoader.ClassOf(["Q113145171"]));     // type of chemical entity
         Assert.Null(WikidataLoader.ClassOf(["Q7725634", "Q11424"]));          // literary work, film
         Assert.Equal("Person", WikidataLoader.ClassOf(["Q7725634", "Q5"]));   // the first known class wins, whatever precedes it
     }

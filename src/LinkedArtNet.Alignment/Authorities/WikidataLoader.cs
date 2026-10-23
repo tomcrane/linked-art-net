@@ -95,6 +95,18 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
         ["Q48204"] = nameof(EntityClass.Group), ["Q6881511"] = nameof(EntityClass.Group), ["Q955824"] = nameof(EntityClass.Group), ["Q47258130"] = nameof(EntityClass.Group),
         ["Q2020153"] = nameof(EntityClass.Event),
         ["Q34770"] = nameof(EntityClass.Language), ["Q1288568"] = nameof(EntityClass.Language),
+        // the second forty (the same day, after the first were applied): more settlement types, landforms and waterways, buildings (a
+        // building is a place here, as the project's houses and abbeys are), bands, choirs, unions, schools and societies; the
+        // chemical-entity metaclass (Q113145171) gives the first Material records
+        ["Q1134686"] = nameof(EntityClass.Place), ["Q12284"] = nameof(EntityClass.Place), ["Q5153359"] = nameof(EntityClass.Place), ["Q42744322"] = nameof(EntityClass.Place),
+        ["Q3055118"] = nameof(EntityClass.Place), ["Q54050"] = nameof(EntityClass.Place), ["Q79007"] = nameof(EntityClass.Place), ["Q3184121"] = nameof(EntityClass.Place),
+        ["Q131681"] = nameof(EntityClass.Place), ["Q473972"] = nameof(EntityClass.Place), ["Q102496"] = nameof(EntityClass.Place), ["Q6784672"] = nameof(EntityClass.Place),
+        ["Q11755880"] = nameof(EntityClass.Place), ["Q811979"] = nameof(EntityClass.Place), ["Q317557"] = nameof(EntityClass.Place),
+        ["Q56351315"] = nameof(EntityClass.Group), ["Q13417114"] = nameof(EntityClass.Group), ["Q15911314"] = nameof(EntityClass.Group), ["Q748019"] = nameof(EntityClass.Group),
+        ["Q483242"] = nameof(EntityClass.Group), ["Q2088357"] = nameof(EntityClass.Group), ["Q1762059"] = nameof(EntityClass.Group), ["Q18127"] = nameof(EntityClass.Group),
+        ["Q176799"] = nameof(EntityClass.Group), ["Q178790"] = nameof(EntityClass.Group), ["Q18706073"] = nameof(EntityClass.Group), ["Q14350"] = nameof(EntityClass.Group),
+        ["Q5741069"] = nameof(EntityClass.Group), ["Q9212979"] = nameof(EntityClass.Group), ["Q4671277"] = nameof(EntityClass.Group), ["Q131186"] = nameof(EntityClass.Group),
+        ["Q113145171"] = nameof(EntityClass.Material),
     };
 
     /// <summary>The record's class: the first instance-of value the table knows, else none (the record is kept untyped).</summary>

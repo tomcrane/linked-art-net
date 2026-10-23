@@ -22,12 +22,12 @@ the LoC "-781" subdivision forms deleted from both files. The store has had two 
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
-SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-140352-z5vp74: accepted 9,139 (vote
-3,874, single 1,936, exact-single 3,329), queued 3,955, matched in store 5,841, minted 11,318, lists 404, compounds
-15,558; by context queued persauthorfull 1,303, keywords 759, publisher 798, keywords:head 465, place 277, corpauthor
-182, keywords:sub 171. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 ->
-4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955. Doc 10 7.6 has a "Measured" paragraph per run with the samples
-read; the last is "Measured ... z5vp74". The Wikidata truthy dump
+SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-183343-fk53p7: accepted 9,386 (vote
+3,961, single 2,110, exact-single 3,315), queued 3,603, matched in store 5,958, minted 11,306, lists 404, compounds
+15,558; second pass 3,896 reconsidered, 293 settled; by context queued persauthorfull 1,264, keywords 620, publisher
+781, keywords:head 354, place 256, corpauthor 175, keywords:sub 153. The path: 8,518 (Monday) -> 6,647 -> 5,763 ->
+5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603. Doc 10 7.6
+has a "Measured" paragraph per run with the samples read; the last is "Measured ... fk53p7". The Wikidata truthy dump
 (71.7 GB) and the sitelinks table are downloading on the owner's other machine (next builds, item 4).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -76,15 +76,18 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-23 afternoon from z5vp74's samples, waiting for the next run** (doc 10 7.6 "Measured ... z5vp74"):
-finding 81 (a heading the home vocabulary holds whole beside its bare form names the whole heading's record, in the
-indexes and in the store: "Surrealism (Literature)"); finding 82 (a lone year after a name is the birth year, widened by
-four years when uncertain: "Charlton, Alan, 1948", "Goldsmith, Oliver, 1730?"; finding 26's reading of it reversed).
+**Built 2026-10-23 evening from fk53p7's settled lines, waiting for the next run** (doc 10 7.6 "Measured ...
+fk53p7"): finding 83, in the agent parser: a trailing date segment that opens with name words ("Milton, John
+1608-1674", the comma before the dates dropped) is the forenames and the dates, not a date segment that swallows the
+forenames; nine headings had been accepted on the surname alone onto the project's surname-only legacy entities
+("Milton", "Gander"). Expect the nine to come back queued or to find their dated records.
 
-**Built 2026-10-23 afternoon, finding 51 (the second pass), waiting for the next run** (doc 10
-7.6 "Built 2026-10-23, finding 51"): every string a run queues is evaluated again at the run's end with the store as it
-stands, and one now matched in store or accepted is decided afresh, its placeholder removed; the report ends "second
-pass: n reconsidered, m settled". Expect "Cornwall" in keywords:sub and its kind to settle; the count says how many.
+**Measured on fk53p7, 2026-10-23 evening** (kept for the record): findings 81 and 82 took 59 queued strings, the second
+pass (finding 51) 293 of 3,896 reconsidered: "Cornwall" and its kind in keywords:sub to the place entities, the dated
+keywords names onto the project's own undated entity of the name, ULAN-LoC votes the project's entity joined. Two
+matches to check in the store (the queries below): "Lincoln (England)" to "Lincoln, Neb" and "Newbridge (Dublin)" to
+"Newbridge, Co. Kildare", both passed the store stage's qualifier check, so the entity's placement or its label is
+wrong.
 
 **Built 2026-10-23 from eetp4h's samples, measured on z5vp74** (kept for the record): finding 79 (a
 source's lone exact record dated without conflict joins the record another source dates as the string does: ULAN's
@@ -194,19 +197,30 @@ says "continue with the list"):
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
-Runs ygjx75, p9g534, eetp4h and z5vp74 (2026-10-23) are measured and read. The queue is in the band the assistant
-expected the cycles to stop in (3,955). The levers now change: the Wikidata load, then the run that measures the second
-pass (finding 51) and findings 81 and 82 together, then the Wikidata index's use, then the 2024 shadow. In order:
+Runs ygjx75, p9g534, eetp4h, z5vp74 and fk53p7 (2026-10-23) are measured and read; the queue is 3,603. First the two
+store checks from fk53p7's settled lines, in DataGrip:
+
+    select e.id, e.label, e.class, e.status, q.uri, q.source, q.method
+    from entities e left join entity_equivalents q on q.entity_id = e.id
+    where e.id in ('https://data.paul-mellon-centre.ac.uk/place/sg9n2gps', 'https://data.paul-mellon-centre.ac.uk/place/udgbns9d')
+    order by e.id, q.source;
+
+    select s.context, s.raw, d.method, d.evidence
+    from decisions d join source_strings s on s.id = d.source_string_id
+    where d.run_id = 'run-20261023-183343-fk53p7' and d.valid and s.raw in ('Lincoln (England)', 'Newbridge (Dublin)', 'Lincoln');
+
+If "Lincoln, Neb" is equivalent to TGN's or LoC's Lincoln in England, the legacy label is wrong and the entity is right
+(a label fix at the desk); if it is equivalent to Nebraska's, the store stage's placement let a qualifier through and
+that is a finding. Then the rerun, which measures finding 83 (the tool rebuilds itself on `dotnet run`):
 
     git push
-    dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
-    dotnet run --project tools/Align -- undo-run --run run-20261023-140352-z5vp74
+    dotnet run --project tools/Align -- undo-run --run run-20261023-183343-fk53p7
     dotnet run --project tools/Align -- reconcile --verbose
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
 
-The run's summary line ends with the second pass's counts. The Wikidata index is not among the manifest's sources, so
-that run is unchanged by it; its record count and a look at a few records start the design of its use.
+The Wikidata index is not among the manifest's sources, so that run is unchanged by it. The next build is the index's
+use, prominence first (item 3), which the keywords:sub queue is waiting for almost to a string.
 
 **The Wikidata load is done** (2026-10-23, 3 h 13 min, 5,004,911 records; the counts are in doc 11 section 8.11 and
 item 3 above). The retyping of the rows the class table missed, run once in DataGrip (the same forty classes the
@@ -674,7 +688,12 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       Art prizes" read as Person; ~~"McSloy, Tom, op 1946" (a working date written "op")~~ (finding 26, 2026-10-23);
       "Mainz/Rhein" (a slash variant for name-forms). From p9g534 (2026-10-23): "S. W. [(Simon Wilson)] (editor)"
       read as "S. W." with the bracketed fuller form dropped; a bracketed parenthetical of capitalised words after a
-      name of initials is the name's fuller form (doc 10 7.6 "Measured ... p9g534"). ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
+      name of initials is the name's fuller form (doc 10 7.6 "Measured ... p9g534"). From fk53p7 (2026-10-23):
+      "Trent)" in keywords:sub, a fragment with an unbalanced bracket from a split heading (set it aside, or rejoin
+      it to the heading it came from); "Royal Academy of Music (London, England : 1719-1728);" with a trailing
+      semicolon; "Royal Collection (London)" against LoC's "(Great Britain)", a body's qualifier being its seat
+      (the qualifier walk could place a city in its country). ~~"Milton, John 1608-1674"~~ (finding 83, built
+      2026-10-23 evening). ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
       Oliver, 1730?" read undated by the MARC profile; LoC's "Bolton, James, active 1840-1876" undated by the loader~~
       (built 2026-10-23: working spans, doc 10 7.6 "Built 2026-10-23"; "op 1946" with them).
     - Workbench step 3 (jobs): runs, loads and indexes pages (authority_sources is the indexes table), a schedule,

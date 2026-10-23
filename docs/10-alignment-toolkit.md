@@ -1259,6 +1259,42 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-10-23 evening (run-20261023-183343-fk53p7: findings 81 and 82 and the second pass, finding 51, against
+z5vp74): accepted 9,139 -> 9,386 (vote 3,874 -> 3,961, single 1,936 -> 2,110, exact-single 3,329 -> 3,315), queued
+3,955 -> 3,603, matched in store 5,841 -> 5,958, minted 11,318 -> 11,306. The second pass reconsidered 3,896 queued
+strings and settled 293, so findings 81 and 82 took 59 (3,955 -> 3,896) and the second pass the rest. By context:
+persauthorfull queued 1,303 -> 1,264, keywords 759 -> 620, publisher 798 -> 781, keywords:head 465 -> 354, place 277
+-> 256, corpauthor 182 -> 175, keywords:sub 171 -> 153. The path: 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603.
+Time by stage: store 1,022 s of about 1,900, the second pass 105 s. The settled lines, read:
+
+- As designed: "Cornwall", "Norfolk", "Yorkshire", "Hampshire", "Cheshire", "Dublin", "Saint Petersburg", "Lucknow",
+  "Didsbury", "West Country" in keywords:sub to the place entities the place field made later (decision 7's shape, now
+  closed by the pass); "Scotney Castle", "Sudeley Castle", "Boughton House (England)", "Gawthorpe Hall?" to the project's
+  qualified house entities; the dated keywords names onto the project's own undated entity of the name minted earlier in
+  the run ("Hall, Harry, 1815-1882" to "Hall, Harry"; the single count's rise, 1,936 -> 2,110, is these), and the
+  ULAN-LoC votes where the project's entity joined the group ("Turner, Daniel, fl 1782-1817"); the same whole heading
+  in two contexts sharing one concept ("St. Andrew's Church (Freckenham, England)").
+- Wrong, nine strings: "Milton, John 1608-1674", "Wordsworth, William 1770-1850", "Gander, Ryan 1976-", "Christopher,
+  Ann, 1947-", "Greg, Samuel 1758-1834", "Parker, Frederick 1845-1927", "Starr, John W. 1925-", "Blackburn, John
+  1932-", "Pelham, Henry 1695?-1754" accepted onto the project's surname-only legacy entities ("Milton", "Gander").
+  The agent parser read "John 1608-1674" as the date segment and left "Milton" as the name: a heading with the comma
+  before the dates dropped. Finding 83, built in the parser (`AgentStringParser`, step 3): a trailing date segment that
+  opens with name words is the forenames and the dates, the words back on the name. The rerun reverses the nine.
+- To check: "Lincoln (England)" in keywords:head matched the project's "Lincoln, Neb", as did "Lincoln" in keywords:sub
+  and the place field's "Lincoln" (a vote with that entity in the group). The store stage requires the qualifier to
+  agree, so either that entity's equivalents place it in England and its label is wrong, or the placement is. The
+  query is in plan section 0. "Newbridge (Dublin)" matched "Newbridge, Co. Kildare" (Newbridge House is in County
+  Dublin; the town is Kildare's), the same question. "Clayton" (keywords:head) to the project's one Clayton, in
+  Victoria, and "Smith, William" to the project's one: the lone-entity rule for places and bare names, the desk's.
+- Still queued, keywords:head: "Paintings, European", "Kirby, John", "Hughs", "Art, Primitive", "Franco", "Royal
+  Collection (London)" against "(Great Britain)" (the qualifier not placed; a body's qualifier is its seat, London is
+  in Great Britain: a small finding for the qualifier walk, not built), "York (England)" and "Leeds (England)" with
+  three TGN places each (the inhabited place, the district, the county), "Piper, John, 1903-1992" and "Blake, Peter,
+  1932-" held by the legacy twins (finding 32). keywords:sub: "Sheffield", "Parma", "Camden", "Cambridge", "Durham",
+  "Virginia", "Williamsburg", "Kildare", every one the famous-name tie that waits for prominence from the Wikidata
+  index (doc 11 section 8.11, plan item 3); "Trent)", a fragment with an unbalanced bracket from a split heading
+  (parser gaps); "De profundis" against the Psalm, the desk's.
+
 Measured 2026-10-23 (run-20261023-140352-z5vp74: findings 79 and 80, against eetp4h; the slow first run of them, ace2wt,
 stopped and undone): accepted 9,124 -> 9,139 (vote 3,867 -> 3,874, single 1,936, exact-single 3,321 -> 3,329), queued
 3,964 -> 3,955, minted 11,329 -> 11,318, matched in store 5,836 -> 5,841. By context: persauthorfull queued 1,306 ->

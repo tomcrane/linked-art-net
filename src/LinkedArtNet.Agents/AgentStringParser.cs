@@ -107,6 +107,17 @@ public sealed partial class AgentStringParser
             for (var i = segments.Count - 1; i >= (_profile.InvertedNames ? 1 : 0); i--)
             {
                 var segment = Classify(segments[i], AllMeanings, inGroup: false);
+                // "Milton, John 1608-1674", "Gander, Ryan 1976-": a date segment that opens with name words is the forenames and the dates
+                // with the comma between them dropped; the words go back to the name, the dates are the dates (2026-10-23, from headings
+                // the reconciler had matched on the surname alone)
+                if (segment.Kind == SegmentKind.Date && NameThenDate().Match(segments[i]) is { Success: true } split
+                    && Classify(split.Groups["date"].Value, AllMeanings, inGroup: false) is { Kind: SegmentKind.Date } dateOnly)
+                {
+                    Take(dateOnly, fromGroup: false);
+                    segments[i] = split.Groups["name"].Value.Trim();
+                    keep = i + 1;
+                    break;
+                }
                 if (segment.Kind == SegmentKind.Unknown) break;
                 Take(segment, fromGroup: false);
                 keep = i;
@@ -380,4 +391,8 @@ public sealed partial class AgentStringParser
 
     [GeneratedRegex(@"^\s*-?\d{3,4}\s*-\s*\d{2,4}\s*$")]
     private static partial Regex YearRange();
+
+    /// <summary>One or more capitalised words with no digit, none of them a date word, then the rest beginning with a digit or an opening bracket: "John 1608-1674", "John W. 1925-", "Ryan 1976-".</summary>
+    [GeneratedRegex(@"^(?<name>(?:(?!(?:fl|b|d|c|ca|circa|active|flourished|floruit|born|died|baptised|baptized|buried|op)\b)\p{Lu}[\p{L}'.\-]*\s+)+)(?<date>[\d(\[].*)$")]
+    private static partial Regex NameThenDate();
 }

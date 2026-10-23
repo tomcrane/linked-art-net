@@ -85,6 +85,26 @@ public class ParserTests
         if (roleLabel is null) Assert.Empty(a.Roles); else Assert.Equal(roleLabel, Assert.Single(a.Roles).Label);
     }
 
+    [Theory]
+    [InlineData("Milton, John 1608-1674", "Milton, John", "1608-1674")]
+    [InlineData("Gander, Ryan 1976-", "Gander, Ryan", "1976-")]
+    [InlineData("Starr, John W. 1925-", "Starr, John W.", "1925-")]
+    [InlineData("Pelham, Henry 1695?-1754", "Pelham, Henry", "1695?-1754")]
+    [InlineData("Smith, John 1866-1960, artist", "Smith, John", "1866-1960")]
+    public void A_date_segment_opening_with_name_words_is_the_forenames_and_the_dates_with_their_comma_dropped(string input, string name, string dateText)
+    {
+        // 2026-10-23: the reconciler had matched "Milton, John 1608-1674" and eight headings like it on the surname alone, the dates
+        // parser having swallowed "John 1608-1674" whole as a date segment
+        var a = Parse(input, "marc");
+        Assert.Equal(name, a.Name);
+        Assert.Equal(dateText, a.DateText);
+        Assert.Equal(name.Split(", ")[1], a.GivenNames);
+        Assert.Null(a.Unconsumed);
+        // a date segment that is only dates, or opens with a date word, is unchanged
+        Assert.Equal("Bevan, Charles", Parse("Bevan, Charles, active 1865-1883", "marc").Name);
+        Assert.Equal("James, Hugh", Parse("James, Hugh, d. 1695", "marc").Name);
+    }
+
     [Fact]
     public void Marc_honorific_sits_between_name_and_dates()
     {

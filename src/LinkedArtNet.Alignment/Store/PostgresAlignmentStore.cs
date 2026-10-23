@@ -441,6 +441,27 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             order by e.class, lower(trim(e.label)), e.created_at, e.id
             """, cmd => Add(cmd, "dataset", dataset), ct);
 
+    public async Task<bool> RemoveProvisionalIfUnreferencedAsync(string entityId, CancellationToken ct = default)
+    {
+        // as the undo does: the superseded decisions that still name the placeholder let go of it first (the foreign key), then it goes
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        await using var cmd = new NpgsqlCommand(
+            """
+            create temp table remove_entity on commit drop as
+              select e.id from entities e where e.id = @id and e.status = 'provisional' and e.merged_into is null
+                and not exists (select 1 from decisions d where d.entity_id = e.id and d.valid)
+                and not exists (select 1 from entities m where m.merged_into = e.id)
+                and not exists (select 1 from entity_equivalents q where q.entity_id = e.id);
+            update decisions set entity_id = null where not valid and entity_id in (select id from remove_entity);
+            delete from entities where id in (select id from remove_entity)
+            """, conn, tx);
+        cmd.Parameters.AddWithValue("id", entityId);
+        var removed = await cmd.ExecuteNonQueryAsync(ct) == 1;
+        await tx.CommitAsync(ct);
+        return removed;
+    }
+
     public async Task<int> RemoveOrphanProvisionalsAsync(string dataset, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

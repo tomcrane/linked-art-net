@@ -1345,7 +1345,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var report = await reconciler.RunAsync(ds);
         // oldest first: Tate (override), the dated Dürer (vote), the inverted Dürer (now in the store), Smith (two exact Smiths: review),
         // Nobody (minted), the wrongly dated Dürer (ULAN vetoed by dates, and the LoC record it is linked to falls with it: minted)
-        Assert.Equal(new ReconcileReport(Considered: 6, Overridden: 1, MatchedStore: 1, Accepted: 1, Queued: 1, Minted: 2, Deferred: 0, Skipped: 0), report);
+        Assert.Equal(new ReconcileReport(Considered: 6, Overridden: 1, MatchedStore: 1, Accepted: 1, Queued: 1, Minted: 2, Deferred: 0, Skipped: 0, Reconsidered: 1), report); // the second pass looked at Smith again and left it queued
 
         // override: the entity was created under the curated identifier
         var tateEntity = (await pg.Store.ResolveAsync(ds, "corpauthor", "Tate"))!;

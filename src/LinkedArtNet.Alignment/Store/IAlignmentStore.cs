@@ -111,6 +111,9 @@ public interface IAlignmentStore
     /// <summary>Marks every valid decision pointing at the entity invalid, so the reconciler reconsiders those strings.</summary>
     Task<int> InvalidateDecisionsForEntityAsync(string entityId, CancellationToken ct = default);
 
+    /// <summary>Removes a provisional entity that nothing points at any more (no valid decision, no equivalents, nothing merged into it): the placeholder of a queued string the second pass settled. True when it went.</summary>
+    Task<bool> RemoveProvisionalIfUnreferencedAsync(string entityId, CancellationToken ct = default);
+
     // ---- overrides
 
     Task PutOverrideAsync(Override item, CancellationToken ct = default);

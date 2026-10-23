@@ -1259,6 +1259,18 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-23, finding 51 (the second pass), while the owner's run went. A string queued early in a run may be
+settled by what the run does later: "Cornwall" in keywords:sub was queued before the place field's "Cornwall" made the
+entity that would have answered it from the store (decision 7, 2026-10-22, closed as run order). At the end of a run
+the reconciler now evaluates every string it queued once more, with the store as it stands. One that comes back
+matched in store or accepted (the store stage, or the project's own aligned entity breaking a tie among places,
+finding 35) is decided afresh: the queued decision is superseded, the new decision carries the run's id (so the undo
+takes it too), and the queued string's placeholder, which nothing else points at (a queued placeholder never answers
+another string), is removed. One still queued keeps its decision and placeholder. The indexes have not changed within
+the run, so nothing else can come back different, and the pass is cheap: a store lookup per queued string. The run
+report ends "second pass: n queued strings reconsidered, m settled", the settled ones counted under matched in store
+or accepted, and `reconcile --verbose` prints the settled strings after the run's own lines, numbered within the pass.
+
 Measured 2026-10-23 (run-20261023-124010-eetp4h: findings 77 and 78, against p9g534): accepted 9,017 -> 9,124 (vote
 3,803 -> 3,867, single 1,907 -> 1,936, exact-single 3,307 -> 3,321), queued 4,109 -> 3,964, minted 11,295 -> 11,329,
 matched in store 5,832 -> 5,836. By context: keywords queued 843 -> 761 (finding 77's county qualifiers and finding

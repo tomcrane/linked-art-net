@@ -76,6 +76,11 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
+**Built 2026-10-23 afternoon, finding 51 (the second pass), waiting for the rerun after the one in progress** (doc 10
+7.6 "Built 2026-10-23, finding 51"): every string a run queues is evaluated again at the run's end with the store as it
+stands, and one now matched in store or accepted is decided afresh, its placeholder removed; the report ends "second
+pass: n reconsidered, m settled". Expect "Cornwall" in keywords:sub and its kind to settle; the count says how many.
+
 **Built 2026-10-23 from eetp4h's samples, waiting for the rerun** (doc 10 7.6 "Measured ... eetp4h"): finding 79 (a
 source's lone exact record dated without conflict joins the record another source dates as the string does: ULAN's
 "Bolton, James" 1699~-1799 beside LoC's agreeing "active 1775-1795"); finding 80 (a dated heading that is a concept,
@@ -139,8 +144,8 @@ says "continue with the list"):
 
 1. ~~Finding 26, the working-date gaps~~ (built 2026-10-23 morning, above; the parser already read every form, the
    reading and the LoC loader dropped them).
-2. Finding 51, a second pass: at the end of a run, re-evaluate the strings it queued, since entities it created
-   later in the run can settle them ("Cornwall" in keywords:sub, decision 7). Size S; its own line in the report.
+2. ~~Finding 51, a second pass~~ (built 2026-10-23, doc 10 7.6 "Built 2026-10-23, finding 51": the run ends by
+   evaluating its queued strings again with the store as it stands; the report says how many settled).
 3. ~~A local Wikidata extract as a sixth index~~: the loader is built (2026-10-23, doc 11 section 8.10,
    `load-wikidata`), reading the truthy dump in one pass and keeping items that carry a VIAF, LoC, ULAN, TGN, AAT or
    GND id, with the sitelinks table for prominence; both files are on the owner's external drive (`E:\datadumps`).

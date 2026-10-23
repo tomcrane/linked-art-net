@@ -302,7 +302,16 @@ still apply. Off by `acceptUniqueExactSingleSource: false` in the manifest or `-
 project page links "review single-source acceptances", the desk filtered to that method, so the set can be sampled;
 `undo-run` reverses a run of them. A dated string is never reached by this rule: the dates rule governs it.
 
-### 8.10 The Wikidata extract (2026-10-23)
+### 8.10 The second pass (2026-10-23)
+
+`RunAsync` ends with a second pass over the strings the run queued: each is evaluated again with the store as the
+run left it, and one that now matches an entity in the store or is accepted (an entity aligned later in the run for the
+same name in another context; the project's own aligned entity breaking a tie among places) is decided afresh, its
+queued decision superseded and its placeholder removed (`RemoveProvisionalIfUnreferencedAsync`). The report's
+`Reconsidered` and `Settled` count it, and the settled strings move from queued to matched in store or accepted (doc
+10 section 7.6, finding 51).
+
+### 8.11 The Wikidata extract (2026-10-23)
 
 `WikidataLoader` reads the Wikidata "truthy" N-Triples dump (`dumps.wikimedia.org/wikidatawiki/entities/latest-truthy.nt.gz`,
 71.7 GB gzipped on 2026-10-23, CC0) in one pass without staging: the dump lists each item's statements together, so items

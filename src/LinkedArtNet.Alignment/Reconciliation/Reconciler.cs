@@ -42,11 +42,13 @@ public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minte
 /// <param name="Single">Accepted on one source carried by the string's own dates or placed qualifier (DecisionMethod.Single).</param>
 /// <param name="Compounds">Compound headings decided as concepts coordinated from their parts (DecisionMethod.Composite); counted like lists.</param>
 /// <param name="DecidedEarlier">Strings in the undecided list that were decided before the run reached them, as parts of an earlier string (part strings outlive an undo as rows), and so were passed over rather than decided twice.</param>
-public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0, int Compounds = 0, int DecidedEarlier = 0)
+/// <param name="Reconsidered">Strings the run queued and looked at again at its end (the second pass, finding 51).</param>
+/// <param name="Settled">Of those, the strings the second pass decided: counted under matched in store or accepted, and no longer under queued.</param>
+public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0, int Compounds = 0, int DecidedEarlier = 0, int Reconsidered = 0, int Settled = 0)
 {
     /// <summary>Accepted by independent sources agreeing, as opposed to one source carried by the string or the single-source policy.</summary>
     public int Voted => Accepted - ExactSingle - Single;
-    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (between them {Parts} part strings)" : "") + (DecidedEarlier > 0 ? $"; {DecidedEarlier} of those considered were decided as parts before the run reached them" : "");
+    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (between them {Parts} part strings)" : "") + (DecidedEarlier > 0 ? $"; {DecidedEarlier} of those considered were decided as parts before the run reached them" : "") + (Reconsidered > 0 ? $"; second pass: {Reconsidered} queued strings reconsidered, {Settled} settled" : "");
 }
 
 /// <summary>
@@ -97,6 +99,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     {
         var strings = await store.UndecidedAsync(dataset, limit > 0 ? limit : int.MaxValue, ct);
         int overridden = 0, matched = 0, accepted = 0, exactSingle = 0, single = 0, queued = 0, minted = 0, deferred = 0, skipped = 0, lists = 0, compounds = 0, parts = 0, decidedEarlier = 0, n = 0;
+        var queuedStrings = new List<SourceString>();
         void Count(Evaluation e)
         {
             switch (e.Outcome)
@@ -104,7 +107,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 case Outcome.Overridden: overridden++; break;
                 case Outcome.MatchedStore: matched++; break;
                 case Outcome.Accepted: accepted++; if (e.AcceptedMethod == DecisionMethod.ExactSingle) exactSingle++; else if (e.AcceptedMethod == DecisionMethod.Single) single++; break;
-                case Outcome.Queued: queued++; break;
+                case Outcome.Queued: queued++; queuedStrings.Add(e.Reading.String); break;
                 case Outcome.Minted: minted++; break;
                 case Outcome.Deferred: deferred++; break;
                 case Outcome.Decomposed: if (e.Reading.Shape == PartsShape.Compound) compounds++; else lists++; foreach (var p in e.Parts ?? []) { parts++; Count(p); } break;
@@ -121,7 +124,33 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             else { var e = await ReconcileOneDetailedAsync(dataset, s, runId, ct); Count(e); onDecided?.Invoke(e, n, strings.Count); }
             if (n % 500 == 0) progress?.Report($"{n} of {strings.Count}: accepted {accepted} (exact-single {exactSingle}), queued {queued}, minted {minted}" + (lists + compounds > 0 ? $", lists {lists}, compounds {compounds}" : ""));
         }
-        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier);
+        // the second pass (finding 51, 2026-10-23): a string queued early in the run may be settled by what the run did later, when an
+        // entity aligned for the same name in another context answers it from the store ("Cornwall" in keywords:sub, decided before the
+        // place field's "Cornwall" made the entity) or breaks a tie among places (finding 35). Each queued string is evaluated again at the
+        // end; one that comes back matched in store or accepted is decided afresh, the queued decision superseded and its placeholder,
+        // which nothing else points at, removed; one still queued keeps its decision and its placeholder. The indexes have not changed,
+        // so nothing else can come back different
+        int reconsidered = 0, settled = 0;
+        if (queuedStrings.Count > 0)
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            progress?.Report($"second pass over {queuedStrings.Count} queued strings");
+            foreach (var s in queuedStrings)
+            {
+                ct.ThrowIfCancellationRequested();
+                reconsidered++;
+                var e = await EvaluateAsync(dataset, s, includeStore: true, ct);
+                if (e.Outcome is not (Outcome.MatchedStore or Outcome.Accepted)) continue;
+                var old = await store.DecisionForAsync(s.Id, ct);
+                await CommitAsync(dataset, s, e, runId, ct);
+                if (old?.EntityId is { } placeholder) await store.RemoveProvisionalIfUnreferencedAsync(placeholder, ct);
+                settled++; queued--; Count(e);
+                onDecided?.Invoke(e, reconsidered, queuedStrings.Count);
+            }
+            Time("second-pass", sw);
+            progress?.Report($"second pass: {reconsidered} reconsidered, {settled} settled");
+        }
+        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier, reconsidered, settled);
     }
 
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>

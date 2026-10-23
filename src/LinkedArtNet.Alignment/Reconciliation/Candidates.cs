@@ -281,8 +281,10 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // John"; ULAN's "Kirby, John C."), is not its source's record of the name: the lone-record rules, which rest on a source knowing
         // one of the name, do not count it (finding 74, 2026-10-23). A LoC heading without its dates is still the heading
         string[] headingForms = r.Label is null ? [] : r.Source == "loc" ? [r.Label, LocNamesLoader.SplitHeading(r.Label).Name] : [r.Label];
+        // a name that is the heading written shorter ("Horlor, George W" of ULAN's "Horlor, George William", through its variant
+        // "Horlor, George W.") is the heading, not another name (finding 78, 2026-10-23)
         var byVariant = nameScore >= 0.97 && headingForms.Length > 0 && NameMatcher.Score(reading.Text, headingForms) < 0.97
-            && !(cls == EntityClass.Group && NameMatcher.SameBody(reading.Text, headingForms));
+            && !(cls == EntityClass.Group && NameMatcher.SameBody(reading.Text, headingForms)) && !NameMatcher.Abbreviates(reading.Text, headingForms);
         // a place record always says where it is (TGN's parent string, a LoC heading's parenthetical), so that records of
         // different sources can be told to be the same place whether or not the string carries a qualifier; other records
         // only when there is a qualifier to check them against

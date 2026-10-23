@@ -21,12 +21,13 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
-2026-10-23 for the home place. The last measured run is run-20261023-103032-ygjx75: accepted 8,962 (vote 3,745,
-single 1,875, exact-single 3,342), queued 4,193, matched in store 5,856, minted 11,242, lists 404, compounds 15,558;
-by context queued persauthorfull 1,324, keywords 887, publisher 825, keywords:head 493, place 302, corpauthor 191,
-keywords:sub 171. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463
--> 4,294 -> 4,193. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is "Measured ...
-ygjx75". The Wikidata truthy dump
+2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
+SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-115139-p9g534: accepted 9,017 (vote
+3,803, single 1,907, exact-single 3,307), queued 4,109, matched in store 5,832, minted 11,295, lists 404, compounds
+15,558; by context queued persauthorfull 1,306, keywords 843, publisher 811, keywords:head 487, place 302, corpauthor
+189, keywords:sub 171. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 ->
+4,463 -> 4,294 -> 4,193 -> 4,109. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is
+"Measured ... p9g534". The Wikidata truthy dump
 (71.7 GB) and the sitelinks table are downloading on the owner's other machine (next builds, item 4).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -71,19 +72,25 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
+**Built 2026-10-23 from p9g534's samples, waiting for the rerun** (doc 10 7.6 "Measured ... p9g534"): finding 78 (a
+name that is the heading written shorter is the heading, not a variant-only match: "Horlor, George W" of "Horlor,
+George William"; the matcher expands a fuller form into its initials: "Carwitham, J. (John)" is "Carwitham, John";
+and finding 40's two-bodies join works in keywords when both records are bodies by their own class: "Galleria Spada
+(Rome, Italy)"). Expect some of the 35 exact-singles finding 74 took back to return, and a few keywords votes.
+
 **Built 2026-10-23 from decision 16's count, waiting for the rerun** (doc 10 7.6 "Decision 16's count"): finding 77
 (the qualifier's TGN ancestors through variants, every segment and "&" as "and": "Arlington Court (Devonshire)",
 "A-la-Ronde (Exmouth, Devonshire)", "Broughton House (Dumfries & Galloway)"; about 35 queued keywords strings). If
 the rerun in progress started before this commit it does not have it; the following one does.
 
-**Built 2026-10-23 from ygjx75's samples, waiting for the rerun** (doc 10 7.6 "Measured ... ygjx75"): finding 74
+**Built 2026-10-23 from ygjx75's samples, measured on p9g534** (kept for the record): finding 74
 (a record exact only through a variant label is not its source's record of the name for the lone-record rules:
 "Morgan, John Lester"); finding 75 (a string with working dates against a source's one record whose lifespan holds
 them is that record: "Dodd, Phyllis, op 1959"); finding 76 ("Hall, ?" is "Hall"). Finding 74 must be in before
 finding 26's rerun, or the rerun joins "Morgan, John Lester" to the dated ULAN record.
 
-**Built 2026-10-23 morning, finding 26 (working dates), waiting for the rerun** (doc 10 7.6 "Built 2026-10-23"; **the
-LoC index needs the SQL below first**, or a `load-loc` reload): "fl. 1775-1795",
+**Built 2026-10-23 morning, finding 26 (working dates), measured on p9g534** (kept for the record; the LoC index's
+working dates were written by SQL on 2026-10-23, and a `load-loc` reload writes the same): "fl. 1775-1795",
 "active 1773-1789", "op 1739" and a lone "1730?" are working spans (born no later than the start, died no earlier
 than the end; `Lifespan.IsWorking`), read from the string by the reading and from LoC headings by the loader;
 namesakes whose working dates cannot belong to one working life conflict ("Morgan, John, 1823-1886" against "active
@@ -142,39 +149,20 @@ says "continue with the list"):
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
-Run ygjx75 (2026-10-23 morning, findings 69 to 73) is measured and read. First, for finding 26, the LoC index's
-working dates (the loader kept each heading's date segment as `headingDates`
-in the record's data; the loader now reads them, so a later `load-loc` reload writes the same). Count first, then
-update; the count and the update's row count should agree:
-
-    select count(*) from authority_records
-    where source = 'loc' and begin_earliest is null and begin_latest is null and end_earliest is null and end_latest is null
-      and data->>'headingDates' ~ '^(active |fl\. |flourished )\d{3,4}' and data->>'headingDates' !~ '[XxUu]';
-
-    update authority_records a
-    set begin_latest = make_timestamptz(x.y1, 12, 31, 23, 59, 59, 'UTC'),
-        end_earliest = make_timestamptz(coalesce(x.y2, x.y1), 1, 1, 0, 0, 0, 'UTC'),
-        lifespan_text = x.hd
-    from (
-      select uri, data->>'headingDates' as hd,
-             (regexp_match(data->>'headingDates', '(\d{3,4})'))[1]::int as y1,
-             (regexp_match(data->>'headingDates', '\d{3,4}\??\s*[-–]\s*(?:approximately |ca\. )?(\d{3,4})'))[1]::int as y2
-      from authority_records
-      where source = 'loc' and begin_earliest is null and begin_latest is null and end_earliest is null and end_latest is null
-        and data->>'headingDates' ~ '^(active |fl\. |flourished )\d{3,4}' and data->>'headingDates' !~ '[XxUu]'
-    ) x
-    where a.uri = x.uri;
-
-Then the rerun (the tool rebuilds itself on `dotnet run`):
+Runs ygjx75 and p9g534 (2026-10-23) are measured and read, and the LoC index's working dates are written. The
+rerun measures findings 77 and 78 (the tool rebuilds itself on `dotnet run`):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261023-103032-ygjx75
+    dotnet run --project tools/Align -- undo-run --run run-20261023-115139-p9g534
     dotnet run --project tools/Align -- reconcile --verbose
-    dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context corpauthor --method queued --limit 10
 
-"Evanston" and the other place twins with different Wikidata ids are the desk's to judge from their ids. After the
-finding 26 run, the second pass (finding 51) is next, then the Wikidata extract when the files have arrived.
+If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)" are still queued
+after it, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the other place
+twins with different Wikidata ids are the desk's to judge from their ids. After this run's reading, the second pass
+(finding 51) is the next build, then the Wikidata extract when the files have arrived.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)
@@ -610,8 +598,10 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       default~~ (done 2026-10-20: both from the saved manifest, a "manifest:" line on every run saying whether it
       still equals the library rules, `manifest --use-default`, and the project page's "In effect now" sentence).
     - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
-      Art prizes" read as Person; "McSloy, Tom, op 1946" (a working date written "op"); "Mainz/Rhein" (a slash
-      variant for name-forms). ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
+      Art prizes" read as Person; ~~"McSloy, Tom, op 1946" (a working date written "op")~~ (finding 26, 2026-10-23);
+      "Mainz/Rhein" (a slash variant for name-forms). From p9g534 (2026-10-23): "S. W. [(Simon Wilson)] (editor)"
+      read as "S. W." with the bracketed fuller form dropped; a bracketed parenthetical of capitalised words after a
+      name of initials is the name's fuller form (doc 10 7.6 "Measured ... p9g534"). ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
       Oliver, 1730?" read undated by the MARC profile; LoC's "Bolton, James, active 1840-1876" undated by the loader~~
       (built 2026-10-23: working spans, doc 10 7.6 "Built 2026-10-23"; "op 1946" with them).
     - Workbench step 3 (jobs): runs, loads and indexes pages (authority_sources is the indexes table), a schedule,

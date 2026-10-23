@@ -629,13 +629,18 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         }
         // for a body, two sources that each have exactly one exact record of the name, and no other, name the same body and vote:
         // ULAN's "National Gallery" and LoC's "National Gallery (Great Britain)" for "National Gallery London" (finding 40; the
-        // owner's policy, 2026-10-22, ceiling 35). Bodies only: a person's namesakes are too common. As finding 16 does with dates
-        if (!reading.HasLifespan && reading.Classes.Count > 0 && reading.Classes[0] == EntityClass.Group)
+        // owner's policy, 2026-10-22, ceiling 35). Bodies only: a person's namesakes are too common. As finding 16 does with dates.
+        // In a context that reads bodies among other things (keywords: "Galleria Spada (Rome, Italy)", ULAN's and LoC's one record each,
+        // both bodies by their own vocabularies), the records' own classes say it is a body (finding 78, 2026-10-23)
+        var bodyContext = reading.Classes.Count > 0 && reading.Classes[0] == EntityClass.Group;
+        if (!reading.HasLifespan && reading.Classes.Contains(EntityClass.Group))
         {
             var exactBySource = list.Select((m, i) => (m, i))
-                .Where(x => !x.m.Veto && !x.m.SetAside && x.m.JoinedTo is null && x.m.Candidate.Source != "store" && x.m.Candidate.NameScore >= 0.97 && x.m.Candidate.Class is null or EntityClass.Group)
+                .Where(x => !x.m.Veto && !x.m.SetAside && x.m.JoinedTo is null && x.m.Candidate.Source != "store" && x.m.Candidate.NameScore >= 0.97
+                    && (bodyContext ? x.m.Candidate.Class is null or EntityClass.Group : x.m.Candidate.Class == EntityClass.Group))
                 .GroupBy(x => x.m.Candidate.Source, StringComparer.Ordinal).ToList();
-            if (exactBySource.Count == 2 && exactBySource.All(g => g.Count() == 1))
+            var anyOtherExact = !bodyContext && list.Any(m => !m.Veto && !m.SetAside && m.Candidate.Source != "store" && m.Candidate.NameScore >= 0.97 && m.Candidate.Class != EntityClass.Group);
+            if (exactBySource.Count == 2 && exactBySource.All(g => g.Count() == 1) && !anyOtherExact)
             {
                 var (a, _) = exactBySource[0].Single(); var (b, at) = exactBySource[1].Single();
                 if (!SameThing(a, b)) list[at] = b with { JoinedTo = a.Candidate.Uri, Reason = b.Reason + $"; {b.Candidate.Source}'s one record of the body, as {a.Candidate.Source}'s one is" };

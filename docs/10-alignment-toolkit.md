@@ -1224,6 +1224,41 @@ is left: "Brotherhood of Ruralists" against LoC's "Brotherhood of Ruralists (Gre
 "Camberwell School of Arts and Crafts" against "Camberwell School of Arts & Crafts (Camberwell, London, England)": about
 eight strings. The owner's decision (2026-10-23): the desk, not a rule, at that count.
 
+Measured 2026-10-23 (run-20261023-115139-p9g534: finding 26 with the LoC index's 38,754 working spans, findings 74 to
+76, against ygjx75; finding 77 not in it): accepted 8,962 -> 9,017 (vote 3,745 -> 3,803, single 1,875 -> 1,907,
+exact-single 3,342 -> 3,307), queued 4,193 -> 4,109, minted 11,242 -> 11,295, matched in store 5,856 -> 5,832. By
+context: persauthorfull queued 1,324 -> 1,306 (the first movement there in a week: the working dates), keywords 887 ->
+843, publisher 825 -> 811, keywords:head 493 -> 487, corpauthor 191 -> 189, place 302, keywords:sub 171. The path:
+4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109. Exact-single fell by 35 while single and vote rose: finding 74
+took lone records matched through variants out of the single-record rules, and some of those were right (below). The
+samples, read:
+
+- "Horlor, George W, op 1849-1890" (keywords): ULAN's one "Horlor, George William", 1819~-~1920, "dates not
+  comparable" and queued, where finding 75 should have accepted it: the name matched through ULAN's variant "Horlor,
+  George W.", and finding 74 counted that as a variant-only match. "Carwitham, John, c 1700- c1760": the same, LoC's
+  "Carwitham, J. (John)" at 1.00 through its variant, so finding 72 no longer joined it to ULAN. Finding 78, built: a
+  name that is the heading written shorter (initials against its words, `NameMatcher.Abbreviates`) is the heading,
+  not another name; and the matcher expands a fuller form into the initials it follows ("Carwitham, J. (John)" is
+  "Carwitham, John", 0.97), beside finding 57's dropping it. "Morgan, John Lester" and "Kirby, John C." stay variant-
+  only, as finding 74 meant.
+- "Galleria Spada (Rome, Italy)" (keywords): ULAN's one record and LoC's one, both bodies by their own vocabularies,
+  unlinked and unplaced; finding 40 joins such a pair for a body context only, and keywords reads concepts first.
+  Finding 78 also: in a context that allows bodies among other things, the two join when both records are bodies by
+  their own class and no record of another class is exact beside them.
+- "Morgan, John, 1823-1886": now three live groups (ULAN agreeing, LoC's "John Lester", LoC's "active 1851", not
+  comparable; "active 1635" vetoed and off the printer). The desk's, as finding 74 intended.
+- "S. W. [(Simon Wilson)] (editor)" (persauthorfull): read as "S. W.", the bracketed fuller form dropped, and three
+  wrong exact records (ULAN's Monogrammist S. W. and "W., S.", LoC's John Sergeant, who signed S. W.). A parser gap: a
+  bracketed parenthetical of two capitalised words after a name of initials is the name's fuller form. In the plan's
+  parser gaps (section 7), for the Agent parser work; the string is queued, so the desk sees it.
+- persauthorfull: "Gay, John", "Waters, William", "Bennett, Mary", "Ford, John", "Russell, James", "Gray, John",
+  "Jenkins, David", "Little, Bryan": undated namesakes, two to four records each, the queue's residue as expected.
+  "Robertson, G H" against LoC's one "Robertson, G. H. (George Harcourt), 1943-": held by the disambiguated-heading
+  check, as finding 45 says it should be.
+- keywords: "Hall, ?" now read as "Hall" (finding 76) and still three TGN Halls; "Anglesey Abbey", "Ogmore Castle"
+  (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
+  as before.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

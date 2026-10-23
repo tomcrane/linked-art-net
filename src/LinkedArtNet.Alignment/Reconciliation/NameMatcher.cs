@@ -103,7 +103,10 @@ public static class NameMatcher
         var ca = NameForms.Canonical(fa, dropQualifiers: false); var cb = NameForms.Canonical(fb, dropQualifiers: false);
         if (ca.Length > 0 && ca == cb) return 0.95;
         // a parenthetical right after initials is the fuller form of the name, not a qualifier ("Oppé, A. P. (Adolf Paul)", MARC 100 $q):
-        // without it the two are the same name at the folded level
+        // with the initials expanded ("Carwitham, J. (John)" is "Carwitham, John"; finding 78, 2026-10-23), or without it, the two are the
+        // same name at the folded level
+        var ea = FullerFormExpanded(fa); var eb = FullerFormExpanded(fb);
+        if ((ea != fa || eb != fb) && (ea == eb || StringKey.Bare(ea) == StringKey.Bare(eb))) return 0.97;
         var ua = FullerFormDropped(fa); var ub = FullerFormDropped(fb);
         if ((ua != fa || ub != fb) && (ua == ub || StringKey.Bare(ua) == StringKey.Bare(ub))) return 0.97; // "Jope, E M" and "Jope, E. M. (Edward Martyn)" (finding 57)
         // equal only once parenthesised qualifiers go: in LoC those are the disambiguators ("Smith, John (Clergyman)"), so this is review territory, not acceptance
@@ -123,6 +126,32 @@ public static class NameMatcher
 
     private static readonly System.Text.RegularExpressions.Regex FullerForm = new(@"(?<=(?:^|[\s,])[a-z]\.?)\s*\([^()]*\)", System.Text.RegularExpressions.RegexOptions.Compiled);
     private static string FullerFormDropped(string key) => FullerForm.IsMatch(key) ? FullerForm.Replace(key, "").TrimEnd('.', ' ') : key;
+
+    private static readonly System.Text.RegularExpressions.Regex InitialsThenFullerForm = new(@"(?<=^|[\s,])(?<initials>(?:[a-z]\.?\s*)+)\((?<words>[^()]+)\)", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    /// <summary>The initials replaced by the fuller form that follows them when each word begins with its initial: "robertson, g. h. (george harcourt), 1943-" is "robertson, george harcourt, 1943-"; anything else is left as it is.</summary>
+    private static string FullerFormExpanded(string key)
+    {
+        var m = InitialsThenFullerForm.Match(key);
+        if (!m.Success) return key;
+        var initials = m.Groups["initials"].Value.Split([' ', '.'], StringSplitOptions.RemoveEmptyEntries);
+        var words = m.Groups["words"].Value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (initials.Length == 0 || initials.Length != words.Length || !initials.Zip(words).All(p => p.Second.StartsWith(p.First, StringComparison.Ordinal))) return key;
+        return (key[..m.Index] + string.Join(' ', words) + key[(m.Index + m.Length)..]).Trim();
+    }
+
+    /// <summary>Whether the name is an abbreviated form of one of the labels, initials against the words ("Horlor, George W" of "Horlor, George William"; "Carwitham, John" of "Carwitham, J. (John)"): the same name written shorter, not another name (finding 78).</summary>
+    public static bool Abbreviates(string name, IEnumerable<string> labels)
+    {
+        var a = Tokens(Saints(StringKey.Fold(StringKey.Normalise(name))));
+        if (a.Length == 0) return false;
+        return labels.Any(l =>
+        {
+            var f = Saints(StringKey.Fold(StringKey.Normalise(l)));
+            var expanded = Tokens(FullerFormExpanded(f)); var dropped = Tokens(FullerFormDropped(f));
+            return expanded.SequenceEqual(a, StringComparer.Ordinal) || InitialsMatch(a, Tokens(f)) || InitialsMatch(a, expanded) || InitialsMatch(dropped, a);
+        });
+    }
 
     private static bool SameMultiset(string[] a, string[] b)
     {

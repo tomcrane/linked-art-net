@@ -155,6 +155,22 @@ public class LocHeadingTests
     }
 
     [Fact]
+    public void Two_sources_one_body_each_join_in_a_context_that_reads_bodies_among_other_things()
+    {
+        // finding 78 (2026-10-23): "Galleria Spada (Rome, Italy)" in keywords, ULAN's and LoC's one record each, both bodies by their own
+        // vocabularies; finding 40 asked for a body context, and keywords reads concepts first
+        var rule = new ContextRule([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place]);
+        var reading = StringReading.Read(new SourceString(1, "ds", "keywords", "Galleria Spada (Rome, Italy)", StringKey.Normalise("Galleria Spada (Rome, Italy)"), null, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1), rule, null);
+        var ulan = new Candidate("u1", "ulan", "Galleria Spada", EntityClass.Group, null, [], "local", 1.0);
+        var loc = new Candidate("l1", "loc", "Galleria Spada", EntityClass.Group, null, [], "local", 1.0);
+        var scored = Reconciler.Score(reading, [ulan, loc], 120);
+        Assert.Equal("u1", scored[1].JoinedTo); Assert.Contains("one record of the body", scored[1].Reason);
+        // not when a record's class is unknown or another class is exact beside them: a concept of the name is the desk's
+        Assert.Null(Reconciler.Score(reading, [ulan, loc with { Class = null }], 120)[1].JoinedTo);
+        Assert.Null(Reconciler.Score(reading, [ulan, loc, new Candidate("a1", "aat", "Galleria Spada", EntityClass.Type, null, [], "local", 1.0)], 120)[1].JoinedTo);
+    }
+
+    [Fact]
     public void Working_dates_rule_namesakes_out_and_agree_when_the_same()
     {
         // finding 26 (2026-10-23): "Morgan, John, 1823-1886" is not LoC's "Morgan, John, active 1635"
@@ -321,6 +337,14 @@ public class GroupingTests
         Assert.False(Reconciler.Score(reading, [agrees, locUndated], 120)[1].Veto);
         // a record exact only through a variant ("Morgan, John Lester" with the variant "Morgan, John") is not the source's record of the
         // name: not joined as the one LoC record ULAN dates (finding 74), nor as finding 72's one record
+        // the fuller form expanded: "Carwitham, J. (John)" is "Carwitham, John" (finding 78); "Robertson, G. H. (George Harcourt)" still "Robertson, G H"
+        Assert.Equal(0.97, NameMatcher.Score("Carwitham, John", ["Carwitham, J. (John)"]));
+        Assert.Equal(0.97, NameMatcher.Score("Robertson, G H", ["Robertson, G. H. (George Harcourt)"]));
+        Assert.Equal(0.97, NameMatcher.Score("Robertson, George Harcourt", ["Robertson, G. H. (George Harcourt)"]));
+        Assert.True(NameMatcher.Abbreviates("Horlor, George W", ["Horlor, George William"]));
+        Assert.True(NameMatcher.Abbreviates("Carwitham, John", ["Carwitham, J. (John)"]));
+        Assert.False(NameMatcher.Abbreviates("Morgan, John", ["Morgan, John Lester"]));
+        Assert.False(NameMatcher.Abbreviates("Kirby, John", ["Kirby, John C."]));
         var byVariant = locUndated with { Uri = "l9v", Label = "Dürer, Albrecht Lester", ByVariant = true };
         Assert.Null(Reconciler.Score(reading, [agrees, byVariant], 120)[1].JoinedTo);
         Assert.Null(Reconciler.Score(carwitham, [carwithamUlan, carwithamLoc with { ByVariant = true }], 120)[1].JoinedTo);
@@ -1401,6 +1425,12 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var kirbyRecord = (await pg.Store.FindAuthoritiesByLabelAsync(StringKey.Normalise("Kirby, John"), "loc")).Single();
         Assert.True(LocalIndexSource.ToCandidate(kirbyRecord, StringReading.Read(await pg.Store.CollectAsync(ds, "persauthorfull", "Kirby, John, active 1918"), new ContextRule([EntityClass.Person], "default"), new AgentStringParser(AgentProfileCatalog.BuiltIn.Get("default"))), "local").ByVariant);
         Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Kirby, John, active 1918")));
+        // but a name that is the heading written shorter is the heading (finding 78): "Horlor, George W, op 1849-1890" is ULAN's one
+        // "Horlor, George William" (variant "Horlor, George W."), dated by a window the working years sit in
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500030412", "ulan", "Horlor, George William", ["Horlor, George William", "Horlor, George W."], "Person", new Lifespan(new DateTimeOffset(1819, 1, 1, 0, 0, 0, TimeSpan.Zero), null, null, new DateTimeOffset(1920, 12, 31, 0, 0, 0, TimeSpan.Zero), "1819~-~1920"), [], null, DateTimeOffset.UtcNow, "test"));
+        var horlor = await pg.Store.CollectAsync(ds, "persauthorfull", "Horlor, George W, op 1849-1890");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, horlor));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(horlor.Id))!.Method);
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125106", "loc", "Blenkinsop, Terence, 1900-1950", ["Blenkinsop, Terence, 1900-1950", "Blenkinsop, Terence"], "Person", GettyVocabLoader.LifespanFromYears("1900", "1950"), [], null, DateTimeOffset.UtcNow, "test"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125107", "loc", "Blenkinsop, Terence", ["Blenkinsop, Terence"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Blenkinsop, Terence, 1960-"))); // the dated namesake is vetoed, but it is a second record of the name
@@ -1491,7 +1521,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // the audit: Dürer's entity agrees with its ULAN record; the impostor's ULAN id is not in the index
         var flagged = new List<AuditItem>();
         var audit = await new IndexAudit(pg.Store).RunAsync(ds, item => { flagged.Add(item); return Task.CompletedTask; });
-        Assert.Equal(6, audit.WithUlan); // Dürer, the impostor, the undated import above, England & Co. (finding 38), the National Gallery (finding 40) and Biddy MacDonald (finding 65)
+        Assert.Equal(7, audit.WithUlan); // Dürer, the impostor, the undated import above, England & Co. (finding 38), the National Gallery (finding 40), Biddy MacDonald (finding 65) and George Horlor (finding 78)
         Assert.True(audit.Clean >= 1);
         // an entity with only the LoC id is reached through ULAN's link and could gain the ULAN id
         var locOnly = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Durer, Albrecht", Status: EntityStatus.Aligned), scheme);

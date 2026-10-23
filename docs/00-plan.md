@@ -22,12 +22,12 @@ the LoC "-781" subdivision forms deleted from both files. The store has had two 
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
-SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-115139-p9g534: accepted 9,017 (vote
-3,803, single 1,907, exact-single 3,307), queued 4,109, matched in store 5,832, minted 11,295, lists 404, compounds
-15,558; by context queued persauthorfull 1,306, keywords 843, publisher 811, keywords:head 487, place 302, corpauthor
-189, keywords:sub 171. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 ->
-4,463 -> 4,294 -> 4,193 -> 4,109. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is
-"Measured ... p9g534". The Wikidata truthy dump
+SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-124010-eetp4h: accepted 9,124 (vote
+3,867, single 1,936, exact-single 3,321), queued 3,964, matched in store 5,836, minted 11,329, lists 404, compounds
+15,558; by context queued persauthorfull 1,306, keywords 761, publisher 798, keywords:head 469, place 277, corpauthor
+182, keywords:sub 171. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 ->
+4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the
+last is "Measured ... eetp4h". The Wikidata truthy dump
 (71.7 GB) and the sitelinks table are downloading on the owner's other machine (next builds, item 4).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -76,13 +76,19 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-23 from p9g534's samples, waiting for the rerun** (doc 10 7.6 "Measured ... p9g534"): finding 78 (a
+**Built 2026-10-23 from eetp4h's samples, waiting for the rerun** (doc 10 7.6 "Measured ... eetp4h"): finding 79 (a
+source's lone exact record dated without conflict joins the record another source dates as the string does: ULAN's
+"Bolton, James" 1699~-1799 beside LoC's agreeing "active 1775-1795"); finding 80 (a dated heading that is a concept,
+period or event whole in any index is not a person: "World War, 1939-1945"). Expect a few more votes among the dated
+names and the dated topical headings of keywords:head to settle on LCSH.
+
+**Built 2026-10-23 from p9g534's samples, measured on eetp4h** (kept for the record): finding 78 (a
 name that is the heading written shorter is the heading, not a variant-only match: "Horlor, George W" of "Horlor,
 George William"; the matcher expands a fuller form into its initials: "Carwitham, J. (John)" is "Carwitham, John";
 and finding 40's two-bodies join works in keywords when both records are bodies by their own class: "Galleria Spada
 (Rome, Italy)"). Expect some of the 35 exact-singles finding 74 took back to return, and a few keywords votes.
 
-**Built 2026-10-23 from decision 16's count, waiting for the rerun** (doc 10 7.6 "Decision 16's count"): finding 77
+**Built 2026-10-23 from decision 16's count, measured on eetp4h** (kept for the record): finding 77
 (the qualifier's TGN ancestors through variants, every segment and "&" as "and": "Arlington Court (Devonshire)",
 "A-la-Ronde (Exmouth, Devonshire)", "Broughton House (Dumfries & Galloway)"; about 35 queued keywords strings). If
 the rerun in progress started before this commit it does not have it; the following one does.
@@ -153,20 +159,21 @@ says "continue with the list"):
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
-Runs ygjx75 and p9g534 (2026-10-23) are measured and read, and the LoC index's working dates are written. The
-rerun measures findings 77 and 78 (the tool rebuilds itself on `dotnet run`):
+Runs ygjx75, p9g534 and eetp4h (2026-10-23) are measured and read. The rerun measures findings 79 and 80 (the tool
+rebuilds itself on `dotnet run`):
 
     git push
-    dotnet run --project tools/Align -- undo-run --run run-20261023-115139-p9g534
+    dotnet run --project tools/Align -- undo-run --run run-20261023-124010-eetp4h
     dotnet run --project tools/Align -- reconcile --verbose
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context corpauthor --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context publisher --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
 
-If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)" are still queued
-after it, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the other place
-twins with different Wikidata ids are the desk's to judge from their ids. After this run's reading, the second pass
-(finding 51) is the next build, then the Wikidata extract when the files have arrived.
+The queue is in the band the assistant expected the cycles to stop in (3,964). After this run's reading the levers
+change: the second pass (finding 51) is the next build, then the Wikidata extract when the files have arrived, then
+the 2024 shadow. If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
+are still queued, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the
+other place twins with different Wikidata ids are the desk's to judge from their ids.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

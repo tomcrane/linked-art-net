@@ -183,6 +183,14 @@ public class LocHeadingTests
         Assert.Equal(DateAgreement.Agree, Active(1775, 1790).Compare(Active(1773, 1789), 120));
         // "Bolton, James, fl. 1775-1795" and LoC's "Bolton, James, active 1840-1876": a working life of 101 years is two people
         Assert.Equal(DateAgreement.Conflict, Active(1775, 1795).Compare(Active(1840, 1876), 120));
+        // a lone record dated without conflict joins the record another source dates as the string does (finding 79): ULAN's "Bolton,
+        // James" 1699-1799 beside LoC's "Bolton, James, active 1775-1795" for "Bolton, James, fl. 1775-1795"
+        static StringReading Reading(string text, Lifespan l) => StringReading.Read(new SourceString(1, "ds", "persauthorfull", text, StringKey.Normalise(text), null, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1), new ContextRule([EntityClass.Person]), null) with { Lifespan = l };
+        var boltonReading = Reading("Bolton, James", Active(1775, 1795));
+        var boltonLoc = new Candidate("l1", "loc", "Bolton, James, active 1775-1795", EntityClass.Person, Active(1775, 1795), [], "local", 1.0);
+        var boltonUlan = new Candidate("u1", "ulan", "Bolton, James", EntityClass.Person, new Lifespan(new DateTimeOffset(1699, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1699, 12, 31, 0, 0, 0, TimeSpan.Zero), null, new DateTimeOffset(1799, 12, 31, 0, 0, 0, TimeSpan.Zero), "1699~-1799"), [], "local", 1.0);
+        var boltonScored = Reconciler.Score(boltonReading, [boltonLoc, boltonUlan], 120);
+        Assert.True(boltonScored[0].DatesAgree); Assert.Equal("l1", boltonScored[1].JoinedTo);
         // overlapping working dates that are not the same dates say nothing either way
         Assert.Equal(DateAgreement.Incomparable, Active(1775, 1795).Compare(Active(1790, 1830), 120));
         // a working span inside a lifetime says nothing either way; "Goldsmith, Oliver, 1730?" as alive in 1730 does not contradict 1728-1774
@@ -893,6 +901,16 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/aat/300033618", "aat", "painting (visual works)", ["painting (visual works)", "Painting"], "Type", null, [], null, now, "test"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/tgn/7005685", "tgn", "Canada", ["Canada"], "Place", null, [], "{\"parentString\":\"North and Central America, World\"}", now, "test"));
         var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "lcsh"), new LocalIndexSource(pg.Store, "aat"), new LocalIndexSource(pg.Store, "tgn")], ProjectManifest.PmcDefault.ToOptions());
+        // a dated heading that is a concept whole ("World War, 1939-1945") is not a person with a lifespan (finding 80): LCSH's heading is
+        // found by the whole string and the parser's reading is dropped; a dated name heading with no such record keeps its lifespan
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/subjects/sh85148273", "lcsh", "World War, 1939-1945", ["World War, 1939-1945", "Second World War"], "Type", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/aat/300247280", "aat", "world wars", ["world wars", "world war"], "Type", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var worldWar = await pg.Store.CollectAsync(ds, "keywords", "World War, 1939-1945");
+        var worldWarEvaluation = await reconciler.EvaluateAsync(ds, worldWar);
+        Assert.Null(worldWarEvaluation.Reading.Lifespan); Assert.Equal("World War, 1939-1945", worldWarEvaluation.Reading.Text);
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, worldWar));
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "keywords", "World War, 1939-1945"))!.Equivalents, q => q.Uri.EndsWith("sh85148273"));
+        Assert.NotNull((await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords", "Tuke, Henry Scott, 1858-1929"))).Reading.Lifespan);
 
         // the head context reads a dated name heading through the MARC profile and leaves a topical head alone
         var tuke = reconciler.Read(await pg.Store.CollectAsync(ds, "keywords:head", "Tuke, Henry Scott, 1858-1929"));

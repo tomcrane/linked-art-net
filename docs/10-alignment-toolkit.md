@@ -1259,6 +1259,42 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-10-23 (run-20261023-124010-eetp4h: findings 77 and 78, against p9g534): accepted 9,017 -> 9,124 (vote
+3,803 -> 3,867, single 1,907 -> 1,936, exact-single 3,307 -> 3,321), queued 4,109 -> 3,964, minted 11,295 -> 11,329,
+matched in store 5,832 -> 5,836. By context: keywords queued 843 -> 761 (finding 77's county qualifiers and finding
+78's bodies), place 302 -> 277 (finding 77), keywords:head 487 -> 469, publisher 811 -> 798, corpauthor 189 -> 182,
+persauthorfull 1,306, keywords:sub 171. The path: 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964: under 4,000, the band
+the assistant expected the cycles to stop in. The samples, read:
+
+- "Bolton, James, fl. 1775-1795" (keywords:head): LoC's "Bolton, James, active 1775-1795" agrees (the working dates
+  of finding 26 on both sides), LoC's "active 1840-1876" conflicts and is vetoed, and ULAN's one "Bolton, James",
+  1699~-1799, stands apart: finding 55 joined a lone record only when undated or dated by a window, and ULAN's end
+  here is tight. Finding 79, built: a source's lone exact record whose dates do not conflict joins the record another
+  source dates as the string does; a conflict would have vetoed it, and nothing else contradicts.
+- "World War, 1939-1945" (keywords:head): read by the marc profile as the person "World War" with a lifespan, and AAT's
+  "world wars" its one candidate; LCSH's heading of the whole string was not found by the name's keys. Finding 80,
+  built: in a context that uses the parser for dated strings only, a dated heading whose whole text is a label of a
+  concept, a period or an event in any index is that and not a person, and is read again without the parser; "Tuke,
+  Henry Scott, 1858-1929" keeps its lifespan. Why AAT's lone concept did not take the string as finding 24's lone
+  record is not shown by the printer; it no longer matters for this string.
+- "Christie, Sharp and Harper" (corpauthor): ULAN's "Christie, Sharp & Harper" at 1.00 and, at 0.97, ULAN's
+  "Christie, James" and "Christie's", both of which list the firm's name among their variants: ULAN's own history of
+  the house, three records claiming one name. Not a matcher fault; the desk's.
+- "Wheatley, John, 1892-1955": ULAN agrees; LoC's "Wheatley, John" and "Wheatley, J. (John)" (exact through finding
+  78's expansion) are two LoC records of the name, two people by LoC's own rule, so neither is the lone record. The
+  desk's, as finding 14 intends.
+- "Canadian Art Club" against LoC's one "Canadian Art Club (Toronto, Ont.)" at 0.85: the bare string against a lone
+  place-qualified heading, decision 16's shape outside the home place. The desk's by that decision.
+- "Kasmin Limited (London)": LoC's "Kasmin Limited" exact, LoC's "Kasmin" at 0.95 (the suffix dropped) a rival, and
+  the dealer "Kasmin, John" at 0.85; two LoC records of the body. The desk's.
+- "Waltham Forest: Libraries & Arts Department" against LoC's "Waltham Forest (London, England). Libraries and Arts
+  Department" at 0.85: LoC's subordinate-body form (parent, its place, a full stop, the department) against the
+  archive's colon; a name-forms shape worth a rule if corpauthor's queue shows more of it. Noted, not built.
+- "Messrs Royce", "Mr Abbott", "Mr Hodgson", "Mr Farebrother", "Mr Hoard": bare surnames, the one-word rule holding;
+  "Nationalmuseum" (ULAN's Stockholm record and its Copenhagen one through a variant); "Musée de l'Ermitage"; "City
+  Museum and Art Gallery, Portsmouth": the desk's. keywords and keywords:head otherwise as before: the famous-name
+  ties, the legacy twins, "Art, Primitive", "Fine Art Society (London)", "Hughs".
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

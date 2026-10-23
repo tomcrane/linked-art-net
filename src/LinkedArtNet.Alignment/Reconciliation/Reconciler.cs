@@ -261,6 +261,20 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return reading;
     }
 
+    /// <summary>
+    /// A dated heading in a context that uses the parser for dated strings only ("World War, 1939-1945" in the keywords field) is read as
+    /// a person with a lifespan; when the whole heading as written is a label of a concept, a period or an event in any index, it is
+    /// that and not a person, and is read again without the parser (finding 80, 2026-10-23).
+    /// </summary>
+    private async Task<StringReading> WithWholeConceptAsync(SourceString s, StringReading reading, CancellationToken ct)
+    {
+        if (reading.Lifespan is null) return reading;
+        var rule = _options.Contexts.TryGetValue(s.Context, out var r) ? r : _options.DefaultContext;
+        if (!rule.ParseDatedOnly || !rule.Classes.Contains(EntityClass.Type)) return reading;
+        var whole = await store.FindAuthoritiesByLabelAsync(StringKey.Normalise(s.Raw), null, ct);
+        return whole.Any(a => a.Type is nameof(EntityClass.Type) or nameof(EntityClass.Period) or nameof(EntityClass.Event)) ? StringReading.Read(s, rule, null) : reading;
+    }
+
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>
     public StringReading Read(SourceString s)
     {
@@ -272,7 +286,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Evaluation> EvaluateAsync(string dataset, SourceString s, bool includeStore = true, CancellationToken ct = default)
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        var reading = await WithQualifierAncestorsAsync(Read(s), ct);
+        var reading = await WithQualifierAncestorsAsync(await WithWholeConceptAsync(s, Read(s), ct), ct);
         Time("read", sw);
         if (reading.Key.Length == 0) return new Evaluation(Outcome.Skipped, reading, []);
 
@@ -590,7 +604,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 var exact = list.Select((m, i) => (m, i)).Where(x => x.m.Candidate.Source == source && x.m.Candidate.NameScore >= 0.97 && !x.m.Veto && !x.m.Candidate.ByVariant).ToList();
                 if (exact.Count != 1) continue;
                 var (lone, at) = exact[0];
-                if (lone.SetAside || lone.JoinedTo is not null || lone.Candidate.Lifespan is { IsDated: true }) continue;
+                // and a lone record dated without conflict ("Bolton, James", ULAN's 1699~-1799, beside LoC's agreeing "active 1775-1795" for
+                // "Bolton, James, fl. 1775-1795") counts as the undated one does: nothing contradicts, and a conflict would have vetoed it
+                // (finding 79, 2026-10-23; before it only an undated record or a window joined)
+                if (lone.SetAside || lone.JoinedTo is not null) continue;
                 if (lone.Candidate.Class is { } cls && dated.Candidate.Class is { } datedClass && cls != datedClass) continue;
                 list[at] = lone with { JoinedTo = dated.Candidate.Uri, Reason = lone.Reason + $"; {source}'s one record of the name, which {dated.Candidate.Source} dates" };
             }

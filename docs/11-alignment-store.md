@@ -327,10 +327,20 @@ keeps the description, the instance-of ids and the identifiers. The truthy dump 
 comes from a second file, the sitelinks table (`wikidatawiki-latest-wb_items_per_site.sql.gz`, a MySQL dump, 1.9 GB):
 after the records are written, its rows are counted per kept item and merged into each record's data as `sitelinks`
 (`MergeAuthorityDataAsync`). The command is `load-wikidata <dump> [--sitelinks <table>] [--version v]`; the shapes were
-checked against the dump on 2026-10-23 and the test fixture is a sliver in those shapes. The index is not yet among the
-manifest's sources: how the reconciler uses it (a crosswalk between TGN and LoC, dates for LoC's undated records, a
-check on VIAF clusters, prominence for the famous-name ties) is designed once it is loaded (plan section 0). Credit:
-Wikidata, CC0.
+checked against the dump on 2026-10-23 and the test fixture is a sliver in those shapes. Credit: Wikidata, CC0.
+
+The first full load (2026-10-23, dump of that date): 8,268,876,335 triples and 126,893,299 items read in 3 h 13 min,
+5,004,911 records kept, 100,625,067 sitelink rows counted. By class: Person 4,221,300 (3,506,027 dated), untyped
+519,152, Group 152,373, Place 105,829 (22,097 dated), Type 4,040, Event 2,217. By identifier: VIAF 4,722,574, GND
+3,140,584, LoC 1,757,783, ULAN 131,762, TGN 93,661, AAT 24,384; 78 per cent of records carry two or more, 18,220 carry
+both TGN and LoC, 67,069 both ULAN and LoC. Sitelinks: none 2,596,592 (items made from the authority files, with no
+article anywhere), 1-4 1,647,381, 5-19 535,251, 20-99 218,917, 100 or more 6,770. The untyped half-million were
+instance-of values the class table did not list, almost all settlement types (Ortsteil, commune of France, comune of
+Italy, municipality of Spain, lakes, streams) and bodies (political party, sports club, learned society); the forty
+most frequent were named through the Wikidata API and added to the table (`ClassOf`), and the loaded rows were
+retyped by SQL to match (plan section 0). The full fix is to read the dump's subclass-of (P279) edges and walk each
+instance-of up to a root class, which replaces the hand table; it waits for the next reload. The index is not yet among
+the manifest's sources: the reconciler's use of it is the design step that follows (plan section 0).
 
 ## 9. Not yet
 

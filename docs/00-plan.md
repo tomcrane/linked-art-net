@@ -151,15 +151,25 @@ says "continue with the list"):
    reading and the LoC loader dropped them).
 2. ~~Finding 51, a second pass~~ (built 2026-10-23, doc 10 7.6 "Built 2026-10-23, finding 51": the run ends by
    evaluating its queued strings again with the store as it stands; the report says how many settled).
-3. ~~A local Wikidata extract as a sixth index~~: the loader is built (2026-10-23, doc 11 section 8.10,
-   `load-wikidata`), reading the truthy dump in one pass and keeping items that carry a VIAF, LoC, ULAN, TGN, AAT or
-   GND id, with the sitelinks table for prominence; both files are on the owner's external drive (`E:\datadumps`).
-   Still to do, after the load: the design of how the reconciler uses the index (not yet among the manifest's
-   sources): prominence for the famous-name ties (finding 17), dates for LoC's undated records, a crosswalk between
-   TGN and LoC through items that carry both ids, a check on VIAF clusters; and the count of records loaded. Beside
-   it, when the LUX export is designed: a reviewed Wikidata contribution export of confirmed local authorities (a
-   QuickStatements batch of label, dates, roles, nationality and the archive's URI as the reference, for a person to
-   review and submit; confirmed entities only).
+3. ~~A local Wikidata extract as a sixth index~~: the loader is built and the first load done (2026-10-23, doc 11
+   section 8.11: 5,004,911 records from 8.27 billion triples in 3 h 13 min; 4.2 million persons, 83 per cent dated;
+   106 thousand places, almost all through the TGN id; 519 thousand untyped, since retyped by SQL after the forty most
+   frequent classes were added to the table). Both files are on the owner's external drive (`E:\datadumps`). The
+   design of how the reconciler uses the index (not yet among the manifest's sources), from the first queries on it:
+   (a) prominence for the famous-name ties (finding 17): among exact candidates of one class that dates cannot
+   separate, the group whose Wikidata record (reached through `same_as`) has 20 or more sitelinks and at least double
+   the next group's is taken; "Cornwall" 126 against 46 and "Sheffield" 122 against 45 are taken, "Murray" (45, 44,
+   39, three US cities, and the publisher is none of them) is declined and stays the desk's. The famous Cornwall item
+   carries LoC, GND and VIAF ids but no TGN id, so prominence reaches a TGN candidate through the group it has formed
+   with the LoC record, not directly. (b) Dates for LoC's undated records: a LoC candidate without dates takes them
+   from the Wikidata record that links it, for the comparison only, with the reason saying so. (c) The crosswalk:
+   two candidates from different sources both linked from one Wikidata item are one entity, joined as a VIAF cluster
+   would be (18,220 items carry TGN and LoC, 67,069 ULAN and LoC). (d) Wikidata labels count as variants only, never
+   as a heading match: London's record carries "Augusta", "Lon." and "LDN". The next loader change is to read the
+   dump's subclass-of edges (P279) and walk each instance-of to a root class in place of the hand table, at the next
+   reload. Beside it, when the LUX export is designed: a reviewed Wikidata contribution export of confirmed local
+   authorities (a QuickStatements batch of label, dates, roles, nationality and the archive's URI as the reference,
+   for a person to review and submit; confirmed entities only).
 3a. The wider Wikidata, for the entities no authority has (the owner's question, 2026-10-23). The loaded extract keeps
    only items carrying another authority's id, which is what the crosswalk, the dates and the prominence need, and an
    item for an obscure historical person almost always carries one (the item was made from or linked to a library
@@ -198,15 +208,23 @@ pass (finding 51) and findings 81 and 82 together, then the Wikidata index's use
 The run's summary line ends with the second pass's counts. The Wikidata index is not among the manifest's sources, so
 that run is unchanged by it; its record count and a look at a few records start the design of its use.
 
-**The Wikidata load** (built 2026-10-23 while the run went; doc 11 section 8.10). When the run has finished, and not
-while it runs (the tool rebuilds itself and the running process holds its files), the owner runs:
+**The Wikidata load is done** (2026-10-23, 3 h 13 min, 5,004,911 records; the counts are in doc 11 section 8.11 and
+item 3 above). The retyping of the rows the class table missed, run once in DataGrip (the same forty classes the
+table now has; a reload would type them the same way):
 
-    dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
+    update authority_records set type = 'Place' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q253019','Q484170','Q116457956','Q1529096','Q747074','Q17051044','Q17343829','Q23397','Q2074737','Q3558970','Q15127012','Q839954','Q47521','Q46831','Q667509','Q124714','Q18663566','Q820477','Q70208','Q39816','Q3257686','Q751876'];
+    update authority_records set type = 'Group' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q7278','Q180958','Q476028','Q847017','Q48204','Q6881511','Q955824','Q47258130'];
+    update authority_records set type = 'Event' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q2020153'];
+    update authority_records set type = 'Language' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q34770','Q1288568'];
+    select type, count(*) from authority_records where source = 'wikidata' group by type order by 2 desc;
 
-It streams 71.7 GB gzipped (about a terabyte uncompressed, some eight billion triples) and prints a line every twenty
-million; expect several hours, so it is a run for the evening or the night, and it can be cancelled and rerun (records
-are replaced by URI; a load's partial result stays usable). The sitelinks pass follows the records. The index is not
-yet among the manifest's sources, so the next reconcile is unchanged by it; its use is the design step after. If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
+Then the next forty untyped classes, to see how fast the tail falls (the subclass walk at the next reload is the full
+fix):
+
+    select q, count(*) from authority_records, jsonb_array_elements_text(data->'instanceOf') q
+    where source = 'wikidata' and type is null group by q order by 2 desc limit 40;
+
+If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
 are still queued, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the
 other place twins with different Wikidata ids are the desk's to judge from their ids.
 

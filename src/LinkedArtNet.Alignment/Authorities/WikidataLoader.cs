@@ -81,7 +81,24 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
         // concepts
         ["Q968159"] = nameof(EntityClass.Type), ["Q1792644"] = nameof(EntityClass.Type), ["Q11862829"] = nameof(EntityClass.Type), ["Q2198855"] = nameof(EntityClass.Type),
         ["Q1047113"] = nameof(EntityClass.Type), ["Q735"] = nameof(EntityClass.Type), ["Q15621286"] = nameof(EntityClass.Type), ["Q28640"] = nameof(EntityClass.Type),
+        // the forty most frequent classes among the 519,152 records the first full load (2026-10-23) left untyped, named through the
+        // Wikidata API (wbgetentities) that day; the long tail of settlement types in particular. Works (literary work Q7725634, written
+        // work Q47461344, musical work Q105543609, film Q11424, dramatico-musical work Q58483083), taxon (Q16521) and ethnic group
+        // (Q41710) are left untyped on purpose: none is a class the reconciler aligns
+        ["Q253019"] = nameof(EntityClass.Place), ["Q484170"] = nameof(EntityClass.Place), ["Q116457956"] = nameof(EntityClass.Place), ["Q1529096"] = nameof(EntityClass.Place),
+        ["Q747074"] = nameof(EntityClass.Place), ["Q17051044"] = nameof(EntityClass.Place), ["Q17343829"] = nameof(EntityClass.Place), ["Q23397"] = nameof(EntityClass.Place),
+        ["Q2074737"] = nameof(EntityClass.Place), ["Q3558970"] = nameof(EntityClass.Place), ["Q15127012"] = nameof(EntityClass.Place), ["Q839954"] = nameof(EntityClass.Place),
+        ["Q47521"] = nameof(EntityClass.Place), ["Q46831"] = nameof(EntityClass.Place), ["Q667509"] = nameof(EntityClass.Place), ["Q124714"] = nameof(EntityClass.Place),
+        ["Q18663566"] = nameof(EntityClass.Place), ["Q820477"] = nameof(EntityClass.Place), ["Q70208"] = nameof(EntityClass.Place), ["Q39816"] = nameof(EntityClass.Place),
+        ["Q3257686"] = nameof(EntityClass.Place), ["Q751876"] = nameof(EntityClass.Place),
+        ["Q7278"] = nameof(EntityClass.Group), ["Q180958"] = nameof(EntityClass.Group), ["Q476028"] = nameof(EntityClass.Group), ["Q847017"] = nameof(EntityClass.Group),
+        ["Q48204"] = nameof(EntityClass.Group), ["Q6881511"] = nameof(EntityClass.Group), ["Q955824"] = nameof(EntityClass.Group), ["Q47258130"] = nameof(EntityClass.Group),
+        ["Q2020153"] = nameof(EntityClass.Event),
+        ["Q34770"] = nameof(EntityClass.Language), ["Q1288568"] = nameof(EntityClass.Language),
     };
+
+    /// <summary>The record's class: the first instance-of value the table knows, else none (the record is kept untyped).</summary>
+    internal static string? ClassOf(IEnumerable<string> instanceOf) => instanceOf.Select(q => Classes.GetValueOrDefault(q)).FirstOrDefault(c => c is not null);
 
     private static readonly string[] LabelLanguages = ["en", "mul", "en-gb", "en-ca", "en-us", "en-au", "en-ie", "en-nz", "simple"];
 
@@ -182,7 +199,7 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
         if (label is not null) labels.Add(label);
         labels.AddRange(item.Labels.Select(x => x.Text));
         labels.AddRange(item.AltLabels.Select(x => x.Text));
-        var type = item.InstanceOf.Select(q => Classes.GetValueOrDefault(q)).FirstOrDefault(c => c is not null);
+        var type = ClassOf(item.InstanceOf);
         var lifespan = LifespanOf(item, type);
         var sameAs = item.Ids.Select(kv => Identifiers.First(i => i.Value.Key == kv.Key).Value.Uri(kv.Value)).Distinct(StringComparer.Ordinal).ToArray();
         var data = new Dictionary<string, object?> { ["ids"] = item.Ids };

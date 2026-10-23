@@ -49,6 +49,22 @@ public class WikidataLoaderTests(PostgresFixture pg)
         """;
 
     [Fact]
+    public void The_class_table_reads_the_settlement_and_body_types_the_first_load_left_untyped()
+    {
+        // the forty most frequent untyped instance-of values of the 2026-10-23 load, named through the Wikidata API: communes, Ortsteile,
+        // lakes and streams are places; parties, clubs and learned societies are bodies; a conference is an event; works stay untyped
+        Assert.Equal("Place", WikidataLoader.ClassOf(["Q484170"]));           // commune of France
+        Assert.Equal("Place", WikidataLoader.ClassOf(["Q253019"]));           // Ortsteil
+        Assert.Equal("Place", WikidataLoader.ClassOf(["Q23397", "Q47521"]));  // lake, stream
+        Assert.Equal("Group", WikidataLoader.ClassOf(["Q955824"]));           // learned society
+        Assert.Equal("Group", WikidataLoader.ClassOf(["Q47258130"]));         // academic conference series: a conference heading, as LoC has it
+        Assert.Equal("Event", WikidataLoader.ClassOf(["Q2020153"]));          // academic conference
+        Assert.Equal("Language", WikidataLoader.ClassOf(["Q34770"]));
+        Assert.Null(WikidataLoader.ClassOf(["Q7725634", "Q11424"]));          // literary work, film
+        Assert.Equal("Person", WikidataLoader.ClassOf(["Q7725634", "Q5"]));   // the first known class wins, whatever precedes it
+    }
+
+    [Fact]
     public void Dump_dates_give_years_and_sitelink_rows_count_per_kept_item()
     {
         Assert.Equal("1952", WikidataLoader.Year("1952-03-11T00:00:00Z"));

@@ -10,15 +10,22 @@ Branch `de-pmc` is the working branch and `main` is what is deployed (README, "B
 is behind by all of Phase 5. The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this
 folder are the committed record.
 
-## 0. Resume point (written 2026-10-22 evening; the one place to read first)
+## 0. Resume point (written 2026-10-23 evening; the one place to read first)
 
 This section is rewritten at the end of every working day. It lists what stands, what the owner has to decide, what
 is built and waiting for a go, and the commands to run on return. The detail behind each line is in
 [10-alignment-toolkit.md](10-alignment-toolkit.md) section 7.6 (the findings, each dated) and in the open items of
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
-**Where things stand.** Branch `de-pmc`, all work committed, CI green. Five authority sources loaded (14.5M records),
-the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
+**Tomorrow, in order** (2026-10-24; every step is under "Commands on return" below with its SQL and commands):
+(1) `git push`; (2) the two store checks on "Lincoln, Neb" and "Newbridge, Co. Kildare", paste the rows; (3) undo
+fk53p7 and `reconcile --verbose`, paste the summary line and the second pass's lines, then the keywords:head and
+persauthorfull queued samples; (4) the assistant measures finding 83 and builds the Wikidata index's use, prominence
+first. Nothing is half-done: the Wikidata load and its retyping are complete, and the index waits only for its use.
+
+**Where things stand.** Branch `de-pmc`, all work committed, CI green. Six authority sources loaded: the five of the
+manifest (14.5M records) and the Wikidata extract (5.0M, loaded 2026-10-23 evening, doc 11 section 8.11, not yet
+among the manifest's sources); the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
@@ -27,8 +34,8 @@ SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-183
 15,558; second pass 3,896 reconsidered, 293 settled; by context queued persauthorfull 1,264, keywords 620, publisher
 781, keywords:head 354, place 256, corpauthor 175, keywords:sub 153. The path: 8,518 (Monday) -> 6,647 -> 5,763 ->
 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603. Doc 10 7.6
-has a "Measured" paragraph per run with the samples read; the last is "Measured ... fk53p7". The Wikidata truthy dump
-(71.7 GB) and the sitelinks table are downloading on the owner's other machine (next builds, item 4).
+has a "Measured" paragraph per run with the samples read; the last is "Measured ... fk53p7". The Wikidata dump and
+the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
 34); prominence waits for the Wikidata extract; findings 35, 40, 48 (concepts and places), 60 and 63 yes, all built;
@@ -222,9 +229,10 @@ that is a finding. Then the rerun, which measures finding 83 (the tool rebuilds 
 The Wikidata index is not among the manifest's sources, so that run is unchanged by it. The next build is the index's
 use, prominence first (item 3), which the keywords:sub queue is waiting for almost to a string.
 
-**The Wikidata load is done** (2026-10-23, 3 h 13 min, 5,004,911 records; the counts are in doc 11 section 8.11 and
-item 3 above). The retyping of the rows the class table missed, run once in DataGrip (the same forty classes the
-table now has; a reload would type them the same way):
+**The Wikidata load and its retyping are done; nothing here is to be run again** (2026-10-23, 3 h 13 min, 5,004,911
+records; the counts are in doc 11 section 8.11 and item 3 above). The retyping of the rows the class table missed,
+run once in DataGrip on 2026-10-23 evening (the same classes the table now has; a reload would type them the same
+way), kept for the record:
 
     update authority_records set type = 'Place' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q253019','Q484170','Q116457956','Q1529096','Q747074','Q17051044','Q17343829','Q23397','Q2074737','Q3558970','Q15127012','Q839954','Q47521','Q46831','Q667509','Q124714','Q18663566','Q820477','Q70208','Q39816','Q3257686','Q751876'];
     update authority_records set type = 'Group' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q7278','Q180958','Q476028','Q847017','Q48204','Q6881511','Q955824','Q47258130'];

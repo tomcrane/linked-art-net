@@ -37,6 +37,15 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
 
 **Decisions still owed by the owner:**
 
+15. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
+    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
+    `merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX merges
+    its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
+    builds, item 4).
+
+**Decisions taken by the owner on 2026-10-23:** decision 16 (the lone heading placed in the home place) to the desk;
+the two below are closed and kept for their queries.
+
 14. *"Peers"*: finding 63 was built for it and it is still queued, so a fourth group the printer does not show
     stands beside AAT's concept and TGN's two hamlets. The owner runs: `select jsonb_pretty(d.evidence) from
     decisions d join source_strings s on s.id = d.source_string_id where d.run_id = 'run-20261022-141247-hspbdg'
@@ -44,11 +53,6 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     is the desk's. Run 2026-10-22: the fourth group is LoC's "Peers (Musical group)" at 0.85, which the rule
     counted as a rival of another source. Fixed that evening: only exact records count on either side; the
     lookalike is finding 48's business. Closed.
-15. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
-    replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
-    `merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX merges
-    its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
-    builds, item 4).
 16. *A lone heading placed in the home place* (doc 10 7.6 "Measured ... ygjx75": "Ogmore Castle" against LCSH's
     "Ogmore Castle (Wales)" at 0.85, its only candidate; "Anglesey Abbey" against LCSH's "Anglesey Abbey (Lode,
     England)"): the proposed rule makes a qualified heading exact on the bare name when its qualifier places it

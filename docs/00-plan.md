@@ -55,7 +55,7 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     lookalike and two home-placed records ("Richmond (England)", "Richmond (London, England)") stay the desk's. Count
     first, the owner runs (the lone shape, which the rule would accept as exact-single):
     `with q as (select d.id, ss.raw, ss.context, d.evidence from decisions d join source_strings ss on ss.id =
-    d.source_string_id where d.run_id = 'run-20261023-103032-ygjx75' and d.valid and d.method = 'queued' and
+    d.source_string_id where d.run_id = 'run-20261023-103032-ygjx75' and d.method = 'queued' and
     ss.context in ('keywords', 'keywords:head', 'keywords:sub')), members as (select q.id, q.raw, q.context,
     m->>'source' as source, m->>'label' as label, (m->>'score')::numeric as score, (m->>'veto') is not null as veto
     from q cross join lateral jsonb_array_elements(q.evidence->'groups') g cross join lateral
@@ -64,7 +64,8 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     m.raw))[1:5] as examples from members m join lone l on l.id = m.id where not m.veto and m.source in ('lcsh',
     'loc') and m.score >= 0.85 and m.score < 0.97 and m.label ~
     '\((.*, )?(England|Wales|Scotland|Northern Ireland|Great Britain|United Kingdom)( : [^)]*)?\)$'
-    group by m.source, m.context order by strings desc;` Yes
+    group by m.source, m.context order by strings desc;` (no `d.valid`: an undone run's decisions are invalid but keep
+    their evidence; the first attempt, with it, returned 0 rows on 2026-10-23.) Yes
     or no on the count and the examples; the "Anglesey Abbey" shape (other sources' exact records beside it) is a
     second step, since the heading made exact would join or rival them.
 

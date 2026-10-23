@@ -1,9 +1,14 @@
 # Plan: linked-art-net
 
-Status: proposal 2026-10-13; Phases 0-3 delivered and live at linkedart.net as v0.1.0 on 2026-10-16 (status
-review in §7). Branch `de-pmc` is the working branch and `main` is what is deployed (README, "Branches and
-releases"). The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this folder are the
-committed record.
+Status: proposal 2026-10-13. Phases 0-3 delivered: linkedart.net and dates.linkedart.net run v0.1.2 (2026-10-17;
+the model library, the dates parser, service, site and trainer). Phase 4 (hardening) is open. Phase 5, the alignment
+toolkit, is the current work since 2026-10-17 and is not deployed: the agent-string parser (`LinkedArtNet.Agents`,
+with its `/agents` playground and `/v1/agent` endpoint, in the changelog's Unreleased section), the alignment store on
+PostgreSQL, five authority sources loaded locally, the reconciler and the `tools/Align` pipeline, and the review
+workbench, all running on the owner's machine against a local store and tuned run by run (section 0; doc 10 7.6).
+Branch `de-pmc` is the working branch and `main` is what is deployed (README, "Branches and releases"), so `main`
+is behind by all of Phase 5. The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this
+folder are the committed record.
 
 ## 0. Resume point (written 2026-10-22 evening; the one place to read first)
 

@@ -225,34 +225,40 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     private async Task<StringReading> WithQualifierAncestorsAsync(StringReading reading, CancellationToken ct)
     {
         if (reading.Qualifier is null || !sources.Any(x => x.Name == "tgn")) return reading;
-        var segment = reading.Qualifier.Split(',')[0].Trim();
-        if (segment.Length < 3) return reading;
-        if (!_ancestors.TryGetValue(segment, out var ancestors))
+        // every segment in turn until one is a county or above ("Exmouth, Devonshire": the town brings nothing, the county does), the
+        // qualifier's "&" read as "and" ("Dumfries & Galloway"); finding 77, 2026-10-23
+        foreach (var segment in reading.Qualifier.Split(',').Select(x => x.Trim().Replace(" & ", " and ", StringComparison.Ordinal)).Where(x => x.Length >= 3))
         {
-            ancestors = null;
-            var records = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(segment), "tgn", nameof(EntityClass.Place), 50, ct);
-            var own = new List<string>();
-            foreach (var r in records.Where(r => r.Label is not null && NameMatcher.Score(segment, [r.Label!]) >= 0.97))
+            if (!_ancestors.TryGetValue(segment, out var ancestors))
             {
-                string? parent = null, placeType = null;
-                try
+                ancestors = null;
+                var records = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(segment), "tgn", nameof(EntityClass.Place), 50, ct);
+                var own = new List<string>();
+                // the name may be TGN's variant ("Devonshire" for its "Devon"): then the preferred name leads the ancestors, so that a heading
+                // placed by the preferred name ("Arlington, Devon, England") agrees (finding 77)
+                foreach (var r in records.Where(r => r.Label is not null && NameMatcher.Score(segment, r.Labels.Prepend(r.Label!)) >= 0.97))
                 {
-                    using var doc = JsonDocument.Parse(r.DataJson ?? "{}");
-                    if (doc.RootElement.TryGetProperty("parentString", out var ps)) parent = ps.GetString();
-                    if (doc.RootElement.TryGetProperty("placeType", out var pt)) placeType = pt.GetString();
+                    string? parent = null, placeType = null;
+                    try
+                    {
+                        using var doc = JsonDocument.Parse(r.DataJson ?? "{}");
+                        if (doc.RootElement.TryGetProperty("parentString", out var ps)) parent = ps.GetString();
+                        if (doc.RootElement.TryGetProperty("placeType", out var pt)) placeType = pt.GetString();
+                    }
+                    catch (JsonException) { }
+                    if (parent is null || placeType is null) continue;
+                    var label = (await store.GetAuthorityAsync(placeType, ct))?.Label;
+                    if (Qualified.LevelOf(label) is >= 3) own.Add(NameMatcher.Score(segment, [r.Label!]) >= 0.97 ? parent : $"{r.Label}, {parent}");
                 }
-                catch (JsonException) { }
-                if (parent is null || placeType is null) continue;
-                var label = (await store.GetAuthorityAsync(placeType, ct))?.Label;
-                if (Qualified.LevelOf(label) is >= 3) own.Add(parent);
+                // several counties of the name ("Essex" in England, Ontario and five American states): the project's home place decides
+                // (finding 71, 2026-10-22; the PMC manifest says United Kingdom)
+                if (own.Count > 1 && _options.HomePlace is { } home) own = own.Where(p => Qualified.Contains(p, Qualified.Tokens(home))).ToList();
+                if (own.Distinct(StringComparer.Ordinal).Count() == 1) ancestors = own[0];
+                _ancestors[segment] = ancestors;
             }
-            // several counties of the name ("Essex" in England, Ontario and five American states): the project's home place decides
-            // (finding 71, 2026-10-22; the PMC manifest says United Kingdom)
-            if (own.Count > 1 && _options.HomePlace is { } home) own = own.Where(p => Qualified.Contains(p, Qualified.Tokens(home))).ToList();
-            if (own.Count == 1) ancestors = own[0];
-            _ancestors[segment] = ancestors;
+            if (ancestors is not null) return reading with { QualifierAncestors = ancestors };
         }
-        return ancestors is null ? reading : reading with { QualifierAncestors = ancestors };
+        return reading;
     }
 
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>

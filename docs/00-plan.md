@@ -65,9 +65,16 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     'loc') and m.score >= 0.85 and m.score < 0.97 and m.label ~
     '\((.*, )?(England|Wales|Scotland|Northern Ireland|Great Britain|United Kingdom)( : [^)]*)?\)$'
     group by m.source, m.context order by strings desc;` (no `d.valid`: an undone run's decisions are invalid but keep
-    their evidence; the first attempt, with it, returned 0 rows on 2026-10-23.) Yes
-    or no on the count and the examples; the "Anglesey Abbey" shape (other sources' exact records beside it) is a
-    second step, since the heading made exact would join or rival them.
+    their evidence; the first attempt, with it, returned 0 rows on 2026-10-23.) Run 2026-10-23: 43 strings, but 35 of
+    them qualified strings whose county qualifier the ancestors lookup failed to resolve (TGN's variant "Devonshire",
+    a town before the county, "&"): finding 77, built, doc 10 7.6 "Decision 16's count". The bare shape is about
+    eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
+    the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
+
+**Built 2026-10-23 from decision 16's count, waiting for the rerun** (doc 10 7.6 "Decision 16's count"): finding 77
+(the qualifier's TGN ancestors through variants, every segment and "&" as "and": "Arlington Court (Devonshire)",
+"A-la-Ronde (Exmouth, Devonshire)", "Broughton House (Dumfries & Galloway)"; about 35 queued keywords strings). If
+the rerun in progress started before this commit it does not have it; the following one does.
 
 **Built 2026-10-23 from ygjx75's samples, waiting for the rerun** (doc 10 7.6 "Measured ... ygjx75"): finding 74
 (a record exact only through a variant label is not its source's record of the name for the lone-record rules:

@@ -1185,6 +1185,18 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var audley = await pg.Store.CollectAsync(ds, "place", "Audley End (Essex)");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, audley));
         Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Audley End (Essex)"))!.Equivalents, q => q.Uri.EndsWith("n95001920"));
+        // the qualifier may be TGN's variant of the county ("Devonshire" for "Devon") and may come after a town ("Exmouth, Devonshire"):
+        // the segments are tried in turn and the preferred name leads the ancestors, so LoC's "(Arlington, Devon, England)" and "(England)"
+        // both agree (finding 77, 2026-10-23: decision 16's count query, 25 LCSH and 13 LoC headings of this shape)
+        await pg.Store.PutAuthorityAsync(Tgn("7008111", "Devon", "England, United Kingdom, Europe, World", "300000771") with { Labels = ["Devon", "Devonshire"] });
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n2008000001", "loc", "Arlington Court (Arlington, Devon, England)", ["Arlington Court (Arlington, Devon, England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n2008000002", "loc", "Buckland Abbey (England)", ["Buckland Abbey (England)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var arlington = await pg.Store.CollectAsync(ds, "place", "Arlington Court (Arlington, Devonshire)");
+        Assert.Equal("Devon, England, United Kingdom, Europe, World", (await reconciler.EvaluateAsync(ds, arlington)).Reading.QualifierAncestors);
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, arlington));
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Arlington Court (Arlington, Devonshire)"))!.Equivalents, q => q.Uri.EndsWith("n2008000001"));
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "place", "Buckland Abbey (Devonshire)")));
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "place", "Buckland Abbey (Devonshire)"))!.Equivalents, q => q.Uri.EndsWith("n2008000002"));
         var fountains = await pg.Store.CollectAsync(ds, "place", "Fountains Hall (Yorkshire)");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, fountains));
         Assert.Equal(DecisionMethod.Single, (await pg.Store.DecisionForAsync(fountains.Id))!.Method);

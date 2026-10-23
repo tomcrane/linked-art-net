@@ -1203,6 +1203,27 @@ keywords queued 977 -> 887 (the county-qualified houses and the dated names), ke
   prominence; "York (England)": city beside county; "Bottrop, Essen" and "Heaton, Bradford": TGN does not place
   them so; "Evanston, Illinois": the two store twins. All as before.
 
+Decision 16's count, run by the owner against ygjx75 (2026-10-23): 43 queued keywords strings whose only live
+candidate is a LoC or LCSH heading at 0.85 placed in the United Kingdom (lcsh 25 and loc 13 in keywords, 2 and 2 in
+keywords:sub, loc 1 in keywords:head). Read, most are not the bare shape the rule was proposed for but qualified
+strings whose county qualifier should have agreed through finding 56's ancestors and did not: "Arlington Court
+(Devonshire)" against "(Arlington, Devon, England)", "Buckland Abbey (Devonshire)" against "(England)", "A-la-Ronde
+(Exmouth, Devonshire)" against "(Devon, England)", "Ashburnham Place (Sussex)" and "Bignor Park (Sussex)" against
+"(England)", "Callendar House (Stirlingshire)" against "(Falkirk, Scotland)", "Barrogill Castle (Caithness)" against
+"Castle of Mey (Scotland)", "Broughton House (Dumfries & Galloway)" against "(Kirkcudbright, Scotland)". Finding 77,
+built: the ancestors lookup scored the qualifier against TGN's preferred label only ("Devonshire" is TGN's variant of
+"Devon"), read only the first segment ("Exmouth" is a town and brought nothing), and did not read "&" as "and". Now
+every segment is tried until one is a county or above, variants count, and when the match is a variant the preferred
+name leads the ancestors ("Devon, England, United Kingdom, Europe, World"), so a heading placed by the preferred name
+agrees. "Sussex", "Caithness" and "Stirlingshire" are TGN's former counties and should resolve the same way; if
+they still do not after the rerun, the owner's query on their TGN records (`select r.label, t.label as place_type,
+r.data->>'parentString' from authority_records r left join authority_records t on t.uri = r.data->>'placeType' where
+r.source = 'tgn' and r.normalised_labels && array['sussex', 'caithness', 'stirlingshire'];`) says why. The bare shape
+is left: "Brotherhood of Ruralists" against LoC's "Brotherhood of Ruralists (Great Britain)", "Pwllmeyric (Wales)",
+"South Staffordshire (England)", "Tees River Valley (England)", "West Country (England)", "Ogmore Castle (Wales)",
+"Camberwell School of Arts and Crafts" against "Camberwell School of Arts & Crafts (Camberwell, London, England)": about
+eight strings. The owner's decision (2026-10-23): the desk, not a rule, at that count.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

@@ -116,6 +116,13 @@ public sealed record StringReading(
             else if (agent.Kind == AgentKind.Person && classes.Contains(EntityClass.Person)) classes = [EntityClass.Person, .. classes.Where(c => c != EntityClass.Person)];
             if (agent.Dates is { Kind: Dates.ResultKind.BirthDeath or Dates.ResultKind.FormationDissolution } d)
                 lifespan = Lifespan.From(d.Begin, d.End, agent.DateText);
+            // "fl. 1775-1795", "active 1640-1660", "op 1739" are working dates; and a lone year or decade ("1730?", "1730s") says no more
+            // than that the person was alive then, which is the same shape (finding 26, 2026-10-23)
+            else if (agent.Dates is { Kind: Dates.ResultKind.Floruit } f)
+                lifespan = Lifespan.Working(f.Begin ?? f.TimeSpan, f.End ?? f.TimeSpan, agent.DateText);
+            else if (agent.Dates is { Kind: Dates.ResultKind.Single, Status: Dates.ParseStatus.Parsed or Dates.ParseStatus.Partial, TimeSpan: { } single }
+                     && Lifespan.Working(single, single, agent.DateText) is { } alive && Lifespan.Tight(alive.EndEarliest, alive.BeginLatest))
+                lifespan = alive;
             nationalities = agent.Nationalities.Select(n => n.AatUri ?? n.Label).Distinct(StringComparer.Ordinal).ToArray();
             roles = agent.Roles.Where(r => r.IsOccupation).Select(r => r.Label).Distinct(StringComparer.Ordinal).ToArray();
         }

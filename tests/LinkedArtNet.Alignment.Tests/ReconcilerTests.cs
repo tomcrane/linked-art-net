@@ -1,3 +1,4 @@
+using LinkedArtNet.Agents;
 using LinkedArtNet.Alignment.Authorities;
 using LinkedArtNet.Alignment.Reconciliation;
 
@@ -154,18 +155,79 @@ public class LocHeadingTests
     }
 
     [Fact]
-    public void Active_dates_are_not_a_lifespan_and_rwo_dates_win()
+    public void Working_dates_rule_namesakes_out_and_agree_when_the_same()
     {
+        // finding 26 (2026-10-23): "Morgan, John, 1823-1886" is not LoC's "Morgan, John, active 1635"
+        static Lifespan Life(int b, int e) => new(new DateTimeOffset(b, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(b, 12, 31, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(e, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(e, 12, 31, 0, 0, 0, TimeSpan.Zero), $"{b}-{e}");
+        static Lifespan Active(int b, int e) => new(null, new DateTimeOffset(b, 12, 31, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(e, 1, 1, 0, 0, 0, TimeSpan.Zero), null, $"active {b}-{e}");
+        Assert.True(Active(1635, 1635).IsWorking); Assert.False(Active(1635, 1635).IsDated); Assert.False(Life(1823, 1886).IsWorking);
+        Assert.Equal(DateAgreement.Conflict, Life(1823, 1886).Compare(Active(1635, 1635), 120));
+        Assert.Equal(DateAgreement.Conflict, Active(1635, 1635).Compare(Life(1823, 1886), 120));
+        // "Royce, John, active 1773-1789" and the string "Royce, John, fl. 1775-1790" are the same working life
+        Assert.Equal(DateAgreement.Agree, Active(1775, 1790).Compare(Active(1773, 1789), 120));
+        // "Bolton, James, fl. 1775-1795" and LoC's "Bolton, James, active 1840-1876": a working life of 101 years is two people
+        Assert.Equal(DateAgreement.Conflict, Active(1775, 1795).Compare(Active(1840, 1876), 120));
+        // overlapping working dates that are not the same dates say nothing either way
+        Assert.Equal(DateAgreement.Incomparable, Active(1775, 1795).Compare(Active(1790, 1830), 120));
+        // a working span inside a lifetime says nothing either way; "Goldsmith, Oliver, 1730?" as alive in 1730 does not contradict 1728-1774
+        Assert.Equal(DateAgreement.Incomparable, Active(1775, 1795).Compare(Life(1750, 1810), 120));
+        Assert.Equal(DateAgreement.Incomparable, Active(1730, 1730).Compare(Life(1728, 1774), 120));
+        // and one wholly after the person died, or before the person was born, is a conflict
+        Assert.Equal(DateAgreement.Conflict, Active(1820, 1830).Compare(Life(1750, 1810), 120));
+        Assert.Equal(DateAgreement.Conflict, Active(1700, 1710).Compare(Life(1750, 1810), 120));
+    }
+
+    [Fact]
+    public void The_reading_takes_working_dates_from_the_parser()
+    {
+        // finding 26 (2026-10-23): "fl.", "active", "op" and a lone year were read by the parser and dropped by the reading
+        var rule = new ContextRule([EntityClass.Person], "default");
+        var parser = new AgentStringParser(AgentProfileCatalog.BuiltIn.Get("default"));
+        static SourceString S(string raw) => new(1, "ds", "persauthorfull", raw, StringKey.Normalise(raw), null, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1);
+        var bolton = StringReading.Read(S("Bolton, James, fl. 1775-1795"), rule, parser);
+        Assert.Equal("Bolton, James", bolton.Text);
+        Assert.True(bolton.Lifespan!.IsWorking); Assert.Equal(1775, bolton.Lifespan.BeginLatest!.Value.Year); Assert.Equal(1795, bolton.Lifespan.EndEarliest!.Value.Year);
+        var summers = StringReading.Read(S("Summers, S, op 1739"), rule, parser);
+        Assert.Equal("Summers, S", summers.Text);
+        Assert.True(summers.Lifespan!.IsWorking); Assert.Equal(1739, summers.Lifespan.BeginLatest!.Value.Year); Assert.Equal(1739, summers.Lifespan.EndEarliest!.Value.Year);
+        var goldsmith = StringReading.Read(S("Goldsmith, Oliver, 1730?"), rule, parser);
+        Assert.Equal("Goldsmith, Oliver", goldsmith.Text);
+        Assert.True(goldsmith.Lifespan!.IsWorking); Assert.Equal(1730, goldsmith.Lifespan.BeginLatest!.Value.Year);
+        Assert.Equal("Royce, John", StringReading.Read(S("Royce, John, active 1773-1789"), rule, parser).Text);
+        Assert.True(StringReading.Read(S("Royce, John, active 1773-1789"), rule, parser).Lifespan!.IsWorking);
+        // a lifespan is still a lifespan
+        var morgan = StringReading.Read(S("Morgan, John, 1823-1886"), rule, parser);
+        Assert.False(morgan.Lifespan!.IsWorking); Assert.True(morgan.Lifespan.IsDated); Assert.Equal(1823, morgan.Lifespan.BeginEarliest!.Value.Year);
+        // and the two conflict in the scorer: "Morgan, John, 1823-1886" against LoC's "Morgan, John, active 1635"
+        var active1635 = new Candidate("loc1", "loc", "Morgan, John", EntityClass.Person, LocNamesLoader.SplitHeading("Morgan, John, active 1635").Lifespan, [], "local", 1.0);
+        var scored = Reconciler.Score(morgan, [active1635], 120);
+        Assert.True(scored[0].Veto); Assert.Contains("dates conflict", scored[0].Reason);
+        // "Bolton, James, fl. 1775-1795" against LoC's "Bolton, James, active 1840-1876": vetoed; against "Bolton, James, active 1770-1790": dates agree
+        var bolton1840 = new Candidate("loc2", "loc", "Bolton, James", EntityClass.Person, LocNamesLoader.SplitHeading("Bolton, James, active 1840-1876").Lifespan, [], "local", 1.0);
+        var bolton1770 = new Candidate("loc3", "loc", "Bolton, James", EntityClass.Person, LocNamesLoader.SplitHeading("Bolton, James, active 1770-1790").Lifespan, [], "local", 1.0);
+        var boltons = Reconciler.Score(bolton, [bolton1840, bolton1770], 120);
+        Assert.True(boltons[0].Veto); Assert.False(boltons[1].Veto); Assert.True(boltons[1].DatesAgree);
+    }
+
+    [Fact]
+    public void Active_dates_are_working_dates_and_rwo_dates_win()
+    {
+        // finding 26 (2026-10-23): "active 1640-1660" is born no later than 1640 and died no earlier than 1660, not a lifespan and not nothing
         var (n, d, l) = LocNamesLoader.SplitHeading("Smith, John, active 1640-1660");
         Assert.Equal("Smith, John", n);
         Assert.Equal("active 1640-1660", d);
-        Assert.Null(l);
+        Assert.True(l!.IsWorking); Assert.False(l.IsDated);
+        Assert.Null(l.BeginEarliest); Assert.Equal(1640, l.BeginLatest!.Value.Year); Assert.Equal(1660, l.EndEarliest!.Value.Year); Assert.Null(l.EndLatest);
+        var oneYear = LocNamesLoader.SplitHeading("Morgan, John, active 1635").Lifespan!;
+        Assert.True(oneYear.IsWorking); Assert.Equal(1635, oneYear.BeginLatest!.Value.Year); Assert.Equal(1635, oneYear.EndEarliest!.Value.Year);
+        Assert.Equal(1640, LocNamesLoader.SplitHeading("Smith, John, fl. 1640-1660").Lifespan!.BeginLatest!.Value.Year);
+        Assert.Equal(1640, LocNamesLoader.SplitHeading("Smith, John, flourished 1640-1660").Lifespan!.BeginLatest!.Value.Year);
         var rwo = LocNamesLoader.LifespanFrom("1471-05-21", "approximately 1528")!;
         Assert.Equal(1471, rwo.BeginEarliest!.Value.Year);
         Assert.Equal(1528, rwo.EndLatest!.Value.Year);
-        var decade = LocNamesLoader.LifespanFrom("185X", null)!;
-        Assert.Equal(1850, decade.BeginEarliest!.Value.Year);
-        Assert.Equal(1859, decade.BeginLatest!.Value.Year);
+        var born185x = LocNamesLoader.LifespanFrom("185X", null)!;
+        Assert.Equal(1850, born185x.BeginEarliest!.Value.Year);
+        Assert.Equal(1859, born185x.BeginLatest!.Value.Year);
         var bce = LocNamesLoader.LifespanFrom("-0469", "-0399")!;
         Assert.True(bce.IsEmpty);
         Assert.Equal("-0469--0399", bce.Text);

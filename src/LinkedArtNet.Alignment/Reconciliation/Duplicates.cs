@@ -169,6 +169,7 @@ public sealed class DuplicateMerger(IAlignmentStore store)
     private static bool SameDates(Lifespan? a, Lifespan? b)
     {
         if (a is null || b is null || a.IsEmpty || b.IsEmpty) return false;
+        if (a.IsWorking && b.IsWorking) return a.BeginLatest!.Value.Year == b.BeginLatest!.Value.Year && a.EndEarliest!.Value.Year == b.EndEarliest!.Value.Year;
         if (a.BeginEarliest is null || b.BeginEarliest is null) return false;
         return a.BeginEarliest.Value.Year == b.BeginEarliest.Value.Year && a.EndEarliest?.Year == b.EndEarliest?.Year;
     }

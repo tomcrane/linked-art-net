@@ -245,11 +245,19 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
         return (lead * scale, lead * scale + scale - 1);
     }
 
+    private static DateTimeOffset? Day(int? y, bool last) => y is null || y < 1 || y > 9999 ? null : last ? new DateTimeOffset(y.Value, 12, 31, 23, 59, 59, TimeSpan.Zero) : new DateTimeOffset(y.Value, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
     private static Lifespan? LifespanFromRanges((int? From, int? To) start, (int? From, int? To) end, string text)
     {
-        static DateTimeOffset? Day(int? y, bool last) => y is null || y < 1 || y > 9999 ? null : last ? new DateTimeOffset(y.Value, 12, 31, 23, 59, 59, TimeSpan.Zero) : new DateTimeOffset(y.Value, 1, 1, 0, 0, 0, TimeSpan.Zero);
         var l = new Lifespan(Day(start.From, false), Day(start.To, true), Day(end.From, false), Day(end.To, true), text);
         return l.IsEmpty ? new Lifespan(null, null, null, null, text) : l;
+    }
+
+    /// <summary>Working dates: the latest day of the start year (or decade, "185X") and the earliest day of the end year, no outer edges.</summary>
+    private static Lifespan? WorkingFromRanges((int? From, int? To) start, (int? From, int? To) end, string text)
+    {
+        var l = new Lifespan(null, Day(start.To, true), Day(end.From, false), null, text);
+        return l.IsWorking ? l : new Lifespan(null, null, null, null, text);
     }
 
     /// <summary>Splits a personal heading into the name and its date segment: "Dürer, Albrecht, 1471-1528" gives the name "Dürer, Albrecht" and a lifespan 1471 to 1528; "Smith, John, 1900-" an open one; "approximately 1500" a start only.</summary>
@@ -265,8 +273,10 @@ public sealed partial class LocNamesLoader(PostgresAlignmentStore store)
         (int?, int?) start = (null, null), end = (null, null);
         if (dates.StartsWith("d. ", StringComparison.Ordinal) || (startsWithDash && years.Count == 1)) end = ParseYear(years[0]);
         else { start = ParseYear(years[0]); if (years.Count > 1) end = ParseYear(years[1]); }
+        // "active 1640-1660" is working dates: born no later than 1640, died no earlier than 1660, and "active 1635" both in one year
+        // (finding 26, 2026-10-23; before it the loader dropped them)
         if (dates.StartsWith("fl. ", StringComparison.Ordinal) || dates.StartsWith("active ", StringComparison.Ordinal) || dates.StartsWith("flourished ", StringComparison.Ordinal))
-            return (name, dates, null); // active dates are not a lifespan
+            return (name, dates, WorkingFromRanges(start, end.Item1 is null ? start : end, dates));
         return (name, dates, LifespanFromRanges(start, end, dates));
     }
 

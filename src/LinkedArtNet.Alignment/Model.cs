@@ -66,6 +66,19 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
     /// <summary>Whether this lifespan dates its subject: a tight begin or a tight end. Loose outer bounds can rule a match out but never confirm one.</summary>
     public bool IsDated => Tight(BeginEarliest, BeginLatest) || Tight(EndEarliest, EndLatest);
 
+    /// <summary>
+    /// Working dates ("fl. 1775-1795", "active 1640-1660", "op 1739", a lone "1730?"): born no later than the start, died no earlier than
+    /// the end, and nothing more. The shape is a latest begin and an earliest end with no outer edges (finding 26, 2026-10-23).
+    /// </summary>
+    public bool IsWorking => BeginEarliest is null && EndLatest is null && BeginLatest is not null && EndEarliest is not null;
+
+    /// <summary>
+    /// The longest working life allowed between two sets of working dates of the same person: "fl. 1775-1795" and "active 1840-1876" are
+    /// two people, though a lifetime of 120 years could hold both. Eighty years is the assistant's judgement (a working life from the
+    /// teens to the nineties), not a sourced figure.
+    /// </summary>
+    public const int MaxWorkingYears = 80;
+
     public DateAgreement Compare(Lifespan other, int? maxLifetimeYears = null)
     {
         static bool Known(DateTimeOffset? a, DateTimeOffset? b) => a is not null || b is not null;
@@ -81,6 +94,15 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
         if (endsKnown && !Overlap(EndEarliest, EndLatest, other.EndEarliest, other.EndLatest)) return DateAgreement.Conflict;
         if (CrossConflict(BeginEarliest, BeginLatest, other.EndEarliest, other.EndLatest, maxLifetimeYears)) return DateAgreement.Conflict;
         if (CrossConflict(other.BeginEarliest, other.BeginLatest, EndEarliest, EndLatest, maxLifetimeYears)) return DateAgreement.Conflict;
+        if (IsWorking && other.IsWorking)
+        {
+            // two sets of working dates: too far apart for one working life is a conflict; starts and ends each within a decade agree,
+            // as two birth years within a decade do (finding 26, 2026-10-23)
+            var hull = Math.Max(EndEarliest!.Value.Year, other.EndEarliest!.Value.Year) - Math.Min(BeginLatest!.Value.Year, other.BeginLatest!.Value.Year);
+            if (hull > MaxWorkingYears) return DateAgreement.Conflict;
+            if (Tight(Earlier(BeginLatest, other.BeginLatest), Later(BeginLatest, other.BeginLatest)) && Tight(Earlier(EndEarliest, other.EndEarliest), Later(EndEarliest, other.EndEarliest))) return DateAgreement.Agree;
+            return DateAgreement.Incomparable;
+        }
         // agreement needs a tight bound on both sides: a window of possibility (ULAN's 1850-2080) overlaps anything and proves nothing
         var beginsDated = Tight(BeginEarliest, BeginLatest) && Tight(other.BeginEarliest, other.BeginLatest);
         var endsDated = Tight(EndEarliest, EndLatest) && Tight(other.EndEarliest, other.EndLatest);
@@ -101,13 +123,30 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
         return maxLifetimeYears is { } max && latestBegin is not null && endEarliest is not null && endEarliest.Value.Year - latestBegin.Value.Year > max;
     }
 
+    private static DateTimeOffset? Earlier(DateTimeOffset? a, DateTimeOffset? b) => a is null ? b : b is null ? a : a < b ? a : b;
+    private static DateTimeOffset? Later(DateTimeOffset? a, DateTimeOffset? b) => a is null ? b : b is null ? a : a > b ? a : b;
+
+    private static DateTimeOffset? At(LinkedArtDate? d) => d is { } date && date.TryToDateTimeOffset(out var r) ? r : null;
+
     /// <summary>A lifespan from two Linked Art TimeSpans, as the dates parser yields for a pair.</summary>
     public static Lifespan? From(LinkedArtTimeSpan? begin, LinkedArtTimeSpan? end, string? text = null)
     {
         if (begin is null && end is null) return null;
-        static DateTimeOffset? At(LinkedArtDate? d) => d is { } date && date.TryToDateTimeOffset(out var r) ? r : null;
         var l = new Lifespan(At(begin?.BeginOfTheBegin), At(begin?.EndOfTheEnd), At(end?.BeginOfTheBegin), At(end?.EndOfTheEnd), text);
         return l.IsEmpty && text is null ? null : l;
+    }
+
+    /// <summary>
+    /// Working dates from the spans the dates parser yields for a floruit ("fl. 1775-1795": the first and last years; "op 1739": the
+    /// one span twice): alive through the whole of it, so born no later than the last day of the start and died no earlier than the
+    /// first day of the end (<see cref="IsWorking"/>).
+    /// </summary>
+    public static Lifespan? Working(LinkedArtTimeSpan? start, LinkedArtTimeSpan? end, string? text = null)
+    {
+        start ??= end; end ??= start;
+        if (start is null) return null;
+        var l = new Lifespan(null, At(start.EndOfTheEnd), At(end!.BeginOfTheBegin), null, text);
+        return l.IsWorking ? l : null;
     }
 }
 

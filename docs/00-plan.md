@@ -48,7 +48,16 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
     builds, item 4).
 
-**Built 2026-10-22 evening from gh3u6n's samples, waiting for the next rerun** (no reload; **manifest refresh
+**Built 2026-10-23 morning, finding 26 (working dates), waiting for the rerun after the one in progress** (doc 10
+7.6 "Built 2026-10-23"; **the LoC index needs the SQL below first**, or a `load-loc` reload): "fl. 1775-1795",
+"active 1773-1789", "op 1739" and a lone "1730?" are working spans (born no later than the start, died no earlier
+than the end; `Lifespan.IsWorking`), read from the string by the reading and from LoC headings by the loader;
+namesakes whose working dates cannot belong to one working life conflict ("Morgan, John, 1823-1886" against "active
+1635"; "fl. 1775-1795" against "active 1840-1876"), the same working dates agree, and a working span never dates a
+record for the single-record rules. Expect the dated-name residue in persauthorfull and keywords to move: vetoes
+clearing namesakes, a few more exact-singles and votes.
+
+**Built 2026-10-22 evening from gh3u6n's samples, waiting for the run in progress** (no reload; **manifest refresh
 needed**, finding 71): finding 69 (a string placed in a known place is not a person: "Newcastle (Bridgend, Wales)");
 finding 70 (a ULAN label's or a store entity's own place parenthetical places it whenever the string has a qualifier:
 "Hampton Court (Richmond upon Thames, London, England)"); finding 71 (the manifest's `homePlace`, "United Kingdom"
@@ -76,13 +85,8 @@ extract, the second pass (finding 51), the 2024 shadow, the LUX export, the Well
 **Next builds, in the order the assistant would do them** (each on the owner's go, or in sequence when the owner
 says "continue with the list"):
 
-1. Finding 26, the working-date gaps (doc 10 7.6 "Measured ... qr7fbx"): the MARC profile does not read "fl.
-   1775-1795", "op 1739" or a lone "1730?", and the LoC loader does not read "active 1840-1876" in a heading, so
-   namesakes whose working dates cannot overlap do not conflict ("Morgan, John, 1823-1886" against "Morgan, John,
-   active 1635"; "Bolton, James, fl. 1775-1795"; "Summers, S, op 1739"; "Royce, John, active 1773-1789"). A working
-   span is "born no later than its start, died no earlier than its end" (the `Lifespan` record can say so:
-   BeginLatest and EndEarliest) and the lifetime bound then applies. Size S in the parser, S in the loader; the
-   commonest shape among the dated names left.
+1. ~~Finding 26, the working-date gaps~~ (built 2026-10-23 morning, above; the parser already read every form, the
+   reading and the LoC loader dropped them).
 2. Finding 51, a second pass: at the end of a run, re-evaluate the strings it queued, since entities it created
    later in the run can settle them ("Cornwall" in keywords:sub, decision 7). Size S; its own line in the report.
 3. A local Wikidata extract as a sixth index, from the two files downloading (the truthy N-Triples dump
@@ -105,17 +109,44 @@ says "continue with the list"):
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
-    git push
-    dotnet run --project tools/Align -- manifest --use-default          (finding 71: the home place)
-    dotnet run --project tools/Align -- undo-run --run run-20261022-145615-gh3u6n
-    dotnet run --project tools/Align -- reconcile --verbose
+The run in progress on 2026-10-23 morning (after `manifest --use-default` and the undo of gh3u6n) measures findings
+69 to 73 and is read with:
+
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
 
-"Evanston" and the other place twins with different Wikidata ids are the desk's to judge from their ids. After this
-run's reading, the assistant's recommendation is to build finding 26 (working dates) and the second pass (finding 51)
-rather than mine the samples further.
+Then, for finding 26, the LoC index's working dates (the loader kept each heading's date segment as `headingDates`
+in the record's data; the loader now reads them, so a later `load-loc` reload writes the same). Count first, then
+update; the count and the update's row count should agree:
+
+    select count(*) from authority_records
+    where source = 'loc' and begin_earliest is null and begin_latest is null and end_earliest is null and end_latest is null
+      and data->>'headingDates' ~ '^(active |fl\. |flourished )\d{3,4}' and data->>'headingDates' !~ '[XxUu]';
+
+    update authority_records a
+    set begin_latest = make_timestamptz(x.y1, 12, 31, 23, 59, 59, 'UTC'),
+        end_earliest = make_timestamptz(coalesce(x.y2, x.y1), 1, 1, 0, 0, 0, 'UTC'),
+        lifespan_text = x.hd
+    from (
+      select uri, data->>'headingDates' as hd,
+             (regexp_match(data->>'headingDates', '(\d{3,4})'))[1]::int as y1,
+             (regexp_match(data->>'headingDates', '\d{3,4}\??\s*[-–]\s*(?:approximately |ca\. )?(\d{3,4})'))[1]::int as y2
+      from authority_records
+      where source = 'loc' and begin_earliest is null and begin_latest is null and end_earliest is null and end_latest is null
+        and data->>'headingDates' ~ '^(active |fl\. |flourished )\d{3,4}' and data->>'headingDates' !~ '[XxUu]'
+    ) x
+    where a.uri = x.uri;
+
+Then the rerun (the tool rebuilds itself on `dotnet run`):
+
+    dotnet run --project tools/Align -- undo-run --run <the run in progress>
+    dotnet run --project tools/Align -- reconcile --verbose
+    dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
+
+"Evanston" and the other place twins with different Wikidata ids are the desk's to judge from their ids. After the
+finding 26 run, the second pass (finding 51) is next, then the Wikidata extract when the files have arrived.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)
@@ -552,9 +583,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       still equals the library rules, `manifest --use-default`, and the project page's "In effect now" sentence).
     - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
       Art prizes" read as Person; "McSloy, Tom, op 1946" (a working date written "op"); "Mainz/Rhein" (a slash
-      variant for name-forms). From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
-      Oliver, 1730?" read undated by the MARC profile; LoC's "Bolton, James, active 1840-1876" undated by the loader
-      (section 0, next builds, item 5).
+      variant for name-forms). ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
+      Oliver, 1730?" read undated by the MARC profile; LoC's "Bolton, James, active 1840-1876" undated by the loader~~
+      (built 2026-10-23: working spans, doc 10 7.6 "Built 2026-10-23"; "op 1946" with them).
     - Workbench step 3 (jobs): runs, loads and indexes pages (authority_sources is the indexes table), a schedule,
       the counters list; step 4 as extended by doc 14 section 4 (sources and uploaded dumps, the profile job,
       contexts namespaced by source, role routing, mapping tables as overrides, the brief's tables imported as

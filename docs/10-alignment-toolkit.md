@@ -1133,6 +1133,37 @@ firms); corpauthor 198 -> 190; keywords:head 515 -> 502; place 319 -> 310; keywo
   Harper", "Nationalmuseum", "Musée de l'Ermitage", "Waltham Forest", "City Museum and Art Gallery, Portsmouth",
   "Hall, ?", "Anglesey Abbey", "Ogmore Castle", "Christian church": as before, the desk's or the data's.
 
+Built 2026-10-23, finding 26 (working dates), while the owner's run after gh3u6n was going. The dates parser already
+read every form ("fl. 1775-1795", "active 1773-1789", "op 1739", "op 1946" as a floruit; "1730?" as a single
+uncertain year) under both the default and the marc profiles; the reading dropped them, because only a birth-death or
+formation-dissolution pair became a `Lifespan`, and the LoC loader returned no lifespan for "active 1640-1660" by
+design ("active dates are not a lifespan"). Built:
+
+- `Lifespan.IsWorking`: a latest begin and an earliest end with no outer edges, "born no later than the start, died no
+  earlier than the end"; `Lifespan.Working(start, end, text)` makes one from the parser's spans. The store needs no
+  change: the shape is the four columns as they are. `IsDated` stays false for a working span, so every rule that
+  takes an undated record (findings 14, 24, 55, 65) treats a record with working dates as before, and the entity
+  publishes the record's lifespan only when it is a lifespan.
+- The reading: a floruit becomes a working span; a lone year or decade ("Goldsmith, Oliver, 1730?", a Single result
+  no wider than a decade) becomes one too, since it says no more than that the person was alive then. Oliver
+  Goldsmith was born about 1728 and the string's "1730?" was a birth year with the death dropped; "alive in 1730" is
+  the weaker statement and does not contradict a record of 1728-1774.
+- The LoC loader: "active 1640-1660" is a working span, "active 1635" one of a year, "fl." and "flourished" the
+  same; the RWO's birth and death still win when LoC has them.
+- `Compare`: the existing checks already make "Morgan, John, 1823-1886" against "Morgan, John, active 1635" a
+  conflict (a begin after the other's earliest end). Two working spans add two rules: a hull longer than
+  `Lifespan.MaxWorkingYears` (80, the assistant's judgement of the longest working life, not a sourced figure) is a
+  conflict ("fl. 1775-1795" against "active 1840-1876", which the 120-year lifetime bound alone allows), and starts
+  and ends each within a decade agree ("fl. 1775-1790" against "active 1773-1789"), as two birth years within a
+  decade do; otherwise working spans are incomparable, with each other and with lifespans that hold them.
+- The duplicate pass: two people with the same working dates are twins as two with the same lifespan are.
+
+The LoC index holds its working dates only after a reload, or after the SQL in the plan's section 0, which writes
+them from the `headingDates` the loader kept in each record's data; the owner runs it before the next reconcile.
+Expected: persauthorfull's and keywords' dated namesakes ("Bolton, James", "Morgan, John", "Summers, S", "Messrs
+Royce" against "Royce, John, active 1773-1789") resolve or veto by their dates; nothing accepted on a working span
+alone, since it is not dated.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

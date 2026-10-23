@@ -302,6 +302,27 @@ still apply. Off by `acceptUniqueExactSingleSource: false` in the manifest or `-
 project page links "review single-source acceptances", the desk filtered to that method, so the set can be sampled;
 `undo-run` reverses a run of them. A dated string is never reached by this rule: the dates rule governs it.
 
+### 8.10 The Wikidata extract (2026-10-23)
+
+`WikidataLoader` reads the Wikidata "truthy" N-Triples dump (`dumps.wikimedia.org/wikidatawiki/entities/latest-truthy.nt.gz`,
+71.7 GB gzipped on 2026-10-23, CC0) in one pass without staging: the dump lists each item's statements together, so items
+are read one at a time, and a 1 TB uncompressed file never touches the database. An item is kept when it carries one of
+the identifiers the other indexes use, VIAF (P214), Library of Congress (P244), ULAN (P245), TGN (P1667), AAT (P1014)
+or GND (P227); the ids become `sameAs` links in those indexes' URI forms, so a Wikidata record groups with the ULAN or
+LoC record it names whether or not that record links back. Labels are the English ones and the language-neutral `mul`
+ones (`rdfs:label`, `skos:altLabel`); the class comes from `instance of` (P31) through a short table of common
+Wikidata classes (the assistant's own list, not a sourced mapping; anything else is kept untyped); the lifespan from
+birth and death (P569, P570), else inception and dissolution (P571, P576), else the work period (P2031, P2032) as
+working dates. A year-precision date is written in the dump as 1 January, so only the year is read. The record's data
+keeps the description, the instance-of ids and the identifiers. The truthy dump does not carry sitelinks, so prominence
+comes from a second file, the sitelinks table (`wikidatawiki-latest-wb_items_per_site.sql.gz`, a MySQL dump, 1.9 GB):
+after the records are written, its rows are counted per kept item and merged into each record's data as `sitelinks`
+(`MergeAuthorityDataAsync`). The command is `load-wikidata <dump> [--sitelinks <table>] [--version v]`; the shapes were
+checked against the dump on 2026-10-23 and the test fixture is a sliver in those shapes. The index is not yet among the
+manifest's sources: how the reconciler uses it (a crosswalk between TGN and LoC, dates for LoC's undated records, a
+check on VIAF clusters, prominence for the famous-name ties) is designed once it is loaded (plan section 0). Credit:
+Wikidata, CC0.
+
 ## 9. Not yet
 
 Step 3b: the remote sources (VIAF, LoC suggest, LUX with the self-echo rule, Wikidata by known id) behind a cache

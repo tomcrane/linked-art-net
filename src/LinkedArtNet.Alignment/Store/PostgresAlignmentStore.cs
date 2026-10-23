@@ -848,6 +848,29 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     public Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesBySameAsAsync(string uri, CancellationToken ct = default) =>
         QueryAuthoritiesAsync($"select {AuthorityColumns} from authority_records a where a.same_as @> @uri order by a.uri", cmd => Add(cmd, "uri", new[] { uri }), ct);
 
+    /// <summary>Merges a JSON object into each named authority record's data (the Wikidata loader's sitelink counts, written after the records): keys given replace, others stay. Returns how many patches were given.</summary>
+    public async Task<int> MergeAuthorityDataAsync(IAsyncEnumerable<(string Uri, string DataJson)> patches, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using (var create = new NpgsqlCommand("drop table if exists authority_data_in; create temp table authority_data_in (uri text primary key, data jsonb)", conn))
+            await create.ExecuteNonQueryAsync(ct);
+        var count = 0;
+        await using (var writer = await conn.BeginBinaryImportAsync("copy authority_data_in (uri, data) from stdin (format binary)", ct))
+        {
+            await foreach (var (uri, json) in patches.WithCancellation(ct))
+            {
+                await writer.StartRowAsync(ct);
+                await writer.WriteAsync(uri, NpgsqlDbType.Text, ct);
+                await writer.WriteAsync(json, NpgsqlDbType.Jsonb, ct);
+                count++;
+            }
+            await writer.CompleteAsync(ct);
+        }
+        await using (var update = new NpgsqlCommand("update authority_records a set data = coalesce(a.data, '{}'::jsonb) || i.data from authority_data_in i where i.uri = a.uri", conn) { CommandTimeout = 0 })
+            await update.ExecuteNonQueryAsync(ct);
+        return count;
+    }
+
     public async Task<int> PutAuthoritiesAsync(IAsyncEnumerable<AuthorityRecord> records, CancellationToken ct = default)
     {
         await using var conn = await _db.OpenConnectionAsync(ct);

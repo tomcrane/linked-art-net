@@ -11,6 +11,7 @@
 //   dotnet run --project tools/Align -- load-getty <file.nt[.gz] | directory>... --vocab ulan|aat|tgn [--version 2026-10]
 //                                                                              a Getty full N-Triples download into the local authority index
 //   dotnet run --project tools/Align -- load-loc <names.madsrdf.nt.gz> [--version 2026-10]
+//   dotnet run --project tools/Align -- load-wikidata <latest-truthy.nt.gz> [--sitelinks <wb_items_per_site.sql.gz>] [--version 2026-10]
 //                                                                              the LC Name Authority File (MADS/RDF N-Triples bulk download) into the local index
 //   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint] [--verbose | --candidates]
 //                                                                              decide undecided strings from overrides, the store and the local indexes;
@@ -103,6 +104,20 @@ switch (args[0])
         var file = string.Equals(Option("--vocab"), "subjects", StringComparison.OrdinalIgnoreCase) ? LocFile.Subjects : LocFile.Names;
         var result = await new LocNamesLoader(store).LoadAsync(path, file, Option("--version"), progress);
         Console.WriteLine($"{(file == LocFile.Subjects ? "LoC subjects" : "LoC names")}: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
+        return 0;
+    }
+
+    case "load-wikidata":
+    {
+        var optionValues = new HashSet<string>(new[] { Option("--sitelinks"), Option("--version") }.OfType<string>(), StringComparer.Ordinal);
+        var path = args.Skip(1).FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal) && !optionValues.Contains(a));
+        if (path is null || !File.Exists(path)) { Console.Error.WriteLine("Give the Wikidata truthy N-Triples dump (latest-truthy.nt.gz)."); return 2; }
+        var sitelinks = Option("--sitelinks");
+        if (sitelinks is not null && !File.Exists(sitelinks)) { Console.Error.WriteLine($"No sitelinks file at {sitelinks}."); return 2; }
+        await store.InitialiseAsync();
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {DateTime.Now:HH:mm:ss} {m}"));
+        var result = await new WikidataLoader(store).LoadAsync(path, sitelinks, Option("--version"), progress);
+        Console.WriteLine($"Wikidata: {result.TriplesRead:N0} triples read, {result.ItemsSeen:N0} items seen, {result.Records:N0} records, {result.SitelinkRows:N0} sitelink rows in {result.Elapsed:hh\\:mm\\:ss}");
         return 0;
     }
 
@@ -315,6 +330,10 @@ static void Usage() => Console.WriteLine(
                                              a Library of Congress MADS/RDF file: the Name Authority File (default, index loc)
                                              or the Subject Headings (index lcsh)
                                              load the LC Name Authority File (MADS/RDF N-Triples) into the local authority index
+      load-wikidata <latest-truthy.nt.gz> [--sitelinks <wb_items_per_site.sql.gz>] [--version v]
+                                             the Wikidata truthy dump, one pass: items carrying a VIAF, LoC, ULAN, TGN, AAT or GND id become
+                                             the wikidata index, with English labels, dates and the ids as links; the sitelinks table
+                                             gives each a page count for prominence
       reconcile [--dataset] [--limit n] (all undecided strings unless limited) [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint]
                 [--verbose | --candidates]   decide undecided strings from overrides, the store and the local indexes; --verbose prints a
                                              line per string as it is decided, --candidates the top candidates under each as well

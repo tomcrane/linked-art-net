@@ -241,6 +241,7 @@ public static class AuthorityUris
     public const string Tgn = "http://vocab.getty.edu/tgn/";
     public const string Viaf = "http://viaf.org/viaf/";
     public const string Wikidata = "http://www.wikidata.org/entity/";
+    public const string Gnd = "https://d-nb.info/gnd/";
     public const string LocNames = "http://id.loc.gov/authorities/names/";
     public const string LocSubjects = "http://id.loc.gov/authorities/subjects/";
     public const string Lux = "https://lux.collections.yale.edu/data/";
@@ -257,6 +258,7 @@ public static class AuthorityUris
         if (uri.StartsWith(Tgn, StringComparison.Ordinal)) return "tgn";
         if (uri.StartsWith(Viaf, StringComparison.Ordinal)) return "viaf";
         if (uri.StartsWith(Wikidata, StringComparison.Ordinal)) return "wikidata";
+        if (uri.StartsWith(Gnd, StringComparison.Ordinal)) return "gnd";
         if (uri.StartsWith("http://id.loc.gov/", StringComparison.Ordinal)) return "loc";
         if (uri.StartsWith("https://lux.collections.yale.edu/", StringComparison.Ordinal)) return "lux";
         if (uri.StartsWith(PeriodO, StringComparison.Ordinal)) return "periodo";

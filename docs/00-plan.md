@@ -139,17 +139,15 @@ says "continue with the list"):
    reading and the LoC loader dropped them).
 2. Finding 51, a second pass: at the end of a run, re-evaluate the strings it queued, since entities it created
    later in the run can settle them ("Cornwall" in keywords:sub, decision 7). Size S; its own line in the report.
-3. A local Wikidata extract as a sixth index, from the two files downloading (the truthy N-Triples dump
-   `dumps.wikimedia.org/other/wikibase/wikidatawiki/latest-truthy.nt.gz`, 71.7 GB, with labels, aliases,
-   instance-of, dates and the ids P214 VIAF, P244 LoC, P245 ULAN, P1667 TGN, P1014 AAT, P227 GND; and the sitelinks
-   table `dumps.wikimedia.org/wikidatawiki/latest/wikidatawiki-latest-wb_items_per_site.sql.gz`, counted for
-   prominence). Items carrying one of those ids or typed human, organisation or place; a few million rows, CC0.
-   What it adds: prominence for the famous-name ties (finding 17), dates for LoC's undated records, a crosswalk
-   between TGN and LoC, a check on VIAF clusters. Size M. The load runs where the tool runs, reading the file from
-   local disk: either the file comes to the store's machine or the tool runs on the download machine against
-   `LINKEDART_PG` over the network. Beside it, when the LUX export is designed: a reviewed Wikidata contribution
-   export of confirmed local authorities (a QuickStatements batch of label, dates, roles, nationality and the
-   archive's URI as the reference, for a person to review and submit; confirmed entities only).
+3. ~~A local Wikidata extract as a sixth index~~: the loader is built (2026-10-23, doc 11 section 8.10,
+   `load-wikidata`), reading the truthy dump in one pass and keeping items that carry a VIAF, LoC, ULAN, TGN, AAT or
+   GND id, with the sitelinks table for prominence; both files are on the owner's external drive (`E:\datadumps`).
+   Still to do, after the load: the design of how the reconciler uses the index (not yet among the manifest's
+   sources): prominence for the famous-name ties (finding 17), dates for LoC's undated records, a crosswalk between
+   TGN and LoC through items that carry both ids, a check on VIAF clusters; and the count of records loaded. Beside
+   it, when the LUX export is designed: a reviewed Wikidata contribution export of confirmed local authorities (a
+   QuickStatements batch of label, dates, roles, nationality and the archive's URI as the reference, for a person to
+   review and submit; confirmed entities only).
 4. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
 5. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
    the owner.
@@ -170,8 +168,17 @@ rebuilds itself on `dotnet run`):
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
 
 The queue is in the band the assistant expected the cycles to stop in (3,964). After this run's reading the levers
-change: the second pass (finding 51) is the next build, then the Wikidata extract when the files have arrived, then
-the 2024 shadow. If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
+change: the second pass (finding 51) is the next build, then the Wikidata index's use, then the 2024 shadow.
+
+**The Wikidata load** (built 2026-10-23 while the run went; doc 11 section 8.10). When the run has finished, and not
+while it runs (the tool rebuilds itself and the running process holds its files), the owner runs:
+
+    dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
+
+It streams 71.7 GB gzipped (about a terabyte uncompressed, some eight billion triples) and prints a line every twenty
+million; expect several hours, so it is a run for the evening or the night, and it can be cancelled and rerun (records
+are replaced by URI; a load's partial result stays usable). The sitelinks pass follows the records. The index is not
+yet among the manifest's sources, so the next reconcile is unchanged by it; its use is the design step after. If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
 are still queued, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the
 other place twins with different Wikidata ids are the desk's to judge from their ids.
 

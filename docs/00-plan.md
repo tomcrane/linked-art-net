@@ -227,9 +227,9 @@ subclass walk at the next reload is the full fix), the same way:
     update authority_records set type = 'Material' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q113145171'];
     select type, count(*) from authority_records where source = 'wikidata' group by type order by 2 desc;
 
-Stream (Q47521) still showed 2,320 untyped rows after the first Place update that listed it; the check is
-`select count(*) filter (where type is null), count(*) from authority_records where source = 'wikidata' and
-data->'instanceOf' ? 'Q47521'`, unresolved at the time of writing.
+Stream (Q47521) still showed 2,320 untyped rows after the first Place update that listed it; run alone
+(`... and data->'instanceOf' ? 'Q47521'`) the update took 2,318 rows, so the id was lost between the message and the
+console, not refused by the rows. Resolved; the counts are sound.
 
 If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
 are still queued, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the

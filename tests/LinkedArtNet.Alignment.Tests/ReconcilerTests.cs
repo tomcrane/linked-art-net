@@ -194,6 +194,7 @@ public class LocHeadingTests
         Assert.Equal("Goldsmith, Oliver", goldsmith.Text);
         Assert.True(goldsmith.Lifespan!.IsWorking); Assert.Equal(1730, goldsmith.Lifespan.BeginLatest!.Value.Year);
         Assert.Equal("Royce, John", StringReading.Read(S("Royce, John, active 1773-1789"), rule, parser).Text);
+        Assert.Equal("Hall", StringReading.Read(S("Hall, ?"), rule, null).Text); // finding 76: the cataloguer's "?" and its comma go together
         Assert.True(StringReading.Read(S("Royce, John, active 1773-1789"), rule, parser).Lifespan!.IsWorking);
         // a lifespan is still a lifespan
         var morgan = StringReading.Read(S("Morgan, John, 1823-1886"), rule, parser);
@@ -318,6 +319,11 @@ public class GroupingTests
         Assert.All(Reconciler.Score(carwitham, [carwithamUlan, carwithamLoc, carwithamLoc with { Uri = "l24" }], 120), m => Assert.Null(m.JoinedTo)); // two LoC records: the desk
         var locUndated = new Candidate("l9", "loc", "Dürer, Albrecht", EntityClass.Person, null, [], "local", 1.0);
         Assert.False(Reconciler.Score(reading, [agrees, locUndated], 120)[1].Veto);
+        // a record exact only through a variant ("Morgan, John Lester" with the variant "Morgan, John") is not the source's record of the
+        // name: not joined as the one LoC record ULAN dates (finding 74), nor as finding 72's one record
+        var byVariant = locUndated with { Uri = "l9v", Label = "Dürer, Albrecht Lester", ByVariant = true };
+        Assert.Null(Reconciler.Score(reading, [agrees, byVariant], 120)[1].JoinedTo);
+        Assert.Null(Reconciler.Score(carwitham, [carwithamUlan, carwithamLoc with { ByVariant = true }], 120)[1].JoinedTo);
         // and when it is its source's only exact record of the name, it is the person the other source dates: the two vote (the
         // owner's policy, 2026-10-21, finding 14); beside a second LoC record of the name it is not, and nor is a record of another class
         var lone = Reconciler.Score(reading, [agrees, locUndated], 120);
@@ -1370,6 +1376,19 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         var coventry = await pg.Store.CollectAsync(ds, "persauthorfull", "Coventry, Terence, 1938-");
         Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, coventry));
         Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(coventry.Id))!.Method);
+        // a string with working dates against LoC's one record of the name, whose lifespan holds them, is that record (finding 75):
+        // "Dodd, Phyllis, op 1959" and "Dodd, Phyllis, 1899-1995"; working dates after the death are a conflict and the string is minted
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n96121017", "loc", "Dodd, Phyllis, 1899-1995", ["Dodd, Phyllis, 1899-1995", "Dodd, Phyllis"], "Person", GettyVocabLoader.LifespanFromYears("1899", "1995"), [], "{\"headingDates\":\"1899-1995\"}", DateTimeOffset.UtcNow, "test"));
+        var dodd = await pg.Store.CollectAsync(ds, "persauthorfull", "Dodd, Phyllis, op 1959");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, dodd));
+        Assert.Equal(DecisionMethod.ExactSingle, (await pg.Store.DecisionForAsync(dodd.Id))!.Method);
+        Assert.Equal(Outcome.Minted, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Dodd, Phyllis, fl. 2001-2005")));
+        // and a record exact only through a variant is not LoC's record of the name (finding 74): "Kirby, John, active 1918" against
+        // LoC's one "Kirby, John C." with the variant "Kirby, John" stays with the desk
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n50048556", "loc", "Kirby, John C.", ["Kirby, John C.", "Kirby, John"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var kirbyRecord = (await pg.Store.FindAuthoritiesByLabelAsync(StringKey.Normalise("Kirby, John"), "loc")).Single();
+        Assert.True(LocalIndexSource.ToCandidate(kirbyRecord, StringReading.Read(await pg.Store.CollectAsync(ds, "persauthorfull", "Kirby, John, active 1918"), new ContextRule([EntityClass.Person], "default"), new AgentStringParser(AgentProfileCatalog.BuiltIn.Get("default"))), "local").ByVariant);
+        Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Kirby, John, active 1918")));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125106", "loc", "Blenkinsop, Terence, 1900-1950", ["Blenkinsop, Terence, 1900-1950", "Blenkinsop, Terence"], "Person", GettyVocabLoader.LifespanFromYears("1900", "1950"), [], null, DateTimeOffset.UtcNow, "test"));
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/no2008125107", "loc", "Blenkinsop, Terence", ["Blenkinsop, Terence"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
         Assert.Equal(Outcome.Queued, await reconciler.ReconcileOneAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Blenkinsop, Terence, 1960-"))); // the dated namesake is vetoed, but it is a second record of the name

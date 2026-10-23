@@ -377,7 +377,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // by a window of possibility that holds the string's dates is undated for finding 24 (finding 65: ULAN's "MacDonald, Biddy",
         // 1855~-~1968, for "MacDonald, Biddy, 1871-1952")
         var exactTop = live.FirstOrDefault(g => g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) ?? top;
-        var loneUndated = reading.Lifespan is not null && exactTop is { Members.Count: 1 } && (exactTop.Best.Candidate.Lifespan is null or { IsDated: false }) && !exactTop.Best.Veto;
+        // a string with working dates ("Dodd, Phyllis, op 1959") against a source's one record of the name whose lifespan does not conflict
+        // (LoC's "Dodd, Phyllis, 1899-1995") is that record for the same reason: the source knows one, and nothing contradicts (finding 75,
+        // 2026-10-23); a record exact only through a variant is not the source's record of the name (finding 74)
+        var loneUndated = reading.Lifespan is not null && exactTop is { Members.Count: 1 } && !exactTop.Best.Veto && !exactTop.Best.Candidate.ByVariant
+            && (exactTop.Best.Candidate.Lifespan is null or { IsDated: false } || reading.Lifespan.IsWorking);
         // a provisional entity of the project's own (a placeholder minted for the name, awaiting review) is a lookalike, not a second
         // group: ULAN's one "England & Co." is an exact-single beside the project's queued "England & Co" (finding 38, 2026-10-22)
         // a group below the review score is noise, not a rival (ULAN's two "Williams, Peter" at 0.40 beside LoC's exact dated heading); a
@@ -397,7 +401,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             && exactTop.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
             // a heading that carries dates was disambiguated from namesakes by its cataloguer: an undated string cannot claim it alone
             // unless the string is that dated heading, dates and all ("Williams, Peter, 1914-1995" whole in the keywords field; finding 45)
-            && !exactTop.Members.Any(m => m.Candidate.Disambiguated && NameMatcher.Score(reading.String.Raw, [m.Candidate.Label ?? ""]) < 0.97)
+            // (and a string with working dates that the heading's lifespan holds is not an undated string: finding 75)
+            && !exactTop.Members.Any(m => m.Candidate.Disambiguated && NameMatcher.Score(reading.String.Raw, [m.Candidate.Label ?? ""]) < 0.97
+                && !(reading.Lifespan is { IsWorking: true } && m.Candidate.Lifespan is { IsEmpty: false }))
             // a qualifier that the record does not bear out ("Princeton, N.J." against a Princeton elsewhere) is for the desk
             && exactTop.Best.QualifierAgrees != false)
         {
@@ -574,7 +580,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 }
                 // its source's only exact record once the namesakes vetoed by their dates are gone, and a record ULAN dates only by a
                 // window of possibility (1955~-~2035) is undated for this purpose (finding 55, 2026-10-22)
-                var exact = list.Select((m, i) => (m, i)).Where(x => x.m.Candidate.Source == source && x.m.Candidate.NameScore >= 0.97 && !x.m.Veto).ToList();
+                // and a record exact only through a variant ("Morgan, John Lester") is not the source's record of the name (finding 74)
+                var exact = list.Select((m, i) => (m, i)).Where(x => x.m.Candidate.Source == source && x.m.Candidate.NameScore >= 0.97 && !x.m.Veto && !x.m.Candidate.ByVariant).ToList();
                 if (exact.Count != 1) continue;
                 var (lone, at) = exact[0];
                 if (lone.SetAside || lone.JoinedTo is not null || lone.Candidate.Lifespan is { IsDated: true }) continue;
@@ -588,9 +595,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (reading.HasLifespan && !list.Any(m => m.DatesAgree && !m.Veto && !m.SetAside))
         {
             var bySource = list.Select((m, i) => (m, i))
-                .Where(x => !x.m.Veto && !x.m.SetAside && x.m.JoinedTo is null && x.m.Candidate.Source != "store" && x.m.Candidate.NameScore >= 0.97 && x.m.Candidate.Class is EntityClass.Person or null)
+                .Where(x => !x.m.Veto && !x.m.SetAside && x.m.JoinedTo is null && x.m.Candidate.Source != "store" && x.m.Candidate.NameScore >= 0.97 && !x.m.Candidate.ByVariant && x.m.Candidate.Class is EntityClass.Person or null)
                 .GroupBy(x => x.m.Candidate.Source, StringComparer.Ordinal).ToList();
-            var exactBySource = list.Where(m => m.Candidate.Source != "store" && m.Candidate.NameScore >= 0.97).GroupBy(m => m.Candidate.Source, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+            var exactBySource = list.Where(m => m.Candidate.Source != "store" && m.Candidate.NameScore >= 0.97 && !m.Candidate.ByVariant).GroupBy(m => m.Candidate.Source, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
             if (bySource.Count == 2 && bySource.All(g => g.Count() == 1 && exactBySource[g.Key] == 1))
             {
                 var (a, _) = bySource[0].Single(); var (b, at) = bySource[1].Single();

@@ -1164,6 +1164,45 @@ Expected: persauthorfull's and keywords' dated namesakes ("Bolton, James", "Morg
 Royce" against "Royce, John, active 1773-1789") resolve or veto by their dates; nothing accepted on a working span
 alone, since it is not dated.
 
+Measured 2026-10-23 (run-20261023-103032-ygjx75: findings 69 to 73 and the manifest's home place, against gh3u6n;
+finding 26 not yet in the index): accepted 8,919 -> 8,962 (vote 3,756 -> 3,745, single 1,819 -> 1,875, exact-single
+3,344 -> 3,342), queued 4,294 -> 4,193, minted 11,169 -> 11,242, matched in store 5,871 -> 5,856. By context:
+keywords queued 977 -> 887 (the county-qualified houses and the dated names), keywords:head 502 -> 493, place 310 ->
+302, corpauthor 190 -> 191, keywords:sub 168 -> 171, publisher 823 -> 825, persauthorfull 1,324. The path: 5,009 ->
+4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193. The samples, read against what finding 26 will do:
+
+- "Morgan, John, 1823-1886": ULAN agrees; LoC's "Morgan, John, active 1635" will be vetoed by its working dates; and
+  LoC's "Morgan, John Lester" at 1.00, exact only through its variant "Morgan, John", would then have been LoC's one
+  undated record of the name and joined ULAN (finding 14), which it is not: it is LoC's record of John Lester Morgan.
+  Finding 74, built before the rerun: a record exact only through a variant label (`Candidate.ByVariant`; a LoC
+  heading without its dates is still the heading, a body's heading without its suffix still the heading) is not its
+  source's record of the name for the lone-record rules (findings 14, 24, 55, 65, 72). The same shape: ULAN's
+  "Foster, Charles B." for "Foster, Charles, 1850-1931" (its dates agree, so it still counts), LoC's "Kirby, John C."
+  for "Kirby, John". Morgan stays queued, a 1.00 rival; the desk's.
+- "Dodd, Phyllis, op 1959": LoC's one "Dodd, Phyllis, 1899-1995", whose lifespan holds the working year; finding 24
+  took only an undated lone record, and the disambiguated-heading check held an "undated" string off. Finding 75,
+  built: a string with working dates against a source's one record of the name whose lifespan does not conflict is
+  that record, and such a string is not undated for the disambiguated check. "Easton, Timothy, active 1972-1999"
+  (ULAN's one, LoC's one, both undated) becomes finding 72's vote once the reading carries the dates; "Bolton,
+  James, fl. 1775-1795" becomes ULAN's lone record once LoC's "active 1840-1876" and "1960-" are vetoed.
+- "Hall, ?": read as "Hall," with the comma. Finding 76, fixed: the "?" and its comma go together. Still queued: three
+  TGN Halls.
+- "Ogmore Castle" (LCSH's "Ogmore Castle (Wales)" at 0.85, the only candidate) and "Anglesey Abbey" (ULAN's body,
+  the project's own provisional group, LCSH's "Anglesey Abbey (Lode, England)" at 0.85): the string is bare and the
+  heading is qualified by a place inside the project's home place. A rule would say: a heading whose only qualifier
+  places it in the home place, its source's one record of the bare name, is exact on that name; "Hall (Germany)" and
+  "Dublin (Calif.)" are elsewhere, and "Richmond (England)" beside "Richmond (London, England)" is two records. Not
+  built; decision 16 in the plan, with the count query.
+- "Summers, S, op 1739" (LoC's two fuller forms), "Kirby, John", "Hughs" (TGN's "Hughes" exact through a variant),
+  "Fine Art Society (London)" (ULAN's three, none placed), "Piper, John, 1903-1992" and "Blake, Peter, 1932-" (the
+  legacy twins "Piper, John" and "John Piper", both aligned; finding 32), "Art, Primitive" (AAT's concept exact
+  beside two LCSH headings carrying it as a variant), "Paintings, European", "Christian church", "Galleria Spada (Rome,
+  Italy)" (ULAN's and LoC's records, unlinked and unplaced), "Stafford House (London)" (LCSH's "Lancaster House", the
+  later name, at 0.90): the desk's.
+- Place: "Dublin", "Athens", "Winchester", "Norfolk?", "Pisa", "[Warwick]", "Donnington": the famous-name ties,
+  prominence; "York (England)": city beside county; "Bottrop, Essen" and "Heaton, Bradford": TGN does not place
+  them so; "Evanston, Illinois": the two store twins. All as before.
+
 The owner's two exports from the place-type query (2026-10-20, run tzm64p; `reports/tgn-namesakes-tzm64p-types.csv`
 and `reports/tgn-namesakes-tzm64p.csv`, git-ignored): 843 queued place-like strings have live exact TGN namesakes.
 The type combinations recur as expected (five inhabited places "Aberdeen"; county beside town "Durham", "Lancaster",

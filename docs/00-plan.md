@@ -20,12 +20,13 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 **Where things stand.** Branch `de-pmc`, all work committed, CI green. Five authority sources loaded (14.5M records),
 the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
-county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser. The
-last measured run is run-20261022-145615-gh3u6n: accepted 8,919 (vote 3,756, single 1,819, exact-single 3,344),
-queued 4,294, matched in store 5,871, minted 11,169, lists 404, compounds 15,558; by context queued persauthorfull
-1,324, keywords 977, publisher 823, keywords:head 502, place 310, corpauthor 190, keywords:sub 168. The three
-days' path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294. Doc
-10 7.6 has a "Measured" paragraph per run with the samples read; the last is "Measured ... gh3u6n". The Wikidata truthy dump
+county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
+2026-10-23 for the home place. The last measured run is run-20261023-103032-ygjx75: accepted 8,962 (vote 3,745,
+single 1,875, exact-single 3,342), queued 4,193, matched in store 5,856, minted 11,242, lists 404, compounds 15,558;
+by context queued persauthorfull 1,324, keywords 887, publisher 825, keywords:head 493, place 302, corpauthor 191,
+keywords:sub 171. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463
+-> 4,294 -> 4,193. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is "Measured ...
+ygjx75". The Wikidata truthy dump
 (71.7 GB) and the sitelinks table are downloading on the owner's other machine (next builds, item 4).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -47,9 +48,34 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     `merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX merges
     its copies. A reviewed Wikidata contribution export of confirmed local authorities belongs beside it (next
     builds, item 4).
+16. *A lone heading placed in the home place* (doc 10 7.6 "Measured ... ygjx75": "Ogmore Castle" against LCSH's
+    "Ogmore Castle (Wales)" at 0.85, its only candidate; "Anglesey Abbey" against LCSH's "Anglesey Abbey (Lode,
+    England)"): the proposed rule makes a qualified heading exact on the bare name when its qualifier places it
+    inside the project's home place and it is its source's one record of the name; "Hall (Germany)" stays a
+    lookalike and two home-placed records ("Richmond (England)", "Richmond (London, England)") stay the desk's. Count
+    first, the owner runs (the lone shape, which the rule would accept as exact-single):
+    `with q as (select d.id, ss.raw, ss.context, d.evidence from decisions d join source_strings ss on ss.id =
+    d.source_string_id where d.run_id = 'run-20261023-103032-ygjx75' and d.valid and d.method = 'queued' and
+    ss.context in ('keywords', 'keywords:head', 'keywords:sub')), members as (select q.id, q.raw, q.context,
+    m->>'source' as source, m->>'label' as label, (m->>'score')::numeric as score, (m->>'veto') is not null as veto
+    from q cross join lateral jsonb_array_elements(q.evidence->'groups') g cross join lateral
+    jsonb_array_elements(g->'members') m), lone as (select id from members where not veto group by id having
+    count(*) = 1) select m.source, m.context, count(*) as strings, (array_agg(m.raw || ' ~ ' || m.label order by
+    m.raw))[1:5] as examples from members m join lone l on l.id = m.id where not m.veto and m.source in ('lcsh',
+    'loc') and m.score >= 0.85 and m.score < 0.97 and m.label ~
+    '\((.*, )?(England|Wales|Scotland|Northern Ireland|Great Britain|United Kingdom)( : [^)]*)?\)$'
+    group by m.source, m.context order by strings desc;` Yes
+    or no on the count and the examples; the "Anglesey Abbey" shape (other sources' exact records beside it) is a
+    second step, since the heading made exact would join or rival them.
 
-**Built 2026-10-23 morning, finding 26 (working dates), waiting for the rerun after the one in progress** (doc 10
-7.6 "Built 2026-10-23"; **the LoC index needs the SQL below first**, or a `load-loc` reload): "fl. 1775-1795",
+**Built 2026-10-23 from ygjx75's samples, waiting for the rerun** (doc 10 7.6 "Measured ... ygjx75"): finding 74
+(a record exact only through a variant label is not its source's record of the name for the lone-record rules:
+"Morgan, John Lester"); finding 75 (a string with working dates against a source's one record whose lifespan holds
+them is that record: "Dodd, Phyllis, op 1959"); finding 76 ("Hall, ?" is "Hall"). Finding 74 must be in before
+finding 26's rerun, or the rerun joins "Morgan, John Lester" to the dated ULAN record.
+
+**Built 2026-10-23 morning, finding 26 (working dates), waiting for the rerun** (doc 10 7.6 "Built 2026-10-23"; **the
+LoC index needs the SQL below first**, or a `load-loc` reload): "fl. 1775-1795",
 "active 1773-1789", "op 1739" and a lone "1730?" are working spans (born no later than the start, died no earlier
 than the end; `Lifespan.IsWorking`), read from the string by the reading and from LoC headings by the loader;
 namesakes whose working dates cannot belong to one working life conflict ("Morgan, John, 1823-1886" against "active
@@ -57,8 +83,7 @@ namesakes whose working dates cannot belong to one working life conflict ("Morga
 record for the single-record rules. Expect the dated-name residue in persauthorfull and keywords to move: vetoes
 clearing namesakes, a few more exact-singles and votes.
 
-**Built 2026-10-22 evening from gh3u6n's samples, waiting for the run in progress** (no reload; **manifest refresh
-needed**, finding 71): finding 69 (a string placed in a known place is not a person: "Newcastle (Bridgend, Wales)");
+**Built 2026-10-22 evening from gh3u6n's samples, measured on ygjx75** (kept for the record): finding 69 (a string placed in a known place is not a person: "Newcastle (Bridgend, Wales)");
 finding 70 (a ULAN label's or a store entity's own place parenthetical places it whenever the string has a qualifier:
 "Hampton Court (Richmond upon Thames, London, England)"); finding 71 (the manifest's `homePlace`, "United Kingdom"
 for PMC, resolves a county name TGN knows in several countries: "Essex"); finding 72 (two sources' one record each of
@@ -109,14 +134,8 @@ says "continue with the list"):
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
-The run in progress on 2026-10-23 morning (after `manifest --use-default` and the undo of gh3u6n) measures findings
-69 to 73 and is read with:
-
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
-
-Then, for finding 26, the LoC index's working dates (the loader kept each heading's date segment as `headingDates`
+Run ygjx75 (2026-10-23 morning, findings 69 to 73) is measured and read. First, for finding 26, the LoC index's
+working dates (the loader kept each heading's date segment as `headingDates`
 in the record's data; the loader now reads them, so a later `load-loc` reload writes the same). Count first, then
 update; the count and the update's row count should agree:
 
@@ -140,7 +159,8 @@ update; the count and the update's row count should agree:
 
 Then the rerun (the tool rebuilds itself on `dotnet run`):
 
-    dotnet run --project tools/Align -- undo-run --run <the run in progress>
+    git push
+    dotnet run --project tools/Align -- undo-run --run run-20261023-103032-ygjx75
     dotnet run --project tools/Align -- reconcile --verbose
     dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10

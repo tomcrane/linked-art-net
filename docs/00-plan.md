@@ -229,7 +229,9 @@ subclass walk at the next reload is the full fix), the same way:
 
 Stream (Q47521) still showed 2,320 untyped rows after the first Place update that listed it; run alone
 (`... and data->'instanceOf' ? 'Q47521'`) the update took 2,318 rows, so the id was lost between the message and the
-console, not refused by the rows. Resolved; the counts are sound.
+console, not refused by the rows. Resolved; the counts are sound. After the second round: Person 4,221,300, untyped
+352,987, Place 228,188, Group 189,720, Event 5,360, Type 4,040, Language 2,188, Material 1,128. The hand table stops
+here; what remains untyped is works and taxa by choice and the thin tail the subclass walk takes at the next reload.
 
 If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
 are still queued, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the

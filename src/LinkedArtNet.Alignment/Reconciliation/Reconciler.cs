@@ -271,7 +271,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (reading.Lifespan is null) return reading;
         var rule = _options.Contexts.TryGetValue(s.Context, out var r) ? r : _options.DefaultContext;
         if (!rule.ParseDatedOnly || !rule.Classes.Contains(EntityClass.Type)) return reading;
-        var whole = await store.FindAuthoritiesByLabelAsync(StringKey.Normalise(s.Raw), null, ct);
+        // the per-source union query: a lookup without a source literal cannot use the partial label indexes and scans the table
+        // (the run of 2026-10-23 afternoon slowed to a crawl on the dated keywords strings before this was changed)
+        var whole = await store.FindAuthoritiesByLabelsAsync([StringKey.Normalise(s.Raw)], null, null, 20, ct);
         return whole.Any(a => a.Type is nameof(EntityClass.Type) or nameof(EntityClass.Period) or nameof(EntityClass.Event)) ? StringReading.Read(s, rule, null) : reading;
     }
 

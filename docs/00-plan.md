@@ -80,7 +80,9 @@ the two below are closed and kept for their queries.
 source's lone exact record dated without conflict joins the record another source dates as the string does: ULAN's
 "Bolton, James" 1699~-1799 beside LoC's agreeing "active 1775-1795"); finding 80 (a dated heading that is a concept,
 period or event whole in any index is not a person: "World War, 1939-1945"). Expect a few more votes among the dated
-names and the dated topical headings of keywords:head to settle on LCSH.
+names and the dated topical headings of keywords:head to settle on LCSH. Finding 80's first build looked the heading
+up without a source and scanned the table for every dated keywords string (the afternoon's run slowed to a crawl);
+fixed the same afternoon to the per-source union query, so a run begun before that commit is slow but right.
 
 **Built 2026-10-23 from p9g534's samples, measured on eetp4h** (kept for the record): finding 78 (a
 name that is the heading written shorter is the heading, not a variant-only match: "Horlor, George W" of "Horlor,

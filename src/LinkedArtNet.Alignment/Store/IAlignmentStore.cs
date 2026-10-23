@@ -130,7 +130,7 @@ public interface IAlignmentStore
 
     Task PutAuthorityAsync(AuthorityRecord record, CancellationToken ct = default);
 
-    /// <summary>Cached authority records whose labels normalise to the key, optionally from one source ("ulan").</summary>
+    /// <summary>Cached authority records whose labels normalise to the key, optionally from one source ("ulan"). Not for the hot path: without a source literal the partial label indexes cannot be used and the table is scanned; the reconciler uses <see cref="FindAuthoritiesByLabelsAsync"/>.</summary>
     Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelAsync(string normalisedLabel, string? source = null, CancellationToken ct = default);
 
     /// <summary>Authority records matching any of the keys (normalised or diacritic-folded labels), optionally within one source and one type ("Person"), at most <paramref name="limit"/>.</summary>

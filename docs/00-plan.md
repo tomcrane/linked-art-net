@@ -148,6 +148,21 @@ says "continue with the list"):
    it, when the LUX export is designed: a reviewed Wikidata contribution export of confirmed local authorities (a
    QuickStatements batch of label, dates, roles, nationality and the archive's URI as the reference, for a person to
    review and submit; confirmed entities only).
+3a. The wider Wikidata, for the entities no authority has (the owner's question, 2026-10-23). The loaded extract keeps
+   only items carrying another authority's id, which is what the crosswalk, the dates and the prominence need, and an
+   item for an obscure historical person almost always carries one (the item was made from or linked to a library
+   record). What is left out is the name-only item: a label, perhaps dates, a sitelink count, and no id to group it
+   with anything, which for a person is the namesake risk the whole ladder guards against. Three ways to reach it,
+   in the order the assistant would try them: (1) measure first: take fifty minted persauthorfull names and fifty
+   queued ones and ask Wikidata's search for each (`wbsearchentities`), counting items with compatible dates, which
+   says what a wider net would catch; (2) a remote source for the residue only, the `remote` stage the candidate
+   design already names: a rate-limited, cached lookup (results written to `authority_records` as `wikidata` with
+   `fetched_at`, so reruns are reproducible and never call twice) run on demand (`reconcile --remote wikidata`) over
+   strings the local indexes left queued or minted, never in the standard run, and a name-only item accepted for a
+   person only with agreeing dates, for a place as a prominence tie-break; (3) a Wikidata search on the review desk
+   for the reviewer. Widening the local extract to every human (eleven million items) is the alternative, and the
+   loader's keep rule could take an option; it costs a store twice the size and brings exactly the name-only matches
+   that make queues longer, so not first.
 4. Hyphen and space in keys (finding 8): needs a full reload of all five sources, so it waits for the next one.
 5. Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides
    the owner.

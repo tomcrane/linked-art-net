@@ -344,13 +344,16 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    Read (doc 10 7.6 "Read 2026-10-24 night"): Lincoln finding 91's vote; Hadid, Papworth and Keeling finding 93's
    cases (Keeling also finding 94's); Charlton rightly queued. The leading-position count for finding 94 is done (39
    rows; two forenames, Dean and Earl, now in the table's `forenamesToo`). The rerun ran (wy2aqs, measured, doc 10 7.6
-   "Measured ... wy2aqs"; finding 95 built from its second pass). Two pieces of evidence from it are wanted, in
-   DataGrip: why two of finding 93's strings stayed queued when 265 went onto their placeholders:
-
-       select s.context, s.raw, d.method, jsonb_pretty(d.evidence)
-       from decisions d join source_strings s on s.id = d.source_string_id
-       where d.run_id = 'run-20261024-161624-wy2aqs' and s.raw in ('Agar, Eileen, 1899-1991', 'Kelly, Felix, 1917-1994')
-       order by s.raw, d.id;
+   "Measured ... wy2aqs"; finding 95 built from its second pass). The evidence of "Agar, Eileen, 1899-1991" and
+   "Kelly, Felix, 1917-1994", the two of finding 93's ninety that stayed queued, is read (2026-10-24 night): both are
+   linked clusters that disagree with themselves. Agar: LoC's heading is the string verbatim and agrees, ULAN's linked
+   record says 1904-1991, and the vetoed member poisons the group (finding 44's linked veto). Kelly: ULAN agrees, LoC's
+   record carries finding 88's bare 1916 and conflicts, the same veto. The placeholders could not carry them because
+   they were joined into the vetoed group ("dated as store's record is"). A proposal, the owner's to decide, not
+   built: a linked cluster stands when one of its records agrees with the string's dates or is the whole heading as
+   written, though a linked record conflicts; carried as a single by the agreeing record, the conflicting one's reason
+   saying the authorities disagree among themselves. Yes puts about ninety strings back among the accepted; no keeps
+   them the desk's.
 
    Then, after the Wikidata reload's last line (it ran the night of 2026-10-24; the tool cannot be rebuilt while it
    runs), the rerun, which measures findings 93 (properly, with the placeholders carrying nothing), 94 and 95 and the

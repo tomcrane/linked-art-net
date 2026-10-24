@@ -1281,6 +1281,38 @@ answers a bare place name silently only when it is placed in the project's home 
 "Cornwall (England : County)" for "Cornwall", right every time in the samples) or carries no placement at all; placed
 elsewhere, the string is queued for the desk with the entity shown. The Wikidata prominence rule would then settle
 some of those queued ("Lincoln" the English city at 100-odd sitelinks against Nebraska's), and the rest are the desk's.
+The owner asked for examples (2026-10-24) and the rule narrowed before any count: "Dublin (Ireland)", "Saint Petersburg
+(Russia)" and "Lucknow (India)" in fk53p7's settled lines were right and the plain home-place rule would send them to
+the desk too, and Irish places are outside the United Kingdom but central to the project. Narrowed: the lone entity
+placed elsewhere is doubted only when TGN knows a place of the name inside the home place. The count, in DataGrip:
+
+    with m as (
+      select s.context, s.raw, s.normalised, e.label
+      from decisions d
+      join source_strings s on s.id = d.source_string_id
+      join entities e on e.id = d.entity_id
+      where d.run_id = 'run-20261023-183343-fk53p7' and d.valid
+        and d.method = 'exact-name' and d.evidence->>'stage' = 'store'
+        and e.class = 'Place' and d.evidence->'reading'->>'qualifier' is null
+        and s.context in ('keywords', 'keywords:head', 'keywords:sub')
+    ), placed as (
+      select *,
+        label ~ '(England|Scotland|Wales|Northern Ireland|Great Britain|United Kingdom|London)' as home,
+        label ~ '[(,]' as qualified,
+        exists (select 1 from authority_records a where a.source = 'tgn'
+                and a.normalised_labels @> array[m.normalised]
+                and a.data->>'parentString' like '%United Kingdom%') as uk_namesake
+      from m
+    )
+    select case when home then 'home' when not qualified then 'unplaced'
+                when uk_namesake then 'elsewhere, UK namesake: the desk' else 'elsewhere, no UK namesake: kept' end as bucket,
+           count(*), (array_agg(raw || ' -> ' || label order by raw))[1:15] as examples
+    from placed group by 1 order by 1;
+
+The same `m`, listing the bucket the narrowed rule would send to the desk, to read through: `select context, raw, label
+from m where label !~ '(England|Scotland|Wales|Northern Ireland|Great Britain|United Kingdom|London)' and label ~ '[(,]'
+and exists (the uk_namesake subquery) order by context, raw;`. Mostly wrong matches there means the rule is worth
+building; mostly right ones means the desk is the better answer and decision 17 closes as no.
 
 Measured 2026-10-23 evening (run-20261023-183343-fk53p7: findings 81 and 82 and the second pass, finding 51, against
 z5vp74): accepted 9,139 -> 9,386 (vote 3,874 -> 3,961, single 1,936 -> 2,110, exact-single 3,329 -> 3,315), queued

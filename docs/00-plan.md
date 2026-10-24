@@ -48,10 +48,15 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
 
 17. *A bare place name against the project's lone entity placed outside the home place* (doc 10 7.6 "Built 2026-10-24
     morning, finding 84", last paragraph): "Clayton" in keywords:head took "Clayton, Victoria, Australia" and "Lincoln"
-    in keywords:sub took "Lincoln, Neb" because each was the project's one entity of the name. Proposed: the lone
-    entity answers silently only when placed in the home place (United Kingdom) or not placed at all; placed elsewhere,
-    the string is queued for the desk. Size S; the home-place test exists (finding 71). Yes builds it before the next
-    run; no leaves these to the desk.
+    in keywords:sub took "Lincoln, Neb" because each was the project's one entity of the name. First proposed: the lone
+    entity answers silently only when placed in the home place (United Kingdom) or not placed at all. Too blunt, the
+    owner asked for examples (2026-10-24): "Dublin (Ireland)", "Saint Petersburg (Russia)" and "Lucknow (India)" were
+    right and would go to the desk too, and Irish places are outside the home place but central to the project.
+    Narrowed: the lone entity placed elsewhere is doubted only when TGN knows a place of the name inside the home
+    place (England has a Lincoln and Claytons; no Dublin or Lucknow). The owner counts first, in DataGrip: the
+    buckets query and the list of the "elsewhere, UK namesake" bucket are in doc 10 7.6 "Built 2026-10-24 morning,
+    finding 84" (its decision 17 paragraph). If that list is mostly wrong matches, yes builds the narrowed rule (size
+    S; the TGN namesake lookup is a per-source label query); if mostly right ones, no, and the desk has them.
 15. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
     replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
     `merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX merges

@@ -1371,8 +1371,9 @@ public class ReconcilerStoreTests(PostgresFixture pg)
 
         var report = await reconciler.RunAsync(ds);
         // oldest first: Tate (override), the dated Dürer (vote), the inverted Dürer (now in the store), Smith (two exact Smiths: review),
-        // Nobody (minted), the wrongly dated Dürer (ULAN vetoed by dates, and the LoC record it is linked to falls with it: minted)
-        Assert.Equal(new ReconcileReport(Considered: 6, Overridden: 1, MatchedStore: 1, Accepted: 1, Queued: 1, Minted: 2, Deferred: 0, Skipped: 0, Reconsidered: 1), report); // the second pass looked at Smith again and left it queued
+        // Nobody (minted), the wrongly dated Dürer (ULAN vetoed by dates, and the LoC record it is linked to falls with it; the project's own
+        // Dürer, dated through them, conflicts too, and a namesake of the project's own entity is the desk's, not a second entity: queued, finding 93)
+        Assert.Equal(new ReconcileReport(Considered: 6, Overridden: 1, MatchedStore: 1, Accepted: 1, Queued: 2, Minted: 1, Deferred: 0, Skipped: 0, Reconsidered: 2), report); // the second pass looked at Smith and the wrongly dated Dürer again and left them queued
 
         // override: the entity was created under the curated identifier
         var tateEntity = (await pg.Store.ResolveAsync(ds, "corpauthor", "Tate"))!;
@@ -1483,10 +1484,11 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Equal("Nobody, Zed", minted.Label);
         Assert.Equal(1900, minted.Lifespan!.BeginEarliest!.Value.Year);
         var conflict = (await pg.Store.DecisionForAsync(wrongDates.Id))!;
-        Assert.Equal(DecisionMethod.Minted, conflict.Method);
+        Assert.Equal(DecisionMethod.Queued, conflict.Method); // finding 93: minted until 2026-10-24
         Assert.Contains("dates conflict", conflict.EvidenceJson);
         Assert.Contains("vetoed", conflict.EvidenceJson);
-        Assert.NotEqual(durer.Id, conflict.EntityId); // a provisional entity of its own, not Dürer's
+        Assert.Contains("the project's own entity of the name, its dates conflicting: the desk's, not a second entity", conflict.EvidenceJson);
+        Assert.NotEqual(durer.Id, conflict.EntityId); // a placeholder of its own while it waits, not Dürer's
 
         // lookalikes: a sibling of a string awaiting review is queued too, never answered by the lookalike; a sibling of an
         // unknown minted name is consolidated onto it; two provisional lookalikes with different dates make an undated string ambiguous

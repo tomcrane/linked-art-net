@@ -179,7 +179,8 @@ public sealed record Candidate(
 /// <param name="QualifierAgrees">The string's qualifier was found in the record's placement (true), looked for and not found (false), or there was nothing to compare (null).</param>
 /// <param name="JoinedTo">The URI of a candidate this one is grouped with though no sameAs links them: a placed candidate of another source whose placement contains this one's (LoC's "Princes Risborough (England)" through TGN's in Buckinghamshire, England), or the context's home vocabulary's exact term that this exact term of another vocabulary is carried by (AAT's "children's literature" by LCSH's "Juvenile literature").</param>
 /// <param name="SetAside">Not wanted here by a preference rather than a contradiction (a record outside the context's collections, another vocabulary's second exact term): it is not the answer, but unlike a veto it does not poison a group that the authorities' own links put it in.</param>
-public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null, bool SetAside = false);
+/// <param name="DatesConflict">The candidate's lifespan and the string's cannot be one person's (finding 93 reads it: a namesake vetoed on its dates alone is the desk's, not a mint).</param>
+public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null, bool SetAside = false, bool DatesConflict = false);
 
 /// <summary>Candidates that are the same real-world thing across sources, joined through their mutual sameAs links, voting as one.</summary>
 /// <param name="Vetoed">Every member is vetoed, or a vetoed member is the same thing as a live one by the authorities' own links: the group cannot be the answer.</param>

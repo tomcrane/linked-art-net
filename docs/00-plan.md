@@ -10,25 +10,22 @@ Branch `de-pmc` is the working branch and `main` is what is deployed (README, "B
 is behind by all of Phase 5. The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this
 folder are the committed record.
 
-## 0. Resume point (written 2026-10-23 evening; the one place to read first)
+## 0. Resume point (written 2026-10-24 night; the one place to read first)
 
 This section is rewritten at the end of every working day. It lists what stands, what the owner has to decide, what
 is built and waiting for a go, and the commands to run on return. The detail behind each line is in
 [10-alignment-toolkit.md](10-alignment-toolkit.md) section 7.6 (the findings, each dated) and in the open items of
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
-**Today, in order** (2026-10-24; every step is under "Commands on return" below with its commands): (1) `git push`;
-(2) ~~decision 17~~ (closed as no on the count, 2026-10-24); (3) ~~undo fk53p7 and `reconcile --verbose`~~ (run
-t629cj, measured: queued 3,603 -> 3,563, findings 83 and 84 held, finding 86 built from its "Münster" line); (4) ~~three
-queries~~ (run; finding 87 and the corrections to 83 and 84 built from them, doc 10 7.6 "Built 2026-10-24 midday");
-(5) ~~undo t629cj and rerun~~ (run rkjzag, measured, doc 10 7.6 "Measured ... rkjzag": queued 3,563 -> 3,488, votes
-+72; findings 89 and 90 built from it); (6) ~~the finding 88 write, then its count~~ (written 2026-10-24 evening: 354,991 rows, the count agrees); (7) ~~the evidence for "Sheffield" and
-"Lincoln (England)"~~ (read; findings 91 and 92 built from it, doc 10 7.6 "Built 2026-10-24 late afternoon"; the
-Sheffield entities confirmed as two legacy duplicates); (8) undo rkjzag and rerun, which measures 88,
-89, 90, 91 and 92 together. The two store checks were run late on 2026-10-23 and answered:
-"Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
-through (finding 84, built, below). Nothing is half-done: the Wikidata load and its retyping are complete, and the
-index waits only for its use.
+**Today, in order** (2026-10-25; every step is under "Commands on return" below with its commands): (1) `git push`
+(the night's commits are unpushed); (2) `vacuum (analyze) authority_records`, the LoC lookup timed before and after
+(bp8unt's `source:loc` was 6,741 s against rkjzag's 124 s, after finding 88's write); (3) the evidence of five bp8unt
+decisions: "Lincoln (England)", and the dated persons finding 88 turned (Hadid, Keeling, Papworth, Charlton); (4) undo
+bp8unt and rerun, which measures finding 93 and the vacuum; (5) then the index's next use, the crosswalk (item 3 (c)
+under "Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
+3,603 -> 3,563 -> 3,488 -> 3,477), findings 86 to 93 built from them, finding 88 written (354,991 LoC person records
+dated from their Wikidata item), the Sheffield entities confirmed as legacy duplicates, decision 17 closed as no.
+Nothing is half-done.
 
 **Where things stand.** Branch `de-pmc`, all work committed, CI green. Six authority sources loaded: the five of the
 manifest (14.5M records) and the Wikidata extract (5.0M, loaded 2026-10-23 evening, doc 11 section 8.11, not yet
@@ -36,12 +33,15 @@ among the manifest's sources); the LoC "-781" subdivision forms deleted from bot
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
-SQL in doc 10 7.6 "Built 2026-10-23"). The last run is run-20261024-111420-rkjzag (findings 85, 86, 87 and the corrections to 83 and 84): accepted 9,447
-(vote 4,008, single 2,124, exact-single 3,315), queued 3,488, matched in store 5,996, minted 11,322, lists 404,
-compounds 15,558; second pass 3,757 reconsidered, 269 settled; by context queued persauthorfull 1,264, keywords 590,
-publisher 782, keywords:head 342, place 208, corpauthor 174, keywords:sub 128 (doc 10 7.6 "Measured ... rkjzag"). The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
-4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488. Doc 10 7.6 has a "Measured"
-paragraph per run with the samples read; the last is "Measured ... rkjzag". The Wikidata dump and
+SQL in doc 10 7.6 "Built 2026-10-23"), and 354,991 of its undated person records their Wikidata item's dates since
+2026-10-24 evening (finding 88; the table not yet vacuumed after that write, item 1 under "Commands on return"). The last run is run-20261024-130904-bp8unt (findings 88 to 92): accepted 9,556
+(vote 4,020, single 2,239, exact-single 3,297), queued 3,477, matched in store 5,992, minted 11,228, lists 404,
+compounds 15,558; second pass 3,839 reconsidered, 362 settled; by context queued persauthorfull 1,265, keywords 584,
+publisher 782, keywords:head 333, place 215, corpauthor 174, keywords:sub 124 (doc 10 7.6 "Measured ... bp8unt"); its
+timing line says LoC's lookups were fifty times slower than rkjzag's after finding 88's write, and the table waits for
+a vacuum. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
+4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488 -> 3,477. Doc 10 7.6 has a
+"Measured" paragraph per run with the samples read; the last is "Measured ... bp8unt". The Wikidata dump and
 the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -110,11 +110,20 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Corrected 2026-10-24 evening, in the library, for the run after the one in progress**: finding 90's walk skips
-placements that agree with the qualifier (they can never be vetoed), after the owner saw the run carrying it slow down;
-read the run's timing line against rkjzag's (store 1,033 s, commit 234 s, second pass 194 s).
+**Built 2026-10-24 night from bp8unt's method diff, waiting for the next run** (doc 10 7.6 "Built 2026-10-24 night,
+finding 93"): a namesake vetoed on a dates conflict is the desk's, not a mint, when it is the project's own entity of
+the name or its source's one exact record of the name, lifespans proper on both sides (working dates keep finding 75's
+policy). Finding 88's new dates had minted seventeen accepted strings, "Hadid, Zaha, 1950-2006" a second Zaha Hadid
+among them. Expect the seventeen back as queued (minted -> queued in the diff) and a few older mints with them.
 
-**Built 2026-10-24 late afternoon from rkjzag's stored evidence, waiting for the next run** (doc 10 7.6 "Built
+**Measured 2026-10-24 night, run bp8unt** (doc 10 7.6 "Measured ... bp8unt"): findings 88 to 92 together; queued 3,488
+-> 3,477, minted -94 (finding 90 reached 96 houses, not 24), finding 91's "Bedford (England)" and "Chester (England)"
+votes again, finding 92's reasons self-explaining, finding 88 ten votes for and seventeen mints against (finding 93).
+The evening's correction of finding 90's walk stands but its diagnosis was wrong: the slowdown was LoC's index after
+finding 88's write (the GIN pending entries a vacuum folds in, as the store's loaders do after every load), not the
+walk, which cost under ten seconds.
+
+**Built 2026-10-24 late afternoon from rkjzag's stored evidence, measured on bp8unt** (kept for the record) (doc 10 7.6 "Built
 2026-10-24 late afternoon"): finding 91 (the whole heading as written breaks a tie among two-source place groups on a
 qualified string: "Lincoln (England)" is TGN's Lincoln with LoC's heading, not Lincolnshire through its variant); finding
 92 (the evidence says when prominence stands aside for a project entity outside the tie, and lists every group at the top
@@ -122,7 +131,7 @@ score and every group with a project entity, twelve at most, where it listed fiv
 groups and no English one). Expect "Lincoln (England)" and the other qualified English towns that went vote -> queued
 in rkjzag back as votes where the LoC heading is the string, and "Sheffield" queued with the entity named.
 
-**Built 2026-10-24 afternoon from rkjzag's samples and method diff, waiting for the next run** (doc 10 7.6 "Measured
+**Built 2026-10-24 afternoon from rkjzag's samples and method diff, measured on bp8unt** (kept for the record) (doc 10 7.6 "Measured
 ... rkjzag"): finding 89 (prominence checks the project's entity before finding 35 lets it break a tie: "Orkney" had
 gone to the legacy "Orkney (Sask.)" over Scotland's; now the desk's); finding 90 (finding 66's veto needs a known place
 on the candidate's side outside the qualifier's chain: "Arundel Castle (Arundel, England)" is not elsewhere than
@@ -140,25 +149,25 @@ placement ("National Maritime Museum (Great Britain)" against "(London)" votes a
 Kingdom" are one token. Expect the five to come back, and the 17 Royal Academy Winter Exhibition headings and the New
 York strings to be read in the diff.
 
-**Built 2026-10-24 from t629cj's settled lines, waiting for the next run** (doc 10 7.6 "Measured ... t629cj"):
+**Built 2026-10-24 from t629cj's settled lines, measured on rkjzag** (kept for the record) (doc 10 7.6 "Measured ... t629cj"):
 finding 86, a tie for the project's-entity tie-break (35) and for prominence (85) is among groups at the top score
 only, not at any acceptance score: "Münster" (the German city, exact at 1.00 with LoC's heading) had gone to the
 project's "Munster (Ireland)" at 0.97 through its folded umlaut. Expect "Münster" queued.
 
-**Built 2026-10-24 while the run went, waiting for the next run** (doc 10 7.6 "Built 2026-10-24, finding 85"):
+**Built 2026-10-24 while the run went, measured on rkjzag** (kept for the record) (doc 10 7.6 "Built 2026-10-24, finding 85"):
 prominence for the famous-name ties among places, the Wikidata index's first use: among two-source groups tied with no
 project entity among them, the group whose Wikidata item has 20 or more sitelinks and double the next is taken as a
 vote. Expect keywords:sub's "Sheffield", "Parma", "Durham", "Kildare", "Virginia" and "Williamsburg" to settle or be
 declined on their numbers, "Cambridge" declined (England's against Massachusetts'), and the keywords:sub queue (153) to
 fall; `decisions --context keywords:sub --method vote` with "prominent" in the reasons shows the settled ones.
 
-**Built 2026-10-24 morning from the two store checks, waiting for the next run** (doc 10 7.6 "Built 2026-10-24
+**Built 2026-10-24 morning from the two store checks, measured on t629cj** (kept for the record) (doc 10 7.6 "Built 2026-10-24
 morning, finding 84"): in any context where the string carries a qualifier, a store entity is placed through its TGN
 equivalent when its label says nothing ("Lincoln, Neb" is in Nebraska), a label's county is widened to its ancestors
 ("(Northamptonshire)" is in England), and an entity placed elsewhere is not taken. Expect "Lincoln (England)" and
 "Newbridge (Dublin)" to leave the store stage and meet the indexes (LoC "Lincoln (England)" exact-single, most likely).
 
-**Built 2026-10-23 evening from fk53p7's settled lines, waiting for the next run** (doc 10 7.6 "Measured ...
+**Built 2026-10-23 evening from fk53p7's settled lines, measured on t629cj** (kept for the record) (doc 10 7.6 "Measured ...
 fk53p7"): finding 83, in the agent parser: a trailing date segment that opens with name words ("Milton, John
 1608-1674", the comma before the dates dropped) is the forenames and the dates, not a date segment that swallows the
 forenames; nine headings had been accepted on the surname alone onto the project's surname-only legacy entities
@@ -283,36 +292,50 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. Run rkjzag (2026-10-24 afternoon) is measured and its evidence read (doc 10 7.6; findings 91 and 92 built from
-   the "Sheffield" and "Lincoln (England)" decisions; the Sheffield entities confirmed as two aligned legacy
-   duplicates, a desk item below). Then the rerun, which measures findings 88 (written), 89, 90, 91 and 92 together:
+1. Run bp8unt (2026-10-24, findings 88 to 92) is measured and its diff read (doc 10 7.6 "Measured ... bp8unt";
+   finding 93 built from it). Before the next run, the vacuum, since finding 88's write left LoC's lookups fifty times
+   slower (the store's loaders vacuum after every load; the SQL write did not), with one lookup timed before and after:
+
+       select n_live_tup, n_dead_tup, last_vacuum, last_autovacuum, last_analyze, last_autoanalyze
+       from pg_stat_user_tables where relname = 'authority_records';
+       explain (analyze, buffers)
+       with h as materialized (select * from authority_records x where x.normalised_labels && array['smith, john'] and x.source = 'loc' and x.type = 'Person')
+       select * from h limit 200;
+       vacuum (analyze, verbose) authority_records;
+
+   then the explain again: the first time against the second says whether the vacuum was the remedy (if it was not,
+   `reindex index authority_records_labels_loc` rebuilds the index, with a lock while it runs). Then the evidence of
+   five of bp8unt's decisions, in DataGrip (an undone run keeps its evidence, so after the rerun is fine too):
+
+       select s.context, s.raw, d.method, jsonb_pretty(d.evidence)
+       from decisions d join source_strings s on s.id = d.source_string_id
+       where d.run_id = 'run-20261024-130904-bp8unt'
+         and s.raw in ('Lincoln (England)', 'Hadid, Zaha, 1950-2006', 'Keeling, William Knight, 1807-1886', 'Papworth, John, 1775-1847', 'Charlton, Alan, 1948')
+       order by s.raw, d.id;
+
+   Expected: "Lincoln (England)" a vote holding the whole heading (finding 91); Hadid's conflict 1950-2006 against
+   1950-2016 (the catalogue's error); Keeling's and Papworth's records dated from Wikidata items that are not these men,
+   or agreeing dates and another cause; Charlton's vote broken by the LoC member's new dates. Then the rerun, which
+   measures finding 93 and the vacuum:
 
        git push
-       dotnet run --project tools/Align -- undo-run --run run-20261024-111420-rkjzag
+       dotnet run --project tools/Align -- undo-run --run run-20261024-130904-bp8unt
        dotnet run --project tools/Align -- reconcile --verbose
-       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
        dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
+       dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
 
-   and the method diff against rkjzag (run ids moved on). For the record, the reports and diff run on rkjzag itself:
-
-       dotnet run --project tools/Align -- decisions --run run-20261024-111420-rkjzag --context keywords:sub --method queued --limit 10
-       dotnet run --project tools/Align -- decisions --run run-20261024-111420-rkjzag --context keywords:sub --method vote --limit 10
-
-   and the method diff against t629cj, the standing check after every rerun (each run's last decision per string,
+   and the method diff against bp8unt, the standing check after every rerun (each run's last decision per string,
    since a string the second pass settled has two; the undone run keeps its evidence):
 
-       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-100226-t629cj' order by source_string_id, id desc),
-            b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-111420-rkjzag' order by source_string_id, id desc)
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-130904-bp8unt' order by source_string_id, id desc),
+            b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2 order by 3 desc;
 
-   Expected: "Bell, Trevor, B. 1930", "Harewood House (Leeds)", "Statens Museum for Kunst (Copenhagen, Denmark)",
-   "National Maritime Museum (London)" and "Newbridge (Dublin)" back as votes or store matches; "Münster" queued;
-   "Venice (Italy)" no longer a person; keywords:sub's famous-name ties settled or declined by prominence (the vote
-   sample shows "the prominent one" in the reasons); the 17 Royal Academy Winter Exhibition headings and the New York
-   strings explained by the diff.
+   Expected: the seventeen minted on dates back as queued (minted -> queued, "Hadid, Zaha, 1950-2006" among them) and
+   some older mints with them; `source:loc` in the timing line back near rkjzag's 124 s; little else moving.
 
 2. The measurement for the index's next use, dates for LoC's undated person records through the Wikidata item that
    links them (item 3b). Read-only, several minutes beside a running reconcile; cancel and rerun after the run if it
@@ -352,8 +375,11 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
           and exists (select 1 from unnest(l.wlabels) wl where wl like '%' || lower(split_part(a.label, ',', 1)) || '%');
 
    Then `select count(*) from authority_records where source = 'loc' and data ? 'datesFrom';` for the record.
-   Written 2026-10-24 evening: 354,991 rows affected in 8 min 54 s, and the count is 354,991. The next reconcile
-   measures it. The LoC loader must learn the step for the next reload (open item), or the dates go with the reload.
+   Written 2026-10-24 evening: 354,991 rows affected in 8 min 54 s, and the count is 354,991. Measured on bp8unt (doc
+   10 7.6 "Measured ... bp8unt"): ten votes gained, seventeen accepted strings minted on the conflicts it raised
+   (finding 93, built), and LoC's lookups fifty times slower until the table is vacuumed (item 1; the write was staged
+   without the vacuum the loaders run). The LoC loader must learn the step for the next reload (open item), or the
+   dates go with the reload.
 
 3. The Wikidata reload, for the subclass walk (built 2026-10-24, doc 11 section 8.11), an evening's run of about
    three hours when convenient, not urgent; the same command as the first load:

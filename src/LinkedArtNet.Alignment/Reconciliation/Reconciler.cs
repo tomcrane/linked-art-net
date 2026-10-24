@@ -602,6 +602,27 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (reading.Parts is not null) return new Evaluation(Outcome.Decomposed, reading, groups, Truncated: truncated);
         if (top is not null && top.Score >= _options.ReviewScore)
             return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+        // a namesake vetoed on a dates conflict is the desk's, not a mint, when it is the project's own entity of the name (a second entity
+        // for Zaha Hadid over the catalogue's "1950-2006" against the 1950-2016 of LoC's record, dated by finding 88, is the worst outcome)
+        // or its source's one exact record of the name (one date wrong on either side, or a wrong link: "Broderick, Laurence, 1953-" against
+        // LoC's one Laurence Broderick, born 1935); several exact records of a source all conflicting are other people and the string mints
+        // as before, and so do working dates against a lifespan, the project's own entity included ("Dodd, Phyllis, fl. 2001-2005" after the
+        // death of the one Phyllis Dodd is another person: finding 75's policy) (finding 93, 2026-10-24, run bp8unt: seventeen accepted
+        // strings minted on the conflicts finding 88 brought to light)
+        if (reading.Lifespan is { IsEmpty: false } lifespan)
+        {
+            var all = groups.SelectMany(g => g.Members).ToList();
+            bool Exact(ScoredCandidate m) => m.Candidate.NameScore >= 0.97 && (m.Candidate.Class is not { } cls || reading.Classes.Contains(cls));
+            var conflicting = all.Where(m => m.DatesConflict && Exact(m) && !lifespan.IsWorking && m.Candidate.Lifespan is { IsWorking: false }
+                && (m.Candidate.EntityId is not null || all.Count(x => Exact(x) && x.Candidate.EntityId is null && x.Candidate.Source == m.Candidate.Source) == 1)).ToList();
+            if (conflicting.Count > 0)
+            {
+                groups = groups.Select(g => g with { Members = g.Members.Select(m => conflicting.Contains(m) ? m with { Reason = m.Reason + (m.Candidate.EntityId is not null
+                    ? "; the project's own entity of the name, its dates conflicting: the desk's, not a second entity"
+                    : $"; {m.Candidate.Source}'s one record of the name, its dates conflicting: the desk's, not a mint") } : m).ToList() }).ToList();
+                return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+            }
+        }
         return new Evaluation(_options.MintWhenNothingFound ? Outcome.Minted : Outcome.Deferred, reading, groups, Truncated: truncated);
     }
 
@@ -779,6 +800,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             reasons.AddRange(notes);
             var veto = false;
             var datesAgree = false;
+            var datesConflict = false;
             if (c.Class is { } cls && !reading.Classes.Contains(cls)) { veto = true; reasons.Add($"type {cls} not allowed here"); }
             // a heading that carries a lifespan names a person or a body: TGN's Gilbert Rivers are not "Gilbert, 1943-" (finding 31, 2026-10-22)
             else if (reading.HasLifespan && c.Class == EntityClass.Place) { veto = true; reasons.Add("a dated heading names a person or body, not a place"); }
@@ -788,7 +810,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 switch (rl.Compare(cl, person ? maxPersonLifetimeYears : null))
                 {
                     case DateAgreement.Agree: score = Math.Min(1, score + 0.05); datesAgree = true; reasons.Add("dates agree"); break;
-                    case DateAgreement.Conflict: veto = true; reasons.Add($"dates conflict ({rl.Text} vs {cl.Text})"); break;
+                    case DateAgreement.Conflict: veto = true; datesConflict = true; reasons.Add($"dates conflict ({rl.Text} vs {cl.Text})"); break;
                     default: reasons.Add($"dates not comparable ({rl.Text} vs {cl.Text})"); break;
                 }
             }
@@ -822,7 +844,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                     break;
                 case false: reasons.Add($"qualifier not placed ({reading.Qualifier} vs {c.Placement})"); break;
             }
-            list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees));
+            list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees, DatesConflict: datesConflict));
         }
         // a string that carries dates and a record of a source that agrees with them: that source's other records of the name
         // are namesakes, not the dated person (LoC's headings are unique, so its undated "Doyle, Richard" beside "Doyle, Richard,

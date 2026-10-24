@@ -1259,13 +1259,71 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
-Corrected 2026-10-24 evening, finding 90's cost: the first run carrying it ran visibly slower, and the cause is its
-walk, which looked up every segment of every placed candidate's parenthetical (thousands of distinct American counties
-and towns, one label query and a record fetch per hit each, cached for the run). A placement that agrees with the
-qualifier by any of Score's three readings can never be vetoed, and `Elsewhere` reads only the candidate's own
-segments, so agreeing placements are now skipped before the walk; the set of known places a disagreeing candidate is
-judged by is unchanged. Takes effect at the run after the one in progress; that run's timing line (the `score` and
-`store` buckets) says what the walk cost.
+Built 2026-10-24 night, finding 93, from bp8unt's method diff (below): a namesake vetoed on a dates conflict is the
+desk's, not a mint, when it is the project's own entity of the name or its source's one exact record of the name, both
+lifespans proper; several exact records of a source all conflicting are other people and the string mints as before,
+and so do working dates against a lifespan, the project's own entity included ("Dodd, Phyllis, fl. 2001-2005" after the
+death of the one Phyllis Dodd is another person: finding 75's policy stands). The reasons say which ("the project's own
+entity of the name, its dates conflicting: the desk's, not a second entity"; "loc's one record of the name, its dates
+conflicting: the desk's, not a mint"). Finding 88 brought the cases to light: the catalogue's "Hadid, Zaha, 1950-2006"
+against the project's own Zaha Hadid, whose LoC record now says 1950-2016, had minted a second entity for her. The
+store test's "Dürer, Albrecht, 1800-1870" against the project's Dürer, minted since that test was written, is queued now
+for the same reason. Expect bp8unt's seventeen mints back as queued strings and a few older mints with them (a rare
+name's one dated record conflicting), counted in the diff.
+
+Measured 2026-10-24 night (run-20261024-130904-bp8unt: findings 88 to 92, against rkjzag): accepted 9,447 -> 9,556
+(vote 4,008 -> 4,020, single 2,124 -> 2,239, exact-single 3,315 -> 3,297), queued 3,488 -> 3,477, matched in store
+5,996 -> 5,992, minted 11,322 -> 11,228; the second pass reconsidered 3,839 (3,757) and settled 362 (269): the first
+pass left 82 more queued and the second settled 93 more. By context queued: persauthorfull 1,265 (1,264), keywords 584
+(590), publisher 782, keywords:head 333 (342), place 215 (208), corpauthor 174, keywords:sub 124 (128). The path: ...
+-> 3,563 -> 3,488 -> 3,477. The samples and the method diff, read:
+
+- Finding 90 reached further than the 24: minted -> single 96, the county-qualified houses whose LCSH heading names the
+  town ("Hever Castle (Kent)", "Kelmscott Manor (Oxfordshire)", "Auckland Castle (Durham)", "Arundel Castle (Sussex)"),
+  so finding 66's veto had been minting them since each county began to resolve, not only since Sussex did; minted ->
+  queued 9 ("Enfield, Middlesex", "Ulverston, Lancashire", "Tattershall Castle (England)") and minted -> vote 5
+  ("Waddesdon Manor (Buckinghamshire)", "St. George's Hall (Liverpool)"). Minted 11,322 -> 11,228.
+- Finding 91 at work: queued -> vote 20, "Bedford (England)", "Chester (England)", "Agrigento (Italy)", "Bebington,
+  Wirral", "Freemasons (Bath, England)"; and the bare names then join the entities those votes made, in the second pass
+  (queued -> exact-name 7: "Agrigento", "Chester", "Parma", "St Ives (Cornwall)"). "Lincoln (England)" is beyond the
+  diff's eight examples; its line is read with the next queries (plan section 0).
+- Finding 89: "Orkney" in keywords:sub left the legacy "Orkney (Sask.)" and the second pass matched it to the project's
+  "Orkney (Scotland)" (place/aqzss6fj), "Gloucester" and "Hove" the same way (vote -> exact-name 3); vote -> queued 8
+  holds "Dedham", "Somerset", "Wickford" and "Gloucester" in another context, the desk's by finding 89, and three dated
+  persons ("Charlton, Alan, 1948", "Clatworthy, Robert, 1928-", "Richards, Albert, 1919-1945") that are finding 88's: a
+  vote whose LoC member is now dated and no longer agrees, to be read in their evidence.
+- Finding 92 says what it was built to say: "Sheffield", "Cambridge", "Durham" and "Williamsburg" carry "prominence
+  stands aside: the project's own entity Sheffield is among the live groups, the desk's". "Washington (D.C.)" is
+  queued between the project's two "Washington" entities (the duplicates, a desk item). "Camden", "Quebec" and
+  "Trent)" declined by prominence as before.
+- Finding 88, both ways. For it: exact-name -> vote 10 ("Bevan, Tony, 1951-", "Bowyer, William, 1926-", "Green,
+  Anthony, 1939-", "Reynolds, Alan, 1926-2014"), LoC's newly dated record agreeing and joining the vote. Against it,
+  the wrong turn finding 93 corrects (above): seventeen accepted strings minted on conflicts the new dates raised,
+  single -> minted 8 ("Biegel, Peter, 1913-1987", "Broderick, Laurence, 1953-", "Keeling, William Knight, 1807-1886"),
+  exact-name -> minted 5 ("Hadid, Zaha, 1950-2006", "Kindersley, David [1903-1987.] (author)", "Hilton, Matthew,
+  1948-"), exact-single -> minted 3 ("Carstairs, John Paddy, 1916-1970", "Papworth, John, 1775-1847"), vote -> minted 1
+  ("Rice, Anne Estelle, 1879-1959"). By the assistant's recollection, to be read against the evidence: Zaha Hadid died
+  in 2016, David Kindersley lived 1915-1995, Laurence Broderick was born in 1935 and Anne Estelle Rice in 1877, so
+  there the catalogue's dates are the ones wrong and the project's own entities were being duplicated over them;
+  Keeling's 1807-1886 and Papworth's 1775-1847 are right, so there the record's new dates, or the Wikidata link that
+  brought them, are wrong (LoC has several John Papworths, and the undated one may be linked to another man's item).
+  Also vote -> single 15 ("Dodd, Daniel, op 1760-1791", "Eshun, Kodwo, 1966-", "Hay, Jane Benham, 1829-c.1862"): the
+  LoC member's new dates conflict and ULAN's record stands alone with the dates agreeing, an acceptance still, the
+  conflict in the reasons.
+- Time by stage: source:loc 124 s -> 6,741 s, the whole of the slowdown (store 1,033 -> 728 s; the second pass 194 ->
+  508 s, 3,839 strings each going through the LoC lookup again; read 176 -> 333 s; score, where finding 90's walk
+  sits, 9.9 -> 8.7 s). The only change on LoC's side between the runs is finding 88's write of 354,991 rows to
+  `authority_records`, and the store's own loader knows the effect (PostgresAlignmentStore, the vacuum after a load:
+  reloading ULAN's 404k rows had made each lookup twenty times slower until a vacuum folded the GIN index's pending
+  entries in; every load of five thousand records or more has vacuumed since). The SQL write was staged without that
+  step. `vacuum (analyze) authority_records` before the next run, the lookup timed before and after (plan section 0).
+
+Corrected 2026-10-24 evening, finding 90's cost, and corrected again at night: the evening's diagnosis was wrong. The
+first run carrying the walk ran visibly slower and the walk was blamed; bp8unt's timing line (above) puts the walk
+under ten seconds in the `score` bucket in both runs and the slowdown in LoC's index after finding 88's write. The
+evening's narrowing stands as harmless: a placement that agrees with the qualifier by any of Score's three readings can
+never be vetoed, and `Elsewhere` reads only the candidate's own segments, so agreeing placements are skipped before the
+walk; the set of known places a disagreeing candidate is judged by is unchanged.
 
 Built 2026-10-24 late afternoon, findings 91 and 92, from the two pieces of evidence rkjzag's measurement had asked for
 (the stored evidence of its "Sheffield" and "Lincoln (England)" decisions):

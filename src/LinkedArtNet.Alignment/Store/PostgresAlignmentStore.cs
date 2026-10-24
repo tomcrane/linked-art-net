@@ -892,6 +892,35 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return count;
     }
 
+    public async Task<int> SetAuthorityTypesByClassAsync(string source, IReadOnlyDictionary<string, string> typeByClass, CancellationToken ct = default)
+    {
+        if (typeByClass.Count == 0) return 0;
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using (var create = new NpgsqlCommand("drop table if exists class_type_in; create temp table class_type_in (class text primary key, type text not null)", conn))
+            await create.ExecuteNonQueryAsync(ct);
+        await using (var writer = await conn.BeginBinaryImportAsync("copy class_type_in (class, type) from stdin (format binary)", ct))
+        {
+            foreach (var (cls, type) in typeByClass)
+            {
+                await writer.StartRowAsync(ct);
+                await writer.WriteAsync(cls, NpgsqlDbType.Text, ct);
+                await writer.WriteAsync(type, NpgsqlDbType.Text, ct);
+            }
+            await writer.CompleteAsync(ct);
+        }
+        // the first instance-of value, in the record's order, that the map resolves
+        await using var update = new NpgsqlCommand(
+            """
+            update authority_records a
+               set type = (select m.type from jsonb_array_elements_text(a.data->'instanceOf') with ordinality e(class, ord)
+                           join class_type_in m on m.class = e.class order by e.ord limit 1)
+             where a.source = @source and a.type is null
+               and exists (select 1 from jsonb_array_elements_text(a.data->'instanceOf') e(class) join class_type_in m on m.class = e.class)
+            """, conn) { CommandTimeout = 0 };
+        update.Parameters.AddWithValue("source", source);
+        return await update.ExecuteNonQueryAsync(ct);
+    }
+
     public async Task<int> PutAuthoritiesAsync(IAsyncEnumerable<AuthorityRecord> records, CancellationToken ct = default)
     {
         await using var conn = await _db.OpenConnectionAsync(ct);

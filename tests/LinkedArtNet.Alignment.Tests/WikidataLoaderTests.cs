@@ -36,6 +36,15 @@ public class WikidataLoaderTests(PostgresFixture pg)
         <http://www.wikidata.org/entity/Q99999901> <http://www.wikidata.org/prop/direct/P2031> "1773-01-01T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
         <http://www.wikidata.org/entity/Q99999901> <http://www.wikidata.org/prop/direct/P2032> "1789-01-01T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
         <http://www.wikidata.org/entity/Q99999901> <http://www.w3.org/2000/01/rdf-schema#label> "John Royce"@en .
+        <https://www.wikidata.org/wiki/Special:EntityData/Q99999810> <http://schema.org/about> <http://www.wikidata.org/entity/Q99999810> .
+        <http://www.wikidata.org/entity/Q99999810> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q99999820> .
+        <http://www.wikidata.org/entity/Q99999810> <http://www.wikidata.org/prop/direct/P227> "4010579-9" .
+        <http://www.wikidata.org/entity/Q99999810> <http://www.w3.org/2000/01/rdf-schema#label> "Lorem Commune"@en .
+        <https://www.wikidata.org/wiki/Special:EntityData/Q99999820> <http://schema.org/about> <http://www.wikidata.org/entity/Q99999820> .
+        <http://www.wikidata.org/entity/Q99999820> <http://www.wikidata.org/prop/direct/P279> <http://www.wikidata.org/entity/Q99999821> .
+        <http://www.wikidata.org/entity/Q99999820> <http://www.w3.org/2000/01/rdf-schema#label> "commune of Loremia"@en .
+        <https://www.wikidata.org/wiki/Special:EntityData/Q99999821> <http://schema.org/about> <http://www.wikidata.org/entity/Q99999821> .
+        <http://www.wikidata.org/entity/Q99999821> <http://www.wikidata.org/prop/direct/P279> <http://www.wikidata.org/entity/Q2221906> .
         <https://www.wikidata.org/wiki/Special:EntityData/Q99999902> <http://schema.org/about> <http://www.wikidata.org/entity/Q99999902> .
         <http://www.wikidata.org/entity/Q99999902> <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q5> .
         <http://www.wikidata.org/entity/Q99999902> <http://www.w3.org/2000/01/rdf-schema#label> "Nobody Kept"@en .
@@ -68,6 +77,25 @@ public class WikidataLoaderTests(PostgresFixture pg)
     }
 
     [Fact]
+    public void The_subclass_walk_resolves_to_the_nearest_listed_class_and_leaves_works_alone()
+    {
+        var edges = new Dictionary<string, List<string>>
+        {
+            ["Q77001"] = ["Q486972"],                  // an unlisted settlement type -> human settlement (listed: Place)
+            ["Q7725634"] = ["Q386724"],                // literary work -> work
+            ["Q386724"] = ["Q17537576"],               // work -> creative work
+            ["Q99"] = ["Q98"], ["Q98"] = ["Q99"],      // a cycle
+            ["Q77"] = ["Q7725634", "Q43229"],          // two parents, one listed (Group) at depth one
+        };
+        var resolved = WikidataLoader.ResolveClasses(["Q77001", "Q7725634", "Q99", "Q77", "Q5"], edges);
+        Assert.Equal("Place", resolved["Q77001"]);
+        Assert.Equal("Group", resolved["Q77"]);
+        Assert.False(resolved.ContainsKey("Q7725634")); // a work has no listed ancestor
+        Assert.False(resolved.ContainsKey("Q99"));      // a cycle ends
+        Assert.False(resolved.ContainsKey("Q5"));       // a listed class needs no walk
+    }
+
+    [Fact]
     public void Dump_dates_give_years_and_sitelink_rows_count_per_kept_item()
     {
         Assert.Equal("1952", WikidataLoader.Year("1952-03-11T00:00:00Z"));
@@ -83,7 +111,13 @@ public class WikidataLoaderTests(PostgresFixture pg)
     public async Task Items_with_identifiers_load_as_records_with_english_labels_links_dates_classes_and_sitelinks()
     {
         var result = await new WikidataLoader(pg.Store).LoadAsync(NTriples.ReadText(Sample), () => new StringReader(Sitelinks), "test-sample");
-        Assert.Equal(3, result.Records); Assert.Equal(4, result.ItemsSeen); Assert.Equal(6, result.SitelinkRows);
+        Assert.Equal(4, result.Records); Assert.Equal(7, result.ItemsSeen); Assert.Equal(6, result.SitelinkRows);
+        // the subclass walk: "commune of Loremia" is not in the table, but is a subclass of a subclass of geographic location, so a place;
+        // the class items carry no identifier and are not kept themselves
+        Assert.Equal(1, result.ClassesResolved); Assert.Equal(1, result.RecordsTyped);
+        var commune = (await pg.Store.GetAuthorityAsync("http://www.wikidata.org/entity/Q99999810"))!;
+        Assert.Equal("Place", commune.Type); Assert.Equal("Lorem Commune", commune.Label);
+        Assert.Null(await pg.Store.GetAuthorityAsync("http://www.wikidata.org/entity/Q99999820"));
         var durer = (await pg.Store.GetAuthorityAsync("http://www.wikidata.org/entity/Q5580"))!;
         Assert.Equal("wikidata", durer.Source);
         Assert.Equal("Albrecht Dürer", durer.Label);

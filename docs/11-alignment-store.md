@@ -338,8 +338,35 @@ article anywhere), 1-4 1,647,381, 5-19 535,251, 20-99 218,917, 100 or more 6,770
 instance-of values the class table did not list, almost all settlement types (Ortsteil, commune of France, comune of
 Italy, municipality of Spain, lakes, streams) and bodies (political party, sports club, learned society); the forty
 most frequent were named through the Wikidata API and added to the table (`ClassOf`), and the loaded rows were
-retyped by SQL to match (plan section 0). The full fix is to read the dump's subclass-of (P279) edges and walk each
-instance-of up to a root class, which replaces the hand table; it waits for the next reload. The index is not yet among
+retyped by SQL to match. The retyping, run once in DataGrip on 2026-10-23 evening (kept for the record; the
+subclass walk below replaces it at the next reload), the first forty:
+
+    update authority_records set type = 'Place' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q253019','Q484170','Q116457956','Q1529096','Q747074','Q17051044','Q17343829','Q23397','Q2074737','Q3558970','Q15127012','Q839954','Q47521','Q46831','Q667509','Q124714','Q18663566','Q820477','Q70208','Q39816','Q3257686','Q751876'];
+    update authority_records set type = 'Group' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q7278','Q180958','Q476028','Q847017','Q48204','Q6881511','Q955824','Q47258130'];
+    update authority_records set type = 'Event' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q2020153'];
+    update authority_records set type = 'Language' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q34770','Q1288568'];
+    select type, count(*) from authority_records where source = 'wikidata' group by type order by 2 desc;
+
+(Place 105,829 -> 204,776, Group 152,373 -> 170,609, Event 2,217 -> 5,360, Language 2,188; untyped 519,152 -> 396,638)
+and the second forty, 32 new classes:
+
+    update authority_records set type = 'Place' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q1134686','Q12284','Q5153359','Q42744322','Q3055118','Q54050','Q79007','Q3184121','Q131681','Q473972','Q102496','Q6784672','Q11755880','Q811979','Q317557'];
+    update authority_records set type = 'Group' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q56351315','Q13417114','Q15911314','Q748019','Q483242','Q2088357','Q1762059','Q18127','Q176799','Q178790','Q18706073','Q14350','Q5741069','Q9212979','Q4671277','Q131186'];
+    update authority_records set type = 'Material' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q113145171'];
+    select type, count(*) from authority_records where source = 'wikidata' group by type order by 2 desc;
+
+(after both: Person 4,221,300, untyped 352,987, Place 228,188, Group 189,720, Event 5,360, Type 4,040, Language 2,188,
+Material 1,128; stream Q47521 was lost from the first statement on its way to the console and took 2,318 rows when run
+alone). The full fix, built 2026-10-24 for the next reload: the loader gathers every
+item's subclass-of (P279) edges during the pass (a class is an item like any other, and may come after its instances in
+the dump), notes the instance-of classes of kept records that the table does not list, and when the pass is done walks
+each of those upwards, breadth first and twelve steps at most, to the nearest listed class (`ResolveClasses`); the
+table gained roots for the purpose (geographic location Q2221906, geographical feature Q618123, languoid Q17376908,
+material Q214609, historical period Q11514315; organization and occurrence were there). The resolved map is written
+through a temporary table and one update over the untyped records of the source (`SetAuthorityTypesByClassAsync`,
+the first instance-of value in the record's order that the map resolves). A class with no listed ancestor, a literary
+work or a taxon, stays unresolved and its records untyped, which is meant. The table's entries decide first, so a hand
+correction wins over the hierarchy. The load report ends with the classes resolved and the records typed. The index is not yet among
 the manifest's sources, and need not be: its first use, prominence for the famous-name ties among places (doc 10
 section 7.6, finding 85, 2026-10-24), reaches it through `FindAuthoritiesBySameAsAsync` on the tied candidates' TGN and
 LoC URIs, and reads `sitelinks` from the record's data. The other uses designed (dates for LoC's undated records, the

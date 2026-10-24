@@ -6,7 +6,8 @@ using LinkedArtNet.Alignment.Store;
 
 namespace LinkedArtNet.Alignment.Authorities;
 
-public sealed record WikidataLoadResult(long TriplesRead, long ItemsSeen, int Records, long SitelinkRows, TimeSpan Elapsed);
+/// <param name="ClassesResolved">Instance-of classes the table did not list that the subclass walk resolved to a type, and the records typed by them.</param>
+public sealed record WikidataLoadResult(long TriplesRead, long ItemsSeen, int Records, long SitelinkRows, TimeSpan Elapsed, int ClassesResolved = 0, int RecordsTyped = 0);
 
 /// <summary>
 /// A local extract of Wikidata as the <c>wikidata</c> index, from the "truthy" N-Triples dump
@@ -16,7 +17,9 @@ public sealed record WikidataLoadResult(long TriplesRead, long ItemsSeen, int Re
 /// AAT (P1014) or GND (P227). Its English labels and aliases (and the language-neutral <c>mul</c> ones) are the labels, the
 /// identifiers become <c>sameAs</c> links in the other indexes' URI forms, birth and death (P569, P570), inception and
 /// dissolution (P571, P576) or the work period (P2031, P2032, as working dates) the lifespan, and the class comes from
-/// <c>instance of</c> (P31) through a short table of Wikidata classes. The record's data keeps the description, the
+/// <c>instance of</c> (P31) through a table of Wikidata classes, or failing that through the dump's own <c>subclass of</c>
+/// (P279) edges, gathered for every item during the pass and walked upwards from each unlisted class to the nearest listed
+/// one when the pass is done (a commune of France is a human settlement is a geographic location, so a place). The record's data keeps the description, the
 /// instance-of ids and the identifiers. Prominence comes from a second file, the sitelinks table
 /// (<c>wikidatawiki-latest-wb_items_per_site.sql.gz</c>, a MySQL dump): the number of Wikipedia and sister-project pages an
 /// item has is written into each kept record's data as <c>sitelinks</c>.
@@ -107,10 +110,49 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
         ["Q176799"] = nameof(EntityClass.Group), ["Q178790"] = nameof(EntityClass.Group), ["Q18706073"] = nameof(EntityClass.Group), ["Q14350"] = nameof(EntityClass.Group),
         ["Q5741069"] = nameof(EntityClass.Group), ["Q9212979"] = nameof(EntityClass.Group), ["Q4671277"] = nameof(EntityClass.Group), ["Q131186"] = nameof(EntityClass.Group),
         ["Q113145171"] = nameof(EntityClass.Material),
+        // roots for the subclass walk (ResolveClasses), the assistant's choice of Wikidata's top classes for each type
+        ["Q2221906"] = nameof(EntityClass.Place), ["Q618123"] = nameof(EntityClass.Place), ["Q17376908"] = nameof(EntityClass.Language),
+        ["Q214609"] = nameof(EntityClass.Material), ["Q11514315"] = nameof(EntityClass.Period),
     };
 
-    /// <summary>The record's class: the first instance-of value the table knows, else none (the record is kept untyped).</summary>
+    /// <summary>The record's class: the first instance-of value the table knows, else none (the record is kept untyped until the subclass walk).</summary>
     internal static string? ClassOf(IEnumerable<string> instanceOf) => instanceOf.Select(q => Classes.GetValueOrDefault(q)).FirstOrDefault(c => c is not null);
+
+    /// <summary>
+    /// Resolves classes the table does not list by walking their subclass-of edges upwards, breadth first, to the nearest listed class;
+    /// the roots the table carries for the purpose are organization (Q43229), geographic location (Q2221906), occurrence (Q1190554), languoid
+    /// (Q17376908), material (Q214609) and historical period (Q11514315). A class with no listed ancestor within twelve steps (a literary
+    /// work, a taxon) stays unresolved and its records untyped. The walk is the full fix for the long tail of settlement and body types that
+    /// the first load (2026-10-23) left untyped; the table's entries still decide first, so a hand correction wins over the hierarchy.
+    /// </summary>
+    internal static Dictionary<string, string> ResolveClasses(IEnumerable<string> unlisted, IReadOnlyDictionary<string, List<string>> subclassOf, int maxDepth = 12)
+    {
+        var resolved = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var start in unlisted)
+        {
+            if (Classes.ContainsKey(start) || resolved.ContainsKey(start)) continue;
+            var seen = new HashSet<string>(StringComparer.Ordinal) { start };
+            var frontier = new List<string> { start };
+            string? found = null;
+            for (var depth = 0; depth < maxDepth && frontier.Count > 0 && found is null; depth++)
+            {
+                var next = new List<string>();
+                foreach (var q in frontier)
+                {
+                    if (!subclassOf.TryGetValue(q, out var parents)) continue;
+                    foreach (var parent in parents)
+                    {
+                        if (Classes.TryGetValue(parent, out var type)) { found = type; break; }
+                        if (seen.Add(parent)) next.Add(parent);
+                    }
+                    if (found is not null) break;
+                }
+                frontier = next;
+            }
+            if (found is not null) resolved[start] = found;
+        }
+        return resolved;
+    }
 
     private static readonly string[] LabelLanguages = ["en", "mul", "en-gb", "en-ca", "en-us", "en-au", "en-ie", "en-nz", "simple"];
 
@@ -121,10 +163,21 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
     {
         var started = DateTimeOffset.UtcNow;
         var kept = new HashSet<long>();
+        var subclassOf = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        var unlisted = new HashSet<string>(StringComparer.Ordinal);
         long read = 0, seen = 0;
         var records = await store.PutAuthoritiesAsync(ReadRecordsAsync(ct), ct);
         if (records > 0) await store.RetireAuthoritiesAsync(Source, started, ct);
         progress?.Report($"{read:N0} triples read, {seen:N0} items seen, {records:N0} records written");
+        // the subclass walk: the classes kept records carry that the table does not list, resolved through the edges gathered in the pass
+        var classes = ResolveClasses(unlisted, subclassOf);
+        var typed = 0;
+        if (classes.Count > 0)
+        {
+            progress?.Report($"{unlisted.Count:N0} unlisted classes among the kept records, {classes.Count:N0} resolved through {subclassOf.Count:N0} subclass edges");
+            typed = await store.SetAuthorityTypesByClassAsync(Source, classes, ct);
+            progress?.Report($"{typed:N0} records typed by the walk");
+        }
         long rows = 0;
         if (sitelinks is not null && kept.Count > 0)
         {
@@ -134,7 +187,7 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
             var patched = await store.MergeAuthorityDataAsync(Patches(counts), ct);
             progress?.Report($"{rows:N0} sitelink rows read, {patched:N0} records given a count");
         }
-        return new WikidataLoadResult(read, seen, records, rows, DateTimeOffset.UtcNow - started);
+        return new WikidataLoadResult(read, seen, records, rows, DateTimeOffset.UtcNow - started, classes.Count, typed);
 
         async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync([EnumeratorCancellation] CancellationToken c)
         {
@@ -149,13 +202,23 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
                 var id = t.Subject[Entity.Length..];
                 if (current is null || !string.Equals(current.Id, id, StringComparison.Ordinal))
                 {
-                    if (current is not null && ToRecord(current, now, sourceVersion) is { } done) { kept.Add(current.Number); yield return done; }
+                    if (current is not null && Finish(current) is { } done) { kept.Add(current.Number); yield return done; }
                     current = new Item(id); seen++;
                 }
                 current.Take(t);
                 if (read % 1_000_000 == 0) await Task.Yield();
             }
-            if (current is not null && ToRecord(current, now, sourceVersion) is { } last) { kept.Add(current.Number); yield return last; }
+            if (current is not null && Finish(current) is { } last) { kept.Add(current.Number); yield return last; }
+
+            // every item's subclass-of edges are kept for the walk (a class is an item like any other, and may come after its instances in
+            // the dump); a kept record's unlisted instance-of classes are noted for it
+            AuthorityRecord? Finish(Item item)
+            {
+                if (item.SubclassOf.Count > 0) subclassOf[item.Id] = item.SubclassOf;
+                var record = ToRecord(item, now, sourceVersion);
+                if (record is { Type: null }) foreach (var q in item.InstanceOf) unlisted.Add(q);
+                return record;
+            }
         }
 
         static async IAsyncEnumerable<(string Uri, string DataJson)> Patches(Dictionary<long, int> counts)
@@ -174,6 +237,7 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
         public readonly List<(string Lang, string Text)> Labels = [];
         public readonly List<(string Lang, string Text)> AltLabels = [];
         public readonly List<string> InstanceOf = [];
+        public readonly List<string> SubclassOf = [];
         public string? Description, Birth, Death, Inception, Dissolution, WorkFrom, WorkTo;
 
         public void Take(Triple t)
@@ -184,6 +248,7 @@ public sealed partial class WikidataLoader(PostgresAlignmentStore store)
                 switch (p)
                 {
                     case "P31": if (t.Object.StartsWith(Entity, StringComparison.Ordinal)) InstanceOf.Add(t.Object[Entity.Length..]); break;
+                    case "P279": if (t.Object.StartsWith(Entity, StringComparison.Ordinal)) SubclassOf.Add(t.Object[Entity.Length..]); break;
                     case "P569": Birth ??= t.Object; break;
                     case "P570": Death ??= t.Object; break;
                     case "P571": Inception ??= t.Object; break;

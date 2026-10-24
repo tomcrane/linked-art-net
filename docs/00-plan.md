@@ -229,9 +229,10 @@ says "continue with the list"):
    from the Wikidata record that links it, for the comparison only, with the reason saying so. (c) The crosswalk:
    two candidates from different sources both linked from one Wikidata item are one entity, joined as a VIAF cluster
    would be (18,220 items carry TGN and LoC, 67,069 ULAN and LoC). (d) Wikidata labels count as variants only, never
-   as a heading match: London's record carries "Augusta", "Lon." and "LDN". The next loader change is to read the
-   dump's subclass-of edges (P279) and walk each instance-of to a root class in place of the hand table, at the next
-   reload. Beside it, when the LUX export is designed: a reviewed Wikidata contribution export of confirmed local
+   as a heading match: London's record carries "Augusta", "Lon." and "LDN". ~~The next loader change is to read the
+   dump's subclass-of edges (P279) and walk each instance-of to a root class in place of the hand table~~ (built
+   2026-10-24, doc 11 section 8.11; it takes effect at the next reload, three hours, an evening's run; the hand table's
+   two rounds and the SQL retyping stand until then). Beside it, when the LUX export is designed: a reviewed Wikidata contribution export of confirmed local
    authorities (a QuickStatements batch of label, dates, roles, nationality and the archive's URI as the reference,
    for a person to review and submit; confirmed entities only).
 3a. The wider Wikidata, for the entities no authority has (the owner's question, 2026-10-23). The loaded extract keeps
@@ -256,93 +257,59 @@ says "continue with the list"):
    would do to them.
 7. The Agent parser's endpoint, playground and corpus (section 7, item 34), after the alignment list.
 
-**Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
+**Commands on return** (the owner runs all of them; the assistant never runs anything against the real store). The
+answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Lincoln and Newbridge checks under "Built
+2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
+8.11 (the Wikidata retyping); this section holds only what is current.
 
-Runs ygjx75, p9g534, eetp4h, z5vp74 and fk53p7 (2026-10-23) are measured and read; the queue is 3,603. The two
-store checks from fk53p7's settled lines were run on 2026-10-23 late (kept for the record; both answered, finding 84
-built from them):
+1. The run in progress (started 2026-10-24 after midday, after `undo-run --run run-20261024-100226-t629cj`; the tool
+   rebuilt itself from commit 9b3822f) measures findings 85, 86 and 87 and the corrections to 83 and 84. When it ends,
+   paste the second pass's lines from "second pass over" to the "time by stage" line, then:
 
-    select e.id, e.label, e.class, e.status, q.uri, q.source, q.method
-    from entities e left join entity_equivalents q on q.entity_id = e.id
-    where e.id in ('https://data.paul-mellon-centre.ac.uk/place/sg9n2gps', 'https://data.paul-mellon-centre.ac.uk/place/udgbns9d')
-    order by e.id, q.source;
+       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
+       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method vote --limit 10
 
-    select s.context, s.raw, d.method, d.evidence
-    from decisions d join source_strings s on s.id = d.source_string_id
-    where d.run_id = 'run-20261023-183343-fk53p7' and d.valid and s.raw in ('Lincoln (England)', 'Newbridge (Dublin)', 'Lincoln');
+   and the method diff against t629cj, the standing check after every rerun (each run's last decision per string,
+   since a string the second pass settled has two; the undone run keeps its evidence):
 
-Answered: "Lincoln, Neb" is equivalent to TGN 7013892 and LoC "Lincoln (Neb.)" (Nebraska), "Newbridge, Co. Kildare" to
-TGN 1042763 and two LoC headings (Kildare); the store stage had let the qualifiers through: finding 84, built. The
-rerun measures findings 83 and 84 (the tool rebuilds itself on `dotnet run`):
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-100226-t629cj' order by source_string_id, id desc),
+            b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
+       select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
+       from a join b on b.source_string_id = a.source_string_id
+       join source_strings s on s.id = a.source_string_id
+       where a.method <> b.method group by 1, 2 order by 3 desc;
 
-    git push
-    dotnet run --project tools/Align -- undo-run --run run-20261023-183343-fk53p7
-    dotnet run --project tools/Align -- reconcile --verbose
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
+   Expected: "Bell, Trevor, B. 1930", "Harewood House (Leeds)", "Statens Museum for Kunst (Copenhagen, Denmark)",
+   "National Maritime Museum (London)" and "Newbridge (Dublin)" back as votes or store matches; "Münster" queued;
+   "Venice (Italy)" no longer a person; keywords:sub's famous-name ties settled or declined by prominence (the vote
+   sample shows "the prominent one" in the reasons); the 17 Royal Academy Winter Exhibition headings and the New York
+   strings explained by the diff.
 
-Run t629cj (2026-10-24 morning) is measured. Three queries first, in DataGrip, from its settled lines (doc 10 7.6
-"Measured ... t629cj"): the TGN rows behind two qualifiers the ancestors walk did not resolve ("Newbridge (Dublin)"
-went to Kildare's Newbridge by a vote; "Venice (Italy)" matched a person entity labelled "Venice"), and the run-to-run
-method diff, which says where the 25 fewer votes went and is a standing tool for every rerun (the undone run keeps its
-evidence):
+2. The measurement for the index's next use, dates for LoC's undated person records through the Wikidata item that
+   links them (item 3b). Read-only, several minutes beside a running reconcile; cancel and rerun after the run if it
+   passes ten:
 
-    select uri, label, data->>'parentString' as parent, data->>'placeType' as place_type
-    from authority_records where source = 'tgn' and normalised_labels @> array['dublin'];
+       with links as (
+         select w.uri as item, u.loc_uri
+         from authority_records w cross join lateral unnest(w.same_as) as u(loc_uri)
+         where w.source = 'wikidata' and w.type = 'Person' and u.loc_uri like 'http://id.loc.gov/%'
+           and (w.begin_earliest is not null or w.end_latest is not null))
+       select count(*) as linked,
+              count(*) filter (where a.begin_earliest is null and a.begin_latest is null and a.end_earliest is null and a.end_latest is null) as undated_loc
+       from links l join authority_records a on a.uri = l.loc_uri
+       where a.source = 'loc' and a.type = 'Person';
 
-    select uri, label, data->>'parentString' as parent, data->>'placeType' as place_type
-    from authority_records where source = 'tgn' and normalised_labels @> array['italy'];
+   Tens of thousands undated means a one-off SQL writes the dates onto the LoC records with the item recorded as
+   their source (as the "active" working spans were written on 2026-10-23), and the LoC loader learns it for the
+   next reload.
 
-    with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-100226-t629cj' order by source_string_id, id desc),
-         b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
-    select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
-    from a join b on b.source_string_id = a.source_string_id
-    join source_strings s on s.id = a.source_string_id
-    where a.method <> b.method group by 1, 2 order by 3 desc;
+3. The Wikidata reload, for the subclass walk (built 2026-10-24, doc 11 section 8.11), an evening's run of about
+   three hours when convenient, not urgent; the same command as the first load:
 
-(Each run's last decision per string: a string the second pass settled has two decisions in a run, and a plain join
-paired them crosswise on 2026-10-24.) The three queries were run on 2026-10-24 and are answered (doc 10 7.6 "Built
-2026-10-24 midday"); the diff above, with the run ids moved on, is the standing check after every rerun.
+       dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
 
-Then the rerun, which measures prominence (85) and the top-score tie (86):
-
-    dotnet run --project tools/Align -- undo-run --run run-20261024-100226-t629cj
-    dotnet run --project tools/Align -- reconcile --verbose
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
-    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method vote --limit 10
-
-Then the index's other uses (item 3, b to d): dates for LoC's undated records through the linking item, the crosswalk,
-labels as variants only.
-
-**The Wikidata load and its retyping are done; nothing here is to be run again** (2026-10-23, 3 h 13 min, 5,004,911
-records; the counts are in doc 11 section 8.11 and item 3 above). The retyping of the rows the class table missed,
-run once in DataGrip on 2026-10-23 evening (the same classes the table now has; a reload would type them the same
-way), kept for the record:
-
-    update authority_records set type = 'Place' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q253019','Q484170','Q116457956','Q1529096','Q747074','Q17051044','Q17343829','Q23397','Q2074737','Q3558970','Q15127012','Q839954','Q47521','Q46831','Q667509','Q124714','Q18663566','Q820477','Q70208','Q39816','Q3257686','Q751876'];
-    update authority_records set type = 'Group' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q7278','Q180958','Q476028','Q847017','Q48204','Q6881511','Q955824','Q47258130'];
-    update authority_records set type = 'Event' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q2020153'];
-    update authority_records set type = 'Language' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q34770','Q1288568'];
-    select type, count(*) from authority_records where source = 'wikidata' group by type order by 2 desc;
-
-Run (2026-10-23 evening): Place 105,829 -> 204,776, Group 152,373 -> 170,609, Event 2,217 -> 5,360, Language 2,188;
-untyped 519,152 -> 396,638. The second forty (32 new classes, about 40 thousand rows: the tail flattens, and the
-subclass walk at the next reload is the full fix), the same way:
-
-    update authority_records set type = 'Place' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q1134686','Q12284','Q5153359','Q42744322','Q3055118','Q54050','Q79007','Q3184121','Q131681','Q473972','Q102496','Q6784672','Q11755880','Q811979','Q317557'];
-    update authority_records set type = 'Group' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q56351315','Q13417114','Q15911314','Q748019','Q483242','Q2088357','Q1762059','Q18127','Q176799','Q178790','Q18706073','Q14350','Q5741069','Q9212979','Q4671277','Q131186'];
-    update authority_records set type = 'Material' where source = 'wikidata' and type is null and data->'instanceOf' ?| array['Q113145171'];
-    select type, count(*) from authority_records where source = 'wikidata' group by type order by 2 desc;
-
-Stream (Q47521) still showed 2,320 untyped rows after the first Place update that listed it; run alone
-(`... and data->'instanceOf' ? 'Q47521'`) the update took 2,318 rows, so the id was lost between the message and the
-console, not refused by the rows. Resolved; the counts are sound. After the second round: Person 4,221,300, untyped
-352,987, Place 228,188, Group 189,720, Event 5,360, Type 4,040, Language 2,188, Material 1,128. The hand table stops
-here; what remains untyped is works and taxa by choice and the thin tail the subclass walk takes at the next reload.
-
-If "Ashburnham Place (Sussex)", "Barrogill Castle (Caithness)" or "Callendar House (Stirlingshire)"
-are still queued, the query in doc 10 7.6 "Decision 16's count" on their TGN records says why. "Evanston" and the
-other place twins with different Wikidata ids are the desk's to judge from their ids.
+   Not while a reconcile runs (the tool rebuilds itself and the running process holds its files). The report's last
+   line says how many classes the walk resolved and how many records it typed.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

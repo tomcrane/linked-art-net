@@ -19,7 +19,7 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
 **On return, in order** (the next session, 2026-10-25 or days later; every step is under "Commands on return" below
 with its commands): (1) the Wikidata reload's last line, kept from the night of 2026-10-24, pasted and recorded (how
-many classes the subclass walk resolved and how many records it typed; doc 11 section 8.11); (2) `git push` (six
+many classes the subclass walk resolved and how many records it typed; doc 11 section 8.11); (2) `git push` (the
 commits of 2026-10-24 night are unpushed); (3) undo wy2aqs and rerun, about thirty minutes, with the two keywords
 samples and the method diff against wy2aqs: it measures findings 93 (properly), 94, 95 and 96 and the walk's typing
 together, queued expected near 3,740; (4) the measurement written up by the assistant, and whatever the samples and
@@ -328,7 +328,7 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 
 1. First, the Wikidata reload's last line (item 3; it ran the night of 2026-10-24), pasted here and recorded in doc
    11 section 8.11 beside the first load's figures (5,004,911 records; 519 thousand untyped before the SQL retyping).
-   Then `git push` (six commits unpushed). Then the rerun, which measures findings 93 (properly, with the placeholders
+   Then `git push` (the night's commits are unpushed). Then the rerun, which measures findings 93 (properly, with the placeholders
    carrying nothing), 94, 95 and 96 and the subclass walk's typing together:
 
        git push

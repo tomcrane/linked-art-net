@@ -1522,6 +1522,26 @@ LoC loader does not yet do this at load time, so a reload loses the dates until 
 2026-10-24 evening, between runs: 354,991 rows in 8 min 54 s, and the `datesFrom` count is 354,991, the measurement's
 figure to the row. The next run measures it.
 
+The write as run (2026-10-24 evening; the one-off SQL, kept here because the LoC loader has to learn the step before the next
+reload, and because every staged mass write to the table now ends with `vacuum (analyze) authority_records`, which this one did
+not and cost bp8unt its hours):
+
+       with links as (
+         select w.uri as item, w.normalised_labels as wlabels, w.begin_earliest, w.begin_latest, w.end_earliest, w.end_latest, w.lifespan_text, u.loc_uri
+         from authority_records w cross join lateral unnest(w.same_as) as u(loc_uri)
+         where w.source = 'wikidata' and w.type = 'Person' and u.loc_uri like 'http://id.loc.gov/%'
+           and (w.begin_earliest is not null or w.end_latest is not null)
+           and cardinality(array(select x from unnest(w.same_as) x where x like 'http://id.loc.gov/%')) = 1)
+       update authority_records a
+          set begin_earliest = l.begin_earliest, begin_latest = l.begin_latest, end_earliest = l.end_earliest, end_latest = l.end_latest,
+              lifespan_text = l.lifespan_text, data = coalesce(a.data, '{}'::jsonb) || jsonb_build_object('datesFrom', l.item)
+         from links l
+        where a.uri = l.loc_uri and a.source = 'loc' and a.type = 'Person'
+          and a.begin_earliest is null and a.begin_latest is null and a.end_earliest is null and a.end_latest is null
+          and exists (select 1 from unnest(l.wlabels) wl where wl like '%' || lower(split_part(a.label, ',', 1)) || '%');
+
+    Then `select count(*) from authority_records where source = 'loc' and data ? 'datesFrom';` (354,991), then the vacuum.
+
 Built 2026-10-24 midday, finding 87 and the corrections to 83 and 84, from t629cj's run-to-run method diff and the TGN
 rows. The diff (plan section 0 has the query; each run's last decision per string, since a settled string has two) read
 against fk53p7: queued -> vote 20 (Bedford, Chester, Derry, Crimea, and dated names finding 83 now reads right), queued

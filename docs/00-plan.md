@@ -326,7 +326,7 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. First, the Wikidata reload's last line (item 3; it ran the night of 2026-10-24), pasted here and recorded in doc
+1. First, the Wikidata reload's last line (it ran the night of 2026-10-24, after the owner stopped; the command is in doc 11 section 8.11), pasted here and recorded in doc
    11 section 8.11 beside the first load's figures (5,004,911 records; 519 thousand untyped before the SQL retyping).
    Then `git push` (the night's commits are unpushed). Then the rerun, which measures findings 93 (properly, with the placeholders
    carrying nothing), 94, 95 and 96 and the subclass walk's typing together:
@@ -357,59 +357,6 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    what led here is in doc 10 7.6: "Measured ... wy2aqs", "Read 2026-10-24 night" (the five bp8unt decisions), and the
    "Built 2026-10-24 night" paragraphs for findings 93 to 96; the vacuum's figures (423 pages and 11.9 ms before, 5
    pages and 0.11 ms after) are under "Measured ... bp8unt".
-
-2. The measurement for the index's next use, dates for LoC's undated person records through the Wikidata item that
-   links them (item 3b). Read-only, several minutes beside a running reconcile; cancel and rerun after the run if it
-   passes ten:
-
-       with links as (
-         select w.uri as item, u.loc_uri
-         from authority_records w cross join lateral unnest(w.same_as) as u(loc_uri)
-         where w.source = 'wikidata' and w.type = 'Person' and u.loc_uri like 'http://id.loc.gov/%'
-           and (w.begin_earliest is not null or w.end_latest is not null))
-       select count(*) as linked,
-              count(*) filter (where a.begin_earliest is null and a.begin_latest is null and a.end_earliest is null and a.end_latest is null) as undated_loc
-       from links l join authority_records a on a.uri = l.loc_uri
-       where a.source = 'loc' and a.type = 'Person';
-
-   Run 2026-10-24 (7 min 15 s beside the reconcile): 1,318,802 LoC person records are linked from a dated Wikidata
-   item, 374,822 of them undated in LoC. Finding 88, staged: those gain the item's birth and death dates, with the item
-   recorded in their data as the source (`datesFrom`), after two checks that cut wrong links: the item carries one LoC
-   id only, and the LoC heading's surname appears in one of the item's labels. First the count and a sample of twenty
-   through the filter (the `links` and `pass` clauses, doc 10 7.6 "Staged 2026-10-24, finding 88"): 354,991 pass, and
-   the sample of twenty read right to the last row (2026-10-24 afternoon; "Perlman, Rhea" 1948-, "Mannich, Johann"
-   1579-1637, "Cagiano De Azevedo, Raimondo" 1942-2025). Cleared. After the run in progress has finished (it reads
-   those records) and before the next reconcile, the write:
-
-       with links as (
-         select w.uri as item, w.normalised_labels as wlabels, w.begin_earliest, w.begin_latest, w.end_earliest, w.end_latest, w.lifespan_text, u.loc_uri
-         from authority_records w cross join lateral unnest(w.same_as) as u(loc_uri)
-         where w.source = 'wikidata' and w.type = 'Person' and u.loc_uri like 'http://id.loc.gov/%'
-           and (w.begin_earliest is not null or w.end_latest is not null)
-           and cardinality(array(select x from unnest(w.same_as) x where x like 'http://id.loc.gov/%')) = 1)
-       update authority_records a
-          set begin_earliest = l.begin_earliest, begin_latest = l.begin_latest, end_earliest = l.end_earliest, end_latest = l.end_latest,
-              lifespan_text = l.lifespan_text, data = coalesce(a.data, '{}'::jsonb) || jsonb_build_object('datesFrom', l.item)
-         from links l
-        where a.uri = l.loc_uri and a.source = 'loc' and a.type = 'Person'
-          and a.begin_earliest is null and a.begin_latest is null and a.end_earliest is null and a.end_latest is null
-          and exists (select 1 from unnest(l.wlabels) wl where wl like '%' || lower(split_part(a.label, ',', 1)) || '%');
-
-   Then `select count(*) from authority_records where source = 'loc' and data ? 'datesFrom';` for the record.
-   Written 2026-10-24 evening: 354,991 rows affected in 8 min 54 s, and the count is 354,991. Measured on bp8unt (doc
-   10 7.6 "Measured ... bp8unt"): ten votes gained, seventeen accepted strings minted on the conflicts it raised
-   (finding 93, built), and LoC's lookups fifty times slower until the table is vacuumed (item 1; the write was staged
-   without the vacuum the loaders run). The LoC loader must learn the step for the next reload (open item), or the
-   dates go with the reload.
-
-3. The Wikidata reload, for the subclass walk (built 2026-10-24, doc 11 section 8.11), an evening's run of about
-   three hours; run the night of 2026-10-24 after the owner stopped, its report's last line kept for item 1; the same
-   command as the first load, for the record (and for the next reload):
-
-       dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
-
-   Not while a reconcile runs (the tool rebuilds itself and the running process holds its files). The report's last
-   line says how many classes the walk resolved and how many records it typed.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

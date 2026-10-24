@@ -372,6 +372,12 @@ section 7.6, finding 85, 2026-10-24), reaches it through `FindAuthoritiesBySameA
 LoC URIs, and reads `sitelinks` from the record's data. The other uses designed (dates for LoC's undated records, the
 crosswalk through one item's ids) follow the same path (plan section 0, item 3).
 
+The load command as run (2026-10-23, and again the night of 2026-10-24 for the subclass walk; the two files are on the owner's
+external drive), about three hours, not while an Align command runs (the tool rebuilds itself and a running process holds its
+files); the report's last line says how many classes the walk resolved and how many records it typed:
+
+    dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
+
 ## 9. Not yet
 
 Step 3b: the remote sources (VIAF, LoC suggest, LUX with the self-echo rule, Wikidata by known id) behind a cache

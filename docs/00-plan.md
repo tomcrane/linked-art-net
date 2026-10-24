@@ -19,10 +19,12 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
 **Today, in order** (2026-10-25; every step is under "Commands on return" below with its commands): (1) `git push`
 (the night's commits are unpushed); (2) `vacuum (analyze) authority_records`, the LoC lookup timed before and after
-(bp8unt's `source:loc` was 6,741 s against rkjzag's 124 s, after finding 88's write); (3) the evidence of five bp8unt
-decisions: "Lincoln (England)", and the dated persons finding 88 turned (Hadid, Keeling, Papworth, Charlton); (4) undo
-bp8unt and rerun, which measures finding 93 and the vacuum; (5) then the index's next use, the crosswalk (item 3 (c)
-under "Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
+(bp8unt's `source:loc` was 6,741 s against rkjzag's 124 s, after finding 88's write); (3) ~~the evidence of five bp8unt
+decisions~~ (read, doc 10 7.6 "Read 2026-10-24 night": finding 91 as built; Hadid, Papworth and Keeling as finding 93
+expects, the Hadid mint already carrying a second string; Charlton rightly the desk's; finding 94 built from Keeling,
+the parser's "Knight"); (4) undo bp8unt and rerun, which measures finding 93 and the vacuum (running from the night of
+2026-10-24; finding 94 is measured on the run after); (5) then the index's next use, the crosswalk (item 3 (c) under
+"Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
 3,603 -> 3,563 -> 3,488 -> 3,477), findings 86 to 93 built from them, finding 88 written (354,991 LoC person records
 dated from their Wikidata item), the Sheffield entities confirmed as legacy duplicates, decision 17 closed as no.
 Nothing is half-done.
@@ -109,6 +111,16 @@ the two below are closed and kept for their queries.
     a town before the county, "&"): finding 77, built, doc 10 7.6 "Decision 16's count". The bare shape is about
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
+
+**Built 2026-10-24 night from bp8unt's evidence, waiting for the run after the one running** (doc 10 7.6 "Built
+2026-10-24 night, finding 94"): only a post-nominal (Bt, Esq, Kt, KBE, RA ...) comes off the end of the given names;
+"Keeling, William Knight, 1807-1886" had read as "Keeling, William" with the honorific Knight and been accepted to LoC's
+sea captain of the name. The leading position still strips any title in the table, forenames among them (Dean, Earl,
+Duke, King, Prince, Major, Baron, Count, Don, Dom, Marquis, Bishop, Canon, Lord): the count under "Commands on return"
+says whether that needs a rule. Also from the evidence, noted and not built: "Charlton, Alan, 1948" is queued because
+LoC's undated "Charlton, Alan" now carries finding 88's dates and agrees; finding 75's veto could still fall on a record
+dated only by finding 88 when a sibling of the same source agrees on its heading's own dates (three strings in bp8unt's
+diff: Charlton, Clatworthy, Richards).
 
 **Built 2026-10-24 night from bp8unt's method diff, waiting for the next run** (doc 10 7.6 "Built 2026-10-24 night,
 finding 93"): a namesake vetoed on a dates conflict is the desk's, not a mint, when it is the project's own entity of
@@ -317,10 +329,20 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
          and s.raw in ('Lincoln (England)', 'Hadid, Zaha, 1950-2006', 'Keeling, William Knight, 1807-1886', 'Papworth, John, 1775-1847', 'Charlton, Alan, 1948')
        order by s.raw, d.id;
 
-   Expected: "Lincoln (England)" a vote holding the whole heading (finding 91); Hadid's conflict 1950-2006 against
-   1950-2016 (the catalogue's error); Keeling's and Papworth's records dated from Wikidata items that are not these men,
-   or agreeing dates and another cause; Charlton's vote broken by the LoC member's new dates. Then the rerun, which
-   measures finding 93 and the vacuum:
+   Read (doc 10 7.6 "Read 2026-10-24 night"): Lincoln finding 91's vote; Hadid, Papworth and Keeling finding 93's
+   cases (Keeling also finding 94's); Charlton rightly queued. One count wanted from finding 94, in DataGrip: the strings
+   whose first given name, or first word in direct order, is a title the table knows that is also a forename, to say
+   whether the leading position needs a rule too:
+
+       select s.context, s.raw, s.occurrences
+       from source_strings s
+       where s.dataset = 'pmc'
+         and (s.raw ~ '^[^,(]+, (Dean|Earl|Duke|King|Prince|Major|Baron|Count|Don|Dom|Marquis|Bishop|Canon|Lord|Queen|General) [A-Z]'
+           or s.raw ~ '^(Dean|Earl|Duke|King|Prince|Major|Baron|Count|Don|Dom|Marquis|Bishop|Canon) [A-Z][a-z]+( |,|$)')
+       order by s.context, s.raw;
+
+   Then the rerun (running from the night of 2026-10-24), which measures finding 93 and the vacuum; finding 94 is
+   measured on the run after it:
 
        git push
        dotnet run --project tools/Align -- undo-run --run run-20261024-130904-bp8unt
@@ -835,6 +857,8 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       with Wikidata Q42448, the English city, and VIAF 124322655; neither with TGN or LoC), which hold "Sheffield" in
       keywords:sub at the desk; merge-duplicates, or the desk, and the crosswalk use of the index (item 3 (c)) would
       join the second to the English TGN and LoC group.
+    - ~~"Keeling, William Knight, 1807-1886" read as "Keeling, William", "Knight" taken off as an honorific~~ (finding 94,
+      2026-10-24 night; the leading position's forename-titles counted under "Commands on return").
     - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
       Art prizes" read as Person; ~~"McSloy, Tom, op 1946" (a working date written "op")~~ (finding 26, 2026-10-23);
       "Mainz/Rhein" (a slash variant for name-forms). From p9g534 (2026-10-23): "S. W. [(Simon Wilson)] (editor)"

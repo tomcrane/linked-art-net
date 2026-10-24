@@ -109,6 +109,23 @@ public class ParserTests
     }
 
     [Fact]
+    public void A_title_last_among_the_given_names_is_a_name_and_a_postnominal_is_not()
+    {
+        // finding 94 (2026-10-24, run bp8unt): "Knight" is in the honorifics table for "Smith, John, Knight", and the parser took it off the
+        // end of William Knight Keeling's given names, so the string matched LoC's sea captain "Keeling, William" (1578-1620)
+        var keeling = Parse("Keeling, William Knight, 1807-1886", "marc");
+        Assert.Equal("Keeling, William Knight", keeling.Name);
+        Assert.Empty(keeling.Honorifics);
+        Assert.Equal("Dean", Parse("Smith, John Dean", "marc").GivenNames?.Split(' ')[^1]);
+        // a post-nominal still comes off, and a title in a comma segment of its own is still read
+        var esq = Parse("Smith, John Esq, 1800-1870", "marc");
+        Assert.Equal("Smith, John", esq.Name);
+        Assert.Equal(["Esq"], esq.Honorifics);
+        Assert.Equal(["Knight"], Parse("Smith, John, Knight", "marc").Honorifics);
+        Assert.Equal(["Sir"], Parse("Smith, Sir John", "marc").Honorifics);
+    }
+
+    [Fact]
     public void Marc_honorific_sits_between_name_and_dates()
     {
         var a = Parse("Smith, John, Sir, 1866-1960", "marc");

@@ -9,5 +9,7 @@
     "Captain", "Capt", "Colonel", "Col", "Lieutenant", "Lt", "Major", "Maj", "General", "Gen", "Admiral", "Commander", "Cdr", "Sergeant", "Sgt",
     "Hon", "Rt Hon", "Right Honourable", "Honourable", "Bt", "Bart", "Baronet", "Esq", "Esquire", "Knight", "Kt", "KBE", "CBE", "OBE", "MBE", "RA", "ARA", "FRS", "FSA", "MP", "QC", "KC"
   ],
+  "postnominalsNote": "The honorifics that follow a name. Only these come off the end of the given names in an inverted heading: a title that precedes a name ('Dean', 'Earl', 'Knight', 'Major', 'King') is a forename or a middle name when it stands last among the given names, and 'Keeling, William Knight, 1807-1886' is one person's name (finding 94, 2026-10-24). As a comma segment of its own ('Smith, John, Knight') any honorific is still read.",
+  "postnominals": ["Bt", "Bart", "Baronet", "Esq", "Esquire", "Kt", "KBE", "CBE", "OBE", "MBE", "RA", "ARA", "FRS", "FSA", "MP", "QC", "KC"],
   "suffixes": ["Jr", "Jnr", "Junior", "Sr", "Snr", "Senior", "II", "III", "IV", "the Elder", "the Younger", "the elder", "the younger"]
 }

@@ -313,7 +313,10 @@ public sealed partial class AgentStringParser
             var family = name[..comma];
             var givenWords = name[(comma + 1)..].Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
             while (givenWords.Count > 1 && IsHonorificWord(givenWords[0])) { honorifics.Add(givenWords[0].TrimEnd('.')); givenWords.RemoveAt(0); }
-            while (givenWords.Count > 1 && IsHonorificWord(givenWords[^1])) { honorifics.Add(givenWords[^1].TrimEnd('.')); givenWords.RemoveAt(givenWords.Count - 1); }
+            // off the end of the given names only a post-nominal comes ("Smith, John Esq", "Reynolds, Joshua RA"): a title that precedes a
+            // name is a forename or a middle name there, and "Keeling, William Knight, 1807-1886" had read as "Keeling, William" with the
+            // honorific Knight, and matched LoC's one "Keeling, William", a sea captain born 1578 (finding 94, 2026-10-24, run bp8unt)
+            while (givenWords.Count > 1 && IsPostnominalWord(givenWords[^1])) { honorifics.Add(givenWords[^1].TrimEnd('.')); givenWords.RemoveAt(givenWords.Count - 1); }
             return givenWords.Count == 0 ? family.Trim() : $"{family.Trim()}, {string.Join(' ', givenWords)}";
         }
         var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -327,6 +330,7 @@ public sealed partial class AgentStringParser
     /// strings matched to the wrong person for want of theirs.
     /// </summary>
     private bool IsHonorificWord(string word) => word.TrimEnd('.').Length > 1 && _tables.IsHonorific(word);
+    private bool IsPostnominalWord(string word) => word.TrimEnd('.').Length > 1 && _tables.IsPostnominal(word);
 
     private bool IsCorporate(string name)
     {

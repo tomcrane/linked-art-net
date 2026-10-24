@@ -1259,6 +1259,49 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-24 night, finding 94, from the evidence below: off the end of the given names in an inverted heading only
+a post-nominal comes ("Smith, John Esq", "Reynolds, Joshua RA"; the table's new `postnominals` list: Bt, Bart, Baronet,
+Esq, Esquire, Kt, KBE, CBE, OBE, MBE, RA, ARA, FRS, FSA, MP, QC, KC). The parser had taken any word of the honorifics
+table off the end, and "Knight" is in it for "Smith, John, Knight", so "Keeling, William Knight, 1807-1886" read as
+"Keeling, William" with the honorific Knight and, in rkjzag, was accepted exact-single to LoC's one "Keeling, William"
+(n82073934, the sea captain, whom finding 88 then dated 1578-1620 and whose conflict minted the string). A title that
+precedes a name (Dean, Earl, Knight, Major, King) is a forename or a middle name when it stands last among the given
+names; as a comma segment of its own it is still read. Leading titles that are also forenames ("Smith, Dean John",
+"Dean Martin") are the table's remaining exposure, left as they are until the count under plan section 0 says how often
+the data has them. Takes effect at the run after the one running when it was built.
+
+Read 2026-10-24 night, the evidence of five of bp8unt's decisions (plan section 0 item (3)): finding 91 as built, three
+of finding 88's seventeen as finding 93 expects, and one thing finding 93 does not reach:
+
+- "Lincoln (England)" in keywords:head is finding 91's vote: TGN's Lincoln with LoC's "Lincoln (England)" and the two
+  diocese headings carry "holds the whole heading as written (Lincoln (England)): breaks the tie", Lincolnshire's group
+  "the whole heading as written is Lincoln (England), elsewhere", Missouri's Lincoln vetoed by the resolved qualifier.
+- "Hadid, Zaha, 1950-2006" in keywords was minted over the project's own entity (akku6exr, "dates conflict (1950-2006 vs
+  1950-2016)", its lifespan from its LoC equivalent, dated by finding 88), ULAN's and LoC's Zaha Hadid the same, "Zaha
+  Hadid Limited" a body. Then the same string in keywords:head went exact-name, "dates agree", to unrec_nr4bazcp "Hadid,
+  Zaha": the entity the keywords mint had just made under the string's legacy identifier, carrying the catalogue's wrong
+  death year. The second Zaha Hadid, with a string already joined to it. Finding 93 queues the keywords string (the
+  project's own entity of the name, conflicting), and with no mint the head string meets the same entity and the same
+  rule.
+- "Papworth, John, 1775-1847" in keywords:head: LoC's one "Papworth, John" (n84070333) is dated 1921-2020 by finding 88,
+  which is John Papworth the activist and priest (my recollection of who the dates fit; LoC's heading does not say).
+  rkjzag's exact-single acceptance to that record was wrong; the architect John Buonarotti Papworth's heading, if LoC
+  has it, is not of this name as written. Finding 93 queues it (the source's one exact record, conflicting), the desk's.
+- "Keeling, William Knight, 1807-1886" in keywords: read as "Keeling, William" (finding 94 above); LoC's two "Keeling,
+  William" are 1578-1620 and 1964-, both conflicting, so the string mints as finding 93 means several conflicting records
+  to. rkjzag's acceptance to the sea captain was wrong, so this mint is finding 88 correcting a wrong turn, and the next
+  run reads the whole name.
+- "Charlton, Alan, 1948" in keywords:head, a vote in rkjzag, queued: two live groups at 1.00 with dates agreeing, ULAN's
+  Alan Charlton with LoC's "Charlton, Alan, 1948-" (n87803436), and LoC's undated heading "Charlton, Alan" (nb2007025681)
+  alone, which finding 88 dated from its Wikidata item to agree with 1948. Before the write that heading fell to finding
+  75's veto, as "Charlton, Alan (Local historian)" still does ("loc's dated record of the name agrees with the string's
+  dates: this undated one is a namesake"); the 1952- and 1970-2018 headings are vetoed on their dates. The outvoted-rivals
+  rule never runs for people, so the one-source group holds the string for the desk. Either Wikidata's item for the
+  painter points at the wrong LoC record, or LoC holds two records for him: either way the desk should see it, and the
+  string is rightly queued. Noted, not built: finding 75's veto could still fall on a record whose only dates are
+  finding 88's when a sibling record of the same source agrees on its heading's own dates; three strings in bp8unt's
+  diff (Charlton, Clatworthy, Richards) went vote -> queued this way, too few to build on tonight.
+
 Built 2026-10-24 night, finding 93, from bp8unt's method diff (below): a namesake vetoed on a dates conflict is the
 desk's, not a mint, when it is the project's own entity of the name or its source's one exact record of the name, both
 lifespans proper; several exact records of a source all conflicting are other people and the string mints as before,

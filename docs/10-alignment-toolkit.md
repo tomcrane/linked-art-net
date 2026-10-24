@@ -1259,6 +1259,46 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-10-24 afternoon (run-20261024-111420-rkjzag: findings 85, 86, 87 and the corrections to 83 and 84,
+against t629cj): accepted 9,370 -> 9,447 (vote 3,936 -> 4,008, single 2,119 -> 2,124, exact-single 3,315), queued
+3,563 -> 3,488, matched in store 6,003 -> 5,996, minted 11,317 -> 11,322; the second pass reconsidered 3,757 (3,869)
+and settled 269 (306), so the first pass took 112 more than before. By context queued: persauthorfull 1,264, keywords
+590, publisher 782, keywords:head 342, place 208 (258), corpauthor 174, keywords:sub 128 (152). The path: ... -> 3,603
+-> 3,563 -> 3,488. The samples and the method diff, read:
+
+- Prominence (85) works as meant where it runs: "Cornwall" in keywords:sub is a vote with the Ontario, Connecticut and
+  Pennsylvania groups marked "less prominent: 46 sitelinks against 126"; the diff's queued -> vote 68 is mostly places,
+  "Berlin", "Barcelona", "Antrim", "Bradford", "Braunschweig" among them. Declined as meant: "Parma" (124, 80, 50, 40:
+  Italy's against Ohio's, under the ratio), "Camden" (62, 58, ...), "Quebec" (202 against 149, the province and the
+  city), "Trent)" (116, 90, a fragment anyway). Not run at all on "Sheffield", "Cambridge", "Durham" and
+  "Williamsburg", whose queued lines carry no prominence reason: a guard held (a firm project entity in some live
+  group, or no two-source group at the top score), to be read from their evidence (plan section 0).
+- Finding 35 against a legacy entity: "Orkney" in keywords:sub went to the project's "Orkney (Sask.)" over Scotland's
+  Orkney, "the project's own aligned entity breaks the tie". Finding 89, built: prominence checks the project's entity
+  before it breaks a tie; when another tied group's item is the prominent one by prominence's own margins, the string
+  is queued for the desk with both sides' counts in the reasons. "Washington (D.C.)" is queued between two project
+  entities both labelled "Washington": duplicates for merge-duplicates or the desk.
+- The corrections held: "Bell, Trevor, B. 1930" and "Statens Museum for Kunst (Copenhagen, Denmark)" are votes again
+  (minted -> vote), the 17 Royal Academy Winter Exhibition headings are back to queued (minted -> queued), "Münster" is
+  queued, "Venice (Italy)" is no longer a person.
+- A new wrong turn from finding 87 (queued -> minted 19; exact-name -> minted 5): "Arundel Castle (Sussex)", "Firle
+  Place (Sussex)", "Cardiff Castle (Glamorganshire)", "Parham Park (Sussex)", "Powderham Castle (Devonshire)". Sussex now
+  resolves (two counties under England, so the shared chain), and finding 66's veto fell on every candidate whose
+  placement did not agree, LCSH's "Arundel Castle (Arundel, England)" among them, whose placement names the town and
+  the country and not the county: not elsewhere. Finding 90, built: the veto needs a known place on the candidate's
+  side outside the qualifier's chain (a TGN parent string that disagrees is one; a heading's parenthetical only when
+  one of its segments outside the chain is a county or above the walk knows: Kildare against Dublin yes, Arundel
+  against Sussex no); the known places are gathered per string from the candidates' placements through the cached
+  walk, only when the string's qualifier resolved. Expect the 24 back.
+- Also from the diff: 14 queued -> single, "Ashburnham Place (Sussex)", "Basildon Park (Berkshire)", "Cowdray House
+  (Sussex)", the decision-16 shape, now carried by LCSH's placed heading since the county resolves (the right answer
+  that decision 16 declined to force; here the rule's own conditions reached it); 11 vote -> queued, "Bedford
+  (England)", "Lincoln (England)", "Chester (England)", "Munster (Ireland)", "Newbridge (Dublin)": t629cj's votes on
+  these came through the widened store entity, which the lone-country rule now leaves unplaced, so they are the
+  desk's again or wait for their evidence (plan section 0); "Sketchley, R. E. D. 1875- [1875-] (author)" single ->
+  queued, two date segments after finding 83's split (parser gaps). Time by stage: store 1,033 s, commit 234 s, the
+  second pass 194 s.
+
 Staged 2026-10-24, finding 88, dates for LoC's undated person records from the Wikidata item that links them (the
 index's second use; plan section 0 item 2 has the SQL). Measured first: 1,318,802 LoC person records are linked from
 a Wikidata item with a birth or a death date, 374,822 of them undated in LoC (the query ran 7 min 15 s beside a

@@ -55,6 +55,20 @@ public class ProminenceTests(PostgresFixture pg)
         var munster = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "place", "Münster"));
         Assert.True(munster.Outcome != Outcome.Accepted || munster.Accepted!.Uris.Contains("http://vocab.getty.edu/tgn/7004333"), $"{munster.Outcome} {string.Join(",", munster.Accepted?.Uris ?? [])}");
 
+        // prominence checks the project's entity before it breaks a tie (finding 89): the legacy "Orkney (Sask.)" sits in the Saskatchewan group,
+        // but Scotland's Orkney is the prominent one by prominence's own margins, so "Orkney" is the desk's rather than Saskatchewan's
+        await pg.Store.PutAuthorityAsync(Tgn("1016052", "Orkney", "Saskatchewan, Canada, North and Central America, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n83197128", "Orkney (Sask.)"));
+        await pg.Store.PutAuthorityAsync(Tgn("7009907", "Orkney", "Scotland, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n81071458", "Orkney (Scotland)"));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q100166", "Orkney", 150, "http://vocab.getty.edu/tgn/7009907", "http://id.loc.gov/authorities/names/n81071458"));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q7103527", "Orkney", 5, "http://id.loc.gov/authorities/names/n83197128"));
+        var sask = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Orkney (Sask.)", ["Orkney (Sask.)"], null, [], [], EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(sask.Id, new Equivalent("http://id.loc.gov/authorities/names/n83197128", "loc", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var orkney = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:sub", "Orkney"));
+        Assert.Equal(Outcome.Queued, orkney.Outcome);
+        Assert.Contains(orkney.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("the project's own entity is the less prominent: 5 sitelinks against 150"));
+
         // the rule off: the tie stands
         var off = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions() with { ProminenceMinSitelinks = 0 });
         Assert.Equal(Outcome.Queued, (await off.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:sub", "Sheffield"))).Outcome);

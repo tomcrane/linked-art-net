@@ -393,7 +393,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // one acceptable entity, or one acceptable entity with authority behind it among provisional lookalikes. An entity
             // minted for a string that is itself awaiting review never answers silently; an entity minted because nothing
             // was found anywhere does, so the same unknown name across contexts becomes one local authority.
-            var storeScored = Score(reading, candidates).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore).ToList();
+            var storeScored = Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct)).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore).ToList();
             // in a qualified context ("Heaton, Bradford") an entity answers silently only when its qualifier agrees with the string's, or
             // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
@@ -426,7 +426,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             Time("source:" + source.Name, sw);
         }
 
-        var groups = Groups(Score(reading, candidates));
+        var groups = Groups(Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct)));
         Time("score", sw);
         var live = groups.Where(g => !g.Vetoed).ToList();
         var top = live.FirstOrDefault();
@@ -468,6 +468,26 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (tied.Count >= 2 && withEntity.Count == 1 && !live.Any(g => g != withEntity[0] && g.Score >= _options.AcceptScore && g.Members.Any(Firm)))
             {
                 var prior = withEntity[0];
+                // prominence checks the project's entity before it breaks the tie (finding 89, 2026-10-24, run rkjzag): "Orkney" in keywords:sub
+                // went to the project's "Orkney (Sask.)", a legacy alignment, over Scotland's Orkney; when another tied group's item is the
+                // prominent one by the same margins prominence uses to decide, the string is the desk's, not the entity's
+                if (_options.ProminenceMinSitelinks > 0 && reading.Qualifier is null)
+                {
+                    var (priorSitelinks, _) = await ProminenceAsync(prior.Uris, ct);
+                    (CandidateGroup Group, int Sitelinks, string? Item)? rivalBest = null;
+                    foreach (var g in tied.Where(g => g != prior))
+                    {
+                        var (n, item) = await ProminenceAsync(g.Uris, ct);
+                        if (rivalBest is null || n > rivalBest.Value.Sitelinks) rivalBest = (g, n, item);
+                    }
+                    if (rivalBest is { } rival && rival.Sitelinks >= _options.ProminenceMinSitelinks && rival.Sitelinks >= _options.ProminenceRatio * Math.Max(priorSitelinks, 1))
+                    {
+                        groups = groups.Select(g => g == prior
+                            ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; the project's own entity is the less prominent: {priorSitelinks} sitelinks against {rival.Sitelinks} ({rival.Item}): the desk's" }).ToList() }
+                            : g == rival.Group ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; the prominent one: {rival.Sitelinks} sitelinks ({rival.Item}) against the project's entity's {priorSitelinks}" }).ToList() } : g).ToList();
+                        return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+                    }
+                }
                 groups = groups.Select(g => g != prior && !g.Vetoed && g.Score >= _options.AcceptScore ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + "; the project's own aligned entity breaks the tie" }).ToList() } : g).ToList();
                 if (includeStore && await HoldersAsync(dataset, prior.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
                 return new Evaluation(Outcome.Accepted, reading, groups, Accepted: prior, AcceptedMethod: DecisionMethod.Vote);
@@ -674,7 +694,43 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// <summary>Name score, then dates (agreement lifts, conflict vetoes, dates that cannot be compared change nothing), type (a mismatch vetoes), nationality (agreement lifts).</summary>
     public IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates) => Score(reading, candidates, _options.MaxPersonLifetimeYears);
 
-    public static IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates, int maxPersonLifetimeYears)
+    /// <summary>
+    /// The segments of the candidates' placements, outside the string's own qualifier chain, that TGN knows as a county or above: the places
+    /// that make a candidate's placement "elsewhere" for finding 66's veto (finding 90, 2026-10-24). Kildare against "Newbridge (Dublin)" is
+    /// one; Arundel against "Arundel Castle (Sussex)" is a town and is not. Only computed when the string's qualifier resolved, since the veto
+    /// needs that too; the lookups are the cached ancestors walk.
+    /// </summary>
+    private async Task<IReadOnlySet<string>?> KnownPlacesAsync(StringReading reading, IEnumerable<Candidate> candidates, CancellationToken ct)
+    {
+        if (reading.QualifierAncestors is null) return null;
+        var chain = Qualified.Tokens(reading.QualifierForPlacement);
+        var known = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var c in candidates)
+        {
+            if (c.Placement is null || c.Placement.EndsWith("World", StringComparison.Ordinal)) continue;
+            foreach (var segment in Segments(c.Placement))
+            {
+                if (known.Contains(segment) || Qualified.Tokens(segment).All(t => chain.Contains(t))) continue;
+                if (await AncestorsOfAsync(segment, ct) is not null) known.Add(segment);
+            }
+        }
+        return known;
+    }
+
+    /// <summary>
+    /// Whether a candidate's placement, which does not agree with the string's resolved qualifier, is elsewhere: a TGN parent string (a whole
+    /// chain, ending in "World") that disagrees is; a heading's parenthetical is only when one of its segments outside the qualifier's chain
+    /// is a known place (Kildare, Nebraska), not when the foreign segment is a town the walk does not know (Arundel, in Sussex after all).
+    /// Without the known places (callers that score without the store) every disagreement is elsewhere, as before finding 90.
+    /// </summary>
+    private static bool Elsewhere(string placement, StringReading reading, IReadOnlySet<string>? knownPlaces)
+    {
+        if (knownPlaces is null || placement.EndsWith("World", StringComparison.Ordinal)) return true;
+        var chain = Qualified.Tokens(reading.QualifierForPlacement);
+        return Segments(placement).Any(segment => knownPlaces.Contains(segment) && !Qualified.Tokens(segment).All(t => chain.Contains(t)));
+    }
+
+    public static IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates, int maxPersonLifetimeYears, IReadOnlySet<string>? knownPlaces = null)
     {
         var list = new List<ScoredCandidate>();
         foreach (var candidate in candidates)
@@ -718,7 +774,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // a qualifier TGN knows as a county or above ("Herefordshire") names a real place, and a record placed elsewhere is not the
             // string's whether or not any record is placed: "Hampton Court (Herefordshire)" is neither the Jamaican nor the Richmond
             // one, and is minted (finding 66, 2026-10-22)
-            if (qualifierAgrees == false && reading.QualifierAncestors is not null && !veto) { veto = true; reasons.Add("the qualifier names a known place and this is elsewhere"); }
+            if (qualifierAgrees == false && reading.QualifierAncestors is not null && !veto && c.Placement is not null && Elsewhere(c.Placement, reading, knownPlaces)) { veto = true; reasons.Add("the qualifier names a known place and this is elsewhere"); }
             // and a string placed in a known place ("Newcastle (Bridgend, Wales)") is a place, a building or a body there, not a person:
             // LoC's "Captain Newcastle, approximately 1701-1756" through its variant is not it (finding 69, 2026-10-22)
             if (reading.QualifierAncestors is not null && c.Class == EntityClass.Person && !veto) { veto = true; reasons.Add("a string placed in a known place is not a person"); }

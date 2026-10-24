@@ -21,8 +21,9 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 (2) ~~decision 17~~ (closed as no on the count, 2026-10-24); (3) ~~undo fk53p7 and `reconcile --verbose`~~ (run
 t629cj, measured: queued 3,603 -> 3,563, findings 83 and 84 held, finding 86 built from its "Münster" line); (4) ~~three
 queries~~ (run; finding 87 and the corrections to 83 and 84 built from them, doc 10 7.6 "Built 2026-10-24 midday");
-(5) undo t629cj and rerun, which measures findings 85, 86, 87 and the corrections, with the keywords:sub queued and
-vote samples and the method diff against t629cj (the query below, with the run ids changed). The two store checks were run late on 2026-10-23 and answered:
+(5) ~~undo t629cj and rerun~~ (run rkjzag, measured, doc 10 7.6 "Measured ... rkjzag": queued 3,563 -> 3,488, votes
++72; findings 89 and 90 built from it); (6) the finding 88 write, then its count; (7) the evidence for "Sheffield" and
+"Lincoln (England)" (under "Commands on return"); (8) undo rkjzag and rerun, which measures 88, 89 and 90 together. The two store checks were run late on 2026-10-23 and answered:
 "Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
 through (finding 84, built, below). Nothing is half-done: the Wikidata load and its retyping are complete, and the
 index waits only for its use.
@@ -35,10 +36,10 @@ county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for 
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
 SQL in doc 10 7.6 "Built 2026-10-23"). The last run is run-20261024-111420-rkjzag (findings 85, 86, 87 and the corrections to 83 and 84): accepted 9,447
 (vote 4,008, single 2,124, exact-single 3,315), queued 3,488, matched in store 5,996, minted 11,322, lists 404,
-compounds 15,558; second pass 3,757 reconsidered, 269 settled; its samples and method diff are being read (the measured
-paragraph follows in doc 10 7.6). The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
+compounds 15,558; second pass 3,757 reconsidered, 269 settled; by context queued persauthorfull 1,264, keywords 590,
+publisher 782, keywords:head 342, place 208, corpauthor 174, keywords:sub 128 (doc 10 7.6 "Measured ... rkjzag"). The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488. Doc 10 7.6 has a "Measured"
-paragraph per run with the samples read; the last written is "Measured ... t629cj". The Wikidata dump and
+paragraph per run with the samples read; the last is "Measured ... rkjzag". The Wikidata dump and
 the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -107,7 +108,14 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-24 midday from t629cj's method diff and the TGN rows, waiting for the next run** (doc 10 7.6 "Built
+**Built 2026-10-24 afternoon from rkjzag's samples and method diff, waiting for the next run** (doc 10 7.6 "Measured
+... rkjzag"): finding 89 (prominence checks the project's entity before finding 35 lets it break a tie: "Orkney" had
+gone to the legacy "Orkney (Sask.)" over Scotland's; now the desk's); finding 90 (finding 66's veto needs a known place
+on the candidate's side outside the qualifier's chain: "Arundel Castle (Arundel, England)" is not elsewhere than
+Sussex, Kildare is elsewhere than Dublin; 24 Sussex, Glamorgan and Devon houses had been minted). Expect the 24 back
+to queued or single, and "Orkney" queued.
+
+**Built 2026-10-24 midday from t629cj's method diff and the TGN rows, measured on rkjzag** (kept for the record) (doc 10 7.6 "Built
 2026-10-24 midday"): finding 87 (several TGN records of a qualifier's name at county level or above: the highest level
 wins, records sharing the chain above them resolve to it, and the home-place filter decides only when it leaves
 something; "Newbridge (Dublin)" is placed in Ireland and vetoes Kildare's, "Venice (Italy)" is not a person); finding
@@ -261,8 +269,25 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. Run rkjzag (2026-10-24 afternoon) measured findings 85, 86 and 87 and the corrections to 83 and 84: queued 3,563 ->
-   3,488, votes 3,936 -> 4,008. Its second pass's lines are read; still to paste:
+1. Run rkjzag (2026-10-24 afternoon) is measured and read (doc 10 7.6). Two pieces of evidence from it are still
+   wanted, in DataGrip: why prominence did not run on "Sheffield" (its queued line carries no prominence reason: a firm
+   project entity in a live group, or no two-source group at the top score), and how "Lincoln (England)" went from a
+   vote in t629cj to queued:
+
+       select s.context, s.raw, d.method, jsonb_pretty(d.evidence)
+       from decisions d join source_strings s on s.id = d.source_string_id
+       where d.run_id = 'run-20261024-111420-rkjzag' and d.valid
+         and ((s.context = 'keywords:sub' and s.raw = 'Sheffield') or (s.context = 'keywords:head' and s.raw = 'Lincoln (England)'));
+
+   Then the rerun, which measures findings 88 (after its write, item 2), 89 and 90 together:
+
+       git push
+       dotnet run --project tools/Align -- undo-run --run run-20261024-111420-rkjzag
+       dotnet run --project tools/Align -- reconcile --verbose
+       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
+       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
+
+   and the method diff against rkjzag (run ids moved on). For the record, the reports and diff run on rkjzag itself:
 
        dotnet run --project tools/Align -- decisions --run run-20261024-111420-rkjzag --context keywords:sub --method queued --limit 10
        dotnet run --project tools/Align -- decisions --run run-20261024-111420-rkjzag --context keywords:sub --method vote --limit 10

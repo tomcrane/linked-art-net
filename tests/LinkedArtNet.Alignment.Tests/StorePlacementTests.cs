@@ -88,6 +88,18 @@ public class StorePlacementTests(PostgresFixture pg)
         Assert.Equal("Ireland, Europe, World", newbridge.Reading.QualifierAncestors);
         Assert.NotEqual(Outcome.Accepted, newbridge.Outcome);
         Assert.Contains(newbridge.Groups.SelectMany(g => g.Members), m => m.Veto && m.Reason.Contains("the qualifier names a known place and this is elsewhere"));
+        // finding 90: a heading placed in a town the walk does not know is not elsewhere. Sussex resolves (two counties under England, so the
+        // shared chain), and LCSH's "Arundel Castle (Arundel, England)" disagrees with "(Sussex)" only for naming the town; it is not vetoed,
+        // where Kildare, a known county outside Dublin's chain, is (above). Run rkjzag had minted nineteen Sussex and Glamorgan houses this way
+        await pg.Store.PutAuthorityAsync(Tgn("7008144", "East Sussex", "England, United Kingdom, Europe, World", "300000771", "Sussex"));
+        await pg.Store.PutAuthorityAsync(Tgn("7008145", "West Sussex", "England, United Kingdom, Europe, World", "300000771", "Sussex"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/subjects/sh85007000", "lcsh", "Arundel Castle (Arundel, England)", ["Arundel Castle (Arundel, England)"], "Type", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var withLcsh = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn"), new LocalIndexSource(pg.Store, "loc"), new LocalIndexSource(pg.Store, "lcsh")], ProjectManifest.PmcDefault.ToOptions());
+        var arundel = await withLcsh.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords", "Arundel Castle (Sussex)"));
+        Assert.Equal("England, United Kingdom, Europe, World", arundel.Reading.QualifierAncestors);
+        var castle = Assert.Single(arundel.Groups.SelectMany(g => g.Members), m => m.Candidate.Source == "lcsh");
+        Assert.False(castle.Veto); Assert.False(castle.QualifierAgrees == true);
+        Assert.NotEqual(Outcome.Minted, arundel.Outcome);
         var veniceHeading = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:head", "Venice (Italy)"));
         Assert.Equal("Italia, Europe, World", veniceHeading.Reading.QualifierAncestors);
         Assert.NotEqual(Outcome.MatchedStore, veniceHeading.Outcome);

@@ -303,7 +303,11 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
        select * from h limit 200;
        vacuum (analyze, verbose) authority_records;
 
-   then the explain again: the first time against the second says whether the vacuum was the remedy (if it was not,
+   Before the vacuum (2026-10-25): 19,428,581 live tuples, 2,901,626 dead (15 per cent, under autovacuum's 20; its
+   last visit was 2026-10-18, the last vacuum the Wikidata load's on 2026-10-23); the one-key lookup took 13.9 ms, 11.9
+   of them in the bitmap index scan on `authority_records_labels_loc`, which read 423 pages for one key, the pending
+   list's signature (a settled GIN lookup reads a handful). Then the explain again: the first time against the second
+   says whether the vacuum was the remedy (if it was not,
    `reindex index authority_records_labels_loc` rebuilds the index, with a lock while it runs). Then the evidence of
    five of bp8unt's decisions, in DataGrip (an undone run keeps its evidence, so after the rerun is fine too):
 

@@ -613,7 +613,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             var all = groups.SelectMany(g => g.Members).ToList();
             bool Exact(ScoredCandidate m) => m.Candidate.NameScore >= 0.97 && (m.Candidate.Class is not { } cls || reading.Classes.Contains(cls));
-            var conflicting = all.Where(m => m.DatesConflict && Exact(m) && !lifespan.IsWorking && m.Candidate.Lifespan is { IsWorking: false }
+            var conflicting = all.Where(m => m.DatesConflict && !m.SetAside && Exact(m) && !lifespan.IsWorking && m.Candidate.Lifespan is { IsWorking: false }
                 && (m.Candidate.EntityId is not null || all.Count(x => Exact(x) && x.Candidate.EntityId is null && x.Candidate.Source == m.Candidate.Source) == 1)).ToList();
             if (conflicting.Count > 0)
             {
@@ -847,6 +847,27 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees, DatesConflict: datesConflict));
         }
+        // a linked cluster that disagrees with itself about the dates stands when one of its records agrees with the string's dates (the
+        // whole heading as written agrees by its own): LoC's "Agar, Eileen, 1899-1991" is the string verbatim and ULAN's linked record says 1904-1991; ULAN's
+        // "Kelly, Felix" agrees with "Kelly, Felix, 1917-1994" and LoC's linked record carries finding 88's bare 1916. The link is the
+        // authorities' own claim that these are one person, and the conflict is their disagreement among themselves, so the conflicting
+        // record is set aside (not live, and not poisoning the group as a vetoed linked member does) and the agreeing record carries the
+        // string; a record vetoed for its class as well stays vetoed, and an undated linked record vouches for nothing (finding 44's
+        // undated LoC record still goes down with ULAN's conflicting one) (finding 96; the owner's policy, 2026-10-24 night, run wy2aqs:
+        // about ninety of finding 93's strings were queued this way)
+        if (reading.HasLifespan)
+        {
+            bool Linked(ScoredCandidate a, ScoredCandidate b) => a.Candidate.SameAs.Contains(b.Candidate.Uri, StringComparer.Ordinal) || b.Candidate.SameAs.Contains(a.Candidate.Uri, StringComparer.Ordinal);
+            bool Vouches(ScoredCandidate m) => !m.Veto && !m.SetAside && m.Candidate.EntityId is null && m.DatesAgree;
+            for (var i = 0; i < list.Count; i++)
+            {
+                var b = list[i];
+                if (!b.Veto || !b.DatesConflict || b.Candidate.EntityId is not null) continue;
+                if (b.Candidate.Class is { } bc && (!reading.Classes.Contains(bc) || bc == EntityClass.Place)) continue;
+                if (list.FirstOrDefault(m => !ReferenceEquals(m, b) && Vouches(m) && Linked(m, b)) is not { } voucher) continue;
+                list[i] = b with { Veto = false, SetAside = true, Reason = b.Reason + $"; linked to {voucher.Candidate.Source}'s record, which agrees with the string: the authorities disagree among themselves, and the cluster stands" };
+            }
+        }
         // a string that carries dates and a record of a source that agrees with them: that source's other records of the name
         // are namesakes, not the dated person (LoC's headings are unique, so its undated "Doyle, Richard" beside "Doyle, Richard,
         // 1824-1883" is another Richard Doyle by LoC's own rule); the owner's policy, 2026-10-21, for the undated ones; widened
@@ -857,7 +878,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 for (var i = 0; i < list.Count; i++)
                 {
                     var b = list[i];
-                    if (b.Veto || b.DatesAgree || b.Candidate.Source != source || b.Candidate.EntityId is not null) continue;
+                    if (b.Veto || b.SetAside || b.DatesAgree || b.Candidate.Source != source || b.Candidate.EntityId is not null) continue;
                     var undated = b.Candidate.Lifespan is null || !b.Candidate.Lifespan.IsDated;
                     list[i] = b with { Veto = true, Reason = b.Reason + $"; {source}'s dated record of the name agrees with the string's dates: this {(undated ? "undated" : "other")} one is a namesake" };
                 }
@@ -1166,11 +1187,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     {
         if (group.Sources.Count >= _options.MinIndependentSources) return DecisionMethod.Vote;
         if (group.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional)) return DecisionMethod.Vote;
-        var best = group.Best;
         // the placeholder of a string awaiting review carries nothing: minted with that string's own lifespan and qualifier, it agrees with
         // them by construction, and the second pass had accepted 265 queued strings onto their own placeholders as singles ("Cozens, John
-        // Robert, 1752-1798" onto "Cozens, John Robert", finding 93's seventeen among them) (finding 95, 2026-10-24 night, run wy2aqs)
-        if (best.Candidate.ProvisionalQueued) return null;
+        // Robert, 1752-1798" onto "Cozens, John Robert", finding 93's seventeen among them) (finding 95, 2026-10-24 night, run wy2aqs);
+        // the ground is the best live member that is not one (ULAN's agreeing record beside the placeholder it dated, finding 96), and a
+        // member set aside is not live
+        var best = group.Members.Where(m => !m.Veto && !m.SetAside && !m.Candidate.ProvisionalQueued).OrderByDescending(m => m.Score).FirstOrDefault();
+        if (best is null) return null;
         return _options.AcceptSingleSourceWithDates && (best.DatesAgree || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97 ? DecisionMethod.Single : null;
     }
 

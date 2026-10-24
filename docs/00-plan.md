@@ -26,7 +26,7 @@ the parser's "Knight"); (4) ~~undo bp8unt and rerun~~ (run wy2aqs, measured, doc
 vacuum confirmed, `source:loc` 6,741 s -> 97 s; finding 93 reached 355 strings, and the second pass took 265 of them back
 onto their own placeholders: finding 95 built); (4b) the Wikidata reload, started the night of 2026-10-24 (item 3 under
 "Commands on return"; about three hours; no Align command until its last line); (4c) then undo wy2aqs and rerun, which
-measures findings 93 (properly), 94 and 95 and the subclass walk's typing together; (5) then the index's next use, the
+measures findings 93 (properly), 94, 95 and 96 and the subclass walk's typing together; (5) then the index's next use, the
 crosswalk (item 3 (c) under "Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
 3,603 -> 3,563 -> 3,488 -> 3,477), findings 86 to 93 built from them, finding 88 written (354,991 LoC person records
 dated from their Wikidata item), the Sheffield entities confirmed as legacy duplicates, decision 17 closed as no.
@@ -115,6 +115,13 @@ the two below are closed and kept for their queries.
     a town before the county, "&"): finding 77, built, doc 10 7.6 "Decision 16's count". The bare shape is about
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
+
+**Built 2026-10-24 night from the Agar and Kelly evidence, the owner's policy, waiting for the next run** (doc 10 7.6
+"Built 2026-10-24 night, finding 96"): a linked cluster that disagrees with itself about the dates stands when one of
+its records agrees with the string's dates (the whole heading as written agrees by its own; an undated linked record
+vouches for nothing); the conflicting record is set aside, the agreeing one carries the string as a single, both join. Expect about ninety of finding 93's queued strings back among
+the singles ("Agar, Eileen, 1899-1991" on LoC's heading, "Kelly, Felix, 1917-1994" on ULAN's), so queued near 3,740
+rather than 3,830.
 
 **Built 2026-10-24 night from wy2aqs's second pass, waiting for the next run** (doc 10 7.6 "Built 2026-10-24 night,
 finding 95"): the placeholder of a string awaiting review carries nothing. Minted with the string's own lifespan and
@@ -349,15 +356,12 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    linked clusters that disagree with themselves. Agar: LoC's heading is the string verbatim and agrees, ULAN's linked
    record says 1904-1991, and the vetoed member poisons the group (finding 44's linked veto). Kelly: ULAN agrees, LoC's
    record carries finding 88's bare 1916 and conflicts, the same veto. The placeholders could not carry them because
-   they were joined into the vetoed group ("dated as store's record is"). A proposal, the owner's to decide, not
-   built: a linked cluster stands when one of its records agrees with the string's dates or is the whole heading as
-   written, though a linked record conflicts; carried as a single by the agreeing record, the conflicting one's reason
-   saying the authorities disagree among themselves. Yes puts about ninety strings back among the accepted; no keeps
-   them the desk's.
+   they were joined into the vetoed group ("dated as store's record is"). The owner's answer the same night: build it;
+   finding 96 (doc 10 7.6 "Built 2026-10-24 night, finding 96"), measured on the next run.
 
    Then, after the Wikidata reload's last line (it ran the night of 2026-10-24; the tool cannot be rebuilt while it
-   runs), the rerun, which measures findings 93 (properly, with the placeholders carrying nothing), 94 and 95 and the
-   subclass walk's typing together:
+   runs), the rerun, which measures findings 93 (properly, with the placeholders carrying nothing), 94, 95 and 96 and
+   the subclass walk's typing together:
 
        git push
        dotnet run --project tools/Align -- undo-run --run run-20261024-161624-wy2aqs
@@ -378,8 +382,9 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    Expected: single -> queued about 265 ("Cozens, John Robert, 1752-1798", "Hadid, Zaha, 1950-2006", "Papworth, John,
    1775-1847") and bp8unt's older placeholder singles with them (the Liverpool Biennial editions, "Phillips, Claude");
    the keywords single sample with no store placeholder among its grounds; "Keeling, William Knight, 1807-1886" read
-   whole (finding 94); queued near 3,830; the run about thirty minutes again; and whatever the retyped Wikidata records
-   move (prominence reads sitelinks, finding 88's dates are on the LoC records and do not move).
+   whole (finding 94); queued -> single about ninety ("Agar, Eileen, 1899-1991", "Kelly, Felix, 1917-1994": finding
+   96); queued near 3,740; the run about thirty minutes again; and whatever the retyped Wikidata records move
+   (prominence reads sitelinks, finding 88's dates are on the LoC records and do not move).
 
 2. The measurement for the index's next use, dates for LoC's undated person records through the Wikidata item that
    links them (item 3b). Read-only, several minutes beside a running reconcile; cancel and rerun after the run if it

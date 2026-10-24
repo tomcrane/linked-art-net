@@ -1259,6 +1259,21 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-24 night, finding 96, from the evidence of two of the ninety strings finding 93 left queued in wy2aqs
+("Agar, Eileen, 1899-1991", "Kelly, Felix, 1917-1994"; the owner's policy, asked and given the same night): a linked
+cluster that disagrees with itself about the dates stands when one of its records agrees with the string's dates (the
+whole heading as written agrees by its own; an undated linked record vouches for nothing, so finding 44's undated LoC
+record still goes down with ULAN's conflicting one). Agar: LoC's heading is the string verbatim and agrees, ULAN's linked record says
+1904-1991, and finding 44's linked veto had taken the group down with it. Kelly: ULAN agrees, LoC's linked record
+carries finding 88's bare 1916. The link is the authorities' own claim that these are one person and the conflict their
+disagreement among themselves, so the conflicting record is set aside rather than vetoed (set aside, it is not live and
+does not poison the group), the agreeing record carries the string as a single, and both records join the entity. A
+record vetoed for its class as well stays vetoed; a cluster none of whose records agrees stays vetoed and is finding
+93's. With it, CarriedBy's ground is the best live member that is not a placeholder awaiting review (finding 95), since
+the placeholder a string's dates had joined to ULAN's record (the "dated as store's record is" join) stood first in the
+group. Finding 75's namesake rule leaves set-aside members alone. The test is LinkedClusterTests. Expect about ninety
+of the next run's queued back among the singles.
+
 Built 2026-10-24 night, finding 95, from wy2aqs's second pass (below): the placeholder of a string awaiting review
 carries nothing. A queued string's placeholder is minted with the string's own lifespan and qualifier (MintAsync), so
 when the second pass evaluated the string again the placeholder came back as a store candidate whose dates agreed, by

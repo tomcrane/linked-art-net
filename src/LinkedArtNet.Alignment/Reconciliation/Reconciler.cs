@@ -256,38 +256,50 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (reading.Qualifier is null || !sources.Any(x => x.Name == "tgn")) return reading;
         // every segment in turn until one is a county or above ("Exmouth, Devonshire": the town brings nothing, the county does), the
         // qualifier's "&" read as "and" ("Dumfries & Galloway"); finding 77, 2026-10-23
-        foreach (var segment in reading.Qualifier.Split(',').Select(x => x.Trim().Replace(" & ", " and ", StringComparison.Ordinal)).Where(x => x.Length >= 3))
-        {
-            if (!_ancestors.TryGetValue(segment, out var ancestors))
-            {
-                ancestors = null;
-                var records = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(segment), "tgn", nameof(EntityClass.Place), 50, ct);
-                var own = new List<string>();
-                // the name may be TGN's variant ("Devonshire" for its "Devon"): then the preferred name leads the ancestors, so that a heading
-                // placed by the preferred name ("Arlington, Devon, England") agrees (finding 77)
-                foreach (var r in records.Where(r => r.Label is not null && NameMatcher.Score(segment, r.Labels.Prepend(r.Label!)) >= 0.97))
-                {
-                    string? parent = null, placeType = null;
-                    try
-                    {
-                        using var doc = JsonDocument.Parse(r.DataJson ?? "{}");
-                        if (doc.RootElement.TryGetProperty("parentString", out var ps)) parent = ps.GetString();
-                        if (doc.RootElement.TryGetProperty("placeType", out var pt)) placeType = pt.GetString();
-                    }
-                    catch (JsonException) { }
-                    if (parent is null || placeType is null) continue;
-                    var label = (await store.GetAuthorityAsync(placeType, ct))?.Label;
-                    if (Qualified.LevelOf(label) is >= 3) own.Add(NameMatcher.Score(segment, [r.Label!]) >= 0.97 ? parent : $"{r.Label}, {parent}");
-                }
-                // several counties of the name ("Essex" in England, Ontario and five American states): the project's home place decides
-                // (finding 71, 2026-10-22; the PMC manifest says United Kingdom)
-                if (own.Count > 1 && _options.HomePlace is { } home) own = own.Where(p => Qualified.Contains(p, Qualified.Tokens(home))).ToList();
-                if (own.Distinct(StringComparer.Ordinal).Count() == 1) ancestors = own[0];
-                _ancestors[segment] = ancestors;
-            }
-            if (ancestors is not null) return reading with { QualifierAncestors = ancestors };
-        }
+        foreach (var segment in Segments(reading.Qualifier))
+            if (await AncestorsOfAsync(segment, ct) is { } ancestors) return reading with { QualifierAncestors = ancestors };
         return reading;
+    }
+
+    private static IEnumerable<string> Segments(string qualifier) =>
+        qualifier.Split(',').Select(x => x.Trim().Replace(" & ", " and ", StringComparison.Ordinal)).Where(x => x.Length >= 3);
+
+    /// <summary>The TGN ancestors of a place name that is a county or above and one such place in TGN (the home place deciding among namesakes), cached for the run; null when it is a town, unknown, or several.</summary>
+    private async Task<string?> AncestorsOfAsync(string segment, CancellationToken ct)
+    {
+        if (_ancestors.TryGetValue(segment, out var ancestors)) return ancestors;
+        ancestors = null;
+        var records = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(segment), "tgn", nameof(EntityClass.Place), 50, ct);
+        var own = new List<string>();
+        // the name may be TGN's variant ("Devonshire" for its "Devon"): then the preferred name leads the ancestors, so that a heading
+        // placed by the preferred name ("Arlington, Devon, England") agrees (finding 77)
+        foreach (var r in records.Where(r => r.Label is not null && NameMatcher.Score(segment, r.Labels.Prepend(r.Label!)) >= 0.97))
+        {
+            var (parent, placeType) = ParentAndType(r);
+            if (parent is null || placeType is null) continue;
+            var label = (await store.GetAuthorityAsync(placeType, ct))?.Label;
+            if (Qualified.LevelOf(label) is >= 3) own.Add(NameMatcher.Score(segment, [r.Label!]) >= 0.97 ? parent : $"{r.Label}, {parent}");
+        }
+        // several counties of the name ("Essex" in England, Ontario and five American states): the project's home place decides
+        // (finding 71, 2026-10-22; the PMC manifest says United Kingdom)
+        if (own.Count > 1 && _options.HomePlace is { } home) own = own.Where(p => Qualified.Contains(p, Qualified.Tokens(home))).ToList();
+        if (own.Distinct(StringComparer.Ordinal).Count() == 1) ancestors = own[0];
+        _ancestors[segment] = ancestors;
+        return ancestors;
+    }
+
+    /// <summary>A TGN record's parent string and place-type URI from its data.</summary>
+    private static (string? Parent, string? PlaceType) ParentAndType(AuthorityRecord r)
+    {
+        string? parent = null, placeType = null;
+        try
+        {
+            using var doc = JsonDocument.Parse(r.DataJson ?? "{}");
+            if (doc.RootElement.TryGetProperty("parentString", out var ps)) parent = ps.GetString();
+            if (doc.RootElement.TryGetProperty("placeType", out var pt)) placeType = pt.GetString();
+        }
+        catch (JsonException) { }
+        return (parent, placeType);
     }
 
     /// <summary>
@@ -349,6 +361,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // in a qualified context ("Heaton, Bradford") an entity answers silently only when its qualifier agrees with the string's, or
             // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
+            // in any other context a qualified heading never takes an entity placed elsewhere: "Lincoln (England)" is not the project's
+            // "Lincoln, Neb" (placed in Nebraska through its TGN equivalent), "Newbridge (Dublin)" not its "Newbridge, Co. Kildare"; an
+            // entity whose placement is unknown still answers, as before (finding 84, 2026-10-24, from run fk53p7's settled lines)
+            else if (reading.Qualifier is not null) storeScored = storeScored.Where(c => c.QualifierAgrees != false).ToList();
             var firm = storeScored.Where(c => !c.Candidate.Provisional).ToList();
             var chosen = storeScored.Count == 1 ? storeScored[0] : firm.Count == 1 ? firm[0] : null;
             // two of the project's entities, one labelled with the whole heading as written ("Surrealism (Literature)") and one with its
@@ -502,6 +518,21 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var placement = e.Label is null ? null
             : reading.IsQualified ? Qualified.Split(e.Label).Qualifier
             : reading.Qualifier is not null ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
+        if (reading.Qualifier is not null)
+        {
+            // an entity's label may say nothing TGN-shaped about where it is ("Lincoln, Neb"): its TGN equivalent does; and a label's county
+            // ("Boughton House (Northamptonshire)") is widened to the county's ancestors so that the string's "(England)" places it, as
+            // the ancestors walk does for the string's own qualifier (finding 84, 2026-10-24)
+            if (placement is null)
+                foreach (var q in e.Equivalents.Where(q => q.Source == "tgn").Take(2))
+                    if (await store.GetAuthorityAsync(q.Uri, ct) is { } tgn && ParentAndType(tgn).Parent is { } parent) { placement = parent; break; }
+            // the label's own qualifier, or the placement read from it, widened by its first segment that TGN knows as a county or above
+            // (a TGN parent string, ending in "World", needs no widening)
+            var own = placement ?? (e.Label is null ? null : Qualified.Split(e.Label).Qualifier);
+            if (own is not null && !own.EndsWith("World", StringComparison.Ordinal))
+                foreach (var segment in Segments(own))
+                    if (await AncestorsOfAsync(segment, ct) is { } ancestors) { placement = $"{own}, {ancestors}"; break; }
+        }
         return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued, Placement: placement,
             PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null);
     }

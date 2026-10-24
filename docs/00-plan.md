@@ -17,11 +17,13 @@ is built and waiting for a go, and the commands to run on return. The detail beh
 [10-alignment-toolkit.md](10-alignment-toolkit.md) section 7.6 (the findings, each dated) and in the open items of
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
-**Tomorrow, in order** (2026-10-24; every step is under "Commands on return" below with its SQL and commands):
-(1) `git push`; (2) the two store checks on "Lincoln, Neb" and "Newbridge, Co. Kildare", paste the rows; (3) undo
-fk53p7 and `reconcile --verbose`, paste the summary line and the second pass's lines, then the keywords:head and
-persauthorfull queued samples; (4) the assistant measures finding 83 and builds the Wikidata index's use, prominence
-first. Nothing is half-done: the Wikidata load and its retyping are complete, and the index waits only for its use.
+**Today, in order** (2026-10-24; every step is under "Commands on return" below with its commands): (1) `git push`;
+(2) decision 17 below, a yes or no; (3) undo fk53p7 and `reconcile --verbose`, paste the summary line and the second
+pass's lines, then the keywords:head and persauthorfull queued samples; (4) the assistant measures findings 83 and 84
+and builds the Wikidata index's use, prominence first. The two store checks were run late on 2026-10-23 and answered:
+"Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
+through (finding 84, built, below). Nothing is half-done: the Wikidata load and its retyping are complete, and the
+index waits only for its use.
 
 **Where things stand.** Branch `de-pmc`, all work committed, CI green. Six authority sources loaded: the five of the
 manifest (14.5M records) and the Wikidata extract (5.0M, loaded 2026-10-23 evening, doc 11 section 8.11, not yet
@@ -44,6 +46,12 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
 
 **Decisions still owed by the owner:**
 
+17. *A bare place name against the project's lone entity placed outside the home place* (doc 10 7.6 "Built 2026-10-24
+    morning, finding 84", last paragraph): "Clayton" in keywords:head took "Clayton, Victoria, Australia" and "Lincoln"
+    in keywords:sub took "Lincoln, Neb" because each was the project's one entity of the name. Proposed: the lone
+    entity answers silently only when placed in the home place (United Kingdom) or not placed at all; placed elsewhere,
+    the string is queued for the desk. Size S; the home-place test exists (finding 71). Yes builds it before the next
+    run; no leaves these to the desk.
 15. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
     replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
     `merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX merges
@@ -82,6 +90,12 @@ the two below are closed and kept for their queries.
     a town before the county, "&"): finding 77, built, doc 10 7.6 "Decision 16's count". The bare shape is about
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
+
+**Built 2026-10-24 morning from the two store checks, waiting for the next run** (doc 10 7.6 "Built 2026-10-24
+morning, finding 84"): in any context where the string carries a qualifier, a store entity is placed through its TGN
+equivalent when its label says nothing ("Lincoln, Neb" is in Nebraska), a label's county is widened to its ancestors
+("(Northamptonshire)" is in England), and an entity placed elsewhere is not taken. Expect "Lincoln (England)" and
+"Newbridge (Dublin)" to leave the store stage and meet the indexes (LoC "Lincoln (England)" exact-single, most likely).
 
 **Built 2026-10-23 evening from fk53p7's settled lines, waiting for the next run** (doc 10 7.6 "Measured ...
 fk53p7"): finding 83, in the agent parser: a trailing date segment that opens with name words ("Milton, John
@@ -204,8 +218,9 @@ says "continue with the list"):
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store):
 
-Runs ygjx75, p9g534, eetp4h, z5vp74 and fk53p7 (2026-10-23) are measured and read; the queue is 3,603. First the two
-store checks from fk53p7's settled lines, in DataGrip:
+Runs ygjx75, p9g534, eetp4h, z5vp74 and fk53p7 (2026-10-23) are measured and read; the queue is 3,603. The two
+store checks from fk53p7's settled lines were run on 2026-10-23 late (kept for the record; both answered, finding 84
+built from them):
 
     select e.id, e.label, e.class, e.status, q.uri, q.source, q.method
     from entities e left join entity_equivalents q on q.entity_id = e.id
@@ -216,9 +231,9 @@ store checks from fk53p7's settled lines, in DataGrip:
     from decisions d join source_strings s on s.id = d.source_string_id
     where d.run_id = 'run-20261023-183343-fk53p7' and d.valid and s.raw in ('Lincoln (England)', 'Newbridge (Dublin)', 'Lincoln');
 
-If "Lincoln, Neb" is equivalent to TGN's or LoC's Lincoln in England, the legacy label is wrong and the entity is right
-(a label fix at the desk); if it is equivalent to Nebraska's, the store stage's placement let a qualifier through and
-that is a finding. Then the rerun, which measures finding 83 (the tool rebuilds itself on `dotnet run`):
+Answered: "Lincoln, Neb" is equivalent to TGN 7013892 and LoC "Lincoln (Neb.)" (Nebraska), "Newbridge, Co. Kildare" to
+TGN 1042763 and two LoC headings (Kildare); the store stage had let the qualifiers through: finding 84, built. The
+rerun measures findings 83 and 84 (the tool rebuilds itself on `dotnet run`):
 
     git push
     dotnet run --project tools/Align -- undo-run --run run-20261023-183343-fk53p7
@@ -701,7 +716,9 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       it to the heading it came from); "Royal Academy of Music (London, England : 1719-1728);" with a trailing
       semicolon; "Royal Collection (London)" against LoC's "(Great Britain)", a body's qualifier being its seat
       (the qualifier walk could place a city in its country). ~~"Milton, John 1608-1674"~~ (finding 83, built
-      2026-10-23 evening). ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
+      2026-10-23 evening). The corpauthor rule drops a parenthetical ("Boughton House (England)") without reading it
+      as a qualifier, so the store stage compares no placement there (2026-10-24; finding 84 applies where the
+      qualifier is read). ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
       Oliver, 1730?" read undated by the MARC profile; LoC's "Bolton, James, active 1840-1876" undated by the loader~~
       (built 2026-10-23: working spans, doc 10 7.6 "Built 2026-10-23"; "op 1946" with them).
     - Workbench step 3 (jobs): runs, loads and indexes pages (authority_sources is the indexes table), a schedule,

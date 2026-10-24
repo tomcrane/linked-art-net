@@ -1259,6 +1259,29 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-24 morning, finding 84, from the two store checks on fk53p7's settled lines. The project's "Lincoln, Neb"
+is Nebraska (TGN 7013892, LoC "Lincoln (Neb.)"), and "Lincoln (England)" in keywords:head had matched it with the
+reason "name 1.00": the entity's label says nothing TGN-shaped about where it is, so no placement was read and the
+qualifier was never compared. "Newbridge (Dublin)" had matched "Newbridge, Co. Kildare" with the reason "qualifier not
+placed (Dublin vs Kildare, Ireland)": the comparison ran, said no, and the store stage took the entity anyway, because
+its qualifier filter applied only in a context whose rule reads qualified names (the place field). Now, in any context
+where the string carries a qualifier: a store entity whose label gives no placement is placed through its TGN
+equivalent's parent string; a label's own qualifier ("Boughton House (Northamptonshire)") is widened by the ancestors
+walk (finding 56's, extracted as `AncestorsOfAsync`) so that "(England)" places it; and an entity whose placement
+disagrees is not taken, while one whose placement is unknown still answers as before. The place field's "Lincoln"
+is another matter: five TGN Lincolns tied and the project's own aligned entity, Nebraska's, broke the tie (finding
+35), which may be right for a publisher place (the University of Nebraska Press is there) and is the desk's to say.
+The corpauthor rule drops a parenthetical without reading it as a qualifier, so that context compares nothing and
+"Boughton House (England)" matched as before; noted among the parser gaps, not changed.
+
+Proposed, not built, for the owner (decision 17): a bare place name in a subject context ("Clayton" in keywords:head,
+"Lincoln" in keywords:sub) that matches the project's one entity of the name takes it today whatever that entity's
+place ("Clayton, Victoria, Australia"; "Lincoln, Neb"). The rule the assistant would build: the lone store entity
+answers a bare place name silently only when it is placed in the project's home place (the manifest's United Kingdom:
+"Cornwall (England : County)" for "Cornwall", right every time in the samples) or carries no placement at all; placed
+elsewhere, the string is queued for the desk with the entity shown. The Wikidata prominence rule would then settle
+some of those queued ("Lincoln" the English city at 100-odd sitelinks against Nebraska's), and the rest are the desk's.
+
 Measured 2026-10-23 evening (run-20261023-183343-fk53p7: findings 81 and 82 and the second pass, finding 51, against
 z5vp74): accepted 9,139 -> 9,386 (vote 3,874 -> 3,961, single 1,936 -> 2,110, exact-single 3,329 -> 3,315), queued
 3,955 -> 3,603, matched in store 5,841 -> 5,958, minted 11,318 -> 11,306. The second pass reconsidered 3,896 queued

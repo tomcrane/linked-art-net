@@ -1259,6 +1259,35 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-10-24 (run-20261024-100226-t629cj: findings 83 and 84, against fk53p7; prominence, finding 85, was
+built while it ran and is not in it): accepted 9,386 -> 9,370 (vote 3,961 -> 3,936, single 2,110 -> 2,119,
+exact-single 3,315), queued 3,603 -> 3,563, matched in store 5,958 -> 6,003, minted 11,306 -> 11,317; the second pass
+reconsidered 3,869 (fk53p7: 3,896) and settled 306 (293). The path: ... -> 3,955 -> 3,603 -> 3,563. The fall in votes
+(25) is unexplained from the summary; the run-to-run method diff (plan section 0, the query on two runs' decisions,
+the undone run keeping its evidence) says where they went. Time by stage: store 1,054 s, the second pass 125 s. The
+settled lines, read against fk53p7's:
+
+- Finding 83 held: the nine surname-only matches ("Milton", "Gander", "Wordsworth") are gone from the settled lines.
+  "Christopher, Ann, 1947-" still takes the project's entity labelled "Christopher": that entity must carry the full
+  name among its labels, so it is the sculptor under a poor label, and the desk's to relabel.
+- Finding 84 held and gave more than it took: "Lincoln (England)" left Nebraska and reached the project's own concept
+  "Lincoln (England)" by a vote with TGN and LoC; "York (England)", "Gloucester (England)", "Chester (England)",
+  "Bedford (England)", "Derry (Northern Ireland)", "Picardy (France)", "Benin (Nigeria)" and "Kildare (Ireland :
+  County)", queued in fk53p7 among several TGN places each, are votes now: the widened placement made the project's
+  legacy concept entity firm, and finding 35 let it break the tie.
+- Wrong, three: "Münster" in the place field took "Munster (Ireland)" at 0.97: the German city's group was exact at
+  1.00 with LoC's heading, but finding 35 read "tied" as any two-source group at acceptance score and the Irish group,
+  holding the project's entity, won through its folded umlaut. Finding 86, built: a tie, for finding 35 and for
+  prominence (85), is among groups at the top score only; "Münster" then has a rival at acceptance score and is
+  queued, the desk's. "Newbridge (Dublin)" left the store stage as finding 84 meant and came back by a vote onto
+  Kildare's Newbridge with TGN and LoC: the qualifier "Dublin" was not resolved to a known place (the ancestors walk
+  found more than one TGN Dublin at county level or above, so no veto fell on a group placed elsewhere). "Venice
+  (Italy)" matched the project's person entity labelled "Venice": finding 69's veto (a heading placed in a known place
+  is not a person) needs the qualifier resolved, and "Italy" was not. Both wait on the TGN rows for "Dublin" and
+  "Italy" (plan section 0); the likely fix is that several records of the name at county level or above that share a
+  parent resolve to that parent.
+- Noise: "L (colonnade)" in the place field minted "L, colonnade" (a fragment; parser gaps). The rest as in fk53p7.
+
 Built 2026-10-24, finding 85, prominence (the Wikidata index's first use; doc 11 section 8.11). "Sheffield" in
 keywords:sub ties between TGN's English city with LoC's heading and Alabama's, Ohio's and Massachusetts' Sheffields,
 each a two-source group placed through, and nothing on an unqualified string separates them: the famous-name tie

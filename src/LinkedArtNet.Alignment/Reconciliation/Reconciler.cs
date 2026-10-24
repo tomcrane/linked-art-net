@@ -430,9 +430,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // with a LoC heading placed through; the earlier pipeline identified the name with the county in this project, and a bare
         // "Cornwall" here is that place. Only among two-source groups at acceptance score, only when one of them holds the entity
         static bool Firm(ScoredCandidate m) => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional;
+        // a tie is among groups at the top score, not at any acceptance score: "Münster" (the German city, exact at 1.00 with LoC's heading)
+        // is not broken towards the project's "Munster (Ireland)" at 0.97 through its folded umlaut (finding 86, 2026-10-24, run t629cj)
+        bool AtTop(CandidateGroup g) => top is not null && g.Score >= top.Score - 0.001 && g.Score >= _options.AcceptScore && g.Sources.Count >= 2;
         if (top is not null && (top.Best.Candidate.Class ?? reading.Classes[0]) == EntityClass.Place)
         {
-            var tied = live.Where(g => g.Score >= _options.AcceptScore && g.Sources.Count >= 2).ToList();
+            var tied = live.Where(AtTop).ToList();
             var withEntity = tied.Where(g => g.Members.Any(Firm)).ToList();
             if (tied.Count >= 2 && withEntity.Count == 1 && !live.Any(g => g != withEntity[0] && g.Score >= _options.AcceptScore && g.Members.Any(Firm)))
             {
@@ -450,7 +453,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // (45, 44, 39) is declined and stays the desk's
         if (top is not null && reading.Qualifier is null && _options.ProminenceMinSitelinks > 0 && (top.Best.Candidate.Class ?? reading.Classes[0]) == EntityClass.Place)
         {
-            var tied = live.Where(g => g.Score >= _options.AcceptScore && g.Sources.Count >= 2).ToList();
+            var tied = live.Where(AtTop).ToList();
             if (tied.Count >= 2 && !live.Any(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm)))
             {
                 var ranked = new List<(CandidateGroup Group, int Sitelinks, string? Item)>();

@@ -18,10 +18,11 @@ is built and waiting for a go, and the commands to run on return. The detail beh
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
 **Today, in order** (2026-10-24; every step is under "Commands on return" below with its commands): (1) `git push`;
-(2) ~~decision 17~~ (closed as no on the count, 2026-10-24); (3) undo fk53p7 and `reconcile --verbose` (running since
-mid-morning), paste the summary line and the second pass's lines, then the keywords:head and persauthorfull queued
-samples; (4) the assistant measures findings 83 and 84; (5) the run after that measures finding 85, prominence (built
-while the run went), with the keywords:sub queued and vote samples. The two store checks were run late on 2026-10-23 and answered:
+(2) ~~decision 17~~ (closed as no on the count, 2026-10-24); (3) ~~undo fk53p7 and `reconcile --verbose`~~ (run
+t629cj, measured: queued 3,603 -> 3,563, findings 83 and 84 held, finding 86 built from its "Münster" line); (4) three
+queries, under "Commands on return": the TGN rows for "Dublin" and "Italy" (two unresolved qualifiers) and the
+run-to-run method diff (25 fewer votes, unexplained); (5) undo t629cj and rerun, which measures findings 85 and 86,
+with the keywords:sub queued and vote samples. The two store checks were run late on 2026-10-23 and answered:
 "Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
 through (finding 84, built, below). Nothing is half-done: the Wikidata load and its retyping are complete, and the
 index waits only for its use.
@@ -32,12 +33,12 @@ among the manifest's sources); the LoC "-781" subdivision forms deleted from bot
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
-SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261023-183343-fk53p7: accepted 9,386 (vote
-3,961, single 2,110, exact-single 3,315), queued 3,603, matched in store 5,958, minted 11,306, lists 404, compounds
-15,558; second pass 3,896 reconsidered, 293 settled; by context queued persauthorfull 1,264, keywords 620, publisher
-781, keywords:head 354, place 256, corpauthor 175, keywords:sub 153. The path: 8,518 (Monday) -> 6,647 -> 5,763 ->
-5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603. Doc 10 7.6
-has a "Measured" paragraph per run with the samples read; the last is "Measured ... fk53p7". The Wikidata dump and
+SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261024-100226-t629cj: accepted 9,370 (vote
+3,936, single 2,119, exact-single 3,315), queued 3,563, matched in store 6,003, minted 11,317, lists 404, compounds
+15,558; second pass 3,869 reconsidered, 306 settled (by-context queued counts not yet taken for this run). The path:
+8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 ->
+3,964 -> 3,955 -> 3,603 -> 3,563. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is
+"Measured ... t629cj". The Wikidata dump and
 the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -106,7 +107,12 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-24 while the run went, waiting for the run after it** (doc 10 7.6 "Built 2026-10-24, finding 85"):
+**Built 2026-10-24 from t629cj's settled lines, waiting for the next run** (doc 10 7.6 "Measured ... t629cj"):
+finding 86, a tie for the project's-entity tie-break (35) and for prominence (85) is among groups at the top score
+only, not at any acceptance score: "Münster" (the German city, exact at 1.00 with LoC's heading) had gone to the
+project's "Munster (Ireland)" at 0.97 through its folded umlaut. Expect "Münster" queued.
+
+**Built 2026-10-24 while the run went, waiting for the next run** (doc 10 7.6 "Built 2026-10-24, finding 85"):
 prominence for the famous-name ties among places, the Wikidata index's first use: among two-source groups tied with no
 project entity among them, the group whose Wikidata item has 20 or more sitelinks and double the next is taken as a
 vote. Expect keywords:sub's "Sheffield", "Parma", "Durham", "Kildare", "Virginia" and "Williamsburg" to settle or be
@@ -263,10 +269,28 @@ rerun measures findings 83 and 84 (the tool rebuilds itself on `dotnet run`):
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
 
-The Wikidata index is not among the manifest's sources and the run in progress began before finding 85, so that run
-is unchanged by it. The run after measures prominence:
+Run t629cj (2026-10-24 morning) is measured. Three queries first, in DataGrip, from its settled lines (doc 10 7.6
+"Measured ... t629cj"): the TGN rows behind two qualifiers the ancestors walk did not resolve ("Newbridge (Dublin)"
+went to Kildare's Newbridge by a vote; "Venice (Italy)" matched a person entity labelled "Venice"), and the run-to-run
+method diff, which says where the 25 fewer votes went and is a standing tool for every rerun (the undone run keeps its
+evidence):
 
-    dotnet run --project tools/Align -- undo-run --run <this morning's run id>
+    select uri, label, data->>'parentString' as parent, data->>'placeType' as place_type
+    from authority_records where source = 'tgn' and normalised_labels @> array['dublin'];
+
+    select uri, label, data->>'parentString' as parent, data->>'placeType' as place_type
+    from authority_records where source = 'tgn' and normalised_labels @> array['italy'];
+
+    select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
+    from decisions a
+    join decisions b on b.source_string_id = a.source_string_id
+    join source_strings s on s.id = a.source_string_id
+    where a.run_id = 'run-20261023-183343-fk53p7' and b.run_id = 'run-20261024-100226-t629cj' and a.method <> b.method
+    group by 1, 2 order by 3 desc;
+
+Then the rerun, which measures prominence (85) and the top-score tie (86):
+
+    dotnet run --project tools/Align -- undo-run --run run-20261024-100226-t629cj
     dotnet run --project tools/Align -- reconcile --verbose
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method vote --limit 10
@@ -753,7 +777,7 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       (the qualifier walk could place a city in its country). ~~"Milton, John 1608-1674"~~ (finding 83, built
       2026-10-23 evening). The corpauthor rule drops a parenthetical ("Boughton House (England)") without reading it
       as a qualifier, so the store stage compares no placement there (2026-10-24; finding 84 applies where the
-      qualifier is read). ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
+      qualifier is read). "L (colonnade)" in the place field (t629cj), a fragment minted as "L, colonnade". ~~From qr7fbx (2026-10-21, finding 26): "Bolton, James, fl. 1775-1795" and "Goldsmith,
       Oliver, 1730?" read undated by the MARC profile; LoC's "Bolton, James, active 1840-1876" undated by the loader~~
       (built 2026-10-23: working spans, doc 10 7.6 "Built 2026-10-23"; "op 1946" with them).
     - Workbench step 3 (jobs): runs, loads and indexes pages (authority_sources is the indexes table), a schedule,

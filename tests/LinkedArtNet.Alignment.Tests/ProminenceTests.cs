@@ -43,6 +43,18 @@ public class ProminenceTests(PostgresFixture pg)
         Assert.Equal(Outcome.Queued, murray.Outcome);
         Assert.Contains(murray.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("prominence does not separate them (45, 44 sitelinks)"));
 
+        // a tie is among groups at the top score (finding 86): the German Münster, exact at 1.00 with LoC's heading, is not broken towards
+        // the project's "Munster (Ireland)" at 0.97 through its folded umlaut, by the project's entity (finding 35) or by prominence
+        await pg.Store.PutAuthorityAsync(Tgn("7004333", "Münster", "Nordrhein-Westfalen, Germany, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n79043433", "Münster (Germany)"));
+        await pg.Store.PutAuthorityAsync(Tgn("1127460", "Munster", "Ireland, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n79047888", "Munster (Ireland)"));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q245546", "Munster", 90, "http://vocab.getty.edu/tgn/1127460"));
+        var irish = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Munster (Ireland)", ["Munster (Ireland)", "Munster"], null, [], [], EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(irish.Id, new Equivalent("http://vocab.getty.edu/tgn/1127460", "tgn", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var munster = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "place", "Münster"));
+        Assert.True(munster.Outcome != Outcome.Accepted || munster.Accepted!.Uris.Contains("http://vocab.getty.edu/tgn/7004333"), $"{munster.Outcome} {string.Join(",", munster.Accepted?.Uris ?? [])}");
+
         // the rule off: the tie stands
         var off = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions() with { ProminenceMinSitelinks = 0 });
         Assert.Equal(Outcome.Queued, (await off.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:sub", "Sheffield"))).Outcome);

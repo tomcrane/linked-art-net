@@ -252,7 +252,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         catch (JsonException) { return null; }
     }
 
-    private readonly Dictionary<string, string?> _ancestors = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, (string Chain, int Level)?> _ancestors = new(StringComparer.Ordinal);
 
     /// <summary>
     /// The qualifier's own place in TGN, when it is a county or above and TGN has one such place of the name: "Yorkshire" is in
@@ -265,15 +265,15 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // every segment in turn until one is a county or above ("Exmouth, Devonshire": the town brings nothing, the county does), the
         // qualifier's "&" read as "and" ("Dumfries & Galloway"); finding 77, 2026-10-23
         foreach (var segment in Segments(reading.Qualifier))
-            if (await AncestorsOfAsync(segment, ct) is { } ancestors) return reading with { QualifierAncestors = ancestors };
+            if (await AncestorsOfAsync(segment, ct) is { } ancestors) return reading with { QualifierAncestors = ancestors.Chain };
         return reading;
     }
 
     private static IEnumerable<string> Segments(string qualifier) =>
         qualifier.Split(',').Select(x => x.Trim().Replace(" & ", " and ", StringComparison.Ordinal)).Where(x => x.Length >= 3);
 
-    /// <summary>The TGN ancestors of a place name that is a county or above and one such place in TGN (the home place deciding among namesakes), cached for the run; null when it is a town, unknown, or several.</summary>
-    private async Task<string?> AncestorsOfAsync(string segment, CancellationToken ct)
+    /// <summary>The TGN ancestors of a place name that is a county or above and one such place in TGN (the home place deciding among namesakes), with the place's level, cached for the run; null when it is a town, unknown, or several.</summary>
+    private async Task<(string Chain, int Level)?> AncestorsOfAsync(string segment, CancellationToken ct)
     {
         if (_ancestors.TryGetValue(segment, out var ancestors)) return ancestors;
         ancestors = null;
@@ -297,13 +297,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // province "Italia"), and records that share the chain above them resolve to that chain (Dublin the county, the region and
         // "County Dublin", all under "Ireland, Europe, World"), so that "Newbridge (Dublin)" is placed in Ireland and vetoes Kildare's
         var chains = own.Select(x => x.Chain).Distinct(StringComparer.Ordinal).ToList();
+        var topLevel = own.Count == 0 ? 0 : own.Max(x => x.Level);
         if (chains.Count > 1)
         {
-            var topLevel = own.Max(x => x.Level);
             chains = own.Where(x => x.Level == topLevel).Select(x => x.Chain).Distinct(StringComparer.Ordinal).ToList();
             if (chains.Count > 1 && CommonParent(chains) is { } shared) chains = [shared];
         }
-        if (chains.Count == 1) ancestors = chains[0];
+        if (chains.Count == 1) ancestors = (chains[0], topLevel);
         _ancestors[segment] = ancestors;
         return ancestors;
     }
@@ -618,7 +618,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var own = placement ?? (e.Label is null ? null : Qualified.Split(e.Label).Qualifier);
             if (own is not null && !own.EndsWith("World", StringComparison.Ordinal))
                 foreach (var segment in Segments(own))
-                    if (await AncestorsOfAsync(segment, ct) is { } ancestors) { placement = own; placementAncestors = ancestors; break; }
+                    if (await AncestorsOfAsync(segment, ct) is { } ancestors)
+                    {
+                        // a label's own qualifier that is a nation ("National Maritime Museum (Great Britain)") is a national body's qualifier,
+                        // not a placement, as PlacementOf leaves it; a county or a country within one ("(Northamptonshire)", "(England)") is a
+                        // placement with its chain
+                        if (placement is null && ancestors.Level >= 5) break;
+                        placement = own; placementAncestors = ancestors.Chain; break;
+                    }
         }
         return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued, Placement: placement,
             PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null);

@@ -46,6 +46,12 @@ public static class Qualified
     private static readonly (Regex Pattern, string Token)[] Phrases = Regions.Select(r => r.Name).Where(n => n.Contains(' ')).Distinct()
         .Select(n => (new Regex(@"(?<![a-z])" + Regex.Escape(n) + @"(?![a-z])", RegexOptions.Compiled), n.Replace(" ", "")))
         .ToArray();
+    // one country under two names: LoC's headings say "(Great Britain)" where TGN's hierarchy says "United Kingdom" (2026-10-24, run t629cj:
+    // the project's "National Maritime Museum (Great Britain)" against "(London)", placed in "..., England, United Kingdom, Europe, World")
+    private static readonly (Regex Pattern, string Token)[] Synonyms =
+    [
+        (new Regex(@"(?<![a-z])(?:great britain|united kingdom|u\.k\.?|uk|britain)(?![a-z])", RegexOptions.Compiled), "unitedkingdom"),
+    ];
 
     /// <summary>Splits "Name, Qualifier" or "Name (Qualifier)" into the name and the qualifier; a name alone has no qualifier.</summary>
     public static (string Name, string? Qualifier) Split(string text)
@@ -87,6 +93,7 @@ public static class Qualified
         var folded = StringKey.Fold(StringKey.Normalise(text));
         foreach (var (pattern, token) in Expansions) folded = pattern.Replace(folded, token);
         foreach (var (pattern, token) in Phrases) folded = pattern.Replace(folded, token);
+        foreach (var (pattern, token) in Synonyms) folded = pattern.Replace(folded, token);
         return folded.Split([' ', ',', ';', '.', '(', ')', '/', ':', '-', '\'', '?', '[', ']'], StringSplitOptions.RemoveEmptyEntries)
             .Where(t => t.Length >= 3 && !Noise.Contains(t)).Distinct(StringComparer.Ordinal).ToArray();
     }

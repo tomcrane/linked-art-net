@@ -1286,6 +1286,12 @@ store match gains no new equivalents where a vote did, which is the audit's busi
   chain (`CommonParent`, when it names a country or more); and the home-place filter of finding 71 decides only when
   it leaves something (Dublin's records, none in the United Kingdom, had emptied the list). "Palais (Augsburg,
   Germany)" minted is right (the French Palais records vetoed as elsewhere; it was wrongly a store match before).
+- "National Maritime Museum (London)" lost its vote (vote -> queued; t629cj's keywords:head sample) for the same reason as
+  Statens with one more twist: the project's entity is "(Great Britain)", a lone country that the placement reader leaves
+  out of a label on purpose (a national body's qualifier, not a placement), and the widening path had read it in. Now a
+  nation (level 5) from a label's own qualifier is left out as before, a county or a country within one is kept with
+  its chain; and "Great Britain" and "United Kingdom" are one token (`Qualified.Synonyms`), since LoC's headings say
+  the first where TGN's chains say the second.
 - Still to read on the next run: 17 "Royal Academy of Arts (Great Britain). Winter Exhibition (nth : year : Royal
   Academy of Arts)" headings went queued -> minted, and "New York, NY", "New York (Madison Avenue)", "National Maritime
   Museum (London)", "London, New York & Bombay" went vote -> queued; the diff on the next run says whether the

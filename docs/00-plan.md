@@ -35,7 +35,8 @@ county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for 
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
 SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261024-100226-t629cj: accepted 9,370 (vote
 3,936, single 2,119, exact-single 3,315), queued 3,563, matched in store 6,003, minted 11,317, lists 404, compounds
-15,558; second pass 3,869 reconsidered, 306 settled (by-context queued counts not yet taken for this run). The path:
+15,558; second pass 3,869 reconsidered, 306 settled; by context queued persauthorfull 1,263, keywords 593, publisher
+782, keywords:head 340, place 258, corpauthor 175, keywords:sub 152. The path:
 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 ->
 3,964 -> 3,955 -> 3,603 -> 3,563. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is
 "Measured ... t629cj". The Wikidata dump and
@@ -113,8 +114,10 @@ wins, records sharing the chain above them resolve to it, and the home-place fil
 something; "Newbridge (Dublin)" is placed in Ireland and vetoes Kildare's, "Venice (Italy)" is not a person); finding
 83's regex case-insensitive for date words ("Bell, Trevor, B. 1930"); finding 84's store filter withdrawn ("Harewood
 House (Leeds)" keeps the project's "(England)") and its widening kept apart from the placement ("Statens Museum for
-Kunst (Copenhagen, Denmark)" keeps the project's "(Denmark)"). Expect the four to come back, and the 17 Royal Academy
-Winter Exhibition headings and the New York and London strings to be read in the diff.
+Kunst (Copenhagen, Denmark)" keeps the project's "(Denmark)"); a nation from a label's own qualifier is not a
+placement ("National Maritime Museum (Great Britain)" against "(London)" votes again), and "Great Britain" and "United
+Kingdom" are one token. Expect the five to come back, and the 17 Royal Academy Winter Exhibition headings and the New
+York strings to be read in the diff.
 
 **Built 2026-10-24 from t629cj's settled lines, waiting for the next run** (doc 10 7.6 "Measured ... t629cj"):
 finding 86, a tie for the project's-entity tie-break (35) and for prominence (85) is among groups at the top score

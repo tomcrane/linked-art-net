@@ -39,14 +39,23 @@ public class StorePlacementTests(PostgresFixture pg)
         var house = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:head", "Boughton House (England)"));
         Assert.Equal(Outcome.MatchedStore, house.Outcome); Assert.Equal(boughton.Id, house.StoreMatch!.Id);
         Assert.Contains("qualifier places it", house.StoreChoice!.Reason);
-        // ancestors widen agreement, never narrow it (finding 56's rule): the project's "Statens museum for kunst (Denmark)" is placed by
-        // "(Copenhagen, Denmark)" on its own label before its widened chain "Denmark, Danmark, Europe, World" is consulted (run t629cj had
-        // vetoed it as elsewhere and minted the museum again)
+        // a label's lone country is a national body's qualifier, not a placement, as PlacementOf leaves it: the project's "Statens museum for
+        // kunst (Denmark)" is neither placed nor vetoed by "(Copenhagen, Denmark)" and answers as before (run t629cj had widened it in place to
+        // "Denmark, Danmark, Europe, World", vetoed it as elsewhere and minted the museum again)
         await pg.Store.PutAuthorityAsync(Tgn("1000084", "Danmark", "Europe, World", "300128207") with { Labels = ["Danmark", "Denmark"] });
         var statens = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Statens museum for kunst (Denmark)", ["Statens museum for kunst (Denmark)", "Statens Museum for Kunst"], null, [], [], EntityStatus.Aligned), scheme);
         var museum = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords", "Statens Museum for Kunst (Copenhagen, Denmark)"));
         Assert.Equal(Outcome.MatchedStore, museum.Outcome); Assert.Equal(statens.Id, museum.StoreMatch!.Id);
-        Assert.Contains("qualifier places it", museum.StoreChoice!.Reason);
+        Assert.Null(museum.StoreChoice!.Candidate.Placement); Assert.Null(museum.StoreChoice.QualifierAgrees);
+        // a label's own lone country is a national body's qualifier, not a placement: the project's "National Maritime Museum (Great
+        // Britain)" is neither placed nor vetoed by "(London)" (run t629cj had queued the heading that was a vote before); and "Great Britain"
+        // and "United Kingdom" are one token, so LoC's qualifier agrees with TGN's chain
+        await pg.Store.PutAuthorityAsync(Tgn("7008591", "United Kingdom", "Europe, World", "300128207") with { Labels = ["United Kingdom", "Great Britain"] });
+        var maritime = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "National Maritime Museum (Great Britain)", ["National Maritime Museum (Great Britain)", "National Maritime Museum"], null, [], [], EntityStatus.Aligned), scheme);
+        var greenwich = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:head", "National Maritime Museum (London)"));
+        var maritimeMember = Assert.Single(greenwich.Groups.SelectMany(g => g.Members), m => m.Candidate.EntityId == maritime.Id);
+        Assert.False(maritimeMember.Veto); Assert.Null(maritimeMember.Candidate.Placement); Assert.Null(maritimeMember.QualifierAgrees);
+        Assert.True(Qualified.Agrees("London, Greater London, England, United Kingdom, Europe, World", "Great Britain"));
         var bare = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:sub", "Cornwall"));
         Assert.Equal(Outcome.MatchedStore, bare.Outcome); Assert.Equal(cornwall.Id, bare.StoreMatch!.Id);
     }

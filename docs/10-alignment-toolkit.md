@@ -1259,6 +1259,31 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-24 late afternoon, findings 91 and 92, from the two pieces of evidence rkjzag's measurement had asked for
+(the stored evidence of its "Sheffield" and "Lincoln (England)" decisions):
+
+- "Lincoln (England)" in keywords:head was queued on a tie of two two-source groups at 1.00: TGN's Lincoln, placed by
+  the qualifier, with LoC's "Lincoln (England)" through it and two diocese headings; and TGN's Lincolnshire, exact
+  through its variant "Lincoln", with LoC's "Lincolnshire (England)" through it (Missouri's Lincoln vetoed by the
+  resolved qualifier, finding 66). Nothing on a qualified string separated them: prominence is for bare names, finding
+  35 wants a project entity, and the outvoted rule wants a one-source rival. The string is LoC's heading as written.
+  Finding 91: among two-source place groups tied at the top score on a qualified string, when exactly one holds a
+  record whose label is the whole heading as written (0.97 against the raw string), its qualifier agreeing, that group
+  wins as a vote ("holds the whole heading as written (Lincoln (England)): breaks the tie"); the others carry "the
+  whole heading as written is ..., elsewhere". Not when any live group holds a project entity (finding 35's ground).
+  t629cj's vote on this string had come through the widened store entity, since unplaced (the lone-nation rule); this
+  is the rule that should have carried it.
+- "Sheffield" in keywords:sub was queued with no word of why. Its evidence showed five two-source groups at 1.00, all
+  American (Illinois, Massachusetts, Ohio, Pennsylvania, Texas), and nothing English: the evidence takes the first five
+  groups, and the English group, like whatever stopped prominence, lay beyond them. By the code, prominence stands aside
+  only when a live group at acceptance score holds a firm project entity outside the tie (in a tied group, finding 35
+  would have taken it), so the project has an aligned "Sheffield" entity in a group one source carries, or two of them;
+  the query under plan section 0 confirms it. Finding 92, two changes to the evidence rather than a rule: the tied groups
+  carry "prominence stands aside: the project's own entity <label> is among the live groups, the desk's" when that is
+  what happened; and the stored evidence lists the first five groups, every live group at the top score and every
+  group holding a project entity, twelve at most, so that a tie of six namesakes shows all six and the entity that
+  decided. The next run's "Sheffield" line will say which entity; the desk, or merge-duplicates, takes it from there.
+
 Measured 2026-10-24 afternoon (run-20261024-111420-rkjzag: findings 85, 86, 87 and the corrections to 83 and 84,
 against t629cj): accepted 9,370 -> 9,447 (vote 3,936 -> 4,008, single 2,119 -> 2,124, exact-single 3,315), queued
 3,563 -> 3,488, matched in store 6,003 -> 5,996, minted 11,317 -> 11,322; the second pass reconsidered 3,757 (3,869)

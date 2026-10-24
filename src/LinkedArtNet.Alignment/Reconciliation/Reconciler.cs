@@ -493,6 +493,28 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 return new Evaluation(Outcome.Accepted, reading, groups, Accepted: prior, AcceptedMethod: DecisionMethod.Vote);
             }
         }
+        // the whole heading breaks a tie among qualified places (finding 91, 2026-10-24, run rkjzag): "Lincoln (England)" ties between TGN's
+        // Lincoln with LoC's "Lincoln (England)" and TGN's Lincolnshire, exact through its variant "Lincoln", with LoC's "Lincolnshire
+        // (England)"; the string is LoC's heading as written, and the one tied group that holds that heading, its qualifier agreeing, is
+        // the place it names. Only among two-source groups at the top score, only when no live group holds a project entity (finding 35)
+        if (top is not null && reading.Qualifier is not null && (top.Best.Candidate.Class ?? reading.Classes[0]) == EntityClass.Place)
+        {
+            var tied = live.Where(AtTop).ToList();
+            bool Whole(ScoredCandidate m) => !m.Veto && !m.SetAside && m.Candidate.EntityId is null && m.QualifierAgrees != false
+                && m.Candidate.Label is { } l && NameMatcher.Score(reading.String.Raw, [l]) >= 0.97;
+            var holders = tied.Where(g => g.Members.Any(Whole)).ToList();
+            if (tied.Count >= 2 && holders.Count == 1 && !live.Any(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm)))
+            {
+                var holder = holders[0];
+                var heading = holder.Members.First(Whole).Candidate.Label;
+                groups = groups.Select(g => g == holder
+                    ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; holds the whole heading as written ({heading}): breaks the tie" }).ToList() }
+                    : tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; the whole heading as written is {heading}, elsewhere" }).ToList() } : g).ToList();
+                if (includeStore && await HoldersAsync(dataset, holder.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+                var annotated = groups.First(g => g.Uris.SequenceEqual(holder.Uris, StringComparer.Ordinal));
+                return new Evaluation(Outcome.Accepted, reading, groups, Accepted: annotated, AcceptedMethod: DecisionMethod.Vote);
+            }
+        }
         // prominence breaks the famous-name tie among places (finding 85, 2026-10-24; doc 11 section 8.11): "Sheffield" in keywords:sub ties
         // between TGN's English city with LoC's heading and Alabama's, Ohio's and Massachusetts' Sheffields each with a LoC heading placed
         // through, and nothing on an unqualified string separates them; Wikidata's items, reached through the candidates' URIs in their
@@ -502,7 +524,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (top is not null && reading.Qualifier is null && _options.ProminenceMinSitelinks > 0 && (top.Best.Candidate.Class ?? reading.Classes[0]) == EntityClass.Place)
         {
             var tied = live.Where(AtTop).ToList();
-            if (tied.Count >= 2 && !live.Any(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm)))
+            // a project entity in a live group outside the tie (two legacy entities of the name, or one in a group only one source carries)
+            // leaves the string to the desk, and says so (finding 92, 2026-10-24, run rkjzag: "Sheffield" was queued with no word of why)
+            var standing = live.FirstOrDefault(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm));
+            if (tied.Count >= 2 && standing is not null)
+                groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence stands aside: the project's own entity {standing.Members.First(Firm).Candidate.Label} is among the live groups, the desk's" }).ToList() } : g).ToList();
+            else if (tied.Count >= 2)
             {
                 var ranked = new List<(CandidateGroup Group, int Sitelinks, string? Item)>();
                 foreach (var g in tied) { var (n, item) = await ProminenceAsync(g.Uris, ct); ranked.Add((g, n, item)); }
@@ -1193,7 +1220,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             stage,
             reading = new { reading.Text, reading.Key, reading.Qualifier, classes = reading.Classes.Select(c => c.ToString()), lifespan = reading.Lifespan?.Text, nationalities = reading.Nationalities.Count == 0 ? null : reading.Nationalities, roles = reading.Roles.Count == 0 ? null : reading.Roles },
-            groups = groups.Take(5).Select(g => new
+            // the first five, every live group at the top score and every group holding a project entity, twelve at most: a tie of six
+            // namesakes had shown five and left the sixth, and the entity that stopped prominence, to be guessed at (finding 92, 2026-10-24)
+            groups = groups.Where((g, i) => i < 5 || (!g.Vetoed && groups.Count > 0 && g.Score >= groups[0].Score - 0.001) || g.Members.Any(m => m.Candidate.EntityId is not null)).Take(12).Select(g => new
             {
                 g.Score, g.Sources, vetoed = g.Vetoed ? true : (bool?)null,
                 members = g.Members.Take(8).Select(m => new { m.Candidate.Uri, m.Candidate.Source, m.Candidate.Label, m.Candidate.Stage, m.Score, veto = m.Veto ? true : (bool?)null, setAside = m.SetAside ? true : (bool?)null, m.Reason }),

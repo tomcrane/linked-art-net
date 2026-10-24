@@ -22,8 +22,10 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 t629cj, measured: queued 3,603 -> 3,563, findings 83 and 84 held, finding 86 built from its "Münster" line); (4) ~~three
 queries~~ (run; finding 87 and the corrections to 83 and 84 built from them, doc 10 7.6 "Built 2026-10-24 midday");
 (5) ~~undo t629cj and rerun~~ (run rkjzag, measured, doc 10 7.6 "Measured ... rkjzag": queued 3,563 -> 3,488, votes
-+72; findings 89 and 90 built from it); (6) the finding 88 write, then its count; (7) the evidence for "Sheffield" and
-"Lincoln (England)" (under "Commands on return"); (8) undo rkjzag and rerun, which measures 88, 89 and 90 together. The two store checks were run late on 2026-10-23 and answered:
++72; findings 89 and 90 built from it); (6) the finding 88 write, then its count; (7) ~~the evidence for "Sheffield" and
+"Lincoln (England)"~~ (read; findings 91 and 92 built from it, doc 10 7.6 "Built 2026-10-24 late afternoon"; one
+query still confirms the Sheffield entity, under "Commands on return"); (8) undo rkjzag and rerun, which measures 88,
+89, 90, 91 and 92 together. The two store checks were run late on 2026-10-23 and answered:
 "Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
 through (finding 84, built, below). Nothing is half-done: the Wikidata load and its retyping are complete, and the
 index waits only for its use.
@@ -107,6 +109,14 @@ the two below are closed and kept for their queries.
     a town before the county, "&"): finding 77, built, doc 10 7.6 "Decision 16's count". The bare shape is about
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
+
+**Built 2026-10-24 late afternoon from rkjzag's stored evidence, waiting for the next run** (doc 10 7.6 "Built
+2026-10-24 late afternoon"): finding 91 (the whole heading as written breaks a tie among two-source place groups on a
+qualified string: "Lincoln (England)" is TGN's Lincoln with LoC's heading, not Lincolnshire through its variant); finding
+92 (the evidence says when prominence stands aside for a project entity outside the tie, and lists every group at the top
+score and every group with a project entity, twelve at most, where it listed five: "Sheffield" had shown five American
+groups and no English one). Expect "Lincoln (England)" and the other qualified English towns that went vote -> queued
+in rkjzag back as votes where the LoC heading is the string, and "Sheffield" queued with the entity named.
 
 **Built 2026-10-24 afternoon from rkjzag's samples and method diff, waiting for the next run** (doc 10 7.6 "Measured
 ... rkjzag"): finding 89 (prominence checks the project's entity before finding 35 lets it break a tie: "Orkney" had
@@ -269,17 +279,16 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. Run rkjzag (2026-10-24 afternoon) is measured and read (doc 10 7.6). Two pieces of evidence from it are still
-   wanted, in DataGrip: why prominence did not run on "Sheffield" (its queued line carries no prominence reason: a firm
-   project entity in a live group, or no two-source group at the top score), and how "Lincoln (England)" went from a
-   vote in t629cj to queued:
+1. Run rkjzag (2026-10-24 afternoon) is measured and its evidence read (doc 10 7.6; findings 91 and 92 built from
+   the "Sheffield" and "Lincoln (England)" decisions). One confirmation still wanted, in DataGrip: the project's
+   "Sheffield" entity (or entities) that stopped prominence, with its equivalents:
 
-       select s.context, s.raw, d.method, jsonb_pretty(d.evidence)
-       from decisions d join source_strings s on s.id = d.source_string_id
-       where d.run_id = 'run-20261024-111420-rkjzag' and d.valid
-         and ((s.context = 'keywords:sub' and s.raw = 'Sheffield') or (s.context = 'keywords:head' and s.raw = 'Lincoln (England)'));
+       select e.id, e.class, e.label, e.status, array_agg(q.uri order by q.uri) as equivalents
+       from entities e left join entity_equivalents q on q.entity_id = e.id
+       where e.dataset = 'pmc' and e.merged_into is null and e.label ilike 'sheffield%'
+       group by e.id, e.class, e.label, e.status;
 
-   Then the rerun, which measures findings 88 (after its write, item 2), 89 and 90 together:
+   Then the rerun, which measures findings 88 (after its write, item 2), 89, 90, 91 and 92 together:
 
        git push
        dotnet run --project tools/Align -- undo-run --run run-20261024-111420-rkjzag

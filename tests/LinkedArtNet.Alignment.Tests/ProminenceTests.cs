@@ -69,6 +69,22 @@ public class ProminenceTests(PostgresFixture pg)
         Assert.Equal(Outcome.Queued, orkney.Outcome);
         Assert.Contains(orkney.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("the project's own entity is the less prominent: 5 sitelinks against 150"));
 
+        // prominence stands aside, and says so, when a project entity sits in a live group outside the tie (finding 92): two legacy
+        // "Sheffield" entities, Ohio's and Pennsylvania's, each with its TGN equivalent and no LoC heading, are one-source groups, so neither
+        // finding 35 nor prominence decides, and the tied groups carry the reason
+        await pg.Store.PutAuthorityAsync(Tgn("2081865", "Sheffield", "Lorain, Ohio, United States, North and Central America, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("2092990", "Sheffield", "Warren, Pennsylvania, United States, North and Central America, World"));
+        var ohio = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Sheffield", ["Sheffield"], null, [], [], EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(ohio.Id, new Equivalent("http://vocab.getty.edu/tgn/2081865", "tgn", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var penn = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Sheffield", ["Sheffield"], null, [], [], EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(penn.Id, new Equivalent("http://vocab.getty.edu/tgn/2092990", "tgn", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var aside = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:sub", "Sheffield"));
+        Assert.Equal(Outcome.Queued, aside.Outcome);
+        Assert.Contains(aside.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("prominence stands aside: the project's own entity Sheffield is among the live groups"));
+        // and the evidence shows every group at the top score and every group with a project entity, not the first five
+        var evidence = Reconciler.Evidence("queued", aside.Reading, aside.Groups, null);
+        Assert.Contains("tgn/7010692", evidence); Assert.Contains("tgn/2030130", evidence); Assert.Contains("tgn/2081865", evidence); Assert.Contains("tgn/2092990", evidence);
+
         // the rule off: the tie stands
         var off = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions() with { ProminenceMinSitelinks = 0 });
         Assert.Equal(Outcome.Queued, (await off.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:sub", "Sheffield"))).Outcome);

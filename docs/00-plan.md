@@ -24,9 +24,10 @@ decisions~~ (read, doc 10 7.6 "Read 2026-10-24 night": finding 91 as built; Hadi
 expects, the Hadid mint already carrying a second string; Charlton rightly the desk's; finding 94 built from Keeling,
 the parser's "Knight"); (4) ~~undo bp8unt and rerun~~ (run wy2aqs, measured, doc 10 7.6 "Measured ... wy2aqs": the
 vacuum confirmed, `source:loc` 6,741 s -> 97 s; finding 93 reached 355 strings, and the second pass took 265 of them back
-onto their own placeholders: finding 95 built); (4b) undo wy2aqs and rerun, which measures findings 93 (properly), 94
-and 95 together; (5) the Wikidata reload in the gap after it (item 3 under "Commands on return"), then the index's next
-use, the crosswalk (item 3 (c) under "Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
+onto their own placeholders: finding 95 built); (4b) the Wikidata reload, started the night of 2026-10-24 (item 3 under
+"Commands on return"; about three hours; no Align command until its last line); (4c) then undo wy2aqs and rerun, which
+measures findings 93 (properly), 94 and 95 and the subclass walk's typing together; (5) then the index's next use, the
+crosswalk (item 3 (c) under "Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
 3,603 -> 3,563 -> 3,488 -> 3,477), findings 86 to 93 built from them, finding 88 written (354,991 LoC person records
 dated from their Wikidata item), the Sheffield entities confirmed as legacy duplicates, decision 17 closed as no.
 Nothing is half-done.
@@ -351,7 +352,9 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
        where d.run_id = 'run-20261024-161624-wy2aqs' and s.raw in ('Agar, Eileen, 1899-1991', 'Kelly, Felix, 1917-1994')
        order by s.raw, d.id;
 
-   Then the rerun, which measures findings 93 (properly, with the placeholders carrying nothing), 94 and 95 together:
+   Then, after the Wikidata reload's last line (it ran the night of 2026-10-24; the tool cannot be rebuilt while it
+   runs), the rerun, which measures findings 93 (properly, with the placeholders carrying nothing), 94 and 95 and the
+   subclass walk's typing together:
 
        git push
        dotnet run --project tools/Align -- undo-run --run run-20261024-161624-wy2aqs
@@ -372,7 +375,8 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    Expected: single -> queued about 265 ("Cozens, John Robert, 1752-1798", "Hadid, Zaha, 1950-2006", "Papworth, John,
    1775-1847") and bp8unt's older placeholder singles with them (the Liverpool Biennial editions, "Phillips, Claude");
    the keywords single sample with no store placeholder among its grounds; "Keeling, William Knight, 1807-1886" read
-   whole (finding 94); queued near 3,830; the run about thirty minutes again. After it, the Wikidata reload (item 3).
+   whole (finding 94); queued near 3,830; the run about thirty minutes again; and whatever the retyped Wikidata records
+   move (prominence reads sitelinks, finding 88's dates are on the LoC records and do not move).
 
 2. The measurement for the index's next use, dates for LoC's undated person records through the Wikidata item that
    links them (item 3b). Read-only, several minutes beside a running reconcile; cancel and rerun after the run if it
@@ -419,7 +423,7 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    dates go with the reload.
 
 3. The Wikidata reload, for the subclass walk (built 2026-10-24, doc 11 section 8.11), an evening's run of about
-   three hours when convenient, not urgent; the same command as the first load:
+   three hours; started the night of 2026-10-24, its report's last line to be pasted; the same command as the first load:
 
        dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
 

@@ -115,9 +115,10 @@ the two below are closed and kept for their queries.
 **Built 2026-10-24 night from bp8unt's evidence, waiting for the run after the one running** (doc 10 7.6 "Built
 2026-10-24 night, finding 94"): only a post-nominal (Bt, Esq, Kt, KBE, RA ...) comes off the end of the given names;
 "Keeling, William Knight, 1807-1886" had read as "Keeling, William" with the honorific Knight and been accepted to LoC's
-sea captain of the name. The leading position still strips any title in the table, forenames among them (Dean, Earl,
-Duke, King, Prince, Major, Baron, Count, Don, Dom, Marquis, Bishop, Canon, Lord): the count under "Commands on return"
-says whether that needs a rule. Also from the evidence, noted and not built: "Charlton, Alan, 1948" is queued because
+sea captain of the name. The leading position, counted over the PMC strings the same night: seven titles (Lord, Dom,
+Major, Prince) and two forenames ("Arnaud, Dean Leopold", "Mandle, Earl Roger"), so the table's `forenamesToo` list
+(Dean, Earl) keeps those at the head of the given names; the direct-order rows were all bodies and places, already kept
+whole. Also from the evidence, noted and not built: "Charlton, Alan, 1948" is queued because
 LoC's undated "Charlton, Alan" now carries finding 88's dates and agrees; finding 75's veto could still fall on a record
 dated only by finding 88 when a sibling of the same source agrees on its heading's own dates (three strings in bp8unt's
 diff: Charlton, Clatworthy, Richards).
@@ -330,18 +331,8 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
        order by s.raw, d.id;
 
    Read (doc 10 7.6 "Read 2026-10-24 night"): Lincoln finding 91's vote; Hadid, Papworth and Keeling finding 93's
-   cases (Keeling also finding 94's); Charlton rightly queued. One count wanted from finding 94, in DataGrip: the strings
-   whose first given name, or first word in direct order, is a title the table knows that is also a forename, to say
-   whether the leading position needs a rule too:
-
-       select s.context, s.raw, s.occurrences
-       from source_strings s
-       where s.dataset = 'pmc'
-         and (s.raw ~ '^[^,(]+, (Dean|Earl|Duke|King|Prince|Major|Baron|Count|Don|Dom|Marquis|Bishop|Canon|Lord|Queen|General) [A-Z]'
-           or s.raw ~ '^(Dean|Earl|Duke|King|Prince|Major|Baron|Count|Don|Dom|Marquis|Bishop|Canon) [A-Z][a-z]+( |,|$)')
-       order by s.context, s.raw;
-
-   Then the rerun (running from the night of 2026-10-24), which measures finding 93 and the vacuum; finding 94 is
+   cases (Keeling also finding 94's); Charlton rightly queued. The leading-position count for finding 94 is done (39
+   rows; two forenames, Dean and Earl, now in the table's `forenamesToo`). Then the rerun (running from the night of 2026-10-24), which measures finding 93 and the vacuum; finding 94 is
    measured on the run after it:
 
        git push
@@ -858,7 +849,8 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       keywords:sub at the desk; merge-duplicates, or the desk, and the crosswalk use of the index (item 3 (c)) would
       join the second to the English TGN and LoC group.
     - ~~"Keeling, William Knight, 1807-1886" read as "Keeling, William", "Knight" taken off as an honorific~~ (finding 94,
-      2026-10-24 night; the leading position's forename-titles counted under "Commands on return").
+      2026-10-24 night; the leading position counted the same night: "Arnaud, Dean Leopold" and "Mandle, Earl Roger"
+      kept whole by the table's `forenamesToo`).
     - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
       Art prizes" read as Person; ~~"McSloy, Tom, op 1946" (a working date written "op")~~ (finding 26, 2026-10-23);
       "Mainz/Rhein" (a slash variant for name-forms). From p9g534 (2026-10-23): "S. W. [(Simon Wilson)] (editor)"

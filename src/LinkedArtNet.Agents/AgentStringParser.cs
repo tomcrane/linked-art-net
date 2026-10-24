@@ -312,7 +312,9 @@ public sealed partial class AgentStringParser
         {
             var family = name[..comma];
             var givenWords = name[(comma + 1)..].Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-            while (givenWords.Count > 1 && IsHonorificWord(givenWords[0])) { honorifics.Add(givenWords[0].TrimEnd('.')); givenWords.RemoveAt(0); }
+            // and off the front only a title the data does not use as a forename: "Arnaud, Dean Leopold" and "Mandle, Earl Roger" are those
+            // men's names, where "Cecil, Lord David", "Bellenger, Dom Aidan" and "Barnes, Major R M" carry titles (finding 94, the owner's count)
+            while (givenWords.Count > 1 && IsHonorificWord(givenWords[0]) && !_tables.IsForenameToo(givenWords[0])) { honorifics.Add(givenWords[0].TrimEnd('.')); givenWords.RemoveAt(0); }
             // off the end of the given names only a post-nominal comes ("Smith, John Esq", "Reynolds, Joshua RA"): a title that precedes a
             // name is a forename or a middle name there, and "Keeling, William Knight, 1807-1886" had read as "Keeling, William" with the
             // honorific Knight, and matched LoC's one "Keeling, William", a sea captain born 1578 (finding 94, 2026-10-24, run bp8unt)

@@ -24,6 +24,8 @@ public sealed class AgentTables
     public IReadOnlySet<string> Suffixes { get; private init; } = new HashSet<string>();
     /// <summary>The honorifics that follow a name (Bt, Esq, KBE, RA): the only ones read off the end of the given names (finding 94).</summary>
     public IReadOnlySet<string> Postnominals { get; private init; } = new HashSet<string>();
+    /// <summary>Titles the data uses as forenames (Dean, Earl): kept when they lead the given names of an inverted heading (finding 94).</summary>
+    public IReadOnlySet<string> ForenamesToo { get; private init; } = new HashSet<string>();
     public IReadOnlyDictionary<string, AgentQualifier> Qualifiers { get; private init; } = new Dictionary<string, AgentQualifier>();
     public IReadOnlySet<string> CorporateWords { get; private init; } = new HashSet<string>();
     public IReadOnlyDictionary<string, NationalityEntry> Nationalities { get; private init; } = new Dictionary<string, NationalityEntry>();
@@ -43,6 +45,7 @@ public sealed class AgentTables
     public bool IsHonorific(string text) => Honorifics.Contains(Key(text));
     public bool IsSuffix(string text) => Suffixes.Contains(Key(text));
     public bool IsPostnominal(string text) => Postnominals.Contains(Key(text));
+    public bool IsForenameToo(string text) => ForenamesToo.Contains(Key(text));
     public bool TryQualifier(string text, out AgentQualifier qualifier) => Qualifiers.TryGetValue(Key(text), out qualifier);
     public bool TryNationality(string text, out NationalityEntry entry) => Nationalities.TryGetValue(Key(text), out entry!);
     public bool IsCorporateWord(string word) => CorporateWords.Contains(Key(word).Trim('&'));
@@ -89,6 +92,7 @@ public sealed class AgentTables
             Honorifics = honorifics.GetProperty("honorifics").EnumerateArray().Select(h => Key(h.GetString()!)).ToHashSet(StringComparer.Ordinal),
             Suffixes = honorifics.GetProperty("suffixes").EnumerateArray().Select(h => Key(h.GetString()!)).ToHashSet(StringComparer.Ordinal),
             Postnominals = honorifics.GetProperty("postnominals").EnumerateArray().Select(h => Key(h.GetString()!)).ToHashSet(StringComparer.Ordinal),
+            ForenamesToo = honorifics.GetProperty("forenamesToo").EnumerateArray().Select(h => Key(h.GetString()!)).ToHashSet(StringComparer.Ordinal),
             Qualifiers = qualifierMap,
             CorporateWords = corporate.GetProperty("words").EnumerateArray().Select(w => Key(w.GetString()!)).ToHashSet(StringComparer.Ordinal),
             Nationalities = nationalityMap,

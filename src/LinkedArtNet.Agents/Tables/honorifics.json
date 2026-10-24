@@ -11,5 +11,7 @@
   ],
   "postnominalsNote": "The honorifics that follow a name. Only these come off the end of the given names in an inverted heading: a title that precedes a name ('Dean', 'Earl', 'Knight', 'Major', 'King') is a forename or a middle name when it stands last among the given names, and 'Keeling, William Knight, 1807-1886' is one person's name (finding 94, 2026-10-24). As a comma segment of its own ('Smith, John, Knight') any honorific is still read.",
   "postnominals": ["Bt", "Bart", "Baronet", "Esq", "Esquire", "Kt", "KBE", "CBE", "OBE", "MBE", "RA", "ARA", "FRS", "FSA", "MP", "QC", "KC"],
+  "forenamesTooNote": "Titles in the table that the data uses as forenames at the head of the given names: 'Arnaud, Dean Leopold' and 'Mandle, Earl Roger' are those men's names, while Lord, Dom, Major and Prince in the same position were titles every time (the owner's count over the PMC strings, 2026-10-24 night, finding 94). These are not taken off the front of the given names in an inverted heading; in direct order and as a comma segment they are still titles.",
+  "forenamesToo": ["Dean", "Earl"],
   "suffixes": ["Jr", "Jnr", "Junior", "Sr", "Snr", "Senior", "II", "III", "IV", "the Elder", "the Younger", "the elder", "the younger"]
 }

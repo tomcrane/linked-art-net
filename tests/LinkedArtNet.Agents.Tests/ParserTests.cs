@@ -123,6 +123,13 @@ public class ParserTests
         Assert.Equal(["Esq"], esq.Honorifics);
         Assert.Equal(["Knight"], Parse("Smith, John, Knight", "marc").Honorifics);
         Assert.Equal(["Sir"], Parse("Smith, Sir John", "marc").Honorifics);
+        // at the head of the given names, Dean and Earl are forenames in this data and Lord, Dom and Major are titles (the owner's count)
+        var arnaud = Parse("Arnaud, Dean Leopold", "marc");
+        Assert.Equal("Arnaud, Dean Leopold", arnaud.Name); Assert.Empty(arnaud.Honorifics);
+        Assert.Equal("Mandle, Earl Roger", Parse("Mandle, Earl Roger", "marc").Name);
+        Assert.Equal(["Lord"], Parse("Cecil, Lord David", "marc").Honorifics);
+        Assert.Equal(["Dom"], Parse("Bellenger, Dom Aidan", "marc").Honorifics);
+        Assert.Equal(["Major"], Parse("Barnes, Major R M", "marc").Honorifics);
     }
 
     [Fact]

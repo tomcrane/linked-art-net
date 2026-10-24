@@ -1266,9 +1266,16 @@ table off the end, and "Knight" is in it for "Smith, John, Knight", so "Keeling,
 "Keeling, William" with the honorific Knight and, in rkjzag, was accepted exact-single to LoC's one "Keeling, William"
 (n82073934, the sea captain, whom finding 88 then dated 1578-1620 and whose conflict minted the string). A title that
 precedes a name (Dean, Earl, Knight, Major, King) is a forename or a middle name when it stands last among the given
-names; as a comma segment of its own it is still read. Leading titles that are also forenames ("Smith, Dean John",
-"Dean Martin") are the table's remaining exposure, left as they are until the count under plan section 0 says how often
-the data has them. Takes effect at the run after the one running when it was built.
+names; as a comma segment of its own it is still read. The leading position, counted the same night over the PMC strings
+(the owner's query, every string whose first given name or first direct-order word is a title the table knows that is
+also a forename): nine inverted personal names, seven of them titles ("Cecil, Lord David", "Kerr, Lord John", "Bellenger,
+Dom Aidan", "Houédard, Dom Sylvester", "Barnes, Major R M", "Singh, Prince Frederick Duleep"), two of them forenames,
+"Arnaud, Dean Leopold" and "Mandle, Earl Roger"; the direct-order rows all bodies and places ("Dean Clough Galleries",
+"Duke University Press", "Bishop Auckland", "Prince Edward Island"), which the corporate guard and the unparsed contexts
+already keep whole. No shape separates "Earl Roger" from "Dom Aidan", so the table says it: a `forenamesToo` list (Dean,
+Earl) that is not taken off the front of the given names in an inverted heading, still a title in direct order and as a
+comma segment. The owner's caution stands in the table's note: this is the PMC data's usage, and another dataset may
+use these words otherwise. Takes effect at the run after the one running when it was built.
 
 Read 2026-10-24 night, the evidence of five of bp8unt's decisions (plan section 0 item (3)): finding 91 as built, three
 of finding 88's seventeen as finding 93 expects, and one thing finding 93 does not reach:

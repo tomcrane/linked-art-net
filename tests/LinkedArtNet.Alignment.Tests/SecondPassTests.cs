@@ -1,3 +1,4 @@
+using LinkedArtNet.Alignment.Authorities;
 using LinkedArtNet.Alignment.Reconciliation;
 
 namespace LinkedArtNet.Alignment.Tests;
@@ -42,5 +43,33 @@ public class SecondPassTests(PostgresFixture pg)
         var undone = await pg.Store.UndoRunAsync("run-test-second-pass");
         Assert.Equal(3, undone.DecisionsInvalidated);
         Assert.Null(await pg.Store.DecisionForAsync(lorem.Id));
+    }
+
+    [PostgresFact]
+    public async Task A_queued_strings_own_placeholder_never_settles_it()
+    {
+        // finding 95 (2026-10-24 night, run wy2aqs): a string queued on a dates conflict (finding 93) gets a placeholder minted with its own
+        // lifespan; in the second pass that placeholder came back as a store candidate whose dates agree, and the single-source rule
+        // accepted the string onto it ("Cozens, John Robert, 1752-1798" -> accepted single store Cozens, John Robert): 265 strings taken
+        // off the desk onto their own placeholders, finding 93's seventeen among them. A placeholder awaiting review carries nothing
+        var ds = "pl" + Guid.NewGuid().ToString("N")[..6];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n79068451", "loc", "Cozens, John Robert", ["Cozens, John Robert"], "Person", GettyVocabLoader.LifespanFromYears("1752", "1797"), [], null, DateTimeOffset.UtcNow, "test"));
+        var cozens = await pg.Store.CollectAsync(ds, "keywords", "Cozens, John Robert, 1752-1799");
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
+        var report = await reconciler.RunAsync(ds, runId: "run-test-placeholder");
+        Assert.Equal(1, report.Queued); Assert.Equal(0, report.Minted); Assert.Equal(0, report.Accepted);
+        Assert.Equal(1, report.Reconsidered); Assert.Equal(0, report.Settled);
+        var decision = (await pg.Store.DecisionForAsync(cozens.Id))!;
+        Assert.Equal(DecisionMethod.Queued, decision.Method);
+        var placeholder = (await pg.Store.GetEntityAsync(decision.EntityId!))!;
+        Assert.Equal(EntityStatus.Provisional, placeholder.Status);
+        Assert.Equal("1752-1799", placeholder.Lifespan?.Text);
+        // evaluated again with the placeholder in the store, the string is still the desk's, and the placeholder says why it carries nothing
+        var again = await reconciler.EvaluateAsync(ds, cozens, includeStore: true);
+        Assert.Equal(Outcome.Queued, again.Outcome);
+        var own = Assert.Single(again.Groups.SelectMany(g => g.Members), m => m.Candidate.EntityId == placeholder.Id);
+        Assert.Contains("a placeholder awaiting review: carries nothing", own.Reason);
+        Assert.Contains(again.Groups.SelectMany(g => g.Members), m => m.Candidate.Source == "loc" && m.Veto && m.DatesConflict); // the conflict that queued it, still there
     }
 }

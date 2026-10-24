@@ -802,6 +802,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var datesAgree = false;
             var datesConflict = false;
             if (c.Class is { } cls && !reading.Classes.Contains(cls)) { veto = true; reasons.Add($"type {cls} not allowed here"); }
+            if (c.ProvisionalQueued) reasons.Add("a placeholder awaiting review: carries nothing"); // finding 95: never a ground, see CarriedBy
             // a heading that carries a lifespan names a person or a body: TGN's Gilbert Rivers are not "Gilbert, 1943-" (finding 31, 2026-10-22)
             else if (reading.HasLifespan && c.Class == EntityClass.Place) { veto = true; reasons.Add("a dated heading names a person or body, not a place"); }
             if (reading.Lifespan is { IsEmpty: false } rl && c.Lifespan is { IsEmpty: false } cl)
@@ -1166,6 +1167,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (group.Sources.Count >= _options.MinIndependentSources) return DecisionMethod.Vote;
         if (group.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional)) return DecisionMethod.Vote;
         var best = group.Best;
+        // the placeholder of a string awaiting review carries nothing: minted with that string's own lifespan and qualifier, it agrees with
+        // them by construction, and the second pass had accepted 265 queued strings onto their own placeholders as singles ("Cozens, John
+        // Robert, 1752-1798" onto "Cozens, John Robert", finding 93's seventeen among them) (finding 95, 2026-10-24 night, run wy2aqs)
+        if (best.Candidate.ProvisionalQueued) return null;
         return _options.AcceptSingleSourceWithDates && (best.DatesAgree || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97 ? DecisionMethod.Single : null;
     }
 

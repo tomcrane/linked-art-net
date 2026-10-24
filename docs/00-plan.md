@@ -22,9 +22,11 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 (bp8unt's `source:loc` was 6,741 s against rkjzag's 124 s, after finding 88's write); (3) ~~the evidence of five bp8unt
 decisions~~ (read, doc 10 7.6 "Read 2026-10-24 night": finding 91 as built; Hadid, Papworth and Keeling as finding 93
 expects, the Hadid mint already carrying a second string; Charlton rightly the desk's; finding 94 built from Keeling,
-the parser's "Knight"); (4) undo bp8unt and rerun, which measures finding 93 and the vacuum (running from the night of
-2026-10-24; finding 94 is measured on the run after); (5) then the index's next use, the crosswalk (item 3 (c) under
-"Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
+the parser's "Knight"); (4) ~~undo bp8unt and rerun~~ (run wy2aqs, measured, doc 10 7.6 "Measured ... wy2aqs": the
+vacuum confirmed, `source:loc` 6,741 s -> 97 s; finding 93 reached 355 strings, and the second pass took 265 of them back
+onto their own placeholders: finding 95 built); (4b) undo wy2aqs and rerun, which measures findings 93 (properly), 94
+and 95 together; (5) the Wikidata reload in the gap after it (item 3 under "Commands on return"), then the index's next
+use, the crosswalk (item 3 (c) under "Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
 3,603 -> 3,563 -> 3,488 -> 3,477), findings 86 to 93 built from them, finding 88 written (354,991 LoC person records
 dated from their Wikidata item), the Sheffield entities confirmed as legacy duplicates, decision 17 closed as no.
 Nothing is half-done.
@@ -36,14 +38,15 @@ merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
 SQL in doc 10 7.6 "Built 2026-10-23"), and 354,991 of its undated person records their Wikidata item's dates since
-2026-10-24 evening (finding 88; the table not yet vacuumed after that write, item 1 under "Commands on return"). The last run is run-20261024-130904-bp8unt (findings 88 to 92): accepted 9,556
-(vote 4,020, single 2,239, exact-single 3,297), queued 3,477, matched in store 5,992, minted 11,228, lists 404,
-compounds 15,558; second pass 3,839 reconsidered, 362 settled; by context queued persauthorfull 1,265, keywords 584,
-publisher 782, keywords:head 333, place 215, corpauthor 174, keywords:sub 124 (doc 10 7.6 "Measured ... bp8unt"); its
-timing line says LoC's lookups were fifty times slower than rkjzag's after finding 88's write, and the table waits for
-a vacuum. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
-4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488 -> 3,477. Doc 10 7.6 has a
-"Measured" paragraph per run with the samples read; the last is "Measured ... bp8unt". The Wikidata dump and
+2026-10-24 evening (finding 88; the table vacuumed on 2026-10-25). The last run is run-20261024-161624-wy2aqs (finding
+93 and the vacuum): accepted 9,822 (vote 4,020, single 2,504, exact-single 3,298), queued 3,567, matched in store 5,957,
+minted 10,907, lists 404, compounds 15,558; second pass 4,163 reconsidered, 596 settled; by context queued
+persauthorfull 1,265, keywords 621, publisher 782, keywords:head 386, place 215, corpauthor 174, keywords:sub 124 (doc 10
+7.6 "Measured ... wy2aqs"); thirty minutes, `source:loc` 97 s. Its single count carries 265 strings the second pass
+accepted onto their own placeholders (finding 95, built, not yet run): the honest queue is nearer 3,830, and the next
+run will say so. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
+4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488 -> 3,477 -> 3,567. Doc 10 7.6
+has a "Measured" paragraph per run with the samples read; the last is "Measured ... wy2aqs". The Wikidata dump and
 the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -112,8 +115,15 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-24 night from bp8unt's evidence, waiting for the run after the one running** (doc 10 7.6 "Built
-2026-10-24 night, finding 94"): only a post-nominal (Bt, Esq, Kt, KBE, RA ...) comes off the end of the given names;
+**Built 2026-10-24 night from wy2aqs's second pass, waiting for the next run** (doc 10 7.6 "Built 2026-10-24 night,
+finding 95"): the placeholder of a string awaiting review carries nothing. Minted with the string's own lifespan and
+qualifier, it came back in the second pass as a store candidate whose dates agreed and took the string as a single: 265
+strings in wy2aqs, finding 93's seventeen among them (the second Zaha Hadid stood at the run's end by this route), and
+about thirty in every run since the second pass was built. Expect queued near 3,830 (the 265 and the thirty back on the
+desk), single near 2,239, the second pass settling about 300.
+
+**Built 2026-10-24 night from bp8unt's evidence, waiting for the next run** (doc 10 7.6 "Built 2026-10-24 night,
+finding 94"): only a post-nominal (Bt, Esq, Kt, KBE, RA ...) comes off the end of the given names;
 "Keeling, William Knight, 1807-1886" had read as "Keeling, William" with the honorific Knight and been accepted to LoC's
 sea captain of the name. The leading position, counted over the PMC strings the same night: seven titles (Lord, Dom,
 Major, Prince) and two forenames ("Arnaud, Dean Leopold", "Mandle, Earl Roger"), so the table's `forenamesToo` list
@@ -123,7 +133,7 @@ LoC's undated "Charlton, Alan" now carries finding 88's dates and agrees; findin
 dated only by finding 88 when a sibling of the same source agrees on its heading's own dates (three strings in bp8unt's
 diff: Charlton, Clatworthy, Richards).
 
-**Built 2026-10-24 night from bp8unt's method diff, waiting for the next run** (doc 10 7.6 "Built 2026-10-24 night,
+**Built 2026-10-24 night from bp8unt's method diff, measured on wy2aqs** (kept for the record; doc 10 7.6 "Built 2026-10-24 night,
 finding 93"): a namesake vetoed on a dates conflict is the desk's, not a mint, when it is the project's own entity of
 the name or its source's one exact record of the name, lifespans proper on both sides (working dates keep finding 75's
 policy). Finding 88's new dates had minted seventeen accepted strings, "Hadid, Zaha, 1950-2006" a second Zaha Hadid
@@ -332,27 +342,37 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 
    Read (doc 10 7.6 "Read 2026-10-24 night"): Lincoln finding 91's vote; Hadid, Papworth and Keeling finding 93's
    cases (Keeling also finding 94's); Charlton rightly queued. The leading-position count for finding 94 is done (39
-   rows; two forenames, Dean and Earl, now in the table's `forenamesToo`). Then the rerun (running from the night of 2026-10-24), which measures finding 93 and the vacuum; finding 94 is
-   measured on the run after it:
+   rows; two forenames, Dean and Earl, now in the table's `forenamesToo`). The rerun ran (wy2aqs, measured, doc 10 7.6
+   "Measured ... wy2aqs"; finding 95 built from its second pass). Two pieces of evidence from it are wanted, in
+   DataGrip: why two of finding 93's strings stayed queued when 265 went onto their placeholders:
+
+       select s.context, s.raw, d.method, jsonb_pretty(d.evidence)
+       from decisions d join source_strings s on s.id = d.source_string_id
+       where d.run_id = 'run-20261024-161624-wy2aqs' and s.raw in ('Agar, Eileen, 1899-1991', 'Kelly, Felix, 1917-1994')
+       order by s.raw, d.id;
+
+   Then the rerun, which measures findings 93 (properly, with the placeholders carrying nothing), 94 and 95 together:
 
        git push
-       dotnet run --project tools/Align -- undo-run --run run-20261024-130904-bp8unt
+       dotnet run --project tools/Align -- undo-run --run run-20261024-161624-wy2aqs
        dotnet run --project tools/Align -- reconcile --verbose
        dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
-       dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
+       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method single --limit 10
 
-   and the method diff against bp8unt, the standing check after every rerun (each run's last decision per string,
+   and the method diff against wy2aqs, the standing check after every rerun (each run's last decision per string,
    since a string the second pass settled has two; the undone run keeps its evidence):
 
-       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-130904-bp8unt' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-161624-wy2aqs' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2 order by 3 desc;
 
-   Expected: the seventeen minted on dates back as queued (minted -> queued, "Hadid, Zaha, 1950-2006" among them) and
-   some older mints with them; `source:loc` in the timing line back near rkjzag's 124 s; little else moving.
+   Expected: single -> queued about 265 ("Cozens, John Robert, 1752-1798", "Hadid, Zaha, 1950-2006", "Papworth, John,
+   1775-1847") and bp8unt's older placeholder singles with them (the Liverpool Biennial editions, "Phillips, Claude");
+   the keywords single sample with no store placeholder among its grounds; "Keeling, William Knight, 1807-1886" read
+   whole (finding 94); queued near 3,830; the run about thirty minutes again. After it, the Wikidata reload (item 3).
 
 2. The measurement for the index's next use, dates for LoC's undated person records through the Wikidata item that
    links them (item 3b). Read-only, several minutes beside a running reconcile; cancel and rerun after the run if it

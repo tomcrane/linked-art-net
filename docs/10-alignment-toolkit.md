@@ -1259,6 +1259,51 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-24 night, finding 95, from wy2aqs's second pass (below): the placeholder of a string awaiting review
+carries nothing. A queued string's placeholder is minted with the string's own lifespan and qualifier (MintAsync), so
+when the second pass evaluated the string again the placeholder came back as a store candidate whose dates agreed, by
+construction, and the single-source rule (CarriedBy) accepted the string onto it: "Cozens, John Robert, 1752-1798 ->
+accepted single store Cozens, John Robert", 265 strings in wy2aqs, finding 93's seventeen among them ("Hadid, Zaha,
+1950-2006" onto unrec_nr4bazcp again, "Papworth, John, 1775-1847", "Broderick, Laurence, 1953-", "Rice, Anne Estelle"),
+and about thirty in every run since the second pass was built (bp8unt's "Phillips, Claude [1848-1924]", "Kindersley,
+David [1903-1987.]", the Liverpool Biennial editions onto "Liverpool Biennial of Contemporary Art"). The store stage had
+already refused such a placeholder as a silent answer (ProvisionalQueued, finding 51); now CarriedBy refuses it as a
+ground too, and the candidate's reason says "a placeholder awaiting review: carries nothing". The test is
+SecondPassTests "A queued string's own placeholder never settles it"; the test store's "Dürer, Albrecht, 1800-1870" had
+not shown the hole because the project's own Dürer stood in its way. Expect the next run's queue near 3,830: the 265
+back on the desk and the older thirty with them, single near 2,239 again.
+
+Measured 2026-10-24 night (run-20261024-161624-wy2aqs: finding 93 and the vacuum, against bp8unt): accepted 9,556 ->
+9,822 (vote 4,020 -> 4,020, single 2,239 -> 2,504, exact-single 3,297 -> 3,298), queued 3,477 -> 3,567, matched in store
+5,992 -> 5,957, minted 11,228 -> 10,907; the second pass reconsidered 4,163 (3,839) and settled 596 (362). By context
+queued: persauthorfull 1,265, keywords 621, publisher 782, keywords:head 386, place 215, corpauthor 174, keywords:sub
+124. Time by stage: store 975 s, second pass 176 s, commit 158 s, source:ulan 105 s, source:loc 97 s (6,741 s in bp8unt:
+the vacuum was the remedy, as the EXPLAIN had said), lcsh 85 s, tgn 84 s, aat 83 s, read 22 s; the whole run about
+thirty minutes against bp8unt's hours. The method diff against bp8unt (each run's last decision per string): minted ->
+single 233, minted -> queued 87, exact-name -> single 32, exact-name -> queued 3, and "Duranty, Charles" (two strings)
+swapping exact-name and exact-single with minted. Read:
+
+- Finding 93 reached some 355 strings, not seventeen: every earlier mint on a dates conflict with a source's one exact
+  record of the name, which the diff had never shown because those strings were minted in every run. Most are the
+  catalogue's own dates against the authority's: "Cozens, John Robert, 1752-1798" against 1752-1797, "Emerson, Peter
+  Henry, 1956-1936" and "Purvis, Tom, 1988-1959" (typed years), "Chippendale, Thomas, Jr., 1718-1779" (the father's
+  dates), "Fullard, George, 1925-1973" against 1923-1974. Each had been a silent second entity under the string's legacy
+  identifier; finding 93's policy is that they are the desk's, which fixes the date and joins the record.
+- But the second pass took 265 of them straight back off the desk, onto their own placeholders, as singles at 1.00
+  (minted -> single 233, exact-name -> single 32): finding 95, built, above. "Hadid, Zaha, 1950-2006" went that way in
+  keywords and the head string followed it: the second Zaha Hadid stood at the end of this run as it had at the end of
+  bp8unt, by another route. Ninety stayed queued (minted -> queued 87, exact-name -> queued 3: "Agar, Eileen,
+  1899-1991", "Angus, Peggy, 1904-1993", "Bellotto, Bernardo (Michiel), 1721-1780", "Kelly, Felix, 1917-1994"); why their
+  placeholders did not carry them is not read (two of their evidence rows are under plan section 0).
+- The samples: keywords queued is the desk's, "Hall, ?" three TGN Halls with no sitelinks, "Stafford House (London)"
+  against LCSH's "Lancaster House (London, England)" at 0.90 through the variant (the same house under its old name,
+  the desk's to accept), "Kasmin Limited (London)" against LoC's "Kasmin Limited" with "Kasmin" and John Kasmin beside
+  it, "Wheatley, John, 1892-1955" ULAN agreeing beside LoC's undated "Wheatley, John" (another source's undated record is
+  not finding 75's namesake; left as it is). persauthorfull queued is bare names among dated namesakes ("Gay, John",
+  "Ford, John", "Jenkins, David" three LoC headings) and "Robertson, G H" against LoC's one dated heading (finding 45).
+  Nothing to build from the samples.
+- Finding 94 is not in this run (built while it ran); "Keeling, William Knight, 1807-1886" reads whole from the next.
+
 Built 2026-10-24 night, finding 94, from the evidence below: off the end of the given names in an inverted heading only
 a post-nominal comes ("Smith, John Esq", "Reynolds, Joshua RA"; the table's new `postnominals` list: Bt, Bart, Baronet,
 Esq, Esquire, Kt, KBE, CBE, OBE, MBE, RA, ARA, FRS, FSA, MP, QC, KC). The parser had taken any word of the honorifics

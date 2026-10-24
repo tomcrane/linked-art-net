@@ -22,7 +22,7 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 t629cj, measured: queued 3,603 -> 3,563, findings 83 and 84 held, finding 86 built from its "Münster" line); (4) ~~three
 queries~~ (run; finding 87 and the corrections to 83 and 84 built from them, doc 10 7.6 "Built 2026-10-24 midday");
 (5) ~~undo t629cj and rerun~~ (run rkjzag, measured, doc 10 7.6 "Measured ... rkjzag": queued 3,563 -> 3,488, votes
-+72; findings 89 and 90 built from it); (6) the finding 88 write, then its count; (7) ~~the evidence for "Sheffield" and
++72; findings 89 and 90 built from it); (6) ~~the finding 88 write, then its count~~ (written 2026-10-24 evening: 354,991 rows, the count agrees); (7) ~~the evidence for "Sheffield" and
 "Lincoln (England)"~~ (read; findings 91 and 92 built from it, doc 10 7.6 "Built 2026-10-24 late afternoon"; the
 Sheffield entities confirmed as two legacy duplicates); (8) undo rkjzag and rerun, which measures 88,
 89, 90, 91 and 92 together. The two store checks were run late on 2026-10-23 and answered:
@@ -281,7 +281,7 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 
 1. Run rkjzag (2026-10-24 afternoon) is measured and its evidence read (doc 10 7.6; findings 91 and 92 built from
    the "Sheffield" and "Lincoln (England)" decisions; the Sheffield entities confirmed as two aligned legacy
-   duplicates, a desk item below). Then the rerun, which measures findings 88 (after its write, item 2), 89, 90, 91 and 92 together:
+   duplicates, a desk item below). Then the rerun, which measures findings 88 (written), 89, 90, 91 and 92 together:
 
        git push
        dotnet run --project tools/Align -- undo-run --run run-20261024-111420-rkjzag
@@ -347,9 +347,9 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
           and a.begin_earliest is null and a.begin_latest is null and a.end_earliest is null and a.end_latest is null
           and exists (select 1 from unnest(l.wlabels) wl where wl like '%' || lower(split_part(a.label, ',', 1)) || '%');
 
-   Then `select count(*) from authority_records where source = 'loc' and data ? 'datesFrom';` for the record, and
-   the next reconcile measures it. The LoC loader must learn the step for the next reload (open item), or the dates
-   go with the reload.
+   Then `select count(*) from authority_records where source = 'loc' and data ? 'datesFrom';` for the record.
+   Written 2026-10-24 evening: 354,991 rows affected in 8 min 54 s, and the count is 354,991. The next reconcile
+   measures it. The LoC loader must learn the step for the next reload (open item), or the dates go with the reload.
 
 3. The Wikidata reload, for the subclass walk (built 2026-10-24, doc 11 section 8.11), an evening's run of about
    three hours when convenient, not urgent; the same command as the first load:

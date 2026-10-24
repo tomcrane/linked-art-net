@@ -1339,7 +1339,9 @@ the first comma, lower-cased) appears in one of the item's labels. Through the f
 cent dropped as doubtful), and the owner's sample of twenty read right to the last row (2026-10-24 afternoon), so the
 write is cleared for after the run in progress; the write records the item in the record's data as `datesFrom`, so the dates' provenance is
 on the record and the step is reversible (`update ... set begin_earliest = null, ... where data ? 'datesFrom'`). The
-LoC loader does not yet do this at load time, so a reload loses the dates until it does (open item).
+LoC loader does not yet do this at load time, so a reload loses the dates until it does (open item). Written
+2026-10-24 evening, between runs: 354,991 rows in 8 min 54 s, and the `datesFrom` count is 354,991, the measurement's
+figure to the row. The next run measures it.
 
 Built 2026-10-24 midday, finding 87 and the corrections to 83 and 84, from t629cj's run-to-run method diff and the TGN
 rows. The diff (plan section 0 has the query; each run's last decision per string, since a settled string has two) read

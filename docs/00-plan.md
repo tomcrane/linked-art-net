@@ -299,9 +299,30 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
        from links l join authority_records a on a.uri = l.loc_uri
        where a.source = 'loc' and a.type = 'Person';
 
-   Tens of thousands undated means a one-off SQL writes the dates onto the LoC records with the item recorded as
-   their source (as the "active" working spans were written on 2026-10-23), and the LoC loader learns it for the
-   next reload.
+   Run 2026-10-24 (7 min 15 s beside the reconcile): 1,318,802 LoC person records are linked from a dated Wikidata
+   item, 374,822 of them undated in LoC. Finding 88, staged: those gain the item's birth and death dates, with the item
+   recorded in their data as the source (`datesFrom`), after two checks that cut wrong links: the item carries one LoC
+   id only, and the LoC heading's surname appears in one of the item's labels. First the count and a sample of twenty
+   through the filter (the `links` and `pass` clauses, doc 10 7.6 "Staged 2026-10-24, finding 88"), read by the owner;
+   then, after the run in progress has finished (it reads those records), the write:
+
+       with links as (
+         select w.uri as item, w.normalised_labels as wlabels, w.begin_earliest, w.begin_latest, w.end_earliest, w.end_latest, w.lifespan_text, u.loc_uri
+         from authority_records w cross join lateral unnest(w.same_as) as u(loc_uri)
+         where w.source = 'wikidata' and w.type = 'Person' and u.loc_uri like 'http://id.loc.gov/%'
+           and (w.begin_earliest is not null or w.end_latest is not null)
+           and cardinality(array(select x from unnest(w.same_as) x where x like 'http://id.loc.gov/%')) = 1)
+       update authority_records a
+          set begin_earliest = l.begin_earliest, begin_latest = l.begin_latest, end_earliest = l.end_earliest, end_latest = l.end_latest,
+              lifespan_text = l.lifespan_text, data = coalesce(a.data, '{}'::jsonb) || jsonb_build_object('datesFrom', l.item)
+         from links l
+        where a.uri = l.loc_uri and a.source = 'loc' and a.type = 'Person'
+          and a.begin_earliest is null and a.begin_latest is null and a.end_earliest is null and a.end_latest is null
+          and exists (select 1 from unnest(l.wlabels) wl where wl like '%' || lower(split_part(a.label, ',', 1)) || '%');
+
+   Then `select count(*) from authority_records where source = 'loc' and data ? 'datesFrom';` for the record, and
+   the next reconcile measures it. The LoC loader must learn the step for the next reload (open item), or the dates
+   go with the reload.
 
 3. The Wikidata reload, for the subclass walk (built 2026-10-24, doc 11 section 8.11), an evening's run of about
    three hours when convenient, not urgent; the same command as the first load:

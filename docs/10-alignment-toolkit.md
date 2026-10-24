@@ -1259,6 +1259,18 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Staged 2026-10-24, finding 88, dates for LoC's undated person records from the Wikidata item that links them (the
+index's second use; plan section 0 item 2 has the SQL). Measured first: 1,318,802 LoC person records are linked from
+a Wikidata item with a birth or a death date, 374,822 of them undated in LoC (the query ran 7 min 15 s beside a
+reconcile). The lever: a dated string against LoC's undated record of the name is today a guess the lone-record rules
+make (findings 24, 75, 79); dated, it is a comparison, agreeing or conflicting. The risk: a Wikidata item linked to
+the wrong LoC record writes a wrong lifespan onto it, which then vetoes the right person's strings. Two checks cut
+it: the item carries one LoC id only (a merged item spreads nothing), and the LoC heading's surname (its text before
+the first comma, lower-cased) appears in one of the item's labels. The owner reads a sample of twenty through the
+filter before the write; the write records the item in the record's data as `datesFrom`, so the dates' provenance is
+on the record and the step is reversible (`update ... set begin_earliest = null, ... where data ? 'datesFrom'`). The
+LoC loader does not yet do this at load time, so a reload loses the dates until it does (open item).
+
 Built 2026-10-24 midday, finding 87 and the corrections to 83 and 84, from t629cj's run-to-run method diff and the TGN
 rows. The diff (plan section 0 has the query; each run's last decision per string, since a settled string has two) read
 against fk53p7: queued -> vote 20 (Bedford, Chester, Derry, Crimea, and dated names finding 83 now reads right), queued

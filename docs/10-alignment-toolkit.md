@@ -1316,7 +1316,10 @@ pass left 82 more queued and the second settled 93 more. By context queued: pers
   `authority_records`, and the store's own loader knows the effect (PostgresAlignmentStore, the vacuum after a load:
   reloading ULAN's 404k rows had made each lookup twenty times slower until a vacuum folded the GIN index's pending
   entries in; every load of five thousand records or more has vacuumed since). The SQL write was staged without that
-  step. `vacuum (analyze) authority_records` before the next run, the lookup timed before and after (plan section 0).
+  step. Run 2026-10-25 with the lookup timed before and after: 2,901,626 dead tuples (15 per cent, under autovacuum's
+  trigger); before, the bitmap index scan on `authority_records_labels_loc` read 423 pages for one key in 11.9 ms, the
+  pending list's signature; after, 5 pages in 0.11 ms, the lookup 13.9 ms -> 1.6 ms. Every staged mass write to the
+  table ends with the vacuum from now on, as the loaders' do.
 
 Corrected 2026-10-24 evening, finding 90's cost, and corrected again at night: the evening's diagnosis was wrong. The
 first run carrying the walk ran visibly slower and the walk was blamed; bp8unt's timing line (above) puts the walk

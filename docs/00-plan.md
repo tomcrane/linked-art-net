@@ -303,8 +303,10 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    item, 374,822 of them undated in LoC. Finding 88, staged: those gain the item's birth and death dates, with the item
    recorded in their data as the source (`datesFrom`), after two checks that cut wrong links: the item carries one LoC
    id only, and the LoC heading's surname appears in one of the item's labels. First the count and a sample of twenty
-   through the filter (the `links` and `pass` clauses, doc 10 7.6 "Staged 2026-10-24, finding 88"), read by the owner;
-   then, after the run in progress has finished (it reads those records), the write:
+   through the filter (the `links` and `pass` clauses, doc 10 7.6 "Staged 2026-10-24, finding 88"): 354,991 pass, and
+   the sample of twenty read right to the last row (2026-10-24 afternoon; "Perlman, Rhea" 1948-, "Mannich, Johann"
+   1579-1637, "Cagiano De Azevedo, Raimondo" 1942-2025). Cleared. After the run in progress has finished (it reads
+   those records) and before the next reconcile, the write:
 
        with links as (
          select w.uri as item, w.normalised_labels as wlabels, w.begin_earliest, w.begin_latest, w.end_earliest, w.end_latest, w.lifespan_text, u.loc_uri

@@ -1266,8 +1266,9 @@ reconcile). The lever: a dated string against LoC's undated record of the name i
 make (findings 24, 75, 79); dated, it is a comparison, agreeing or conflicting. The risk: a Wikidata item linked to
 the wrong LoC record writes a wrong lifespan onto it, which then vetoes the right person's strings. Two checks cut
 it: the item carries one LoC id only (a merged item spreads nothing), and the LoC heading's surname (its text before
-the first comma, lower-cased) appears in one of the item's labels. The owner reads a sample of twenty through the
-filter before the write; the write records the item in the record's data as `datesFrom`, so the dates' provenance is
+the first comma, lower-cased) appears in one of the item's labels. Through the filter 354,991 pass (about five per
+cent dropped as doubtful), and the owner's sample of twenty read right to the last row (2026-10-24 afternoon), so the
+write is cleared for after the run in progress; the write records the item in the record's data as `datesFrom`, so the dates' provenance is
 on the record and the step is reversible (`update ... set begin_earliest = null, ... where data ? 'datesFrom'`). The
 LoC loader does not yet do this at load time, so a reload loses the dates until it does (open item).
 

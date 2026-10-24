@@ -18,7 +18,7 @@ is built and waiting for a go, and the commands to run on return. The detail beh
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
 **Today, in order** (2026-10-24; every step is under "Commands on return" below with its commands): (1) `git push`;
-(2) decision 17 below, a yes or no; (3) undo fk53p7 and `reconcile --verbose`, paste the summary line and the second
+(2) ~~decision 17~~ (closed as no on the count, 2026-10-24); (3) undo fk53p7 and `reconcile --verbose`, paste the summary line and the second
 pass's lines, then the keywords:head and persauthorfull queued samples; (4) the assistant measures findings 83 and 84
 and builds the Wikidata index's use, prominence first. The two store checks were run late on 2026-10-23 and answered:
 "Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
@@ -46,6 +46,10 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
 
 **Decisions still owed by the owner:**
 
+~~17.~~ Closed 2026-10-24 as no, on the count (below): five strings in 271 lone store matches, three wrong ("Clayton"
+    to Victoria, "Lincoln" to Nebraska, "Stratford" to Virginia) and two right but caught ("Isles of Scilly" to
+    "Scilly, Isles of", "Stornoway" to "Stornoway, Isle of Lewis"). The three are the desk's; listed under the
+    desk's strings in section 7. Kept for the record:
 17. *A bare place name against the project's lone entity placed outside the home place* (doc 10 7.6 "Built 2026-10-24
     morning, finding 84", last paragraph): "Clayton" in keywords:head took "Clayton, Victoria, Australia" and "Lincoln"
     in keywords:sub took "Lincoln, Neb" because each was the project's one entity of the name. First proposed: the lone
@@ -56,7 +60,12 @@ finding 32 to the desk; the bare TGN-only namesakes and "Cornwall" in keywords:s
     place (England has a Lincoln and Claytons; no Dublin or Lucknow). The owner counts first, in DataGrip: the
     buckets query and the list of the "elsewhere, UK namesake" bucket are in doc 10 7.6 "Built 2026-10-24 morning,
     finding 84" (its decision 17 paragraph). If that list is mostly wrong matches, yes builds the narrowed rule (size
-    S; the TGN namesake lookup is a per-source label query); if mostly right ones, no, and the desk has them.
+    S; the TGN namesake lookup is a per-source label query); if mostly right ones, no, and the desk has them. Counted
+    2026-10-24 on fk53p7: home 39, unplaced 215, elsewhere without a UK namesake 12 (Dublin, Leinster, Sicily, Saint
+    Petersburg, Lucknow, Andalusia, Hallstatt: all right), elsewhere with a UK namesake 5, three of them wrong. Closed
+    as no. Side observation from the buckets: the legacy import gave "Crimean War, 1853-1856", "World War, 1914-1918",
+    "World War, 1939-1945", "Americans" and "Archaeology" the class Place; a desk pass over legacy entities whose class
+    disagrees with their label is an open item (section 7).
 15. *The LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX team whether a source reload
     replaces by URI and whether records absent from a full dump are retired; the merged-away identifiers (now
     `merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX merges
@@ -712,6 +721,11 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
     - ~~The Align tool reads the sources from the project's saved manifest but the context rules from the code's PMC
       default~~ (done 2026-10-20: both from the saved manifest, a "manifest:" line on every run saying whether it
       still equals the library rules, `manifest --use-default`, and the project page's "In effect now" sentence).
+    - The desk's strings from decision 17's count (2026-10-24): "Clayton" (keywords:head) matched to "Clayton,
+      Victoria, Australia", "Lincoln" (keywords:sub) to "Lincoln, Neb", "Stratford" (keywords:sub) to "Stratford,
+      Va.", each the project's one entity of the name; overrides or new entities at the desk. And a desk pass over
+      legacy entities whose class disagrees with their label ("Crimean War, 1853-1856", the two World Wars,
+      "Americans", "Archaeology" imported as Place).
     - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
       Art prizes" read as Person; ~~"McSloy, Tom, op 1946" (a working date written "op")~~ (finding 26, 2026-10-23);
       "Mainz/Rhein" (a slash variant for name-forms). From p9g534 (2026-10-23): "S. W. [(Simon Wilson)] (editor)"

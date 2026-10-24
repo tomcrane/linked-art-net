@@ -1259,6 +1259,24 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-24, finding 85, prominence (the Wikidata index's first use; doc 11 section 8.11). "Sheffield" in
+keywords:sub ties between TGN's English city with LoC's heading and Alabama's, Ohio's and Massachusetts' Sheffields,
+each a two-source group placed through, and nothing on an unqualified string separates them: the famous-name tie
+(finding 17) that most of the keywords:sub queue is. Wikidata's items, reached through the candidates' TGN and LoC URIs
+in their sameAs links (the index need not be among the manifest's sources), say which the world writes about: 122
+sitelinks against 45. The rule: among two-source groups tied at acceptance score, when none holds a project entity
+(finding 35 has that case) and the string carries no qualifier (a qualifier places), the group whose item has at least
+20 sitelinks and at least twice the next group's is taken, decided as a vote with the reason "the prominent one: 122
+sitelinks (Q42448) against 45" and the others marked "less prominent"; closer than that ("Murray" at 45, 44 and 39,
+three American cities, and the publisher none of them) the groups are marked "prominence does not separate them" and
+the string stays queued. Places only: for people and bodies sameness of name is weak evidence, and the desk decides.
+`ProminenceMinSitelinks` (20; zero turns it off) and `ProminenceRatio` (2.0) are the options; the thresholds are the
+assistant's judgement from the first queries on the index (Cornwall 126 against 46, Sheffield 122 against 45, Murray
+45 against 44). Expected from fk53p7's samples: Sheffield, Parma (Italy's against Ohio's), Camden, Durham, Kildare,
+Virginia and Williamsburg are settled or declined on their numbers; Cambridge (England's against Massachusetts',
+both famous) is declined and stays the desk's, rightly for a rule this blunt. Cost: a sameAs lookup per URI of the
+tied groups, through the GIN index, on the tie path only.
+
 Built 2026-10-24 morning, finding 84, from the two store checks on fk53p7's settled lines. The project's "Lincoln, Neb"
 is Nebraska (TGN 7013892, LoC "Lincoln (Neb.)"), and "Lincoln (England)" in keywords:head had matched it with the
 reason "name 1.00": the entity's label says nothing TGN-shaped about where it is, so no placement was read and the

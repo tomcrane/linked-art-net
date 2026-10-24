@@ -33,6 +33,14 @@ public sealed record ReconcilerOptions
     public int MaxPersonLifetimeYears { get; init; } = 120;
     /// <summary>Where the dataset's places mostly are ("United Kingdom"): when a qualifier's name is a county in several countries ("Essex"), the one here is meant (finding 71).</summary>
     public string? HomePlace { get; init; }
+    /// <summary>
+    /// Prominence for the famous-name ties among places (finding 85, 2026-10-24): when groups two sources carry tie at acceptance score and no
+    /// project entity is among them, the group whose Wikidata item has at least this many sitelinks, and at least <see cref="ProminenceRatio"/>
+    /// times the next group's, is the one meant ("Sheffield" the English city at 122 against Alabama's 45; "Murray" at 45, 44 and 39 declined).
+    /// Zero turns the rule off. The Wikidata index need not be among the sources: it is reached through the candidates' URIs in its sameAs links.
+    /// </summary>
+    public int ProminenceMinSitelinks { get; init; } = 20;
+    public double ProminenceRatio { get; init; } = 2.0;
 }
 
 public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minted, Deferred, Decomposed }
@@ -434,6 +442,33 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 return new Evaluation(Outcome.Accepted, reading, groups, Accepted: prior, AcceptedMethod: DecisionMethod.Vote);
             }
         }
+        // prominence breaks the famous-name tie among places (finding 85, 2026-10-24; doc 11 section 8.11): "Sheffield" in keywords:sub ties
+        // between TGN's English city with LoC's heading and Alabama's, Ohio's and Massachusetts' Sheffields each with a LoC heading placed
+        // through, and nothing on an unqualified string separates them; Wikidata's items, reached through the candidates' URIs in their
+        // sameAs links, say which the world writes about: 122 sitelinks against 45. Only among two-source groups at acceptance score,
+        // only when none holds a project entity (finding 35 has that), only when the best is clear of the next by the ratio; "Murray"
+        // (45, 44, 39) is declined and stays the desk's
+        if (top is not null && reading.Qualifier is null && _options.ProminenceMinSitelinks > 0 && (top.Best.Candidate.Class ?? reading.Classes[0]) == EntityClass.Place)
+        {
+            var tied = live.Where(g => g.Score >= _options.AcceptScore && g.Sources.Count >= 2).ToList();
+            if (tied.Count >= 2 && !live.Any(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm)))
+            {
+                var ranked = new List<(CandidateGroup Group, int Sitelinks, string? Item)>();
+                foreach (var g in tied) { var (n, item) = await ProminenceAsync(g.Uris, ct); ranked.Add((g, n, item)); }
+                ranked = ranked.OrderByDescending(x => x.Sitelinks).ToList();
+                var (best, next) = (ranked[0], ranked[1]);
+                if (best.Sitelinks >= _options.ProminenceMinSitelinks && best.Sitelinks >= _options.ProminenceRatio * Math.Max(next.Sitelinks, 1))
+                {
+                    groups = groups.Select(g => g == best.Group
+                        ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; the prominent one: {best.Sitelinks} sitelinks ({best.Item}) against {next.Sitelinks}" }).ToList() }
+                        : tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; less prominent: {ranked.First(x => x.Group == g).Sitelinks} sitelinks against {best.Sitelinks}" }).ToList() } : g).ToList();
+                    if (includeStore && await HoldersAsync(dataset, best.Group.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+                    var annotated = groups.First(g => g.Uris.SequenceEqual(best.Group.Uris, StringComparer.Ordinal));
+                    return new Evaluation(Outcome.Accepted, reading, groups, Accepted: annotated, AcceptedMethod: DecisionMethod.Vote);
+                }
+                groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks)" }).ToList() } : g).ToList();
+            }
+        }
         if (top is not null && top.Score >= _options.AcceptScore && !truncated && carried is not null && (second is null || second.Score < _options.AcceptScore || outvoted))
         {
             // the group's ids already on two different entities of ours means the store disagrees with itself: review, not a vote onto the first
@@ -490,6 +525,24 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (top is not null && top.Score >= _options.ReviewScore)
             return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
         return new Evaluation(_options.MintWhenNothingFound ? Outcome.Minted : Outcome.Deferred, reading, groups, Truncated: truncated);
+    }
+
+    /// <summary>The group's prominence: the most sitelinks any Wikidata item linking one of its URIs has, with that item's URI; zero when none links it.</summary>
+    private async Task<(int Sitelinks, string? Item)> ProminenceAsync(IReadOnlyList<string> uris, CancellationToken ct)
+    {
+        var best = (Sitelinks: 0, Item: (string?)null);
+        foreach (var uri in uris.Where(u => !scheme.Owns(u)))
+            foreach (var r in await store.FindAuthoritiesBySameAsAsync(uri, ct))
+            {
+                if (r.Source != "wikidata" || r.DataJson is null) continue;
+                try
+                {
+                    using var doc = JsonDocument.Parse(r.DataJson);
+                    if (doc.RootElement.TryGetProperty("sitelinks", out var v) && v.TryGetInt32(out var n) && n > best.Sitelinks) best = (n, r.Uri);
+                }
+                catch (JsonException) { }
+            }
+        return best;
     }
 
     /// <summary>How many distinct live entities of the dataset hold any of the URIs as an equivalent.</summary>

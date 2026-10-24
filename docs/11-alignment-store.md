@@ -340,7 +340,10 @@ Italy, municipality of Spain, lakes, streams) and bodies (political party, sport
 most frequent were named through the Wikidata API and added to the table (`ClassOf`), and the loaded rows were
 retyped by SQL to match (plan section 0). The full fix is to read the dump's subclass-of (P279) edges and walk each
 instance-of up to a root class, which replaces the hand table; it waits for the next reload. The index is not yet among
-the manifest's sources: the reconciler's use of it is the design step that follows (plan section 0).
+the manifest's sources, and need not be: its first use, prominence for the famous-name ties among places (doc 10
+section 7.6, finding 85, 2026-10-24), reaches it through `FindAuthoritiesBySameAsAsync` on the tied candidates' TGN and
+LoC URIs, and reads `sitelinks` from the record's data. The other uses designed (dates for LoC's undated records, the
+crosswalk through one item's ids) follow the same path (plan section 0, item 3).
 
 ## 9. Not yet
 

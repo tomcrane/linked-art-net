@@ -18,9 +18,10 @@ is built and waiting for a go, and the commands to run on return. The detail beh
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
 **Today, in order** (2026-10-24; every step is under "Commands on return" below with its commands): (1) `git push`;
-(2) ~~decision 17~~ (closed as no on the count, 2026-10-24); (3) undo fk53p7 and `reconcile --verbose`, paste the summary line and the second
-pass's lines, then the keywords:head and persauthorfull queued samples; (4) the assistant measures findings 83 and 84
-and builds the Wikidata index's use, prominence first. The two store checks were run late on 2026-10-23 and answered:
+(2) ~~decision 17~~ (closed as no on the count, 2026-10-24); (3) undo fk53p7 and `reconcile --verbose` (running since
+mid-morning), paste the summary line and the second pass's lines, then the keywords:head and persauthorfull queued
+samples; (4) the assistant measures findings 83 and 84; (5) the run after that measures finding 85, prominence (built
+while the run went), with the keywords:sub queued and vote samples. The two store checks were run late on 2026-10-23 and answered:
 "Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
 through (finding 84, built, below). Nothing is half-done: the Wikidata load and its retyping are complete, and the
 index waits only for its use.
@@ -104,6 +105,13 @@ the two below are closed and kept for their queries.
     a town before the county, "&"): finding 77, built, doc 10 7.6 "Decision 16's count". The bare shape is about
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
+
+**Built 2026-10-24 while the run went, waiting for the run after it** (doc 10 7.6 "Built 2026-10-24, finding 85"):
+prominence for the famous-name ties among places, the Wikidata index's first use: among two-source groups tied with no
+project entity among them, the group whose Wikidata item has 20 or more sitelinks and double the next is taken as a
+vote. Expect keywords:sub's "Sheffield", "Parma", "Durham", "Kildare", "Virginia" and "Williamsburg" to settle or be
+declined on their numbers, "Cambridge" declined (England's against Massachusetts'), and the keywords:sub queue (153) to
+fall; `decisions --context keywords:sub --method vote` with "prominent" in the reasons shows the settled ones.
 
 **Built 2026-10-24 morning from the two store checks, waiting for the next run** (doc 10 7.6 "Built 2026-10-24
 morning, finding 84"): in any context where the string carries a qualifier, a store entity is placed through its TGN
@@ -194,10 +202,10 @@ says "continue with the list"):
    106 thousand places, almost all through the TGN id; 519 thousand untyped, since retyped by SQL after the forty most
    frequent classes were added to the table). Both files are on the owner's external drive (`E:\datadumps`). The
    design of how the reconciler uses the index (not yet among the manifest's sources), from the first queries on it:
-   (a) prominence for the famous-name ties (finding 17): among exact candidates of one class that dates cannot
-   separate, the group whose Wikidata record (reached through `same_as`) has 20 or more sitelinks and at least double
-   the next group's is taken; "Cornwall" 126 against 46 and "Sheffield" 122 against 45 are taken, "Murray" (45, 44,
-   39, three US cities, and the publisher is none of them) is declined and stays the desk's. The famous Cornwall item
+   (a) ~~prominence for the famous-name ties~~ (built 2026-10-24 as finding 85, doc 10 7.6 "Built 2026-10-24, finding
+   85"; places only, two-source groups tied at acceptance score with no project entity among them, 20 sitelinks and
+   double the next; "Sheffield" 122 against 45 taken, "Murray" 45 against 44 declined; waiting for the run after the
+   one in progress). The famous Cornwall item
    carries LoC, GND and VIAF ids but no TGN id, so prominence reaches a TGN candidate through the group it has formed
    with the LoC record, not directly. (b) Dates for LoC's undated records: a LoC candidate without dates takes them
    from the Wikidata record that links it, for the comparison only, with the reason saying so. (c) The crosswalk:
@@ -255,8 +263,16 @@ rerun measures findings 83 and 84 (the tool rebuilds itself on `dotnet run`):
     dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
     dotnet run --project tools/Align -- decisions --run <new run id> --context persauthorfull --method queued --limit 10
 
-The Wikidata index is not among the manifest's sources, so that run is unchanged by it. The next build is the index's
-use, prominence first (item 3), which the keywords:sub queue is waiting for almost to a string.
+The Wikidata index is not among the manifest's sources and the run in progress began before finding 85, so that run
+is unchanged by it. The run after measures prominence:
+
+    dotnet run --project tools/Align -- undo-run --run <this morning's run id>
+    dotnet run --project tools/Align -- reconcile --verbose
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
+    dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method vote --limit 10
+
+Then the index's other uses (item 3, b to d): dates for LoC's undated records through the linking item, the crosswalk,
+labels as variants only.
 
 **The Wikidata load and its retyping are done; nothing here is to be run again** (2026-10-23, 3 h 13 min, 5,004,911
 records; the counts are in doc 11 section 8.11 and item 3 above). The retyping of the rows the class table missed,

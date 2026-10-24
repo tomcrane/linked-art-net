@@ -1259,6 +1259,38 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-24 midday, finding 87 and the corrections to 83 and 84, from t629cj's run-to-run method diff and the TGN
+rows. The diff (plan section 0 has the query; each run's last decision per string, since a settled string has two) read
+against fk53p7: queued -> vote 20 (Bedford, Chester, Derry, Crimea, and dated names finding 83 now reads right), queued
+-> single 14, the surname-only strings decided on their records (minted -> exact-name, single, vote: "Froy, Martin
+1926-", "Casement, Roger 1864-1916", "Camplin, Bonnie. 1970-"), vote -> exact-name 52 (the project's own place
+entities now answer at the store stage where they voted before, through the widened placement; the same entity, but a
+store match gains no new equivalents where a vote did, which is the audit's business later), and four shapes to fix:
+
+- "Bell, Trevor, B. 1930" lost its vote (vote -> minted): finding 83's regex excluded lower-case date words only, and
+  "B." is "born" in capitals. Corrected: the exclusion is case-insensitive.
+- "Harewood House (Leeds)" and "Harewood House (Yorkshire)" lost the project's "Harewood House (England)" (exact-name
+  -> queued): finding 84's store filter refused any disagreement, and a town's name resolves to nothing, so "Leeds"
+  against "England" read as elsewhere. Withdrawn: the veto in Score, which fires when the string's qualifier resolves
+  to a known place, is the whole of the rule; "Lincoln (England)" is still refused Nebraska by it.
+- "Statens Museum for Kunst (Copenhagen, Denmark)" lost its vote (vote -> minted): the project's "Statens museum for
+  kunst (Denmark)" had its placement widened in place to "Denmark, Danmark, Europe, World", which no longer read as a
+  coarser placement inside the string's "Copenhagen, Denmark", and the vetoed entity took its group of ULAN and LoC
+  down with it. Corrected on finding 56's rule, ancestors widen agreement and never narrow it: the chain is kept apart
+  (`Candidate.PlacementAncestors`) and consulted only when the placement as written does not agree.
+- "Newbridge (Dublin)" came back by a vote onto Kildare's Newbridge and "Venice (Italy)" matched a person entity
+  labelled "Venice", both because the ancestors walk resolved neither qualifier. The TGN rows: Dublin has four records
+  at county level or above, the county, the region and "County Dublin", all under "Ireland, Europe, World"; "Italy" is
+  TGN's nation "Italia" beside the Roman province "Italia". Finding 87: when several records of the name remain, the
+  highest level wins (the nation before the province), and records that share the chain above them resolve to that
+  chain (`CommonParent`, when it names a country or more); and the home-place filter of finding 71 decides only when
+  it leaves something (Dublin's records, none in the United Kingdom, had emptied the list). "Palais (Augsburg,
+  Germany)" minted is right (the French Palais records vetoed as elsewhere; it was wrongly a store match before).
+- Still to read on the next run: 17 "Royal Academy of Arts (Great Britain). Winter Exhibition (nth : year : Royal
+  Academy of Arts)" headings went queued -> minted, and "New York, NY", "New York (Madison Avenue)", "National Maritime
+  Museum (London)", "London, New York & Bombay" went vote -> queued; the diff on the next run says whether the
+  corrections above restore them.
+
 Measured 2026-10-24 (run-20261024-100226-t629cj: findings 83 and 84, against fk53p7; prominence, finding 85, was
 built while it ran and is not in it): accepted 9,386 -> 9,370 (vote 3,961 -> 3,936, single 2,110 -> 2,119,
 exact-single 3,315), queued 3,603 -> 3,563, matched in store 5,958 -> 6,003, minted 11,306 -> 11,317; the second pass

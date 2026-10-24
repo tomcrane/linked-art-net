@@ -100,9 +100,12 @@ public class ParserTests
         Assert.Equal(dateText, a.DateText);
         Assert.Equal(name.Split(", ")[1], a.GivenNames);
         Assert.Null(a.Unconsumed);
-        // a date segment that is only dates, or opens with a date word, is unchanged
+        // a date segment that is only dates, or opens with a date word, is unchanged; "B. 1930" is "born 1930" whatever its case (run t629cj,
+        // 2026-10-24: "Bell, Trevor, B. 1930" had lost its vote to a name "Bell, Trevor, B.")
         Assert.Equal("Bevan, Charles", Parse("Bevan, Charles, active 1865-1883", "marc").Name);
         Assert.Equal("James, Hugh", Parse("James, Hugh, d. 1695", "marc").Name);
+        var bell = Parse("Bell, Trevor, B. 1930", "marc");
+        Assert.Equal("Bell, Trevor", bell.Name); Assert.Equal("B. 1930", bell.DateText);
     }
 
     [Fact]

@@ -19,10 +19,10 @@ section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
 **Today, in order** (2026-10-24; every step is under "Commands on return" below with its commands): (1) `git push`;
 (2) ~~decision 17~~ (closed as no on the count, 2026-10-24); (3) ~~undo fk53p7 and `reconcile --verbose`~~ (run
-t629cj, measured: queued 3,603 -> 3,563, findings 83 and 84 held, finding 86 built from its "Münster" line); (4) three
-queries, under "Commands on return": the TGN rows for "Dublin" and "Italy" (two unresolved qualifiers) and the
-run-to-run method diff (25 fewer votes, unexplained); (5) undo t629cj and rerun, which measures findings 85 and 86,
-with the keywords:sub queued and vote samples. The two store checks were run late on 2026-10-23 and answered:
+t629cj, measured: queued 3,603 -> 3,563, findings 83 and 84 held, finding 86 built from its "Münster" line); (4) ~~three
+queries~~ (run; finding 87 and the corrections to 83 and 84 built from them, doc 10 7.6 "Built 2026-10-24 midday");
+(5) undo t629cj and rerun, which measures findings 85, 86, 87 and the corrections, with the keywords:sub queued and
+vote samples and the method diff against t629cj (the query below, with the run ids changed). The two store checks were run late on 2026-10-23 and answered:
 "Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
 through (finding 84, built, below). Nothing is half-done: the Wikidata load and its retyping are complete, and the
 index waits only for its use.
@@ -106,6 +106,15 @@ the two below are closed and kept for their queries.
     a town before the county, "&"): finding 77, built, doc 10 7.6 "Decision 16's count". The bare shape is about
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
+
+**Built 2026-10-24 midday from t629cj's method diff and the TGN rows, waiting for the next run** (doc 10 7.6 "Built
+2026-10-24 midday"): finding 87 (several TGN records of a qualifier's name at county level or above: the highest level
+wins, records sharing the chain above them resolve to it, and the home-place filter decides only when it leaves
+something; "Newbridge (Dublin)" is placed in Ireland and vetoes Kildare's, "Venice (Italy)" is not a person); finding
+83's regex case-insensitive for date words ("Bell, Trevor, B. 1930"); finding 84's store filter withdrawn ("Harewood
+House (Leeds)" keeps the project's "(England)") and its widening kept apart from the placement ("Statens Museum for
+Kunst (Copenhagen, Denmark)" keeps the project's "(Denmark)"). Expect the four to come back, and the 17 Royal Academy
+Winter Exhibition headings and the New York and London strings to be read in the diff.
 
 **Built 2026-10-24 from t629cj's settled lines, waiting for the next run** (doc 10 7.6 "Measured ... t629cj"):
 finding 86, a tie for the project's-entity tie-break (35) and for prominence (85) is among groups at the top score
@@ -281,12 +290,16 @@ evidence):
     select uri, label, data->>'parentString' as parent, data->>'placeType' as place_type
     from authority_records where source = 'tgn' and normalised_labels @> array['italy'];
 
+    with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-100226-t629cj' order by source_string_id, id desc),
+         b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
     select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
-    from decisions a
-    join decisions b on b.source_string_id = a.source_string_id
+    from a join b on b.source_string_id = a.source_string_id
     join source_strings s on s.id = a.source_string_id
-    where a.run_id = 'run-20261023-183343-fk53p7' and b.run_id = 'run-20261024-100226-t629cj' and a.method <> b.method
-    group by 1, 2 order by 3 desc;
+    where a.method <> b.method group by 1, 2 order by 3 desc;
+
+(Each run's last decision per string: a string the second pass settled has two decisions in a run, and a plain join
+paired them crosswise on 2026-10-24.) The three queries were run on 2026-10-24 and are answered (doc 10 7.6 "Built
+2026-10-24 midday"); the diff above, with the run ids moved on, is the standing check after every rerun.
 
 Then the rerun, which measures prominence (85) and the top-score tie (86):
 

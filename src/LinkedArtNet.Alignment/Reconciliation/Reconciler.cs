@@ -278,7 +278,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (_ancestors.TryGetValue(segment, out var ancestors)) return ancestors;
         ancestors = null;
         var records = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(segment), "tgn", nameof(EntityClass.Place), 50, ct);
-        var own = new List<string>();
+        var own = new List<(string Chain, int Level)>();
         // the name may be TGN's variant ("Devonshire" for its "Devon"): then the preferred name leads the ancestors, so that a heading
         // placed by the preferred name ("Arlington, Devon, England") agrees (finding 77)
         foreach (var r in records.Where(r => r.Label is not null && NameMatcher.Score(segment, r.Labels.Prepend(r.Label!)) >= 0.97))
@@ -286,14 +286,42 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var (parent, placeType) = ParentAndType(r);
             if (parent is null || placeType is null) continue;
             var label = (await store.GetAuthorityAsync(placeType, ct))?.Label;
-            if (Qualified.LevelOf(label) is >= 3) own.Add(NameMatcher.Score(segment, [r.Label!]) >= 0.97 ? parent : $"{r.Label}, {parent}");
+            if (Qualified.LevelOf(label) is >= 3 and var level) own.Add((NameMatcher.Score(segment, [r.Label!]) >= 0.97 ? parent : $"{r.Label}, {parent}", level));
         }
         // several counties of the name ("Essex" in England, Ontario and five American states): the project's home place decides
         // (finding 71, 2026-10-22; the PMC manifest says United Kingdom)
-        if (own.Count > 1 && _options.HomePlace is { } home) own = own.Where(p => Qualified.Contains(p, Qualified.Tokens(home))).ToList();
-        if (own.Distinct(StringComparer.Ordinal).Count() == 1) ancestors = own[0];
+        // (and decides only when it leaves something: Dublin's several records, none in the United Kingdom, stay for the rules below;
+        // finding 87, 2026-10-24)
+        if (own.Count > 1 && _options.HomePlace is { } home && own.Where(p => Qualified.Contains(p.Chain, Qualified.Tokens(home))).ToList() is { Count: > 0 } atHome) own = atHome;
+        // still several (finding 87, 2026-10-24, run t629cj): the highest level wins ("Italy" is TGN's nation "Italia" before the Roman
+        // province "Italia"), and records that share the chain above them resolve to that chain (Dublin the county, the region and
+        // "County Dublin", all under "Ireland, Europe, World"), so that "Newbridge (Dublin)" is placed in Ireland and vetoes Kildare's
+        var chains = own.Select(x => x.Chain).Distinct(StringComparer.Ordinal).ToList();
+        if (chains.Count > 1)
+        {
+            var topLevel = own.Max(x => x.Level);
+            chains = own.Where(x => x.Level == topLevel).Select(x => x.Chain).Distinct(StringComparer.Ordinal).ToList();
+            if (chains.Count > 1 && CommonParent(chains) is { } shared) chains = [shared];
+        }
+        if (chains.Count == 1) ancestors = chains[0];
         _ancestors[segment] = ancestors;
         return ancestors;
+    }
+
+    /// <summary>The chain the given parent chains share above their first segments ("Ireland, Europe, World" for "Ireland, Europe, World" and "County Fingal, Ireland, Europe, World"), when it names a country or more; null when they share only the world.</summary>
+    private static string? CommonParent(IReadOnlyList<string> chains)
+    {
+        var split = chains.Select(c => c.Split(',').Select(x => x.Trim()).Reverse().ToArray()).ToList();
+        var shared = new List<string>();
+        for (var i = 0; ; i++)
+        {
+            if (split.Any(s => s.Length <= i)) break;
+            var seg = split[0][i];
+            if (!split.All(s => s[i] == seg)) break;
+            shared.Add(seg);
+        }
+        shared.Reverse();
+        return shared.Count >= 3 ? string.Join(", ", shared) : null;
     }
 
     /// <summary>A TGN record's parent string and place-type URI from its data.</summary>
@@ -370,9 +398,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
             // in any other context a qualified heading never takes an entity placed elsewhere: "Lincoln (England)" is not the project's
-            // "Lincoln, Neb" (placed in Nebraska through its TGN equivalent), "Newbridge (Dublin)" not its "Newbridge, Co. Kildare"; an
-            // entity whose placement is unknown still answers, as before (finding 84, 2026-10-24, from run fk53p7's settled lines)
-            else if (reading.Qualifier is not null) storeScored = storeScored.Where(c => c.QualifierAgrees != false).ToList();
+            // "Lincoln, Neb", placed in Nebraska through its TGN equivalent (finding 84, 2026-10-24). The veto in Score does this when the
+            // string's qualifier resolves to a known place; a filter on any disagreement was tried the same day and withdrawn, since a
+            // town's name ("Harewood House (Leeds)") resolves to nothing and the project's "Harewood House (England)" must still answer
             var firm = storeScored.Where(c => !c.Candidate.Provisional).ToList();
             var chosen = storeScored.Count == 1 ? storeScored[0] : firm.Count == 1 ? firm[0] : null;
             // two of the project's entities, one labelled with the whole heading as written ("Surrealism (Literature)") and one with its
@@ -574,6 +602,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var placement = e.Label is null ? null
             : reading.IsQualified ? Qualified.Split(e.Label).Qualifier
             : reading.Qualifier is not null ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
+        string? placementAncestors = null;
         if (reading.Qualifier is not null)
         {
             // an entity's label may say nothing TGN-shaped about where it is ("Lincoln, Neb"): its TGN equivalent does; and a label's county
@@ -582,15 +611,17 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (placement is null)
                 foreach (var q in e.Equivalents.Where(q => q.Source == "tgn").Take(2))
                     if (await store.GetAuthorityAsync(q.Uri, ct) is { } tgn && ParentAndType(tgn).Parent is { } parent) { placement = parent; break; }
-            // the label's own qualifier, or the placement read from it, widened by its first segment that TGN knows as a county or above
-            // (a TGN parent string, ending in "World", needs no widening)
+            // the label's own qualifier, or the placement read from it, with the chain above its first segment that TGN knows as a county
+            // or above, kept apart from the placement itself: the comparison reads the placement as written first and the chain only when
+            // that fails, so that "(Copenhagen, Denmark)" still places the project's "(Denmark)" (a TGN parent string, ending in "World",
+            // needs no chain)
             var own = placement ?? (e.Label is null ? null : Qualified.Split(e.Label).Qualifier);
             if (own is not null && !own.EndsWith("World", StringComparison.Ordinal))
                 foreach (var segment in Segments(own))
-                    if (await AncestorsOfAsync(segment, ct) is { } ancestors) { placement = $"{own}, {ancestors}"; break; }
+                    if (await AncestorsOfAsync(segment, ct) is { } ancestors) { placement = own; placementAncestors = ancestors; break; }
         }
         return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued, Placement: placement,
-            PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null);
+            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null);
     }
 
     /// <summary>Writes an evaluation: the decision with its evidence and, where needed, the entity.</summary>
@@ -675,6 +706,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // (Wales)" against LCSH's "(Raglan, Wales)" agrees on "Wales" alone, ancestors or no (2026-10-22)
             var qualifierAgrees = Qualified.Agrees(reading.Qualifier, c.Placement);
             if (qualifierAgrees == false && reading.QualifierAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement, c.Placement) == true) qualifierAgrees = true;
+            // and the chain above the candidate's own placement, the same way ("Boughton House (Northamptonshire)" for "(England)"; finding 84)
+            if (qualifierAgrees == false && c.PlacementAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement ?? reading.Qualifier, $"{c.Placement}, {c.PlacementAncestors}") == true) qualifierAgrees = true;
             // a qualifier TGN knows as a county or above ("Herefordshire") names a real place, and a record placed elsewhere is not the
             // string's whether or not any record is placed: "Hampton Court (Herefordshire)" is neither the Jamaican nor the Richmond
             // one, and is minted (finding 66, 2026-10-22)

@@ -393,6 +393,6 @@ public sealed partial class AgentStringParser
     private static partial Regex YearRange();
 
     /// <summary>One or more capitalised words with no digit, none of them a date word, then the rest beginning with a digit or an opening bracket: "John 1608-1674", "John W. 1925-", "Ryan 1976-".</summary>
-    [GeneratedRegex(@"^(?<name>(?:(?!(?:fl|b|d|c|ca|circa|active|flourished|floruit|born|died|baptised|baptized|buried|op)\b)\p{Lu}[\p{L}'.\-]*\s+)+)(?<date>[\d(\[].*)$")]
+    [GeneratedRegex(@"^(?<name>(?:(?!(?i:fl|b|d|c|ca|circa|active|flourished|floruit|born|died|baptised|baptized|buried|op)\b)\p{Lu}[\p{L}'.\-]*\s+)+)(?<date>[\d(\[].*)$")]
     private static partial Regex NameThenDate();
 }

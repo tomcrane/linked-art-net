@@ -151,6 +151,7 @@ public sealed record StringReading(
 /// <param name="Provisional">A store entity minted for an earlier string without any authority behind it: a lookalike that must not make a known entity ambiguous or contradict a vote.</param>
 /// <param name="ProvisionalQueued">A provisional entity whose own string is awaiting review: it never answers another string silently.</param>
 /// <param name="Placement">Where the record's own vocabulary puts it (TGN's parent string, a LoC heading's parenthetical), for a qualified string to check against.</param>
+/// <param name="PlacementAncestors">The TGN chain above a placement read from a label ("England, United Kingdom, Europe, World" above "Northamptonshire"), consulted only when the placement as written does not agree: ancestors widen agreement, never narrow it (finding 84, 2026-10-24).</param>
 /// <param name="Collections">The record's own vocabulary's collections it belongs to, by short name (LCSH's "Subdivisions"), for a context that wants some of them (<see cref="ContextRule.Collections"/>).</param>
 /// <param name="ByVariant">The name matched only a variant label, not the record's heading or the heading without its dates: LoC's "Morgan, John Lester" through its variant "Morgan, John" is LoC's record of John Lester Morgan, not of the name (finding 74).</param>
 public sealed record Candidate(
@@ -168,6 +169,7 @@ public sealed record Candidate(
     bool ProvisionalQueued = false,
     bool Disambiguated = false,
     string? Placement = null,
+    string? PlacementAncestors = null,
     IReadOnlyList<string>? Collections = null,
     string? PlaceType = null,
     bool ByVariant = false);

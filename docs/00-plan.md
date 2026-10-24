@@ -23,8 +23,8 @@ t629cj, measured: queued 3,603 -> 3,563, findings 83 and 84 held, finding 86 bui
 queries~~ (run; finding 87 and the corrections to 83 and 84 built from them, doc 10 7.6 "Built 2026-10-24 midday");
 (5) ~~undo t629cj and rerun~~ (run rkjzag, measured, doc 10 7.6 "Measured ... rkjzag": queued 3,563 -> 3,488, votes
 +72; findings 89 and 90 built from it); (6) the finding 88 write, then its count; (7) ~~the evidence for "Sheffield" and
-"Lincoln (England)"~~ (read; findings 91 and 92 built from it, doc 10 7.6 "Built 2026-10-24 late afternoon"; one
-query still confirms the Sheffield entity, under "Commands on return"); (8) undo rkjzag and rerun, which measures 88,
+"Lincoln (England)"~~ (read; findings 91 and 92 built from it, doc 10 7.6 "Built 2026-10-24 late afternoon"; the
+Sheffield entities confirmed as two legacy duplicates); (8) undo rkjzag and rerun, which measures 88,
 89, 90, 91 and 92 together. The two store checks were run late on 2026-10-23 and answered:
 "Lincoln, Neb" is Nebraska and "Newbridge, Co. Kildare" is Kildare's town, so the store stage had let a qualifier
 through (finding 84, built, below). Nothing is half-done: the Wikidata load and its retyping are complete, and the
@@ -280,15 +280,8 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 8.11 (the Wikidata retyping); this section holds only what is current.
 
 1. Run rkjzag (2026-10-24 afternoon) is measured and its evidence read (doc 10 7.6; findings 91 and 92 built from
-   the "Sheffield" and "Lincoln (England)" decisions). One confirmation still wanted, in DataGrip: the project's
-   "Sheffield" entity (or entities) that stopped prominence, with its equivalents:
-
-       select e.id, e.class, e.label, e.status, array_agg(q.uri order by q.uri) as equivalents
-       from entities e left join entity_equivalents q on q.entity_id = e.id
-       where e.dataset = 'pmc' and e.merged_into is null and e.label ilike 'sheffield%'
-       group by e.id, e.class, e.label, e.status;
-
-   Then the rerun, which measures findings 88 (after its write, item 2), 89, 90, 91 and 92 together:
+   the "Sheffield" and "Lincoln (England)" decisions; the Sheffield entities confirmed as two aligned legacy
+   duplicates, a desk item below). Then the rerun, which measures findings 88 (after its write, item 2), 89, 90, 91 and 92 together:
 
        git push
        dotnet run --project tools/Align -- undo-run --run run-20261024-111420-rkjzag
@@ -803,7 +796,11 @@ Owner's initial responses recorded 2026-10-13; items marked *open* are still to 
       Victoria, Australia", "Lincoln" (keywords:sub) to "Lincoln, Neb", "Stratford" (keywords:sub) to "Stratford,
       Va.", each the project's one entity of the name; overrides or new entities at the desk. And a desk pass over
       legacy entities whose class disagrees with their label ("Crimean War, 1853-1856", the two World Wars,
-      "Americans", "Archaeology" imported as Place).
+      "Americans", "Archaeology" imported as Place). Legacy duplicates among places (2026-10-24): two aligned
+      "Washington" entities, and two aligned "Sheffield" entities (place/c4c4mbm7 with VIAF 133706141, place/djtugwgt
+      with Wikidata Q42448, the English city, and VIAF 124322655; neither with TGN or LoC), which hold "Sheffield" in
+      keywords:sub at the desk; merge-duplicates, or the desk, and the crosswalk use of the index (item 3 (c)) would
+      join the second to the English TGN and LoC group.
     - Parser gaps from the 2026-10-20 minted samples (also doc 10 section 7.6 item 6): "The Hunterian" and "Hunting
       Art prizes" read as Person; ~~"McSloy, Tom, op 1946" (a working date written "op")~~ (finding 26, 2026-10-23);
       "Mainz/Rhein" (a slash variant for name-forms). From p9g534 (2026-10-23): "S. W. [(Simon Wilson)] (editor)"

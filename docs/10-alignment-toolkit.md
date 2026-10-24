@@ -1278,7 +1278,11 @@ Built 2026-10-24 late afternoon, findings 91 and 92, from the two pieces of evid
   groups, and the English group, like whatever stopped prominence, lay beyond them. By the code, prominence stands aside
   only when a live group at acceptance score holds a firm project entity outside the tie (in a tied group, finding 35
   would have taken it), so the project has an aligned "Sheffield" entity in a group one source carries, or two of them;
-  the query under plan section 0 confirms it. Finding 92, two changes to the evidence rather than a rule: the tied groups
+  the owner's query confirmed it the same hour: two aligned Place entities both labelled "Sheffield", one carrying
+  Wikidata's Q42448 (the English city) with a VIAF id, the other another VIAF id, neither with a TGN or LoC equivalent,
+  so each is a lone store group and the store stage declines to choose between two firm entities. Duplicates for
+  merge-duplicates or the desk, as "Washington" is; and the crosswalk use of the index (plan section 0, item 3 (c))
+  would join the first to the English TGN and LoC group through Q42448's ids. Finding 92, two changes to the evidence rather than a rule: the tied groups
   carry "prominence stands aside: the project's own entity <label> is among the live groups, the desk's" when that is
   what happened; and the stored evidence lists the first five groups, every live group at the top score and every
   group holding a project entity, twelve at most, so that a tie of six namesakes shows all six and the entity that

@@ -1259,6 +1259,14 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Corrected 2026-10-24 evening, finding 90's cost: the first run carrying it ran visibly slower, and the cause is its
+walk, which looked up every segment of every placed candidate's parenthetical (thousands of distinct American counties
+and towns, one label query and a record fetch per hit each, cached for the run). A placement that agrees with the
+qualifier by any of Score's three readings can never be vetoed, and `Elsewhere` reads only the candidate's own
+segments, so agreeing placements are now skipped before the walk; the set of known places a disagreeing candidate is
+judged by is unchanged. Takes effect at the run after the one in progress; that run's timing line (the `score` and
+`store` buckets) says what the walk cost.
+
 Built 2026-10-24 late afternoon, findings 91 and 92, from the two pieces of evidence rkjzag's measurement had asked for
 (the stored evidence of its "Sheffield" and "Lincoln (England)" decisions):
 

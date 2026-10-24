@@ -735,6 +735,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         foreach (var c in candidates)
         {
             if (c.Placement is null || c.Placement.EndsWith("World", StringComparison.Ordinal)) continue;
+            // a placement that agrees with the qualifier, by any of Score's three readings, can never be vetoed, and Elsewhere reads only
+            // the candidate's own segments: its segments need no walk (2026-10-24 evening; the first run with finding 90 was walking every
+            // placed heading's county and town, most of them agreeing, and the owner saw the run slow)
+            if (Qualified.Agrees(reading.Qualifier, c.Placement) == true || Qualified.Agrees(reading.QualifierForPlacement, c.Placement) == true
+                || (c.PlacementAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement ?? reading.Qualifier, $"{c.Placement}, {c.PlacementAncestors}") == true)) continue;
             foreach (var segment in Segments(c.Placement))
             {
                 if (known.Contains(segment) || Qualified.Tokens(segment).All(t => chain.Contains(t))) continue;

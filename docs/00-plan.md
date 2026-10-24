@@ -110,6 +110,10 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
+**Corrected 2026-10-24 evening, in the library, for the run after the one in progress**: finding 90's walk skips
+placements that agree with the qualifier (they can never be vetoed), after the owner saw the run carrying it slow down;
+read the run's timing line against rkjzag's (store 1,033 s, commit 234 s, second pass 194 s).
+
 **Built 2026-10-24 late afternoon from rkjzag's stored evidence, waiting for the next run** (doc 10 7.6 "Built
 2026-10-24 late afternoon"): finding 91 (the whole heading as written breaks a tie among two-source place groups on a
 qualified string: "Lincoln (England)" is TGN's Lincoln with LoC's heading, not Lincolnshire through its variant); finding

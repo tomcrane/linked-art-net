@@ -33,13 +33,12 @@ among the manifest's sources); the LoC "-781" subdivision forms deleted from bot
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
-SQL in doc 10 7.6 "Built 2026-10-23"). The last measured run is run-20261024-100226-t629cj: accepted 9,370 (vote
-3,936, single 2,119, exact-single 3,315), queued 3,563, matched in store 6,003, minted 11,317, lists 404, compounds
-15,558; second pass 3,869 reconsidered, 306 settled; by context queued persauthorfull 1,263, keywords 593, publisher
-782, keywords:head 340, place 258, corpauthor 175, keywords:sub 152. The path:
-8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 ->
-3,964 -> 3,955 -> 3,603 -> 3,563. Doc 10 7.6 has a "Measured" paragraph per run with the samples read; the last is
-"Measured ... t629cj". The Wikidata dump and
+SQL in doc 10 7.6 "Built 2026-10-23"). The last run is run-20261024-111420-rkjzag (findings 85, 86, 87 and the corrections to 83 and 84): accepted 9,447
+(vote 4,008, single 2,124, exact-single 3,315), queued 3,488, matched in store 5,996, minted 11,322, lists 404,
+compounds 15,558; second pass 3,757 reconsidered, 269 settled; its samples and method diff are being read (the measured
+paragraph follows in doc 10 7.6). The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
+4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488. Doc 10 7.6 has a "Measured"
+paragraph per run with the samples read; the last written is "Measured ... t629cj". The Wikidata dump and
 the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -262,18 +261,17 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. The run in progress (started 2026-10-24 after midday, after `undo-run --run run-20261024-100226-t629cj`; the tool
-   rebuilt itself from commit 9b3822f) measures findings 85, 86 and 87 and the corrections to 83 and 84. When it ends,
-   paste the second pass's lines from "second pass over" to the "time by stage" line, then:
+1. Run rkjzag (2026-10-24 afternoon) measured findings 85, 86 and 87 and the corrections to 83 and 84: queued 3,563 ->
+   3,488, votes 3,936 -> 4,008. Its second pass's lines are read; still to paste:
 
-       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method queued --limit 10
-       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:sub --method vote --limit 10
+       dotnet run --project tools/Align -- decisions --run run-20261024-111420-rkjzag --context keywords:sub --method queued --limit 10
+       dotnet run --project tools/Align -- decisions --run run-20261024-111420-rkjzag --context keywords:sub --method vote --limit 10
 
    and the method diff against t629cj, the standing check after every rerun (each run's last decision per string,
    since a string the second pass settled has two; the undone run keeps its evidence):
 
        with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-100226-t629cj' order by source_string_id, id desc),
-            b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
+            b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-111420-rkjzag' order by source_string_id, id desc)
        select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
        join source_strings s on s.id = a.source_string_id

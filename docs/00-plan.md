@@ -10,31 +10,34 @@ Branch `de-pmc` is the working branch and `main` is what is deployed (README, "B
 is behind by all of Phase 5. The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this
 folder are the committed record.
 
-## 0. Resume point (written 2026-10-24 night; the one place to read first)
+## 0. Resume point (written 2026-10-24 night, late, for the next session whenever it is; the one place to read first)
 
 This section is rewritten at the end of every working day. It lists what stands, what the owner has to decide, what
 is built and waiting for a go, and the commands to run on return. The detail behind each line is in
 [10-alignment-toolkit.md](10-alignment-toolkit.md) section 7.6 (the findings, each dated) and in the open items of
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
-**Today, in order** (2026-10-25; every step is under "Commands on return" below with its commands): (1) `git push`
-(the night's commits are unpushed); (2) `vacuum (analyze) authority_records`, the LoC lookup timed before and after
-(bp8unt's `source:loc` was 6,741 s against rkjzag's 124 s, after finding 88's write); (3) ~~the evidence of five bp8unt
-decisions~~ (read, doc 10 7.6 "Read 2026-10-24 night": finding 91 as built; Hadid, Papworth and Keeling as finding 93
-expects, the Hadid mint already carrying a second string; Charlton rightly the desk's; finding 94 built from Keeling,
-the parser's "Knight"); (4) ~~undo bp8unt and rerun~~ (run wy2aqs, measured, doc 10 7.6 "Measured ... wy2aqs": the
-vacuum confirmed, `source:loc` 6,741 s -> 97 s; finding 93 reached 355 strings, and the second pass took 265 of them back
-onto their own placeholders: finding 95 built); (4b) the Wikidata reload, started the night of 2026-10-24 (item 3 under
-"Commands on return"; about three hours; no Align command until its last line); (4c) then undo wy2aqs and rerun, which
-measures findings 93 (properly), 94, 95 and 96 and the subclass walk's typing together; (5) then the index's next use, the
-crosswalk (item 3 (c) under "Next builds"), or the desk. The record of 2026-10-24: three runs measured (t629cj, rkjzag, bp8unt; queued
-3,603 -> 3,563 -> 3,488 -> 3,477), findings 86 to 93 built from them, finding 88 written (354,991 LoC person records
-dated from their Wikidata item), the Sheffield entities confirmed as legacy duplicates, decision 17 closed as no.
-Nothing is half-done.
+**On return, in order** (the next session, 2026-10-25 or days later; every step is under "Commands on return" below
+with its commands): (1) the Wikidata reload's last line, kept from the night of 2026-10-24, pasted and recorded (how
+many classes the subclass walk resolved and how many records it typed; doc 11 section 8.11); (2) `git push` (six
+commits of 2026-10-24 night are unpushed); (3) undo wy2aqs and rerun, about thirty minutes, with the two keywords
+samples and the method diff against wy2aqs: it measures findings 93 (properly), 94, 95 and 96 and the walk's typing
+together, queued expected near 3,740; (4) the measurement written up by the assistant, and whatever the samples and
+diff show built; (5) then the index's next use, the crosswalk (item 3 (c) under "Next builds"), or the desk. Nothing is
+half-done: every finding to 96 is built, tested and committed, and the only thing not yet measured is the rerun.
+
+**The record of 2026-10-24** (one day): four runs measured (t629cj, rkjzag, bp8unt, wy2aqs; queued 3,603 -> 3,563 ->
+3,488 -> 3,477 -> 3,567, the last carrying 265 placeholder self-acceptances finding 95 undoes); findings 86 to 96 built
+from them, finding 88 written (354,991 LoC person records dated from their Wikidata item) and the table vacuumed after
+it (the LoC lookup fifty times slower until then; every staged mass write ends with the vacuum from now on); the
+Sheffield entities confirmed as legacy duplicates; decision 17 closed as no; the honorifics table's trailing and
+leading positions settled from the owner's count (finding 94); the Wikidata reload for the subclass walk started at
+the night's end.
 
 **Where things stand.** Branch `de-pmc`, all work committed, CI green. Six authority sources loaded: the five of the
 manifest (14.5M records) and the Wikidata extract (5.0M, loaded 2026-10-23 evening, doc 11 section 8.11, not yet
-among the manifest's sources); the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
+among the manifest's sources; reloaded with the subclass walk the night of 2026-10-24, its last line to be recorded
+on return); the LoC "-781" subdivision forms deleted from both files. The store has had two duplicate passes (292 and 89
 merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
@@ -323,45 +326,10 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. Run bp8unt (2026-10-24, findings 88 to 92) is measured and its diff read (doc 10 7.6 "Measured ... bp8unt";
-   finding 93 built from it). Before the next run, the vacuum, since finding 88's write left LoC's lookups fifty times
-   slower (the store's loaders vacuum after every load; the SQL write did not), with one lookup timed before and after:
-
-       select n_live_tup, n_dead_tup, last_vacuum, last_autovacuum, last_analyze, last_autoanalyze
-       from pg_stat_user_tables where relname = 'authority_records';
-       explain (analyze, buffers)
-       with h as materialized (select * from authority_records x where x.normalised_labels && array['smith, john'] and x.source = 'loc' and x.type = 'Person')
-       select * from h limit 200;
-       vacuum (analyze, verbose) authority_records;
-
-   Before the vacuum (2026-10-25): 19,428,581 live tuples, 2,901,626 dead (15 per cent, under autovacuum's 20; its
-   last visit was 2026-10-18, the last vacuum the Wikidata load's on 2026-10-23); the one-key lookup took 13.9 ms, 11.9
-   of them in the bitmap index scan on `authority_records_labels_loc`, which read 423 pages for one key, the pending
-   list's signature (a settled GIN lookup reads a handful). After the vacuum: the index scan read 5 pages in 0.11 ms
-   and the lookup took 1.6 ms. The vacuum was the remedy; `vacuum (analyze) authority_records` ends every staged mass
-   write to the table from now on (the loaders already do it). Then the evidence of
-   five of bp8unt's decisions, in DataGrip (an undone run keeps its evidence, so after the rerun is fine too):
-
-       select s.context, s.raw, d.method, jsonb_pretty(d.evidence)
-       from decisions d join source_strings s on s.id = d.source_string_id
-       where d.run_id = 'run-20261024-130904-bp8unt'
-         and s.raw in ('Lincoln (England)', 'Hadid, Zaha, 1950-2006', 'Keeling, William Knight, 1807-1886', 'Papworth, John, 1775-1847', 'Charlton, Alan, 1948')
-       order by s.raw, d.id;
-
-   Read (doc 10 7.6 "Read 2026-10-24 night"): Lincoln finding 91's vote; Hadid, Papworth and Keeling finding 93's
-   cases (Keeling also finding 94's); Charlton rightly queued. The leading-position count for finding 94 is done (39
-   rows; two forenames, Dean and Earl, now in the table's `forenamesToo`). The rerun ran (wy2aqs, measured, doc 10 7.6
-   "Measured ... wy2aqs"; finding 95 built from its second pass). The evidence of "Agar, Eileen, 1899-1991" and
-   "Kelly, Felix, 1917-1994", the two of finding 93's ninety that stayed queued, is read (2026-10-24 night): both are
-   linked clusters that disagree with themselves. Agar: LoC's heading is the string verbatim and agrees, ULAN's linked
-   record says 1904-1991, and the vetoed member poisons the group (finding 44's linked veto). Kelly: ULAN agrees, LoC's
-   record carries finding 88's bare 1916 and conflicts, the same veto. The placeholders could not carry them because
-   they were joined into the vetoed group ("dated as store's record is"). The owner's answer the same night: build it;
-   finding 96 (doc 10 7.6 "Built 2026-10-24 night, finding 96"), measured on the next run.
-
-   Then, after the Wikidata reload's last line (it ran the night of 2026-10-24; the tool cannot be rebuilt while it
-   runs), the rerun, which measures findings 93 (properly, with the placeholders carrying nothing), 94, 95 and 96 and
-   the subclass walk's typing together:
+1. First, the Wikidata reload's last line (item 3; it ran the night of 2026-10-24), pasted here and recorded in doc
+   11 section 8.11 beside the first load's figures (5,004,911 records; 519 thousand untyped before the SQL retyping).
+   Then `git push` (six commits unpushed). Then the rerun, which measures findings 93 (properly, with the placeholders
+   carrying nothing), 94, 95 and 96 and the subclass walk's typing together:
 
        git push
        dotnet run --project tools/Align -- undo-run --run run-20261024-161624-wy2aqs
@@ -379,12 +347,16 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2 order by 3 desc;
 
-   Expected: single -> queued about 265 ("Cozens, John Robert, 1752-1798", "Hadid, Zaha, 1950-2006", "Papworth, John,
-   1775-1847") and bp8unt's older placeholder singles with them (the Liverpool Biennial editions, "Phillips, Claude");
-   the keywords single sample with no store placeholder among its grounds; "Keeling, William Knight, 1807-1886" read
-   whole (finding 94); queued -> single about ninety ("Agar, Eileen, 1899-1991", "Kelly, Felix, 1917-1994": finding
-   96); queued near 3,740; the run about thirty minutes again; and whatever the retyped Wikidata records move
-   (prominence reads sitelinks, finding 88's dates are on the LoC records and do not move).
+   Paste the second pass's lines, the summary, the timing line, the two samples and the diff. Expected: single ->
+   queued about 265 ("Cozens, John Robert, 1752-1798", "Hadid, Zaha, 1950-2006", "Papworth, John, 1775-1847") and
+   bp8unt's older placeholder singles with them (the Liverpool Biennial editions, "Phillips, Claude") (finding 95); the
+   keywords single sample with no store placeholder among its grounds; "Keeling, William Knight, 1807-1886" read whole
+   (finding 94); queued -> single about ninety ("Agar, Eileen, 1899-1991", "Kelly, Felix, 1917-1994") (finding 96);
+   queued near 3,740; `source:loc` near 100 s and the run about thirty minutes; and whatever the retyped Wikidata
+   records move (prominence reads sitelinks; finding 88's dates are on the LoC records and do not move). The record of
+   what led here is in doc 10 7.6: "Measured ... wy2aqs", "Read 2026-10-24 night" (the five bp8unt decisions), and the
+   "Built 2026-10-24 night" paragraphs for findings 93 to 96; the vacuum's figures (423 pages and 11.9 ms before, 5
+   pages and 0.11 ms after) are under "Measured ... bp8unt".
 
 2. The measurement for the index's next use, dates for LoC's undated person records through the Wikidata item that
    links them (item 3b). Read-only, several minutes beside a running reconcile; cancel and rerun after the run if it
@@ -431,7 +403,8 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    dates go with the reload.
 
 3. The Wikidata reload, for the subclass walk (built 2026-10-24, doc 11 section 8.11), an evening's run of about
-   three hours; started the night of 2026-10-24, its report's last line to be pasted; the same command as the first load:
+   three hours; run the night of 2026-10-24 after the owner stopped, its report's last line kept for item 1; the same
+   command as the first load, for the record (and for the next reload):
 
        dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
 

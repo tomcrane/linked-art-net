@@ -23,9 +23,13 @@ Wikidata reload's last line~~ (recorded, doc 11 section 8.11: 285,365 records ty
 ... k22erz": queued 3,567 -> 3,989, the first honest count since the second pass, finding 95 having taken back 494
 placeholder self-acceptances; finding 96's 79 to single; finding 97 built from the single sample); (4) ~~the evidence
 of five k22erz decisions and two records~~ (read, doc 10 7.6 "Read 2026-10-26": findings 98 to 100 built from it,
-Orovida is ULAN's own data; the gjq63j55 query read, finding 101 built); (5) undo k22erz and rerun, which measures
-findings 97 to 101 together (the commands under "Commands on return"); (6) then the index's next use, the crosswalk
-(item 3 (c) under "Next builds"), or the desk.
+Orovida is ULAN's own data; the gjq63j55 query read, finding 101 built); (5) ~~undo k22erz and rerun~~ (run u4ykeu,
+measured, doc 10 7.6 "Measured 2026-10-26 afternoon": 97, 99, 100 and 101 as expected, 98 over-reached and was
+corrected the same day); (6) three queries in DataGrip (under "Commands on return"): the evidence of finding 98's
+vetoes in u4ykeu, the decisions onto unrec_hew74tdt ("Rug Chapel (Corwen, Wales)" accepted onto a placeholder in the
+second pass), and the two Hallstatt strings ("Hallstatt (Austria)" matched to the Bronze Age period); (7) whatever
+(6) shows, built; then undo u4ykeu and rerun, which measures the correction; (8) then the index's next use, the
+crosswalk (item 3 (c) under "Next builds"), or the desk.
 
 **The record of 2026-10-24** (one day): four runs measured (t629cj, rkjzag, bp8unt, wy2aqs; queued 3,603 -> 3,563 ->
 3,488 -> 3,477 -> 3,567, the last carrying 265 placeholder self-acceptances finding 95 undoes); findings 86 to 96 built
@@ -120,7 +124,14 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-26 from the four pieces of evidence and the fifth, waiting for the next run** (doc 10 7.6 "Built
+**Corrected 2026-10-26 afternoon from run u4ykeu, waiting for the next run** (doc 10 7.6 "Measured 2026-10-26
+afternoon"): finding 98 had read any resolution of a qualifier as naming the place and vetoed a TGN chain without the
+resolved ancestors' words; it took some forty right places with the one wrong one (Decatur in the American state when
+"Georgia" resolved to the nation; Agrigento, Bonn, Beirut, Blairquhan Castle, Omagh). Now only a qualifier the home
+place resolved names a place at home, and only a chain outside the home country is a namesake abroad. Expect the forty
+back where k22erz had them, Marble Hill still queued, queued about 4,010.
+
+**Built 2026-10-26 from the four pieces of evidence and the fifth, measured in run u4ykeu** (doc 10 7.6 "Built
 2026-10-26, findings 98 to 101"): finding 98, a qualifier resolved to a known place vetoes a whole TGN chain that holds the
 qualifier's word without the place's ancestors ("Marble Hill (Middlesex)" was placed in Middlesex County,
 Massachusetts, on the word alone); finding 99, a name whose given part is a rank alone ("Yarmouth, Earl of") is a
@@ -345,32 +356,65 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. Run k22erz (2026-10-26) is measured, its evidence read, and findings 97 to 101 built from it (doc 10 7.6 "Built
-   2026-10-26"). The rerun measures them together:
+1. Run u4ykeu (2026-10-26 afternoon) is measured (doc 10 7.6 "Measured 2026-10-26 afternoon") and finding 98
+   corrected from its diff. Three queries to read before the rerun, in DataGrip:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261026-090659-k22erz
-       dotnet run --project tools/Align -- reconcile --verbose
-       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
-       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method single --limit 10
-
-   and the method diff against k22erz, the standing check after every rerun (each run's last decision per string,
-   since a string the second pass settled has two; the undone run keeps its evidence):
+   (a) the evidence of finding 98's vetoes in u4ykeu, for the strings whose method changed against k22erz: the
+   resolved chain is in the reason, the record's own chain beside it
 
        with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261026-090659-k22erz' order by source_string_id, id desc),
+            b as (select distinct on (source_string_id) source_string_id, method, evidence from decisions where run_id = 'run-20261026-130632-u4ykeu' order by source_string_id, id desc)
+       select a.method as before, b.method as after, s.context, s.raw, m->>'source' as source, m->>'label' as label, ar.data->>'parentString' as chain, m->>'reason' as reason
+       from a join b on b.source_string_id = a.source_string_id
+       join source_strings s on s.id = a.source_string_id
+       cross join lateral jsonb_array_elements(b.evidence->'groups') g
+       cross join lateral jsonb_array_elements(g->'members') m
+       left join authority_records ar on ar.uri = m->>'uri'
+       where a.method <> b.method and m->>'reason' like '%namesake elsewhere%'
+       order by s.raw;
+
+   and how many strings the veto touched in all, by context and method:
+
+       select s.context, d.method, count(distinct d.id)
+       from decisions d join source_strings s on s.id = d.source_string_id
+       cross join lateral jsonb_array_elements(d.evidence->'groups') g
+       cross join lateral jsonb_array_elements(g->'members') m
+       where d.run_id = 'run-20261026-130632-u4ykeu' and m->>'reason' like '%namesake elsewhere%'
+       group by 1, 2 order by 3 desc;
+
+   (b) the decisions onto the placeholder "Rug Chapel (Corwen, Wales)" was accepted onto in the second pass:
+
+       select s.context, s.raw, d.method, d.run_id, jsonb_pretty(d.evidence)
+       from decisions d join source_strings s on s.id = d.source_string_id
+       where d.entity_id = 'https://data.paul-mellon-centre.ac.uk/concept/unrec_hew74tdt' order by d.id;
+
+   (c) the two Hallstatt strings' decisions in u4ykeu (the head's one, the qualified string's two):
+
+       select s.context, s.raw, d.method, d.entity_id, jsonb_pretty(d.evidence)
+       from decisions d join source_strings s on s.id = d.source_string_id
+       where d.run_id = 'run-20261026-130632-u4ykeu' and s.raw in ('Hallstatt', 'Hallstatt (Austria)') order by d.id;
+
+   Then, with whatever they show built, the rerun, which measures the correction of 98:
+
+       dotnet run --project tools/Align -- undo-run --run run-20261026-130632-u4ykeu
+       dotnet run --project tools/Align -- reconcile --verbose
+       dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
+       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method single --limit 10
+
+   and the method diff against u4ykeu, the standing check after every rerun (each run's last decision per string,
+   since a string the second pass settled has two; the undone run keeps its evidence):
+
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261026-130632-u4ykeu' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2 order by 3 desc;
 
-   Paste the second pass's lines (one per round now), the summary, the timing line, the two samples and the diff.
-   Expected: "Cavaceppi, Bartolomeo, c.1716-1799" single -> vote and a handful more approximate lifespans joining a
-   second record (finding 97); "Marble Hill (Middlesex)" single -> minted, its head string exact-name -> minted with
-   it, and the houses placed in American namesake counties the same way (finding 98); "Yarmouth, Earl of (author)"
-   exact-single -> queued (finding 99); some tens settled by the further rounds, the second pass about 161 s longer
-   for each round it goes (finding 100); "Gibson, Jean, 1930-" vote -> queued, the keywords:head "Gibson, Jean, 1935-"
-   single -> queued, and some tens of second-pass votes onto placeholders with them (finding 101); queued near 3,989,
-   the rounds and the placeholder votes pulling opposite ways.
+   Paste the second pass's lines, the summary, the timing line, the two samples and the diff. Expected: the forty
+   places back where k22erz had them (queued -> vote some 30 with Agrigento, Beirut, Bonn; minted -> single 8; single
+   -> vote 17 with Decatur), their heads back to exact-name, "Marble Hill (Middlesex)" still queued; nothing else
+   moving unless (a) to (c) build something; queued about 4,010.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

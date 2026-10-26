@@ -471,16 +471,24 @@ public class GroupingTests
         Assert.False(Reconciler.Score(bridgend, [new Candidate("t41", "tgn", "Newcastle", EntityClass.Place, null, [], "local", 1.0, Placement: "Shropshire, England, United Kingdom, Europe, World")], 120)[0].Veto);
         var fountains = Reading("Fountains Hall", EntityClass.Place) with { Qualifier = "Yorkshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
         Assert.True(Reconciler.Score(fountains, [new Candidate("l30", "lcsh", "Fountains Hall (England)", EntityClass.Type, null, [], "local", 0.85, Placement: "England")], 120)[0].QualifierAgrees); // and still widen
-        // a qualifier that resolves to a known place names that place: a whole chain holding the qualifier's word but not the place's ancestors is a
-        // namesake elsewhere (finding 98, 2026-10-26, run k22erz: "Marble Hill (Middlesex)" was placed in TGN's Marble Hill in Middlesex County,
-        // Massachusetts, on the word alone); a chain under the ancestors agrees, and a heading's parenthetical is not a chain and agrees as before
+        // a qualifier the home place resolved names a place at home: a whole chain holding the qualifier's word outside the home country is a
+        // namesake abroad (finding 98, 2026-10-26, run k22erz: "Marble Hill (Middlesex)" was placed in TGN's Marble Hill in Middlesex County,
+        // Massachusetts, on the word alone); a chain at home agrees, and a heading's parenthetical is not a chain and agrees as before
         var marble = Reading("Marble Hill", EntityClass.Place) with { Qualifier = "Middlesex", QualifierAncestors = "England, United Kingdom, Europe, World" };
-        var massachusetts = Reconciler.Score(marble, [new Candidate("t2491915", "tgn", "Marble Hill", EntityClass.Place, null, [], "local", 1.0, Placement: "Middlesex, Massachusetts, United States, North and Central America, World")], 120)[0];
-        Assert.True(massachusetts.Veto); Assert.False(massachusetts.QualifierAgrees); Assert.Contains("is a namesake elsewhere", massachusetts.Reason);
-        var twickenham = Reconciler.Score(marble, [new Candidate("t1", "tgn", "Marble Hill", EntityClass.Place, null, [], "local", 1.0, Placement: "Twickenham, Middlesex, England, United Kingdom, Europe, World")], 120)[0];
+        var massachusettsRecord = new Candidate("t2491915", "tgn", "Marble Hill", EntityClass.Place, null, [], "local", 1.0, Placement: "Middlesex, Massachusetts, United States, North and Central America, World");
+        var massachusetts = Reconciler.Score(marble, [massachusettsRecord], 120, homePlace: "United Kingdom")[0];
+        Assert.True(massachusetts.Veto); Assert.False(massachusetts.QualifierAgrees); Assert.Contains("is a namesake abroad", massachusetts.Reason);
+        var twickenham = Reconciler.Score(marble, [new Candidate("t1", "tgn", "Marble Hill", EntityClass.Place, null, [], "local", 1.0, Placement: "Twickenham, Middlesex, England, United Kingdom, Europe, World")], 120, homePlace: "United Kingdom")[0];
         Assert.False(twickenham.Veto); Assert.True(twickenham.QualifierAgrees);
-        var marbleHeading = Reconciler.Score(marble, [new Candidate("l31", "loc", "Marble Hill (Middlesex)", EntityClass.Place, null, [], "local", 1.0, Placement: "Middlesex")], 120)[0];
+        var marbleHeading = Reconciler.Score(marble, [new Candidate("l31", "loc", "Marble Hill (Middlesex)", EntityClass.Place, null, [], "local", 1.0, Placement: "Middlesex")], 120, homePlace: "United Kingdom")[0];
         Assert.False(marbleHeading.Veto); Assert.True(marbleHeading.QualifierAgrees);
+        // a project without a home place cannot tell the Marble Hills apart and vetoes nothing on this ground
+        Assert.False(Reconciler.Score(marble, [massachusettsRecord], 120)[0].Veto);
+        // and a resolution that is not the home place's is a guess, which never vetoes a chain agreeing as written (run u4ykeu, the same day: the
+        // first form of the rule read "Georgia" as the nation TGN ranks first and vetoed Decatur in the American state, and some forty with it)
+        var decatur = Reading("Decatur", EntityClass.Place) with { Qualifier = "Georgia", QualifierAncestors = "Georgia, Asia, World" };
+        var inGeorgia = Reconciler.Score(decatur, [new Candidate("t2", "tgn", "Decatur", EntityClass.Place, null, [], "local", 1.0, Placement: "DeKalb, Georgia, United States, North and Central America, World")], 120, homePlace: "United Kingdom")[0];
+        Assert.False(inGeorgia.Veto); Assert.True(inGeorgia.QualifierAgrees);
         // a heading's type word and a record's level (the TGN level preference)
         Assert.Equal("County", Qualified.TypeOf(["Cornwall (England : County)"]));
         Assert.Equal("City", Qualified.TypeOf(["New York (N.Y.)", "New York (N.Y. : City)"]));

@@ -1259,6 +1259,72 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-10-26 afternoon (run-20261026-130632-u4ykeu: findings 97 to 101, against k22erz): accepted 9,426 ->
+9,371 (vote 4,024 -> 3,978, single 2,101 -> 2,092, exact-single 3,301 -> 3,301), queued 3,989 -> 4,048, matched in
+store 5,956 -> 5,945, minted 10,882 -> 10,889; the second pass reconsidered 4,141 (4,121) and settled 93 (132), and
+its second round, over the 4,048 still queued, settled nothing. By context queued: persauthorfull 1,286, keywords 984,
+publisher 783, keywords:head 467, place 217, corpauthor 183, keywords:sub 128. Time by stage: store 933 s, second pass
+285 s (two rounds), commit 145 s, source:loc 127 s, ulan 114 s, lcsh 89 s, tgn 88 s, aat 84 s, read 26 s; thirty-one
+minutes. The method diff against k22erz: vote -> queued 50, single -> vote 19, vote -> single 17, exact-name -> queued
+9, single -> minted 8, queued -> single 7, single -> queued 6, exact-name -> minted 4, minted -> queued 4, queued ->
+exact-name 2, queued -> vote 2, minted -> vote 1, exact-single -> queued 1, vote -> exact-name 1, exact-name -> single
+1, exact-name -> exact-single 1, single -> exact-name 1. Read:
+
+- Finding 97 as expected: the 19 single -> vote are approximate lifespans joining a record a year off ("Amigoni,
+  Jacopo, c.1685-1752", "Bentley, Charles, c 1806-1854", "Beverley, William Roxby, c. 1810-1889", "Bogdany, Jakob,
+  ca.1660-1724", Cavaceppi, Crunden, Elmer, "Granges, David Des, 1611-c 1672"), four of the 7 queued -> single the
+  same ("Beechey, Henry William, c.1789-1862", "Cunningham, Edward Francis, c 1742- c 1795", "Knell, William Adolphus,
+  c 1808-1875", "Taylor, Robert, 1807-c.1870"), and "Bonnar, William, 1800- ca.1855" queued -> vote.
+- Finding 99: "Yarmouth, Earl of (author)" exact-single -> queued, as expected. The rank kept in the name also
+  brought the dukes to the desk ("Atholl, Duke of (author)", "Devonshire, Duke of (author)", "Rutland, Duke of
+  (author)", "Salisbury, Marquess of (author)" minted -> queued, with candidates now; "Salisbury, Marchioness of
+  (author)" exact-name -> minted, nothing of the whole name) and "Glin, Knight of (author)" minted -> vote: the Knight
+  of Glin (Desmond FitzGerald, 1937-2011) in ULAN and LoC, a title one line has borne and the author's. Right.
+- Finding 101: "Gibson, Jean, 1935-" single -> queued as expected, and the dated persons among the 50 vote -> queued
+  ("Beare, George, op.1741-1749", "Berg, Claus, ca. 1470-1532-1535", "Best, John, op.1750-1792", "Chalmers, George,
+  Sir, c 1720-1791", "Cooper, Alexander, 1605-1660") are the placeholder votes taken back; "Hamilton, Emma, Lady,
+  1761?-1815" and "Payne, William, 1760-1830" exact-name -> queued are their twins' entities, no longer firm. The
+  second pass settled 39 fewer.
+- Finding 100: the second round settled nothing of the 4,048 and cost 105 s. Consistent with finding 101: the order
+  dependence the round was built from was the acceptance that made gjq63j55 firm, which 101 took back, and nothing
+  round 1 accepted (matches in store, votes onto the project's firm places) changed what the store offers. The round
+  stays: a run in which round 1 makes an entity firm will use it, and a round that settles nothing ends the pass.
+- Finding 98 over-reached. "Marble Hill (Middlesex)" went single -> queued, better than the mint expected: the
+  Massachusetts record vetoed, LCSH's "Marble Hill (Richmond upon Thames, London, England)" and LoC's "Marble Hill
+  House (London, England)" at 0.85 for the desk, and its head exact-name -> queued with it. But the other places that
+  moved are not namesakes: Agrigento (Italy), Beirut (Lebanon), Bonn (Germany) among the vote -> queued; Agrigento,
+  Campania (Italy), Gubbio (Italy), Lucknow (India), Parma exact-name -> queued (their twins' entities gone); the 8
+  single -> minted (Balabakk (Lebanon), Banbridge (Co. Down), Blairquhan Castle (Ayrshire), Cascata delle Marmore
+  (Italy), Fasque (Kincardineshire), "Hilversum, Holland", Marchmont (Berwickshire), "Omagh, Co. Tyrone"); the 17 vote
+  -> single (Andalusia (Spain), "Baarn, The Netherlands", Coonoor (India), "Cumnock, Ayrshire", "Decatur, Georgia",
+  "Humlebaek, Denmark", Jammu and Kashmir (India), Maharashtra (India)): the TGN record vetoed, LoC's heading carrying
+  alone; some forty strings. The ground was wrong. The resolution of a qualifier among TGN's namesakes is a guess, by
+  level (finding 87: "Georgia" is the nation before the American state, and Decatur is in the state) or by the one
+  record's spelling (TGN's chains spell their places as TGN prefers, and a historic county is not the council area in
+  a modern chain), good enough to widen agreement (finding 56) but not to veto a whole chain that agrees with the
+  qualifier as written. The one resolution that is a presumption about the project rather than a guess about the data
+  is the home place's (finding 71): a qualifier the home place resolved names a place at home, and a chain agreeing on
+  its word outside the home country is a namesake abroad. Corrected the same day: the veto fires only when the
+  resolved chain is at home and the candidate's whole chain does not hold the home place ("the qualifier names a
+  place at home (England, United Kingdom, Europe, World) and this Middlesex is a namesake abroad"); Score takes the
+  home place for it, and a project without one vetoes nothing on this ground. Expect the forty back where k22erz had
+  them and Marble Hill still queued. The evidence of the run's vetoes (the query under "Commands on return" in the
+  plan) confirms the reading before the rerun.
+- Two to read from the second pass's lines, their queries in the plan: "Rug Chapel (Corwen, Wales)" (keywords) was
+  accepted single onto the project's concept unrec_hew74tdt, a placeholder (whose, and what carried it: a placeholder
+  awaiting review carries nothing, finding 95; a record joined to it may); and "Hallstatt (Austria)" (keywords:head),
+  a vote on TGN and LoC in k22erz, was queued in the first pass (finding 98's misfire, if "Austria" resolved to a
+  chain spelt otherwise) and matched in store in the second to the project's "Hallstatt (Bronze Age culture or
+  period)", a period, after its head "Hallstatt" had gone exact-name -> exact-single (AAT's culture: one exact record
+  of a one-word name in a context that reads Type first). The match is wrong whatever queued the string: a string
+  placed in a known place is not a period, as it is not a person (finding 69). The evidence says whether the
+  correction of 98 is enough or a rule is wanted.
+- The keywords samples otherwise as before: queued "Hall, ?", "Anglesey Abbey" (its placeholder marked), "Wheatley,
+  John, 1892-1955", "Ogmore Castle", "Newcastle (Bridgend, Wales)", "Morgan, John, 1823-1886", "Nibes, Richard Henry,
+  1954-", "Summers, S, op 1739", "Christian church", with "Marble Hill (Middlesex)" now among them; single Fountains
+  Hall, Williams, Leeds Castle, Orovida, Thomas, Grimsthorpe Castle, Lismore Castle (the Cavan and Galway records
+  vetoed as elsewhere), Houghton Hall, Bentley, Stuart "Athenian".
+
 Built 2026-10-26, findings 98 to 101, from the four pieces of evidence k22erz's samples asked for (below, "Read
 2026-10-26") and the fifth they led to:
 

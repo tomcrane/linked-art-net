@@ -405,7 +405,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // one acceptable entity, or one acceptable entity with authority behind it among provisional lookalikes. An entity
             // minted for a string that is itself awaiting review never answers silently; an entity minted because nothing
             // was found anywhere does, so the same unknown name across contexts becomes one local authority.
-            var storeScored = Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct)).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore).ToList();
+            var storeScored = Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct), _options.HomePlace).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore).ToList();
             // in a qualified context ("Heaton, Bradford") an entity answers silently only when its qualifier agrees with the string's, or
             // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
@@ -438,7 +438,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             Time("source:" + source.Name, sw);
         }
 
-        var groups = Groups(Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct)));
+        var groups = Groups(Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct), _options.HomePlace));
         Time("score", sw);
         var live = groups.Where(g => !g.Vetoed).ToList();
         var top = live.FirstOrDefault();
@@ -756,7 +756,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     // ---- scoring and grouping ----------------------------------------------------------------------------------
 
     /// <summary>Name score, then dates (agreement lifts, conflict vetoes, dates that cannot be compared change nothing), type (a mismatch vetoes), nationality (agreement lifts).</summary>
-    public IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates) => Score(reading, candidates, _options.MaxPersonLifetimeYears);
+    public IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates) => Score(reading, candidates, _options.MaxPersonLifetimeYears, null, _options.HomePlace);
 
     /// <summary>
     /// The segments of the candidates' placements, outside the string's own qualifier chain, that TGN knows as a county or above: the places
@@ -799,7 +799,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return Segments(placement).Any(segment => knownPlaces.Contains(segment) && !Qualified.Tokens(segment).All(t => chain.Contains(t)));
     }
 
-    public static IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates, int maxPersonLifetimeYears, IReadOnlySet<string>? knownPlaces = null)
+    /// <param name="homePlace">The project's home place (the manifest's), for finding 98: a qualifier the home place resolved names a place at home, and a whole chain agreeing on its word outside the home country is a namesake abroad. Null when the project has none; then nothing is vetoed on that ground.</param>
+    public static IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates, int maxPersonLifetimeYears, IReadOnlySet<string>? knownPlaces = null, string? homePlace = null)
     {
         var list = new List<ScoredCandidate>();
         foreach (var candidate in candidates)
@@ -842,13 +843,20 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (qualifierAgrees == false && reading.QualifierAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement, c.Placement) == true) qualifierAgrees = true;
             // and the chain above the candidate's own placement, the same way ("Boughton House (Northamptonshire)" for "(England)"; finding 84)
             if (qualifierAgrees == false && c.PlacementAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement ?? reading.Qualifier, $"{c.Placement}, {c.PlacementAncestors}") == true) qualifierAgrees = true;
-            // a qualifier that resolves to a known place names that place, and a record whose whole chain holds the qualifier's word but not
-            // the place's ancestors is in a namesake elsewhere: TGN's Marble Hill in Middlesex County, Massachusetts, agreed with "(Middlesex)"
+            // a qualifier the home place resolved (finding 71) names a place at home, and a record whose whole chain holds the qualifier's word
+            // outside the home country is a namesake abroad: TGN's Marble Hill in Middlesex County, Massachusetts, agreed with "(Middlesex)"
             // on the word alone, and the house in Twickenham was placed there (finding 98, 2026-10-26, run k22erz). Only a whole chain (TGN's
-            // parent string, ending in "World") says enough to be read so; a heading's parenthetical "(Middlesex)" agrees as before
-            if (qualifierAgrees == true && reading.QualifierAncestors is { } resolved && !veto && c.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal)
-                && !Qualified.Contains(chain, Qualified.Tokens(resolved)))
-            { qualifierAgrees = false; veto = true; reasons.Add($"the qualifier names a known place ({resolved}) and this {reading.Qualifier} is a namesake elsewhere"); }
+            // parent string, ending in "World") says enough to be read so; a heading's parenthetical "(Middlesex)" agrees as before. The
+            // first form of the rule read any resolution as naming the place and vetoed a chain without the resolved ancestors' words, and
+            // took some forty right places with the one wrong one (run u4ykeu, the same day): a resolution among namesakes by level ("Georgia"
+            // the nation before the American state, and Decatur is in the state), or the one record's spelling (TGN's chains spell places
+            // as TGN prefers; a historic county is not the council area in a modern chain), is a guess, good enough to widen agreement
+            // (finding 56), not to veto a chain that agrees as written. The home place's choice is a presumption about the project, and
+            // the home country is spelt one way in TGN's chains, so the veto reads only that
+            if (qualifierAgrees == true && reading.QualifierAncestors is { } resolved && !veto && homePlace is { } home && c.Placement is { } chain
+                && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Tokens(home) is { Count: > 0 } homeWords
+                && Qualified.Contains(resolved, homeWords) && !Qualified.Contains(chain, homeWords))
+            { qualifierAgrees = false; veto = true; reasons.Add($"the qualifier names a place at home ({resolved}) and this {reading.Qualifier} is a namesake abroad"); }
             // a qualifier TGN knows as a county or above ("Herefordshire") names a real place, and a record placed elsewhere is not the
             // string's whether or not any record is placed: "Hampton Court (Herefordshire)" is neither the Jamaican nor the Richmond
             // one, and is minted (finding 66, 2026-10-22)

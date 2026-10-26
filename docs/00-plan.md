@@ -29,9 +29,10 @@ corrected the same day); (6) ~~three queries in DataGrip~~ (read, doc 10 7.6 "Re
 correction of 98 confirmed, findings 102 and 103 built from the other two); (7) ~~undo u4ykeu and rerun~~ (run awn284,
 measured, doc 10 7.6 "Measured 2026-10-26 evening": the diff explained by the three, no misfire, nothing new in the
 samples; the stopping criterion met, the reconciliation cycles end as the main activity); (8) `git push`; (9) the
-evidence of two drifted decisions, if wanted (under "Commands on return"); (10) the owner's two decisions: the
-placeholder consolidation (one run of its own) or not, and which use comes first, the crosswalk (item 3 (c) under
-"Next builds") or the desk in the workbench.
+evidence of two drifted decisions, if wanted (under "Commands on return"); (10) ~~the placeholder consolidation~~
+(decided and built the same evening in its minimal form, finding 104: the string's own placeholder is never a
+candidate; measured incidentally by the next run, none scheduled); (11) the owner's remaining decision: which use
+comes first, the crosswalk (item 3 (c) under "Next builds") or the desk in the workbench.
 
 **The record of 2026-10-26** (one day): three runs measured (k22erz, u4ykeu, awn284; queued 3,989 -> 4,048 -> 4,032,
 the first the first honest count since the second pass); findings 97 to 103 built (approximate years widened; a
@@ -134,6 +135,11 @@ the two below are closed and kept for their queries.
     a town before the county, "&"): finding 77, built, doc 10 7.6 "Decision 16's count". The bare shape is about
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
+
+**Built 2026-10-26 evening, waiting for whatever run comes next** (doc 10 7.6 "Built 2026-10-26 evening, finding
+104"): the string's own placeholder is never a candidate (the store stage drops the entity its own Queued decision
+names), closing the family of holes findings 95, 101 and 102 closed one rule at a time; the six exclusions stay for
+twins' placeholders. Nothing decided rightly can move; expect no diff from it.
 
 **Corrected and built 2026-10-26 afternoon from run u4ykeu, measured in run awn284** (doc 10 7.6 "Measured
 2026-10-26 afternoon", "Built 2026-10-26 afternoon, findings 102 and 103", "Measured 2026-10-26 evening"): finding 98 had read any resolution of a

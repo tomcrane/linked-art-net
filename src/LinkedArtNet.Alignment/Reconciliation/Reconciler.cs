@@ -399,6 +399,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 foreach (var key in reading.Keys)
                     foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, cls, ct))
                         storeMatches[e.Id] = e;
+            // the string's own placeholder is never a candidate (finding 104, 2026-10-26, the owner's decision after run awn284): the
+            // provisional entity minted from the string when it was queued copies its name, qualifier and dates, so it agrees with the
+            // string on everything, and every rule that reads agreement among candidates was a hole until told otherwise (findings 95, 101
+            // and 102 closed three, one rule each; those exclusions stay for twins' placeholders, which may still be the entity a sibling
+            // is accepted onto). The string's own current decision names it
+            if (await store.DecisionForAsync(s.Id, ct) is { Method: DecisionMethod.Queued, EntityId: { } own }) storeMatches.Remove(own);
             foreach (var e in storeMatches.Values)
                 candidates.Add(await StoreCandidateAsync(e, reading, ct));
             Time("store", sw);

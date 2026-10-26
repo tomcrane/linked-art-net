@@ -1259,6 +1259,23 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-26 evening, finding 104, the placeholder consolidation in its minimal form (the owner's decision, after
+the explanation of both forms): the string's own placeholder is never a candidate. The provisional entity minted from
+a string when it is queued copies its name, qualifier and dates, so whenever the string is evaluated again with the
+store in play (the second pass does this for every queued string) its own placeholder came back agreeing with it on
+everything, and every rule that reads agreement among candidates was a hole until told otherwise: finding 95 (the
+single rule and the silent store match), finding 101 (the three date rules), finding 102 (the "placed through" join),
+one rule each, six exclusions in all, with the place tie rules, prominence, the outvoting and the lone-record rules
+unpatched. Now the store stage drops the entity the string's own current Queued decision names before scoring, so no
+rule sees it. The six exclusions stay, since they also cover a twin's placeholder (the same name in another context,
+still queued), which carries nothing as a ground but may still be the entity a sibling is accepted onto when a record
+in its group carries ("Gibson, Jean, 1935-" in keywords:head joined its keywords twin's placeholder with LoC's record
+behind it, and the two contexts share one entity); the fuller form, dropping twins' placeholders too, would make a
+second entity for the desk to merge and was declined. Nothing the current rules decide rightly can move: the own
+placeholder was never a right ground, so the change is measured incidentally by the next run, whenever it comes, and
+no run is scheduled for it. SecondPassTests: the own placeholder is absent from the evidence in the three placeholder
+tests (findings 95, 101, 102), which had asserted it present and marked.
+
 Measured 2026-10-26 evening (run-20261026-142043-awn284: finding 98 corrected, findings 102 and 103, against u4ykeu):
 accepted 9,371 -> 9,388 (vote 3,978 -> 4,008, single 2,092 -> 2,082, exact-single 3,301 -> 3,298), queued 4,048 ->
 4,032, matched in store 5,945 -> 5,951, minted 10,889 -> 10,882; the second pass reconsidered 4,127 and settled 95,

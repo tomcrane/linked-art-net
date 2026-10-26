@@ -103,11 +103,11 @@ public class SecondPassTests(PostgresFixture pg)
         var placeholder = (await pg.Store.GetEntityAsync(decision.EntityId!))!;
         Assert.Equal(EntityStatus.Provisional, placeholder.Status);
         Assert.Equal("1752-1799", placeholder.Lifespan?.Text);
-        // evaluated again with the placeholder in the store, the string is still the desk's, and the placeholder says why it carries nothing
+        // evaluated again with the placeholder in the store, the string is still the desk's; since finding 104 its own placeholder is not a
+        // candidate at all (a twin's would be, marked "a placeholder awaiting review: carries nothing")
         var again = await reconciler.EvaluateAsync(ds, cozens, includeStore: true);
         Assert.Equal(Outcome.Queued, again.Outcome);
-        var own = Assert.Single(again.Groups.SelectMany(g => g.Members), m => m.Candidate.EntityId == placeholder.Id);
-        Assert.Contains("a placeholder awaiting review: carries nothing", own.Reason);
+        Assert.DoesNotContain(again.Groups.SelectMany(g => g.Members), m => m.Candidate.EntityId == placeholder.Id);
         Assert.Contains(again.Groups.SelectMany(g => g.Members), m => m.Candidate.Source == "loc" && m.Veto && m.DatesConflict); // the conflict that queued it, still there
     }
 
@@ -135,7 +135,7 @@ public class SecondPassTests(PostgresFixture pg)
         var again = await reconciler.EvaluateAsync(ds, gibson, includeStore: true);
         Assert.Equal(Outcome.Queued, again.Outcome);
         var members = again.Groups.SelectMany(g => g.Members).ToList();
-        Assert.Contains(members, m => m.Candidate.EntityId == decision.EntityId && m.Reason.Contains("a placeholder awaiting review: carries nothing"));
+        Assert.DoesNotContain(members, m => m.Candidate.EntityId == decision.EntityId); // its own placeholder, not a candidate since finding 104
         Assert.DoesNotContain(members, m => m.Reason.Contains("which store dates") || m.JoinedTo == decision.EntityId);
         Assert.Equal(2, again.Groups.Count(g => !g.Vetoed && g.Members.Any(m => m.Candidate.EntityId is null))); // ULAN's and LoC's undated records, still two groups
     }
@@ -161,7 +161,7 @@ public class SecondPassTests(PostgresFixture pg)
         var again = await reconciler.EvaluateAsync(ds, rug, includeStore: true);
         Assert.Equal(Outcome.Queued, again.Outcome);
         var members = again.Groups.SelectMany(g => g.Members).ToList();
-        Assert.Contains(members, m => m.Candidate.EntityId == decision.EntityId && m.Reason.Contains("a placeholder awaiting review: carries nothing"));
+        Assert.DoesNotContain(members, m => m.Candidate.EntityId == decision.EntityId); // its own placeholder, not a candidate since finding 104
         Assert.DoesNotContain(members, m => m.JoinedTo == decision.EntityId);
     }
 }

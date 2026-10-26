@@ -243,6 +243,13 @@ and the log (doc 15) records that. The order within an area is rough value.
 - The possessive key of an acronym (finding 105's follow-up, run evhvuw): "ICA" went from 82 to 102 groups through
   the key "icas"; a name written in capitals gets no possessive key. One line and a test line, with the next library
   change.
+- "Accept together" (the desk, 2026-10-26 evening, the owner's FYI at "Christopher Cock": ULAN's "Cock, Christopher"
+  1648~-1748 and LoC's "Cock, Mr. (Christopher), active 1720-1749" are one man in two cards, accepted one and then
+  attended to on the entity page). A tick on each card and one action that makes one entity with both identifiers.
+  Size S to M. Behind it, two reconciler items: LoC's courtesy heading "Surname, Mr. (Forename)" read as "Surname,
+  Forename" by the matcher (it scored 0.93 for the "Mr."; size S), and, to measure before building, a join for an
+  undated string whose two sources hold one exact record each with compatible dates (LoC's working span inside ULAN's
+  window), the shape of finding 79 without the string's own dates; namesakes are the risk.
 - An identifier on "Keep as local authority" (the same desk item): the NLS archive is the one authority for
   Dowell's Ltd (https://manuscripts.nls.uk/agents/corporate_entities/1476), and the entity page already takes a URI
   as an identifier (since 2026-10-26 evening it takes an ArchivesSpace agent's public URL on any host, by the shape

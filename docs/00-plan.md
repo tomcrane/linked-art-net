@@ -71,6 +71,15 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        where d.run_id in ('run-20261026-130632-u4ykeu', 'run-20261026-142043-awn284')
          and s.raw in ('L (colonnade)', 'Red House (Yorkshire)') order by s.raw, d.id;
 
+4. The 88 strings decided on 2026-10-18 and never re-decided: the run that holds them, then its undo and a reconcile
+   (which passes over every string already decided, so it re-decides only those):
+
+       select run_id, method, count(*), min(decided_at), max(decided_at) from decisions where valid group by 1, 2 order by 4;
+       dotnet run --project tools/Align -- undo-run --run <the 2026-10-18 run id>
+       dotnet run --project tools/Align -- reconcile --verbose
+
+   Paste the summary (expect considered 46,299, 88 decided, the rest passed over) and the desk's count after.
+
 3. The standing method diff after the next run, whenever it comes, against awn284 (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence):
 
@@ -215,6 +224,20 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
+- The record behind the string, at the desk (the owner's first question at the desk, 2026-10-26 evening: "Messrs
+  Langford" in corpauthor, seen twice, is the auction house or a provenance stub, and the catalogue record would say).
+  The store keeps a string's field, parse, occurrences and first and last seen, nothing of the records; doc 12 section
+  5 wants up to three example records per string (title, date, the field), deferred to the pipeline runner's collect
+  stage (step 4). Build that stage's first slice for the desk: a table of examples per string (dataset, context,
+  normalised, record id, title, date, field), filled by a collector over the DScribe library export under
+  `C:\pmc4-03-18`, three per string, and the desk showing them under the string. Needs the export's format and
+  the field mapping the pmc-2 pipeline used (doc 10 section 9). Size M.
+- The 88 strings queued on 2026-10-18 by the first reconciliation and never re-decided (seen at the desk 2026-10-26:
+  4,120 in the list against awn284's 4,032; "Messrs Langford" shows the evidence of that day, no reasons, no body
+  rules). A run passes over a string with a valid decision and each day's undo took back only the previous run, so
+  decisions from a run never undone persist with their rules of the day. Undo that run and reconcile, which re-decides
+  only those 88 (the query to find it is under Commands on return, item 4). More generally, the jobs step wants a
+  "re-decide strings decided before run X" operation.
 - The first desk session (section 0, Commands on return, item 1) and what it shows: each shortfall becomes a desk
   item here and is built. Doc 13, the user guide (2026-10-18), is revised after it: it predates placeholders, the
   second pass and the evidence shape as it now is.

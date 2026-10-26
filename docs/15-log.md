@@ -30,7 +30,7 @@ the first of them the first honest count since the second pass); findings 97 to 
 namesake abroad; a rank alone is a title; the second pass goes round again; a placeholder dates, holds and answers
 nothing, findings 101 and 102 with 95; a placed string is not an idea), finding 98 corrected the same afternoon after
 it vetoed 48 right places; the Wikidata reload's figures recorded; and the cycles declared converged (doc 10 7.6
-"Measured 2026-10-26 evening", the stopping criterion).
+"Measured 2026-10-26 evening", the stopping criterion). In the evening: the owner chose the desk before the crosswalk and the minimal placeholder consolidation (finding 104, built); the plan was reorganised and this log begun; the first desk session found the 88 strings queued on 2026-10-18 and never re-decided, and asked for the record behind the string (plan section 7, workbench and desk).
 
 **Built 2026-10-26 evening, waiting for whatever run comes next** (doc 10 7.6 "Built 2026-10-26 evening, finding
 104"): the string's own placeholder is never a candidate (the store stage drops the entity its own Queued decision

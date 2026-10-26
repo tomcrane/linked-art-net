@@ -467,6 +467,14 @@ public class GroupingTests
         // and a string placed in a known place is not a person (finding 69): LoC's Captain Newcastle through his variant
         var captain = Reconciler.Score(Reading("Newcastle", EntityClass.Place, EntityClass.Person) with { Qualifier = "Bridgend, Wales", QualifierAncestors = "Wales, United Kingdom, Europe, World" }, [new Candidate("l42", "loc", "Captain Newcastle, approximately 1701-1756", EntityClass.Person, null, [], "local", 1.0)], 120)[0];
         Assert.True(captain.Veto); Assert.Contains("is not a person", captain.Reason);
+        // nor an idea (finding 103, run u4ykeu): AAT's Hallstatt culture is not "Hallstatt (Austria)", nor is the project's concept aligned to it;
+        // LoC's placed heading is, and so may be a project concept with nothing behind it (a keywords placeholder)
+        var hallstatt = Reading("Hallstatt", EntityClass.Type, EntityClass.Place) with { Qualifier = "Austria", QualifierAncestors = "Österreich, Europe, World" };
+        var culture = Reconciler.Score(hallstatt, [new Candidate("http://vocab.getty.edu/aat/300019368", "aat", "Hallstatt (Bronze Age culture or period)", EntityClass.Type, null, [], "local", 1.0)], 120)[0];
+        Assert.True(culture.Veto); Assert.Contains("is not an idea", culture.Reason);
+        Assert.True(Reconciler.Score(hallstatt, [new Candidate("https://data.example.org/concept/c1", "store", "Hallstatt (Bronze Age culture or period)", EntityClass.Type, null, ["http://vocab.getty.edu/aat/300019368"], "store", 1.0, EntityId: "https://data.example.org/concept/c1")], 120)[0].Veto);
+        Assert.False(Reconciler.Score(hallstatt, [new Candidate("l43", "loc", "Hallstatt (Austria)", EntityClass.Place, null, [], "local", 1.0, Placement: "Austria")], 120)[0].Veto);
+        Assert.False(Reconciler.Score(hallstatt, [new Candidate("https://data.example.org/concept/c2", "store", "Hallstatt (Austria)", EntityClass.Type, null, [], "store", 1.0, EntityId: "https://data.example.org/concept/c2")], 120)[0].Veto);
         var bridgend = Reading("Newcastle", EntityClass.Place) with { Qualifier = "Bridgend, Wales" }; // a town's name resolves to nothing, so nothing is vetoed on its account
         Assert.False(Reconciler.Score(bridgend, [new Candidate("t41", "tgn", "Newcastle", EntityClass.Place, null, [], "local", 1.0, Placement: "Shropshire, England, United Kingdom, Europe, World")], 120)[0].Veto);
         var fountains = Reading("Fountains Hall", EntityClass.Place) with { Qualifier = "Yorkshire", QualifierAncestors = "England, United Kingdom, Europe, World" };

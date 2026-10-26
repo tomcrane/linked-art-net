@@ -1259,6 +1259,65 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-26 afternoon, findings 102 and 103, from the three queries u4ykeu's reading asked for (below, "Read
+2026-10-26 afternoon"); both are finding 95's ground in rules it had not reached:
+
+- Finding 102: a placeholder awaiting review holds nothing. "Rug Chapel (Corwen, Wales)" (keywords) was queued in the
+  first pass between LoC's two headings placed at Corwen, "Rug Chapel (Corwen, Wales)" and "Capel y Rug (Corwen,
+  Wales)", one source, two groups. In the second pass its own placeholder came back as a store candidate, labelled
+  from the string and so placed at Corwen too, and the join that puts a record inside a holding record's placement
+  ("placed through store Rug Chapel (Corwen, Wales)") took the placeholder as the holder of both headings: one group,
+  the single carried by LoC's exact heading, accepted onto the placeholder. The holders now pass a ProvisionalQueued
+  candidate over, in both forms of the join (a qualified string's placed candidates; an unqualified string's exact
+  place records). SecondPassTests: the string stays queued through the second pass, nothing joined to its placeholder
+  (fails without the fix). Expect "Rug Chapel (Corwen, Wales)" single -> queued; the second pass's one single of
+  u4ykeu's 93 was this.
+- Finding 103: a string placed in a known place is not an idea. "Hallstatt (Austria)" (keywords:head) was queued in
+  u4ykeu's first pass between AAT's "Hallstatt (Bronze Age culture or period)" (name 1.00, nothing to compare a
+  qualifier against) and LoC's "Hallstatt (Austria)", TGN's Hallstatt vetoed by finding 98's misfire; then
+  "Hallstatt" (keywords:sub, Type before Place) was accepted exact-single onto AAT's culture, through the project's
+  concept cmb6ptap aligned to it, which gained the bare label; and in the second pass "Hallstatt (Austria)" found
+  that concept in the store by the bare name, one acceptable firm entity, and was matched to it silently (the
+  store stage's qualifier check applies in qualified contexts only; the class and the finding 69 veto did not reach
+  a concept). AAT is a thesaurus of ideas and holds no places, so a string whose qualifier resolves to a known place
+  (county or above, finding 66's ground) vetoes an AAT record and a store entity with an AAT equivalent, as finding
+  69 vetoes a person: "a string placed in a known place is not an idea". A project concept with nothing behind it
+  (a keywords placeholder of class Type) may still be the thing named and is not touched. In Score, so the store
+  stage declines the match too. Expect "Hallstatt (Austria)" exact-name -> vote (TGN and LoC, as k22erz had it),
+  and "Hallstatt" in keywords:sub back to exact-name on the place's entity when the run reaches it after the head;
+  if it comes first, the exact-single on the culture stands (the sub context reads Type first, and TGN's place is
+  set aside for the idea there), and the second pass does not revisit an accepted string. The keywords:sub reading
+  of a bare "Hallstatt" is the desk's question either way.
+
+Read 2026-10-26 afternoon, the evidence of u4ykeu's three queries (the owner, the same afternoon):
+
+- Finding 98's vetoes, 48 strings in all (keywords:head queued 10 and single 7, place single 9, the rest minted and
+  queued across the keywords contexts), the reason carrying the resolved chain beside each record's own: the
+  resolved chain led with TGN's preferred label, which is the vernacular ("Italia, Europe, World" for "Italy",
+  "Bhārat" for India, "Lubnān", "Österreich", "Nederland", "Deutschland", "España", "Ellás", "Danmark", "Schweiz",
+  "Sverige", "België", "Al Maghrib", "Sūrīyah"), since the ancestors walk puts the record's label before its parent
+  string when the segment matched a variant (finding 77), while TGN's parent strings in the index are English
+  ("Sicily, Italy, Europe, World"); and at home the historic counties resolved to TGN's former-county records under
+  their modern chains ("Ayr, South Ayrshire, Scotland, ..." for Ayrshire, "Selkirk, Scottish Borders, ...", "Kincardine,
+  Aberdeenshire, ...", "Berwick, Scottish Borders, ...", "Westmorland, Cumbria, England, ..." for Cumbria, "Down,
+  United Kingdom, ..." for Co. Down, where Banbridge's own chain is "United Kingdom, Europe, World"), none of whose
+  first words a chain of a place in the council area holds. "Vt." resolved to the Holy See ("Santa Sede, Europe,
+  World"), a wrong resolution the correction makes harmless (North Pomfret agrees as written through the
+  abbreviation's expansion). Every chain at home holds "United Kingdom" and every chain abroad lacks it, which is
+  what the corrected rule reads. The reading above stands; the 48 are expected back where k22erz had them.
+- The decisions onto unrec_hew74tdt: the keywords "Rug Chapel (Corwen, Wales)" queued in the first pass (LoC's two
+  headings, "name 1.00; the whole heading; qualifier places it (Corwen, Wales)" and "name 0.85; qualifier places it
+  (Corwen, Wales)", two groups, one source), then single in the second with its own placeholder "a placeholder
+  awaiting review: carries nothing ... inside 2 placed candidates" and both headings "placed through store Rug Chapel
+  (Corwen, Wales)". Finding 102.
+- The Hallstatt strings: "Hallstatt (Austria)" queued (AAT's culture at 1.00 in a group of its own; LoC's "Hallstatt
+  (Austria)" placed; ULAN's "unknown Hallstatt" vetoed as a person; TGN's Hallstatt vetoed "the qualifier names a
+  known place (Österreich, Europe, World) and this Austria is a namesake elsewhere", the chain "Oberösterreich,
+  Austria, Europe, World"), then "Hallstatt" in keywords:sub exact-single onto AAT's culture (TGN's place set aside
+  "aat Hallstatt (Bronze Age culture or period) decides: a place of the name, not the idea"; the project's "Hallstatt
+  (Austria)" placeholder marked), then "Hallstatt (Austria)" exact-name onto cmb6ptap "Hallstatt (Bronze Age culture
+  or period)", name 1.00, nothing else in the evidence. Finding 103.
+
 Measured 2026-10-26 afternoon (run-20261026-130632-u4ykeu: findings 97 to 101, against k22erz): accepted 9,426 ->
 9,371 (vote 4,024 -> 3,978, single 2,101 -> 2,092, exact-single 3,301 -> 3,301), queued 3,989 -> 4,048, matched in
 store 5,956 -> 5,945, minted 10,882 -> 10,889; the second pass reconsidered 4,141 (4,121) and settled 93 (132), and

@@ -755,6 +755,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     // ---- scoring and grouping ----------------------------------------------------------------------------------
 
+    private static bool IsAat(string uri) => uri.StartsWith("http://vocab.getty.edu/aat/", StringComparison.Ordinal);
+
     /// <summary>Name score, then dates (agreement lifts, conflict vetoes, dates that cannot be compared change nothing), type (a mismatch vetoes), nationality (agreement lifts).</summary>
     public IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates) => Score(reading, candidates, _options.MaxPersonLifetimeYears, null, _options.HomePlace);
 
@@ -864,6 +866,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // and a string placed in a known place ("Newcastle (Bridgend, Wales)") is a place, a building or a body there, not a person:
             // LoC's "Captain Newcastle, approximately 1701-1756" through its variant is not it (finding 69, 2026-10-22)
             if (reading.QualifierAncestors is not null && c.Class == EntityClass.Person && !veto) { veto = true; reasons.Add("a string placed in a known place is not a person"); }
+            // nor an idea: AAT is a thesaurus of concepts and holds no places, so its "Hallstatt (Bronze Age culture or period)" is not
+            // "Hallstatt (Austria)", and neither is the project's concept aligned to it (finding 103, 2026-10-26, run u4ykeu: the second pass
+            // matched the placed string to the period in the store, silently, once another string had put the project's concept on it). A
+            // project concept with nothing behind it (a keywords placeholder of class Type) may still be the thing named
+            if (reading.QualifierAncestors is not null && c.Class == EntityClass.Type && !veto && (c.Source == "aat" || c.SameAs.Any(IsAat)))
+            { veto = true; reasons.Add("a string placed in a known place is not an idea"); }
             switch (qualifierAgrees)
             {
                 case true:
@@ -1018,9 +1026,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // (Ireland)" is TGN's Abbeyleix in Laois, Ireland whether the string says so or not, and TGN and LoC then agree. Inside
         // two holders of one source (a city and its district with the same parent string) it is placed through neither; the
         // desk tells them apart.
-        var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto && !m.SetAside).ToList();
+        // A placeholder awaiting review holds nothing (finding 102, 2026-10-26, run u4ykeu): "Rug Chapel (Corwen, Wales)" was queued
+        // between LoC's two headings placed at Corwen, and in the second pass its own placeholder, labelled from the string and so placed
+        // at Corwen too, held both headings in one group and took the single. Finding 95's ground, as for the date rules (finding 101)
+        var placed = list.Where(m => m.QualifierAgrees == true && !m.Veto && !m.SetAside && !m.Candidate.ProvisionalQueued).ToList();
         var holders = reading.Qualifier is not null ? placed
-            : list.Where(m => !m.Veto && !m.SetAside && m.Candidate.Placement is not null && m.Candidate.Class is EntityClass.Place or null && m.Candidate.NameScore >= 0.97).ToList();
+            : list.Where(m => !m.Veto && !m.SetAside && !m.Candidate.ProvisionalQueued && m.Candidate.Placement is not null && m.Candidate.Class is EntityClass.Place or null && m.Candidate.NameScore >= 0.97).ToList();
         if (holders.Count == 0) return list;
         var inside = new HashSet<int>();
         for (var i = 0; i < list.Count; i++)

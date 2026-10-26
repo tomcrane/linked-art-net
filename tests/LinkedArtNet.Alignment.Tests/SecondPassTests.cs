@@ -139,4 +139,29 @@ public class SecondPassTests(PostgresFixture pg)
         Assert.DoesNotContain(members, m => m.Reason.Contains("which store dates") || m.JoinedTo == decision.EntityId);
         Assert.Equal(2, again.Groups.Count(g => !g.Vetoed && g.Members.Any(m => m.Candidate.EntityId is null))); // ULAN's and LoC's undated records, still two groups
     }
+
+    [PostgresFact]
+    public async Task A_queued_strings_own_placeholder_holds_no_record_for_it()
+    {
+        // finding 102 (2026-10-26, run u4ykeu): "Rug Chapel (Corwen, Wales)" was queued between LoC's two headings placed at Corwen, "Rug
+        // Chapel" and "Capel y Rug"; in the second pass its own placeholder, labelled from the string and so placed at Corwen too, came back
+        // as a store candidate, both headings were "placed through" it into one group, and the single was accepted onto the placeholder.
+        // A placeholder awaiting review holds nothing; the string stays the desk's
+        var ds = "pp" + Guid.NewGuid().ToString("N")[..6];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        static AuthorityRecord Placed(string uri, string label, params string[] variants) => new(uri, "loc", label, [label, Qualified.Split(label).Name, .. variants], "Place", null, [], null, DateTimeOffset.UtcNow, "test");
+        await pg.Store.PutAuthorityAsync(Placed("http://id.loc.gov/authorities/names/no99002269", "Rug Chapel (Corwen, Wales)"));
+        await pg.Store.PutAuthorityAsync(Placed("http://id.loc.gov/authorities/names/no2019049001", "Capel y Rug (Corwen, Wales)", "Rug Chapel"));
+        var rug = await pg.Store.CollectAsync(ds, "keywords", "Rug Chapel (Corwen, Wales)");
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
+        var report = await reconciler.RunAsync(ds, runId: "run-test-placeholder-holds");
+        Assert.Equal(1, report.Queued); Assert.Equal(0, report.Accepted); Assert.Equal(0, report.Settled);
+        var decision = (await pg.Store.DecisionForAsync(rug.Id))!;
+        Assert.Equal(DecisionMethod.Queued, decision.Method);
+        var again = await reconciler.EvaluateAsync(ds, rug, includeStore: true);
+        Assert.Equal(Outcome.Queued, again.Outcome);
+        var members = again.Groups.SelectMany(g => g.Members).ToList();
+        Assert.Contains(members, m => m.Candidate.EntityId == decision.EntityId && m.Reason.Contains("a placeholder awaiting review: carries nothing"));
+        Assert.DoesNotContain(members, m => m.JoinedTo == decision.EntityId);
+    }
 }

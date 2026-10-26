@@ -135,7 +135,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
-    /// <summary>Attaches an authority URI the store knows (a cached record) or that lives in a namespace the toolkit recognises.</summary>
+    /// <summary>Attaches an authority URI the store knows (a cached record) or that lives in a namespace the toolkit recognises, an ArchivesSpace agent's public URL among them.</summary>
     public async Task<Entity> AddEquivalentAsync(string dataset, string entityId, string uri, string reviewer, CancellationToken ct = default)
     {
         var entity = await OwnEntityAsync(dataset, entityId, ct);
@@ -143,7 +143,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         if (!Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new InvalidOperationException("The identifier is not a URI.");
         if (scheme.Owns(uri)) throw new InvalidOperationException("Use merge for one of our own entities.");
         var known = await store.GetAuthorityAsync(uri, ct) is not null;
-        if (!known && AuthorityUris.SourceOf(uri) == "other") throw new InvalidOperationException("Not a known authority record and not in a recognised namespace (ULAN, AAT, TGN, VIAF, Wikidata, LoC, LUX, PeriodO).");
+        if (!known && AuthorityUris.SourceOf(uri) == "other") throw new InvalidOperationException("Not a known authority record and not in a recognised namespace (ULAN, AAT, TGN, VIAF, Wikidata, GND, LoC, LUX, PeriodO, or an ArchivesSpace agent's URL).");
         await store.AddEquivalentAsync(entity.Id, new Equivalent(uri, AuthorityUris.SourceOf(uri), DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow), ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }

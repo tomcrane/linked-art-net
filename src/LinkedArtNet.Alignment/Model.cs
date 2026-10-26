@@ -264,6 +264,16 @@ public static class AuthorityUris
     /// <summary>A Library of Congress identifier's URI: subject headings begin "sh", everything else is a name.</summary>
     public static string Loc(string id) => (id.StartsWith("sh", StringComparison.OrdinalIgnoreCase) ? LocSubjects : LocNames) + id;
 
+    /// <summary>
+    /// An ArchivesSpace agent on any instance: the public URL carries the record's own identity, the agents path with its kind and
+    /// number ("https://manuscripts.nls.uk/agents/corporate_entities/1476", the National Library of Scotland's record of the
+    /// Edinburgh auctioneers Dowell's; 2026-10-26, the desk). The instance is the host; a host change is the identifier's risk, and an
+    /// institutional or SNAC id on the record, when it carries one, is the better identifier beside it.
+    /// </summary>
+    private static readonly System.Text.RegularExpressions.Regex ArchivesSpaceAgent = new(@"^https?://[^/]+(?:/[^/?#]+)*?/agents/(?:people|corporate_entities|families|software)/\d+/?$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    public static bool IsArchivesSpaceAgent(string uri) => ArchivesSpaceAgent.IsMatch(uri);
+
     /// <summary>The source name for an authority URI ("ulan", "viaf", ...), or "other".</summary>
     public static string SourceOf(string uri)
     {
@@ -276,6 +286,7 @@ public static class AuthorityUris
         if (uri.StartsWith("http://id.loc.gov/", StringComparison.Ordinal)) return "loc";
         if (uri.StartsWith("https://lux.collections.yale.edu/", StringComparison.Ordinal)) return "lux";
         if (uri.StartsWith(PeriodO, StringComparison.Ordinal)) return "periodo";
+        if (IsArchivesSpaceAgent(uri)) return "archivesspace";
         return "other";
     }
 }

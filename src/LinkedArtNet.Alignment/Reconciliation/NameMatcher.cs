@@ -78,6 +78,25 @@ public static class NameMatcher
     public static string WithoutBodyType(string label) =>
         System.Text.RegularExpressions.Regex.Replace(label, @"\s*\(([^()]*)\)", m => BodyTypes.Contains(m.Groups[1].Value.Trim().ToLowerInvariant()) ? "" : m.Value);
 
+    /// <summary>
+    /// Whether a label is a firm named for the man the string names: the string one word ("Dowell", from "Mr Dowell"; "Christie" from
+    /// "Messrs Christie") and the label's body form that word in the possessive ("Dowell's Ltd", "Christie's") (finding 105, 2026-10-26,
+    /// the desk: the project's own "Dowell's Ltd" never met "Mr Dowell", the keys "dowell" and "dowells" being two).
+    /// </summary>
+    public static bool PossessiveOf(string name, IEnumerable<string> labels)
+    {
+        var a = BodyForm(name);
+        if (a.Length == 0 || a.Contains(' ')) return false;
+        return labels.Any(l => BodyForm(l) == a + "s");
+    }
+
+    /// <summary>The bare possessive of a one-word name as a lookup key ("dowells" for "Dowell"), the form a possessive firm name is indexed under once its apostrophe and legal suffix are gone; null for a name of several words.</summary>
+    public static string? PossessiveKey(string name)
+    {
+        var a = BodyForm(name);
+        return a.Length == 0 || a.Contains(' ') ? null : a + "s";
+    }
+
     private static string BodyForm(string raw)
     {
         var key = StringKey.Normalise(WithoutBodyType(raw));

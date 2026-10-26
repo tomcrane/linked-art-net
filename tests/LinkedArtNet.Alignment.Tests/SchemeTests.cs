@@ -109,6 +109,11 @@ public class SchemeTests
         Assert.Equal("ulan", AuthorityUris.SourceOf("http://vocab.getty.edu/ulan/500011051"));
         Assert.Equal("loc", AuthorityUris.SourceOf("http://id.loc.gov/authorities/names/n79142935"));
         Assert.Equal("lux", AuthorityUris.SourceOf("https://lux.collections.yale.edu/data/person/abc"));
+        // an ArchivesSpace agent on any instance, by the shape of its public URL (the desk, 2026-10-26: NLS's record of Dowell's)
+        Assert.Equal("archivesspace", AuthorityUris.SourceOf("https://manuscripts.nls.uk/agents/corporate_entities/1476"));
+        Assert.Equal("archivesspace", AuthorityUris.SourceOf("https://archives.example.org/aspace/agents/people/12/"));
+        Assert.Equal("other", AuthorityUris.SourceOf("https://manuscripts.nls.uk/repositories/2/resources/10985")); // a collection, not an agent
+        Assert.Equal("other", AuthorityUris.SourceOf("https://example.org/agents/corporate_entities/not-a-number"));
         Assert.Equal("other", AuthorityUris.SourceOf("https://example.org/x"));
         Assert.Equal("http://id.loc.gov/authorities/names/n79142935", AuthorityUris.Loc("n79142935"));
         Assert.Equal("http://id.loc.gov/authorities/subjects/sh85038258", AuthorityUris.Loc("sh85038258"));

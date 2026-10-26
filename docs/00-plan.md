@@ -71,8 +71,14 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        where d.run_id in ('run-20261026-130632-u4ykeu', 'run-20261026-142043-awn284')
          and s.raw in ('L (colonnade)', 'Red House (Yorkshire)') order by s.raw, d.id;
 
-4. ~~The 88 strings decided on 2026-10-18 and never re-decided~~ (done 2026-10-26 evening, run utt9xm; section 7,
-   workbench and desk).
+4. The 500 of run utt9xm re-decided under finding 105 (nine seconds; the desk then offers "Dowell's Ltd" for "Mr
+   Dowell"), the workbench stopped meanwhile:
+
+       dotnet run --project tools/Align -- undo-run --run run-20261026-161751-utt9xm
+       dotnet run --project tools/Align -- reconcile --verbose
+
+   Paste the summary; expect the 500 as before with a few more queued where a firm named for the man now stands
+   beside a person.
 
 5. ~~The records behind the strings, for the desk~~ (built and collected 2026-10-26 evening). With the cleaned
    keywords the March export covers keywords 30,039 of 30,039, persauthorfull 24,119 of 24,119, keywords:head 7,741
@@ -230,21 +236,19 @@ and the log (doc 15) records that. The order within an area is rough value.
 - ~~Help for the reviewer who asks what to do~~ (built 2026-10-26 evening, the owner's ask at the desk: a fold at the
   top of the desk, "What am I supposed to do here?", a Help link in the bar, and `/help` rendering doc 13 from the
   embedded committed text; the search under "Something else" pre-filled with the name as read).
-- The possessive firm name as a candidate (the desk, 2026-10-26 evening: "Mr Dowell" in corpauthor, three Edinburgh
-  sale catalogues under "In the records", and the project's own "Dowell's Ltd", the auctioneers, found by the search
-  but not among the candidates, since the keys "dowell" and "dowell's" never meet). A firm named for its man is
-  written "Dowell's", "Christie's", "Sotheby's", and the catalogue writes "Mr Dowell" and "Messrs Christie". Finding
-  105 to build: for a reading that may be a body, the possessive forms join the lookup keys ("dowell's", "dowells"),
-  and a body record or entity whose name is the possessive of the string's scores as a lookalike (0.90: shown on the
-  desk, never carried alone), so "Dowell's Ltd" stands beside ULAN's "Dowell" for the reviewer. Size S, the
-  Alignment library and its tests; no reindex, since the string's keys widen, not the index's.
+- ~~The possessive firm name as a candidate~~ (finding 105, built 2026-10-26 evening, doc 10 7.6 "Built 2026-10-26
+  evening, finding 105": "Dowell's Ltd" offered for "Mr Dowell" at 0.90, shown and never carried alone; measured by
+  the next run, and seen at the desk once the 500 of run utt9xm are re-decided, Commands on return item 4).
 - An identifier on "Keep as local authority" (the same desk item): the NLS archive is the one authority for
   Dowell's Ltd (https://manuscripts.nls.uk/agents/corporate_entities/1476), and the entity page already takes a URI
-  as an identifier; the keep-local form wants an optional "Known elsewhere (URL)" so the reviewer records it in one
-  step. Size S. Behind it, the owner's thought: NLS runs ArchivesSpace, and an ArchivesSpace instance's agents are
-  a source like any other (a public JSON API per agent, `/agents/corporate_entities/{id}`; an identifier scheme per
-  instance). A remote source for the residue (section 7, reconciler, 3b) is the shape for it; not before the desk
-  has shown how often an archive's agent is the answer.
+  as an identifier (since 2026-10-26 evening it takes an ArchivesSpace agent's public URL on any host, by the shape
+  of the path, source "archivesspace"; before that the namespace guard refused NLS's); the keep-local form wants an
+  optional "Known elsewhere (URL)" so the reviewer records it in one step. Size S. Behind it, the owner's thought:
+  NLS runs ArchivesSpace, and an ArchivesSpace instance's agents are a source like any other (a public JSON API per
+  agent, `/agents/corporate_entities/{id}`). The shape is fixed and the hosts vary, so the proper form is a list of
+  instances in the project's manifest, each with a name and its host, so that NLS's agents read as "nls" and an
+  unknown host is a question rather than a match; a remote source for the residue (section 7, reconciler, 3b) is the
+  shape for the lookup. Not before the desk has shown how often an archive's agent is the answer.
 - ~~The record behind the string, at the desk~~ (built and collected 2026-10-26 evening, doc 12 section 5 "The
   records behind the string": `string_examples`, schema version 8; `tools/Align collect-examples` with the 2024
   process's cleaned keywords; the desk's "In the records" cards; every context at or near full coverage, Commands on

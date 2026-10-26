@@ -411,7 +411,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // one acceptable entity, or one acceptable entity with authority behind it among provisional lookalikes. An entity
             // minted for a string that is itself awaiting review never answers silently; an entity minted because nothing
             // was found anywhere does, so the same unknown name across contexts becomes one local authority.
-            var storeScored = Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct), _options.HomePlace).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore).ToList();
+            var storeScored = Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct), _options.HomePlace).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore && !c.Candidate.ByPossessive).ToList(); // a firm named for the man is the desk's, never a silent match (finding 105)
             // in a qualified context ("Heaton, Bradford") an entity answers silently only when its qualifier agrees with the string's, or
             // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
@@ -717,8 +717,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                         placement = own; placementAncestors = ancestors.Chain; break;
                     }
         }
-        return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", NameMatcher.Score(reading.Text, labels), e.Id, e.Nationalities, provisional, queued, Placement: placement,
-            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null);
+        var nameScore = NameMatcher.Score(reading.Text, labels);
+        // the project's own firm named for the man ("Dowell's Ltd" for "Mr Dowell"), as for a record (finding 105, 2026-10-26)
+        var byPossessive = nameScore < 0.90 && e.Class == EntityClass.Group && reading.Classes.Contains(EntityClass.Group) && NameMatcher.PossessiveOf(reading.Text, labels);
+        if (byPossessive) nameScore = 0.90;
+        return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", nameScore, e.Id, e.Nationalities, provisional, queued, Placement: placement,
+            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null, ByPossessive: byPossessive);
     }
 
     /// <summary>Writes an evaluation: the decision with its evidence and, where needed, the entity.</summary>
@@ -828,6 +832,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var datesConflict = false;
             if (c.Class is { } cls && !reading.Classes.Contains(cls)) { veto = true; reasons.Add($"type {cls} not allowed here"); }
             if (c.ProvisionalQueued) reasons.Add("a placeholder awaiting review: carries nothing"); // finding 95: never a ground, see CarriedBy
+            if (c.ByPossessive) reasons.Add("a firm named for the man: the possessive of the string's name, for the desk"); // finding 105
             // a heading that carries a lifespan names a person or a body: TGN's Gilbert Rivers are not "Gilbert, 1943-" (finding 31, 2026-10-22)
             else if (reading.HasLifespan && c.Class == EntityClass.Place) { veto = true; reasons.Add("a dated heading names a person or body, not a place"); }
             if (reading.Lifespan is { IsEmpty: false } rl && c.Lifespan is { IsEmpty: false } cl)

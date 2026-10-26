@@ -161,7 +161,10 @@ public sealed record StringReading(
             var (name, inParentheses) = Qualified.SplitParenthetical(text);
             if (inParentheses is not null) { text = name; qualifier = inParentheses; labelOverride = s.Raw.Trim(); }
         }
-        return new StringReading(s, text, NameMatcher.Keys(text), classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified, parts, rule.Parts, rule.Home, rule.Collections, labelOverride);
+        var keys = NameMatcher.Keys(text);
+        // a reading that may be a body looks for the firm named for the man too: "Mr Dowell" for "Dowell's Ltd" (finding 105, 2026-10-26)
+        if (classes.Contains(EntityClass.Group) && NameMatcher.PossessiveKey(text) is { } possessive && !keys.Contains(possessive, StringComparer.Ordinal)) keys = [.. keys, possessive];
+        return new StringReading(s, text, keys, classes, lifespan, nationalities, roles, agent, qualifier, rule.Qualified, parts, rule.Parts, rule.Home, rule.Collections, labelOverride);
     }
 }
 
@@ -174,6 +177,7 @@ public sealed record StringReading(
 /// <param name="Placement">Where the record's own vocabulary puts it (TGN's parent string, a LoC heading's parenthetical), for a qualified string to check against.</param>
 /// <param name="PlacementAncestors">The TGN chain above a placement read from a label ("England, United Kingdom, Europe, World" above "Northamptonshire"), consulted only when the placement as written does not agree: ancestors widen agreement, never narrow it (finding 84, 2026-10-24).</param>
 /// <param name="Collections">The record's own vocabulary's collections it belongs to, by short name (LCSH's "Subdivisions"), for a context that wants some of them (<see cref="ContextRule.Collections"/>).</param>
+/// <param name="ByPossessive">The record is a firm named for the man the string names ("Dowell's Ltd" for "Mr Dowell"): a lookalike at 0.90, shown and never carried alone (finding 105).</param>
 /// <param name="ByVariant">The name matched only a variant label, not the record's heading or the heading without its dates: LoC's "Morgan, John Lester" through its variant "Morgan, John" is LoC's record of John Lester Morgan, not of the name (finding 74).</param>
 public sealed record Candidate(
     string Uri,
@@ -193,7 +197,8 @@ public sealed record Candidate(
     string? PlacementAncestors = null,
     IReadOnlyList<string>? Collections = null,
     string? PlaceType = null,
-    bool ByVariant = false);
+    bool ByVariant = false,
+    bool ByPossessive = false);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
@@ -305,6 +310,9 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         // (Firm)"), which tells the firm from a person of the name, not from another firm; a person's record ("Clark, Art") stays
         // short of "Clark Art Ltd" (findings 37 and 39, 2026-10-22)
         if (nameScore < 0.97 && cls == EntityClass.Group && reading.Classes.Contains(EntityClass.Group) && NameMatcher.SameBody(reading.Text, labels.Where(l => !IsAcronym(l)))) nameScore = 0.97;
+        // a firm named for the man ("Dowell's Ltd" for "Mr Dowell") is a lookalike: shown on the desk, never carried alone (finding 105, 2026-10-26)
+        var byPossessive = nameScore < 0.90 && cls == EntityClass.Group && reading.Classes.Contains(EntityClass.Group) && NameMatcher.PossessiveOf(reading.Text, labels);
+        if (byPossessive) nameScore = 0.90;
         // a record exact only through a variant label, its heading being another name ("Morgan, John Lester" with the variant "Morgan,
         // John"; ULAN's "Kirby, John C."), is not its source's record of the name: the lone-record rules, which rest on a source knowing
         // one of the name, do not count it (finding 74, 2026-10-23). A LoC heading without its dates is still the heading
@@ -331,7 +339,7 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
             // London, England)"), which places the body when the string has a qualifier (finding 70)
             : reading.Qualifier is not null && r.Source == "ulan" ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
         return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, nameScore, null, nationalities, Disambiguated: disambiguated,
-            Placement: placement, Collections: collections, PlaceType: placeType, ByVariant: byVariant);
+            Placement: placement, Collections: collections, PlaceType: placeType, ByVariant: byVariant, ByPossessive: byPossessive);
     }
 
     /// <summary>Letters only, two to eight, all capitals but for a plural's trailing "s": "SCOTS", "RIBA", and LoC's "SCOTs" (2026-10-22, the owner's query).</summary>

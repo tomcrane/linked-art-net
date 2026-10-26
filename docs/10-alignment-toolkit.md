@@ -1259,6 +1259,21 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-26 evening, finding 105, from the desk's first session (the owner at "Mr Dowell" in corpauthor): a firm
+named for the man is offered for his name and never carried alone. Three Edinburgh sale catalogues stood under the
+string, and the project's own "Dowell's Ltd", the auctioneers, was found by the desk's search but was never among the
+candidates: the string's key is "dowell" and the firm's, once its apostrophe and "Ltd" are gone, "dowells", and the two
+never met. The pattern is the trade's: "Dowell's", "Christie's", "Sotheby's", and the catalogue writes "Mr Dowell" and
+"Messrs Christie". Now a reading that may be a body adds the bare possessive of a one-word name to its lookup keys
+(`NameMatcher.PossessiveKey`), so the firm is found in the store and in the indexes; a body record or entity whose body
+form is that possessive scores 0.90 (`ByPossessive`, "a firm named for the man: the possessive of the string's name,
+for the desk"), above the review score and below exact, so it is shown on the desk and queues the string, and the
+silent store match passes it over, since a project entity at 0.90 would otherwise have answered alone. The reviewer
+decides between ULAN's "Dowell", a provenance stub, and the project's firm. PossessiveTests: "Mr Dowell" against the
+minted "Dowell's Ltd" and ULAN's person, queued with the firm at 0.90 and its reason; "Messrs Christie" reaching ULAN's
+"Christie's" through the key; a persauthorfull reading not looking for a firm. Measured by the next run; expect some
+tens of corpauthor strings to gain a candidate and a few mints to queue.
+
 Built 2026-10-26 evening, finding 104, the placeholder consolidation in its minimal form (the owner's decision, after
 the explanation of both forms): the string's own placeholder is never a candidate. The provisional entity minted from
 a string when it is queued copies its name, qualifier and dates, so whenever the string is evaluated again with the

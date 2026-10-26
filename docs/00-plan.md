@@ -74,17 +74,14 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 4. ~~The 88 strings decided on 2026-10-18 and never re-decided~~ (done 2026-10-26 evening, run utt9xm; section 7,
    workbench and desk).
 
-5. The records behind the strings, for the desk (built 2026-10-26 evening). Collected the same evening from the two
-   library exports as two sources: the March export covers persauthorfull 24,119 of 24,119 (so it is the file the
-   2024 database came from), corpauthor 4,682 of 4,707, place 2,828 of 2,850, publisher 10,608 of 11,141, keywords
-   12,419 of 30,039 (the store holds the cleaned forms); the October export a little under it everywhere. The
-   keywords gap: the March collection again with the 2024 process's cleaned keywords (the dump beside the exports),
-   which the collector now reads; a source collected again is replaced:
+5. ~~The records behind the strings, for the desk~~ (built and collected 2026-10-26 evening). With the cleaned
+   keywords the March export covers keywords 30,039 of 30,039, persauthorfull 24,119 of 24,119, keywords:head 7,741
+   of 7,814, keywords:sub 1,536 of 1,551, publisher 10,608 of 11,141, corpauthor 4,682 of 4,707, place 2,828 of
+   2,850: 121,774 examples for 81,553 strings. The uncovered publishers are the 2024 process's derived forms
+   ("Printed for ..." statements), not export values. To collect again after the next export (the same catalogue,
+   the same record ids, so the newer export's records replace the older's):
 
-       dotnet run --project tools/Align -- collect-examples --file "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\2024-03-18\2024-03-11_library\2024-03-11_library.xml" --source library-2024-03 --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
-
-   Paste the coverage; expect keywords most of the way to 30,039 and keywords:head and keywords:sub to rise with
-   them. The October export can be collected the same way with the same dump.
+       dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
 3. The standing method diff after the next run, whenever it comes, against awn284 (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence):
@@ -230,11 +227,14 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
-- ~~The record behind the string, at the desk~~ (built 2026-10-26 evening, doc 12 section 5 "The records behind the
-  string": `string_examples`, schema version 8; `tools/Align collect-examples`; the desk's "In the records" cards).
-  Waiting for the owner to run the collector over the library exports (Commands on return, item 5) and read the
-  coverage line; the keywords the 2024 process cleaned will not match the raw export and want the legacy database's
-  cleaned subjects table (a second source for the collector, size S).
+- ~~The record behind the string, at the desk~~ (built and collected 2026-10-26 evening, doc 12 section 5 "The
+  records behind the string": `string_examples`, schema version 8; `tools/Align collect-examples` with the 2024
+  process's cleaned keywords; the desk's "In the records" cards; every context at or near full coverage, Commands on
+  return item 5). A note on the source column: the March and October exports are the same catalogue with the same
+  record ids, so collecting both did not put them side by side; the later collection overwrote the earlier's rows
+  for shared records, and the source names which export a record was last seen in. One export at a time is the
+  intended use; the thousand records only the October export has keep its name. Whether the cards show what the
+  desk needs is the first desk session's reading.
 - ~~The 88 strings queued on 2026-10-18 and never re-decided~~ (done 2026-10-26 evening: run-20261018-152324-k7sdqb
   undone, its 500 decisions and 221 unreferenced provisional entities; run utt9xm re-decided the 500 under today's
   rules in nine seconds: matched in store 283, accepted 41, queued 61, minted 107, overridden 7; the desk's list

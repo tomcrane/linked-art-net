@@ -31,8 +31,12 @@ measured, doc 10 7.6 "Measured 2026-10-26 evening": the diff explained by the th
 samples; the stopping criterion met, the reconciliation cycles end as the main activity); (8) `git push`; (9) the
 evidence of two drifted decisions, if wanted (under "Commands on return"); (10) ~~the placeholder consolidation~~
 (decided and built the same evening in its minimal form, finding 104: the string's own placeholder is never a
-candidate; measured incidentally by the next run, none scheduled); (11) the owner's remaining decision: which use
-comes first, the crosswalk (item 3 (c) under "Next builds") or the desk in the workbench.
+candidate; measured incidentally by the next run, none scheduled); (11) ~~which use comes first~~ (decided the same
+evening: the desk in the workbench, the crosswalk after); (12) the first session on the desk (under "Commands on
+return"): the owner reviews a first batch from the real queue and says what the desk fails to show or do; the
+assistant builds from that, the way the runs were read. The desk as built (2026-10-18, doc 12 section 11 step 1)
+renders today's evidence (groups, members, vetoes, set-asides, reasons), filters by context and method, and folds a
+string's placeholder into the entity it is accepted onto.
 
 **The record of 2026-10-26** (one day): three runs measured (k22erz, u4ykeu, awn284; queued 3,989 -> 4,048 -> 4,032,
 the first the first honest count since the second pass); findings 97 to 103 built (approximate years widened; a
@@ -391,7 +395,19 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2 order by 3 desc;
 
-2. Two of awn284's drifted decisions, wanted in evidence when convenient (nothing waits on them): "L (colonnade)",
+2. The first session on the desk. Start the workbench against the real store (`LINKEDART_PG` set; Development
+   allows the typed sign-in, the name `local` is an owner) and review from the queue, a batch of twenty or so in two
+   contexts, keywords and persauthorfull, with the context filter:
+
+       dotnet run --project src/LinkedArtNet.Workbench
+
+   then http://localhost:5200. Paste or note what the desk fails to show (a reason you needed, a candidate's
+   placement or dates, the twin strings in other contexts, the occurrences), fails to do (an action missing, an
+   order you wanted, a filter), or gets wrong (an action's effect on the entities). Each becomes a desk item in doc
+   12 and is built; the decisions themselves are the project's. The assistant does not build the workbench project
+   while it runs (the output is locked); the library and tests are fine.
+
+3. Two of awn284's drifted decisions, wanted in evidence when convenient (nothing waits on them): "L (colonnade)",
    voted in the second pass onto the project's place "L", and "Red House (Yorkshire)", matched to a group "Red House"
    made in the run:
 

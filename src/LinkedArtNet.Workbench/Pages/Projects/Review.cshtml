@@ -103,7 +103,7 @@ else
                 <div class="row" style="margin-top:.5rem; @(m.Veto == true || m.SetAside == true ? "opacity:.6" : "")">
                     <div style="flex:1">
                         <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong>
-                        @if (record?.Lifespan?.Text is { } life) { <span class="muted">@life</span> }
+                        @if (record?.Lifespan?.Display is { } life) { <span class="muted">@life</span> }
                         @if (record?.Type is { } type) { <span class="tag">@type.ToLowerInvariant()</span> }
                         <span class="tag">@m.Source</span>
                         <a class="small" href="@m.Uri" target="_blank" rel="noopener">@m.Uri</a>
@@ -159,7 +159,7 @@ else
                 }
                 @foreach (var r in Model.IndexMatches)
                 {
-                    <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Text is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag">@r.Source</span><br /><a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
+                    <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Display is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag">@r.Source</span><br /><a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
                         <form method="post" asp-page-handler="Accept" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit">Accept</button></form></div>
                 }
             }

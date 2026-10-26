@@ -73,6 +73,27 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
     public bool IsWorking => BeginEarliest is null && EndLatest is null && BeginLatest is not null && EndEarliest is not null;
 
     /// <summary>
+    /// The lifespan as a person should see it: the source's own text when both sides are dated or the dates are working dates; a dated side
+    /// alone when the other is a window of possibility ("1952-", "-1748"); nothing for a window alone, since ULAN's "1200~-~2080" says only
+    /// that the dates are unknown (the desk, 2026-10-26: every undated ULAN owner wore it as if it were a life).
+    /// </summary>
+    public string? Display
+    {
+        get
+        {
+            if (IsWorking) return Text;
+            bool begin = Tight(BeginEarliest, BeginLatest), end = Tight(EndEarliest, EndLatest);
+            if (begin && end) return Text;
+            if (begin) return Year(BeginEarliest!.Value, BeginLatest!.Value) + "-";
+            if (end) return "-" + Year(EndEarliest!.Value, EndLatest!.Value);
+            return null;
+        }
+    }
+
+    private static string Year(DateTimeOffset earliest, DateTimeOffset latest) =>
+        earliest.Year == latest.Year ? earliest.Year.ToString(System.Globalization.CultureInfo.InvariantCulture) : "c. " + ((earliest.Year + latest.Year) / 2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    /// <summary>
     /// The longest working life allowed between two sets of working dates of the same person: "fl. 1775-1795" and "active 1840-1876" are
     /// two people, though a lifetime of 120 years could hold both. Eighty years is the assistant's judgement (a working life from the
     /// teens to the nineties), not a sourced figure.

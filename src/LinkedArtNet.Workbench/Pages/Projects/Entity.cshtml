@@ -13,7 +13,7 @@
     <div>
         <dl class="facts">
             @if (e.Labels.Any(l => l != e.Label)) { <dt>Also</dt><dd>@string.Join(" · ", e.Labels.Where(l => l != e.Label))</dd> }
-            @if (e.Lifespan?.Text is { } life) { <dt>Dates</dt><dd>@life</dd> }
+            @if (e.Lifespan?.Display is { } life) { <dt>Dates</dt><dd>@life</dd> }
             @if (e.Nationalities.Count > 0) { <dt>Nationality</dt><dd>@string.Join(", ", e.Nationalities)</dd> }
             @if (e.Roles.Count > 0) { <dt>Roles</dt><dd>@string.Join(", ", e.Roles)</dd> }
             <dt>Created</dt><dd>@e.CreatedAt.ToString("yyyy-MM-dd")@(e.RunId is null ? "" : $" in run {e.RunId}")</dd>
@@ -28,7 +28,7 @@
                 v.Records.TryGetValue(q.Uri, out var record);
                 <tr>
                     <td><a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a></td>
-                    <td><a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>@if (record is not null) { <div class="small muted">@record.Label @record.Lifespan?.Text</div> }</td>
+                    <td><a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>@if (record is not null) { <div class="small muted">@record.Label @record.Lifespan?.Display</div> }</td>
                     <td class="small muted">@q.Method @q.Confidence.ToString("0.00")</td>
                     <td><form method="post" asp-page-handler="RemoveEquivalent" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@q.Uri" /><button type="submit" class="quiet">Remove</button></form></td>
                 </tr>
@@ -51,7 +51,7 @@
             @if (Model.Found.Count == 0) { <p class="small muted">Nothing found for "@Model.Find" that is not already an identifier here.</p> }
             @foreach (var r in Model.Found)
             {
-                <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Text is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag">@r.Source</span><br /><a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
+                <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Display is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag">@r.Source</span><br /><a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
                     <form method="post" asp-page-handler="AddEquivalent" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@r.Uri" /><button type="submit" class="secondary">Add as identifier</button></form></div>
             }
         }

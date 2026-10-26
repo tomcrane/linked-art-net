@@ -4,6 +4,23 @@ using LinkedArtNet.Alignment.Reconciliation;
 
 namespace LinkedArtNet.Alignment.Tests;
 
+public class LifespanDisplayTests
+{
+    private static DateTimeOffset Y(int year, bool end = false) => end ? new DateTimeOffset(year, 12, 31, 0, 0, 0, TimeSpan.Zero) : new DateTimeOffset(year, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+    [Fact]
+    public void A_window_of_possibility_shows_nothing_and_a_dated_side_shows_alone()
+    {
+        // the desk, 2026-10-26: ULAN's undated owners all wore "1200~-~2080", its estimate for "unknown", as if it were a life
+        Assert.Null(new Lifespan(Y(1200), null, null, Y(2080, true), "1200~-~2080").Display);
+        Assert.Equal("1952-", new Lifespan(Y(1952), Y(1952, true), null, Y(2102, true), "1952-~2102").Display);
+        Assert.Equal("-1748", new Lifespan(Y(1648), null, Y(1748), Y(1748, true), "1648~-1748").Display);
+        Assert.Equal("c. 1648-1748", new Lifespan(Y(1644), Y(1652, true), Y(1748), Y(1748, true), "c. 1648-1748").Display); // both sides dated (an approximate year within a decade is tight): the text as given
+        Assert.Equal("active 1720-1749", new Lifespan(null, Y(1720), Y(1749), null, "active 1720-1749").Display); // working dates as given
+        Assert.Null(new Lifespan(null, null, null, null).Display);
+    }
+}
+
 [Collection("postgres")]
 public class DatesConflictTests(PostgresFixture pg)
 {

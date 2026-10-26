@@ -242,6 +242,11 @@ and the log (doc 15) records that. The order within an area is rough value.
 - The possessive key of an acronym (finding 105's follow-up, run evhvuw): "ICA" went from 82 to 102 groups through
   the key "icas"; a name written in capitals gets no possessive key. One line and a test line, with the next library
   change.
+- ~~ULAN's "1200~-~2080" on the desk~~ (2026-10-26 evening, the owner: confusing on every undated owner. It is
+  ULAN's estimate for "unknown", a window the reconciler keeps to rule matches out; `Lifespan.Display` now shows
+  nothing for a window alone, a dated side alone when the other is a window ("1952-", "-1748"), and the source's own
+  text when both sides are dated or the dates are working dates; the desk, the search results, the entity and
+  variants pages use it).
 - ~~The banner's link to the entity just decided, and an index search on the entity page~~ (built 2026-10-26
   evening, the owner's ask: after an action the banner on the next item names the entity with a link, and the entity
   page searches the local indexes with "Add as identifier" on each result, so a Wikidata record seen under the desk's

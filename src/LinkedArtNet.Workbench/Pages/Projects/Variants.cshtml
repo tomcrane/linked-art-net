@@ -44,7 +44,7 @@
                     <label>Identifiers to attach (from the index search, or typed)</label>
                     @foreach (var r in Model.IdCandidates)
                     {
-                        <div class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="externalUris" value="@r.Uri" /> <a class="tag src" href="@r.Uri" target="_blank" rel="noopener" title="@r.Uri">@r.Source</a> @r.Label @r.Lifespan?.Text <a href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></label></div>
+                        <div class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="externalUris" value="@r.Uri" /> <a class="tag src" href="@r.Uri" target="_blank" rel="noopener" title="@r.Uri">@r.Source</a> @r.Label @r.Lifespan?.Display <a href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></label></div>
                     }
                     <input type="text" name="externalUris" placeholder="http://vocab.getty.edu/ulan/… (typed)" />
                 </div>

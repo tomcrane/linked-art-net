@@ -22,7 +22,7 @@
         </select>
     </form>
 </div>
-@if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
+@if (Model.Message is not null) { <p class="notice">@Model.Message @if (Model.Decided is { } d) { <text>· </text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.Id)"><strong>@d.Label</strong></a><text>, to add identifiers or notes before going on</text> }</p> }
 
 <details class="help">
     <summary>What am I supposed to do here?</summary>

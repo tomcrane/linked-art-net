@@ -22,14 +22,21 @@ public abstract class ProjectPageModel(ProjectServices services, ProjectAccess a
     public bool Can(string role) => ProjectRole.Covers(Role, role);
 
     /// <summary>Redirects after an action with a one-time message for the next page, carried in TempData rather than the address bar, so a refresh does not repeat it.</summary>
-    protected IActionResult Flash(string message, object routeValues)
+    protected IActionResult Flash(string message, object routeValues, Entity? entity = null)
     {
         TempData["Flash"] = message;
+        // the entity an action made or chose travels with the message, so the banner on the next item can open it (the desk,
+        // 2026-10-26: a Wikidata record seen under "Something else" wanted adding before moving on)
+        TempData["FlashEntityId"] = entity?.Id;
+        TempData["FlashEntityLabel"] = entity?.Label;
         return RedirectToPage(routeValues);
     }
 
     /// <summary>The message left by the previous action, if any; reading it clears it.</summary>
     protected string? TakeFlash() => TempData["Flash"] as string;
+
+    /// <summary>The entity the previous action made or chose, if any, for a link in the banner; reading it clears it.</summary>
+    protected (string Id, string Label)? TakeFlashEntity() => TempData["FlashEntityId"] is string id ? (id, TempData["FlashEntityLabel"] as string ?? id) : null;
 
     public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {

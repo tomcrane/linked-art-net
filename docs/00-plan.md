@@ -242,6 +242,10 @@ and the log (doc 15) records that. The order within an area is rough value.
 - The possessive key of an acronym (finding 105's follow-up, run evhvuw): "ICA" went from 82 to 102 groups through
   the key "icas"; a name written in capitals gets no possessive key. One line and a test line, with the next library
   change.
+- ~~The banner's link to the entity just decided, and an index search on the entity page~~ (built 2026-10-26
+  evening, the owner's ask: after an action the banner on the next item names the entity with a link, and the entity
+  page searches the local indexes with "Add as identifier" on each result, so a Wikidata record seen under the desk's
+  "Something else" can be added before going on).
 - ~~"Accept together"~~ (built 2026-10-26 evening, from the owner's FYI at "Christopher Cock": a "together" tick on
   each card and one action that makes one entity with every ticked identifier, one of the project's own entities
   allowed among them as the base). Behind it, two reconciler items: LoC's courtesy heading "Surname, Mr. (Forename)" read as "Surname,

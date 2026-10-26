@@ -25,12 +25,15 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<Entity> EntityMatches { get; private set; } = [];
     public IReadOnlyList<AuthorityRecord> IndexMatches { get; private set; } = [];
     public string? Message { get; private set; }
+    /// <summary>The entity the previous action made or chose, for the banner's link to it.</summary>
+    public (string Id, string Label)? Decided { get; private set; }
 
     public long Remaining => Queue.Where(r => Context is null || r.Context == Context).Sum(r => r.Count);
 
     public async Task OnGetAsync(string? message = null)
     {
         Message = message ?? TakeFlash();
+        Decided = TakeFlashEntity();
         if (string.IsNullOrWhiteSpace(Context)) Context = null;
         Queue = await Project.Desk.QueueCountsAsync(Dataset, Method);
         Item = Id is { } id ? (Look ? await Project.Desk.LookAgainAsync(Dataset, id) : await Project.Desk.GetAsync(id)) : await Project.Desk.NextAsync(Dataset, Method, Context, After);
@@ -43,19 +46,19 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     }
 
     public Task<IActionResult> OnPostAcceptAsync(long id, string target, string? note) =>
-        Act(id, async () => { await Project.Desk.AcceptAsync(Dataset, id, target, Reviewer, note); return "Accepted."; });
+        Act(id, async () => ("Accepted.", await Project.Desk.AcceptAsync(Dataset, id, target, Reviewer, note)));
 
     public Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note) =>
-        Act(id, async () => { var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, targets ?? [], Reviewer, note); return $"Accepted together: {entity.Label} with {entity.Equivalents.Count} identifiers."; });
+        Act(id, async () => { var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, targets ?? [], Reviewer, note); return ($"Accepted together, with {entity.Equivalents.Count} identifiers.", entity); });
 
     public Task<IActionResult> OnPostSameAsAsync(long id, string entity, string? note) =>
-        Act(id, async () => { await Project.Desk.SameAsAsync(Dataset, id, entity, Reviewer, note); return "Marked as the same entity."; });
+        Act(id, async () => ("Marked as the same entity.", await Project.Desk.SameAsAsync(Dataset, id, entity, Reviewer, note)));
 
     public Task<IActionResult> OnPostLocalAsync(long id, string? label, string? note) =>
-        Act(id, async () => { await Project.Desk.KeepLocalAsync(Dataset, id, Reviewer, label, note); return "Kept as a local authority."; });
+        Act(id, async () => ("Kept as a local authority.", await Project.Desk.KeepLocalAsync(Dataset, id, Reviewer, label, note)));
 
     public Task<IActionResult> OnPostOverrideAsync(long id, string target, string? note) =>
-        Act(id, async () => { await Project.Desk.OverrideAsync(Dataset, id, target, Reviewer, note); return "Override saved and applied."; });
+        Act(id, async () => ("Override saved and applied.", await Project.Desk.OverrideAsync(Dataset, id, target, Reviewer, note)));
 
     public async Task<IActionResult> OnPostFlagAsync(long id, string text)
     {
@@ -73,14 +76,14 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         return Flash(restored is null ? "Nothing to undo." : $"Undone; the earlier decision ({restored.Method}) stands again.", new { dataset = Dataset, method = Method, context = Context, id });
     }
 
-    private async Task<IActionResult> Act(long id, Func<Task<string>> action)
+    private async Task<IActionResult> Act(long id, Func<Task<(string Message, Entity Entity)>> action)
     {
-        string message;
-        try { message = await action(); }
+        (string Message, Entity Entity) done;
+        try { done = await action(); }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
             return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id });
         }
-        return Flash(message, new { dataset = Dataset, method = Method, context = Context, after = id });
+        return Flash(done.Message, new { dataset = Dataset, method = Method, context = Context, after = id }, done.Entity);
     }
 }

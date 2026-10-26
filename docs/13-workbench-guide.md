@@ -104,6 +104,10 @@ Actions:
   with all their identifiers.
 - **Skip for now** leaves it in the queue. **Add note** leaves a message for another reviewer. **Undo last decision**
   puts the previous decision back.
+- After an action, the message at the top of the next item names the entity it made or chose, with a link, so you
+  can add an identifier or a note there before going on. The entity page takes an identifier as a URI, or searches
+  the local indexes for it, each result with "Add as identifier" (a Wikidata record the desk's search turned up,
+  say).
 - **Look again** (beside the decision date) shows what today's rules would offer for the string, without deciding
   anything. A decision shows the evidence stored with it, so a string decided before the rules changed, or by hand,
   may show more now. The actions act on what you see.

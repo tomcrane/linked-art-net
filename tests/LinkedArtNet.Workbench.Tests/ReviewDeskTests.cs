@@ -99,6 +99,9 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Equal(HttpStatusCode.Redirect, accepted.StatusCode);
         var decision = (await store.DecisionForAsync(smith.Id))!;
         Assert.Equal(DecisionMethod.Human, decision.Method);
+        var afterAccept = await owner.GetStringAsync(accepted.Headers.Location!.ToString()); // the banner links to the entity just decided
+        Assert.Contains("Accepted.", afterAccept);
+        Assert.Contains("/entity?id=" + Uri.EscapeDataString(decision.EntityId!), afterAccept);
         Assert.Equal("owner", decision.Reviewer);
         var resolved = (await store.ResolveAsync(ds, "persauthorfull", "Smith, John (author)"))!;
         Assert.Contains(resolved.Equivalents, q => q.Uri == "http://vocab.getty.edu/ulan/500000001");

@@ -9,9 +9,12 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
 {
     [BindProperty(SupportsGet = true)] public string Id { get; set; } = "";
     [BindProperty(SupportsGet = true)] public string? Merge { get; set; }
+    /// <summary>A search of the local indexes for a record to add as an identifier (the desk, 2026-10-26: a Wikidata record seen under the desk's "Something else" could not be found again here).</summary>
+    [BindProperty(SupportsGet = true)] public string? Find { get; set; }
 
     public EntityView View { get; private set; } = null!;
     public IReadOnlyList<Entity> MergeCandidates { get; private set; } = [];
+    public IReadOnlyList<AuthorityRecord> Found { get; private set; } = [];
     public string? Message { get; private set; }
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
@@ -22,6 +25,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         View = view;
         if (!string.IsNullOrWhiteSpace(Merge))
             MergeCandidates = (await Project.Desk.SearchEntitiesAsync(Dataset, Merge)).Where(e => e.Id != view.Entity.Id).ToList();
+        if (!string.IsNullOrWhiteSpace(Find))
+            Found = (await Project.Desk.SearchIndexesAsync(Find, null, 12)).Where(r => view.Entity.Equivalents.All(q => q.Uri != r.Uri)).ToList();
         return Page();
     }
 

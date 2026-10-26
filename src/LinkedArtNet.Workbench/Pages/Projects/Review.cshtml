@@ -43,7 +43,12 @@ else
 {
     var ev = item.Evidence;
     var reading = ev.Reading;
-    <p class="small muted">@Model.Remaining in this list · string @item.String.Id · seen @item.String.Occurrences time@(item.String.Occurrences == 1 ? "" : "s") in <strong>@item.String.Context</strong> · decided <em>@item.Decision.Method</em>@(item.Decision.Reviewer is null ? "" : $" by {item.Decision.Reviewer}") @item.Decision.DecidedAt.ToString("yyyy-MM-dd")</p>
+    <p class="small muted">@Model.Remaining in this list · string @item.String.Id · seen @item.String.Occurrences time@(item.String.Occurrences == 1 ? "" : "s") in <strong>@item.String.Context</strong> · decided <em>@item.Decision.Method</em>@(item.Decision.Reviewer is null ? "" : $" by {item.Decision.Reviewer}") @item.Decision.DecidedAt.ToString("yyyy-MM-dd")
+    @if (item.LookedAgain is null) { <text>· </text><a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, look = true })" title="Show what today's rules would offer for this string, without deciding anything">Look again</a> }</p>
+    @if (item.LookedAgain is { } outcome)
+    {
+        <p class="flash">Looked at again under today's rules: it would be <strong>@outcome</strong>. The stored decision is unchanged; the actions below act on what you see. <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id })">Back to the stored evidence</a></p>
+    }
     <p class="string">@item.String.Raw</p>
     @if (reading is not null)
     {
@@ -73,6 +78,14 @@ else
 
     <h2>Candidates</h2>
     @if (ev.Groups.Count == 0) { <p class="muted">The reconciler found nothing in the local indexes for this string.</p> }
+    @if (ev.Groups.Count > 1 && Model.Method != "human")
+    {
+        <form method="post" asp-page-handler="AcceptTogether" id="together" class="row" style="gap:.5rem; margin:.25rem 0 .75rem">
+            <input type="hidden" name="id" value="@item.String.Id" />
+            <button type="submit" class="secondary" title="The ticked cards are one thing: one entity with all their identifiers">Accept the ticked together</button>
+            <span class="small muted">tick "together" on two or more cards that are the same thing</span>
+        </form>
+    }
     var first = true;
     foreach (var group in ev.Groups)
     {
@@ -98,6 +111,10 @@ else
                         @if (record?.DataJson is { } data && System.Text.Json.JsonDocument.Parse(data).RootElement.TryGetProperty("description", out var desc)) { <div class="small">@desc.GetString()</div> }
                         <div class="reason">@m.Reason</div>
                     </div>
+                    @if (m.Veto != true && Model.Method != "human" && ev.Groups.Count > 1)
+                    {
+                        <label class="small inline" style="white-space:nowrap" title="This card is one of the things to accept together"><input type="checkbox" name="targets" value="@m.Uri" form="together" /> together</label>
+                    }
                     @if (m.Veto != true && !m.IsStore && Model.Method != "human")
                     {
                         <form method="post" asp-page-handler="Accept" class="inline">
@@ -124,25 +141,29 @@ else
 
     <h2>Something else</h2>
     <div class="grid">
-        <form method="get" class="card">
-            <input type="hidden" name="method" value="@Model.Method" /><input type="hidden" name="context" value="@Model.Context" /><input type="hidden" name="id" value="@item.String.Id" />
-            <label for="q">Search the store's entities and the local indexes</label>
-            <div class="row"><input type="search" id="q" name="q" value="@(Model.Q ?? reading?.Text ?? item.String.Raw)" style="flex:1" /><button type="submit" class="secondary">Search</button></div>
+        <div class="card">
+            @* the search is a form of its own and the results follow it inside the card: a result's own form nested in the search form
+               would end it, and the rest of the results would fall out of the card into the grid (the desk, 2026-10-26) *@
+            <form method="get">
+                <input type="hidden" name="method" value="@Model.Method" /><input type="hidden" name="context" value="@Model.Context" /><input type="hidden" name="id" value="@item.String.Id" />
+                <label for="q">Search the store's entities and the local indexes</label>
+                <div class="row"><input type="search" id="q" name="q" value="@(Model.Q ?? reading?.Text ?? item.String.Raw)" style="flex:1" /><button type="submit" class="secondary">Search</button></div>
+            </form>
             @if (Model.Q is not null)
             {
                 @if (Model.EntityMatches.Count == 0 && Model.IndexMatches.Count == 0) { <p class="muted small">Nothing found for "@Model.Q".</p> }
                 @foreach (var e in Model.EntityMatches)
                 {
-                    <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@e.Label</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span> <span class="small muted">@string.Join(" ", e.Equivalents.Select(q => q.Source))</span></div>
+                    <div class="row result"><div style="flex:1"><strong>@e.Label</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span><br /><a class="small" href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)">@e.Id</a></div>
                         <form method="post" asp-page-handler="SameAs" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@e.Id" /><button type="submit">Same as</button></form></div>
                 }
                 @foreach (var r in Model.IndexMatches)
                 {
-                    <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Text is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <a class="tag src" href="@r.Uri" target="_blank" rel="noopener" title="@r.Uri">@r.Source</a> <a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
+                    <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Text is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag">@r.Source</span><br /><a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
                         <form method="post" asp-page-handler="Accept" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit">Accept</button></form></div>
                 }
             }
-        </form>
+        </div>
         <form method="post" asp-page-handler="Local" class="card">
             <input type="hidden" name="id" value="@item.String.Id" />
             <h3 style="margin-top:0">None of these: it is real and local</h3>

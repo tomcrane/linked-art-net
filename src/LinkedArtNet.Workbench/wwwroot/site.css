@@ -29,7 +29,8 @@ details.help p { margin: .5rem 0 0; max-width: 60rem; color: inherit; }
 .card.best { border-color: var(--accent); }
 .card.veto { opacity: .6; border-style: dashed; }
 .row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: baseline; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; } @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.result { margin-top: .6rem; padding-top: .6rem; border-top: 1px solid var(--line); align-items: center; } @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
 .string { font-size: 1.5rem; font-weight: 700; margin: 0; }
 .score { font-variant-numeric: tabular-nums; font-weight: 700; padding: .1rem .5rem; border-radius: 6px; background: var(--accent-soft); color: var(--accent); }
 .tag { display: inline-block; font-size: .8rem; padding: .05rem .5rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); margin-right: .25rem; }

@@ -236,17 +236,15 @@ and the log (doc 15) records that. The order within an area is rough value.
 - ~~The possessive firm name as a candidate~~ (finding 105, built 2026-10-26 evening, doc 10 7.6 "Built 2026-10-26
   evening, finding 105": "Dowell's Ltd" offered for "Mr Dowell" at 0.90, shown and never carried alone; measured by
   the next run, and seen at the desk once the 500 of run utt9xm are re-decided, Commands on return item 4).
-- "Look again" at the desk (2026-10-26 evening, after finding 105): a decision's evidence is the evidence stored
-  with it, so a string decided before a rule change, or by hand, never shows what today's rules would offer ("Mr
-  Dowell", decided at the desk before 105, cannot show Dowell's Ltd). An action that re-evaluates the string under
-  the rules as they stand and shows the fresh evidence without deciding anything; size S (EvaluateAsync is there).
+- ~~"Look again" at the desk~~ (built 2026-10-26 evening: a link beside the decision date re-evaluates the string
+  under today's rules and shows the fresh evidence with what the outcome would be, deciding nothing; the actions act
+  on what is shown).
 - The possessive key of an acronym (finding 105's follow-up, run evhvuw): "ICA" went from 82 to 102 groups through
   the key "icas"; a name written in capitals gets no possessive key. One line and a test line, with the next library
   change.
-- "Accept together" (the desk, 2026-10-26 evening, the owner's FYI at "Christopher Cock": ULAN's "Cock, Christopher"
-  1648~-1748 and LoC's "Cock, Mr. (Christopher), active 1720-1749" are one man in two cards, accepted one and then
-  attended to on the entity page). A tick on each card and one action that makes one entity with both identifiers.
-  Size S to M. Behind it, two reconciler items: LoC's courtesy heading "Surname, Mr. (Forename)" read as "Surname,
+- ~~"Accept together"~~ (built 2026-10-26 evening, from the owner's FYI at "Christopher Cock": a "together" tick on
+  each card and one action that makes one entity with every ticked identifier, one of the project's own entities
+  allowed among them as the base). Behind it, two reconciler items: LoC's courtesy heading "Surname, Mr. (Forename)" read as "Surname,
   Forename" by the matcher (it scored 0.93 for the "Mr."; size S), and, to measure before building, a join for an
   undated string whose two sources hold one exact record each with compatible dates (LoC's working span inside ULAN's
   window), the shape of finding 79 without the string's own dates; namesakes are the risk.

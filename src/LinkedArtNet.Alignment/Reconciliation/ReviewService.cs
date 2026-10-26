@@ -14,7 +14,8 @@ public sealed record EvidenceMember(string Uri, string Source, string? Label, st
 }
 
 /// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, the records behind the candidates, and the catalogue records the string was seen in.</summary>
-public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples)
+/// <param name="LookedAgain">Set when the evidence shown is a fresh evaluation under today's rules, not the decision's own: what the string would be decided as now ("queued", "accepted", ...). The stored decision is unchanged.</param>
+public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, string? LookedAgain = null)
 {
     public bool IsQueued => Decision.Method == DecisionMethod.Queued;
 }
@@ -49,15 +50,28 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         return decided is null ? null : await LoadAsync(decided, ct);
     }
 
-    private async Task<ReviewItem> LoadAsync(DecidedString decided, CancellationToken ct)
+    /// <summary>
+    /// The string looked at again under the rules as they stand (the desk, 2026-10-26: a decision shows the evidence stored with it, so a
+    /// string decided before a rule change, or by hand, never shows what today's rules would offer). Nothing is decided; the item carries
+    /// the fresh evidence and what the outcome would be, and the actions act on what is shown.
+    /// </summary>
+    public async Task<ReviewItem> LookAgainAsync(string dataset, long stringId, CancellationToken ct = default)
     {
-        var evidence = ParseEvidence(decided.Decision.EvidenceJson);
+        var decided = await OwnAsync(dataset, stringId, ct);
+        var evaluation = await reconciler.EvaluateAsync(dataset, decided.String, includeStore: true, ct);
+        var fresh = ParseEvidence(Reconciler.Evidence(evaluation.Outcome.ToString().ToLowerInvariant(), evaluation.Reading, evaluation.Groups, null));
+        return await LoadAsync(decided, ct, fresh, evaluation.Outcome.ToString().ToLowerInvariant());
+    }
+
+    private async Task<ReviewItem> LoadAsync(DecidedString decided, CancellationToken ct, EvidenceView? fresh = null, string? lookedAgain = null)
+    {
+        var evidence = fresh ?? ParseEvidence(decided.Decision.EvidenceJson);
         var entity = decided.Decision.EntityId is null ? null : await store.ResolveEntityAsync(decided.Decision.EntityId, ct);
         var notes = await store.NotesAsync(decided.String.Dataset, StringTarget(decided.String.Id), ct);
         var records = new Dictionary<string, AuthorityRecord>(StringComparer.Ordinal);
         foreach (var uri in evidence.Groups.SelectMany(g => g.Members).Where(m => !m.IsStore).Select(m => m.Uri).Distinct(StringComparer.Ordinal).Take(40))
             if (await store.GetAuthorityAsync(uri, ct) is { } record) records[uri] = record;
-        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct));
+        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), lookedAgain);
     }
 
     /// <summary>The catalogue records a string was seen in (design doc 12 section 5), up to three; a part string with none of its own (a keyword's head, a place in a list) shows its parents'.</summary>
@@ -133,6 +147,30 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var evidence = ParseEvidence(decided.Decision.EvidenceJson);
         if (evidence.Groups.Any(g => g.Members.Any(m => m.Uri == targetUri))) return;
         throw new InvalidOperationException("The target is not a candidate, a known authority record or an entity of this project.");
+    }
+
+    /// <summary>
+    /// The reviewer says several cards are one thing (the desk, 2026-10-26: ULAN's "Cock, Christopher" and LoC's "Cock, Mr. (Christopher)"
+    /// in two cards): one entity, made or found for the first target as Accept does it, or for the one entity of ours among the targets,
+    /// and every other target an equivalent the reviewer vouched for. At most one of our entities; two would be a merge, which the
+    /// entity page does.
+    /// </summary>
+    public async Task<Entity> AcceptTogetherAsync(string dataset, long stringId, IReadOnlyList<string> targetUris, string reviewer, string? note = null, CancellationToken ct = default)
+    {
+        var decided = await OwnAsync(dataset, stringId, ct);
+        var targets = targetUris.Select(t => t.Trim()).Where(t => t.Length > 0).Distinct(StringComparer.Ordinal).ToList();
+        if (targets.Count == 0) throw new InvalidOperationException("Nothing is ticked.");
+        foreach (var t in targets) await EnsureTargetAsync(dataset, decided, t, ct);
+        var ours = targets.Where(scheme.Owns).ToList();
+        if (ours.Count > 1) throw new InvalidOperationException("Two of the project's own entities are ticked: merge them on the entity page first.");
+        var reading = reconciler.Read(decided.String);
+        var entity = await reconciler.EntityForUriAsync(dataset, ours.Count == 1 ? ours[0] : targets[0], reading, null, ct);
+        var now = DateTimeOffset.UtcNow;
+        foreach (var t in targets.Where(t => !scheme.Owns(t)))
+            if (entity.Equivalents.All(q => q.Uri != t)) await store.AddEquivalentAsync(entity.Id, new Equivalent(t, AuthorityUris.SourceOf(t), DecisionMethod.Human, 1.0, now), ct);
+        await FoldProvisionalAsync(decided, entity, reviewer, ct);
+        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept-together", reading, new { targets, entity = entity.Id, note }), reviewer, ct: ct);
+        return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
     /// <summary>The reviewer says the string is this authority record (a URI from the candidates or a search) or this entity (one of ours).</summary>

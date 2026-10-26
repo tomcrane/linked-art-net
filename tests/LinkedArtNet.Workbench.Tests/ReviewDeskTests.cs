@@ -74,6 +74,26 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("id=\"the-desk\"", guide);
         Assert.Contains("Keep as local authority", guide);
 
+        // look again: the evidence as today's rules give it, deciding nothing
+        var again = await owner.GetStringAsync($"/p/{ds}/review?id={smith.Id}&look=true");
+        Assert.Contains("under today's rules", again);
+        Assert.Contains("500000001", again);
+        Assert.Equal(DecisionMethod.Queued, (await store.DecisionForAsync(smith.Id))!.Method);
+
+        // accept the two Smiths together: one entity with both identifiers; then undo, and the queued decision stands again
+        var together = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/review?handler=AcceptTogether", $"/p/{ds}/review", new() { ["id"] = smith.Id.ToString(), ["targets"] = "http://vocab.getty.edu/ulan/500000001", ["note"] = "both" });
+        Assert.Equal(HttpStatusCode.Redirect, together.StatusCode);
+        var both = (await store.ResolveAsync(ds, "persauthorfull", "Smith, John (author)"))!;
+        Assert.Contains(both.Equivalents, q => q.Uri == "http://vocab.getty.edu/ulan/500000001");
+        var service = wb.Factory.Services.GetRequiredService<ProjectServices>();
+        var deskService = (await service.GetAsync(ds))!.Desk;
+        var merged = await deskService.AcceptTogetherAsync(ds, smith.Id, ["http://vocab.getty.edu/ulan/500000001", "http://vocab.getty.edu/ulan/500000002"], "owner", "both");
+        Assert.Contains(merged.Equivalents, q => q.Uri == "http://vocab.getty.edu/ulan/500000002");
+        Assert.Contains(merged.Equivalents, q => q.Uri == "http://vocab.getty.edu/ulan/500000001");
+        Assert.Equal(DecisionMethod.Human, (await store.DecisionForAsync(smith.Id))!.Method);
+        await deskService.UndoAsync(ds, smith.Id); await deskService.UndoAsync(ds, smith.Id);
+        Assert.Equal(DecisionMethod.Queued, (await store.DecisionForAsync(smith.Id))!.Method);
+
         // accept the first Smith
         var accepted = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/review?handler=Accept", $"/p/{ds}/review", new() { ["id"] = smith.Id.ToString(), ["target"] = "http://vocab.getty.edu/ulan/500000001", ["note"] = "the painter" });
         Assert.Equal(HttpStatusCode.Redirect, accepted.StatusCode);

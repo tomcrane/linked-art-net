@@ -99,8 +99,14 @@ Actions:
 - **Something else**: search the project's entities and the indexes for anything not among the candidates.
 - **Keep as local authority**: none of the candidates is right and the thing is real. Give it the label it should be
   published under and, if useful, a note. The software stops asking about it.
+- **Accept the ticked together**: when two or more cards are the same thing (an auction house in ULAN and the same
+  house as a person in the Library of Congress), tick "together" on each and accept them as one. One entity is made
+  with all their identifiers.
 - **Skip for now** leaves it in the queue. **Add note** leaves a message for another reviewer. **Undo last decision**
   puts the previous decision back.
+- **Look again** (beside the decision date) shows what today's rules would offer for the string, without deciding
+  anything. A decision shows the evidence stored with it, so a string decided before the rules changed, or by hand,
+  may show more now. The actions act on what you see.
 
 The dropdown at the top switches from the queue to the strings the software minted (nothing found), which can be
 reviewed the same way, and to those a person already decided.

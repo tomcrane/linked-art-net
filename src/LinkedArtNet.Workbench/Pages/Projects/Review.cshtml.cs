@@ -17,6 +17,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     [BindProperty(SupportsGet = true)] public long After { get; set; }
     [BindProperty(SupportsGet = true)] public long? Id { get; set; }
     [BindProperty(SupportsGet = true)] public string? Q { get; set; }
+    /// <summary>Show the string's evidence as today's rules would give it, deciding nothing.</summary>
+    [BindProperty(SupportsGet = true)] public bool Look { get; set; }
 
     public ReviewItem? Item { get; private set; }
     public IReadOnlyList<ContextMethodCount> Queue { get; private set; } = [];
@@ -31,7 +33,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         Message = message ?? TakeFlash();
         if (string.IsNullOrWhiteSpace(Context)) Context = null;
         Queue = await Project.Desk.QueueCountsAsync(Dataset, Method);
-        Item = Id is { } id ? await Project.Desk.GetAsync(id) : await Project.Desk.NextAsync(Dataset, Method, Context, After);
+        Item = Id is { } id ? (Look ? await Project.Desk.LookAgainAsync(Dataset, id) : await Project.Desk.GetAsync(id)) : await Project.Desk.NextAsync(Dataset, Method, Context, After);
         if (Item is not null && Item.String.Dataset != Dataset) Item = null;
         if (Item is not null && !string.IsNullOrWhiteSpace(Q))
         {
@@ -42,6 +44,9 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
 
     public Task<IActionResult> OnPostAcceptAsync(long id, string target, string? note) =>
         Act(id, async () => { await Project.Desk.AcceptAsync(Dataset, id, target, Reviewer, note); return "Accepted."; });
+
+    public Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note) =>
+        Act(id, async () => { var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, targets ?? [], Reviewer, note); return $"Accepted together: {entity.Label} with {entity.Equivalents.Count} identifiers."; });
 
     public Task<IActionResult> OnPostSameAsAsync(long id, string entity, string? note) =>
         Act(id, async () => { await Project.Desk.SameAsAsync(Dataset, id, entity, Reviewer, note); return "Marked as the same entity."; });

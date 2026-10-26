@@ -71,14 +71,11 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        where d.run_id in ('run-20261026-130632-u4ykeu', 'run-20261026-142043-awn284')
          and s.raw in ('L (colonnade)', 'Red House (Yorkshire)') order by s.raw, d.id;
 
-4. The 500 of run utt9xm re-decided under finding 105 (nine seconds; the desk then offers "Dowell's Ltd" for "Mr
-   Dowell"), the workbench stopped meanwhile:
-
-       dotnet run --project tools/Align -- undo-run --run run-20261026-161751-utt9xm
-       dotnet run --project tools/Align -- reconcile --verbose
-
-   Paste the summary; expect the 500 as before with a few more queued where a firm named for the man now stands
-   beside a person.
+4. ~~The 500 of run utt9xm re-decided under finding 105~~ (done 2026-10-26 evening, run evhvuw: 498, since "Mr
+   Southgate" and "Mr Dowell" had been decided by hand at the desk; the same decisions, with a firm named for the man
+   among the candidates where one exists: "Mr Wright" 27 -> 29 groups, "Mr Stewart" 28 -> 30, "Mr Ford" 9 -> 11,
+   "Lawrence", "Ackermann", "Dickinson", "Ireland", "Mr Cameron" one more each; nothing accepted or minted on its
+   account).
 
 5. ~~The records behind the strings, for the desk~~ (built and collected 2026-10-26 evening). With the cleaned
    keywords the March export covers keywords 30,039 of 30,039, persauthorfull 24,119 of 24,119, keywords:head 7,741
@@ -239,6 +236,13 @@ and the log (doc 15) records that. The order within an area is rough value.
 - ~~The possessive firm name as a candidate~~ (finding 105, built 2026-10-26 evening, doc 10 7.6 "Built 2026-10-26
   evening, finding 105": "Dowell's Ltd" offered for "Mr Dowell" at 0.90, shown and never carried alone; measured by
   the next run, and seen at the desk once the 500 of run utt9xm are re-decided, Commands on return item 4).
+- "Look again" at the desk (2026-10-26 evening, after finding 105): a decision's evidence is the evidence stored
+  with it, so a string decided before a rule change, or by hand, never shows what today's rules would offer ("Mr
+  Dowell", decided at the desk before 105, cannot show Dowell's Ltd). An action that re-evaluates the string under
+  the rules as they stand and shows the fresh evidence without deciding anything; size S (EvaluateAsync is there).
+- The possessive key of an acronym (finding 105's follow-up, run evhvuw): "ICA" went from 82 to 102 groups through
+  the key "icas"; a name written in capitals gets no possessive key. One line and a test line, with the next library
+  change.
 - An identifier on "Keep as local authority" (the same desk item): the NLS archive is the one authority for
   Dowell's Ltd (https://manuscripts.nls.uk/agents/corporate_entities/1476), and the entity page already takes a URI
   as an identifier (since 2026-10-26 evening it takes an ArchivesSpace agent's public URL on any host, by the shape

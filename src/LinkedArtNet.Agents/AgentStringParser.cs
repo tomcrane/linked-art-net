@@ -136,7 +136,8 @@ public sealed partial class AgentStringParser
 
         // 5. Honorifics inside the name: "Sir John Smith", "Smith, Sir John". A body keeps its words: "Queen Victoria Museum" is
         //    not the Victoria Museum (the 2026-10-20 shadow matched it to one), nor "Sir John Soane's Museum" John Soane's.
-        if (!IsCorporate(core)) core = StripHonorifics(core, honorifics);
+        var titleOnly = false;
+        if (!IsCorporate(core)) core = StripHonorifics(core, honorifics, out titleOnly);
 
         // 6. Name parts.
         string? name = core.Length == 0 ? null : core;
@@ -174,7 +175,7 @@ public sealed partial class AgentStringParser
             return Empty(original, "Nothing recognisable in the text.");
 
         return new ParsedAgent(original, _profile.Name, kind, name, family, given, sortName, displayName, honorifics, dateText, dates,
-            roles, nationalities, qualifiers, unconsumed.Count == 0 ? null : string.Join("; ", unconsumed), Math.Clamp(confidence, 0.1, 1), notes);
+            roles, nationalities, qualifiers, unconsumed.Count == 0 ? null : string.Join("; ", unconsumed), Math.Clamp(confidence, 0.1, 1), notes) { TitleOnly = titleOnly };
     }
 
     private ParsedAgent Empty(string input, string note) =>
@@ -304,14 +305,25 @@ public sealed partial class AgentStringParser
         return text.Trim(',', ';', ' ');
     }
 
-    private string StripHonorifics(string name, List<string> honorifics)
+    /// <summary>The particles a rank takes its place through: "Earl of", "Duc de", "Graf von".</summary>
+    private static readonly HashSet<string> Particles = new(StringComparer.OrdinalIgnoreCase) { "of", "de", "del", "della", "di", "da", "du", "des", "von", "van", "the", "zu" };
+
+    private string StripHonorifics(string name, List<string> honorifics, out bool titleOnly)
     {
+        titleOnly = false;
         if (name.Length == 0) return name;
         var comma = name.IndexOf(',');
         if (_profile.InvertedNames && comma > 0)
         {
             var family = name[..comma];
             var givenWords = name[(comma + 1)..].Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+            // "Yarmouth, Earl of", "Hertford, Marquess of", "Byron, Lord": given names that are a rank and its particle and nothing else name
+            // no person; the rank stays in the name and the name is marked a title, which the reconciler does not take as exact (finding 99,
+            // 2026-10-26, run k22erz: ULAN's Marquess of Hertford, bearing "Yarmouth, Earl of" as a variant, was an exact-single). A lone
+            // forename the data uses as one ("Smith, Dean", "Jones, Earl") is a name
+            if (givenWords.Count > 0 && givenWords.Any(IsHonorificWord) && givenWords.All(w => IsHonorificWord(w) || Particles.Contains(w.TrimEnd('.')))
+                && !(givenWords.Count == 1 && _tables.IsForenameToo(givenWords[0])))
+            { titleOnly = true; return name.Trim(); }
             // and off the front only a title the data does not use as a forename: "Arnaud, Dean Leopold" and "Mandle, Earl Roger" are those
             // men's names, where "Cecil, Lord David", "Bellenger, Dom Aidan" and "Barnes, Major R M" carry titles (finding 94, the owner's count)
             while (givenWords.Count > 1 && IsHonorificWord(givenWords[0]) && !_tables.IsForenameToo(givenWords[0])) { honorifics.Add(givenWords[0].TrimEnd('.')); givenWords.RemoveAt(0); }
@@ -322,6 +334,8 @@ public sealed partial class AgentStringParser
             return givenWords.Count == 0 ? family.Trim() : $"{family.Trim()}, {string.Join(' ', givenWords)}";
         }
         var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+        // "Earl of Yarmouth", "Duke of Wellington": a rank, its particle and a place is a title in natural order too (finding 99)
+        if (words.Count >= 3 && IsHonorificWord(words[0]) && Particles.Contains(words[1])) { titleOnly = true; return name.Trim(); }
         while (words.Count > 1 && IsHonorificWord(words[0])) { honorifics.Add(words[0].TrimEnd('.')); words.RemoveAt(0); }
         return string.Join(' ', words);
     }

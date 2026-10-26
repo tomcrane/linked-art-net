@@ -44,4 +44,6 @@ public sealed record ParsedAgent(
 {
     public bool HasName => !string.IsNullOrEmpty(Name);
     public bool HasDates => Dates is { Status: ParseStatus.Parsed or ParseStatus.Partial };
+    /// <summary>The given names are a rank and its particle and nothing else ("Yarmouth, Earl of", "Hertford, Marquess of", "Earl of Yarmouth"): a title, which several people may have borne, not a personal name. The rank stays in the name.</summary>
+    public bool TitleOnly { get; init; }
 }

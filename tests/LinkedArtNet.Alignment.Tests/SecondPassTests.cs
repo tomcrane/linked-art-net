@@ -46,6 +46,44 @@ public class SecondPassTests(PostgresFixture pg)
     }
 
     [PostgresFact]
+    public async Task The_second_pass_goes_round_again_while_it_settles_something()
+    {
+        // finding 100 (2026-10-26, run k22erz): the two "Gibson, Jean, 1935-" strings. The keywords string stayed queued between LoC's agreeing
+        // heading and ULAN's undated namesake; the keywords:head string was accepted in the second pass, because by its turn another string's
+        // acceptance had put that namesake on an entity whose dates conflict, and the namesake's group went down with it. The keywords string
+        // had been reconsidered before that acceptance, and one round left it where the order of the pass found it.
+        // Here: "Brown, Ann, 1935-" is queued between LoC's agreeing heading and the undated pair ULAN and VIAF link; "Brown, Ann, 1920-" is
+        // queued between that pair and LoC's undated record; an override decides "Brown, Ann, 1880-1950" onto LoC's undated record at the
+        // run's end. Round one: the first string is still queued (the pair stands); the second is accepted onto the pair, LoC's record gone
+        // down with the overridden entity. Round two: the pair goes down with the second string's entity, and the first string is a single
+        var ds = "sp" + Guid.NewGuid().ToString("N")[..6];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        static AuthorityRecord Person(string uri, string source, string label, Lifespan? lifespan, params string[] sameAs) => new(uri, source, label, [label, Qualified.Split(label).Name], "Person", lifespan, sameAs, null, DateTimeOffset.UtcNow, "test");
+        await pg.Store.PutAuthorityAsync(Person("http://id.loc.gov/authorities/names/nb2010009060", "loc", "Brown, Ann, 1935-1991", GettyVocabLoader.LifespanFromYears("1935", "1991")));
+        await pg.Store.PutAuthorityAsync(Person("http://id.loc.gov/authorities/names/nb2010009063", "loc", "Brown, Ann", null));
+        await pg.Store.PutAuthorityAsync(Person("http://vocab.getty.edu/ulan/500375601", "ulan", "Brown, Ann", null, "http://viaf.org/viaf/900000001"));
+        await pg.Store.PutAuthorityAsync(Person("http://viaf.org/viaf/900000001", "viaf", "Brown, Ann", null));
+        var first = await pg.Store.CollectAsync(ds, "persauthorfull", "Brown, Ann, 1935-");
+        var second = await pg.Store.CollectAsync(ds, "persauthorfull", "Brown, Ann, 1920-");
+        var third = await pg.Store.CollectAsync(ds, "persauthorfull", "Brown, Ann, 1880-1950");
+        await pg.Store.PutOverrideAsync(new Override(ds, "persauthorfull", third.Normalised, "http://id.loc.gov/authorities/names/nb2010009063", "test"));
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc"), new LocalIndexSource(pg.Store, "viaf")], ProjectManifest.PmcDefault.ToOptions());
+        var report = await reconciler.RunAsync(ds, runId: "run-test-rounds");
+        Assert.Equal(3, report.Considered); Assert.Equal(1, report.Overridden);
+        Assert.Equal(2, report.Reconsidered); Assert.Equal(2, report.Settled); Assert.Equal(2, report.Rounds); Assert.Equal(0, report.Queued);
+        Assert.Contains("second pass: 2 queued strings reconsidered, 2 settled over 2 rounds", report.ToString());
+        var secondDecision = (await pg.Store.DecisionForAsync(second.Id))!;
+        Assert.Equal(DecisionMethod.Vote, secondDecision.Method);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "persauthorfull", "Brown, Ann, 1920-"))!.Equivalents, q => q.Uri.EndsWith("500375601"));
+        var firstDecision = (await pg.Store.DecisionForAsync(first.Id))!;
+        Assert.Equal(DecisionMethod.Single, firstDecision.Method); Assert.Equal("run-test-rounds", firstDecision.RunId);
+        Assert.Contains((await pg.Store.ResolveAsync(ds, "persauthorfull", "Brown, Ann, 1935-"))!.Equivalents, q => q.Uri.EndsWith("nb2010009060"));
+        Assert.NotEqual(firstDecision.EntityId, secondDecision.EntityId);
+        // the placeholders of both went with their queued decisions
+        Assert.All(await pg.Store.FindEntitiesByLabelAsync(StringKey.Normalise("Brown, Ann"), ds, EntityClass.Person), e => Assert.NotEqual(EntityStatus.Provisional, e.Status));
+    }
+
+    [PostgresFact]
     public async Task A_queued_strings_own_placeholder_never_settles_it()
     {
         // finding 95 (2026-10-24 night, run wy2aqs): a string queued on a dates conflict (finding 93) gets a placeholder minted with its own

@@ -52,11 +52,12 @@ public enum Outcome { Skipped, Overridden, MatchedStore, Accepted, Queued, Minte
 /// <param name="DecidedEarlier">Strings in the undecided list that were decided before the run reached them, as parts of an earlier string (part strings outlive an undo as rows), and so were passed over rather than decided twice.</param>
 /// <param name="Reconsidered">Strings the run queued and looked at again at its end (the second pass, finding 51).</param>
 /// <param name="Settled">Of those, the strings the second pass decided: counted under matched in store or accepted, and no longer under queued.</param>
-public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0, int Compounds = 0, int DecidedEarlier = 0, int Reconsidered = 0, int Settled = 0)
+/// <param name="Rounds">How many times the second pass went over the queued strings: once, and again while a round settled something (finding 100); zero when nothing was queued.</param>
+public sealed record ReconcileReport(int Considered, int Overridden, int MatchedStore, int Accepted, int Queued, int Minted, int Deferred, int Skipped, int ExactSingle = 0, int Lists = 0, int Parts = 0, int Single = 0, int Compounds = 0, int DecidedEarlier = 0, int Reconsidered = 0, int Settled = 0, int Rounds = 0)
 {
     /// <summary>Accepted by independent sources agreeing, as opposed to one source carried by the string or the single-source policy.</summary>
     public int Voted => Accepted - ExactSingle - Single;
-    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (between them {Parts} part strings)" : "") + (DecidedEarlier > 0 ? $"; {DecidedEarlier} of those considered were decided as parts before the run reached them" : "") + (Reconsidered > 0 ? $"; second pass: {Reconsidered} queued strings reconsidered, {Settled} settled" : "");
+    public override string ToString() => $"considered {Considered}: overridden {Overridden}, matched in store {MatchedStore}, accepted {Accepted} (vote {Voted}, single {Single}, exact-single {ExactSingle}), queued {Queued}, minted {Minted}, deferred {Deferred}, skipped {Skipped}" + (Lists + Compounds > 0 ? $", lists {Lists}, compounds {Compounds} (between them {Parts} part strings)" : "") + (DecidedEarlier > 0 ? $"; {DecidedEarlier} of those considered were decided as parts before the run reached them" : "") + (Reconsidered > 0 ? $"; second pass: {Reconsidered} queued strings reconsidered, {Settled} settled" + (Rounds > 1 ? $" over {Rounds} rounds" : "") : "");
 }
 
 /// <summary>
@@ -137,28 +138,39 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // place field's "Cornwall" made the entity) or breaks a tie among places (finding 35). Each queued string is evaluated again at the
         // end; one that comes back matched in store or accepted is decided afresh, the queued decision superseded and its placeholder,
         // which nothing else points at, removed; one still queued keeps its decision and its placeholder. The indexes have not changed,
-        // so nothing else can come back different
-        int reconsidered = 0, settled = 0;
-        if (queuedStrings.Count > 0)
+        // so nothing else can come back different.
+        // And the pass goes round again while it settles something (finding 100, 2026-10-26, run k22erz): a string the pass accepts makes
+        // or changes an entity, and a string reconsidered before it, that the change would have settled, was left where the order of the
+        // pass found it ("Gibson, Jean, 1935-" in keywords stayed queued beside ULAN's undated namesake, while the same string in
+        // keywords:head, reconsidered after the acceptance that put that namesake on an entity whose dates conflict, was accepted). Each
+        // round reconsiders only the strings still queued; three rounds at most, since a round that settles nothing changes nothing
+        int reconsidered = 0, settled = 0, rounds = 0;
+        var pending = queuedStrings;
+        while (pending.Count > 0 && rounds < 3)
         {
+            rounds++;
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            progress?.Report($"second pass over {queuedStrings.Count} queued strings");
-            foreach (var s in queuedStrings)
+            progress?.Report(rounds == 1 ? $"second pass over {pending.Count} queued strings" : $"second pass, round {rounds}, over {pending.Count} strings still queued");
+            var still = new List<SourceString>();
+            var settledThisRound = 0;
+            foreach (var s in pending)
             {
                 ct.ThrowIfCancellationRequested();
-                reconsidered++;
+                if (rounds == 1) reconsidered++;
                 var e = await EvaluateAsync(dataset, s, includeStore: true, ct);
-                if (e.Outcome is not (Outcome.MatchedStore or Outcome.Accepted)) continue;
+                if (e.Outcome is not (Outcome.MatchedStore or Outcome.Accepted)) { still.Add(s); continue; }
                 var old = await store.DecisionForAsync(s.Id, ct);
                 await CommitAsync(dataset, s, e, runId, ct);
                 if (old?.EntityId is { } placeholder) await store.RemoveProvisionalIfUnreferencedAsync(placeholder, ct);
-                settled++; queued--; Count(e);
-                onDecided?.Invoke(e, reconsidered, queuedStrings.Count);
+                settled++; settledThisRound++; queued--; Count(e);
+                onDecided?.Invoke(e, rounds == 1 ? reconsidered : pending.Count - still.Count, pending.Count);
             }
             Time("second-pass", sw);
-            progress?.Report($"second pass: {reconsidered} reconsidered, {settled} settled");
+            progress?.Report(rounds == 1 ? $"second pass: {reconsidered} reconsidered, {settledThisRound} settled" : $"second pass, round {rounds}: {settledThisRound} settled");
+            if (settledThisRound == 0) break;
+            pending = still;
         }
-        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier, reconsidered, settled);
+        return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier, reconsidered, settled, rounds);
     }
 
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>
@@ -581,7 +593,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // a name of one word is not exact enough for a person or a body ("Mr Farebrother" read as "Farebrother"), unless the record is
         // plainly a firm by its own label ("Remondini (Firm)", "Macmillan, Inc."): a one-word firm name is a firm's name (finding 42,
         // 2026-10-22)
-        var wordsEnough = reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2
+        // and a name whose given part is a rank and nothing else ("Yarmouth, Earl of", a courtesy title several men have borne) is a title, not a
+        // personal name, and no more exact than one word: ULAN's Marquess of Hertford, bearing it as a variant, was an exact-single (finding 99,
+        // 2026-10-26, run k22erz); the parser marks such a name (ParsedAgent.TitleOnly)
+        var titleOnly = reading.Agent?.TitleOnly == true;
+        var wordsEnough = reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || (!titleOnly && StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
             || (exactTop is not null && exactTop.Best.Candidate.Class == EntityClass.Group && NameMatcher.PlainlyABody(exactTop.Best.Candidate.Label));
         if (_options.AcceptUniqueExactSingleSource && exactTop is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= rivalFloor) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
             && wordsEnough
@@ -826,6 +842,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (qualifierAgrees == false && reading.QualifierAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement, c.Placement) == true) qualifierAgrees = true;
             // and the chain above the candidate's own placement, the same way ("Boughton House (Northamptonshire)" for "(England)"; finding 84)
             if (qualifierAgrees == false && c.PlacementAncestors is not null && Qualified.Agrees(reading.QualifierForPlacement ?? reading.Qualifier, $"{c.Placement}, {c.PlacementAncestors}") == true) qualifierAgrees = true;
+            // a qualifier that resolves to a known place names that place, and a record whose whole chain holds the qualifier's word but not
+            // the place's ancestors is in a namesake elsewhere: TGN's Marble Hill in Middlesex County, Massachusetts, agreed with "(Middlesex)"
+            // on the word alone, and the house in Twickenham was placed there (finding 98, 2026-10-26, run k22erz). Only a whole chain (TGN's
+            // parent string, ending in "World") says enough to be read so; a heading's parenthetical "(Middlesex)" agrees as before
+            if (qualifierAgrees == true && reading.QualifierAncestors is { } resolved && !veto && c.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal)
+                && !Qualified.Contains(chain, Qualified.Tokens(resolved)))
+            { qualifierAgrees = false; veto = true; reasons.Add($"the qualifier names a known place ({resolved}) and this {reading.Qualifier} is a namesake elsewhere"); }
             // a qualifier TGN knows as a county or above ("Herefordshire") names a real place, and a record placed elsewhere is not the
             // string's whether or not any record is placed: "Hampton Court (Herefordshire)" is neither the Jamaican nor the Richmond
             // one, and is minted (finding 66, 2026-10-22)

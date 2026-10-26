@@ -471,6 +471,16 @@ public class GroupingTests
         Assert.False(Reconciler.Score(bridgend, [new Candidate("t41", "tgn", "Newcastle", EntityClass.Place, null, [], "local", 1.0, Placement: "Shropshire, England, United Kingdom, Europe, World")], 120)[0].Veto);
         var fountains = Reading("Fountains Hall", EntityClass.Place) with { Qualifier = "Yorkshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
         Assert.True(Reconciler.Score(fountains, [new Candidate("l30", "lcsh", "Fountains Hall (England)", EntityClass.Type, null, [], "local", 0.85, Placement: "England")], 120)[0].QualifierAgrees); // and still widen
+        // a qualifier that resolves to a known place names that place: a whole chain holding the qualifier's word but not the place's ancestors is a
+        // namesake elsewhere (finding 98, 2026-10-26, run k22erz: "Marble Hill (Middlesex)" was placed in TGN's Marble Hill in Middlesex County,
+        // Massachusetts, on the word alone); a chain under the ancestors agrees, and a heading's parenthetical is not a chain and agrees as before
+        var marble = Reading("Marble Hill", EntityClass.Place) with { Qualifier = "Middlesex", QualifierAncestors = "England, United Kingdom, Europe, World" };
+        var massachusetts = Reconciler.Score(marble, [new Candidate("t2491915", "tgn", "Marble Hill", EntityClass.Place, null, [], "local", 1.0, Placement: "Middlesex, Massachusetts, United States, North and Central America, World")], 120)[0];
+        Assert.True(massachusetts.Veto); Assert.False(massachusetts.QualifierAgrees); Assert.Contains("is a namesake elsewhere", massachusetts.Reason);
+        var twickenham = Reconciler.Score(marble, [new Candidate("t1", "tgn", "Marble Hill", EntityClass.Place, null, [], "local", 1.0, Placement: "Twickenham, Middlesex, England, United Kingdom, Europe, World")], 120)[0];
+        Assert.False(twickenham.Veto); Assert.True(twickenham.QualifierAgrees);
+        var marbleHeading = Reconciler.Score(marble, [new Candidate("l31", "loc", "Marble Hill (Middlesex)", EntityClass.Place, null, [], "local", 1.0, Placement: "Middlesex")], 120)[0];
+        Assert.False(marbleHeading.Veto); Assert.True(marbleHeading.QualifierAgrees);
         // a heading's type word and a record's level (the TGN level preference)
         Assert.Equal("County", Qualified.TypeOf(["Cornwall (England : County)"]));
         Assert.Equal("City", Qualified.TypeOf(["New York (N.Y.)", "New York (N.Y. : City)"]));
@@ -1373,7 +1383,7 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         // oldest first: Tate (override), the dated Dürer (vote), the inverted Dürer (now in the store), Smith (two exact Smiths: review),
         // Nobody (minted), the wrongly dated Dürer (ULAN vetoed by dates, and the LoC record it is linked to falls with it; the project's own
         // Dürer, dated through them, conflicts too, and a namesake of the project's own entity is the desk's, not a second entity: queued, finding 93)
-        Assert.Equal(new ReconcileReport(Considered: 6, Overridden: 1, MatchedStore: 1, Accepted: 1, Queued: 2, Minted: 1, Deferred: 0, Skipped: 0, Reconsidered: 2), report); // the second pass looked at Smith and the wrongly dated Dürer again and left them queued
+        Assert.Equal(new ReconcileReport(Considered: 6, Overridden: 1, MatchedStore: 1, Accepted: 1, Queued: 2, Minted: 1, Deferred: 0, Skipped: 0, Reconsidered: 2, Rounds: 1), report); // the second pass looked at Smith and the wrongly dated Dürer again and left them queued
 
         // override: the entity was created under the curated identifier
         var tateEntity = (await pg.Store.ResolveAsync(ds, "corpauthor", "Tate"))!;

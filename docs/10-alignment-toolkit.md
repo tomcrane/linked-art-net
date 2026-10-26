@@ -1259,6 +1259,61 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-26, findings 98 to 100, from the four pieces of evidence k22erz's samples asked for (below, "Read
+2026-10-26"):
+
+- Finding 98: a qualifier that resolves to a known place names that place, and a record whose whole chain holds the
+  qualifier's word but not the place's ancestors is in a namesake elsewhere. "Marble Hill (Middlesex)" resolved
+  "Middlesex" to England (the home place deciding among TGN's nineteen records of the name, finding 71), and then
+  TGN's Marble Hill in Middlesex County, Massachusetts, agreed on the word alone, since the qualifier as written is
+  read before its ancestors, which only widen (finding 56); the other American Marble Hills were vetoed as elsewhere.
+  Now an agreement with a whole chain (TGN's parent string, ending in "World") is checked against the ancestors and
+  vetoed when they are missing: "the qualifier names a known place (England, ...) and this Middlesex is a namesake
+  elsewhere". A heading's parenthetical "(Middlesex)" is not a chain and agrees as before. TGN has no Marble Hill in
+  Twickenham, so the string will mint, which is right. Expect the qualified houses placed in American namesake
+  counties (New England has England's county names) to move single -> minted or queued; the method diff will count
+  them.
+- Finding 99: a name whose given part is a rank and its particle and nothing else ("Yarmouth, Earl of") is a title,
+  which several men have borne, not a personal name, and is no more exact than one word (finding 42's ground).
+  "Yarmouth, Earl of (author)" was an exact-single on ULAN's "Hertford, Francis Charles Seymour-Conway, 3rd Marquess
+  of", which bears "Yarmouth, Earl of" as a variant. The parser marks such a name (ParsedAgent.TitleOnly; the rank
+  stays in the name, so "Hertford, Marquess of" reads so and no longer as "Hertford, of"; a lone forename the data
+  uses as one, "Smith, Dean", is a name), and the exact-single rule declines it; the single rule with dates and a
+  vote still carry it. A lone title in a comma segment of its own ("Byron, Lord") comes off as before and leaves one
+  word, finding 42's. Expect "Yarmouth, Earl of (author)" exact-single -> queued, the peerage headings finding 94
+  brought to the desk staying there.
+- Finding 100: the second pass goes round again while it settles something. The two "Gibson, Jean, 1935-" strings:
+  keywords stayed queued between LoC's agreeing heading (nb2010009060, 1935-1991; ULAN's linked 500001913, 1927-1991,
+  set aside by finding 96) and ULAN's undated 500375601 ("1800~-~2100", not comparable); keywords:head was accepted
+  single in the second pass, because by its turn the pass had accepted another string onto the project's gjq63j55
+  ("Gibson, Jean", 1930-) with that undated ULAN record and LoC's undated nb2010009063 as its equivalents, and the
+  namesake's group went down with the entity's dates conflict. The keywords string had been reconsidered before that
+  acceptance, and one round left it where the order of the pass found it. Each further round reconsiders only the
+  strings still queued, stops when a round settles nothing, three rounds at most; the report says "over N rounds" and
+  the progress line reports each round. Expect the keywords Gibson string queued -> single and some tens more; the
+  second pass took 161 s in k22erz, so each further round adds about that.
+
+Read 2026-10-26, the evidence of k22erz's four samples (the owner's three queries, run that morning):
+
+- "Orovida, 1877-1970" -> ULAN's "Knight, Laura" (500017204) is what the data says: the record's labels include
+  "Orovida" (beside "Knight, Dame Laura", "Johnson, Laura", "Knight-Johnson, Laura" and the rest) and its lifespan is
+  1877-1970, the string's. The string carries Laura Knight's dates under a name ULAN lists as hers; whether ULAN is
+  right to (Orovida Pissarro, 1893-1968, is 500008117, and was vetoed on the dates) is Getty's question, not the
+  toolkit's, and a candidate for the upstream list if the owner wants to raise it. Nothing to build.
+- "Marble Hill (Middlesex)": nineteen TGN records bear the name; the English Middlesex (7012288, under England) is
+  typed aat 300387179 where the American counties are 300000771. The resolution reached England all the same (the
+  Indiana, Missouri and Tennessee records were vetoed "the qualifier names a known place and this is elsewhere", and
+  only the home place can have chosen one chain among nineteen), and the Massachusetts record agreed on its word.
+  Finding 98.
+- "Yarmouth, Earl of (author)": ULAN 500436285 at name 1.00 through the variant, nothing else. Finding 99.
+- "Gibson, Jean, 1935-": the keywords decision has ULAN 500001913 set aside and LoC nb2010009060 agreeing (finding
+  96 at work), ULAN 500375601 the live rival, ULAN 500783658 (1957-), LoC n88111181 (active 1755) and LoC nb2010009063
+  (finding 75's namesake) vetoed; the head string's two decisions, queued then single, the second with 500375601 in
+  one group with the project's gjq63j55 (1930-, conflicting) and LoC nb2010009063, and the single onto unrec_b9u3ugps,
+  the keywords string's placeholder, LoC's heading joined to it. Finding 100 for the order. Still to read, with the
+  rerun: the string decided onto gjq63j55 and how the second pass accepted it onto two undated records that were
+  separate groups for the keywords string (its query is under "Commands on return" in the plan).
+
 Built 2026-10-26, finding 97, from k22erz's single sample: an approximate or uncertain year in a lifespan is widened by
 four years each way on its own side ("c.1716-1799" the birth, "1859-c.1927" the death, "c 1816- c 1875" both), as the
 lone year has been since finding 82; the dates parser flags the whole result, so the side is read from the text

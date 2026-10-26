@@ -133,6 +133,25 @@ public class ParserTests
     }
 
     [Fact]
+    public void Given_names_that_are_a_rank_alone_make_a_title_not_a_personal_name()
+    {
+        // finding 99 (2026-10-26, run k22erz): "Yarmouth, Earl of (author)" matched ULAN's Marquess of Hertford, who bore the title, as an
+        // exact-single; a rank and its particle name no person. The rank stays in the name, and the name is marked a title
+        var yarmouth = Parse("Yarmouth, Earl of (author)");
+        Assert.True(yarmouth.TitleOnly); Assert.Equal("Yarmouth, Earl of", yarmouth.Name); Assert.Equal("Earl of", yarmouth.GivenNames); Assert.Empty(yarmouth.Honorifics);
+        var hertford = Parse("Hertford, Marquess of", "marc");
+        Assert.True(hertford.TitleOnly); Assert.Equal("Hertford, Marquess of", hertford.Name); Assert.Empty(hertford.Honorifics);
+        Assert.Equal("Byron", Parse("Byron, Lord", "marc").Name); // a lone title in a comma segment of its own comes off as before, and the one word left is finding 42's
+        // a lone forename the data uses as one, a title before a forename, and a forename that is in the table are names
+        Assert.False(Parse("Smith, Dean", "marc").TitleOnly);
+        Assert.False(Parse("Jones, Earl", "marc").TitleOnly);
+        Assert.False(Parse("Mandle, Earl Roger", "marc").TitleOnly);
+        Assert.False(Parse("Cecil, Lord David", "marc").TitleOnly);
+        Assert.False(Parse("Keeling, William Knight, 1807-1886", "marc").TitleOnly);
+        Assert.False(Parse("Smith, John", "marc").TitleOnly);
+    }
+
+    [Fact]
     public void Marc_honorific_sits_between_name_and_dates()
     {
         var a = Parse("Smith, John, Sir, 1866-1960", "marc");

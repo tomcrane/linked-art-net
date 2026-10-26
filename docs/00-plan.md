@@ -71,26 +71,8 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        where d.run_id in ('run-20261026-130632-u4ykeu', 'run-20261026-142043-awn284')
          and s.raw in ('L (colonnade)', 'Red House (Yorkshire)') order by s.raw, d.id;
 
-4. The 88 strings decided on 2026-10-18 and never re-decided: the run that holds them, then its undo and a reconcile
-   (which passes over every string already decided, so it re-decides only those):
-
-       select run_id, method, count(*), min(decided_at), max(decided_at) from decisions where valid group by 1, 2 order by 4;
-       dotnet run --project tools/Align -- undo-run --run <the 2026-10-18 run id>
-       dotnet run --project tools/Align -- reconcile --verbose
-
-   Paste the summary (expect considered 46,299, 88 decided, the rest passed over) and the desk's count after.
-
-5. The records behind the strings, for the desk (built 2026-10-26 evening): collect from the two library exports,
-   the March one the 2024 pipeline read and the October one after it, each as its own source (the examples of both
-   stand side by side, three shown per string), with the workbench stopped during the first (the schema gains a
-   table on `init`, which the command does itself):
-
-       dotnet run --project tools/Align -- collect-examples --file "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\2024-03-18\2024-03-11_library\2024-03-11_library.xml" --source library-2024-03
-       dotnet run --project tools/Align -- collect-examples --file "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\2024-10-22\2024-10-22_library\2024-10-22_library.xml" --source library-2024-10
-
-   Paste both coverage lines (strings with examples, by context). Expect persauthorfull, corpauthor, publisher and
-   place near full, keywords lower by the cleaned forms, keywords:head and keywords:sub through their parents. Then
-   the workbench again and "Messrs Langford" on the desk.
+4. ~~The 88 strings decided on 2026-10-18 and never re-decided~~ (done 2026-10-26 evening, run utt9xm; section 7,
+   workbench and desk).
 
 3. The standing method diff after the next run, whenever it comes, against awn284 (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence):
@@ -241,12 +223,21 @@ and the log (doc 15) records that. The order within an area is rough value.
   Waiting for the owner to run the collector over the library exports (Commands on return, item 5) and read the
   coverage line; the keywords the 2024 process cleaned will not match the raw export and want the legacy database's
   cleaned subjects table (a second source for the collector, size S).
-- The 88 strings queued on 2026-10-18 by the first reconciliation and never re-decided (seen at the desk 2026-10-26:
-  4,120 in the list against awn284's 4,032; "Messrs Langford" shows the evidence of that day, no reasons, no body
-  rules). A run passes over a string with a valid decision and each day's undo took back only the previous run, so
-  decisions from a run never undone persist with their rules of the day. Undo that run and reconcile, which re-decides
-  only those 88 (the query to find it is under Commands on return, item 4). More generally, the jobs step wants a
-  "re-decide strings decided before run X" operation.
+- ~~The 88 strings queued on 2026-10-18 and never re-decided~~ (done 2026-10-26 evening: run-20261018-152324-k7sdqb
+  undone, its 500 decisions and 221 unreferenced provisional entities; run utt9xm re-decided the 500 under today's
+  rules in nine seconds: matched in store 283, accepted 41, queued 61, minted 107, overridden 7; the desk's list
+  4,093). "Messrs Langford" is now exact-name on the project's group "Langford" (finding 37's courtesy prefix), to
+  check on its entity page. The jobs step still wants a "re-decide strings decided before run X" operation. Seen in
+  the 500: (a) stale labels on provisional entities from the first runs' readings, kept because another context's
+  string points at them ("St Mary's Church" matched the project's "Mary's Church", "St Barbe Museum & Art Gallery" its
+  "Barbe Museum & Art Gallery"; today's parser keeps "St" on a body under every profile): a housekeeping job to
+  relabel a provisional entity from its strings' current reading, or the desk; (b) legacy entities typed Person that
+  are plainly bodies ("Chiswick Auctions", "Castle Howard", "Burlington Magazine", "Warburg and Courtauld
+  Institutes") answering corpauthor strings by exact name, with the legacy class item below: a retype job for
+  entities whose label is plainly a body; (c) a corpauthor string that is only "(Firm)", queued on four LoC
+  lookalikes, for a skip rule or the desk; (d) an exact ULAN record queued beside an LCSH lookalike at 0.85 ("Royal
+  Pavilion (Brighton, England)", "Huis ten Bosch (Hague, Netherlands)"), which finding 48's lookalike rule may not
+  reach in corpauthor; the desk first, a finding if it recurs.
 - The first desk session (section 0, Commands on return, item 1) and what it shows: each shortfall becomes a desk
   item here and is built. Doc 13, the user guide (2026-10-18), is revised after it: it predates placeholders, the
   second pass and the evidence shape as it now is.

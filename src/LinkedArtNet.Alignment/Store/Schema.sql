@@ -222,3 +222,20 @@ create table if not exists source_string_parts (
 create index if not exists source_string_parts_part on source_string_parts (part_id);
 
 insert into schema_version (version) values (7) on conflict do nothing;
+
+-- version 8 (2026-10-26): the records behind the strings, for the desk (design doc 12 section 5; the first slice of the
+-- collect stage). Up to a few example records per string from a source export: the record's id, title and date, the
+-- element the string came from, and the record's naming fields as JSON for the desk's card.
+create table if not exists string_examples (
+    string_id   bigint not null references source_strings(id) on delete cascade,
+    record_id   text not null,
+    source      text not null,
+    title       text,
+    date        text,
+    field       text not null,
+    record      jsonb,
+    primary key (string_id, record_id)
+);
+create index if not exists string_examples_source on string_examples (source);
+
+insert into schema_version (version) values (8) on conflict do nothing;

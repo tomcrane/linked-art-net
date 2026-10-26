@@ -182,6 +182,20 @@ public sealed record NewEntity(
 /// <summary>A string as it occurred in a dataset. The key is (dataset, context, normalised); the same name in another context may be another person.</summary>
 public sealed record SourceString(long Id, string Dataset, string Context, string Raw, string Normalised, string? ParsedJson, DateTimeOffset FirstSeen, DateTimeOffset LastSeen, int Occurrences);
 
+/// <summary>A record behind a string, for the desk: where the string was seen, with the record's title and date, the element it came from, and the record's naming fields as JSON (field to values).</summary>
+public sealed record StringExample(long StringId, string RecordId, string Source, string? Title, string? Date, string Field, string? RecordJson)
+{
+    /// <summary>The record's naming fields in the order the export gives them, the string's own field first.</summary>
+    public IEnumerable<(string Name, IReadOnlyList<string> Values)> NamingFields()
+    {
+        if (RecordJson is null) yield break;
+        using var doc = System.Text.Json.JsonDocument.Parse(RecordJson);
+        var all = doc.RootElement.EnumerateObject().Select(p => (p.Name, (IReadOnlyList<string>)p.Value.EnumerateArray().Select(v => v.GetString() ?? "").ToList())).ToList();
+        foreach (var f in all.Where(f => f.Name == Field)) yield return f;
+        foreach (var f in all.Where(f => f.Name != Field && f.Name is not ("title" or "year"))) yield return f;
+    }
+}
+
 /// <summary>What a source string refers to. A null entity means it was looked at and left unresolved; <see cref="Valid"/> false means a later event (merge, authority update) reopened it.</summary>
 /// <param name="Supersedes">The decision this one replaced when it was made, so an undo restores exactly that one.</param>
 public sealed record Decision(long Id, long SourceStringId, string? EntityId, string Method, string? EvidenceJson, string? Reviewer, DateTimeOffset DecidedAt, string? DatasetVersion, string? RunId, bool Valid, long? Supersedes = null);

@@ -77,6 +77,16 @@ public interface IAlignmentStore
 
     Task<SourceString?> GetSourceStringAsync(long id, CancellationToken ct = default);
 
+    // ---- the records behind the strings (design doc 12 section 5; 2026-10-26) ----
+    /// <summary>Every string of the dataset by (context, normalised text), for a collector that reads an export once.</summary>
+    Task<IReadOnlyDictionary<(string Context, string Normalised), long>> StringKeysAsync(string dataset, CancellationToken ct = default);
+    /// <summary>Writes examples, replacing any for the same string and record.</summary>
+    Task PutExamplesAsync(IReadOnlyList<StringExample> examples, CancellationToken ct = default);
+    /// <summary>Removes the examples a source export wrote for the dataset's strings, before it is collected again; how many.</summary>
+    Task<int> ClearExamplesAsync(string dataset, string source, CancellationToken ct = default);
+    /// <summary>The records behind a string, at most the limit.</summary>
+    Task<IReadOnlyList<StringExample>> ExamplesForAsync(long stringId, int limit = 3, CancellationToken ct = default);
+
     Task<SourceString?> FindSourceStringAsync(string dataset, string context, string raw, CancellationToken ct = default);
 
     /// <summary>Strings in the dataset with no valid decision at all, oldest first: the reconciler's work. A decision that left a string unresolved counts as looked at until it is invalidated.</summary>

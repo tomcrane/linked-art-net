@@ -1155,6 +1155,52 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    // ---- the records behind the strings ----------------------------------------------------------------------
+
+    public async Task<IReadOnlyDictionary<(string Context, string Normalised), long>> StringKeysAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select id, context, normalised from source_strings where dataset = @dataset");
+        Add(cmd, "dataset", dataset);
+        var keys = new Dictionary<(string, string), long>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) keys[(r.GetString(1), r.GetString(2))] = r.GetInt64(0);
+        return keys;
+    }
+
+    public async Task PutExamplesAsync(IReadOnlyList<StringExample> examples, CancellationToken ct = default)
+    {
+        if (examples.Count == 0) return;
+        await using var cmd = _db.CreateCommand(
+            "insert into string_examples (string_id, record_id, source, title, date, field, record) " +
+            "select s, r, src, t, d, f, j::jsonb from unnest(@s, @r, @src, @t, @d, @f, @j) as x(s, r, src, t, d, f, j) " +
+            "on conflict (string_id, record_id) do update set source = excluded.source, title = excluded.title, date = excluded.date, field = excluded.field, record = excluded.record");
+        Add(cmd, "s", examples.Select(e => e.StringId).ToArray());
+        Add(cmd, "r", examples.Select(e => e.RecordId).ToArray());
+        Add(cmd, "src", examples.Select(e => e.Source).ToArray());
+        Add(cmd, "t", examples.Select(e => e.Title).ToArray());
+        Add(cmd, "d", examples.Select(e => e.Date).ToArray());
+        Add(cmd, "f", examples.Select(e => e.Field).ToArray());
+        Add(cmd, "j", examples.Select(e => e.RecordJson).ToArray());
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<int> ClearExamplesAsync(string dataset, string source, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("delete from string_examples e using source_strings s where e.string_id = s.id and s.dataset = @dataset and e.source = @source");
+        Add(cmd, "dataset", dataset); Add(cmd, "source", source);
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<StringExample>> ExamplesForAsync(long stringId, int limit = 3, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select string_id, record_id, source, title, date, field, record::text from string_examples where string_id = @id order by record_id limit @limit");
+        Add(cmd, "id", stringId); Add(cmd, "limit", limit);
+        var list = new List<StringExample>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new StringExample(r.GetInt64(0), r.GetString(1), r.GetString(2), Str(r, 3), Str(r, 4), r.GetString(5), Str(r, 6)));
+        return list;
+    }
+
     public async Task<DecidedString?> DecidedStringAsync(long stringId, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

@@ -89,6 +89,20 @@ adding a note ("Edinburgh dealer, not the national gallery"), recorded as a huma
 parsed reading, a correction form, the canonical preview, the interpreter's proposal, accept or save, with the corpus
 entries and pull request built as now.
 
+**The records behind the string** (built 2026-10-26 evening, the desk's first item, from the owner's first question at
+the desk: "Messrs Langford" in corpauthor could not be told from its catalogue record). The store keeps up to three
+example records per string in `string_examples`: the record's id, title and date, the element the string came from,
+and the record's naming fields as JSON. `tools/Align collect-examples --file <library export .xml>` fills it from a
+Heritage library export (DScribe's MAIN_CAT XML, one record element per work), yielding each record's strings the way
+the 2024 pmc-2 processor did (persauthorfull and corpauthor values, a trailing publisher role routing to publisher and
+addressee to keywords; the publisher element; keywords and their " -- " parts; the place element with its brackets
+trimmed, the notes' (HIE) hierarchical places, and the parts of a place list) and matching them to the store's strings
+by context and normalised text; a source collected again is replaced. The desk shows the examples under the string as
+"In the records", the string's own field first on each card; a part string with none of its own (a keyword's head, a
+place in a list) shows its parents'. Not reached: keywords the 2024 process cleaned before the string map was made
+(the cleaned form is the store's string and the export carries the raw one), which the coverage line of the command
+counts; the cleaned subjects table of the legacy database would close that.
+
 **Bulk**: with a filter applied, select items and apply one action, for the cases where a pattern is obvious once seen:
 "all queued corpauthor strings whose single ULAN candidate is an exact label match, accept". The evidence is still
 recorded per item, with the bulk action noted.

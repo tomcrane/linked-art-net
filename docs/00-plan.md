@@ -80,6 +80,18 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    Paste the summary (expect considered 46,299, 88 decided, the rest passed over) and the desk's count after.
 
+5. The records behind the strings, for the desk (built 2026-10-26 evening): collect from the two library exports,
+   the March one the 2024 pipeline read and the October one after it, each as its own source (the examples of both
+   stand side by side, three shown per string), with the workbench stopped during the first (the schema gains a
+   table on `init`, which the command does itself):
+
+       dotnet run --project tools/Align -- collect-examples --file "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\2024-03-18\2024-03-11_library\2024-03-11_library.xml" --source library-2024-03
+       dotnet run --project tools/Align -- collect-examples --file "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\2024-10-22\2024-10-22_library\2024-10-22_library.xml" --source library-2024-10
+
+   Paste both coverage lines (strings with examples, by context). Expect persauthorfull, corpauthor, publisher and
+   place near full, keywords lower by the cleaned forms, keywords:head and keywords:sub through their parents. Then
+   the workbench again and "Messrs Langford" on the desk.
+
 3. The standing method diff after the next run, whenever it comes, against awn284 (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence):
 
@@ -224,14 +236,11 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
-- The record behind the string, at the desk (the owner's first question at the desk, 2026-10-26 evening: "Messrs
-  Langford" in corpauthor, seen twice, is the auction house or a provenance stub, and the catalogue record would say).
-  The store keeps a string's field, parse, occurrences and first and last seen, nothing of the records; doc 12 section
-  5 wants up to three example records per string (title, date, the field), deferred to the pipeline runner's collect
-  stage (step 4). Build that stage's first slice for the desk: a table of examples per string (dataset, context,
-  normalised, record id, title, date, field), filled by a collector over the DScribe library export under
-  `C:\pmc\2024-03-18`, three per string, and the desk showing them under the string. Needs the export's format and
-  the field mapping the pmc-2 pipeline used (doc 10 section 9). Size M.
+- ~~The record behind the string, at the desk~~ (built 2026-10-26 evening, doc 12 section 5 "The records behind the
+  string": `string_examples`, schema version 8; `tools/Align collect-examples`; the desk's "In the records" cards).
+  Waiting for the owner to run the collector over the library exports (Commands on return, item 5) and read the
+  coverage line; the keywords the 2024 process cleaned will not match the raw export and want the legacy database's
+  cleaned subjects table (a second source for the collector, size S).
 - The 88 strings queued on 2026-10-18 by the first reconciliation and never re-decided (seen at the desk 2026-10-26:
   4,120 in the list against awn284's 4,032; "Messrs Langford" shows the evidence of that day, no reasons, no body
   rules). A run passes over a string with a valid decision and each day's undo took back only the previous run, so

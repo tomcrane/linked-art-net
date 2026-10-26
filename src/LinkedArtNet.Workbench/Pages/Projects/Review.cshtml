@@ -44,6 +44,17 @@ else
             @if (item.Entity is not null) { <dt>Currently</dt><dd>@item.Entity.Label <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span> <code class="small">@item.Entity.Id</code></dd> }
         </dl>
     }
+    @if (item.Examples.Count > 0)
+    {
+        <div class="card"><h3 style="margin-top:0">In the records</h3>
+        @foreach (var x in item.Examples)
+        {
+            <p class="small"><strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @x.RecordId · from &lt;@x.Field&gt;</span>
+            @foreach (var (name, values) in x.NamingFields()) { <br /><span class="muted">@name:</span> @string.Join(" · ", values) }
+            </p>
+        }
+        </div>
+    }
     @if (item.Notes.Count > 0)
     {
         <div class="card"><h3 style="margin-top:0">Notes</h3>@foreach (var n in item.Notes) { <p class="small"><strong>@n.Author</strong> <span class="muted">@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span><br />@n.Text</p> }</div>

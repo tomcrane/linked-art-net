@@ -234,6 +234,21 @@ switch (args[0])
         return 0;
     }
 
+    case "collect-examples":
+    {
+        var file = Option("--file") ?? throw new ArgumentException("--file <library export .xml> is required");
+        var sourceName = Option("--source") ?? Path.GetFileNameWithoutExtension(file);
+        var perString = int.TryParse(Option("--per-string"), out var per) ? per : 3;
+        await store.InitialiseAsync();
+        var cleared = await store.ClearExamplesAsync(dataset, sourceName);
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
+        var report = await new LinkedArtNet.Alignment.Import.HeritageExampleCollector(store).CollectAsync(dataset, file, sourceName, perString, progress);
+        Console.WriteLine($"source {sourceName}: {report.Records:N0} records read, {report.Examples:N0} examples written for {report.StringsCovered:N0} strings" + (cleared > 0 ? $" ({cleared:N0} earlier examples of this source replaced)" : ""));
+        foreach (var (context, (coveredCount, total)) in report.ByContext.OrderByDescending(kv => kv.Value.Strings))
+            Console.WriteLine($"  {context,-16} {coveredCount,7:N0} of {total,7:N0} strings have examples");
+        return 0;
+    }
+
     case "cleanup-orphans":
     {
         var removed = await store.RemoveOrphanProvisionalsAsync(dataset);
@@ -347,6 +362,9 @@ static void Usage() => Console.WriteLine(
       manifest [--dataset] [--use-default]   print the manifest in force and whether it matches the PMC library rules;
                                              --use-default saves the library rules as the project's manifest
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
+      collect-examples --file <export.xml> [--source name] [--per-string 3] [--dataset]
+                                             the records behind the strings, for the desk: reads a Heritage library export and keeps up
+                                             to three example records per string the store knows; a source collected again is replaced
       reindex-labels [--source s]            recompute lookup keys after the key rules change; --source limits the records to one
                                              index (ulan, loc, aat, tgn); rows already current are not rewritten
       merge-duplicates [--dataset] [--class Place,Type] [--apply] [--reviewer r] [--out f]

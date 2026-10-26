@@ -13,8 +13,8 @@ public sealed record EvidenceMember(string Uri, string Source, string? Label, st
     public bool IsStore => Stage == "store";
 }
 
-/// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, and the records behind the candidates.</summary>
-public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records)
+/// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, the records behind the candidates, and the catalogue records the string was seen in.</summary>
+public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples)
 {
     public bool IsQueued => Decision.Method == DecisionMethod.Queued;
 }
@@ -57,7 +57,22 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var records = new Dictionary<string, AuthorityRecord>(StringComparer.Ordinal);
         foreach (var uri in evidence.Groups.SelectMany(g => g.Members).Where(m => !m.IsStore).Select(m => m.Uri).Distinct(StringComparer.Ordinal).Take(40))
             if (await store.GetAuthorityAsync(uri, ct) is { } record) records[uri] = record;
-        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records);
+        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct));
+    }
+
+    /// <summary>The catalogue records a string was seen in (design doc 12 section 5), up to three; a part string with none of its own (a keyword's head, a place in a list) shows its parents'.</summary>
+    public async Task<IReadOnlyList<StringExample>> ExamplesForAsync(long stringId, CancellationToken ct = default)
+    {
+        var own = await store.ExamplesForAsync(stringId, 3, ct);
+        if (own.Count > 0) return own;
+        var list = new List<StringExample>();
+        foreach (var parent in await store.ParentsAsync(stringId, ct))
+        {
+            foreach (var e in await store.ExamplesForAsync(parent.Id, 3, ct))
+                if (list.All(x => x.RecordId != e.RecordId)) list.Add(e);
+            if (list.Count >= 3) break;
+        }
+        return list.Take(3).ToList();
     }
 
     public static EvidenceView ParseEvidence(string? json)

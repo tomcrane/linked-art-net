@@ -15,31 +15,34 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-10-26 evening; the one place to read first)
+## 0. Resume point (written 2026-10-26 night; the one place to read first)
 
-**On return, in order:** (1) the first session on the desk (its commands below); (2) the evidence of two drifted
-decisions, if wanted (below; nothing waits on it); (3) whatever the desk session shows, built, the way the runs were
-read; (4) the Wikidata index's next uses, the crosswalk and labels as variants (section 7, sources and indexes); then
-the open items of section 7 as the owner orders them.
+**On return, in order:** (1) `git push` if the night's commits are not up (the last is the one that wrote this);
+(2) the desk, continued: start the workbench and review from the queue, and each thing the desk fails to show, do or
+get right becomes an item in section 7 and is built, the way this evening's were; (3) the two small desk items left
+from the evening, in whichever order the desk suggests: the identifier field on "Keep as local authority", and no
+possessive key for a name in capitals; (4) the Wikidata index's next uses, the crosswalk and labels as variants
+(section 7, sources and indexes); then the open items of section 7 as the owner orders them.
 
-**Where things stand.** Branch `de-pmc`, all work committed and pushed, CI green. Six authority sources loaded: the
-manifest's five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M records that carry
-another authority's id, loaded 2026-10-23 and retyped by the subclass walk on 2026-10-24; not yet among the manifest's
+**Where things stand.** Branch `de-pmc`, all work committed, CI green. Six authority sources loaded: the manifest's
+five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M records that carry another
+authority's id, loaded 2026-10-23 and retyped by the subclass walk on 2026-10-24; not yet among the manifest's
 sources; doc 11 section 8.11); the LoC index's 38,754 "active" headings carry working spans and 354,991 of its undated
 person records their Wikidata item's dates (finding 88; every staged mass write to `authority_records` ends with
-`vacuum (analyze)`). The store has had two duplicate passes (292 and 89 merges) and four hand merges ("England",
-"London", "Italy", "Kolkata"; "Dumfries" kept apart as the town and the old county); the manifest was last refreshed on
-2026-10-23 (the home place). The last run is run-20261026-142043-awn284 (2026-10-26 evening): accepted 9,388 (vote
-4,008, single 2,082, exact-single 3,298), queued 4,032, matched in store 5,951, minted 10,882, lists 404, compounds
-15,558; second pass 4,127 reconsidered, 95 settled over two rounds; by context queued persauthorfull 1,286, keywords
-981, publisher 783, keywords:head 458, place 214, corpauthor 183, keywords:sub 127; thirty-three minutes (doc 10 7.6
-"Measured 2026-10-26 evening"). The reconciliation cycles ended with that run: its diff against the run before was
-explained by the findings built for it, with no misfire and nothing new in the samples. The queue count is no longer
-the measure: the queue is the desk's residue by design and will rise when the crosswalk brings candidates; a run is
-measured by its diff against the run before, small, explained, without misfires. Reruns are for a reason from now: a
-source loaded, a rule the desk's decisions suggest. Finding 104 (the string's own placeholder is never a candidate,
-built 2026-10-26 evening) is unmeasured; nothing decided rightly can move, so no run is scheduled for it. The Wikidata
-dump and the sitelinks table are on the owner's external drive (`E:\datadumps`).
+`vacuum (analyze)`). The store has had two duplicate passes (292 and 89 merges) and four hand merges; the manifest was
+last refreshed on 2026-10-23 (the home place). The reconciliation cycles ended on 2026-10-26 with run awn284 (queued
+4,032; doc 10 7.6 "Measured 2026-10-26 evening"): a diff explained by the findings built for it, no misfire, nothing
+new in the samples. Since then: the 2026-10-18 run's 500 strings re-decided under today's rules (runs utt9xm and
+evhvuw; the desk's list 4,093, then the owner's first decisions off it), finding 104 (the string's own placeholder
+never a candidate) and finding 105 (a firm named for the man offered for his name, never carried alone) built and
+measured in evhvuw; neither wants a run. A run is measured by its diff against the run before, and the standing diff
+is under "Commands on return"; the queue count is the desk's residue by design. The desk is the current work: the
+first session (the owner, 2026-10-26 evening) produced the records behind the string (`string_examples`, collected
+from the March 2024 library export with the 2024 process's cleaned keywords, every context at or near full), the
+help (the fold, Help, `/help` from doc 13), "Look again", "Accept the ticked together", the banner's link to the
+entity just decided, an index search on the entity page, the "Something else" layout mended, the search pre-filled,
+`Lifespan.Display` (ULAN's "1200~-~2080" no longer shown as a life), and an ArchivesSpace agent's URL as a recognised
+identifier. The Wikidata dump and the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI and whether records absent from a full dump are retired; the merged-away
@@ -50,17 +53,13 @@ exports and reports). Open question 7 (section 6). Every decision taken is in do
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store; the
 answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 section 8.11).
 
-1. The first session on the desk. Start the workbench against the real store (`LINKEDART_PG` set; Development
-   allows the typed sign-in, the name `local` is an owner) and review from the queue, a batch of twenty or so in two
-   contexts, keywords and persauthorfull, with the context filter:
+1. The desk: start the workbench against the real store (`LINKEDART_PG` set; Development allows the typed sign-in,
+   the name `local` is an owner) and review from the queue; the assistant does not build the workbench project while
+   it runs (the output is locked), so a commit that touches it waits for a stop:
 
        dotnet run --project src/LinkedArtNet.Workbench
 
-   then http://localhost:5200. Paste or note what the desk fails to show (a reason you needed, a candidate's
-   placement or dates, the twin strings in other contexts, the occurrences), fails to do (an action missing, an
-   order you wanted, a filter), or gets wrong (an action's effect on the entities). Each becomes a desk item in doc
-   12 and is built; the decisions themselves are the project's. The assistant does not build the workbench project
-   while it runs (the output is locked); the library and tests are fine.
+   then http://localhost:5200.
 
 2. Two of awn284's drifted decisions, wanted in evidence when convenient (nothing waits on them): "L (colonnade)",
    voted in the second pass onto the project's place "L", and "Red House (Yorkshire)", matched to a group "Red House"
@@ -71,25 +70,16 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        where d.run_id in ('run-20261026-130632-u4ykeu', 'run-20261026-142043-awn284')
          and s.raw in ('L (colonnade)', 'Red House (Yorkshire)') order by s.raw, d.id;
 
-4. ~~The 500 of run utt9xm re-decided under finding 105~~ (done 2026-10-26 evening, run evhvuw: 498, since "Mr
-   Southgate" and "Mr Dowell" had been decided by hand at the desk; the same decisions, with a firm named for the man
-   among the candidates where one exists: "Mr Wright" 27 -> 29 groups, "Mr Stewart" 28 -> 30, "Mr Ford" 9 -> 11,
-   "Lawrence", "Ackermann", "Dickinson", "Ireland", "Mr Cameron" one more each; nothing accepted or minted on its
-   account).
-
-5. ~~The records behind the strings, for the desk~~ (built and collected 2026-10-26 evening). With the cleaned
-   keywords the March export covers keywords 30,039 of 30,039, persauthorfull 24,119 of 24,119, keywords:head 7,741
-   of 7,814, keywords:sub 1,536 of 1,551, publisher 10,608 of 11,141, corpauthor 4,682 of 4,707, place 2,828 of
-   2,850: 121,774 examples for 81,553 strings. The uncovered publishers are the 2024 process's derived forms
-   ("Printed for ..." statements), not export values. To collect again after the next export (the same catalogue,
-   the same record ids, so the newer export's records replace the older's):
+3. The records behind the strings, collected again after the next library export (the same catalogue, the same
+   record ids, so the newer export's records replace the older's):
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-3. The standing method diff after the next run, whenever it comes, against awn284 (each run's last decision per
-   string, since a string the second pass settled has two; an undone run keeps its evidence):
+4. The standing method diff after the next run, whenever it comes, against evhvuw for the 498 it re-decided and
+   awn284 for the rest (each run's last decision per string, since a string the second pass settled has two; an
+   undone run keeps its evidence):
 
-       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261026-142043-awn284' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id in ('run-20261026-142043-awn284', 'run-20261026-171829-evhvuw') order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id

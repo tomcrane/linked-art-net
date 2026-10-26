@@ -230,7 +230,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   5 wants up to three example records per string (title, date, the field), deferred to the pipeline runner's collect
   stage (step 4). Build that stage's first slice for the desk: a table of examples per string (dataset, context,
   normalised, record id, title, date, field), filled by a collector over the DScribe library export under
-  `C:\pmc4-03-18`, three per string, and the desk showing them under the string. Needs the export's format and
+  `C:\pmc\2024-03-18`, three per string, and the desk showing them under the string. Needs the export's format and
   the field mapping the pmc-2 pipeline used (doc 10 section 9). Size M.
 - The 88 strings queued on 2026-10-18 by the first reconciliation and never re-decided (seen at the desk 2026-10-26:
   4,120 in the list against awn284's 4,032; "Messrs Langford" shows the evidence of that day, no reasons, no body

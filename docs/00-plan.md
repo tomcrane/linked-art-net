@@ -10,7 +10,7 @@ Branch `de-pmc` is the working branch and `main` is what is deployed (README, "B
 is behind by all of Phase 5. The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this
 folder are the committed record.
 
-## 0. Resume point (written 2026-10-26; the one place to read first)
+## 0. Resume point (written 2026-10-26 evening; the one place to read first)
 
 This section is rewritten at the end of every working day. It lists what stands, what the owner has to decide, what
 is built and waiting for a go, and the commands to run on return. The detail behind each line is in
@@ -26,9 +26,19 @@ of five k22erz decisions and two records~~ (read, doc 10 7.6 "Read 2026-10-26": 
 Orovida is ULAN's own data; the gjq63j55 query read, finding 101 built); (5) ~~undo k22erz and rerun~~ (run u4ykeu,
 measured, doc 10 7.6 "Measured 2026-10-26 afternoon": 97, 99, 100 and 101 as expected, 98 over-reached and was
 corrected the same day); (6) ~~three queries in DataGrip~~ (read, doc 10 7.6 "Read 2026-10-26 afternoon": the
-correction of 98 confirmed, findings 102 and 103 built from the other two); (7) undo u4ykeu and rerun, which
-measures the correction of 98 with 102 and 103 (the commands under "Commands on return"); (8) then the index's next
-use, the crosswalk (item 3 (c) under "Next builds"), or the desk.
+correction of 98 confirmed, findings 102 and 103 built from the other two); (7) ~~undo u4ykeu and rerun~~ (run awn284,
+measured, doc 10 7.6 "Measured 2026-10-26 evening": the diff explained by the three, no misfire, nothing new in the
+samples; the stopping criterion met, the reconciliation cycles end as the main activity); (8) `git push`; (9) the
+evidence of two drifted decisions, if wanted (under "Commands on return"); (10) the owner's two decisions: the
+placeholder consolidation (one run of its own) or not, and which use comes first, the crosswalk (item 3 (c) under
+"Next builds") or the desk in the workbench.
+
+**The record of 2026-10-26** (one day): three runs measured (k22erz, u4ykeu, awn284; queued 3,989 -> 4,048 -> 4,032,
+the first the first honest count since the second pass); findings 97 to 103 built (approximate years widened; a
+namesake abroad; a rank alone is a title; the second pass goes round again; a placeholder dates, holds and answers
+nothing, findings 101 and 102 with 95; a placed string is not an idea), finding 98 corrected the same afternoon after
+it vetoed 48 right places; the Wikidata reload's figures recorded; and the cycles declared converged (doc 10 7.6
+"Measured 2026-10-26 evening", the stopping criterion).
 
 **The record of 2026-10-24** (one day): four runs measured (t629cj, rkjzag, bp8unt, wy2aqs; queued 3,603 -> 3,563 ->
 3,488 -> 3,477 -> 3,567, the last carrying 265 placeholder self-acceptances finding 95 undoes); findings 86 to 96 built
@@ -46,15 +56,17 @@ merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
 SQL in doc 10 7.6 "Built 2026-10-23"), and 354,991 of its undated person records their Wikidata item's dates since
-2026-10-24 evening (finding 88; the table vacuumed on 2026-10-25). The last run is run-20261026-090659-k22erz (findings 93
-to 96 and the subclass walk): accepted 9,426 (vote 4,024, single 2,101, exact-single 3,301), queued 3,989, matched in
-store 5,956, minted 10,882, lists 404, compounds 15,558; second pass 4,121 reconsidered, 132 settled; by context queued
-persauthorfull 1,282, keywords 947, publisher 783, keywords:head 452, place 216, corpauthor 183, keywords:sub 126 (doc
-10 7.6 "Measured ... k22erz"); twenty-nine minutes. Its queue is the first honest count since the second pass was built
-on 2026-10-23: every count between understated by up to some 230 placeholder self-acceptances (finding 95). The path:
-8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 ->
-3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488 -> 3,477 -> 3,567 -> 3,989. Doc 10 7.6 has a "Measured" paragraph per run
-with the samples read; the last is "Measured ... k22erz". The Wikidata dump and
+2026-10-24 evening (finding 88; the table vacuumed on 2026-10-25). The last run is run-20261026-142043-awn284 (finding
+98 corrected, findings 102 and 103): accepted 9,388 (vote 4,008, single 2,082, exact-single 3,298), queued 4,032,
+matched in store 5,951, minted 10,882, lists 404, compounds 15,558; second pass 4,127 reconsidered, 95 settled over two
+rounds; by context queued persauthorfull 1,286, keywords 981, publisher 783, keywords:head 458, place 214, corpauthor
+183, keywords:sub 127 (doc 10 7.6 "Measured 2026-10-26 evening"); thirty-three minutes. Every count since k22erz
+(2026-10-26 morning) is honest: the counts between 2026-10-23 and 2026-10-24 understated by up to some 230 placeholder
+self-acceptances (finding 95). The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572
+-> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488 -> 3,477 -> 3,567 -> 3,989 -> 4,048 ->
+4,032. The count is no longer the measure: the queue is the desk's residue by design, and will rise when the crosswalk
+brings candidates; the measure is the run-to-run diff, small, explained and without misfires. Doc 10 7.6 has a
+"Measured" paragraph per run with the samples read; the last is "Measured 2026-10-26 evening". The Wikidata dump and
 the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -123,8 +135,8 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Corrected and built 2026-10-26 afternoon from run u4ykeu, waiting for the next run** (doc 10 7.6 "Measured
-2026-10-26 afternoon", "Built 2026-10-26 afternoon, findings 102 and 103"): finding 98 had read any resolution of a
+**Corrected and built 2026-10-26 afternoon from run u4ykeu, measured in run awn284** (doc 10 7.6 "Measured
+2026-10-26 afternoon", "Built 2026-10-26 afternoon, findings 102 and 103", "Measured 2026-10-26 evening"): finding 98 had read any resolution of a
 qualifier as naming the place and vetoed a TGN chain without the resolved ancestors' words; it took 48 right places
 with the one wrong one (the resolved chain leads with TGN's vernacular preferred label, "Italia" for Italy, and the
 chains are English; the Scottish historic counties resolve to former-county records under modern chains; "Georgia"
@@ -133,8 +145,9 @@ home, and only a chain outside the home country is a namesake abroad. Finding 10
 holds nothing in the "placed through" join ("Rug Chapel (Corwen, Wales)" took a single onto its own placeholder in
 the second pass). Finding 103: a string placed in a known place is not an idea, so an AAT record or a store concept
 aligned to AAT is vetoed as a person is ("Hallstatt (Austria)" was matched in store to the Bronze Age period).
-Expect the 48 back where k22erz had them, Marble Hill still queued, Rug Chapel single -> queued, "Hallstatt
-(Austria)" exact-name -> vote; queued about 4,000.
+Measured: the 48 back where k22erz had them, Marble Hill still queued, Rug Chapel single -> queued, "Hallstatt
+(Austria)" exact-name -> vote, and finding 103 reaching the London buildings AAT's types had carried (Freemason's
+Hall, Garden House) and "Highlands (Scotland)"; queued 4,032.
 
 **Built 2026-10-26 from the four pieces of evidence and the fifth, measured in run u4ykeu** (doc 10 7.6 "Built
 2026-10-26, findings 98 to 101"): finding 98, a qualifier resolved to a known place vetoes a whole TGN chain that holds the
@@ -361,32 +374,25 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. Run u4ykeu (2026-10-26 afternoon) is measured and its three queries read (doc 10 7.6 "Measured 2026-10-26
-   afternoon", "Read 2026-10-26 afternoon"); finding 98 corrected and findings 102 and 103 built from them. The rerun
-   measures the three together:
+1. No rerun is scheduled. Run awn284 (2026-10-26 evening) is measured and its diff explained (doc 10 7.6 "Measured
+   2026-10-26 evening"); the next run is for a reason: a source loaded, a rule the desk's decisions suggest, or the
+   placeholder consolidation if the owner wants it. The standing method diff for that run, against awn284:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261026-130632-u4ykeu
-       dotnet run --project tools/Align -- reconcile --verbose
-       dotnet run --project tools/Align -- decisions --run <new run id> --context place --method queued --limit 10
-       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method single --limit 10
-
-   and the method diff against u4ykeu, the standing check after every rerun (each run's last decision per string,
-   since a string the second pass settled has two; the undone run keeps its evidence):
-
-       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261026-130632-u4ykeu' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261026-142043-awn284' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2 order by 3 desc;
 
-   Paste the second pass's lines, the summary, the timing line, the two samples and the diff. Expected: the 48 places
-   finding 98 vetoed back where k22erz had them (queued -> vote some 30 with Agrigento, Beirut, Bonn; minted -> single
-   8; single -> vote 17 with Decatur; their heads back to exact-name), "Marble Hill (Middlesex)" still queued (the
-   corrected 98); "Rug Chapel (Corwen, Wales)" single -> queued (102); "Hallstatt (Austria)" exact-name -> vote and
-   "Hallstatt" exact-single -> exact-name if the run reaches the sub after the head (103); nothing else moving;
-   queued about 4,000. The place queued sample is a check that the corrected veto fires nowhere abroad; the
-   keywords:head single sample a check on the placed houses.
+2. Two of awn284's drifted decisions, wanted in evidence when convenient (nothing waits on them): "L (colonnade)",
+   voted in the second pass onto the project's place "L", and "Red House (Yorkshire)", matched to a group "Red House"
+   made in the run:
+
+       select d.run_id, s.context, s.raw, d.method, d.entity_id, jsonb_pretty(d.evidence)
+       from decisions d join source_strings s on s.id = d.source_string_id
+       where d.run_id in ('run-20261026-130632-u4ykeu', 'run-20261026-142043-awn284')
+         and s.raw in ('L (colonnade)', 'Red House (Yorkshire)') order by s.raw, d.id;
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

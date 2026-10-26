@@ -1259,6 +1259,54 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-10-26 evening (run-20261026-142043-awn284: finding 98 corrected, findings 102 and 103, against u4ykeu):
+accepted 9,371 -> 9,388 (vote 3,978 -> 4,008, single 2,092 -> 2,082, exact-single 3,301 -> 3,298), queued 4,048 ->
+4,032, matched in store 5,945 -> 5,951, minted 10,889 -> 10,882; the second pass reconsidered 4,127 and settled 95,
+its second round nothing. By context queued: persauthorfull 1,286, keywords 981, publisher 783, keywords:head 458,
+place 214, corpauthor 183, keywords:sub 127. Time by stage: store 1,012 s, second pass 283 s, commit 154 s, ulan 106 s,
+loc 104 s, lcsh 88 s, tgn 87 s, aat 84 s, read 20 s; thirty-three minutes. The method diff against u4ykeu: single ->
+vote 17, queued -> vote 13, minted -> single 8, queued -> exact-name 7, single -> queued 4, queued -> single 3, minted
+-> exact-name 3, vote -> queued 2, exact-name -> queued 2, exact-name -> vote 2, exact-single -> minted 2, queued ->
+minted 1, single -> exact-name 1, exact-single -> exact-name 1, exact-name -> single 1, exact-name -> minted 1. Read:
+
+- The correction of finding 98, as expected: the 17 single -> vote are u4ykeu's 17 (Andalusia, Baarn, Coonoor,
+  Cumnock, Decatur, Humlebaek, Jammu and Kashmir, Maharashtra), the 8 minted -> single its 8 (Balabakk, Banbridge,
+  Blairquhan Castle, Cascata delle Marmore, Fasque, Hilversum, Marchmont, Omagh), the 3 minted -> exact-name its 3
+  heads (Andaman and Nicobar Islands, Bengal, Cockermouth), Puducherry single -> exact-name, Bowhill queued -> single,
+  Swindon vote -> queued, Crans and the Ionian Islands single -> queued (both had gone queued -> single by the
+  misfire), Carton (Kildare) queued -> single, and the places among the 13 queued -> vote (Agrigento, Beirut, Bonn,
+  Ibiza, Irvine, Marrakech and the rest) with their heads among the 7 queued -> exact-name (Agrigento, Campania,
+  Gubbio, Lucknow, Parma). The place queued sample shows the corrected veto firing nowhere abroad: Bottrop, Donnington,
+  Heaton (finding 66's elsewhere vetoes, right), Athens, Evanston (two of the project's own Evanstons among the
+  groups: a store duplicate for the desk), Pisa, Winchester, Warwick, Dudley, Londra.
+- Finding 102: "Rug Chapel (Corwen, Wales)" single -> queued, as expected; the second pass's 95 settled hold no single.
+- Finding 103 reached further than the Hallstatt pair, and rightly: "Hallstatt (Austria)" exact-name -> vote and
+  "Hallstatt" exact-single -> exact-name as expected; "Highlands (Scotland)" exact-name -> vote (the project's concept
+  aligned to AAT's highlands had answered it; TGN and LCSH now do); "Freemason's Hall (London, England)" and "Garden
+  House (London, England)" exact-single -> minted and "Museum (Aachen, Germany)" queued -> minted (AAT's hall, garden
+  house and museum types were the one exact record each; a building in London is not the type of building); "Sea
+  (England)" exact-name -> minted (the concept for AAT's sea); "Colours (Great Britain)" vote -> queued and "Humber
+  (England)" exact-name -> queued (an AAT record or an AAT-aligned concept gone from the vote or the match; what is
+  left is the desk's, and "Colours (Great Britain)" may be the regimental colours, an idea qualified by nation, which
+  the desk can say).
+- The rest is the place drift between runs (the open item in the plan): "Stratford" queued -> exact-name with
+  "Stratford, Va." queued -> single, "Jamestown (Va.)" single -> queued with "Jamestown (Accra, Ghana)" exact-name ->
+  single, "Red House (Yorkshire)" queued -> exact-name onto a group "Red House" made in this run, and "L (colonnade)"
+  queued -> vote onto the project's place "L" in the second pass, firm this run: the same strings move between runs
+  as the order makes entities firm or not. The last two are wanted in evidence (the query in the plan), the string
+  "L (colonnade)" because a place called "L" is the data's question before the toolkit's.
+- The keywords:head single sample all right: Clanbrassill ca. 1691-1758 (finding 97 agreeing), Adeney, Bratby, Oppé,
+  Kennington, Scott, Loire River, St. Mary (Lambeth, England : Parish) with the American Saint Marys vetoed as
+  elsewhere, Madan, Ionia (Turkey and Greece) with TGN's ten American Ionias set aside.
+
+The stopping criterion, proposed to the owner the same afternoon and met by this run: a diff explained by the
+findings built for it, with no misfire and nothing new in the samples. The reconciliation cycles end here as the main
+activity (six runs over three days, findings 86 to 103, the queue 3,603 -> 4,032 as the counts grew honest and the
+rules more careful). Reruns are occasional from now: when a source loads, when the desk's decisions suggest a rule, or
+for the placeholder consolidation if the owner wants it (ProvisionalQueued candidates excluded once before the
+post-passes, in place of the five exclusions of findings 95, 101 and 102; a behaviour change that wants a run of its
+own). The next work is the alignment's uses: the Wikidata crosswalk, the desk in the workbench, the export.
+
 Built 2026-10-26 afternoon, findings 102 and 103, from the three queries u4ykeu's reading asked for (below, "Read
 2026-10-26 afternoon"); both are finding 95's ground in rules it had not reached:
 

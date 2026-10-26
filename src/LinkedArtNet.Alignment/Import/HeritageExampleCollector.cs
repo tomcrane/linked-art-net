@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -16,9 +17,15 @@ namespace LinkedArtNet.Alignment.Import;
 /// its parts about " -- " (keywords:head, keywords:sub); the place element with its outer brackets trimmed, the hierarchical places of
 /// the notes' (HIE) segments, and the parts of a place list about ";". A string the store knows, by context and normalised text, gains
 /// the record as an example, up to the limit per string. Liberal on purpose: a value tried in a context the store has no string for
-/// costs a dictionary lookup and nothing else.
+/// costs a dictionary lookup and nothing else. The export is read as UTF-8 with invalid bytes replaced, not refused: the March 2024
+/// library file carries one stray byte (0x9D, in a series field) in 71 MB, and the XML reader's own decoder threw on it.
+/// The 2024 process cleaned the keywords before the string map was made ("Hodgkin, Eliot, 1905-1987-Exhibitions" became "Hodgkin,
+/// Eliot, 1905-1987--Exhibitions", the subdivisions marked by a double hyphen), so the store's keywords strings are the cleaned forms
+/// and the export's raw ones reach 41 per cent of them (the first collection, 2026-10-26); given the cleaned-subjects table (the
+/// owner's `pmc_subjects_csv`, a dump of insert statements: record id, raw keywords, cleaned keywords), the cleaned form is tried
+/// too, with its parts.
 /// </summary>
-public sealed class HeritageExampleCollector(IAlignmentStore store)
+public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDictionary<string, string>? cleanedKeywords = null)
 {
     private static readonly Regex TrailingRole = new(@"\(([^()]*)\)\s*$", RegexOptions.Compiled);
 
@@ -34,7 +41,8 @@ public sealed class HeritageExampleCollector(IAlignmentStore store)
         var covered = new HashSet<long>();
         var batch = new List<StringExample>();
         int records = 0, examples = 0;
-        using var reader = XmlReader.Create(path, new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore, IgnoreWhitespace = true, Async = true });
+        using var text = new StreamReader(path, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false), detectEncodingFromByteOrderMarks: true);
+        using var reader = XmlReader.Create(text, new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore, IgnoreWhitespace = true, Async = true });
         while (!reader.EOF)
         {
             ct.ThrowIfCancellationRequested();
@@ -47,7 +55,7 @@ public sealed class HeritageExampleCollector(IAlignmentStore store)
             var year = Values(record, "year").FirstOrDefault();
             string? json = null;
             var seen = new HashSet<long>();
-            foreach (var (context, value, field) in Candidates(record))
+            foreach (var (context, value, field) in Candidates(record, cleanedKeywords))
             {
                 if (!keys.TryGetValue((context, StringKey.Normalise(value)), out var stringId) || !seen.Add(stringId)) continue;
                 taken.TryGetValue(stringId, out var n);
@@ -66,8 +74,57 @@ public sealed class HeritageExampleCollector(IAlignmentStore store)
         return new Report(source, records, examples, covered.Count, byContext);
     }
 
+    /// <summary>
+    /// The raw-to-cleaned keywords of the 2024 process, read from a dump of insert statements into <c>pmc_subjects_csv</c> (record id,
+    /// raw keywords, cleaned keywords, ...; SQL string literals with doubled quotes). The raw form keys the map; a raw form cleaned two
+    /// ways keeps the first.
+    /// </summary>
+    public static IReadOnlyDictionary<string, string> ReadCleanedKeywords(string path)
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var line in File.ReadLines(path, Encoding.UTF8))
+        {
+            var i = line.IndexOf("VALUES (", StringComparison.Ordinal);
+            if (i < 0) continue;
+            var values = SqlStrings(line.AsSpan(i + 8)).Take(3).ToList();
+            if (values.Count == 3 && values[1] is { } raw && values[2] is { } cleaned && raw.Length > 0 && cleaned.Length > 0) map.TryAdd(raw, cleaned);
+        }
+        return map;
+    }
+
+    /// <summary>The successive values of a SQL tuple: quoted strings with their doubled quotes undone, null for <c>null</c>.</summary>
+    private static IEnumerable<string?> SqlStrings(ReadOnlySpan<char> tuple)
+    {
+        var values = new List<string?>();
+        var i = 0;
+        while (i < tuple.Length)
+        {
+            while (i < tuple.Length && (tuple[i] == ' ' || tuple[i] == ',')) i++;
+            if (i >= tuple.Length || tuple[i] == ')') break;
+            if (tuple[i] == '\'')
+            {
+                var sb = new StringBuilder();
+                i++;
+                while (i < tuple.Length)
+                {
+                    if (tuple[i] == '\'') { if (i + 1 < tuple.Length && tuple[i + 1] == '\'') { sb.Append('\''); i += 2; continue; } i++; break; }
+                    sb.Append(tuple[i++]);
+                }
+                values.Add(sb.ToString());
+            }
+            else
+            {
+                var start = i;
+                while (i < tuple.Length && tuple[i] != ',' && tuple[i] != ')') i++;
+                var word = tuple[start..i].Trim().ToString();
+                values.Add(word.Equals("null", StringComparison.OrdinalIgnoreCase) ? null : word);
+            }
+        }
+        return values;
+    }
+
     /// <summary>The strings a record would have yielded, each with the context it belongs to and the element it came from.</summary>
-    public static IEnumerable<(string Context, string Value, string Field)> Candidates(XElement record)
+    public static IEnumerable<(string Context, string Value, string Field)> Candidates(XElement record, IReadOnlyDictionary<string, string>? cleanedKeywords = null)
     {
         foreach (var v in Values(record, "persauthorfull"))
         {
@@ -84,13 +141,17 @@ public sealed class HeritageExampleCollector(IAlignmentStore store)
             if (Role(v) == "publisher") yield return ("publisher", v, "corpauthor");
         }
         foreach (var v in Values(record, "publisher")) yield return ("publisher", v, "publisher");
-        foreach (var v in Values(record, "keywords"))
+        foreach (var raw in Values(record, "keywords"))
         {
-            yield return ("keywords", v, "keywords");
-            var parts = v.Split("--", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            if (parts.Length < 2) continue;
-            yield return ("keywords:head", parts[0], "keywords");
-            foreach (var sub in parts.Skip(1)) yield return ("keywords:sub", sub, "keywords");
+            var forms = cleanedKeywords is not null && cleanedKeywords.TryGetValue(raw, out var cleaned) && cleaned != raw ? new[] { raw, cleaned } : [raw];
+            foreach (var v in forms)
+            {
+                yield return ("keywords", v, "keywords");
+                var parts = v.Split("--", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (parts.Length < 2) continue;
+                yield return ("keywords:head", parts[0], "keywords");
+                foreach (var sub in parts.Skip(1)) yield return ("keywords:sub", sub, "keywords");
+            }
         }
         foreach (var v in Values(record, "place").Select(TrimOuterBrackets).Concat(HierarchicalPlaces(record)))
         {

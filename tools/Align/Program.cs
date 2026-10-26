@@ -242,7 +242,9 @@ switch (args[0])
         await store.InitialiseAsync();
         var cleared = await store.ClearExamplesAsync(dataset, sourceName);
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
-        var report = await new LinkedArtNet.Alignment.Import.HeritageExampleCollector(store).CollectAsync(dataset, file, sourceName, perString, progress);
+        var cleaned = Option("--keywords") is { } keywordsPath ? LinkedArtNet.Alignment.Import.HeritageExampleCollector.ReadCleanedKeywords(keywordsPath) : null;
+        if (cleaned is not null) Console.Error.WriteLine($"  {cleaned.Count:N0} cleaned keywords read");
+        var report = await new LinkedArtNet.Alignment.Import.HeritageExampleCollector(store, cleaned).CollectAsync(dataset, file, sourceName, perString, progress);
         Console.WriteLine($"source {sourceName}: {report.Records:N0} records read, {report.Examples:N0} examples written for {report.StringsCovered:N0} strings" + (cleared > 0 ? $" ({cleared:N0} earlier examples of this source replaced)" : ""));
         foreach (var (context, (coveredCount, total)) in report.ByContext.OrderByDescending(kv => kv.Value.Strings))
             Console.WriteLine($"  {context,-16} {coveredCount,7:N0} of {total,7:N0} strings have examples");
@@ -362,9 +364,10 @@ static void Usage() => Console.WriteLine(
       manifest [--dataset] [--use-default]   print the manifest in force and whether it matches the PMC library rules;
                                              --use-default saves the library rules as the project's manifest
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
-      collect-examples --file <export.xml> [--source name] [--per-string 3] [--dataset]
+      collect-examples --file <export.xml> [--source name] [--per-string 3] [--keywords <pmc_subjects_csv.sql>] [--dataset]
                                              the records behind the strings, for the desk: reads a Heritage library export and keeps up
-                                             to three example records per string the store knows; a source collected again is replaced
+                                             to three example records per string the store knows; a source collected again is replaced;
+                                             --keywords reads the 2024 process's cleaned keywords so the cleaned forms match too
       reindex-labels [--source s]            recompute lookup keys after the key rules change; --source limits the records to one
                                              index (ulan, loc, aat, tgn); rows already current are not rewritten
       merge-duplicates [--dataset] [--class Place,Type] [--apply] [--reviewer r] [--out f]

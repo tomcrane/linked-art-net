@@ -74,6 +74,18 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 4. ~~The 88 strings decided on 2026-10-18 and never re-decided~~ (done 2026-10-26 evening, run utt9xm; section 7,
    workbench and desk).
 
+5. The records behind the strings, for the desk (built 2026-10-26 evening). Collected the same evening from the two
+   library exports as two sources: the March export covers persauthorfull 24,119 of 24,119 (so it is the file the
+   2024 database came from), corpauthor 4,682 of 4,707, place 2,828 of 2,850, publisher 10,608 of 11,141, keywords
+   12,419 of 30,039 (the store holds the cleaned forms); the October export a little under it everywhere. The
+   keywords gap: the March collection again with the 2024 process's cleaned keywords (the dump beside the exports),
+   which the collector now reads; a source collected again is replaced:
+
+       dotnet run --project tools/Align -- collect-examples --file "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\2024-03-18\2024-03-11_library\2024-03-11_library.xml" --source library-2024-03 --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
+
+   Paste the coverage; expect keywords most of the way to 30,039 and keywords:head and keywords:sub to rise with
+   them. The October export can be collected the same way with the same dump.
+
 3. The standing method diff after the next run, whenever it comes, against awn284 (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence):
 

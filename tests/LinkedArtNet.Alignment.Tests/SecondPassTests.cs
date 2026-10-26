@@ -110,4 +110,33 @@ public class SecondPassTests(PostgresFixture pg)
         Assert.Contains("a placeholder awaiting review: carries nothing", own.Reason);
         Assert.Contains(again.Groups.SelectMany(g => g.Members), m => m.Candidate.Source == "loc" && m.Veto && m.DatesConflict); // the conflict that queued it, still there
     }
+
+    [PostgresFact]
+    public async Task A_queued_strings_own_placeholder_dates_no_record_for_it()
+    {
+        // finding 101 (2026-10-26, run k22erz): "Gibson, Jean, 1930-" was queued between ULAN's undated "Gibson, Jean" (a window, 1800~-~2100)
+        // and LoC's undated one, LoC's dated namesakes vetoed. In the second pass its own placeholder came back agreeing on the dates, and
+        // the rule of findings 14 and 16 took it as the record that dates the two lone undated ones: both joined to it, two sources, a vote
+        // onto a placeholder that carries nothing. The placeholder dates nothing; the string stays the desk's
+        var ds = "pd" + Guid.NewGuid().ToString("N")[..6];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        static AuthorityRecord Person(string uri, string source, string label, Lifespan? lifespan) => new(uri, source, label, [label, Qualified.Split(label).Name], "Person", lifespan, [], null, DateTimeOffset.UtcNow, "test");
+        await pg.Store.PutAuthorityAsync(Person("http://vocab.getty.edu/ulan/500375601", "ulan", "Gibson, Jean", new Lifespan(new DateTimeOffset(1800, 1, 1, 0, 0, 0, TimeSpan.Zero), null, null, new DateTimeOffset(2100, 12, 31, 0, 0, 0, TimeSpan.Zero), "1800~-~2100")));
+        await pg.Store.PutAuthorityAsync(Person("http://id.loc.gov/authorities/names/nb2010009063", "loc", "Gibson, Jean", null));
+        await pg.Store.PutAuthorityAsync(Person("http://id.loc.gov/authorities/names/nb2010009060", "loc", "Gibson, Jean, 1935-1991", GettyVocabLoader.LifespanFromYears("1935", "1991")) with { Labels = ["Gibson, Jean, 1935-1991", "Gibson, Jean"] });
+        await pg.Store.PutAuthorityAsync(Person("http://vocab.getty.edu/ulan/500001913", "ulan", "Gibson, Jean", GettyVocabLoader.LifespanFromYears("1927", "1991")));
+        // (the dated namesakes make each source a source of several records of the name, as LoC and ULAN are, so finding 72 does not read the undated pair as two lone records)
+        var gibson = await pg.Store.CollectAsync(ds, "persauthorfull", "Gibson, Jean, 1930-");
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
+        var report = await reconciler.RunAsync(ds, runId: "run-test-placeholder-dates");
+        Assert.Equal(1, report.Queued); Assert.Equal(0, report.Accepted); Assert.Equal(1, report.Reconsidered); Assert.Equal(0, report.Settled);
+        var decision = (await pg.Store.DecisionForAsync(gibson.Id))!;
+        Assert.Equal(DecisionMethod.Queued, decision.Method);
+        var again = await reconciler.EvaluateAsync(ds, gibson, includeStore: true);
+        Assert.Equal(Outcome.Queued, again.Outcome);
+        var members = again.Groups.SelectMany(g => g.Members).ToList();
+        Assert.Contains(members, m => m.Candidate.EntityId == decision.EntityId && m.Reason.Contains("a placeholder awaiting review: carries nothing"));
+        Assert.DoesNotContain(members, m => m.Reason.Contains("which store dates") || m.JoinedTo == decision.EntityId);
+        Assert.Equal(2, again.Groups.Count(g => !g.Vetoed && g.Members.Any(m => m.Candidate.EntityId is null))); // ULAN's and LoC's undated records, still two groups
+    }
 }

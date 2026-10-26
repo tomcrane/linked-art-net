@@ -23,9 +23,9 @@ Wikidata reload's last line~~ (recorded, doc 11 section 8.11: 285,365 records ty
 ... k22erz": queued 3,567 -> 3,989, the first honest count since the second pass, finding 95 having taken back 494
 placeholder self-acceptances; finding 96's 79 to single; finding 97 built from the single sample); (4) ~~the evidence
 of five k22erz decisions and two records~~ (read, doc 10 7.6 "Read 2026-10-26": findings 98 to 100 built from it,
-Orovida is ULAN's own data); (5) undo k22erz and rerun, which measures findings 97 to 100 together (the commands under
-"Commands on return"), with the one query still open read alongside, the string decided onto gjq63j55; (6) then the
-index's next use, the crosswalk (item 3 (c) under "Next builds"), or the desk.
+Orovida is ULAN's own data; the gjq63j55 query read, finding 101 built); (5) undo k22erz and rerun, which measures
+findings 97 to 101 together (the commands under "Commands on return"); (6) then the index's next use, the crosswalk
+(item 3 (c) under "Next builds"), or the desk.
 
 **The record of 2026-10-24** (one day): four runs measured (t629cj, rkjzag, bp8unt, wy2aqs; queued 3,603 -> 3,563 ->
 3,488 -> 3,477 -> 3,567, the last carrying 265 placeholder self-acceptances finding 95 undoes); findings 86 to 96 built
@@ -120,14 +120,18 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-26 from the four pieces of evidence, waiting for the next run** (doc 10 7.6 "Built 2026-10-26,
-findings 98 to 100"): finding 98, a qualifier resolved to a known place vetoes a whole TGN chain that holds the
+**Built 2026-10-26 from the four pieces of evidence and the fifth, waiting for the next run** (doc 10 7.6 "Built
+2026-10-26, findings 98 to 101"): finding 98, a qualifier resolved to a known place vetoes a whole TGN chain that holds the
 qualifier's word without the place's ancestors ("Marble Hill (Middlesex)" was placed in Middlesex County,
 Massachusetts, on the word alone); finding 99, a name whose given part is a rank alone ("Yarmouth, Earl of") is a
 title, not exact enough for the exact-single rule; finding 100, the second pass goes round again while it settles
-something, since the two "Gibson, Jean, 1935-" strings came out differently by the order of the pass. Expect: Marble
-Hill single -> minted and the houses in American namesake counties with it; Yarmouth exact-single -> queued; the
-keywords Gibson queued -> single and some tens more; the second pass about 161 s longer for each round it goes.
+something, since the two "Gibson, Jean, 1935-" strings came out differently by the order of the pass; finding 101,
+the string's own placeholder dates no record for it ("Gibson, Jean, 1930-" was voted onto its placeholder in the
+second pass, two undated records joined to it as "which store dates"), closing finding 95's hole in the three date
+rules. Expect: Marble Hill single -> minted and the houses in American namesake counties with it; Yarmouth
+exact-single -> queued; "Gibson, Jean, 1930-" vote -> queued and the keywords:head "Gibson, Jean, 1935-" single ->
+queued with some tens of placeholder votes; some tens settled by the further rounds; the second pass about 161 s
+longer for each round it goes.
 
 **Built 2026-10-26 from k22erz's single sample, waiting for the next run** (doc 10 7.6 "Built 2026-10-26, finding 97"):
 an approximate or uncertain year in a lifespan is widened by four years each way on its own side ("c.1716-1799" the
@@ -341,17 +345,8 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. Run k22erz (2026-10-26) is measured, its four pieces of evidence read, and findings 97 to 100 built from them (doc
-   10 7.6 "Built 2026-10-26"). One query is still open, to read with the rerun's output: how the string decided onto
-   gjq63j55 ("Gibson, Jean", 1930-) was accepted in k22erz's second pass onto ULAN's undated 500375601 and LoC's
-   undated nb2010009063, which were separate groups for the keywords "Gibson, Jean, 1935-" (the undone run keeps its
-   evidence):
-
-       select s.context, s.raw, d.method, d.run_id, jsonb_pretty(d.evidence)
-       from decisions d join source_strings s on s.id = d.source_string_id
-       where d.entity_id = 'https://data.paul-mellon-centre.ac.uk/person/gjq63j55' order by d.id;
-
-   Then the rerun, which measures findings 97 to 100 together:
+1. Run k22erz (2026-10-26) is measured, its evidence read, and findings 97 to 101 built from it (doc 10 7.6 "Built
+   2026-10-26"). The rerun measures them together:
 
        dotnet run --project tools/Align -- undo-run --run run-20261026-090659-k22erz
        dotnet run --project tools/Align -- reconcile --verbose
@@ -372,9 +367,10 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
    Expected: "Cavaceppi, Bartolomeo, c.1716-1799" single -> vote and a handful more approximate lifespans joining a
    second record (finding 97); "Marble Hill (Middlesex)" single -> minted, its head string exact-name -> minted with
    it, and the houses placed in American namesake counties the same way (finding 98); "Yarmouth, Earl of (author)"
-   exact-single -> queued (finding 99); the keywords "Gibson, Jean, 1935-" queued -> single and some tens more settled
-   by the second round, the second pass about 161 s longer for each round it goes (finding 100); queued below 3,989
-   by what the rounds settle.
+   exact-single -> queued (finding 99); some tens settled by the further rounds, the second pass about 161 s longer
+   for each round it goes (finding 100); "Gibson, Jean, 1930-" vote -> queued, the keywords:head "Gibson, Jean, 1935-"
+   single -> queued, and some tens of second-pass votes onto placeholders with them (finding 101); queued near 3,989,
+   the rounds and the placeholder votes pulling opposite ways.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

@@ -896,8 +896,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // 1824-1883" is another Richard Doyle by LoC's own rule); the owner's policy, 2026-10-21, for the undated ones; widened
         // 2026-10-22 (finding 54) to the dated ones that merely do not conflict (LoC's "Clarke, Geoffrey, -1950" beside its
         // "Clarke, Geoffrey, 1924-2014") and to ULAN's windows of possibility (1871~-~2030), by the same rule of uniqueness
+        // (a placeholder awaiting review, whose dates are the string's own, dates nothing and vouches for nothing, here and in the two rules
+        // below: finding 101, 2026-10-26, run k22erz, with finding 95's ground)
         if (reading.HasLifespan)
-            foreach (var source in list.Where(m => m.DatesAgree && !m.Veto).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
+            foreach (var source in list.Where(m => m.DatesAgree && !m.Veto && !m.Candidate.ProvisionalQueued).Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
                 for (var i = 0; i < list.Count; i++)
                 {
                     var b = list[i];
@@ -909,7 +911,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // Marit Guinness Aschan; ULAN dates her", and the two vote (doc 10, section 7.6 finding 14; the owner's policy, 2026-10-21)
         // and two sources that each date one record of the name as the string does date the same person ("Friedmann, Gloria, 1950-"
         // in ULAN and LoC, unlinked), so the two vote (finding 16, 2026-10-21)
-        if (reading.HasLifespan && list.FirstOrDefault(m => m.DatesAgree && !m.Veto && !m.SetAside) is { } dated)
+        // and never the string's own placeholder as the record that dates: "Gibson, Jean, 1930-" was queued between ULAN's undated record
+        // and LoC's, and the second pass joined both to its placeholder, "which store dates", and voted them onto it (finding 101,
+        // 2026-10-26, run k22erz)
+        if (reading.HasLifespan && list.FirstOrDefault(m => m.DatesAgree && !m.Veto && !m.SetAside && !m.Candidate.ProvisionalQueued) is { } dated)
             foreach (var source in list.Select(m => m.Candidate.Source).Distinct(StringComparer.Ordinal).ToList())
             {
                 if (source == dated.Candidate.Source || source == "store") continue;
@@ -936,7 +941,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // at odds with the dates (ULAN's "Carwitham, John" by a window of 1683~-~1783, LoC's "Carwitham, J. (John)" undated, for
         // "Carwitham, John, c 1700- c1760"): the two name the same person and vote, as finding 24 takes one such record alone
         // (finding 72, 2026-10-22). Not when any record agrees tightly: findings 14 and 16 have that
-        if (reading.HasLifespan && !list.Any(m => m.DatesAgree && !m.Veto && !m.SetAside))
+        if (reading.HasLifespan && !list.Any(m => m.DatesAgree && !m.Veto && !m.SetAside && !m.Candidate.ProvisionalQueued))
         {
             var bySource = list.Select((m, i) => (m, i))
                 .Where(x => !x.m.Veto && !x.m.SetAside && x.m.JoinedTo is null && x.m.Candidate.Source != "store" && x.m.Candidate.NameScore >= 0.97 && !x.m.Candidate.ByVariant && x.m.Candidate.Class is EntityClass.Person or null)

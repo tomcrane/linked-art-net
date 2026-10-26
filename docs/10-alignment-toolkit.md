@@ -1259,8 +1259,8 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
-Built 2026-10-26, findings 98 to 100, from the four pieces of evidence k22erz's samples asked for (below, "Read
-2026-10-26"):
+Built 2026-10-26, findings 98 to 101, from the four pieces of evidence k22erz's samples asked for (below, "Read
+2026-10-26") and the fifth they led to:
 
 - Finding 98: a qualifier that resolves to a known place names that place, and a record whose whole chain holds the
   qualifier's word but not the place's ancestors is in a namesake elsewhere. "Marble Hill (Middlesex)" resolved
@@ -1290,8 +1290,22 @@ Built 2026-10-26, findings 98 to 100, from the four pieces of evidence k22erz's 
   namesake's group went down with the entity's dates conflict. The keywords string had been reconsidered before that
   acceptance, and one round left it where the order of the pass found it. Each further round reconsiders only the
   strings still queued, stops when a round settles nothing, three rounds at most; the report says "over N rounds" and
-  the progress line reports each round. Expect the keywords Gibson string queued -> single and some tens more; the
-  second pass took 161 s in k22erz, so each further round adds about that.
+  the progress line reports each round. Expect some tens settled by the further rounds; the second pass took 161 s in
+  k22erz, so each further round adds about that. (The keywords Gibson string itself will not be among them, finding 101.)
+- Finding 101: the string's own placeholder dates no record for it. The decisions onto gjq63j55 (the owner's query,
+  the same day) showed how "Gibson, Jean, 1930-" in keywords:head was accepted in k22erz's second pass: queued in the
+  first pass between ULAN's undated "Gibson, Jean" (500375601, a window of 1800~-~2100) and LoC's undated one
+  (nb2010009063), with LoC's dated namesakes vetoed; in the second pass its own placeholder came back as a store
+  candidate agreeing on the dates, and the rule of findings 14 and 16 took it as the record that dates a source's one
+  undated record of the name, joining both to it ("ulan's one record of the name, which store dates"; "loc's one ...");
+  two sources in one group, a vote, onto a placeholder that carries nothing. Finding 95 closed this hole in the single
+  rule; the same ground closes it in the three date rules that read an agreeing record (finding 54's namesake veto,
+  findings 14/16/79's join, finding 72's two lone records): a placeholder awaiting review agrees with nothing. The
+  string returns to the desk, and so does the keywords "Gibson, Jean, 1935-" question: with gjq63j55 no longer firm,
+  its undated ULAN rival stands again for both "1935-" strings, which is right (ULAN's 500375601 may be the sculptor
+  or a namesake; the desk's). Expect "Gibson, Jean, 1930-" vote -> queued, the keywords:head "Gibson, Jean, 1935-"
+  single -> queued, and some tens of second-pass votes onto placeholders with them (the diff will count "which store
+  dates" reversals as vote -> queued).
 
 Read 2026-10-26, the evidence of k22erz's four samples (the owner's three queries, run that morning):
 
@@ -1310,9 +1324,8 @@ Read 2026-10-26, the evidence of k22erz's four samples (the owner's three querie
   96 at work), ULAN 500375601 the live rival, ULAN 500783658 (1957-), LoC n88111181 (active 1755) and LoC nb2010009063
   (finding 75's namesake) vetoed; the head string's two decisions, queued then single, the second with 500375601 in
   one group with the project's gjq63j55 (1930-, conflicting) and LoC nb2010009063, and the single onto unrec_b9u3ugps,
-  the keywords string's placeholder, LoC's heading joined to it. Finding 100 for the order. Still to read, with the
-  rerun: the string decided onto gjq63j55 and how the second pass accepted it onto two undated records that were
-  separate groups for the keywords string (its query is under "Commands on return" in the plan).
+  the keywords string's placeholder, LoC's heading joined to it. Finding 100 for the order; and the decisions onto
+  gjq63j55, read the same day, showed the acceptance itself was a hole: finding 101.
 
 Built 2026-10-26, finding 97, from k22erz's single sample: an approximate or uncertain year in a lifespan is widened by
 four years each way on its own side ("c.1716-1799" the birth, "1859-c.1927" the death, "c 1816- c 1875" both), as the

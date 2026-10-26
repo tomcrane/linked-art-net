@@ -1,3 +1,4 @@
+using LinkedArtNet.Agents;
 using LinkedArtNet.Alignment.Authorities;
 using LinkedArtNet.Alignment.Reconciliation;
 
@@ -7,6 +8,32 @@ namespace LinkedArtNet.Alignment.Tests;
 public class DatesConflictTests(PostgresFixture pg)
 {
     private static AuthorityRecord Person(string uri, string source, string label, Lifespan? lifespan) => new(uri, source, label, [label], "Person", lifespan, [], null, DateTimeOffset.UtcNow, "test");
+
+    [Fact]
+    public void An_approximate_year_in_a_lifespan_is_widened_on_its_own_side()
+    {
+        // finding 97 (2026-10-26, run k22erz): "Cavaceppi, Bartolomeo, c.1716-1799" against LoC's 1717-1799 was a conflict, and the vote with
+        // ULAN's agreeing record was lost; the lone year had been widened since finding 82, the range had not
+        var rule = new ContextRule([EntityClass.Person], "default");
+        var parser = new AgentStringParser(AgentProfileCatalog.BuiltIn.Get("default"));
+        static SourceString S(string raw) => new(1, "ds", "keywords", raw, StringKey.Normalise(raw), null, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1);
+        var cavaceppi = StringReading.Read(S("Cavaceppi, Bartolomeo, c.1716-1799"), rule, parser).Lifespan!;
+        Assert.Equal(1712, cavaceppi.BeginEarliest!.Value.Year); Assert.Equal(1720, cavaceppi.BeginLatest!.Value.Year);
+        Assert.Equal(1799, cavaceppi.EndEarliest!.Value.Year); Assert.Equal(1799, cavaceppi.EndLatest!.Value.Year);
+        Assert.Equal(DateAgreement.Agree, cavaceppi.Compare(GettyVocabLoader.LifespanFromYears("1717", "1799")!, 120));
+        var ward = StringReading.Read(S("Ward, Edwin Arthur, 1859-c.1927"), rule, parser).Lifespan!;
+        Assert.Equal(1859, ward.BeginEarliest!.Value.Year); Assert.Equal(1859, ward.BeginLatest!.Value.Year);
+        Assert.Equal(1923, ward.EndEarliest!.Value.Year); Assert.Equal(1931, ward.EndLatest!.Value.Year);
+        var tait = StringReading.Read(S("Tait, Robert Scott, c 1816- c 1875"), rule, parser).Lifespan!;
+        Assert.Equal(1812, tait.BeginEarliest!.Value.Year); Assert.Equal(1879, tait.EndLatest!.Value.Year);
+        var exact = StringReading.Read(S("Alken, Henry, 1774-1850"), rule, parser).Lifespan!;
+        Assert.Equal(1774, exact.BeginEarliest!.Value.Year); Assert.Equal(1774, exact.BeginLatest!.Value.Year); Assert.Equal(1850, exact.EndLatest!.Value.Year);
+        Assert.Equal((true, false), StringReading.ApproximateSides("c.1716-1799"));
+        Assert.Equal((true, false), StringReading.ApproximateSides("1733?-1810"));
+        Assert.Equal((false, true), StringReading.ApproximateSides("1859-c.1927"));
+        Assert.Equal((true, true), StringReading.ApproximateSides("c 1816- c 1875"));
+        Assert.Equal((false, false), StringReading.ApproximateSides("1774-1850"));
+    }
 
     [PostgresFact]
     public async Task A_namesake_vetoed_on_its_dates_alone_is_queued_not_minted()

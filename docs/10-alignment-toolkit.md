@@ -1259,6 +1259,59 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-10-26, finding 97, from k22erz's single sample: an approximate or uncertain year in a lifespan is widened by
+four years each way on its own side ("c.1716-1799" the birth, "1859-c.1927" the death, "c 1816- c 1875" both), as the
+lone year has been since finding 82; the dates parser flags the whole result, so the side is read from the text
+(StringReading.ApproximateSides). "Cavaceppi, Bartolomeo, c.1716-1799" had LoC's "Cavaceppi, Bartolomeo, 1717-1799"
+vetoed as a conflict and was a single on ULAN's record where it should have been a vote. Takes effect at the next run.
+
+Measured 2026-10-26 (run-20261026-090659-k22erz: findings 93 to 96 and the Wikidata subclass walk, against wy2aqs):
+accepted 9,822 -> 9,426 (vote 4,020 -> 4,024, single 2,504 -> 2,101, exact-single 3,298 -> 3,301), queued 3,567 ->
+3,989, matched in store 5,957 -> 5,956, minted 10,907 -> 10,882; the second pass reconsidered 4,121 (4,163) and
+settled 132 (596). By context queued: persauthorfull 1,282, keywords 947, publisher 783, keywords:head 452, place 216,
+corpauthor 183, keywords:sub 126. Time by stage: store 939 s, second pass 161 s, commit 150 s, source:loc 118 s, ulan
+103 s, tgn 84 s, lcsh 84 s, aat 79 s, read 22 s; twenty-nine minutes. The method diff against wy2aqs: single -> queued
+494, queued -> single 79, minted -> single 12, minted -> queued 10, queued -> exact-name 4, exact-name -> queued 3,
+minted -> vote 2, minted -> exact-single 2, exact-name -> single 2, single -> vote 2, queued -> exact-single 1, queued
+-> minted 1. Read:
+
+- Finding 95 took back 494 placeholder self-acceptances, not the 295 expected: the hole was wider than the dated
+  persons, since a placeholder minted with the string's qualifier agreed with it the same way ("Arundel Castle
+  (Sussex)", "Apethorpe Hall (Northamptonshire)", "Abby Aldrich Rockefeller Folk Art Center (Williamsburg, Virginia,
+  USA)"), and bp8unt's 96 houses "reached" by finding 90 were mostly this: queued by finding 90's narrowing and then
+  accepted onto themselves. Every queue count since the second pass was built (finding 51, 2026-10-23) understated by
+  up to some 230 of these older ones; 3,989 is the first honest count since then, and the path reads 3,567 -> 3,989
+  with that said. The keywords queued sample shows the rule at work: "Anglesey Abbey" with its placeholder marked "a
+  placeholder awaiting review: carries nothing", "Newcastle (Bridgend, Wales)" back on the desk.
+- Finding 96 brought 79 queued strings to single ("Agar, Eileen, 1899-1991", "Angus, Peggy, 1904-1993", "Arbuthnot,
+  Malcolm, 1874-1967", "Baldinucci, Filippo, 1625-1696"), a share of the 12 minted -> single (Jan van Eyck 1390-1440,
+  William Kent 1685-1748, John Frederick Lewis), the 2 minted -> vote (Mary Cameron, Sir George Reid), and the 4 queued
+  -> exact-name (Bellotto, Kelly, Mednikoff, Rice: the twin string's entity, now made, answering).
+- Finding 94: "Keeling, William Knight, 1807-1886" minted -> single, read whole and found; "Browne, Hablot Knight
+  [Phiz], 1815-1882" single -> vote; "Mandle, Earl Roger" queued -> exact-single; "Arnaud, Dean Leopold" queued ->
+  minted (nothing of the whole name; right by the name). And an effect not foreseen: "Earl" kept at the head of the
+  given names makes the peerage headings "Jersey, Earl of (author)", "Rosse, Earl of", "Shaftesbury, Earl of",
+  "Crawford and Balcarres, Earl of" read as names, so they went minted -> queued with candidates (the desk's, better
+  than mints) and "Yarmouth, Earl of (author)" minted -> exact-single, which wants its evidence: a title with no
+  personal name may not be exact enough to carry a record alone (finding 42's ground).
+- The walk's retyping shows nowhere in the diff that can be told apart from findings 93 to 96 (vote +4).
+- The keywords single sample, three to check: "Marble Hill (Middlesex)" is placed in TGN's Marble Hill in Middlesex
+  County, Massachusetts, the two other American Marble Hills vetoed as elsewhere, when the house is in Twickenham
+  (the qualifier "Middlesex" resolved to the American county, or to several with the American one agreeing; the TGN
+  records of the name and the reading's ancestors wanted); "Orovida, 1877-1970" accepted single to ULAN's "Knight,
+  Laura" at name 1.00 with dates agreeing (1877-1970 are Laura Knight's; how a one-word name matched that record is
+  the record's labels to show; finding 42 kept one-word names from exact-single, not from the single rule);
+  "Cavaceppi, Bartolomeo, c.1716-1799" a single where a vote was due (finding 97, above). The rest right: Fountains
+  Hall, Leeds Castle, Grimsthorpe Castle, Houghton Hall on LCSH's placed headings; Williams, Peter and Thomas, Thomas
+  on LoC's dated headings against ULAN's windows; Lismore Castle in Waterford. Also to read: "Gibson, Jean, 1935-" in
+  keywords:head was accepted single in the second pass onto unrec_b9u3ugps, the keywords string's placeholder, which is
+  still queued; the ground was the authority record joined to it, printed as the placeholder, and the entity chosen is
+  the placeholder: whether that is the right entity is for the evidence.
+- keywords queued otherwise the desk's: "Hall, ?" three TGN Halls with no sitelinks; "Wheatley, John, 1892-1955" ULAN
+  agreeing beside LoC's undated namesakes; "Nibes, Richard Henry, 1954-" against ULAN's one Richard Henry Nibbs
+  (1806-1893), the catalogue's spelling and dates both the desk's; "Harcourt, George, 1868-1947" two one-record
+  conflicts (ULAN's 1869-1923, LoC's "Horsford, George" through a variant).
+
 Built 2026-10-24 night, finding 96, from the evidence of two of the ninety strings finding 93 left queued in wy2aqs
 ("Agar, Eileen, 1899-1991", "Kelly, Felix, 1917-1994"; the owner's policy, asked and given the same night): a linked
 cluster that disagrees with itself about the dates stands when one of its records agrees with the string's dates (the

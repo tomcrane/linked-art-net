@@ -378,6 +378,13 @@ files); the report's last line says how many classes the walk resolved and how m
 
     dotnet run --project tools/Align -- load-wikidata E:\datadumps\latest-truthy.nt.gz --sitelinks E:\datadumps\wikidatawiki-latest-wb_items_per_site.sql.gz
 
+The reload with the subclass walk (the night of 2026-10-24, 3 h 13 min 40 s): 8,268,876,335 triples read, 126,893,299
+items seen, 5,004,911 records written (the same count as the first load); 23,209 unlisted classes among the kept
+records, 17,526 of them resolved through 4,476,318 subclass edges, and 285,365 records typed by the walk (the first
+load had left 519 thousand untyped and the SQL retyping had taken the forty most frequent classes; what the walk did not
+reach is the 5,683 classes no root claims); 100,625,067 sitelink rows read, 2,408,319 records given a count. The run
+after it (k22erz, doc 10 7.6) showed nothing attributable to the retyping in its method diff.
+
 ## 9. Not yet
 
 Step 3b: the remote sources (VIAF, LoC suggest, LUX with the self-echo rule, Wikidata by known id) behind a cache

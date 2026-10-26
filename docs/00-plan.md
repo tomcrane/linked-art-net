@@ -17,14 +17,15 @@ is built and waiting for a go, and the commands to run on return. The detail beh
 [10-alignment-toolkit.md](10-alignment-toolkit.md) section 7.6 (the findings, each dated) and in the open items of
 section 7 below; section 13 of doc 10 holds the owner's decisions already taken.
 
-**On return, in order** (the next session, 2026-10-25 or days later; every step is under "Commands on return" below
-with its commands): (1) the Wikidata reload's last line, kept from the night of 2026-10-24, pasted and recorded (how
-many classes the subclass walk resolved and how many records it typed; doc 11 section 8.11); (2) `git push` (the
-commits of 2026-10-24 night are unpushed); (3) undo wy2aqs and rerun, about thirty minutes, with the two keywords
-samples and the method diff against wy2aqs: it measures findings 93 (properly), 94, 95 and 96 and the walk's typing
-together, queued expected near 3,740; (4) the measurement written up by the assistant, and whatever the samples and
-diff show built; (5) then the index's next use, the crosswalk (item 3 (c) under "Next builds"), or the desk. Nothing is
-half-done: every finding to 96 is built, tested and committed, and the only thing not yet measured is the rerun.
+**On return, in order** (2026-10-26; every step is under "Commands on return" below with its commands): (1) ~~the
+Wikidata reload's last line~~ (recorded, doc 11 section 8.11: 285,365 records typed by the walk through 17,526 of the
+23,209 unlisted classes); (2) ~~`git push`~~; (3) ~~undo wy2aqs and rerun~~ (run k22erz, measured, doc 10 7.6 "Measured
+... k22erz": queued 3,567 -> 3,989, the first honest count since the second pass, finding 95 having taken back 494
+placeholder self-acceptances; finding 96's 79 to single; finding 97 built from the single sample); (4) the evidence of
+five k22erz decisions and two records, in DataGrip (under "Commands on return"): "Marble Hill (Middlesex)" placed in
+Massachusetts, "Orovida, 1877-1970" accepted to Laura Knight, "Yarmouth, Earl of (author)" an exact-single, the two
+"Gibson, Jean, 1935-" strings; (5) whatever (4) shows, built; then undo k22erz and rerun, which measures it with
+finding 97; (6) then the index's next use, the crosswalk (item 3 (c) under "Next builds"), or the desk.
 
 **The record of 2026-10-24** (one day): four runs measured (t629cj, rkjzag, bp8unt, wy2aqs; queued 3,603 -> 3,563 ->
 3,488 -> 3,477 -> 3,567, the last carrying 265 placeholder self-acceptances finding 95 undoes); findings 86 to 96 built
@@ -42,15 +43,15 @@ merges) and four hand merges ("England", "London", "Italy", "Kolkata"; "Dumfries
 county, relabelled Dumfriesshire); the manifest was refreshed on 2026-10-22 for the keywords field's parser and on
 2026-10-23 for the home place; the LoC index's 38,754 "active" headings carry working spans since 2026-10-23 (the
 SQL in doc 10 7.6 "Built 2026-10-23"), and 354,991 of its undated person records their Wikidata item's dates since
-2026-10-24 evening (finding 88; the table vacuumed on 2026-10-25). The last run is run-20261024-161624-wy2aqs (finding
-93 and the vacuum): accepted 9,822 (vote 4,020, single 2,504, exact-single 3,298), queued 3,567, matched in store 5,957,
-minted 10,907, lists 404, compounds 15,558; second pass 4,163 reconsidered, 596 settled; by context queued
-persauthorfull 1,265, keywords 621, publisher 782, keywords:head 386, place 215, corpauthor 174, keywords:sub 124 (doc 10
-7.6 "Measured ... wy2aqs"); thirty minutes, `source:loc` 97 s. Its single count carries 265 strings the second pass
-accepted onto their own placeholders (finding 95, built, not yet run): the honest queue is nearer 3,830, and the next
-run will say so. The path: 8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 ->
-4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 -> 3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488 -> 3,477 -> 3,567. Doc 10 7.6
-has a "Measured" paragraph per run with the samples read; the last is "Measured ... wy2aqs". The Wikidata dump and
+2026-10-24 evening (finding 88; the table vacuumed on 2026-10-25). The last run is run-20261026-090659-k22erz (findings 93
+to 96 and the subclass walk): accepted 9,426 (vote 4,024, single 2,101, exact-single 3,301), queued 3,989, matched in
+store 5,956, minted 10,882, lists 404, compounds 15,558; second pass 4,121 reconsidered, 132 settled; by context queued
+persauthorfull 1,282, keywords 947, publisher 783, keywords:head 452, place 216, corpauthor 183, keywords:sub 126 (doc
+10 7.6 "Measured ... k22erz"); twenty-nine minutes. Its queue is the first honest count since the second pass was built
+on 2026-10-23: every count between understated by up to some 230 placeholder self-acceptances (finding 95). The path:
+8,518 (Monday) -> 6,647 -> 5,763 -> 5,586 -> 5,296 -> 5,009 -> 4,828 -> 4,572 -> 4,463 -> 4,294 -> 4,193 -> 4,109 ->
+3,964 -> 3,955 -> 3,603 -> 3,563 -> 3,488 -> 3,477 -> 3,567 -> 3,989. Doc 10 7.6 has a "Measured" paragraph per run
+with the samples read; the last is "Measured ... k22erz". The Wikidata dump and
 the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions taken by the owner on 2026-10-22:** the Agent parser as an objective (objectives 2 and 6, section 7 item
@@ -119,21 +120,26 @@ the two below are closed and kept for their queries.
     eight strings ("Brotherhood of Ruralists", "Pwllmeyric", "South Staffordshire", "West Country", "Ogmore Castle");
     the owner's decision, 2026-10-23: the desk. Closed; the bare shape is the desk's, finding 77 covers the rest.
 
-**Built 2026-10-24 night from the Agar and Kelly evidence, the owner's policy, waiting for the next run** (doc 10 7.6
+**Built 2026-10-26 from k22erz's single sample, waiting for the next run** (doc 10 7.6 "Built 2026-10-26, finding 97"):
+an approximate or uncertain year in a lifespan is widened by four years each way on its own side ("c.1716-1799" the
+birth, "1859-c.1927" the death), as the lone year has been since finding 82; "Cavaceppi, Bartolomeo, c.1716-1799" had
+LoC's 1717-1799 vetoed and was a single where a vote was due. Expect that string single -> vote and a handful more.
+
+**Built 2026-10-24 night from the Agar and Kelly evidence, the owner's policy, measured on k22erz** (kept for the record; doc 10 7.6
 "Built 2026-10-24 night, finding 96"): a linked cluster that disagrees with itself about the dates stands when one of
 its records agrees with the string's dates (the whole heading as written agrees by its own; an undated linked record
 vouches for nothing); the conflicting record is set aside, the agreeing one carries the string as a single, both join. Expect about ninety of finding 93's queued strings back among
 the singles ("Agar, Eileen, 1899-1991" on LoC's heading, "Kelly, Felix, 1917-1994" on ULAN's), so queued near 3,740
 rather than 3,830.
 
-**Built 2026-10-24 night from wy2aqs's second pass, waiting for the next run** (doc 10 7.6 "Built 2026-10-24 night,
+**Built 2026-10-24 night from wy2aqs's second pass, measured on k22erz** (kept for the record; doc 10 7.6 "Built 2026-10-24 night,
 finding 95"): the placeholder of a string awaiting review carries nothing. Minted with the string's own lifespan and
 qualifier, it came back in the second pass as a store candidate whose dates agreed and took the string as a single: 265
 strings in wy2aqs, finding 93's seventeen among them (the second Zaha Hadid stood at the run's end by this route), and
 about thirty in every run since the second pass was built. Expect queued near 3,830 (the 265 and the thirty back on the
 desk), single near 2,239, the second pass settling about 300.
 
-**Built 2026-10-24 night from bp8unt's evidence, waiting for the next run** (doc 10 7.6 "Built 2026-10-24 night,
+**Built 2026-10-24 night from bp8unt's evidence, measured on k22erz** (kept for the record; doc 10 7.6 "Built 2026-10-24 night,
 finding 94"): only a post-nominal (Bt, Esq, Kt, KBE, RA ...) comes off the end of the given names;
 "Keeling, William Knight, 1807-1886" had read as "Keeling, William" with the honorific Knight and been accepted to LoC's
 sea captain of the name. The leading position, counted over the PMC strings the same night: seven titles (Lord, Dom,
@@ -326,37 +332,43 @@ answered queries and the one-off SQL of earlier days are in doc 10 7.6 (the Linc
 2026-10-24 morning, finding 84"; the TGN rows for Dublin and Italy under "Built 2026-10-24 midday") and doc 11 section
 8.11 (the Wikidata retyping); this section holds only what is current.
 
-1. First, the Wikidata reload's last line (it ran the night of 2026-10-24, after the owner stopped; the command is in doc 11 section 8.11), pasted here and recorded in doc
-   11 section 8.11 beside the first load's figures (5,004,911 records; 519 thousand untyped before the SQL retyping).
-   Then `git push` (the night's commits are unpushed). Then the rerun, which measures findings 93 (properly, with the placeholders
-   carrying nothing), 94, 95 and 96 and the subclass walk's typing together:
+1. Run k22erz (2026-10-26) is measured and its diff read (doc 10 7.6 "Measured ... k22erz"; finding 97 built from
+   it). Four pieces of evidence from it are wanted, in DataGrip, before the next build:
 
-       git push
-       dotnet run --project tools/Align -- undo-run --run run-20261024-161624-wy2aqs
+       select s.context, s.raw, d.method, jsonb_pretty(d.evidence)
+       from decisions d join source_strings s on s.id = d.source_string_id
+       where d.run_id = 'run-20261026-090659-k22erz'
+         and s.raw in ('Marble Hill (Middlesex)', 'Orovida, 1877-1970', 'Yarmouth, Earl of (author)', 'Gibson, Jean, 1935-')
+       order by s.raw, d.id;
+
+       select uri, label, labels, lifespan_text from authority_records where uri = 'http://vocab.getty.edu/ulan/500017204';
+
+       select uri, label, data->>'parentString' as parent, data->>'placeType' as place_type
+       from authority_records where source = 'tgn' and 'middlesex' = any(normalised_labels) order by uri;
+
+   Expected: Marble Hill's reading placed in Massachusetts because TGN's English Middlesex is not a county to the walk
+   (a historic county, typed otherwise) or the qualifier resolved to several American counties sharing nothing, so
+   the home place could not decide (finding 71); Laura Knight's record carrying "Orovida" among its labels, or a
+   one-word name matched too freely; the Earl of Yarmouth heading matched by a title alone. Then the rerun, which
+   measures finding 97 and whatever those four lead to:
+
+       dotnet run --project tools/Align -- undo-run --run run-20261026-090659-k22erz
        dotnet run --project tools/Align -- reconcile --verbose
        dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method queued --limit 10
-       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords --method single --limit 10
+       dotnet run --project tools/Align -- decisions --run <new run id> --context keywords:head --method queued --limit 10
 
-   and the method diff against wy2aqs, the standing check after every rerun (each run's last decision per string,
+   and the method diff against k22erz, the standing check after every rerun (each run's last decision per string,
    since a string the second pass settled has two; the undone run keeps its evidence):
 
-       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261024-161624-wy2aqs' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261026-090659-k22erz' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2 order by 3 desc;
 
-   Paste the second pass's lines, the summary, the timing line, the two samples and the diff. Expected: single ->
-   queued about 265 ("Cozens, John Robert, 1752-1798", "Hadid, Zaha, 1950-2006", "Papworth, John, 1775-1847") and
-   bp8unt's older placeholder singles with them (the Liverpool Biennial editions, "Phillips, Claude") (finding 95); the
-   keywords single sample with no store placeholder among its grounds; "Keeling, William Knight, 1807-1886" read whole
-   (finding 94); queued -> single about ninety ("Agar, Eileen, 1899-1991", "Kelly, Felix, 1917-1994") (finding 96);
-   queued near 3,740; `source:loc` near 100 s and the run about thirty minutes; and whatever the retyped Wikidata
-   records move (prominence reads sitelinks; finding 88's dates are on the LoC records and do not move). The record of
-   what led here is in doc 10 7.6: "Measured ... wy2aqs", "Read 2026-10-24 night" (the five bp8unt decisions), and the
-   "Built 2026-10-24 night" paragraphs for findings 93 to 96; the vacuum's figures (423 pages and 11.9 ms before, 5
-   pages and 0.11 ms after) are under "Measured ... bp8unt".
+   Expected from finding 97: "Cavaceppi, Bartolomeo, c.1716-1799" single -> vote and a handful more approximate
+   lifespans joining a second record; little else unless the four pieces of evidence build something.
 
 **Open items not in this list** (parser gaps, store-stage speed, per-context redo, compound export and entity page,
 place drift between runs, the printer's three groups, remote sources 3b, audit against LoC, workbench steps 3 and 4)

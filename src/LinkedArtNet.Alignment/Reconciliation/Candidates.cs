@@ -63,6 +63,16 @@ public sealed record StringReading(
     private static readonly HashSet<string> Prefixes = new(StringComparer.OrdinalIgnoreCase) { "pre", "post", "anti", "neo", "non", "proto", "pseudo", "semi", "mid", "ex" };
 
     /// <summary>Reads a string under its context's rule, through the agent parser when the rule names a profile.</summary>
+    private static readonly System.Text.RegularExpressions.Regex ApproximateMarker = new(@"(?i)(?<![a-z])(c|ca|circa|approx\w*|about)(?![a-z])|\?|~", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    /// <summary>Which side of a dates text carries an approximate or uncertain marker: "c.1716-1799" the begin, "1859-c.1927" the end, "c 1816- c 1875" both; a text with no range is read as the begin (finding 97).</summary>
+    public static (bool Begin, bool End) ApproximateSides(string dateText)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(dateText, @"^(?<a>.*?\d{3,4}\??)\s*-\s*(?<b>.*\d.*)$");
+        if (!m.Success) return (ApproximateMarker.IsMatch(dateText), false);
+        return (ApproximateMarker.IsMatch(m.Groups["a"].Value), ApproximateMarker.IsMatch(m.Groups["b"].Value));
+    }
+
     public static StringReading Read(SourceString s, ContextRule rule, AgentStringParser? parser)
     {
         IReadOnlyList<string>? parts = null;
@@ -116,7 +126,18 @@ public sealed record StringReading(
             if (agent.Kind == AgentKind.Group && classes.Contains(EntityClass.Group)) classes = [EntityClass.Group, .. classes.Where(c => c != EntityClass.Group)];
             else if (agent.Kind == AgentKind.Person && classes.Contains(EntityClass.Person)) classes = [EntityClass.Person, .. classes.Where(c => c != EntityClass.Person)];
             if (agent.Dates is { Kind: Dates.ResultKind.BirthDeath or Dates.ResultKind.FormationDissolution } d)
+            {
                 lifespan = Lifespan.From(d.Begin, d.End, agent.DateText);
+                // "c.1716-1799", "1733?-1810", "c 1816- c 1875": an approximate or uncertain year in a lifespan is widened by four years each
+                // way, as the lone year is (finding 82); the parser flags the whole, so the side the marker sits on is read from the text
+                // (finding 97, 2026-10-26, run k22erz: LoC's "Cavaceppi, Bartolomeo, 1717-1799" was vetoed against "c.1716-1799", a vote lost)
+                if (lifespan is not null && agent.DateText is { } dateText && (agent.Dates.Flags.Contains(Dates.DateFlag.Approximate) || agent.Dates.Flags.Contains(Dates.DateFlag.Uncertain)))
+                {
+                    var (beginApproximate, endApproximate) = ApproximateSides(dateText);
+                    if (beginApproximate) lifespan = lifespan with { BeginEarliest = lifespan.BeginEarliest?.AddYears(-4), BeginLatest = lifespan.BeginLatest?.AddYears(4) };
+                    if (endApproximate) lifespan = lifespan with { EndEarliest = lifespan.EndEarliest?.AddYears(-4), EndLatest = lifespan.EndLatest?.AddYears(4) };
+                }
+            }
             // "fl. 1775-1795", "active 1640-1660", "op 1739" are working dates (finding 26, 2026-10-23)
             else if (agent.Dates is { Kind: Dates.ResultKind.Floruit } f)
                 lifespan = Lifespan.Working(f.Begin ?? f.TimeSpan, f.End ?? f.TimeSpan, agent.DateText);

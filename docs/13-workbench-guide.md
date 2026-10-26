@@ -76,13 +76,19 @@ report and the option to undo it.
 ## 3. The desk
 
 Review in the menu, or Start on the project page. The desk shows one string at a time and moves to the next after
-each action.
+each action. The fold at the top, "What am I supposed to do here?", says the same as this section in a breath; Help in
+the bar opens this guide.
 
 At the top: the string as written, how often it occurs and in which field, and how the software read it: the name
-part, the dates, roles and nationality it recognised. Below: the candidates, best first. Each card is one authority
-record, or a group of records from different files that say they are the same thing, with its score, the files that
-agree, the record's own label, dates and description, a link to the record, and the reasons the software gave, such
-as "dates agree" or "type Group not allowed here". Greyed cards were ruled out, and the reason says why.
+part, the dates, roles and nationality it recognised; and "Currently", the entity the string points at today, which
+for a queued string is a provisional placeholder minted from the string itself, waiting for your decision. Under
+"In the records": up to three catalogue records the string was seen in, each with its title, date and record id, the
+field the string came from, and the record's other naming fields, so that a corporate author can be told from the
+sale catalogue it heads and a keyword from the books it describes. Below: the candidates, best first. Each card is
+one authority record, or a group of records from different files that say they are the same thing, with its score,
+the files that agree, the record's own label, dates and description, a link to the record, and the reasons the
+software gave, such as "dates agree" or "a placeholder awaiting review: carries nothing". Greyed cards were ruled
+out, and the reason says why.
 
 Actions:
 

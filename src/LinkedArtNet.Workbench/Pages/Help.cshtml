@@ -1,0 +1,8 @@
+@page "/help"
+@model HelpModel
+@{
+    ViewData["Title"] = "Help";
+}
+<article class="guide">
+    @Html.Raw(Model.Html)
+</article>

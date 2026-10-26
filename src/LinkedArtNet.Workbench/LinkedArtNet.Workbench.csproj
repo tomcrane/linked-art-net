@@ -9,6 +9,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LinkedArtNet.Alignment\LinkedArtNet.Alignment.csproj" />
+    <PackageReference Include="Markdig" Version="0.37.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- the user guide, rendered at /help from the committed text (docs/13-workbench-guide.md), never a second copy -->
+    <EmbeddedResource Include="..\..\docs\13-workbench-guide.md" LogicalName="guide.md" />
   </ItemGroup>
 
   <ItemGroup>

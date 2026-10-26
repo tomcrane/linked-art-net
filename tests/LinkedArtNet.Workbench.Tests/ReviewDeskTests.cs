@@ -66,6 +66,13 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("500000002", desk);
         Assert.Contains("Accept", desk);
         Assert.Contains("Keep as local authority", desk);
+        Assert.Contains("What am I supposed to do here?", desk); // the fold at the top, with a link into the guide
+        Assert.Contains("/help#the-desk", desk);
+        var help = await anonymous.GetAsync("/help"); // the guide, rendered from the committed doc 13, open to anyone
+        Assert.Equal(HttpStatusCode.OK, help.StatusCode);
+        var guide = await help.Content.ReadAsStringAsync();
+        Assert.Contains("id=\"the-desk\"", guide);
+        Assert.Contains("Keep as local authority", guide);
 
         // accept the first Smith
         var accepted = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/review?handler=Accept", $"/p/{ds}/review", new() { ["id"] = smith.Id.ToString(), ["target"] = "http://vocab.getty.edu/ulan/500000001", ["note"] = "the painter" });

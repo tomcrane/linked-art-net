@@ -24,6 +24,17 @@
 </div>
 @if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
 
+<details class="help">
+    <summary>What am I supposed to do here?</summary>
+    <p>One string at a time, as the catalogue wrote it, with the records it was seen in under <strong>In the records</strong>.
+    Below it, what the software found: each card is one authority record, or a group of records that say they are the same
+    thing, best first; greyed cards were ruled out and the reason says why. Say what the string is: <strong>Accept</strong> a
+    card (it is this record); <strong>Always, in this field</strong> (the same, and this spelling means this from now on);
+    <strong>Same as this</strong> (an entity the project already has); search for <strong>something else</strong>; or
+    <strong>Keep as local authority</strong> when it is real and none of the cards is it. Not sure? <strong>Skip for now</strong>,
+    or leave a <strong>note</strong> for another reviewer. Every decision can be undone. <a href="/help#the-desk">The guide</a>
+    has the rest.</p>
+</details>
 @if (item is null)
 {
     <p class="empty">Nothing @(Model.Method == "queued" ? "waiting for review" : "here")@(Model.Context is null ? "" : $" in {Model.Context}"). <a href="/p/@Model.Dataset">Back to the project</a>.</p>
@@ -116,7 +127,7 @@ else
         <form method="get" class="card">
             <input type="hidden" name="method" value="@Model.Method" /><input type="hidden" name="context" value="@Model.Context" /><input type="hidden" name="id" value="@item.String.Id" />
             <label for="q">Search the store's entities and the local indexes</label>
-            <div class="row"><input type="search" id="q" name="q" value="@Model.Q" placeholder="@(reading?.Text ?? item.String.Raw)" style="flex:1" /><button type="submit" class="secondary">Search</button></div>
+            <div class="row"><input type="search" id="q" name="q" value="@(Model.Q ?? reading?.Text ?? item.String.Raw)" style="flex:1" /><button type="submit" class="secondary">Search</button></div>
             @if (Model.Q is not null)
             {
                 @if (Model.EntityMatches.Count == 0 && Model.IndexMatches.Count == 0) { <p class="muted small">Nothing found for "@Model.Q".</p> }

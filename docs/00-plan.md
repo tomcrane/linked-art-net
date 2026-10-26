@@ -227,6 +227,24 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
+- ~~Help for the reviewer who asks what to do~~ (built 2026-10-26 evening, the owner's ask at the desk: a fold at the
+  top of the desk, "What am I supposed to do here?", a Help link in the bar, and `/help` rendering doc 13 from the
+  embedded committed text; the search under "Something else" pre-filled with the name as read).
+- The possessive firm name as a candidate (the desk, 2026-10-26 evening: "Mr Dowell" in corpauthor, three Edinburgh
+  sale catalogues under "In the records", and the project's own "Dowell's Ltd", the auctioneers, found by the search
+  but not among the candidates, since the keys "dowell" and "dowell's" never meet). A firm named for its man is
+  written "Dowell's", "Christie's", "Sotheby's", and the catalogue writes "Mr Dowell" and "Messrs Christie". Finding
+  105 to build: for a reading that may be a body, the possessive forms join the lookup keys ("dowell's", "dowells"),
+  and a body record or entity whose name is the possessive of the string's scores as a lookalike (0.90: shown on the
+  desk, never carried alone), so "Dowell's Ltd" stands beside ULAN's "Dowell" for the reviewer. Size S, the
+  Alignment library and its tests; no reindex, since the string's keys widen, not the index's.
+- An identifier on "Keep as local authority" (the same desk item): the NLS archive is the one authority for
+  Dowell's Ltd (https://manuscripts.nls.uk/agents/corporate_entities/1476), and the entity page already takes a URI
+  as an identifier; the keep-local form wants an optional "Known elsewhere (URL)" so the reviewer records it in one
+  step. Size S. Behind it, the owner's thought: NLS runs ArchivesSpace, and an ArchivesSpace instance's agents are
+  a source like any other (a public JSON API per agent, `/agents/corporate_entities/{id}`; an identifier scheme per
+  instance). A remote source for the residue (section 7, reconciler, 3b) is the shape for it; not before the desk
+  has shown how often an archive's agent is the answer.
 - ~~The record behind the string, at the desk~~ (built and collected 2026-10-26 evening, doc 12 section 5 "The
   records behind the string": `string_examples`, schema version 8; `tools/Align collect-examples` with the 2024
   process's cleaned keywords; the desk's "In the records" cards; every context at or near full coverage, Commands on

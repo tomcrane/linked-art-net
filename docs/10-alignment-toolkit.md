@@ -1259,6 +1259,52 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-05 (run v6gjx5, finding 106's run: awn284 undone and its strings decided again, 56 minutes beside the
+day's builds; the standing diff against awn284 and evhvuw, 50 strings, every one read in evidence).
+
+- As expected: "Bishop's Palace (Chichester, England)", "Soho (Birmingham, England)", St. Martin's at Bilborough and
+  St. Michael's at Tilehurst from a wrong silent match to queued; "L (colonnade)", "l" and "S" (twice) queued by the
+  one-letter rule; "Benin (Kingdom)" onto the republic as before, the desk's by hand. Better than expected: five more
+  went from a wrong silent match to a single on the record the qualifier places, LoC's own heading in each case
+  ("Hannover (Province)", "New York (State)", St. George's at Everton, St. Martin's at Brampton, "Walmer Castle
+  (Kent)"): with the contradicted entity gone from the group, the placed heading carried alone. No wrong decision
+  gained.
+- The desk radiating through the store, not the run's doing: ten queued to exact-name are the publisher twins of the
+  corpauthor strings the owner decided on 2026-10-26 ("Christopher Cock", "Mr Dowell", "Mr Ford", "Mr Bryan", "Mr
+  Southgate" among them; the decision history shows the human decision, no run id, and the twin queued by every run
+  since the 19th), now meeting the entity by exact name, and "Kelham Hall (Nottinghamshire)" onto a placeholder in the
+  second pass; seven exact-single to exact-name, six vote to exact-name, "Architect", "Vase": the same entity, met
+  first in the store, a different method.
+- Wrong, and finding 107's candidate: "Red House (Yorkshire)" and "Red House (Bexleyheath, Kent)" both voted onto the
+  project's Red House at Aldeburgh, the two strings finding 106 was measured on. The first pass queued both as the
+  rule says; in the second pass the entity, carrying Aldeburgh's LoC heading and ULAN's unplaced record, grouped the two
+  records that nothing but the entity joins, and `CarriedBy` reads two independent sources before it reads the
+  contradiction. The clause wanted: a group whose sources are joined only through a project entity the string's
+  resolved qualifier contradicts, with no member the qualifier places, does not carry. The measure so far (every
+  accepted decision in v6gjx5 whose chosen entity's reason says the qualifier was not placed, with whether any member of
+  its group was placed): the two Red Houses, and beside them eleven right place-field votes whose qualifier is a town
+  the walk resolves to nothing ("Downton, Salisbury", "Glynde, Lewes", "Sparham, Norwich"; finding 90's boundary, and
+  "New Haven, London" is Yale's two cities in one field, right by accident) and four right exact names ("Northumbria
+  (Region)", "Raglan Castle (Monthmouthshire)" misspelt, "Parkin, Michael (London)", Benin). That query saw only votes
+  onto an existing entity; the votes that mint are measured by the plan's query before the clause is built.
+- Two project entities of one name, four queued: "New York" bare, "New York, NY" and "New York (Madison Avenue)" now
+  meet the city's entity (TGN and LoC behind it) and the state's (made by this run, rightly) at the same score, and the
+  abbreviation resolves to nothing; "Christopher Gibbs" meets two persons of the name, ULAN's behind one and LoC's
+  behind the other. The rule to weigh: between two project entities at the top score, a bare place name or a qualifier
+  that is no level word means the inhabited place, which is LoC's own convention ("New York (N.Y.)" is the city, the
+  state is "New York (State)"); two persons of a name stay the desk's.
+- Finding 105's lookalike read as a rival, three right decisions lost: "Chartwell (Kent)" single to queued, TGN's
+  Chartwell placed by Kent carried alone but LoC's "Chartwells (Firm)", the possessive lookalike at 0.90, now a second
+  group at acceptance score, and a single is not accepted beside a rival; "Landmark" exact-single to queued, ULAN's
+  "Landmarks" at 0.90 beside LoC's one "Landmark Properties Limited"; "Still" (keywords:head) vote to queued, the
+  project's own "Stills (Gallery)" with LoC's at 0.90 among the rivals, and the outvoted-rivals policy never overrides a
+  project entity. The possessive is shown for the desk and never carried; it should block nothing either: no rival for
+  the single's second group, the exact-single's count of groups or the outvoted policy's rivals.
+- Unexplained, one: "Fleming" (keywords:head) vote to queued. TGN's Fleming with LoC's "Fleming (N.Y.)" placed through
+  it, two sources at 1.00, every rival one source with no project entity, so carried as a vote and outvoting them; the
+  evidence is not truncated. What is left is the holders check (the group's ids already on two entities of the
+  project's); the plan's query asks the store.
+
 Built 2026-11-05, finding 106, the three parts of the measurement below, the first two as one rule. `Contradiction`
 says why a project entity's placement makes it not the string's answer on its own: a qualifier the walk resolved to a
 county or above against an entity whose placement does not agree with it (`QualifierAgrees` false), or a qualifier

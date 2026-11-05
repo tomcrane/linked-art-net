@@ -39,7 +39,13 @@ links to its page, the URI beneath it to the URI (a separate "entity page" tag w
 "In the records" for the strings that resolve to it, so three placeholders of one name can be told apart by what
 they stood in. And the workbench restyled onto the site's own look (the owner's brief: like the site, for people who
 work in the arts, not something cooked up by AI): the site's tokens and conventions, the workbench's pieces drawn with
-the site's parts; doc 12 section 3.
+the site's parts; doc 12 section 3. Run v6gjx5 (awn284 undone, 56 minutes) measured finding 106 (doc 10 7.6 "Measured
+2026-11-05 (run v6gjx5)"): the ten wrong silent matches gone, five of them to a single on LoC's placed heading, the
+one-letter names queued, nothing right lost to it; ten queued strings matched by exact name turned out to be the
+publisher twins of the owner's corpauthor decisions of 2026-10-26, the desk radiating. Left on the plan: the two Red
+Houses voted onto Aldeburgh's in the second pass through the entity's own two ids (finding 107's candidate, its measure
+over the minting votes still to run), the city-and-state tie for three New Yorks and a Christopher Gibbs between two
+persons, finding 105's possessive lookalike blocking three right decisions as a rival, and "Fleming" unexplained.
 
 ## 2026-10-26
 

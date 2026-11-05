@@ -1259,6 +1259,60 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-05 (the query of the reading below, over awn284 and evhvuw: every exact-name and vote decision whose
+chosen entity's reason says the qualifier was not placed): 31 strings, 16 silent store matches and 15 votes, and the
+two forms are different animals.
+
+- The 16 silent matches are 12 wrong and 4 right. Wrong: "Bishop's Palace (Chichester, England)" onto Salisbury's,
+  "Red House (Yorkshire)" and "Red House (Bexleyheath, Kent)" (Morris's) onto Aldeburgh's, "Soho (Birmingham,
+  England)" (Boulton's) onto London's, "St. George's Church (Everton, Liverpool, England)" onto Bloomsbury's, "St.
+  Martin's Church" at Bilborough and at Brampton (twice, keywords and keywords:head) onto Blackheath's, "St. Michael's
+  Church (Tilehurst, England)" onto Garton-on-the-Wolds', "Hannover (Province)" onto a Hannover in North Dakota, "Benin
+  (Kingdom)" (the Edo kingdom) onto the republic, "New York (State)" onto the entity whose chain is "New York, United
+  States" (the city's). Right: "Walmer Castle (Kent)" onto "(Walmer, England)", "Raglan Castle (Monthmouthshire)"
+  (misspelt) onto "(Wales)", "Northumbria (Region)" onto TGN's Northumbria, "Parkin, Michael (London)" onto the
+  project's Michael Parkin (the "placement" read as "Michael": a person's label split at its comma is not a placement).
+  The second query says how the Red House came to be: "Red House (Aldeburgh, England)" voted it in awn284, then the
+  Bexleyheath and Yorkshire strings matched it silently. The entity is right; the two matches were not.
+- The 15 votes are 13 right and 2 wrong. Right: eleven place-field strings qualified by a town or a county town the
+  qualifier walk resolves to nothing ("Downton, Salisbury" onto "Downton, Wiltshire"; "Glynde, Lewes" onto "Glynde
+  (Sussex)"; "Oysterhaven, Kinsale", "Sparham, Norwich", "Waddesdon, Aylesbury", "Sydney, NSW", "Taunton, Eng.?",
+  "Newbridge, Co. Kidare", "Lacock (Tanyard, Lacock, Wilts. SN15 2LB)", "New York (Madison Avenue)" onto the city),
+  "Tyne and Wear (Metropolitan County)" onto "(England)", and "Waddesdon Manor (Buckinghamshire)" twice, placed through
+  LCSH's heading, whose own chain reaches the county. Wrong: "L (colonnade)" and "New Haven, London" onto Connecticut's.
+  The plainer condition the reading proposed for the vote (a firm entity carries a qualified string's group only when
+  its placement does not contradict the qualifier as written) would have sent those thirteen to the desk to catch two:
+  declined.
+
+What the count says to build, finding 106, in three parts, the first two one rule:
+
+1. The resolved-qualifier form, in both stages. A string whose qualifier the walk resolved to a county or above
+   (`QualifierAncestors` not null; "Chichester, England" resolves at "England", "Yorkshire" and "Kent" at themselves,
+   "Monthmouthshire" and "colonnade" at nothing) is not matched silently in the store stage onto a firm entity whose
+   placement it contradicts (`QualifierAgrees == false`), and in the index stage a group grounded on such an entity
+   alone (fewer than the independent sources a vote needs) does not carry when no live member of the group agrees
+   with the qualifier. The second half is not symmetry for its own sake: a string the store stage declines goes on to
+   the index stage, where the same entity is grouped with its own authority records and `CarriedBy` reads it as a vote,
+   so the first half alone would change nothing. A group with a member the qualifier places ("Waddesdon Manor
+   (Buckinghamshire)" through LCSH's heading) is placed, and carries. Reaches nine of the twelve wrong matches and
+   loses "Walmer Castle (Kent)" to the desk, with the entity shown; the eleven place-field votes are untouched, since
+   their qualifiers resolve to nothing, and "New Haven, London" is reached only if "London" resolves (its TGN record
+   is an inhabited place; the walk takes a county or above). A placement is a parenthetical or a chain, never the
+   comma-split of a person's label.
+2. The level-word form, store stage. A qualifier that is a level word alone ("(Province)", "(State)", "(Kingdom)",
+   "(Region)": `Qualified.LevelOf` knows them) names a level, not a place, and the walk resolves it to nothing; a firm
+   entity whose own level is known and is not that level (the TGN record's place type, read by `ParentAndType` where
+   the store candidate's placement comes from, or a heading's type word) is not matched silently. Reaches "Hannover
+   (Province)" (an inhabited place) and "New York (State)" (the city); not "Benin (Kingdom)", where both are nations and
+   only a reader knows the Edo kingdom from the republic (the desk's, by hand); "Northumbria (Region)" stays or goes
+   to the desk as TGN types it.
+3. A name of one letter is not a name. "l" in the place field was accepted as an exact single onto TGN's one "L", a
+   locality in Idaho, and the entity so made then carried "L (colonnade)". A reading whose text is a single letter is
+   queued, matching nothing silently and carrying nothing; the entity is for the desk to merge away.
+
+Expected: some ten silent matches and "L (colonnade)" to the desk in the next run, no accepted decision gained, and
+the diff against awn284 and evhvuw explained by the three parts. Not yet built: the owner decides.
+
 Read 2026-11-05 (the two drifted decisions of awn284, in evidence; the query under the plan's commands on return, now
 answered): both are one gap, in two of its forms, and neither is the order of the run. A project entity whose placement
 the string's qualifier contradicts, without the contradiction rising to finding 66's veto, still answers for a

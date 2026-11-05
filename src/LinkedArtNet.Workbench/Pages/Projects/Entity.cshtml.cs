@@ -15,6 +15,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     public EntityView View { get; private set; } = null!;
     public IReadOnlyList<Entity> MergeCandidates { get; private set; } = [];
     public IReadOnlyList<AuthorityRecord> Found { get; private set; } = [];
+    /// <summary>The catalogue records the entity's strings were seen in, by string (the owner, 2026-11-05: on a placeholder's page, nothing said what the records it stood in were about).</summary>
+    public IReadOnlyList<(SourceString String, IReadOnlyList<StringExample> Examples)> Examples { get; private set; } = [];
     public string? Message { get; private set; }
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
@@ -27,6 +29,16 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
             MergeCandidates = (await Project.Desk.SearchEntitiesAsync(Dataset, Merge)).Where(e => e.Id != view.Entity.Id).ToList();
         if (!string.IsNullOrWhiteSpace(Find))
             Found = (await Project.Desk.SearchIndexesAsync(Find, null, 12)).Where(r => view.Entity.Equivalents.All(q => q.Uri != r.Uri)).ToList();
+        // the records behind the strings, the most frequent strings first, a record shown once, eight at most
+        var examples = new List<(SourceString, IReadOnlyList<StringExample>)>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var s in view.Strings.OrderByDescending(x => x.String.Occurrences).Take(12))
+        {
+            var own = (await Project.Desk.ExamplesForAsync(s.String.Id)).Where(x => seen.Add(x.RecordId)).ToList();
+            if (own.Count > 0) examples.Add((s.String, own));
+            if (seen.Count >= 8) break;
+        }
+        Examples = examples;
         return Page();
     }
 

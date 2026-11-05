@@ -33,7 +33,11 @@ the bare string "l" as an exact single). Measured over awn284 and evhvuw before 
 12 wrong; 15 votes, 13 right, so the plainer vote condition was declined. Finding 106 built in three parts (doc 10
 7.6): the resolved-qualifier form in both stages (the index stage would otherwise vote a declined entity through its
 own records), the level-word form ("Hannover (Province)" had taken a North Dakota Hannover), and a name of one letter
-matching nothing. Finding106Tests. The run that measures it is the plan's command 2.
+matching nothing. Finding106Tests. The run that measures it is the plan's command 2. While it ran, from the owner's
+notes at "Mr Stanley": the desk's cards, "Currently" and the search results carry an "entity page" link for each
+project entity, apart from the URI's own link (two things, neither clicked for the other), and the entity page shows
+"In the records" for the strings that resolve to it, so three placeholders of one name can be told apart by what
+they stood in.
 
 ## 2026-10-26
 

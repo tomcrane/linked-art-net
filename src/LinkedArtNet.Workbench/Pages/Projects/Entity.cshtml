@@ -56,6 +56,23 @@
             }
         }
 
+        @if (Model.Examples.Count > 0)
+        {
+            <h2>In the records</h2>
+            <div class="card">
+            @foreach (var (s, examples) in Model.Examples)
+            {
+                <p class="small muted" style="margin-bottom:.2rem">as "@s.Raw" in @s.Context</p>
+                @foreach (var x in examples)
+                {
+                    <p class="small"><strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @x.RecordId · from &lt;@x.Field&gt;</span>
+                    @foreach (var (name, values) in x.NamingFields()) { <br /><span class="muted">@name:</span> @string.Join(" · ", values) }
+                    </p>
+                }
+            }
+            </div>
+        }
+
         <h2>Strings that resolve here (@v.Strings.Count)</h2>
         <form method="post" asp-page-handler="Reopen">
             <input type="hidden" name="id" value="@e.Id" />

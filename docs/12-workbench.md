@@ -99,7 +99,11 @@ addressee to keywords; the publisher element; keywords and their " -- " parts; t
 trimmed, the notes' (HIE) hierarchical places, and the parts of a place list) and matching them to the store's strings
 by context and normalised text; a source collected again is replaced. The desk shows the examples under the string as
 "In the records", the string's own field first on each card; a part string with none of its own (a keyword's head, a
-place in a list) shows its parents'. Not reached: keywords the 2024 process cleaned before the string map was made
+place in a list) shows its parents'. The entity page shows the same for the strings that resolve to the entity (the
+most frequent first, a record once, eight at most), and the desk's cards, "Currently" and the search results carry a
+link to each project entity's page, a tag reading "entity page" apart from the URI's own link, since the two are
+different things and neither should be clicked for the other (2026-11-05: three placeholders of one name beside "Mr
+Stanley", told apart only by their records). Not reached: keywords the 2024 process cleaned before the string map was made
 (the cleaned form is the store's string and the export carries the raw one), which the coverage line of the command
 counts; the cleaned subjects table of the legacy database would close that.
 

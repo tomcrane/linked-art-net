@@ -88,7 +88,10 @@ sale catalogue it heads and a keyword from the books it describes. Below: the ca
 one authority record, or a group of records from different files that say they are the same thing, with its score,
 the files that agree, the record's own label, dates and description, a link to the record, and the reasons the
 software gave, such as "dates agree" or "a placeholder awaiting review: carries nothing". Greyed cards were ruled
-out, and the reason says why.
+out, and the reason says why. A card that is one of the project's own entities carries two links, kept apart so
+that neither is clicked for the other: its URI, which opens the URI as every record's does, and a tag reading
+"entity page", which opens the entity's page in another tab so the desk stays where it is. The entity under
+"Currently" and the project's entities among the search results carry the same two.
 
 Actions:
 
@@ -118,7 +121,9 @@ reviewed the same way, and to those a person already decided.
 ## 4. Entities and variants
 
 **Entities** lists the project's entities with a search box and filters by state and class. An entity's page shows
-its labels, dates, identifiers with the authority record behind each, the strings that resolve to it, and notes. A
+its labels, dates, identifiers with the authority record behind each, the catalogue records its strings were seen
+in ("In the records", as on the desk, the most frequent strings first, eight records at most), the strings that
+resolve to it, and notes. A
 reviewer can rename it, add an identifier (a URI from ULAN, LoC, VIAF, Wikidata, AAT, TGN or LUX), remove one,
 confirm it, merge it into another entity found by search, add a note, or *reopen* chosen strings, which takes them
 away from the entity so the software reconsiders them next time.

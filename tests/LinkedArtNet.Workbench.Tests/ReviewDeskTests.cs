@@ -141,8 +141,10 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         // step 2 pages: entities, one entity, variants and the cluster action, the overrides export
         var entities = await owner.GetStringAsync($"/p/{ds}/entities?q=smith");
         Assert.Contains("Smith, John (the author)", entities);
+        await store.PutExamplesAsync([new StringExample(smith.Id, "b1000001", "test-library", "A review of reviews", "1999", "persauthorfull", """{"persauthorfull":["Smith, John (author)"],"publisher":["Smith & Co"]}""")]);
         var entityPage = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}");
         Assert.Contains("Smith, John (author)", entityPage);
+        Assert.Contains("In the records", entityPage); Assert.Contains("A review of reviews", entityPage); Assert.Contains("Smith &amp; Co", entityPage); // the records behind the entity's strings
         Assert.Contains("Confirm", entityPage.Contains("confirmed") ? "Confirm" : entityPage); // confirmed already, so no confirm form is fine
         var relabel = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/entity?handler=Label", $"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}", new() { ["id"] = kept.Id, ["label"] = "Smith, John (author of the review)" });
         Assert.Equal(HttpStatusCode.Redirect, relabel.StatusCode);

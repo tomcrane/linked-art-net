@@ -52,7 +52,10 @@ so the clause is ready to build; "Fleming"'s ids are on no entity, the store has
 runs' evidence side by side showed the same twelve groups, awn284's rivals annotated "outvoted" and v6gjx5's not: the
 difference is finding 105, built between the runs, whose "Flemings" lookalike at 0.90 sits in a thirteenth group the
 evidence's cap of twelve cut; the store named it, the project's own Robert Fleming Holdings Ltd. with "Flemings" among
-its labels. Finding 105's lookalike as a rival has four cases, then, and the cap is a gap of its own.
+its labels. Finding 105's lookalike as a rival has four cases, then, and the cap is a gap of its own. The three built
+the same evening on the owner's word (doc 10 7.6 "Built 2026-11-05 (evening)"): finding 107 in `CarriedBy`, the
+lookalike no rival for the single, the exact-single or the outvoted policy, and the evidence keeping every group that
+holds a project entity; each test shown to fail before its change; the run that measures them is the plan's command 2.
 
 ## 2026-10-26
 

@@ -66,8 +66,21 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
    set is the two Red Houses; "Fleming"'s ids are on no entity; the two runs' evidence side by side, read the same
    evening, showed the same twelve groups with awn284's rivals annotated "outvoted" and v6gjx5's not, and finding 105,
    built between the runs, is the difference: a "Flemings" lookalike at 0.90 in a thirteenth group the cap cut, named
-   by the store as the project's own Robert Fleming Holdings Ltd., aligned, "Flemings" among its labels). Nothing
-   stands; what it left is in section 7 (Reconciler), three builds measured and waiting on the word.
+   by the store as the project's own Robert Fleming Holdings Ltd., aligned, "Flemings" among its labels). The three it
+   left are built (doc 10 7.6 "Built 2026-11-05 (evening)": finding 107, finding 105's lookalike no rival, the evidence's
+   cap) and wait on their run: v6gjx5 taken back and its strings decided again, then the standing diff against it.
+   Expected: the two Red Houses from vote to queued, "Chartwell (Kent)" to a single, "Landmark" to an exact-single,
+   "Still" and "Fleming" to votes, nothing else moving. With the workbench stopped:
+
+       dotnet run --project tools/Align -- undo-run --run run-20261105-131547-v6gjx5
+       dotnet run --project tools/Align -- reconcile
+
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261105-131547-v6gjx5' order by source_string_id, id desc),
+            b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
+       select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
+       from a join b on b.source_string_id = a.source_string_id
+       join source_strings s on s.id = a.source_string_id
+       where a.method <> b.method group by 1, 2 order by 3 desc;
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
@@ -309,29 +322,10 @@ and the log (doc 15) records that. The order within an area is rough value.
 - Place drift between runs (2026-10-20, seen again 2026-10-26): the same strings move between runs as the order makes
   entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns in awn284); undo and redo are not
   idempotent on the store side. Look at it with the store-stage work.
-- Finding 107, measured and ready to build (run v6gjx5, 2026-11-05; doc 10 7.6 "Measured 2026-11-05 (run v6gjx5)"):
-  the two-sources line of `CarriedBy` does not carry a group holding a firm entity the string's resolved qualifier
-  contradicts when no member is placed ("Red House (Yorkshire)" and "Red House (Bexleyheath, Kent)" voted onto
-  Aldeburgh's in the second pass through the entity's own two ids). The set is complete: a contradicted record is vetoed
-  and never in a live group, so only a firm entity can bring the contradiction, and a group with a firm entity never
-  mints; two caught, nothing right touched. Finding106Tests' Red House must find ULAN's and LoC's records by name so the
-  group has two sources, as the run's had.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or
   a qualifier that is no level word means the inhabited place, LoC's own convention; persons stay the desk's. Count the
   strings queued between two project entities at the top score before building it.
-- Finding 105's lookalike counted as a rival (v6gjx5: "Chartwell (Kent)" lost its single to LoC's "Chartwells
-  (Firm)", "Landmark" its exact-single to ULAN's "Landmarks", "Still" its vote to the project's "Stills (Gallery)"):
-  a possessive member is shown for the desk and should block nothing; make it no rival for the single's second group,
-  the exact-single's count and the outvoted policy's rivals. Three right decisions to regain, none at risk.
-- "Fleming" (keywords:head) vote to queued in v6gjx5, explained (doc 10 7.6): finding 105's lookalike as a rival, the
-  fourth case, "Flemings" at 0.90 in a thirteenth group the evidence's cap of twelve cut (the two runs' evidence shows
-  the same twelve groups, awn284's rivals annotated "outvoted" and v6gjx5's not; finding 105 was built between the
-  runs); the lookalike is the project's own Robert Fleming Holdings Ltd. (sssxdnrx, aligned), "Flemings" the bank among
-  its labels, a firm named for the man. Regained by the item above. The cap is a gap of its
-  own and goes in with the fix: a group holding a project entity is never cut from the evidence (finding 92's rule,
-  that the reason a string was queued is in its evidence): keep entity-holding groups ahead of the twelve, or raise
-  the cap for them.
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

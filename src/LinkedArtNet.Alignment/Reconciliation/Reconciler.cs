@@ -467,7 +467,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (strongest is not null && top is not null && strongest != top && strongest.Sources.Count >= 2 && top.Sources.Count <= 1) { live.Remove(strongest); live.Insert(0, strongest); top = strongest; }
         // a rival at acceptance score is a disagreement: another authority, or another provisional lookalike when the top is only a lookalike itself
         var topIsFirm = top is not null && top.Members.Any(m => !m.Veto && !m.Candidate.Provisional);
-        var second = live.Skip(1).FirstOrDefault(g => !topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional));
+        // and a possessive lookalike (finding 105: a firm named for the man, at 0.90, shown for the desk and never carried) is no rival at all:
+        // not the single's second group, not one of the exact-single's count, not one of the outvoted policy's rivals ("Chartwell (Kent)" lost
+        // its single to LoC's "Chartwells (Firm)", "Landmark" its exact-single to ULAN's "Landmarks", "Still" and "Fleming" their votes to
+        // the project's "Stills (Gallery)" and Robert Fleming Holdings, "Flemings" among its labels; run v6gjx5, 2026-11-05)
+        var second = live.Skip(1).FirstOrDefault(g => !Lookalike(g) && (!topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional)));
         var carried = top is null ? null : CarriedBy(reading, top);
         if (top is not null && carried is null && !top.Members.Any(m => !m.Veto && !m.SetAside && m.QualifierAgrees == true))
             groups = groups.Select(g => g == top ? g with { Members = g.Members.Select(m => Firm(m) && Contradiction(reading, m) is { } why ? m with { Reason = m.Reason + $"; {why}: not carried alone (finding 106)" } : m).ToList() } : g).ToList();
@@ -475,7 +479,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // carry beats rivals one source carries at the same score (TGN's Scottish Aberdeen with LoC's "Aberdeen (Scotland)" joined,
         // against four TGN namesakes no LoC heading reaches); never over one of the project's own aligned entities or another
         // two-source group, and never for people and bodies, where sameness of name is weak evidence and the desk decides
-        var rivals = top is null ? [] : live.Skip(1).Where(g => g.Score >= _options.AcceptScore).ToList();
+        var rivals = top is null ? [] : live.Skip(1).Where(g => g.Score >= _options.AcceptScore && !Lookalike(g)).ToList();
         // and for a body when the string's qualifier places a member of the winning group (TGN's National Maritime Museum in London,
         // with LoC's heading through it, against ULAN's three unplaced records): not a name-only tie (finding 60; the owner's
         // policy, 2026-10-22, ceiling 18)
@@ -490,6 +494,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // with a LoC heading placed through; the earlier pipeline identified the name with the county in this project, and a bare
         // "Cornwall" here is that place. Only among two-source groups at acceptance score, only when one of them holds the entity
         static bool Firm(ScoredCandidate m) => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional;
+        static bool Lookalike(CandidateGroup g) { var alive = g.Members.Where(m => !m.Veto && !m.SetAside).ToList(); return alive.Count > 0 && alive.All(m => m.Candidate.ByPossessive); }
         // a tie is among groups at the top score, not at any acceptance score: "Münster" (the German city, exact at 1.00 with LoC's heading)
         // is not broken towards the project's "Munster (Ireland)" at 0.97 through its folded umlaut (finding 86, 2026-10-24, run t629cj)
         bool AtTop(CandidateGroup g) => top is not null && g.Score >= top.Score - 0.001 && g.Score >= _options.AcceptScore && g.Sources.Count >= 2;
@@ -619,7 +624,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var titleOnly = reading.Agent?.TitleOnly == true;
         var wordsEnough = reading.Classes[0] is not (EntityClass.Person or EntityClass.Group) || (!titleOnly && StringKey.Normalise(reading.Text).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 2)
             || (exactTop is not null && exactTop.Best.Candidate.Class == EntityClass.Group && NameMatcher.PlainlyABody(exactTop.Best.Candidate.Label));
-        if (_options.AcceptUniqueExactSingleSource && exactTop is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= rivalFloor) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
+        if (_options.AcceptUniqueExactSingleSource && exactTop is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= rivalFloor) && !Lookalike(g) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
             && wordsEnough
             && exactTop.Score >= _options.AcceptScore && exactTop.Best.Candidate.NameScore >= 0.97
             && exactTop.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
@@ -1266,15 +1271,22 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// </summary>
     private string? CarriedBy(StringReading reading, CandidateGroup group)
     {
-        if (group.Sources.Count >= _options.MinIndependentSources) return DecisionMethod.Vote;
+        static bool Firm(ScoredCandidate m) => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional;
+        var placed = group.Members.Any(m => !m.Veto && !m.SetAside && m.QualifierAgrees == true);
+        // two independent sources carry a group; not when a firm project entity the string's resolved qualifier contradicts is among them and
+        // nothing in the group agrees with the qualifier (finding 107, 2026-11-05, run v6gjx5): "Red House (Yorkshire)" and "Red House
+        // (Bexleyheath, Kent)", queued under finding 106 in the first pass, were voted onto Aldeburgh's in the second, the entity's own LoC
+        // heading and ULAN record grouped as two sources through the entity alone. A record the resolved qualifier places elsewhere is vetoed
+        // (finding 66) and never in a live group, so only a firm entity can bring the contradiction; two caught, nothing right touched
+        var bridged = !placed && group.Members.Any(m => Firm(m) && Contradiction(reading, m) is not null);
+        if (group.Sources.Count >= _options.MinIndependentSources && !bridged) return DecisionMethod.Vote;
         // a firm project entity carries a group alone, with the authority behind it; not when the string's qualifier names a known place
         // or a level that the entity's own placement contradicts and nothing in the group agrees with the qualifier (finding 106,
         // 2026-11-05): a string the store stage declined for that reason meets the same entity here, grouped with its own records, and
         // would have been voted onto it all the same. A group with a member the qualifier places ("Waddesdon Manor (Buckinghamshire)"
         // through LCSH's heading, whose chain reaches the county) is placed, and carries; a qualifier that resolves to nothing ("Downton,
         // Salisbury" onto the project's "Downton, Wiltshire": eleven such right votes in the place field) leaves the entity's vote as it was
-        var placed = group.Members.Any(m => !m.Veto && !m.SetAside && m.QualifierAgrees == true);
-        if (group.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional && (placed || Contradiction(reading, m) is null))) return DecisionMethod.Vote;
+        if (group.Members.Any(m => Firm(m) && (placed || Contradiction(reading, m) is null))) return DecisionMethod.Vote;
         // the placeholder of a string awaiting review carries nothing: minted with that string's own lifespan and qualifier, it agrees with
         // them by construction, and the second pass had accepted 265 queued strings onto their own placeholders as singles ("Cozens, John
         // Robert, 1752-1798" onto "Cozens, John Robert", finding 93's seventeen among them) (finding 95, 2026-10-24 night, run wy2aqs);
@@ -1376,14 +1388,29 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     private static readonly JsonSerializerOptions EvidenceJson = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull };
 
+    /// <summary>
+    /// The groups the evidence shows: the first five, every live group at the top score and every group holding a project entity, twelve at
+    /// most (a tie of six namesakes had shown five and left the sixth, and the entity that stopped prominence, to be guessed at: finding 92,
+    /// 2026-10-24); and a group holding a project entity is never among those the twelve cut ("Fleming"'s twelve namesakes at 1.00 filled the
+    /// cap and hid the thirteenth, the project's own Robert Fleming Holdings at 0.90, the lookalike that had stopped the outvoted policy; run
+    /// v6gjx5, 2026-11-05). The reason a string was queued is in its evidence.
+    /// </summary>
+    private static List<CandidateGroup> Shown(IReadOnlyList<CandidateGroup> groups)
+    {
+        var kept = groups.Where((g, i) => i < 5 || (!g.Vetoed && g.Score >= groups[0].Score - 0.001) || HoldsEntity(g)).ToList();
+        if (kept.Count <= 12) return kept;
+        var room = Math.Max(0, 12 - kept.Count(HoldsEntity));
+        var taken = 0;
+        return kept.Where(g => HoldsEntity(g) || taken++ < room).ToList();
+        static bool HoldsEntity(CandidateGroup g) => g.Members.Any(m => m.Candidate.EntityId is not null);
+    }
+
     public static string Evidence(string stage, StringReading reading, IReadOnlyList<CandidateGroup> groups, object? extra) =>
         JsonSerializer.Serialize(new
         {
             stage,
             reading = new { reading.Text, reading.Key, reading.Qualifier, classes = reading.Classes.Select(c => c.ToString()), lifespan = reading.Lifespan?.Text, nationalities = reading.Nationalities.Count == 0 ? null : reading.Nationalities, roles = reading.Roles.Count == 0 ? null : reading.Roles },
-            // the first five, every live group at the top score and every group holding a project entity, twelve at most: a tie of six
-            // namesakes had shown five and left the sixth, and the entity that stopped prominence, to be guessed at (finding 92, 2026-10-24)
-            groups = groups.Where((g, i) => i < 5 || (!g.Vetoed && groups.Count > 0 && g.Score >= groups[0].Score - 0.001) || g.Members.Any(m => m.Candidate.EntityId is not null)).Take(12).Select(g => new
+            groups = Shown(groups).Select(g => new
             {
                 g.Score, g.Sources, vetoed = g.Vetoed ? true : (bool?)null,
                 members = g.Members.Take(8).Select(m => new { m.Candidate.Uri, m.Candidate.Source, m.Candidate.Label, m.Candidate.Stage, m.Score, veto = m.Veto ? true : (bool?)null, setAside = m.SetAside ? true : (bool?)null, m.Reason }),

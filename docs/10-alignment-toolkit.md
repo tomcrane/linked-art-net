@@ -1259,6 +1259,24 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-05 (evening), the three the measurement below left, each with its test in Finding107Tests (shown to fail
+before the change), awaiting the run that measures them (the plan's command 2: v6gjx5 undone and its strings decided
+again, the standing diff against it; expected, the two Red Houses from vote to queued, "Chartwell (Kent)" to a single,
+"Landmark" to an exact-single, "Still" and "Fleming" to votes, and nothing else moving).
+
+- Finding 107, the bridged vote: `CarriedBy` reads the contradiction before it reads the count of sources. A group holding
+  a firm project entity the string's resolved qualifier contradicts, with no member the qualifier places, is not carried
+  by its two sources; the firm-entity line then declines it as finding 106 says, and the single fallback finds the
+  entity's own heading disagreeing with the qualifier. The test has the entity's LoC heading and ULAN record found by
+  name and nothing else of the name in the index, so that without the clause the group carries as a vote.
+- Finding 105's lookalike is no rival: a group whose live members are all possessive lookalikes is passed over as the
+  single's second group, left out of the exact-single's count of groups and out of the outvoted policy's rivals; it is
+  still shown, with its reason. The test is "Remondini", an exact-single on LoC's "Remondini (Firm)" (finding 42)
+  beside the project's own "Remondinis Ltd".
+- The evidence's cap: the groups kept are as before (the first five, the live groups at the top score, the groups holding
+  a project entity), and when they exceed twelve the entity-holding groups are kept and the rest give way in order, so
+  that "Fleming"'s thirteenth group would show. Tested on twelve namesakes at 1.00 and an entity at 0.90.
+
 Measured 2026-11-05 (run v6gjx5, finding 106's run: awn284 undone and its strings decided again, 56 minutes beside the
 day's builds; the standing diff against awn284 and evhvuw, 50 strings, every one read in evidence).
 

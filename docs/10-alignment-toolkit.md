@@ -1259,6 +1259,47 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Read 2026-11-05 (the two drifted decisions of awn284, in evidence; the query under the plan's commands on return, now
+answered): both are one gap, in two of its forms, and neither is the order of the run. A project entity whose placement
+the string's qualifier contradicts, without the contradiction rising to finding 66's veto, still answers for a
+qualified string: silently in the store stage, and as the ground of a vote in the index stage.
+
+- "L (colonnade)" (place): in u4ykeu, TGN's one "L", a locality in Idaho, at 1.00 with "qualifier not placed (colonnade
+  vs Idaho, ...)", one source and nothing carrying it, queued. In awn284 the same in the first pass; in the second pass
+  the store held the project's place "L" (`jkhbwy9m`, firm, aligned to that TGN record, made from some other string of
+  the bare name), and the store stage passed it over, as the place field is a qualified context and the entity's
+  placement disagrees (the comment at the store stage's filter), but the index stage then grouped the entity with its
+  TGN record, one source and a firm project entity, and `CarriedBy` reads a firm entity in a group as a vote without
+  asking whether the string's qualifier agrees with it. "colonnade" is no place TGN knows, so the resolved-qualifier
+  vetoes (findings 66 and 98) could not speak, and the group carried. Before finding 104 the string's own placeholder
+  "L, colonnade" stood beside it at 0.97, "qualifier places it", a second group without a firm member, which the rival
+  test ignores once the top is firm. The string itself is the data's question (a colonnade named "L", in the place
+  field), and the desk's; the toolkit's part is that the project's Idaho "L" should not have been its answer.
+- "Red House (Yorkshire)" (keywords): in u4ykeu, ULAN's one "Red House" at 1.00, unplaced (no qualifier reason, since
+  the record carries no placement), four LoC lookalikes at 0.85, queued, rightly. In awn284 the first pass the same;
+  the second pass met the project's group "Red House" (`mgdt2fkm`), made earlier in the same run and placed at
+  "Aldeburgh, England", scored 1.00 with "qualifier not placed (Yorkshire vs Aldeburgh, England)" and no veto, and
+  the store stage matched it silently (exact-name): keywords is not a qualified context, so the filter that held the
+  entity back for "L (colonnade)" does not apply, and finding 66's veto did not fire because, under finding 90,
+  Aldeburgh is a town and not a place that makes a placement "elsewhere", while England is inside Yorkshire's own
+  chain. The Red House at Aldeburgh is Britten's; the string names a Yorkshire one, likely the Red House at Gomersal.
+  Wrong, and silent.
+
+The rule the two want, in two places and the same shape: a string whose qualifier resolves to a known place
+(`QualifierAncestors` not null) is not matched silently in the store stage, nor voted in the index stage on the
+strength of a project entity alone, onto an entity whose placement its qualifier contradicts (`QualifierAgrees ==
+false`); it goes on to the desk with the entity shown. Narrow by construction: a qualifier that resolves to nothing
+("Harewood House (Leeds)", the counter-case that withdrew the first filter on 2026-10-24) is untouched, and agreement
+through either chain (finding 84) is agreement. "L (colonnade)" is not reached by the resolved-qualifier form, since
+"colonnade" resolves to nothing; for it the vote's ground needs the plainer condition, a firm project entity carrying
+a qualified string's group only when its placement does not contradict the qualifier as written, which is the store
+stage's own condition in a qualified context, applied to the vote. Measured before built: the query under the plan's
+commands on return counts the exact-name and vote decisions of awn284 and evhvuw whose chosen entity's reason says
+"qualifier not placed", and lists them; the count says whether this is a finding (106) or two strings. The entities
+themselves are a second question: which strings made the project's Idaho "L" and the Aldeburgh "Red House" (the
+second query there), since a bare "L" accepted onto TGN's one "L" is the unique-exact-single rule reading a letter as
+a name.
+
 Built 2026-10-26 evening, finding 105, from the desk's first session (the owner at "Mr Dowell" in corpauthor): a firm
 named for the man is offered for his name and never carried alone. Three Edinburgh sale catalogues stood under the
 string, and the project's own "Dowell's Ltd", the auctioneers, was found by the desk's search but was never among the

@@ -61,14 +61,26 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. Two of awn284's drifted decisions, wanted in evidence when convenient (nothing waits on them): "L (colonnade)",
-   voted in the second pass onto the project's place "L", and "Red House (Yorkshire)", matched to a group "Red House"
-   made in the run:
+2. The qualifier-contradicted store entity (doc 10 7.6, "Read 2026-11-05": "L (colonnade)" voted onto the project's
+   Idaho "L", "Red House (Yorkshire)" matched silently to the project's Aldeburgh "Red House"), measured before a rule
+   is built: every exact-name and vote decision of awn284 and evhvuw whose chosen entity's reason says the qualifier
+   was not placed, with its count by method; and the strings that made the two entities:
 
-       select d.run_id, s.context, s.raw, d.method, d.entity_id, jsonb_pretty(d.evidence)
+       select d.method, s.context, s.raw, m->>'label' as entity, m->>'reason' as reason
+       from decisions d
+       join source_strings s on s.id = d.source_string_id
+       cross join lateral jsonb_array_elements(d.evidence->'groups') g
+       cross join lateral jsonb_array_elements(g->'members') m
+       where d.run_id in ('run-20261026-142043-awn284', 'run-20261026-171829-evhvuw')
+         and d.method in ('vote', 'exact-name')
+         and m->>'uri' = d.entity_id
+         and m->>'reason' like '%qualifier not placed%'
+       order by d.method, s.context, s.raw;
+
+       select d.run_id, d.method, s.context, s.raw, d.entity_id
        from decisions d join source_strings s on s.id = d.source_string_id
-       where d.run_id in ('run-20261026-130632-u4ykeu', 'run-20261026-142043-awn284')
-         and s.raw in ('L (colonnade)', 'Red House (Yorkshire)') order by s.raw, d.id;
+       where d.entity_id in ('https://data.paul-mellon-centre.ac.uk/place/jkhbwy9m', 'https://data.paul-mellon-centre.ac.uk/group/mgdt2fkm')
+       order by d.entity_id, d.id;
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
@@ -306,9 +318,13 @@ and the log (doc 15) records that. The order within an area is rough value.
 **Reconciler** (doc 10 sections 7 and 7.6):
 
 - Place drift between runs (2026-10-20, seen again 2026-10-26): the same strings move between runs as the order makes
-  entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns, "Red House (Yorkshire)", "L (colonnade)"
-  in awn284); undo and redo are not idempotent on the store side. Look at it with the store-stage work; the evidence
-  query for the last two is under Commands on return.
+  entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns in awn284); undo and redo are not
+  idempotent on the store side. Look at it with the store-stage work.
+- The qualifier-contradicted store entity (read 2026-11-05, doc 10 7.6): a project entity whose placement the string's
+  resolved qualifier contradicts, short of finding 66's veto, answers silently in the store stage ("Red House
+  (Yorkshire)" onto the Aldeburgh Red House) and carries a vote in the index stage ("L (colonnade)" onto the Idaho "L").
+  The rule is designed there; measure with the query under Commands on return, then build if the count says so
+  (finding 106). Behind it, how a bare "L" was accepted onto TGN's one "L": the unique-exact-single rule on a letter.
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

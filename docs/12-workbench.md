@@ -41,8 +41,9 @@ is the site's own, not a cousin of it (the owner, 2026-11-05: the workbench, lik
 the arts and should not look cooked up): the site's stylesheet's tokens and conventions, one grotesque face, near-black
 on paper, one warm accent, category labels in small capitals, a strong rule above each section, square corners, black
 buttons; the workbench's own pieces (the string under review set like a title, the candidate cards each under a rule
-with the best under the accent's, the score as a figure, the file tags as outlined marks, the "entity page" tag as a
-small black button) are drawn with the site's parts, in `wwwroot/site.css`. It is not
+each a flat highlight panel with the best on the warm tint, the score as a bold figure, the file marks as small
+capitals on the tint, the actions the only solid or outlined rectangles) are drawn with the site's parts, in
+`wwwroot/site.css`; the owner's eye set each of these on the day, against the first draft's boxes and blocks. It is not
 part of the examples site: that site is public, stateless and deterministic; the workbench is signed-in, stateful and
 holds a database connection. It runs on the owner's laptop first (section 10) and is packaged to run anywhere a
 PostgreSQL is.
@@ -106,10 +107,10 @@ trimmed, the notes' (HIE) hierarchical places, and the parts of a place list) an
 by context and normalised text; a source collected again is replaced. The desk shows the examples under the string as
 "In the records", the string's own field first on each card; a part string with none of its own (a keyword's head, a
 place in a list) shows its parents'. The entity page shows the same for the strings that resolve to the entity (the
-most frequent first, a record once, eight at most), and the desk's cards, "Currently" and the search results carry a
-link to each project entity's page, a tag reading "entity page" apart from the URI's own link, since the two are
-different things and neither should be clicked for the other (2026-11-05: three placeholders of one name beside "Mr
-Stanley", told apart only by their records). Not reached: keywords the 2024 process cleaned before the string map was made
+most frequent first, a record once, eight at most), and on the desk's cards, under "Currently" and in the search
+results a project entity's name is the link to its page, the URI beneath it the URI's own link, the two told apart by
+their words (2026-11-05: three placeholders of one name beside "Mr Stanley", told apart only by their records; a
+separate "entity page" tag was tried the same day and was loud). Not reached: keywords the 2024 process cleaned before the string map was made
 (the cleaned form is the store's string and the export carries the raw one), which the coverage line of the command
 counts; the cleaned subjects table of the legacy database would close that.
 

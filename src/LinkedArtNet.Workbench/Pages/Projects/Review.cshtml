@@ -57,7 +57,7 @@ else
             @if (reading.Lifespan is not null) { <dt>Dates</dt><dd>@reading.Lifespan</dd> }
             @if (reading.Roles is { Count: > 0 }) { <dt>Roles</dt><dd>@string.Join(", ", reading.Roles)</dd> }
             @if (reading.Nationalities is { Count: > 0 }) { <dt>Nationality</dt><dd>@string.Join(", ", reading.Nationalities)</dd> }
-            @if (item.Entity is not null) { <dt>Currently</dt><dd>@item.Entity.Label <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span> <code class="small">@item.Entity.Id</code> <a class="tag page" href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener">entity page</a></dd> }
+            @if (item.Entity is not null) { <dt>Currently</dt><dd><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener" title="The entity's page">@item.Entity.Label</a> <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span> <code class="small">@item.Entity.Id</code></dd> }
         </dl>
     }
     @if (item.Examples.Count > 0)
@@ -102,15 +102,15 @@ else
                 item.Records.TryGetValue(m.Uri, out var record);
                 <div class="row" style="margin-top:.5rem; @(m.Veto == true || m.SetAside == true ? "opacity:.6" : "")">
                     <div style="flex:1">
-                        <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong>
+                        @* a project entity's name is the link to its page, in another tab so the desk stays where it is; the URI below it is the
+                           URI's own link, as every record's (the owner, 2026-11-05: "Mr Stanley" beside placeholders of the name, which might fold
+                           onto it, and nothing to tell them apart but their records) *@
+                        @if (m.IsStore || m.Uri.StartsWith(Model.Project.Project.IdentifierBase, StringComparison.Ordinal)) { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(m.Uri)" target="_blank" rel="noopener" title="The entity's page: its identifiers, the strings that resolve to it and the records they were seen in">@(m.Label ?? m.Uri)</a></strong> }
+                        else { <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong> }
                         @if (record?.Lifespan?.Display is { } life) { <span class="muted">@life</span> }
                         @if (record?.Type is { } type) { <span class="tag">@type.ToLowerInvariant()</span> }
                         <span class="tag">@m.Source</span>
                         <a class="small" href="@m.Uri" target="_blank" rel="noopener">@m.Uri</a>
-                        @* a project entity's card also opens its page, by a link that says so, apart from the URI (the owner, 2026-11-05: "Mr Stanley"
-                           beside three placeholders of the name, which might fold onto it, and nothing to tell them apart but their records; and the
-                           URI and the page are two things, neither to be clicked for the other) *@
-                        @if (m.IsStore) { <a class="tag page" href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(m.Uri)" target="_blank" rel="noopener" title="The entity's page: its identifiers, the strings that resolve to it and the records they were seen in">entity page</a> }
                         @if (record is not null && record.Labels.Count > 1) { <div class="small muted">also: @string.Join(" · ", record.Labels.Where(l => l != record.Label).Take(6))</div> }
                         @if (record?.DataJson is { } data && System.Text.Json.JsonDocument.Parse(data).RootElement.TryGetProperty("description", out var desc)) { <div class="small">@desc.GetString()</div> }
                         <div class="reason">@m.Reason</div>
@@ -158,7 +158,7 @@ else
                 @if (Model.EntityMatches.Count == 0 && Model.IndexMatches.Count == 0) { <p class="muted small">Nothing found for "@Model.Q".</p> }
                 @foreach (var e in Model.EntityMatches)
                 {
-                    <div class="row result"><div style="flex:1"><strong>@e.Label</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span><br /><a class="small" href="@e.Id" target="_blank" rel="noopener">@e.Id</a> <a class="tag page" href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">entity page</a></div>
+                    <div class="row result"><div style="flex:1"><strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener" title="The entity's page">@e.Label</a></strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span><br /><a class="small" href="@e.Id" target="_blank" rel="noopener">@e.Id</a></div>
                         <form method="post" asp-page-handler="SameAs" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@e.Id" /><button type="submit">Same as</button></form></div>
                 }
                 @foreach (var r in Model.IndexMatches)

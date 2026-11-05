@@ -72,16 +72,24 @@ details.help p { margin: 0.75rem 0 0; max-width: 60rem; color: inherit; }
 .guide table { border-collapse: collapse; width: 100%; margin: 1rem 0 2rem; font-size: 0.95rem; }
 
 /* ---- the desk: cards, scores, tags ----------------------------------------------------------------------------- */
-.card { border: 1px solid var(--rule); border-top: 2px solid var(--ink); padding: 1rem 1.25rem 1.1rem; margin: 1rem 0; background: var(--paper); }
-.card.best { border-top: 4px solid var(--accent); }
-.card.veto { opacity: 0.6; border-top-color: var(--rule); }
-.score { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; color: var(--ink); line-height: 1; }
+/* a card is a highlight, not a box: a flat panel of the site's grey, as its tag cloud and code are set; the best candidate on the warm
+   tint, as the site's hero is; a ruled-out one faded (the owner, 2026-11-05: the site has no boxes) */
+.card { background: var(--panel); border: 0; padding: 1.1rem 1.25rem; margin: 1rem 0; }
+.card.best { background: var(--tint); }
+.card.veto { opacity: 0.55; }
+.card > :last-child, .card > form:last-child > :last-child { margin-bottom: 0; }
+.card .tag { background: var(--paper); }
+.card input[type=text], .card input[type=search], .card select, .card textarea { background: var(--paper); }
+/* the score as a figure over a thick rule, as the site sets its figures; orange on the best card. Not a solid block: a solid block is
+   what a button is here, and a mark that is not pressable must not look like one (the owner, 2026-11-05). The same for the source
+   marks, small capitals on the tint with no outline, so that the only rectangles with sentence-case text on a card are the actions */
+.score { display: inline-block; font-variant-numeric: tabular-nums; font-weight: 800; font-size: 1.15rem; letter-spacing: -0.01em; line-height: 1.2; color: var(--ink); vertical-align: middle; }
 .card.best .score { color: var(--accent); }
+.card > .row:first-child { align-items: center; gap: 0.75rem; }
 .tag { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.5rem; margin-right: 0.3rem; color: var(--muted); background: var(--panel); text-decoration: none; vertical-align: middle; white-space: nowrap; }
-.tag.src { color: var(--accent); background: transparent; border: 1px solid var(--accent); padding: calc(0.2rem - 1px) calc(0.5rem - 1px); }
+.tag.src { color: var(--accent); background: var(--tint); }
 a.tag.src:hover { color: var(--accent-ink); background: var(--accent); }
-a.tag.page { color: var(--paper); background: var(--ink); cursor: pointer; }
-a.tag.page:hover { background: var(--accent); color: var(--accent-ink); }
+.card.best .tag.src { background: var(--paper); }
 .row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: baseline; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 2rem; }
 .result { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--rule); align-items: center; }

@@ -34,8 +34,8 @@ the bare string "l" as an exact single). Measured over awn284 and evhvuw before 
 7.6): the resolved-qualifier form in both stages (the index stage would otherwise vote a declined entity through its
 own records), the level-word form ("Hannover (Province)" had taken a North Dakota Hannover), and a name of one letter
 matching nothing. Finding106Tests. The run that measures it is the plan's command 2. While it ran, from the owner's
-notes at "Mr Stanley": the desk's cards, "Currently" and the search results carry an "entity page" link for each
-project entity, apart from the URI's own link (two things, neither clicked for the other), and the entity page shows
+notes at "Mr Stanley": on the desk's cards, under "Currently" and in the search results a project entity's name
+links to its page, the URI beneath it to the URI (a separate "entity page" tag was tried and was loud), and the entity page shows
 "In the records" for the strings that resolve to it, so three placeholders of one name can be told apart by what
 they stood in. And the workbench restyled onto the site's own look (the owner's brief: like the site, for people who
 work in the arts, not something cooked up by AI): the site's tokens and conventions, the workbench's pieces drawn with

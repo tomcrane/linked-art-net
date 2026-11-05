@@ -88,10 +88,9 @@ sale catalogue it heads and a keyword from the books it describes. Below: the ca
 one authority record, or a group of records from different files that say they are the same thing, with its score,
 the files that agree, the record's own label, dates and description, a link to the record, and the reasons the
 software gave, such as "dates agree" or "a placeholder awaiting review: carries nothing". Greyed cards were ruled
-out, and the reason says why. A card that is one of the project's own entities carries two links, kept apart so
-that neither is clicked for the other: its URI, which opens the URI as every record's does, and a tag reading
-"entity page", which opens the entity's page in another tab so the desk stays where it is. The entity under
-"Currently" and the project's entities among the search results carry the same two.
+out, and the reason says why. On a card that is one of the project's own entities, the name is the link to the
+entity's page, opened in another tab so the desk stays where it is, and the URI beneath it opens the URI, as every
+record's does. The entity under "Currently" and the project's entities among the search results link the same way.
 
 Actions:
 

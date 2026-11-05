@@ -1309,15 +1309,23 @@ day's builds; the standing diff against awn284 and evhvuw, 50 strings, every one
   "Landmarks" at 0.90 beside LoC's one "Landmark Properties Limited"; "Still" (keywords:head) vote to queued, the
   project's own "Stills (Gallery)" with LoC's at 0.90 among the rivals, and the outvoted-rivals policy never overrides a
   project entity. The possessive is shown for the desk and never carried; it should block nothing either: no rival for
-  the single's second group, the exact-single's count of groups or the outvoted policy's rivals.
-- Unexplained, one: "Fleming" (keywords:head) vote to queued. TGN's Fleming with LoC's "Fleming (N.Y.)" placed through
-  it, two sources at 1.00, every rival shown one source with no project entity; the evidence is not truncated, and the
-  holders check is not it (its two ids are on no entity at all). But the rivals shown carry no "outvoted by a group of
-  2 sources" annotation, so the outvoted policy was declined, and the evidence shows twelve groups at 1.00 with the rest
-  cut: the policy never overrides a project entity, and the group that stopped it is most likely a project entity named
-  Fleming in a thirteenth group, made since awn284 (the desk, evhvuw or the run's own first pass). Two things follow:
-  the plan's query for the entity, and the evidence's cap, which should never cut a group holding a project entity
-  (the reason a string was queued must be in its evidence; finding 92's rule, breached by the cap of twelve).
+  the single's second group, the exact-single's count of groups or the outvoted policy's rivals. "Fleming" (below) is
+  the fourth, its lookalike hidden by the evidence's cap.
+- Explained last, and finding 105's fourth: "Fleming" (keywords:head) vote to queued. TGN's Fleming with LoC's
+  "Fleming (N.Y.)" placed through it, two sources at 1.00, and the same eleven one-source rivals at 1.00 in both runs'
+  evidence (three ULAN Flemings, eight TGN ones, "Flemington" among them by variant), the same records in the same
+  order; the evidence is not truncated, the holders check is not it (its two ids are on no entity), and the store holds
+  no entity named Fleming (twenty-three Flemings, firms and persons, the run's own placeholder among them). The one
+  difference: awn284's eleven rivals each carry "outvoted by a group of 2 sources" and v6gjx5's carry nothing, so the
+  policy was declined on a group the evidence shows in neither run, cut by the cap of twelve as the thirteenth. What
+  came between the runs is finding 105, built 2026-10-26 at 17:17, three hours after awn284: a firm named for the man,
+  "Flemings", now meets the bare name at 0.90 as a possessive lookalike, and a group at 0.90 is a rival to the outvoted
+  policy. The policy declines only for a rival of two sources or one holding a firm project entity, so the lookalike is
+  a project entity labelled "Flemings" (Robert Fleming Holdings, the bank, most likely) or two records joined under the
+  name; the plan's query names it. Either way the fix is finding 105's lookalike-as-rival (above), which regains this
+  with Chartwell, Landmark and Still. And the cap is a gap of its own: a group holding a project entity must never be
+  cut from the evidence (the reason a string was queued must be in its evidence; finding 92's rule, breached here by the
+  twelve groups at 1.00 that fill the cap before the thirteenth at 0.90).
 
 Built 2026-11-05, finding 106, the three parts of the measurement below, the first two as one rule. `Contradiction`
 says why a project entity's placement makes it not the string's answer on its own: a qualifier the walk resolved to a

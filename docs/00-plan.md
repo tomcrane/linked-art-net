@@ -63,17 +63,17 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
 2. ~~Finding 106 measured by a run~~ Run v6gjx5, 2026-11-05, read in doc 10 7.6 "Measured 2026-11-05 (run
    v6gjx5)"; both measuring queries answered the same day (the minting votes cannot carry a contradiction: finding 107's
-   set is the two Red Houses; "Fleming"'s ids are on no entity). What it left is in section 7 (Reconciler); one query
-   stands, for "Fleming": the store holds no entity of that name (the entities query, answered 2026-11-05 evening:
-   firms and persons named Fleming, none scoring above 0.40 against the bare name), so the two runs' evidence for the
-   string, side by side, is what is left to read (an undone run keeps its evidence; awn284's rivals should carry the
-   "outvoted" annotation v6gjx5's lack):
+   set is the two Red Houses; "Fleming"'s ids are on no entity; the two runs' evidence side by side, read the same
+   evening, showed the same twelve groups with awn284's rivals annotated "outvoted" and v6gjx5's not, and finding 105,
+   built between the runs, is the difference: a "Flemings" lookalike at 0.90 in a thirteenth group the cap cut). What
+   it left is in section 7 (Reconciler); one query stands, to name the lookalike (a project entity, or two records
+   joined, since the outvoted policy declines for nothing less):
 
-       select d.run_id, d.method, d.entity_id, jsonb_pretty(d.evidence)
-       from decisions d join source_strings s on s.id = d.source_string_id
-       where s.dataset = 'pmc' and s.context = 'keywords:head' and s.raw = 'Fleming'
-         and d.run_id in ('run-20261026-142043-awn284', 'run-20261105-131547-v6gjx5')
-       order by d.id;
+       select 'entity' as kind, id as uri, label, class::text, status::text from entities
+       where dataset = 'pmc' and merged_into is null and exists (select 1 from unnest(normalised_labels) l where l like 'flemings%')
+       union all
+       select 'record', uri, label, source, type from authority_records
+       where exists (select 1 from unnest(normalised_labels) l where l like 'flemings%');
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
@@ -330,13 +330,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   (Firm)", "Landmark" its exact-single to ULAN's "Landmarks", "Still" its vote to the project's "Stills (Gallery)"):
   a possessive member is shown for the desk and should block nothing; make it no rival for the single's second group,
   the exact-single's count and the outvoted policy's rivals. Three right decisions to regain, none at risk.
-- "Fleming" (keywords:head) vote to queued in v6gjx5: not truncated, its ids on no entity, no project entity of the
-  name (the Flemings in the store are firms and persons scoring 0.40 at most against the bare name), and the rivals
-  shown carry no "outvoted" annotation, so the outvoted policy declined on a rival the evidence's cap of twelve cut: a
-  second two-source group, most likely (another TGN Fleming with a LoC heading placed through it, at 1.00 or below).
-  The two runs' evidence side by side is the query of Commands on return, 2. Whatever it is, the cap must never cut a
-  group holding a project entity (finding 92's rule, that the reason a string was queued is in its evidence): order the
-  groups kept so that entity-holding groups come before the twelfth, or raise the cap for them.
+- "Fleming" (keywords:head) vote to queued in v6gjx5, explained (doc 10 7.6): finding 105's lookalike as a rival, the
+  fourth case, "Flemings" at 0.90 in a thirteenth group the evidence's cap of twelve cut (the two runs' evidence shows
+  the same twelve groups, awn284's rivals annotated "outvoted" and v6gjx5's not; finding 105 was built between the
+  runs). Regained by the item above; the query of Commands on return, 2, names the lookalike. The cap is a gap of its
+  own and goes in with the fix: a group holding a project entity is never cut from the evidence (finding 92's rule,
+  that the reason a string was queued is in its evidence): keep entity-holding groups ahead of the twelve, or raise
+  the cap for them.
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

@@ -48,8 +48,10 @@ over the minting votes still to run), the city-and-state tie for three New Yorks
 persons, finding 105's possessive lookalike blocking three right decisions as a rival, and "Fleming" unexplained.
 The two measuring queries answered the same evening: finding 107's set is complete at the two Red Houses (a contradicted
 record is vetoed and never in a live group; only a firm entity brings the contradiction, and never to a minting vote),
-so the clause is ready to build; "Fleming"'s ids are on no entity, and the likeliest ground is a project entity of the
-name in a group the evidence's cap of twelve cut, which is a gap of its own.
+so the clause is ready to build; "Fleming"'s ids are on no entity, the store has no entity of the name, and the two
+runs' evidence side by side showed the same twelve groups, awn284's rivals annotated "outvoted" and v6gjx5's not: the
+difference is finding 105, built between the runs, whose "Flemings" lookalike at 0.90 sits in a thirteenth group the
+evidence's cap of twelve cut. Finding 105's lookalike as a rival has four cases, then, and the cap is a gap of its own.
 
 ## 2026-10-26
 

@@ -55,7 +55,9 @@ evidence's cap of twelve cut; the store named it, the project's own Robert Flemi
 its labels. Finding 105's lookalike as a rival has four cases, then, and the cap is a gap of its own. The three built
 the same evening on the owner's word (doc 10 7.6 "Built 2026-11-05 (evening)"): finding 107 in `CarriedBy`, the
 lookalike no rival for the single, the exact-single or the outvoted policy, and the evidence keeping every group that
-holds a project entity; each test shown to fail before its change; the run that measures them is the plan's command 2.
+holds a project entity; each test shown to fail before its change. Run cpxv7k (v6gjx5 undone, the diff against it)
+measured them the same evening: the build's five to the string and nothing else moving, beside "Lawrence" to exact-name,
+the desk's own twin decision radiating (doc 10 7.6 "Measured 2026-11-05 (run cpxv7k)").
 
 ## 2026-10-26
 

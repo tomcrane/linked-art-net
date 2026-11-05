@@ -61,37 +61,21 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. ~~Finding 106 measured by a run~~ Run v6gjx5, 2026-11-05, read in doc 10 7.6 "Measured 2026-11-05 (run
-   v6gjx5)"; both measuring queries answered the same day (the minting votes cannot carry a contradiction: finding 107's
-   set is the two Red Houses; "Fleming"'s ids are on no entity; the two runs' evidence side by side, read the same
-   evening, showed the same twelve groups with awn284's rivals annotated "outvoted" and v6gjx5's not, and finding 105,
-   built between the runs, is the difference: a "Flemings" lookalike at 0.90 in a thirteenth group the cap cut, named
-   by the store as the project's own Robert Fleming Holdings Ltd., aligned, "Flemings" among its labels). The three it
-   left are built (doc 10 7.6 "Built 2026-11-05 (evening)": finding 107, finding 105's lookalike no rival, the evidence's
-   cap) and wait on their run: v6gjx5 taken back and its strings decided again, then the standing diff against it.
-   Expected: the two Red Houses from vote to queued, "Chartwell (Kent)" to a single, "Landmark" to an exact-single,
-   "Still" and "Fleming" to votes, nothing else moving. With the workbench stopped:
-
-       dotnet run --project tools/Align -- undo-run --run run-20261105-131547-v6gjx5
-       dotnet run --project tools/Align -- reconcile
-
-       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261105-131547-v6gjx5' order by source_string_id, id desc),
-            b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
-       select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
-       from a join b on b.source_string_id = a.source_string_id
-       join source_strings s on s.id = a.source_string_id
-       where a.method <> b.method group by 1, 2 order by 3 desc;
+2. ~~Finding 106 measured by a run; the three it left built and measured~~ Runs v6gjx5 and cpxv7k, 2026-11-05, read in
+   doc 10 7.6 ("Measured 2026-11-05 (run v6gjx5)", "Built 2026-11-05 (evening)", "Measured 2026-11-05 (run cpxv7k)"):
+   finding 106, then finding 107, finding 105's lookalike no rival and the evidence's cap, each measured to the string.
+   Nothing stands; what the runs left is in section 7 (Reconciler: two project entities of one name) and the workbench
+   items. The standing diff for the next run, whenever it comes, is command 4 with cpxv7k as the run before.
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, whenever it comes, against evhvuw for the 498 it re-decided and
-   awn284 for the rest (each run's last decision per string, since a string the second pass settled has two; an
-   undone run keeps its evidence):
+4. The standing method diff after the next run, whenever it comes, against cpxv7k, the last full run (each run's last
+   decision per string, since a string the second pass settled has two; an undone run keeps its evidence):
 
-       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id in ('run-20261026-142043-awn284', 'run-20261026-171829-evhvuw') order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261105-151954-cpxv7k' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id

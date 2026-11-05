@@ -1259,6 +1259,15 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-05 (run cpxv7k, the evening's run: v6gjx5 undone and its strings decided again, 46,299 considered, the
+standing diff against v6gjx5). The build's five, to the string, and nothing else moving: "Red House (Yorkshire)" and
+"Red House (Bexleyheath, Kent)" from vote to queued (finding 107); "Still" and "Fleming" from queued to vote, "Chartwell
+(Kent)" to a single, "Landmark" to an exact-single (finding 105's lookalike no rival). One row beside them that is not
+the build's: "Lawrence" from queued to exact-name, the store stage's method, so a firm entity of the name was made
+between the two runs; the day's twins note was written at that pair (corpauthor and publisher behind the same three
+Crewkerne catalogues), and the ground is the desk's decision on one twin, the other meeting the entity by exact name as
+the ten publisher twins had. Findings 105 and 107 stand measured; the cap's change shows in no diff, being evidence.
+
 Built 2026-11-05 (evening), the three the measurement below left, each with its test in Finding107Tests (shown to fail
 before the change), awaiting the run that measures them (the plan's command 2: v6gjx5 undone and its strings decided
 again, the standing diff against it; expected, the two Red Houses from vote to queued, "Chartwell (Kent)" to a single,

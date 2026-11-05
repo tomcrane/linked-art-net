@@ -66,10 +66,10 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
    set is the two Red Houses; "Fleming"'s ids are on no entity). What it left is in section 7 (Reconciler); one query
    stands, for the project entity the evidence's cap hid from "Fleming":
 
-       select id, label, class, status, run_id, created_at from entities
-       where dataset = 'pmc' and merged_into is null and (label ilike 'fleming%' or id in
-         (select entity_id from entity_labels where label ilike 'fleming%'))
-       order by created_at;
+       select id, label, class, status, run_id from entities
+       where dataset = 'pmc' and merged_into is null
+         and (label ilike 'fleming%' or exists (select 1 from unnest(normalised_labels) l where l like 'fleming%'))
+       order by id;
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):

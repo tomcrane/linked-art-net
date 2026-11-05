@@ -46,6 +46,10 @@ publisher twins of the owner's corpauthor decisions of 2026-10-26, the desk radi
 Houses voted onto Aldeburgh's in the second pass through the entity's own two ids (finding 107's candidate, its measure
 over the minting votes still to run), the city-and-state tie for three New Yorks and a Christopher Gibbs between two
 persons, finding 105's possessive lookalike blocking three right decisions as a rival, and "Fleming" unexplained.
+The two measuring queries answered the same evening: finding 107's set is complete at the two Red Houses (a contradicted
+record is vetoed and never in a live group; only a firm entity brings the contradiction, and never to a minting vote),
+so the clause is ready to build; "Fleming"'s ids are on no entity, and the likeliest ground is a project entity of the
+name in a group the evidence's cap of twelve cut, which is a gap of its own.
 
 ## 2026-10-26
 

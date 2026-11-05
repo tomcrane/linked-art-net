@@ -62,25 +62,14 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
    then http://localhost:5200.
 
 2. ~~Finding 106 measured by a run~~ Run v6gjx5, 2026-11-05, read in doc 10 7.6 "Measured 2026-11-05 (run
-   v6gjx5)"; what it left is in section 7 (Reconciler), with two queries to run before anything is built: the votes
-   that mint onto a contradicted group, and the holders of "Fleming"'s two ids.
+   v6gjx5)"; both measuring queries answered the same day (the minting votes cannot carry a contradiction: finding 107's
+   set is the two Red Houses; "Fleming"'s ids are on no entity). What it left is in section 7 (Reconciler); one query
+   stands, for the project entity the evidence's cap hid from "Fleming":
 
-       -- finding 107's measure over the votes that mint: every vote in v6gjx5 some member of whose group the string's
-       -- resolved qualifier placed elsewhere, with none placed by it
-       select s.context, s.raw, d.entity_id,
-              string_agg(m->>'source' || ' ' || coalesce(m->>'label', '') || ': ' || (m->>'reason'), ' | ') as members
-       from decisions d join source_strings s on s.id = d.source_string_id
-       cross join lateral jsonb_array_elements(d.evidence->'groups') g
-       cross join lateral jsonb_array_elements(g->'members') m
-       where d.run_id = 'run-20261105-131547-v6gjx5' and d.valid and d.method = 'vote'
-         and exists (select 1 from jsonb_array_elements(g->'members') x where x->>'reason' like '%names a known place and this is elsewhere%')
-         and not exists (select 1 from jsonb_array_elements(g->'members') y where y->>'reason' like '%qualifier places it%')
-       group by 1, 2, 3 order by 1, 2;
-
-       -- "Fleming"'s holders
-       select q.uri, q.entity_id, e.label, e.status, q.run_id
-       from entity_equivalents q join entities e on e.id = q.entity_id
-       where q.uri in ('http://vocab.getty.edu/tgn/2069213', 'http://id.loc.gov/authorities/names/n2022000659');
+       select id, label, class, status, run_id, created_at from entities
+       where dataset = 'pmc' and merged_into is null and (label ilike 'fleming%' or id in
+         (select entity_id from entity_labels where label ilike 'fleming%'))
+       order by created_at;
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
@@ -322,12 +311,13 @@ and the log (doc 15) records that. The order within an area is rough value.
 - Place drift between runs (2026-10-20, seen again 2026-10-26): the same strings move between runs as the order makes
   entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns in awn284); undo and redo are not
   idempotent on the store side. Look at it with the store-stage work.
-- Finding 107, candidate (run v6gjx5, 2026-11-05; doc 10 7.6 "Measured 2026-11-05 (run v6gjx5)"): a group whose two
-  sources are joined only through a project entity the string's resolved qualifier contradicts, with no member the
-  qualifier places, does not carry ("Red House (Yorkshire)" and "Red House (Bexleyheath, Kent)" voted onto Aldeburgh's
-  in the second pass, after the first pass queued both under finding 106). Measured over the votes onto an existing
-  entity (two caught, nothing right touched); the votes that mint are the first query of Commands on return, 2, and the
-  clause waits on it.
+- Finding 107, measured and ready to build (run v6gjx5, 2026-11-05; doc 10 7.6 "Measured 2026-11-05 (run v6gjx5)"):
+  the two-sources line of `CarriedBy` does not carry a group holding a firm entity the string's resolved qualifier
+  contradicts when no member is placed ("Red House (Yorkshire)" and "Red House (Bexleyheath, Kent)" voted onto
+  Aldeburgh's in the second pass through the entity's own two ids). The set is complete: a contradicted record is vetoed
+  and never in a live group, so only a firm entity can bring the contradiction, and a group with a firm entity never
+  mints; two caught, nothing right touched. Finding106Tests' Red House must find ULAN's and LoC's records by name so the
+  group has two sources, as the run's had.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or
   a qualifier that is no level word means the inhabited place, LoC's own convention; persons stay the desk's. Count the
@@ -336,8 +326,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   (Firm)", "Landmark" its exact-single to ULAN's "Landmarks", "Still" its vote to the project's "Stills (Gallery)"):
   a possessive member is shown for the desk and should block nothing; make it no rival for the single's second group,
   the exact-single's count and the outvoted policy's rivals. Three right decisions to regain, none at risk.
-- "Fleming" (keywords:head) vote to queued in v6gjx5, unexplained by the evidence (two sources, rivals outvoted, not
-  truncated); the holders query of Commands on return, 2, says whether its ids sit on two entities.
+- "Fleming" (keywords:head) vote to queued in v6gjx5: not truncated, its ids on no entity, and the rivals shown carry
+  no "outvoted" annotation, so the outvoted policy declined; the likeliest ground is a project entity named Fleming in
+  a group the evidence's cap of twelve cut (the query of Commands on return, 2). Whatever it is, the cap must never cut a
+  group holding a project entity (finding 92's rule, that the reason a string was queued is in its evidence): order the
+  groups kept so that entity-holding groups come before the twelfth, or raise the cap for them.
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

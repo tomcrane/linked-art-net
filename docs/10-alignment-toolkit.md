@@ -1286,7 +1286,17 @@ day's builds; the standing diff against awn284 and evhvuw, 50 strings, every one
   the walk resolves to nothing ("Downton, Salisbury", "Glynde, Lewes", "Sparham, Norwich"; finding 90's boundary, and
   "New Haven, London" is Yale's two cities in one field, right by accident) and four right exact names ("Northumbria
   (Region)", "Raglan Castle (Monthmouthshire)" misspelt, "Parkin, Michael (London)", Benin). That query saw only votes
-  onto an existing entity; the votes that mint are measured by the plan's query before the clause is built.
+  onto an existing entity. The query over the votes that mint (run later the same day) returned 150 rows of vetoed
+  namesake groups ("Birr (Offaly)" beside TGN's Birr in Aargau), the query having read every group of the decision
+  rather than the chosen one: noise, but it says the thing that matters. A record the resolved qualifier places
+  elsewhere is vetoed by finding 66 and sits in a vetoed group, so a live group can carry such a contradiction only
+  through a firm project entity, which finding 66 does not veto; and a vote whose group holds a firm entity goes onto
+  that entity, never minting. So the first query's set is the whole set: finding 107 touches the two Red Houses and
+  nothing else, and the clause is this: the two-sources line of `CarriedBy` does not carry a group that holds a firm
+  entity `Contradiction` flags when no member is placed; the firm-entity line, which already reads the contradiction,
+  then declines it, and the single fallback finds the entity's qualifier disagreeing. Finding106Tests' Red House
+  passes today because its index returns only the entity's own records as equivalents, one source; the test must have
+  ULAN's and LoC's records found by name too, so that the group has two sources as the run's had.
 - Two project entities of one name, four queued: "New York" bare, "New York, NY" and "New York (Madison Avenue)" now
   meet the city's entity (TGN and LoC behind it) and the state's (made by this run, rightly) at the same score, and the
   abbreviation resolves to nothing; "Christopher Gibbs" meets two persons of the name, ULAN's behind one and LoC's
@@ -1301,9 +1311,13 @@ day's builds; the standing diff against awn284 and evhvuw, 50 strings, every one
   project entity. The possessive is shown for the desk and never carried; it should block nothing either: no rival for
   the single's second group, the exact-single's count of groups or the outvoted policy's rivals.
 - Unexplained, one: "Fleming" (keywords:head) vote to queued. TGN's Fleming with LoC's "Fleming (N.Y.)" placed through
-  it, two sources at 1.00, every rival one source with no project entity, so carried as a vote and outvoting them; the
-  evidence is not truncated. What is left is the holders check (the group's ids already on two entities of the
-  project's); the plan's query asks the store.
+  it, two sources at 1.00, every rival shown one source with no project entity; the evidence is not truncated, and the
+  holders check is not it (its two ids are on no entity at all). But the rivals shown carry no "outvoted by a group of
+  2 sources" annotation, so the outvoted policy was declined, and the evidence shows twelve groups at 1.00 with the rest
+  cut: the policy never overrides a project entity, and the group that stopped it is most likely a project entity named
+  Fleming in a thirteenth group, made since awn284 (the desk, evhvuw or the run's own first pass). Two things follow:
+  the plan's query for the entity, and the evidence's cap, which should never cut a group holding a project entity
+  (the reason a string was queued must be in its evidence; finding 92's rule, breached by the cap of twelve).
 
 Built 2026-11-05, finding 106, the three parts of the measurement below, the first two as one rule. `Contradiction`
 says why a project entity's placement makes it not the string's answer on its own: a qualifier the walk resolved to a

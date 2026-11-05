@@ -15,34 +15,40 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-10-26 night; the one place to read first)
+## 0. Resume point (written 2026-11-05 evening; the one place to read first)
 
-**On return, in order:** (1) `git push` if the night's commits are not up (the last is the one that wrote this);
-(2) the desk, continued: start the workbench and review from the queue, and each thing the desk fails to show, do or
-get right becomes an item in section 7 and is built, the way this evening's were; (3) the two small desk items left
-from the evening, in whichever order the desk suggests: the identifier field on "Keep as local authority", and no
-possessive key for a name in capitals; (4) the Wikidata index's next uses, the crosswalk and labels as variants
-(section 7, sources and indexes); then the open items of section 7 as the owner orders them.
+**On return, in order:** (1) `git push` if the evening's commits are not up (seventeen as of this writing; the last
+is the one that wrote this); (2) the desk, continued: start the workbench (Commands on return, 1) and review from the
+queue, and each thing the desk fails to show, do or get right becomes an item in section 7 and is built, the way
+today's and the 26th's were; the desk items standing (section 7, Workbench and desk) are today's two, the twins that
+share a record (a hint on the card or the search result towards "Same as" or "Accept together", saying which where it
+appears) and the publisher strings without a record behind them, and the 26th's two, the identifier field on "Keep as
+local authority" and no possessive key for a name in capitals; (3) the reconciler's one new item from today, two
+project entities of one name at the top score (three New Yorks between the city's entity and the state's, "Christopher
+Gibbs" between two persons), counted before any rule is built; (4) the Wikidata index's next uses, the crosswalk and
+labels as variants (section 7, sources and indexes); then the open items of section 7 as the owner orders them.
 
-**Where things stand.** Branch `de-pmc`, all work committed, CI green. Six authority sources loaded: the manifest's
-five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M records that carry another
-authority's id, loaded 2026-10-23 and retyped by the subclass walk on 2026-10-24; not yet among the manifest's
-sources; doc 11 section 8.11); the LoC index's 38,754 "active" headings carry working spans and 354,991 of its undated
-person records their Wikidata item's dates (finding 88; every staged mass write to `authority_records` ends with
-`vacuum (analyze)`). The store has had two duplicate passes (292 and 89 merges) and four hand merges; the manifest was
-last refreshed on 2026-10-23 (the home place). The reconciliation cycles ended on 2026-10-26 with run awn284 (queued
-4,032; doc 10 7.6 "Measured 2026-10-26 evening"): a diff explained by the findings built for it, no misfire, nothing
-new in the samples. Since then: the 2026-10-18 run's 500 strings re-decided under today's rules (runs utt9xm and
-evhvuw; the desk's list 4,093, then the owner's first decisions off it), finding 104 (the string's own placeholder
-never a candidate) and finding 105 (a firm named for the man offered for his name, never carried alone) built and
-measured in evhvuw; neither wants a run. A run is measured by its diff against the run before, and the standing diff
-is under "Commands on return"; the queue count is the desk's residue by design. The desk is the current work: the
-first session (the owner, 2026-10-26 evening) produced the records behind the string (`string_examples`, collected
-from the March 2024 library export with the 2024 process's cleaned keywords, every context at or near full), the
-help (the fold, Help, `/help` from doc 13), "Look again", "Accept the ticked together", the banner's link to the
-entity just decided, an index search on the entity page, the "Something else" layout mended, the search pre-filled,
-`Lifespan.Display` (ULAN's "1200~-~2080" no longer shown as a life), and an ArchivesSpace agent's URL as a recognised
-identifier. The Wikidata dump and the sitelinks table are on the owner's external drive (`E:\datadumps`).
+**Where things stand.** Branch `de-pmc`, all work committed, every test project green (3,203 tests). Six authority
+sources loaded: the manifest's five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M
+records that carry another authority's id, loaded 2026-10-23 and retyped by the subclass walk on 2026-10-24; not yet
+among the manifest's sources; doc 11 section 8.11); the LoC index's 38,754 "active" headings carry working spans and
+354,991 of its undated person records their Wikidata item's dates (finding 88; every staged mass write to
+`authority_records` ends with `vacuum (analyze)`). The store has had two duplicate passes (292 and 89 merges) and four
+hand merges; the manifest was last refreshed on 2026-10-23 (the home place). The reconciliation cycles ended on
+2026-10-26 (run awn284); runs are occasional since, and a run is measured by its diff against the run before (Commands
+on return, 4), never by the queue count, which is the desk's residue by design. The last full run is cpxv7k
+(2026-11-05 evening: accepted 9,377, queued 4,039, minted 10,876; doc 10 7.6 "Measured 2026-11-05 (run cpxv7k)").
+Today, from the two drifted decisions the owner's query found in awn284: finding 106 (a firm project entity whose
+placement the string's resolved qualifier contradicts, or whose level a level word contradicts, neither matches
+silently nor carries a vote alone; a name of one letter matches nothing), measured by run v6gjx5, which left three
+more; finding 107 (two sources joined only through such an entity do not carry a vote), finding 105's possessive
+lookalike no rival (for the single's second group, the exact-single's count, the outvoted policy), and the evidence
+never cutting a group that holds a project entity, measured by cpxv7k, every one to the string and nothing else moving.
+Findings 1 to 107 are in doc 10 7.6, newest first. Also today, from the owner's notes at the desk: a project entity's
+name links to its page from the cards, "Currently" and the search results, the entity page shows "In the records",
+and the workbench wears the site's own look (doc 12 section 3). The desk radiates through the store: the owner's
+corpauthor decisions of the 26th reached their publisher twins by exact name in v6gjx5, and "Lawrence" in cpxv7k.
+The Wikidata dump and the sitelinks table are on the owner's external drive (`E:\datadumps`).
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI and whether records absent from a full dump are retired; the merged-away
@@ -61,11 +67,7 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. ~~Finding 106 measured by a run; the three it left built and measured~~ Runs v6gjx5 and cpxv7k, 2026-11-05, read in
-   doc 10 7.6 ("Measured 2026-11-05 (run v6gjx5)", "Built 2026-11-05 (evening)", "Measured 2026-11-05 (run cpxv7k)"):
-   finding 106, then finding 107, finding 105's lookalike no rival and the evidence's cap, each measured to the string.
-   Nothing stands; what the runs left is in section 7 (Reconciler: two project entities of one name) and the workbench
-   items. The standing diff for the next run, whenever it comes, is command 4 with cpxv7k as the run before.
+2. ~~The runs of 2026-11-05~~ (v6gjx5 and cpxv7k, read in doc 10 7.6; nothing stands).
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):

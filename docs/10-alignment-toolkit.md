@@ -1259,6 +1259,26 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-05, finding 106, the three parts of the measurement below, the first two as one rule. `Contradiction`
+says why a project entity's placement makes it not the string's answer on its own: a qualifier the walk resolved to a
+county or above against an entity whose placement does not agree with it (`QualifierAgrees` false), or a qualifier
+that is a level word and nothing else ("Province", "State", "Metropolitan County"; `LevelWord`) against an entity whose
+own TGN record, read where the store candidate's placement comes from and kept as `Candidate.Level`, is of another
+level; a person's label is never read as a placement. The store stage drops such entities before it chooses, in any
+context, after the qualified-context filter it already had; and `CarriedBy`, which now reads the string, no longer
+takes a firm entity as a vote's ground when it contradicts the string and no live member of the group agrees with the
+qualifier, so a string the store stage declined is not voted onto the same entity once the index stage groups it with
+its own records. Where a vote is withheld the entity's reason says so in the evidence ("...: not carried alone (finding
+106)"), for the desk. The third part: a reading whose text is a single letter is queued at once, matching nothing and
+carrying nothing, with the note "a name of one letter is not a name" in its evidence (`Evaluation.Note`); "l" and
+"L (colonnade)" both. Finding106Tests: "Red House (Yorkshire)" against the project's Red House placed at Aldeburgh with
+its LoC heading, ULAN's unplaced record and a LoC lookalike, queued with the entity shown and its reason, and "Harewood
+House (Leeds)" still matched silently to the project's "Harewood House (England)" (the boundary of 2026-10-24: a
+qualifier that resolves to nothing is untouched); "Hannover (Province)" against the project's Hannover aligned to the
+North Dakota one, queued between TGN's two, and "Hannover (City)" still matched; "l" and "L (colonnade)" queued by a run
+with no entity made for the name. Expected from a run (awn284 undone and rerun; the standing diff against awn284 and
+evhvuw): some ten exact-name decisions and "L (colonnade)" to queued, no accepted decision gained, nothing else moving.
+
 Measured 2026-11-05 (the query of the reading below, over awn284 and evhvuw: every exact-name and vote decision whose
 chosen entity's reason says the qualifier was not placed): 31 strings, 16 silent store matches and 15 votes, and the
 two forms are different animals.

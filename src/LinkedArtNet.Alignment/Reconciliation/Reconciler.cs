@@ -66,7 +66,7 @@ public sealed record ReconcileReport(int Considered, int Overridden, int Matched
 /// </summary>
 /// <param name="Truncated">A local index returned more candidates than it was asked for, so the best may not have been seen; such a string is never accepted, only queued.</param>
 /// <param name="Parts">For a decomposed string, the evaluations of the parts reconciled for the first time under it.</param>
-public sealed record Evaluation(Outcome Outcome, StringReading Reading, IReadOnlyList<CandidateGroup> Groups, Override? Override = null, Entity? StoreMatch = null, CandidateGroup? Accepted = null, ScoredCandidate? StoreChoice = null, bool Truncated = false, string? AcceptedMethod = null, IReadOnlyList<Evaluation>? Parts = null)
+public sealed record Evaluation(Outcome Outcome, StringReading Reading, IReadOnlyList<CandidateGroup> Groups, Override? Override = null, Entity? StoreMatch = null, CandidateGroup? Accepted = null, ScoredCandidate? StoreChoice = null, bool Truncated = false, string? AcceptedMethod = null, IReadOnlyList<Evaluation>? Parts = null, string? Note = null)
 {
     /// <summary>The URIs the evaluation points at: the override target, the store entity and its equivalents, or the accepted group's URIs; for a queued string the top group's.</summary>
     public IReadOnlyList<string> TargetUris => Outcome switch
@@ -389,6 +389,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // a list is not looked up itself (an override on the whole still wins above): its parts are, by DecomposeAsync. A compound
         // heading is looked up whole first, and decomposes below when nothing holds it
         if (reading.Shape == PartsShape.List) return new Evaluation(Outcome.Decomposed, reading, []);
+        // a name of one letter is not a name (finding 106, 2026-11-05): "l" in the place field was accepted as an exact single onto TGN's
+        // one "L", a locality in Idaho, and the entity so made then carried "L (colonnade)" in the second pass. Queued, matching nothing
+        // silently and carrying nothing; the desk reads it
+        if (reading.Text.Length == 1 && char.IsLetter(reading.Text[0])) return new Evaluation(Outcome.Queued, reading, [], Note: "a name of one letter is not a name");
 
         // 2. the store: entities already minted whose labels match
         var candidates = new List<Candidate>();
@@ -415,6 +419,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // in a qualified context ("Heaton, Bradford") an entity answers silently only when its qualifier agrees with the string's, or
             // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
+            // in any context, a qualifier the walk resolved to a county or above names a known place, and an entity whose placement
+            // contradicts it is not matched silently; nor is an entity of another level by a qualifier that is a level word ("(Province)")
+            // (finding 106, 2026-11-05; measured over awn284 and evhvuw: sixteen such matches, twelve wrong, Morris's Red House and the
+            // Yorkshire one onto Britten's at Aldeburgh among them, "Hannover (Province)" onto a Hannover in North Dakota). Finding 66's
+            // veto did not reach them: under finding 90 a town is not a place that makes a placement "elsewhere", and the entity's country
+            // is inside the qualifier's chain. A qualifier that resolves to nothing ("Harewood House (Leeds)") is untouched, as the filter
+            // withdrawn on 2026-10-24 asked; the index stage withholds the same entity's vote (CarriedBy), or the string would meet it there
+            storeScored = storeScored.Where(c => Contradiction(reading, c) is null).ToList();
             // in any other context a qualified heading never takes an entity placed elsewhere: "Lincoln (England)" is not the project's
             // "Lincoln, Neb", placed in Nebraska through its TGN equivalent (finding 84, 2026-10-24). The veto in Score does this when the
             // string's qualifier resolves to a known place; a filter on any disagreement was tried the same day and withdrawn, since a
@@ -456,7 +468,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // a rival at acceptance score is a disagreement: another authority, or another provisional lookalike when the top is only a lookalike itself
         var topIsFirm = top is not null && top.Members.Any(m => !m.Veto && !m.Candidate.Provisional);
         var second = live.Skip(1).FirstOrDefault(g => !topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional));
-        var carried = top is null ? null : CarriedBy(top);
+        var carried = top is null ? null : CarriedBy(reading, top);
+        if (top is not null && carried is null && !top.Members.Any(m => !m.Veto && !m.SetAside && m.QualifierAgrees == true))
+            groups = groups.Select(g => g == top ? g with { Members = g.Members.Select(m => Firm(m) && Contradiction(reading, m) is { } why ? m with { Reason = m.Reason + $"; {why}: not carried alone (finding 106)" } : m).ToList() } : g).ToList();
         // outvoted rivals (the owner's policy, 2026-10-21, doc 10 section 7.6): for a place or a concept, a group two independent sources
         // carry beats rivals one source carries at the same score (TGN's Scottish Aberdeen with LoC's "Aberdeen (Scotland)" joined,
         // against four TGN namesakes no LoC heading reaches); never over one of the project's own aligned entities or another
@@ -693,6 +707,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             : reading.IsQualified ? Qualified.Split(e.Label).Qualifier
             : reading.Qualifier is not null ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
         string? placementAncestors = null;
+        int? level = null;
         if (reading.Qualifier is not null)
         {
             // an entity's label may say nothing TGN-shaped about where it is ("Lincoln, Neb"): its TGN equivalent does; and a label's county
@@ -700,7 +715,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // the ancestors walk does for the string's own qualifier (finding 84, 2026-10-24)
             if (placement is null)
                 foreach (var q in e.Equivalents.Where(q => q.Source == "tgn").Take(2))
-                    if (await store.GetAuthorityAsync(q.Uri, ct) is { } tgn && ParentAndType(tgn).Parent is { } parent) { placement = parent; break; }
+                    if (await store.GetAuthorityAsync(q.Uri, ct) is { } tgn && ParentAndType(tgn) is { Parent: { } parent } parentAndType)
+                    {
+                        placement = parent;
+                        // the record's own level, for a qualifier that is a level word (finding 106)
+                        if (parentAndType.PlaceType is { } typeUri) level = Qualified.LevelOf((await store.GetAuthorityAsync(typeUri, ct))?.Label);
+                        break;
+                    }
             // the label's own qualifier, or the placement read from it, with the chain above its first segment that TGN knows as a county
             // or above, kept apart from the placement itself: the comparison reads the placement as written first and the chain only when
             // that fails, so that "(Copenhagen, Denmark)" still places the project's "(Denmark)" (a TGN parent string, ending in "World",
@@ -722,14 +743,16 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var byPossessive = nameScore < 0.90 && e.Class == EntityClass.Group && reading.Classes.Contains(EntityClass.Group) && NameMatcher.PossessiveOf(reading.Text, labels);
         if (byPossessive) nameScore = 0.90;
         return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", nameScore, e.Id, e.Nationalities, provisional, queued, Placement: placement,
-            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null, ByPossessive: byPossessive);
+            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null, ByPossessive: byPossessive, Level: level);
     }
 
     /// <summary>Writes an evaluation: the decision with its evidence and, where needed, the entity.</summary>
     public async Task CommitAsync(string dataset, SourceString s, Evaluation e, string? runId = null, CancellationToken ct = default)
     {
         var reading = e.Reading;
-        var extra = e.Truncated ? new { truncated = true } : null;
+        object? extra = null;
+        if (e.Truncated) extra = new { truncated = true };
+        else if (e.Note is not null) extra = new { note = e.Note };
         switch (e.Outcome)
         {
             case Outcome.Overridden:
@@ -1241,10 +1264,17 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// entity already in the store with authority behind it (vote); one source with an exact name carried by the string's own
     /// dates or placed qualifier (single); or nothing (null).
     /// </summary>
-    private string? CarriedBy(CandidateGroup group)
+    private string? CarriedBy(StringReading reading, CandidateGroup group)
     {
         if (group.Sources.Count >= _options.MinIndependentSources) return DecisionMethod.Vote;
-        if (group.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional)) return DecisionMethod.Vote;
+        // a firm project entity carries a group alone, with the authority behind it; not when the string's qualifier names a known place
+        // or a level that the entity's own placement contradicts and nothing in the group agrees with the qualifier (finding 106,
+        // 2026-11-05): a string the store stage declined for that reason meets the same entity here, grouped with its own records, and
+        // would have been voted onto it all the same. A group with a member the qualifier places ("Waddesdon Manor (Buckinghamshire)"
+        // through LCSH's heading, whose chain reaches the county) is placed, and carries; a qualifier that resolves to nothing ("Downton,
+        // Salisbury" onto the project's "Downton, Wiltshire": eleven such right votes in the place field) leaves the entity's vote as it was
+        var placed = group.Members.Any(m => !m.Veto && !m.SetAside && m.QualifierAgrees == true);
+        if (group.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is not null && !m.Candidate.Provisional && (placed || Contradiction(reading, m) is null))) return DecisionMethod.Vote;
         // the placeholder of a string awaiting review carries nothing: minted with that string's own lifespan and qualifier, it agrees with
         // them by construction, and the second pass had accepted 265 queued strings onto their own placeholders as singles ("Cozens, John
         // Robert, 1752-1798" onto "Cozens, John Robert", finding 93's seventeen among them) (finding 95, 2026-10-24 night, run wy2aqs);
@@ -1254,6 +1284,24 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (best is null) return null;
         return _options.AcceptSingleSourceWithDates && (best.DatesAgree || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97 ? DecisionMethod.Single : null;
     }
+
+    /// <summary>
+    /// Finding 106: why a project entity's placement says it is not the string's answer on its own, or null. A qualifier the walk resolved
+    /// to a county or above ("Yorkshire", "Chichester, England" at England) names a known place, and a placement that does not agree with it
+    /// is elsewhere; a qualifier that is a level word ("Province", "State", "Metropolitan County") names a level, and an entity whose own
+    /// TGN record is of another level is another kind of place. A person's label split at its comma is no placement ("Parkin, Michael").
+    /// </summary>
+    private static string? Contradiction(StringReading reading, ScoredCandidate m)
+    {
+        if (m.Candidate.Class == EntityClass.Person) return null;
+        if (reading.QualifierAncestors is not null) return m.QualifierAgrees == false ? "the qualifier names a known place and the project's entity is placed elsewhere" : null;
+        if (reading.Qualifier is { } q && LevelWord(q) is { } wanted && m.Candidate.Level is { } own && own != wanted)
+            return $"the qualifier names a level ({Qualified.LevelName(wanted)}) and the project's entity is at another ({Qualified.LevelName(own)})";
+        return null;
+    }
+
+    /// <summary>A qualifier that is a level word and nothing else ("Province", "State", "Metropolitan County"): its level, else null.</summary>
+    private static int? LevelWord(string qualifier) => qualifier.Contains(',') || qualifier.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > 2 ? null : Qualified.LevelOf(qualifier);
 
     // ---- entities ------------------------------------------------------------------------------------------------
 

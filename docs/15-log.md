@@ -23,6 +23,18 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-05
+
+The two drifted decisions of awn284 read in evidence (the owner ran the plan's query on return) and found to be one
+gap in two forms, not the run's order: a firm project entity whose placement the string's qualifier contradicts,
+short of finding 66's veto, answered silently in the store stage ("Red House (Yorkshire)" onto Britten's at Aldeburgh,
+made the same run) and carried a vote in the index stage ("L (colonnade)" onto the project's Idaho "L", itself made by
+the bare string "l" as an exact single). Measured over awn284 and evhvuw before anything was built: 16 silent matches,
+12 wrong; 15 votes, 13 right, so the plainer vote condition was declined. Finding 106 built in three parts (doc 10
+7.6): the resolved-qualifier form in both stages (the index stage would otherwise vote a declined entity through its
+own records), the level-word form ("Hannover (Province)" had taken a North Dakota Hannover), and a name of one letter
+matching nothing. Finding106Tests. The run that measures it is the plan's command 2.
+
 ## 2026-10-26
 
 **The record of 2026-10-26** (one day): three runs measured (k22erz, u4ykeu, awn284; queued 3,989 -> 4,048 -> 4,032,

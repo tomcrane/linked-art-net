@@ -61,9 +61,13 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. Finding 106, once the owner says build (doc 10 7.6, "Measured 2026-11-05"; three parts: the resolved-qualifier
-   form in both stages, the level-word form in the store stage, a one-letter name matching nothing), then a run and
-   the standing diff (command 4).
+2. Finding 106 measured by a run (doc 10 7.6, "Built 2026-11-05"): awn284 taken back and its strings decided again
+   (evhvuw's 498 and the desk's own decisions stand, and a run passes over them), then the standing diff of command 4
+   with the new run's id. Expected: some ten exact-name decisions and "L (colonnade)" to queued, no accepted decision
+   gained, nothing else moving. With the workbench stopped:
+
+       dotnet run --project tools/Align -- undo-run --run run-20261026-142043-awn284
+       dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
@@ -303,13 +307,12 @@ and the log (doc 15) records that. The order within an area is rough value.
 - Place drift between runs (2026-10-20, seen again 2026-10-26): the same strings move between runs as the order makes
   entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns in awn284); undo and redo are not
   idempotent on the store side. Look at it with the store-stage work.
-- Finding 106, measured 2026-11-05 and designed in doc 10 7.6, awaiting the owner's word to build: a firm project
-  entity whose placement the string's resolved qualifier contradicts, short of finding 66's veto, answers silently in
-  the store stage (16 such matches in awn284 and evhvuw, 12 wrong: the Aldeburgh Red House for Morris's and the
-  Yorkshire one, London's Soho for Boulton's, Blackheath's St. Martin's for three others) and would carry the same
-  string's vote in the index stage; the plainer vote condition is declined (13 right place-field votes to catch 2).
-  With it: a level-word qualifier ("(Province)", "(State)") against an entity of another level, and a name of one
-  letter ("l", accepted onto TGN's Idaho "L", which then carried "L (colonnade)") matching nothing.
+- Finding 106, built 2026-11-05 (doc 10 7.6), awaiting its run (Commands on return, 2): a firm project entity whose
+  placement the string's resolved qualifier contradicts, or whose level a level-word qualifier contradicts, neither
+  matches silently nor carries a vote alone; a name of one letter matches nothing. Declined with it, on the count: the
+  plainer vote condition (13 right place-field votes to catch 2). Left for the run to show: "Benin (Kingdom)" onto the
+  republic (both nations; the desk's by hand), and whether "New York (State)", declined by the store stage, is then
+  voted onto the city's entity by finding 35's tie-break in the index stage.
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

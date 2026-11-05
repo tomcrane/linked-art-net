@@ -198,7 +198,8 @@ public sealed record Candidate(
     IReadOnlyList<string>? Collections = null,
     string? PlaceType = null,
     bool ByVariant = false,
-    bool ByPossessive = false);
+    bool ByPossessive = false,
+    int? Level = null);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>

@@ -98,7 +98,7 @@ Actions:
 - **Always**: the same, and this exact spelling will mean this from now on in any field. Use it for a spelling that
   recurs.
 - **Same as this**: the string is an entity the project already has.
-- **Something else**: search the project's entities and the indexes for anything not among the candidates.
+- **Something else**: search the project's entities and the indexes for anything not among the candidates. The string's own provisional entity, the one under "Currently", is left out of the results: it is not something else.
 - **Keep as local authority**: none of the candidates is right and the thing is real. Give it the label it should be
   published under and, if useful, a note. The software stops asking about it.
 - **Accept the ticked together**: when two or more cards are the same thing (an auction house in ULAN and the same

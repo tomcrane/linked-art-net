@@ -74,6 +74,12 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("id=\"the-desk\"", guide);
         Assert.Contains("Keep as local authority", guide);
 
+        // the desk's search leaves the string's own placeholder out of the results: it is under "Currently" already
+        var searched = await owner.GetStringAsync($"/p/{ds}/review?id={smith.Id}&q=Smith");
+        var placeholder = (await store.DecisionForAsync(smith.Id))!.EntityId!;
+        Assert.Contains(placeholder, searched); // named under "Currently"
+        Assert.DoesNotContain($"name=\"entity\" value=\"{placeholder}\"", searched); // but no "Same as" onto itself
+
         // look again: the evidence as today's rules give it, deciding nothing
         var again = await owner.GetStringAsync($"/p/{ds}/review?id={smith.Id}&look=true");
         Assert.Contains("under today's rules", again);

@@ -40,7 +40,9 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         if (Item is not null && Item.String.Dataset != Dataset) Item = null;
         if (Item is not null && !string.IsNullOrWhiteSpace(Q))
         {
-            EntityMatches = await Project.Desk.SearchEntitiesAsync(Dataset, Q);
+            // the string's own placeholder is under "Currently" already, and "Same as" onto it would decide nothing: left out of the results
+            // (the owner, 2026-11-05, "Lawrence" beside its own provisional entity; the desk's form of finding 104)
+            EntityMatches = (await Project.Desk.SearchEntitiesAsync(Dataset, Q)).Where(e => e.Id != Item.Entity?.Id).ToList();
             IndexMatches = await Project.Desk.SearchIndexesAsync(Q);
         }
     }

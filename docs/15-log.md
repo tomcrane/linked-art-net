@@ -37,7 +37,9 @@ matching nothing. Finding106Tests. The run that measures it is the plan's comman
 notes at "Mr Stanley": the desk's cards, "Currently" and the search results carry an "entity page" link for each
 project entity, apart from the URI's own link (two things, neither clicked for the other), and the entity page shows
 "In the records" for the strings that resolve to it, so three placeholders of one name can be told apart by what
-they stood in.
+they stood in. And the workbench restyled onto the site's own look (the owner's brief: like the site, for people who
+work in the arts, not something cooked up by AI): the site's tokens and conventions, the workbench's pieces drawn with
+the site's parts; doc 12 section 3.
 
 ## 2026-10-26
 

@@ -36,7 +36,13 @@ undoing, and setting up a new source as a project, are jobs with progress and hi
 ## 3. Where it lives
 
 A separate ASP.NET Razor Pages app, `src/LinkedArtNet.Workbench`, same stack and look as the examples site, talking
-to the PostgreSQL store through `IAlignmentStore` and the reconciler, loaders, shadow and audit as services. It is not
+to the PostgreSQL store through `IAlignmentStore` and the reconciler, loaders, shadow and audit as services. The look
+is the site's own, not a cousin of it (the owner, 2026-11-05: the workbench, like the site, is for people who work in
+the arts and should not look cooked up): the site's stylesheet's tokens and conventions, one grotesque face, near-black
+on paper, one warm accent, category labels in small capitals, a strong rule above each section, square corners, black
+buttons; the workbench's own pieces (the string under review set like a title, the candidate cards each under a rule
+with the best under the accent's, the score as a figure, the file tags as outlined marks, the "entity page" tag as a
+small black button) are drawn with the site's parts, in `wwwroot/site.css`. It is not
 part of the examples site: that site is public, stateless and deterministic; the workbench is signed-in, stateful and
 holds a database connection. It runs on the owner's laptop first (section 10) and is packaged to run anywhere a
 PostgreSQL is.

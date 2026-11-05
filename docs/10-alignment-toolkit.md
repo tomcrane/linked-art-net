@@ -1320,10 +1320,10 @@ day's builds; the standing diff against awn284 and evhvuw, 50 strings, every one
   policy was declined on a group the evidence shows in neither run, cut by the cap of twelve as the thirteenth. What
   came between the runs is finding 105, built 2026-10-26 at 17:17, three hours after awn284: a firm named for the man,
   "Flemings", now meets the bare name at 0.90 as a possessive lookalike, and a group at 0.90 is a rival to the outvoted
-  policy. The policy declines only for a rival of two sources or one holding a firm project entity, so the lookalike is
-  a project entity labelled "Flemings" (Robert Fleming Holdings, the bank, most likely) or two records joined under the
-  name; the plan's query names it. Either way the fix is finding 105's lookalike-as-rival (above), which regains this
-  with Chartwell, Landmark and Still. And the cap is a gap of its own: a group holding a project entity must never be
+  policy. The policy declines only for a rival of two sources or one holding a firm project entity, and the store
+  named it the same evening: the project's own Robert Fleming Holdings Ltd. (sssxdnrx, aligned, LoC's nr96025298 behind
+  it), "Flemings" the bank among its labels, a firm named for the man. The fix is finding 105's lookalike-as-rival
+  (above), which regains this with Chartwell, Landmark and Still. And the cap is a gap of its own: a group holding a project entity must never be
   cut from the evidence (the reason a string was queued must be in its evidence; finding 92's rule, breached here by the
   twelve groups at 1.00 that fill the cap before the thirteenth at 0.90).
 

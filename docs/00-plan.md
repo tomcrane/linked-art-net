@@ -65,15 +65,9 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
    v6gjx5)"; both measuring queries answered the same day (the minting votes cannot carry a contradiction: finding 107's
    set is the two Red Houses; "Fleming"'s ids are on no entity; the two runs' evidence side by side, read the same
    evening, showed the same twelve groups with awn284's rivals annotated "outvoted" and v6gjx5's not, and finding 105,
-   built between the runs, is the difference: a "Flemings" lookalike at 0.90 in a thirteenth group the cap cut). What
-   it left is in section 7 (Reconciler); one query stands, to name the lookalike (a project entity, or two records
-   joined, since the outvoted policy declines for nothing less):
-
-       select 'entity' as kind, id as uri, label, class::text, status::text from entities
-       where dataset = 'pmc' and merged_into is null and exists (select 1 from unnest(normalised_labels) l where l like 'flemings%')
-       union all
-       select 'record', uri, label, source, type from authority_records
-       where exists (select 1 from unnest(normalised_labels) l where l like 'flemings%');
+   built between the runs, is the difference: a "Flemings" lookalike at 0.90 in a thirteenth group the cap cut, named
+   by the store as the project's own Robert Fleming Holdings Ltd., aligned, "Flemings" among its labels). Nothing
+   stands; what it left is in section 7 (Reconciler), three builds measured and waiting on the word.
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
@@ -333,7 +327,8 @@ and the log (doc 15) records that. The order within an area is rough value.
 - "Fleming" (keywords:head) vote to queued in v6gjx5, explained (doc 10 7.6): finding 105's lookalike as a rival, the
   fourth case, "Flemings" at 0.90 in a thirteenth group the evidence's cap of twelve cut (the two runs' evidence shows
   the same twelve groups, awn284's rivals annotated "outvoted" and v6gjx5's not; finding 105 was built between the
-  runs). Regained by the item above; the query of Commands on return, 2, names the lookalike. The cap is a gap of its
+  runs); the lookalike is the project's own Robert Fleming Holdings Ltd. (sssxdnrx, aligned), "Flemings" the bank among
+  its labels, a firm named for the man. Regained by the item above. The cap is a gap of its
   own and goes in with the fix: a group holding a project entity is never cut from the evidence (finding 92's rule,
   that the reason a string was queued is in its evidence): keep entity-holding groups ahead of the twelve, or raise
   the cap for them.

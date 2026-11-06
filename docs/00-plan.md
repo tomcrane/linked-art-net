@@ -321,54 +321,27 @@ and the log (doc 15) records that. The order within an area is rough value.
 - Place drift between runs (2026-10-20, seen again 2026-10-26): the same strings move between runs as the order makes
   entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns in awn284); undo and redo are not
   idempotent on the store side. Look at it with the store-stage work.
-- The whole string as written breaks a tie among persons and bodies, to measure first (2026-11-06, the owner at "Mr
-  Evans" in publisher: nine at 1.00, ordered by nothing but the source's order and the record's id, "Evans, George" the
-  landscapist first; ULAN's 500451791, the auction house, lists "Mr. Evans" as a Provenance Index lookup name and no
-  other of the nine holds the whole string). Finding 91 does this for qualified places only. The measure, before any
-  rule: among queued strings whose top score is tied, how many have exactly one tied record holding the string as
-  written, by field, with examples:
-
-      with q as (select s.id, s.raw, s.normalised, s.context, d.evidence from decisions d join source_strings s on s.id = d.source_string_id
-                 where s.dataset = 'pmc' and d.valid and d.method = 'queued'),
-           tops as (select q.id, q.raw, q.context, q.normalised, (g->>'score')::numeric as score, m->>'uri' as uri
-                    from q cross join lateral jsonb_array_elements(q.evidence->'groups') g cross join lateral jsonb_array_elements(g->'members') m
-                    where (g->>'vetoed') is null and (m->>'veto') is null),
-           best as (select id, max(score) as top from tops group by id),
-           tied as (select t.* from tops t join best b on b.id = t.id and t.score = b.top),
-           counts as (select id, count(distinct uri) as n from tied group by id having count(distinct uri) > 1),
-           whole as (select t.id, t.raw, t.context, c.n, count(distinct t.uri) filter (where a.normalised_labels @> array[t.normalised]) as holding
-                     from tied t join counts c on c.id = t.id left join authority_records a on a.uri = t.uri group by t.id, t.raw, t.context, c.n)
-      select context, count(*) filter (where holding = 1) as one_holds_whole, count(*) as ties,
-             (array_agg(raw order by raw) filter (where holding = 1))[1:10] as examples
-      from whole group by context order by 2 desc;
-
-  Measured 2026-11-06: 178 of 2,423 tied strings have one tied record holding the string as written (keywords:head
-  67 of 263, publisher 53 of 412, corpauthor 32 of 127, keywords 21 of 447, keywords:sub 3, place 2, persauthorfull
-  none of 874, its strings carrying dates and roles no label holds). Two shapes: in the heading fields the string is a
-  LoC or LCSH heading copied whole ("Abbott, Paul, 1960-", "Apollo (Deity)"), the catalogue's own heading against
-  namesakes; in the name fields it is a name as written held by a lookup or display form ("Messrs Robins", but also
-  "Christopher Gibbs", one of two men, and "Bath" as a publisher). A sample of forty read in evidence before the
-  rule's shape is set, with the holding record and the rivals it would beat:
-
-      with q as (select s.id, s.raw, s.normalised, s.context, d.evidence from decisions d join source_strings s on s.id = d.source_string_id
-                 where s.dataset = 'pmc' and d.valid and d.method = 'queued'),
-           tops as (select q.id, q.raw, q.context, q.normalised, (g->>'score')::numeric as score, m->>'uri' as uri
-                    from q cross join lateral jsonb_array_elements(q.evidence->'groups') g cross join lateral jsonb_array_elements(g->'members') m
-                    where (g->>'vetoed') is null and (m->>'veto') is null),
-           best as (select id, max(score) as top from tops group by id),
-           tied as (select t.* from tops t join best b on b.id = t.id and t.score = b.top),
-           counts as (select id, count(distinct uri) as n from tied group by id having count(distinct uri) > 1),
-           whole as (select t.id, t.raw, t.context, c.n,
-                            array_agg(a.source || ' ' || coalesce(a.label, '') || ' <' || t.uri || '>') filter (where a.normalised_labels @> array[t.normalised]) as holds,
-                            array_agg(a.source || ' ' || coalesce(a.label, '')) filter (where not (a.normalised_labels @> array[t.normalised])) as others
-                     from tied t join counts c on c.id = t.id left join authority_records a on a.uri = t.uri
-                     group by t.id, t.raw, t.context, c.n)
-      select context, raw, holds[1] as holds_whole, n as tied, others[1:6] as beats
-      from whole where cardinality(holds) = 1
-      order by random() limit 40;
-
-  The tie's order itself is a smaller thing: ties at the top score could be ordered by fit to the field (a body for
-  publisher) rather than by id, which decides nothing and would put the likelier card first.
+- Findings 108 and 109, measured and waiting on the word (2026-11-06, the owner at "Mr Evans" in publisher: nine at
+  1.00 in id order, "Evans, George" the landscapist first, and ULAN's 500451791, the auction house, bearing "Mr. Evans"
+  as a Provenance Index lookup name). Measured over the 2,423 queued strings whose top score is tied: 178 have one tied
+  record holding the string as written, and a sample of forty read in evidence (doc 15, 2026-11-06) gave the shape.
+  Finding 108, the heading fields (keywords, keywords:head, keywords:sub, place; 93 strings): a tied record of LoC or
+  LCSH whose label is the whole string as written carries the tie, decided as a single ("Mortimer, John (Bookseller)"
+  against ten John Mortimers, "Girtin, Thomas, 1775-1802" against ULAN's two, "St. Clement (Church : Cambridge,
+  England)" against Ipswich's and Saratoga Springs'); twenty of twenty right. Finding 109, the name fields (publisher,
+  corpauthor): a string with an honorific ("Mr", "Messrs", "Mrs") carries the tie when one tied record bears it whole
+  as a name ("Mr Farebrother" to Farebrother, Charles; "Mr Harris" and "Mr Cooper" each against eleven namesakes);
+  twelve of twelve right, with "Mr Hone" to Nathaniel Hone the painter for the owner to judge (the Index's "Mr. Hone",
+  from the sale of his collection; right only if a catalogue's corpauthor may be the owner sold, not the auctioneer).
+  Left out on the sample: the natural-order form ("James Crook", "Christopher Gibbs"), which every ULAN person bears as
+  a display name and no LoC record does, so it favours ULAN and would choose one of two men by nothing; and bodies tied
+  only with a project placeholder ("NewArtCentre", "Academy Gallery"), which are other gaps. Finding 91 is the place
+  form of 108 and stays.
+- The placement join missing LoC's English form against TGN's vernacular label, to measure (seen in the forty: "Crete
+  (Greece)" tied with TGN's Kríti, "Picardy (France)" with Picardie, "Cumberland (England)" with TGN's Cumberland,
+  "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108
+  would take LoC's record alone and lose TGN's id). Count the queued place-field and keywords strings whose top tie
+  holds a LoC heading and a TGN record whose chain contains the heading's parenthetical, before any change to the join.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or
   a qualifier that is no level word means the inhabited place, LoC's own convention; persons stay the desk's. Count the

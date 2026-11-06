@@ -46,7 +46,11 @@ group as accept-together with the override, the rows of a group of several quiet
 desk says the store has changed, a second row for one entity says so; the two desk tests extended. Used at once: two
 rows for one entity had been counted as two entities and sent the owner to a confirm step with nothing to merge; the
 page now asks the plan whether anything merges before it asks the reviewer, and the changed-store line names each
-merge once.
+merge once. Then "Mr Evans" at the desk, nine at 1.00 in id order with the auction house sixth: the whole string as
+written measured over the tied queue (178 of 2,423) and forty read in evidence, giving findings 108 (the heading as
+written carries a tie in the heading fields, twenty of twenty right) and 109 (an honorific string carries a tie when
+one record bears it whole as a name, twelve of twelve, "Mr Hone" for the owner), both on the plan waiting on the word,
+and a join gap beside them (LoC's English form against TGN's vernacular label).
 
 ## 2026-11-05
 

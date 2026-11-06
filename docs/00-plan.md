@@ -342,6 +342,31 @@ and the log (doc 15) records that. The order within an area is rough value.
              (array_agg(raw order by raw) filter (where holding = 1))[1:10] as examples
       from whole group by context order by 2 desc;
 
+  Measured 2026-11-06: 178 of 2,423 tied strings have one tied record holding the string as written (keywords:head
+  67 of 263, publisher 53 of 412, corpauthor 32 of 127, keywords 21 of 447, keywords:sub 3, place 2, persauthorfull
+  none of 874, its strings carrying dates and roles no label holds). Two shapes: in the heading fields the string is a
+  LoC or LCSH heading copied whole ("Abbott, Paul, 1960-", "Apollo (Deity)"), the catalogue's own heading against
+  namesakes; in the name fields it is a name as written held by a lookup or display form ("Messrs Robins", but also
+  "Christopher Gibbs", one of two men, and "Bath" as a publisher). A sample of forty read in evidence before the
+  rule's shape is set, with the holding record and the rivals it would beat:
+
+      with q as (select s.id, s.raw, s.normalised, s.context, d.evidence from decisions d join source_strings s on s.id = d.source_string_id
+                 where s.dataset = 'pmc' and d.valid and d.method = 'queued'),
+           tops as (select q.id, q.raw, q.context, q.normalised, (g->>'score')::numeric as score, m->>'uri' as uri
+                    from q cross join lateral jsonb_array_elements(q.evidence->'groups') g cross join lateral jsonb_array_elements(g->'members') m
+                    where (g->>'vetoed') is null and (m->>'veto') is null),
+           best as (select id, max(score) as top from tops group by id),
+           tied as (select t.* from tops t join best b on b.id = t.id and t.score = b.top),
+           counts as (select id, count(distinct uri) as n from tied group by id having count(distinct uri) > 1),
+           whole as (select t.id, t.raw, t.context, c.n,
+                            array_agg(a.source || ' ' || coalesce(a.label, '') || ' <' || t.uri || '>') filter (where a.normalised_labels @> array[t.normalised]) as holds,
+                            array_agg(a.source || ' ' || coalesce(a.label, '')) filter (where not (a.normalised_labels @> array[t.normalised])) as others
+                     from tied t join counts c on c.id = t.id left join authority_records a on a.uri = t.uri
+                     group by t.id, t.raw, t.context, c.n)
+      select context, raw, holds[1] as holds_whole, n as tied, others[1:6] as beats
+      from whole where cardinality(holds) = 1
+      order by random() limit 40;
+
   The tie's order itself is a smaller thing: ties at the top score could be ordered by fit to the field (a body for
   publisher) rather than by id, which decides nothing and would put the likelier card first.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between

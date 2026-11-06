@@ -99,7 +99,8 @@ entity is placed through its TGN record; every test project green). Run krbnw6 a
 same entity by its own rules with evidence, one ("St Ives (Cornwall)") to read; the last full run is krbnw6. The
 second pass's reasons on a string left queued are not persisted, a desk item. The pass run by the owner at 16:23 (run
 zpcmrz): 2,013 of 2,191 given a record, LoC 1,848, ULAN 807, TGN 150, none ambiguous; the reconcile after it measures
-it.
+it. The owner stopped for the day before that reconcile: section 0 rewritten as the resume point (the measuring run
+first, then St Ives, then the desk), forty-seven commits unpushed, the last full run krbnw6.
 
 ## 2026-11-05
 

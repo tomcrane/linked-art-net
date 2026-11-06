@@ -15,40 +15,43 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-05 evening; the one place to read first)
+## 0. Resume point (written 2026-11-06 evening; the one place to read first)
 
-**On return, in order:** (1) `git push` if the evening's commits are not up (seventeen as of this writing; the last
-is the one that wrote this); (2) the desk, continued: start the workbench (Commands on return, 1) and review from the
-queue, and each thing the desk fails to show, do or get right becomes an item in section 7 and is built, the way
-today's and the 26th's were; the desk items standing (section 7, Workbench and desk) are today's two, the twins that
-share a record (a hint on the card or the search result towards "Same as" or "Accept together", saying which where it
-appears) and the publisher strings without a record behind them, and the 26th's two, the identifier field on "Keep as
-local authority" and no possessive key for a name in capitals; (3) the reconciler's one new item from today, two
-project entities of one name at the top score (three New Yorks between the city's entity and the state's, "Christopher
-Gibbs" between two persons), counted before any rule is built; (4) the Wikidata index's next uses, the crosswalk and
-labels as variants (section 7, sources and indexes); then the open items of section 7 as the owner orders them.
+**On return, in order:** (1) `git push` if the day's commits are not up (forty-seven as of this writing; the last is
+the one that wrote this); (2) the reconcile that measures the pass through Wikidata (Commands on return, 2: undo
+krbnw6, reconcile, the diff of command 4 against krbnw6), read with the entity column, expected the 104 queued strings
+between legacy entities of one name moving onto them and some strings sent to the desk as holders to merge; and "St
+Ives (Cornwall)" read in evidence (command 5); (3) the desk, continued: start the workbench (command 1) and review from
+the queue, each thing the desk fails to show, do or get right becoming an item in section 7 and built; the desk items
+standing (section 7, Workbench and desk): the second pass's reasons on a string it leaves queued not persisted, the
+way from a placeholder's entity page to its own desk page, the twins that share a record, the publisher strings
+without a record, and the 26th's two; (4) the reconciler's items (section 7): a queued string's placeholder taking the
+context's first class (count first), the 113 entities whose item reaches no record of their class (to look at), the
+placement join missing LoC's English form against TGN's vernacular label (count first), the collector and the
+jurisdiction heading cut at its full stop (with the next export); then the open items of section 7 as the owner orders
+them.
 
-**Where things stand.** Branch `de-pmc`, all work committed, every test project green (3,203 tests). Six authority
+**Where things stand.** Branch `de-pmc`, all work committed, every test project green (3,211 tests). Six authority
 sources loaded: the manifest's five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M
-records that carry another authority's id, loaded 2026-10-23 and retyped by the subclass walk on 2026-10-24; not yet
-among the manifest's sources; doc 11 section 8.11); the LoC index's 38,754 "active" headings carry working spans and
-354,991 of its undated person records their Wikidata item's dates (finding 88; every staged mass write to
-`authority_records` ends with `vacuum (analyze)`). The store has had two duplicate passes (292 and 89 merges) and four
-hand merges; the manifest was last refreshed on 2026-10-23 (the home place). The reconciliation cycles ended on
-2026-10-26 (run awn284); runs are occasional since, and a run is measured by its diff against the run before (Commands
-on return, 4), never by the queue count, which is the desk's residue by design. The last full run is cpxv7k
-(2026-11-05 evening: accepted 9,377, queued 4,039, minted 10,876; doc 10 7.6 "Measured 2026-11-05 (run cpxv7k)").
-Today, from the two drifted decisions the owner's query found in awn284: finding 106 (a firm project entity whose
-placement the string's resolved qualifier contradicts, or whose level a level word contradicts, neither matches
-silently nor carries a vote alone; a name of one letter matches nothing), measured by run v6gjx5, which left three
-more; finding 107 (two sources joined only through such an entity do not carry a vote), finding 105's possessive
-lookalike no rival (for the single's second group, the exact-single's count, the outvoted policy), and the evidence
-never cutting a group that holds a project entity, measured by cpxv7k, every one to the string and nothing else moving.
-Findings 1 to 107 are in doc 10 7.6, newest first. Also today, from the owner's notes at the desk: a project entity's
-name links to its page from the cards, "Currently" and the search results, the entity page shows "In the records",
-and the workbench wears the site's own look (doc 12 section 3). The desk radiates through the store: the owner's
-corpauthor decisions of the 26th reached their publisher twins by exact name in v6gjx5, and "Lawrence" in cpxv7k.
-The Wikidata dump and the sitelinks table are on the owner's external drive (`E:\datadumps`).
+records that carry another authority's id; doc 11 section 8.11); the LoC index's "active" headings carry working spans
+and 354,991 of its undated person records their Wikidata item's dates (finding 88; every staged mass write to
+`authority_records` ends with `vacuum (analyze)`). The store has had two duplicate passes and four hand merges, and
+since 16:23 today the pass through Wikidata (run zpcmrz: 2,013 of the 2,191 legacy alignments to Wikidata, VIAF and
+LUX now hold the TGN, LoC, ULAN or LCSH record their item names, method `through-wikidata`, reversible by
+`undo-run`), not yet measured by a reconcile. The manifest was refreshed today with the `trades` key (`manifest
+--use-default`, which now says what it replaces); the workbench rebuilds a project's services when the project row
+changes, so a tool-side save is in force at its next request. Runs are occasional and a run is measured by its diff
+against the run before (command 4), never by the queue count, which is the desk's residue by design. The last full
+run is krbnw6 (2026-11-06 15:36: accepted 9,461, queued 3,938, minted 10,876; doc 10 7.6 "Measured 2026-11-06 (run
+krbnw6)"). Today, from "Mr Evans" at the desk: findings 108 (the heading as written carries a tie in the heading
+fields) and 109 (a name with an honorific carries a tie when one record bears it whole and is a body or of the
+manifest's trades), measured by a98vpa, which also showed them relabelling 77 votes; put behind the acceptance line and
+measured by jr8hf5 (the 77 back, nothing else); finding 110 (a record that lost in the first pass does not answer a
+queued string silently in the second), measured by krbnw6 (five to the desk, fourteen to vote on the same entity by
+the ladder's own rules). Findings 1 to 110 are in doc 10 7.6, newest first. Also today, from the owner at the desk:
+the group is the card with one action, the merge offered at its head with a confirm step only when something merges,
+the desk finishing a name before leaving it, the entity page's signal of waiting strings, the overtaken evidence
+marked (doc 12 section 5, doc 13).
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI and whether records absent from a full dump are retired; the merged-away
@@ -71,12 +74,16 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. ~~Findings 108 and 109 measured by a run~~ (run a98vpa, 2026-11-06 12:56, read in doc 10 7.6 "Measured 2026-11-06
-   (run a98vpa)": 71 queued strings to single as measured, 77 votes relabelled single by the rule sitting before the
-   acceptance line, put behind it the same afternoon; three strings read one by one. Run jr8hf5 at 14:05 measured the
-   fix: the 77 back to vote on the same entities, the diff one row, nothing else moving; doc 10 7.6 "Measured
-   2026-11-06 (run jr8hf5)". The last full run is jr8hf5.)
+2. The reconcile that measures the pass through Wikidata (doc 10 7.6 "Built 2026-11-06, the pass through Wikidata"):
+   krbnw6 taken back (the pass is a run of its own, zpcmrz, and stays), the strings decided again against the
+   enriched entities, then the diff of command 4 against krbnw6. Expected: the 104 queued strings that tied between
+   legacy entities of one name ("Andover", "Antwerp", "Athens", "Birmingham (England)", "Cambridge") moving onto them,
+   by the store stage where the qualifier bears the placement out and by finding 35 where a heading's group holds the
+   entity's record, and some queued still as holders for the desk to merge (two legacy Birminghams of England). With
+   the workbench stopped:
 
+       dotnet run --project tools/Align -- undo-run --run run-20261106-153608-krbnw6
+       dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
@@ -87,7 +94,7 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
    decision per string, since a string the second pass settled has two; an undone run keeps its evidence, though the
    undo removes the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for
    those and true or false only where the entity survived: the desk's, and the ones made before the run undone).
-   A method change on the same entity is a label, not a decision (the 77 of a98vpa):
+   A method change on the same entity is a label, not a decision (the 77 of a98vpa, the 14 of krbnw6):
 
        with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261106-153608-krbnw6' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
@@ -95,6 +102,15 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        from a join b on b.source_string_id = a.source_string_id
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2, 3 order by 4 desc;
+
+5. "St Ives (Cornwall)", exact-name in jr8hf5 and queued in krbnw6 with no word of finding 110 (its reason, if the
+   rule's, was not persisted; section 7, Workbench and desk): the first group of each run's evidence, to see what
+   answered it and what stopped it:
+
+       select d.run_id, d.method, jsonb_pretty(d.evidence->'groups'->0) as first_group
+       from decisions d join source_strings s on s.id = d.source_string_id
+       where s.dataset = 'pmc' and s.raw = 'St Ives (Cornwall)' and d.run_id in ('run-20261106-140520-jr8hf5', 'run-20261106-153608-krbnw6')
+       order by d.id;
 
 ## 1. Objectives (in priority order)
 

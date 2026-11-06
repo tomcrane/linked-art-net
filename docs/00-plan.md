@@ -467,6 +467,27 @@ and the log (doc 15) records that. The order within an area is rough value.
                       and exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source = 'wikidata')
                       and not exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source in ('tgn', 'loc', 'lcsh')));
 
+  Counted (the owner, 2026-11-06, on jr8hf5): different classes 4, the same class 108 (places nearly all: "Andover",
+  "Antwerp", "Athens", "Birmingham", "Cambridge"); 104 of the 108 have an aligned entity with a Wikidata item and no
+  local record among their cards at 1.00; and the join's reach is 2,191 aligned entities of that kind, Person 1,642,
+  Place 453, Group 96, the legacy pipeline's alignments to Wikidata, VIAF and LUX with no TGN, LoC or ULAN id beside
+  them. So the shape proposed is a store-side pass before any rule at evaluation time: for each such entity, the
+  Wikidata record the store already holds (the prominence lookup reads them, source "wikidata", `same_as` carrying
+  the TGN, LoC and ULAN URIs the item links) gives the local records the item is the same as, and the entity gains
+  them as equivalents, marked by their method. Then the existing rules reach the legacy entities unchanged: finding 35
+  takes a heading onto the entity whose TGN record its group holds, the holders check sends two legacy entities of
+  one place to the desk to merge, and the duplicates page can list them. One count first, how far the Wikidata
+  records in the store reach:
+
+      select e.class, count(*) as entities,
+             count(*) filter (where exists (select 1 from entity_equivalents q join authority_records r on r.uri = q.uri where q.entity_id = e.id and q.source = 'wikidata')) as item_in_the_index,
+             count(*) filter (where exists (select 1 from entity_equivalents q join authority_records r on r.uri = q.uri where q.entity_id = e.id and q.source = 'wikidata'
+                                            and exists (select 1 from unnest(r.same_as) u where u like 'http://vocab.getty.edu/%' or u like 'http://id.loc.gov/%'))) as reaching_a_local_record
+      from entities e where e.dataset = 'pmc' and e.status = 'aligned'
+        and exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source = 'wikidata')
+        and not exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source in ('tgn', 'loc', 'lcsh', 'ulan', 'aat'))
+      group by 1 order by 2 desc;
+
 - A queued string's placeholder takes the context's first class (keywords:head: a Type), and a qualified place string's
   placeholder ("Colchester (England)", "Birmingham (England)") is a concept on its entity page until the desk decides it.
   The placeholder's class should follow the reading where the reading is plain: a qualifier that places it, a place.

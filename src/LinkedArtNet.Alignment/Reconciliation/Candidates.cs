@@ -199,7 +199,8 @@ public sealed record Candidate(
     string? PlaceType = null,
     bool ByVariant = false,
     bool ByPossessive = false,
-    int? Level = null);
+    int? Level = null,
+    IReadOnlyList<string>? Labels = null);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>
@@ -340,7 +341,7 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
             // London, England)"), which places the body when the string has a qualifier (finding 70)
             : reading.Qualifier is not null && r.Source == "ulan" ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
         return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, nameScore, null, nationalities, Disambiguated: disambiguated,
-            Placement: placement, Collections: collections, PlaceType: placeType, ByVariant: byVariant, ByPossessive: byPossessive);
+            Placement: placement, Collections: collections, PlaceType: placeType, ByVariant: byVariant, ByPossessive: byPossessive, Labels: r.Labels);
     }
 
     /// <summary>Letters only, two to eight, all capitals but for a plural's trailing "s": "SCOTS", "RIBA", and LoC's "SCOTs" (2026-10-22, the owner's query).</summary>

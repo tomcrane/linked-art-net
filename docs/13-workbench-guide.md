@@ -176,6 +176,12 @@ The manifest is the project's reading rules, shown and edited on the project pag
   only candidate there is. On by default, since the alternative is a queue too long to work; such decisions carry the
   method `exact-single` and the project page offers them for review as a set.
 - `sources`: which indexes to consult, in order.
+- `homePlace`: where the project's places mostly are ("United Kingdom"), so a county name several countries share
+  resolves to the one here.
+- `trades`: the trades of the catalogue as an authority record's biography names them ("auction", "dealer",
+  "bookseller" for a sale-catalogue library). A name with an honorific, "Mr Farebrother", that one tied record bears
+  whole as a name is accepted when the record is a body or a person of one of these trades; a person of no listed
+  trade is shown on the desk and left to the reviewer. Empty, no person is accepted by it.
 
 Above the editor, *In effect now* says what the project is being read with: no manifest (anything goes), the PMC
 library rules as the toolkit currently defines them, or the project's own rules and how they differ from those. The

@@ -54,7 +54,11 @@ The Wikidata dump and the sitelinks table are on the owner's external drive (`E:
 team whether a source reload replaces by URI and whether records absent from a full dump are retired; the merged-away
 identifiers (`merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX
 merges its copies; a reviewed Wikidata contribution export of confirmed local authorities belongs beside it (section 7,
-exports and reports). Open question 7 (section 6). Every decision taken is in doc 10 section 13 and the log.
+exports and reports). 16, *"Mr Hone"* (finding 109, 2026-11-06): whether a sale catalogue's corpauthor or publisher may
+be the owner whose collection was sold, as the Provenance Index names him ("Mr. Hone" on Nathaniel Hone the painter),
+or is always the auctioneer; a specialist's question, the owner says, and PMC's own. Until it is answered the rule
+carries a person's Index name only when his biography names one of the manifest's `trades`, and Hone's kind stays
+queued, the match shown on the card. Open question 7 (section 6). Every decision taken is in doc 10 section 13 and the log.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store; the
 answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 section 8.11).
@@ -321,22 +325,11 @@ and the log (doc 15) records that. The order within an area is rough value.
 - Place drift between runs (2026-10-20, seen again 2026-10-26): the same strings move between runs as the order makes
   entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns in awn284); undo and redo are not
   idempotent on the store side. Look at it with the store-stage work.
-- Findings 108 and 109, measured and waiting on the word (2026-11-06, the owner at "Mr Evans" in publisher: nine at
-  1.00 in id order, "Evans, George" the landscapist first, and ULAN's 500451791, the auction house, bearing "Mr. Evans"
-  as a Provenance Index lookup name). Measured over the 2,423 queued strings whose top score is tied: 178 have one tied
-  record holding the string as written, and a sample of forty read in evidence (doc 15, 2026-11-06) gave the shape.
-  Finding 108, the heading fields (keywords, keywords:head, keywords:sub, place; 93 strings): a tied record of LoC or
-  LCSH whose label is the whole string as written carries the tie, decided as a single ("Mortimer, John (Bookseller)"
-  against ten John Mortimers, "Girtin, Thomas, 1775-1802" against ULAN's two, "St. Clement (Church : Cambridge,
-  England)" against Ipswich's and Saratoga Springs'); twenty of twenty right. Finding 109, the name fields (publisher,
-  corpauthor): a string with an honorific ("Mr", "Messrs", "Mrs") carries the tie when one tied record bears it whole
-  as a name ("Mr Farebrother" to Farebrother, Charles; "Mr Harris" and "Mr Cooper" each against eleven namesakes);
-  twelve of twelve right, with "Mr Hone" to Nathaniel Hone the painter for the owner to judge (the Index's "Mr. Hone",
-  from the sale of his collection; right only if a catalogue's corpauthor may be the owner sold, not the auctioneer).
-  Left out on the sample: the natural-order form ("James Crook", "Christopher Gibbs"), which every ULAN person bears as
-  a display name and no LoC record does, so it favours ULAN and would choose one of two men by nothing; and bodies tied
-  only with a project placeholder ("NewArtCentre", "Academy Gallery"), which are other gaps. Finding 91 is the place
-  form of 108 and stays.
+- ~~Findings 108 and 109~~ (built 2026-11-06, doc 10 7.6 "Built 2026-11-06, findings 108 and 109": the heading as written
+  carries a tie in the heading fields, a name with an honorific carries a tie when one tied record bears it whole as a
+  name and is of the trade, the manifest's `trades`; the natural-order form and the placeholder ties left out;
+  measured by the next run, the standing diff of command 4, expected some 140 queued strings to single. The saved
+  manifest lacks `trades` until `manifest --use-default` is run, which the run needs first).
 - The placement join missing LoC's English form against TGN's vernacular label, to measure (seen in the forty: "Crete
   (Greece)" tied with TGN's Kríti, "Picardy (France)" with Picardie, "Cumberland (England)" with TGN's Cumberland,
   "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108

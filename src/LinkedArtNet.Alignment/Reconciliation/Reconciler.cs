@@ -33,6 +33,8 @@ public sealed record ReconcilerOptions
     public int MaxPersonLifetimeYears { get; init; } = 120;
     /// <summary>Where the dataset's places mostly are ("United Kingdom"): when a qualifier's name is a county in several countries ("Essex"), the one here is meant (finding 71).</summary>
     public string? HomePlace { get; init; }
+    /// <summary>The trades of the catalogue, as a record's biography names them ("auctioneer", "dealer"), from the project's manifest: a person of one of them bearing a name with an honorific whole is carried by finding 109; empty, persons never are.</summary>
+    public IReadOnlyList<string> Trades { get; init; } = [];
     /// <summary>
     /// Prominence for the famous-name ties among places (finding 85, 2026-10-24): when groups two sources carry tie at acceptance score and no
     /// project entity is among them, the group whose Wikidata item has at least this many sitelinks, and at least <see cref="ProminenceRatio"/>
@@ -552,6 +554,49 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 return new Evaluation(Outcome.Accepted, reading, groups, Accepted: annotated, AcceptedMethod: DecisionMethod.Vote);
             }
         }
+        // the string as written carries a tie (findings 108 and 109, 2026-11-06; the owner at "Mr Evans" in publisher: nine at 1.00 in id
+        // order, the auction house sixth, bearing "Mr. Evans" as a Provenance Index lookup name; measured over the 2,423 tied queued strings
+        // and forty read in evidence, doc 10 7.6). 108: a heading as written, qualified or dated, that one tied record of a heading source
+        // (LoC, LCSH) bears whole is the catalogue's own cataloguing, and that record is the one it meant ("Mortimer, John (Bookseller)"
+        // against ten John Mortimers, "Girtin, Thomas, 1775-1802" against ULAN's two; twenty of twenty right). 109: a name with an honorific
+        // ("Mr Farebrother") that one tied record bears whole as a name is the Provenance Index's own reading of the sale catalogues,
+        // carried when the record is a body or a person whose biography names a trade of the catalogue, the manifest's `trades`, the
+        // project's knowledge and not the toolkit's; a painter bearing "Mr. Hone" from the sale of his collection is shown and left to
+        // the desk, the question being a specialist's. Neither over a project entity
+        // (finding 35), and never the natural-order form every ULAN person bears as a display name, which would choose between two men by
+        // nothing ("Christopher Gibbs")
+        if (top is not null && (reading.Qualifier is not null || reading.HasLifespan || reading.Agent is { Honorifics.Count: > 0 }))
+        {
+            static string Written(string x) => StringKey.Bare(StringKey.Normalise(x)); // the index's bare form: "Mr. Evans" and "Mr Evans" are one
+            var key = Written(reading.String.Raw);
+            var heading = reading.Qualifier is not null || reading.HasLifespan;
+            bool AtTopAny(CandidateGroup g) => g.Score >= top.Score - 0.001 && g.Score >= _options.AcceptScore;
+            bool Bears(ScoredCandidate m) => !m.Veto && !m.SetAside && m.Candidate.EntityId is null && (!heading || m.Candidate.Source is "loc" or "lcsh")
+                && (m.Candidate.Labels ?? (m.Candidate.Label is null ? [] : [m.Candidate.Label])).Any(l => Written(l) == key);
+            var tied = live.Where(AtTopAny).ToList();
+            var holders = tied.Where(g => g.Members.Any(Bears)).ToList();
+            if (tied.Count >= 2 && holders.Count == 1 && !live.Any(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm)))
+            {
+                var holder = holders[0];
+                var bearer = holder.Members.First(Bears);
+                var borne = (bearer.Candidate.Labels ?? [bearer.Candidate.Label ?? ""]).First(l => Written(l) == key);
+                var finding = heading ? 108 : 109;
+                // groups and members are matched by URI: the annotations above have rebuilt the group records since `live` was taken
+                static string K(CandidateGroup g) => string.Join("|", g.Uris);
+                var tiedKeys = tied.Select(K).ToHashSet(StringComparer.Ordinal);
+                var holderKey = K(holder);
+                if (heading || bearer.Candidate.Class == EntityClass.Group || await InTheTradeAsync(bearer.Candidate.Uri, ct))
+                {
+                    groups = groups.Select(g => K(g) == holderKey
+                        ? g with { Members = g.Members.Select(m => m.Candidate.Uri == bearer.Candidate.Uri ? m with { Reason = m.Reason + $"; bears the string as written ({borne}): carries the tie (finding {finding})" } : m).ToList() }
+                        : tiedKeys.Contains(K(g)) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; the string as written is borne elsewhere ({borne}; finding {finding})" }).ToList() } : g).ToList();
+                    if (includeStore && await HoldersAsync(dataset, holder.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+                    var annotated = groups.First(g => K(g) == holderKey);
+                    return new Evaluation(Outcome.Accepted, reading, groups, Accepted: annotated, AcceptedMethod: DecisionMethod.Single);
+                }
+                groups = groups.Select(g => K(g) == holderKey ? g with { Members = g.Members.Select(m => m.Candidate.Uri == bearer.Candidate.Uri ? m with { Reason = m.Reason + $"; bears the string as a name ({borne}): a Provenance Index name of a person outside the trade, for the desk (finding 109)" } : m).ToList() } : g).ToList();
+            }
+        }
         // prominence breaks the famous-name tie among places (finding 85, 2026-10-24; doc 11 section 8.11): "Sheffield" in keywords:sub ties
         // between TGN's English city with LoC's heading and Alabama's, Ohio's and Massachusetts' Sheffields each with a LoC heading placed
         // through, and nothing on an unqualified string separates them; Wikidata's items, reached through the candidates' URIs in their
@@ -748,7 +793,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var byPossessive = nameScore < 0.90 && e.Class == EntityClass.Group && reading.Classes.Contains(EntityClass.Group) && NameMatcher.PossessiveOf(reading.Text, labels);
         if (byPossessive) nameScore = 0.90;
         return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", nameScore, e.Id, e.Nationalities, provisional, queued, Placement: placement,
-            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null, ByPossessive: byPossessive, Level: level);
+            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null, ByPossessive: byPossessive, Level: level, Labels: labels.ToList());
     }
 
     /// <summary>Writes an evaluation: the decision with its evidence and, where needed, the entity.</summary>
@@ -1263,6 +1308,18 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     }
 
     private static CandidateGroup Group(IReadOnlyList<ScoredCandidate> members) => Groups(members)[0];
+
+    /// <summary>Finding 109: whether a record's biography names one of the project's trades (the manifest's <c>trades</c>: an auctioneer, a dealer, a bookseller for a sale-catalogue library), which makes a Provenance Index name of the person the catalogue's own naming of him.</summary>
+    private async Task<bool> InTheTradeAsync(string uri, CancellationToken ct)
+    {
+        if (_options.Trades.Count == 0) return false;
+        var record = await store.GetAuthorityAsync(uri, ct);
+        if (record?.DataJson is not { } data) return false;
+        using var doc = System.Text.Json.JsonDocument.Parse(data);
+        if (!doc.RootElement.TryGetProperty("description", out var d) || d.ValueKind != System.Text.Json.JsonValueKind.String) return false;
+        var text = (d.GetString() ?? "").ToLowerInvariant();
+        return _options.Trades.Any(t => text.Contains(t.ToLowerInvariant(), StringComparison.Ordinal));
+    }
 
     /// <summary>
     /// What carries an acceptable-scoring group, as the decision method it is recorded under: independent sources agreeing, or an

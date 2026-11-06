@@ -146,13 +146,14 @@ public class SecondPassTests(PostgresFixture pg)
         // finding 102 (2026-10-26, run u4ykeu): "Rug Chapel (Corwen, Wales)" was queued between LoC's two headings placed at Corwen, "Rug
         // Chapel" and "Capel y Rug"; in the second pass its own placeholder, labelled from the string and so placed at Corwen too, came back
         // as a store candidate, both headings were "placed through" it into one group, and the single was accepted onto the placeholder.
-        // A placeholder awaiting review holds nothing; the string stays the desk's
+        // A placeholder awaiting review holds nothing; the string stays the desk's. (The string here is "Rug Chapel (Corwen)", not the
+        // heading as written, which finding 108 would decide onto LoC's no99002269 since 2026-11-06)
         var ds = "pp" + Guid.NewGuid().ToString("N")[..6];
         var scheme = new IdentifierScheme("https://data.example.org/" + ds);
         static AuthorityRecord Placed(string uri, string label, params string[] variants) => new(uri, "loc", label, [label, Qualified.Split(label).Name, .. variants], "Place", null, [], null, DateTimeOffset.UtcNow, "test");
         await pg.Store.PutAuthorityAsync(Placed("http://id.loc.gov/authorities/names/no99002269", "Rug Chapel (Corwen, Wales)"));
         await pg.Store.PutAuthorityAsync(Placed("http://id.loc.gov/authorities/names/no2019049001", "Capel y Rug (Corwen, Wales)", "Rug Chapel"));
-        var rug = await pg.Store.CollectAsync(ds, "keywords", "Rug Chapel (Corwen, Wales)");
+        var rug = await pg.Store.CollectAsync(ds, "keywords", "Rug Chapel (Corwen)");
         var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
         var report = await reconciler.RunAsync(ds, runId: "run-test-placeholder-holds");
         Assert.Equal(1, report.Queued); Assert.Equal(0, report.Accepted); Assert.Equal(0, report.Settled);

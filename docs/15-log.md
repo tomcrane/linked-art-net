@@ -50,7 +50,11 @@ merge once. Then "Mr Evans" at the desk, nine at 1.00 in id order with the aucti
 written measured over the tied queue (178 of 2,423) and forty read in evidence, giving findings 108 (the heading as
 written carries a tie in the heading fields, twenty of twenty right) and 109 (an honorific string carries a tie when
 one record bears it whole as a name, twelve of twelve, "Mr Hone" for the owner), both on the plan waiting on the word,
-and a join gap beside them (LoC's English form against TGN's vernacular label).
+and a join gap beside them (LoC's English form against TGN's vernacular label). Both built on the word the same day
+(doc 10 7.6 "Built 2026-11-06, findings 108 and 109"; Finding108Tests), 109 in the cautious form, the Hone question
+owed to a specialist (plan section 0, decision 16); the next run measures them. The trades had gone into the reconciler
+as a regex and the owner asked where a PMC rule was kept: they are the manifest's `trades` now (PmcDefault lists them,
+an empty list carries no person, the manifest command reports the drift), guide and docs told.
 
 ## 2026-11-05
 

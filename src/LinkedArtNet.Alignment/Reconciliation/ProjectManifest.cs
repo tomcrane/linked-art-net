@@ -20,6 +20,13 @@ public sealed record ProjectManifest
     public bool MintWhenNothingFound { get; init; } = true;
     /// <summary>Where the dataset's places mostly are, for a qualifier TGN knows in several countries (finding 71).</summary>
     public string? HomePlace { get; init; }
+    /// <summary>
+    /// The trades of the catalogue, as a record's biography names them ("auctioneer", "dealer"): a name with an honorific ("Mr Farebrother")
+    /// that one tied record bears whole is carried when the record is a body, or a person of one of these trades (finding 109); a person of
+    /// no listed trade is shown and left to the desk. Project knowledge, not the toolkit's: a sale-catalogue library's list is not a museum's.
+    /// Empty, persons are never carried by it.
+    /// </summary>
+    public List<string> Trades { get; init; } = [];
     /// <summary>The local indexes to consult, in order.</summary>
     public List<string> Sources { get; init; } = ["ulan", "aat", "tgn", "loc", "lcsh"];
 
@@ -38,6 +45,7 @@ public sealed record ProjectManifest
         AcceptUniqueExactSingleSource = AcceptUniqueExactSingleSource,
         MintWhenNothingFound = MintWhenNothingFound,
         HomePlace = HomePlace,
+        Trades = Trades,
         Contexts = Contexts.ToDictionary(kv => kv.Key, kv => kv.Value.ToRule(), StringComparer.OrdinalIgnoreCase),
     };
 
@@ -45,6 +53,7 @@ public sealed record ProjectManifest
     public static ProjectManifest PmcDefault => new()
     {
         HomePlace = "United Kingdom", // a British art library's places (finding 71)
+        Trades = ["auction", "dealer", "bookseller", "book seller", "printseller", "print seller", "publisher", "stationer"], // the sale catalogues' own trades (finding 109)
         Contexts = new Dictionary<string, ContextRuleJson>(StringComparer.OrdinalIgnoreCase)
         {
             ["persauthorfull"] = new([EntityClass.Person], "default"),
@@ -78,6 +87,7 @@ public sealed record ProjectManifest
             || AcceptSingleSourceWithDates != other.AcceptSingleSourceWithDates || AcceptUniqueExactSingleSource != other.AcceptUniqueExactSingleSource || MintWhenNothingFound != other.MintWhenNothingFound)
             d.Add("the thresholds or policies");
         if (!string.Equals(HomePlace, other.HomePlace, StringComparison.Ordinal)) d.Add($"the home place ({HomePlace ?? "none"} against {other.HomePlace ?? "none"})");
+        if (!Trades.SequenceEqual(other.Trades, cmp)) d.Add($"the trades ({(Trades.Count == 0 ? "none" : string.Join(", ", Trades))} against {(other.Trades.Count == 0 ? "none" : string.Join(", ", other.Trades))})");
         return d;
     }
 }

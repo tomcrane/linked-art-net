@@ -1259,6 +1259,38 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-06, findings 108 and 109: the string as written carries a tie (the owner at "Mr Evans" in publisher: nine
+candidates at 1.00, ordered by nothing but the source's order and the record's id, "Evans, George" the landscapist first
+and ULAN's 500451791, the auction house, sixth, bearing "Mr. Evans" as a Provenance Index lookup name). Measured over the
+2,423 queued strings whose top score is tied: 178 have one tied record holding the string as written (keywords:head 67 of
+263, publisher 53 of 412, corpauthor 32 of 127, keywords 21 of 447, keywords:sub 3, place 2; persauthorfull none of 874,
+its strings carrying dates and roles no label holds), and forty read in evidence gave two shapes.
+
+- Finding 108, the heading as written: a string that is qualified or dated, which one tied record of a heading source
+  (LoC, LCSH) bears whole, is the catalogue's own cataloguing, and that record is the one it meant: "Mortimer, John
+  (Bookseller)" against ten John Mortimers, "Girtin, Thomas, 1775-1802" against ULAN's two, "St. Clement (Church :
+  Cambridge, England)" against Ipswich's and Saratoga Springs', "Northampton (England)" against the rural district, the
+  dioceses and TGN's; twenty of twenty right in the sample, 93 strings. Decided as a single, carried by what the string
+  says about itself. Finding 91 is its form for qualified places among two-source groups and stays. One cost seen: in the
+  place cases the rival is often the same place under TGN's vernacular label ("Crete (Greece)" against Kríti, "Picardy
+  (France)" against Picardie), the placement join having missed, so the entity gets LoC's identifier alone; a join gap
+  on the plan, not a reason to withhold the rule.
+- Finding 109, the name with an honorific: a string the parser read past an honorific ("Mr Farebrother", "Messrs
+  Robins"), which one tied record bears whole as a name, is the Provenance Index's own reading of the sale catalogues
+  ("Mr. Farebrother" on Farebrother, Charles, the auctioneer; "Mr Harris" and "Mr Cooper" each against eleven
+  namesakes); twelve of twelve right in the sample. Carried when the record is a body, or a person whose biography
+  names a trade of the catalogue, the manifest's `trades` (PMC's: auction, dealer, bookseller, printseller, publisher,
+  stationer), project knowledge and not the toolkit's (the owner, 2026-11-06); a manifest listing none carries no
+  person by the rule. Otherwise shown on
+  the card and left to the desk: "Mr Hone" bears "Mr. Hone" on Nathaniel Hone the painter, from the sale of his
+  collection, and whether a catalogue's corpauthor or publisher may be the owner sold is a specialist's question the
+  owner declined to answer (section 0, decisions owed). Decided as a single.
+- Left out on the sample: the natural-order form ("James Crook", "Christopher Gibbs"), which every ULAN person bears as a
+  display name and no LoC record does, so it favours ULAN and would choose between two men by nothing; and bodies tied
+  only with a project placeholder ("NewArtCentre", "Academy Gallery"), which are other gaps. Neither finding acts over a
+  project entity at acceptance score (finding 35), and the holders check stands. Finding108Tests; measured by the next
+  run.
+
 Measured 2026-11-05 (run cpxv7k, the evening's run: v6gjx5 undone and its strings decided again, 46,299 considered, the
 standing diff against v6gjx5). The build's five, to the string, and nothing else moving: "Red House (Yorkshire)" and
 "Red House (Bexleyheath, Kent)" from vote to queued (finding 107); "Still" and "Fleming" from queued to vote, "Chartwell

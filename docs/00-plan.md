@@ -218,6 +218,15 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
+- The desk finishes a name before it leaves it (2026-11-06, the owner after the first merge at "Chris Beetles Ltd": the
+  desk moved on to the next string in the list, and the person placeholder's own "Chris Beetles" and the other queued
+  strings of the name were still waiting). On every item, "Also waiting under this name": the other queued strings
+  whose key matches the string's reading or the entity's labels, each a link with its field. After an action the desk
+  goes to those first, in list order, the banner saying so ("next: 'Chris Beetles' in persauthorfull, also under this
+  name, 2 more"), and moves on down the list only when none is left. Nothing decided for the reviewer: the siblings
+  keep their own cards, and a card naming an entity since merged follows the merge to the survivor already. The
+  general form of the twins item below (the strings that share a name, not only a record); a store lookup of queued
+  strings by normalised key is the one new piece.
 - ~~A group that holds two of the project's own entities~~ (built 2026-11-06, the owner at "Chris Beetles Ltd": every
   card of the project's own says its class and status, what put it in its group and what it stands for, with the
   records behind it; a group holding two firm entities of ours says the store disagrees with itself and offers the

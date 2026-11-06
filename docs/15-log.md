@@ -32,7 +32,9 @@ proposed and recorded in plan section 7 (Workbench and desk): the class and the 
 page's facts in a line, and the merge offered at the head of such a group as its own action with a confirm step. Built
 on the owner's word the same morning (ReviewService: EntityFacts on the item, PlanTogetherAsync, AcceptTogetherAsync
 merging on the reviewer's word; the desk's cards, group head and confirm panel; the guide), with a service test and a
-page test; every test project green.
+page test; every test project green. Used at once, and the owner found the desk moving on while the name still had
+work in the queue (the person placeholder's string, the other fields' strings): the desk finishing a name before it
+leaves it is the next desk item, recorded in plan section 7.
 
 ## 2026-11-05
 

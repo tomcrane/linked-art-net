@@ -35,7 +35,8 @@ merging on the reviewer's word; the desk's cards, group head and confirm panel; 
 page test; every test project green. Used at once, and the owner found the desk moving on while the name still had
 work in the queue (the person placeholder's string, the other fields' strings): the desk finishing a name before it
 leaves it was built on the word the same morning ("Also waiting under this name" on the item and the entity page, the
-next item drawn from them first; the store's queued-by-key lookup; the two desk tests extended).
+next item drawn from them first; the store's queued-by-key lookup; the two desk tests extended). And the entity
+page signals the waiting strings beside its title, a mark that jumps to the list (the owner's tiny improvement).
 
 ## 2026-11-05
 

@@ -255,6 +255,7 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("persauthorfull", next);
         var page = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(limited.Id)}");
         Assert.Contains("Waiting at the desk under this name (1)", page);
+        Assert.Contains("1 waiting at the desk", page); // and the signal at the top of the page, beside the title (the owner, 2026-11-06)
         Assert.Contains($"review?id={man.Id}", page);
     }
 

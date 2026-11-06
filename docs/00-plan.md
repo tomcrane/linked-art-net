@@ -218,6 +218,14 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
+- One action per group (2026-11-06, the owner at the next Chris Beetles string: a group of four, ULAN's and LoC's
+  records and the two store rows that are now one entity holding both, with ten actions on its rows and a tick on each,
+  when the natural step is one action on the group; and "card" in the hint read as the row, not the box). The group's
+  header carries the action: "Same as X" when it holds one of the project's entities (giving X any record of the group
+  it does not yet hold), "Accept these as one" when it holds records only, "Always, in this field" beside it at group
+  level; one "together" tick per group, in the header, so the tick means what the hint says (these groups are one
+  thing); a group of one keeps its row's actions; rows in a group of several carry a quiet "just this one" link and no
+  buttons. The hint, the help and the guide say "group", not "card", for the box. Goes in with the item below.
 - Evidence overtaken by a merge (2026-11-06, the owner at the next Chris Beetles string: three store cards with three
   URIs, the survivor, the entity merged into it that morning and the placeholder folded in, each with the survivor's
   facts line and the run's old label and reason, "a placeholder awaiting review: carries nothing" among them; the

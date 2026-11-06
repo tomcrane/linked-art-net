@@ -39,7 +39,8 @@ next item drawn from them first; the store's queued-by-key lookup; the two desk 
 page signals the waiting strings beside its title, a mark that jumps to the list (the owner's tiny improvement). At the
 next Chris Beetles string the owner asked what each path would do, five cards that were by then one entity under three
 URIs with the run's old reasons: every path lands on the survivor, and the desk's failure to say so is the next desk
-item (plan section 7: evidence overtaken by a merge).
+item (plan section 7: evidence overtaken by a merge). And at the same group, ten actions on the rows of a box that is
+one thing, and "card" read as the row: one action per group, the tick on the group, the rows quiet (plan section 7).
 
 ## 2026-11-05
 

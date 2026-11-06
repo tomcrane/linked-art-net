@@ -370,6 +370,17 @@ and the log (doc 15) records that. The order within an area is rough value.
       select count(*) filter (where held is null) as record_not_a_candidate, count(*) filter (where held < top) as record_below_top, count(*) filter (where held >= top) as record_at_top,
              (array_agg(s.raw || ' -> ' || coalesce(e.label, '?') order by s.raw) filter (where held is null or held < top))[1:12] as examples
       from g join source_strings s on s.id = g.source_string_id join entities e on e.id = g.entity_id;
+
+  Counted on jr8hf5 (the owner, 2026-11-06): 73 at the top, 11 onto an entity with no records (provisional lookalikes,
+  the standing policy, no rule), 7 below the top, read by name: four right ("Boughton House", "Sudeley Castle",
+  "Western Isles" to the project's place of the name, its heading at 0.85 for the qualifier the string lacks; "Messrs
+  Ellis & Smith" to Ellis & Smith) and three wrong ("Apollo" in publisher to the deity under ULAN's body at 1.00;
+  "City Art Gallery, Leeds" to a City Art Gallery of no city; "Sarah Roberts" in natural order to a dated "Roberts,
+  Sarah"). No score separates the four from the three (Apollo and the three places all at 0.85), so the rule proposed
+  is the plain one: in the second pass an entity with records behind it answers a queued string silently only when
+  the string's own index stage puts one of its records at the top score; otherwise the string stays queued with the
+  entity shown on its first card. Seven strings, four of them a click each at the desk, three silent errors stopped.
+  Waiting on the owner's word.
 - The placement join missing LoC's English form against TGN's vernacular label, to measure (seen in the forty: "Crete
   (Greece)" tied with TGN's Kríti, "Picardy (France)" with Picardie, "Cumberland (England)" with TGN's Cumberland,
   "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108

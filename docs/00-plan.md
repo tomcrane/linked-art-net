@@ -354,6 +354,24 @@ and the log (doc 15) records that. The order within an area is rough value.
       select count(*), count(*) filter (where e.status = 'provisional') as onto_provisional, (array_agg(s.raw || ' -> ' || coalesce(e.label, '?') order by s.raw))[1:12] as examples
       from x join source_strings s on s.id = x.source_string_id join entities e on e.id = x.entity_id
       where lower(coalesce(e.label, '')) <> lower(s.raw);
+
+  Counted on a98vpa (the owner, 2026-11-06): 87, three onto provisional entities, and the examples mostly the good
+  radiating of a qualified entity's bare name ("Abbotsford" to Abbotsford (Roxburghshire), "Chester" to Chester
+  (England), "Boughton House" to the Northamptonshire one, "[Farebrother]" to the auctioneer), with Apollo's shape
+  and one class crossing ("Cawdor Castle (Tourism) Ltd" to the castle) among them. The sharper count, after the next
+  run: of these, the ones whose first pass had a live group at the top score the entity's own records were not in
+  (Apollo's: the deity scored 0.85 under two at 1.00), which is the shape to rule on; the rest stand:
+
+      with q as (select distinct on (source_string_id) source_string_id, evidence from decisions where run_id = '<run id>' and method = 'queued' order by source_string_id, id),
+           x as (select d.source_string_id, d.entity_id from decisions d join q using (source_string_id) where d.run_id = '<run id>' and d.method = 'exact-name' and d.valid),
+           g as (select x.source_string_id, x.entity_id,
+                   max((grp->>'score')::numeric) filter (where coalesce(grp->>'vetoed', 'false') <> 'true') as top,
+                   max((grp->>'score')::numeric) filter (where coalesce(grp->>'vetoed', 'false') <> 'true'
+                     and exists (select 1 from jsonb_array_elements(grp->'members') m join entity_equivalents eq on eq.uri = m->>'uri' where eq.entity_id = x.entity_id)) as held
+                 from x join q using (source_string_id), jsonb_array_elements(q.evidence->'groups') grp group by 1, 2)
+      select count(*) filter (where held is null) as record_not_a_candidate, count(*) filter (where held < top) as record_below_top, count(*) filter (where held >= top) as record_at_top,
+             (array_agg(s.raw || ' -> ' || coalesce(e.label, '?') order by s.raw) filter (where held is null or held < top))[1:12] as examples
+      from g join source_strings s on s.id = g.source_string_id join entities e on e.id = g.entity_id;
 - The placement join missing LoC's English form against TGN's vernacular label, to measure (seen in the forty: "Crete
   (Greece)" tied with TGN's Kríti, "Picardy (France)" with Picardie, "Cumberland (England)" with TGN's Cumberland,
   "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108
@@ -374,6 +392,14 @@ and the log (doc 15) records that. The order within an area is rough value.
              from jsonb_array_elements(d.evidence->'groups') g, jsonb_array_elements(g->'members') m
              where coalesce(g->>'vetoed', 'false') <> 'true' and m->>'stage' = 'store'
                and m->>'uri' like 'https://data.paul-mellon-centre.ac.uk/%' and m->>'uri' not like '%/unrec_%') >= 2;
+
+  Counted on a98vpa (the owner, 2026-11-06): 35, all of them place names ("Birmingham (England)", "Birmingham (West
+  Midlands)", "Cambridge" twice, "Colchester (England)", "Compton (Surrey)", "Coventry", "Derby", "Durham (County)",
+  "Durham (England)"): the project's place of the name beside a body of the name the first pass made, and for the
+  qualified ones the heading says the place. Before the rule: read two on the desk after the next run ("Colchester
+  (England)" and "Birmingham (England)"; the cards say which entity holds what and why the store stage declined), since
+  the shape of the rule depends on whether the place entity is aligned or a bare provisional, and on what made the
+  bodies.
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

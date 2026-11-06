@@ -103,7 +103,15 @@ Actions:
   published under and, if useful, a note. The software stops asking about it.
 - **Accept the ticked together**: when two or more cards are the same thing (an auction house in ULAN and the same
   house as a person in the Library of Congress), tick "together" on each and accept them as one. One entity is made
-  with all their identifiers.
+  with all their identifiers. When two or more of the project's own entities are among the ticked, the desk first
+  shows what will happen (which survives, which merge into it with their strings and identifiers, which identifiers
+  are added) and asks; a merge is permanent, and Undo takes back the string's decision only.
+- A card that is one of the project's own entities says what it is (person, group, place; placeholder, aligned,
+  confirmed), what put it in its group ("holding ulan's 500301722"; "a placeholder for 'Chris Beetles' in
+  persauthorfull"), how many strings it stands for and in which fields, and the records it was seen in, so it can be
+  judged without opening its page. When two of the project's entities hold records of one group, the authorities say
+  they are one thing and the store has two: the group says so and offers to merge them and accept the string onto
+  the survivor, through the same confirm step.
 - **Skip for now** leaves it in the queue. **Add note** leaves a message for another reviewer. **Undo last decision**
   puts the previous decision back.
 - After an action, the message at the top of the next item names the entity it made or chose, with a link, so you

@@ -19,12 +19,18 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     [BindProperty(SupportsGet = true)] public string? Q { get; set; }
     /// <summary>Show the string's evidence as today's rules would give it, deciding nothing.</summary>
     [BindProperty(SupportsGet = true)] public bool Look { get; set; }
+    /// <summary>Accepting the ticked together with two or more of the project's own entities among them comes here first: the plan is shown and the reviewer confirms (the owner, 2026-11-06, at "Chris Beetles Ltd").</summary>
+    [BindProperty(SupportsGet = true)] public bool Confirm { get; set; }
+    [BindProperty(SupportsGet = true)] public string[]? Targets { get; set; }
+    [BindProperty(SupportsGet = true)] public string? Survivor { get; set; }
 
     public ReviewItem? Item { get; private set; }
     public IReadOnlyList<ContextMethodCount> Queue { get; private set; } = [];
     public IReadOnlyList<Entity> EntityMatches { get; private set; } = [];
     public IReadOnlyList<AuthorityRecord> IndexMatches { get; private set; } = [];
     public string? Message { get; private set; }
+    /// <summary>What accepting the ticked together will do, when the desk is asking the reviewer to confirm it.</summary>
+    public TogetherPlan? Plan { get; private set; }
     /// <summary>The entity the previous action made or chose, for the banner's link to it.</summary>
     public (string Id, string Label)? Decided { get; private set; }
 
@@ -45,13 +51,27 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             EntityMatches = (await Project.Desk.SearchEntitiesAsync(Dataset, Q)).Where(e => e.Id != Item.Entity?.Id).ToList();
             IndexMatches = await Project.Desk.SearchIndexesAsync(Q);
         }
+        if (Item is not null && Confirm && Targets is { Length: > 0 })
+        {
+            try { Plan = await Project.Desk.PlanTogetherAsync(Dataset, Item.String.Id, Targets, Survivor); }
+            catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { Message = e.Message; }
+        }
     }
 
     public Task<IActionResult> OnPostAcceptAsync(long id, string target, string? note) =>
         Act(id, async () => ("Accepted.", await Project.Desk.AcceptAsync(Dataset, id, target, Reviewer, note)));
 
-    public Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note) =>
-        Act(id, async () => { var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, targets ?? [], Reviewer, note); return ($"Accepted together, with {entity.Equivalents.Count} identifiers.", entity); });
+    public Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note, string? survivor, bool confirmed)
+    {
+        // two or more of the project's own entities among the ticked are a merge: shown first, done on the reviewer's word
+        var ours = (targets ?? []).Where(Project.Scheme.Owns).Distinct(StringComparer.Ordinal).ToList();
+        if (ours.Count > 1 && !confirmed) return Task.FromResult<IActionResult>(RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, confirm = true, targets, survivor }));
+        return Act(id, async () =>
+        {
+            var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, targets ?? [], Reviewer, note, survivor, confirmed);
+            return (ours.Count > 1 ? $"Merged and accepted together: {entity.Label}, with {entity.Equivalents.Count} identifiers." : $"Accepted together, with {entity.Equivalents.Count} identifiers.", entity);
+        });
+    }
 
     public Task<IActionResult> OnPostSameAsAsync(long id, string entity, string? note) =>
         Act(id, async () => ("Marked as the same entity.", await Project.Desk.SameAsAsync(Dataset, id, entity, Reviewer, note)));

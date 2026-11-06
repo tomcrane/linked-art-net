@@ -13,9 +13,31 @@ public sealed record EvidenceMember(string Uri, string Source, string? Label, st
     public bool IsStore => Stage == "store";
 }
 
-/// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, the records behind the candidates, and the catalogue records the string was seen in.</summary>
+/// <summary>
+/// What the desk says of one of the project's own entities on a card, so that it can be judged without opening its page (the owner,
+/// 2026-11-06, at "Chris Beetles Ltd": two aligned entities and two placeholders of the name in one group, and nothing on the cards
+/// but "store"): the entity itself, with its class and status, the strings that resolve to it, and the catalogue records behind the
+/// most frequent of them.
+/// </summary>
+public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<StringExample> Examples)
+{
+    /// <summary>The fields the strings came from, the most frequent first.</summary>
+    public IReadOnlyList<string> Contexts => Strings.GroupBy(s => s.String.Context, StringComparer.Ordinal).OrderByDescending(g => g.Sum(x => x.String.Occurrences)).Select(g => g.Key).ToList();
+    /// <summary>A placeholder: minted for a string and awaiting review, with no authority behind it.</summary>
+    public bool IsPlaceholder => Entity.Status == EntityStatus.Provisional && Entity.Equivalents.Count == 0;
+}
+
+/// <summary>
+/// What accepting the ticked cards together will do when two or more of the project's own entities are among them (the owner, 2026-11-06,
+/// at "Chris Beetles Ltd": the firm's two entities, each aligned to a different authority, in one group): the others merge into the
+/// survivor, their strings and identifiers following; the records among the ticked not yet held become the survivor's identifiers; the
+/// string is decided onto it. The desk shows this and asks before it is done, since a merge is not undone by Undo.
+/// </summary>
+public sealed record TogetherPlan(Entity Survivor, IReadOnlyList<Entity> Merging, IReadOnlyList<Entity> Ours, IReadOnlyList<string> Identifiers);
+
+/// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, the records behind the candidates, the project's own entities among the candidates with their facts, and the catalogue records the string was seen in.</summary>
 /// <param name="LookedAgain">Set when the evidence shown is a fresh evaluation under today's rules, not the decision's own: what the string would be decided as now ("queued", "accepted", ...). The stored decision is unchanged.</param>
-public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, string? LookedAgain = null)
+public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, string? LookedAgain = null)
 {
     public bool IsQueued => Decision.Method == DecisionMethod.Queued;
 }
@@ -71,7 +93,26 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var records = new Dictionary<string, AuthorityRecord>(StringComparer.Ordinal);
         foreach (var uri in evidence.Groups.SelectMany(g => g.Members).Where(m => !m.IsStore).Select(m => m.Uri).Distinct(StringComparer.Ordinal).Take(40))
             if (await store.GetAuthorityAsync(uri, ct) is { } record) records[uri] = record;
-        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), lookedAgain);
+        var entities = new Dictionary<string, EntityFacts>(StringComparer.Ordinal);
+        foreach (var uri in evidence.Groups.SelectMany(g => g.Members).Where(m => m.IsStore || scheme.Owns(m.Uri)).Select(m => m.Uri).Distinct(StringComparer.Ordinal).Take(12))
+            if (await FactsAsync(uri, ct) is { } facts) entities[uri] = facts;
+        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, lookedAgain);
+    }
+
+    /// <summary>The facts of one of the project's own entities for its card: the entity (followed through a merge), its strings, and the records behind the most frequent of them, three at most.</summary>
+    public async Task<EntityFacts?> FactsAsync(string entityId, CancellationToken ct = default)
+    {
+        var entity = await store.ResolveEntityAsync(entityId, ct);
+        if (entity is null) return null;
+        var strings = await store.StringsForEntityAsync(entity.Id, 100, ct);
+        var examples = new List<StringExample>();
+        foreach (var s in strings.OrderByDescending(x => x.String.Occurrences).Take(4))
+        {
+            foreach (var x in await ExamplesForAsync(s.String.Id, ct))
+                if (examples.All(e => e.RecordId != x.RecordId)) examples.Add(x);
+            if (examples.Count >= 3) break;
+        }
+        return new EntityFacts(entity, strings, examples.Take(3).ToList());
     }
 
     /// <summary>The catalogue records a string was seen in (design doc 12 section 5), up to three; a part string with none of its own (a keyword's head, a place in a list) shows its parents'.</summary>
@@ -152,25 +193,65 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     /// <summary>
     /// The reviewer says several cards are one thing (the desk, 2026-10-26: ULAN's "Cock, Christopher" and LoC's "Cock, Mr. (Christopher)"
     /// in two cards): one entity, made or found for the first target as Accept does it, or for the one entity of ours among the targets,
-    /// and every other target an equivalent the reviewer vouched for. At most one of our entities; two would be a merge, which the
-    /// entity page does.
+    /// and every other target an equivalent the reviewer vouched for. Two or more of our entities among them are a merge (the owner,
+    /// 2026-11-06, at "Chris Beetles Ltd": the firm's two entities, each aligned to a different authority, in one group with two
+    /// placeholders): done here, into the survivor chosen, only when <paramref name="mergeOurs"/> says the reviewer has seen the
+    /// <see cref="TogetherPlan"/> and agreed, since a merge is not undone by Undo.
     /// </summary>
-    public async Task<Entity> AcceptTogetherAsync(string dataset, long stringId, IReadOnlyList<string> targetUris, string reviewer, string? note = null, CancellationToken ct = default)
+    public async Task<Entity> AcceptTogetherAsync(string dataset, long stringId, IReadOnlyList<string> targetUris, string reviewer, string? note = null, string? survivorId = null, bool mergeOurs = false, CancellationToken ct = default)
     {
         var decided = await OwnAsync(dataset, stringId, ct);
-        var targets = targetUris.Select(t => t.Trim()).Where(t => t.Length > 0).Distinct(StringComparer.Ordinal).ToList();
+        var targets = Targets(targetUris);
         if (targets.Count == 0) throw new InvalidOperationException("Nothing is ticked.");
         foreach (var t in targets) await EnsureTargetAsync(dataset, decided, t, ct);
-        var ours = targets.Where(scheme.Owns).ToList();
-        if (ours.Count > 1) throw new InvalidOperationException("Two of the project's own entities are ticked: merge them on the entity page first.");
+        var ours = await OursAsync(targets, ct);
         var reading = reconciler.Read(decided.String);
-        var entity = await reconciler.EntityForUriAsync(dataset, ours.Count == 1 ? ours[0] : targets[0], reading, null, ct);
+        Entity entity; TogetherPlan? plan = null;
+        if (ours.Count > 1)
+        {
+            if (!mergeOurs) throw new InvalidOperationException($"{ours.Count} of the project's own entities are ticked ({string.Join(", ", ours.Select(e => e.Label ?? e.Id))}): the desk shows what merging them will do and asks first.");
+            plan = await PlanTogetherAsync(dataset, stringId, targets, survivorId, ct);
+            foreach (var loser in plan.Merging) await store.MergeAsync(loser.Id, plan.Survivor.Id, reviewer, ct);
+            entity = (await store.ResolveEntityAsync(plan.Survivor.Id, ct))!;
+        }
+        else entity = await reconciler.EntityForUriAsync(dataset, ours.Count == 1 ? ours[0].Id : targets[0], reading, null, ct);
         var now = DateTimeOffset.UtcNow;
         foreach (var t in targets.Where(t => !scheme.Owns(t)))
             if (entity.Equivalents.All(q => q.Uri != t)) await store.AddEquivalentAsync(entity.Id, new Equivalent(t, AuthorityUris.SourceOf(t), DecisionMethod.Human, 1.0, now), ct);
         await FoldProvisionalAsync(decided, entity, reviewer, ct);
-        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept-together", reading, new { targets, entity = entity.Id, note }), reviewer, ct: ct);
+        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept-together", reading, new { targets, entity = entity.Id, merged = plan?.Merging.Select(m => m.Id).ToList(), note }), reviewer, ct: ct);
+        await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
+    }
+
+    /// <summary>
+    /// What accepting the ticked together will do, for the desk to show before it is done: the survivor (the one chosen, else the first
+    /// with authority behind it, else the first), the entities of ours that merge into it, and the records among the ticked that become
+    /// its identifiers (a record a merging entity holds comes across with the merge).
+    /// </summary>
+    public async Task<TogetherPlan> PlanTogetherAsync(string dataset, long stringId, IReadOnlyList<string> targetUris, string? survivorId = null, CancellationToken ct = default)
+    {
+        var decided = await OwnAsync(dataset, stringId, ct);
+        var targets = Targets(targetUris);
+        foreach (var t in targets) await EnsureTargetAsync(dataset, decided, t, ct);
+        var ours = await OursAsync(targets, ct);
+        if (ours.Count == 0) throw new InvalidOperationException("None of the ticked cards is one of the project's own entities.");
+        var survivor = (survivorId is null ? null : ours.FirstOrDefault(e => e.Id == survivorId))
+            ?? ours.FirstOrDefault(e => e.Equivalents.Count > 0 || e.Status != EntityStatus.Provisional) ?? ours[0];
+        var merging = ours.Where(e => e.Id != survivor.Id).ToList();
+        var identifiers = targets.Where(t => !scheme.Owns(t) && survivor.Equivalents.All(q => q.Uri != t) && merging.All(m => m.Equivalents.All(q => q.Uri != t))).ToList();
+        return new TogetherPlan(survivor, merging, ours, identifiers);
+    }
+
+    private static List<string> Targets(IReadOnlyList<string> targetUris) => targetUris.Select(t => t.Trim()).Where(t => t.Length > 0).Distinct(StringComparer.Ordinal).ToList();
+
+    /// <summary>The project's own entities among the targets, each followed through a merge and counted once.</summary>
+    private async Task<List<Entity>> OursAsync(IReadOnlyList<string> targets, CancellationToken ct)
+    {
+        var ours = new List<Entity>();
+        foreach (var t in targets.Where(scheme.Owns))
+            if (await store.ResolveEntityAsync(t, ct) is { } e && ours.All(x => x.Id != e.Id)) ours.Add(e);
+        return ours;
     }
 
     /// <summary>The reviewer says the string is this authority record (a URI from the candidates or a search) or this entity (one of ours).</summary>

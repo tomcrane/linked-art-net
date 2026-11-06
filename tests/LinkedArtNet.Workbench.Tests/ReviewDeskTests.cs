@@ -184,4 +184,69 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Contains("/signin", response.Headers.Location!.ToString());
     }
+
+    [WorkbenchFact]
+    public async Task Two_of_the_projects_entities_ticked_together_are_shown_what_will_happen_and_confirmed()
+    {
+        // the owner, 2026-11-06, at "Chris Beetles Ltd": the firm's two aligned entities in one group; the desk shows what the merge will
+        // do and asks, instead of the warning after the fact
+        var ds = "wb" + IdMinter.Generate(6);
+        var owner = await wb.SignedInAsync("owner");
+        var created = await WorkbenchFixture.PostFormAsync(owner, "/", "/", new() { ["dataset"] = ds, ["name"] = "Merge test", ["identifierBase"] = "https://data.example.org/" + ds + "/", ["description"] = "a test project" });
+        Assert.Equal(HttpStatusCode.Redirect, created.StatusCode);
+        var store = wb.Factory.Services.GetRequiredService<IAlignmentStore>();
+        var project = (await wb.Factory.Services.GetRequiredService<ProjectServices>().GetAsync(ds))!;
+        const string ulan = "http://vocab.getty.edu/ulan/500301722", loc = "http://id.loc.gov/authorities/names/n89672369";
+        await store.PutAuthorityAsync(new AuthorityRecord(ulan, "ulan", "Chris Beetles", ["Chris Beetles"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await store.PutAuthorityAsync(new AuthorityRecord(loc, "loc", "Chris Beetles Limited", ["Chris Beetles Limited"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var beetles = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Chris Beetles", ["Chris Beetles"], Status: EntityStatus.Aligned), project.Scheme);
+        await store.AddEquivalentAsync(beetles.Id, new Equivalent(ulan, "ulan", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var limited = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Chris Beetles Limited", ["Chris Beetles Limited"], Status: EntityStatus.Aligned), project.Scheme);
+        await store.AddEquivalentAsync(limited.Id, new Equivalent(loc, "loc", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var ltd = await store.CollectAsync(ds, "corpauthor", "Chris Beetles Ltd");
+        var placeholder = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Chris Beetles Ltd", ["Chris Beetles Ltd"]), project.Scheme);
+        static LinkedArtNet.Alignment.Reconciliation.ScoredCandidate Member(string uri, string source, string label, double score, string? entityId = null) =>
+            new(new LinkedArtNet.Alignment.Reconciliation.Candidate(uri, source, label, EntityClass.Group, null, [], source == "store" ? "store" : "local", score, entityId), score, false, $"name {score:0.00}");
+        var group = new LinkedArtNet.Alignment.Reconciliation.CandidateGroup([Member(ulan, "ulan", "Chris Beetles", 0.97), Member(loc, "loc", "Chris Beetles Limited", 0.97), Member(limited.Id, "store", "Chris Beetles Limited", 0.95, limited.Id), Member(beetles.Id, "store", "Chris Beetles", 0.95, beetles.Id)], 0.97, ["ulan", "loc"], [ulan, loc, limited.Id, beetles.Id]);
+        var own = new LinkedArtNet.Alignment.Reconciliation.CandidateGroup([Member(placeholder.Id, "store", "Chris Beetles Ltd", 1.0, placeholder.Id)], 1.0, ["store"], [placeholder.Id]);
+        await store.DecideAsync(ltd.Id, placeholder.Id, DecisionMethod.Queued, LinkedArtNet.Alignment.Reconciliation.Reconciler.Evidence("queued", project.Reconciler.Read(ltd), [own, group], null));
+
+        // the cards say what the entities are and what put them in the group; the group offers the merge
+        var desk = await owner.GetStringAsync($"/p/{ds}/review?id={ltd.Id}");
+        Assert.Contains("the project's entity, holding ulan&#x27;s 500301722", desk); // Razor encodes the apostrophe the view writes
+        Assert.Contains("the project's entity, holding loc&#x27;s n89672369", desk);
+        Assert.Contains("a placeholder for &quot;Chris Beetles Ltd&quot; in corpauthor", desk);
+        Assert.Contains("2 of the project's entities hold records of this group", desk);
+        Assert.Contains("Merge them and accept this string onto the survivor", desk);
+
+        // ticking both of ours and accepting together goes to the confirm step, carrying the ticked cards; nothing is decided yet
+        var asked = await owner.PostAsync($"/p/{ds}/review?handler=AcceptTogether", new FormUrlEncodedContent(
+            [new("id", ltd.Id.ToString()), new("targets", ulan), new("targets", loc), new("targets", beetles.Id), new("targets", limited.Id), new("__RequestVerificationToken", Token(desk))]));
+        Assert.Equal(HttpStatusCode.Redirect, asked.StatusCode);
+        var where = asked.Headers.Location!.ToString();
+        Assert.Contains("confirm=True", where);
+        Assert.Equal(4, where.Split("targets=").Length - 1);
+        Assert.Equal(DecisionMethod.Queued, (await store.DecisionForAsync(ltd.Id))!.Method);
+        var confirm = await owner.GetStringAsync(where);
+        Assert.Contains("2 of the project's own entities are ticked: they become one", confirm);
+        Assert.Contains($"name=\"survivor\" value=\"{beetles.Id}\"", confirm);
+        Assert.Contains("Merge and accept", confirm);
+
+        // confirmed, with the survivor chosen: one entity with both identifiers, the string decided onto it
+        var done = await owner.PostAsync($"/p/{ds}/review?handler=AcceptTogether", new FormUrlEncodedContent(
+            [new("id", ltd.Id.ToString()), new("confirmed", "true"), new("survivor", limited.Id), new("targets", ulan), new("targets", loc), new("targets", beetles.Id), new("targets", limited.Id), new("__RequestVerificationToken", Token(confirm))]));
+        Assert.Equal(HttpStatusCode.Redirect, done.StatusCode);
+        var survivor = (await store.ResolveEntityAsync(beetles.Id))!;
+        Assert.Equal(limited.Id, survivor.Id);
+        Assert.Equal([loc, ulan], survivor.Equivalents.Select(q => q.Uri).OrderBy(x => x));
+        var decision = (await store.DecisionForAsync(ltd.Id))!;
+        Assert.Equal(DecisionMethod.Human, decision.Method); Assert.Equal(limited.Id, decision.EntityId);
+        Assert.Contains("Merged and accepted together", await owner.GetStringAsync(done.Headers.Location!.ToString()));
+    }
+
+    private static string Token(string page)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(page, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"");
+        return m.Success ? m.Groups[1].Value : System.Text.RegularExpressions.Regex.Match(page, "__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"").Groups[1].Value;
+    }
 }

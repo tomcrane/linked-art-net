@@ -31,7 +31,9 @@
     thing, best first; greyed cards were ruled out and the reason says why. Say what the string is: <strong>Accept</strong> a
     card (it is this record); <strong>Always, in this field</strong> (the same, and this spelling means this from now on);
     <strong>Same as this</strong> (an entity the project already has); search for <strong>something else</strong>; or
-    <strong>Keep as local authority</strong> when it is real and none of the cards is it. Not sure? <strong>Skip for now</strong>,
+    <strong>Keep as local authority</strong> when it is real and none of the cards is it. A card that is one of the project's own
+    entities says what it stands for and holds; when two of them hold records of one group, the group says so and offers to merge them
+    and accept the string onto the survivor, showing what will happen first. Not sure? <strong>Skip for now</strong>,
     or leave a <strong>note</strong> for another reviewer. Every decision can be undone. <a href="/help#the-desk">The guide</a>
     has the rest.</p>
 </details>
@@ -77,6 +79,29 @@ else
     }
 
     <h2>Candidates</h2>
+    @if (Model.Plan is { } plan)
+    {
+        @* two or more of the project's own entities among the ticked: what accepting them together will do, shown before it is done, since a
+           merge is not undone by Undo (the owner, 2026-11-06, at "Chris Beetles Ltd": the firm's two aligned entities and two placeholders in
+           one group, and a warning after the fact that sent them to the entity page) *@
+        <form method="post" asp-page-handler="AcceptTogether" class="notice" id="confirm-together">
+            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="confirmed" value="true" />
+            @foreach (var t in Model.Targets ?? []) { <input type="hidden" name="targets" value="@t" /> }
+            <h3 style="margin-top:0">@plan.Ours.Count of the project's own entities are ticked: they become one</h3>
+            <p class="small">Choose which survives. The others merge into it, and their strings, identifiers and labels follow. A merge is permanent: <strong>Undo</strong> takes back this string's decision, not the merge.</p>
+            @foreach (var e in plan.Ours)
+            {
+                item.Entities.TryGetValue(e.Id, out var ef);
+                <label class="small inline" style="display:block; margin:.3rem 0"><input type="radio" name="survivor" value="@e.Id" checked="@(e.Id == plan.Survivor.Id)" />
+                    <strong>@e.Label</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
+                    @if (e.Equivalents.Count > 0) { <text>holds @string.Join(", ", e.Equivalents.Select(q => q.Source + "'s " + q.Uri.Split('/').Last()));</text> } else { <text>no identifier;</text> }
+                    @if (ef is not null) { <text>stands for @ef.Strings.Count string@(ef.Strings.Count == 1 ? "" : "s")@(ef.Contexts.Count > 0 ? " in " + string.Join(", ", ef.Contexts) : "")</text> }
+                    · <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">its page</a></label>
+            }
+            <p class="small">Then @(plan.Identifiers.Count == 0 ? "no new identifier is added" : plan.Identifiers.Count + " identifier" + (plan.Identifiers.Count == 1 ? "" : "s") + " added: " + string.Join(", ", plan.Identifiers)), and "@item.String.Raw" is decided onto the survivor.</p>
+            <div class="actions"><button type="submit">Merge and accept</button> <a class="button secondary" href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id })">Back</a></div>
+        </form>
+    }
     @if (ev.Groups.Count == 0) { <p class="muted">The reconciler found nothing in the local indexes for this string.</p> }
     @if (ev.Groups.Count > 1 && Model.Method != "human")
     {
@@ -97,9 +122,32 @@ else
                 @foreach (var s in group.Sources) { if (group.Members.FirstOrDefault(m => m.Source == s)?.Uri is { } su) { <a class="tag src" href="@su" target="_blank" rel="noopener" title="@su">@s</a> } else { <span class="tag src">@s</span> } }
                 @if (group.Members.Count > 1) { <span class="muted small">@group.Members.Count records agree they are one thing</span> }
             </div>
+            @{
+                // two or more of the project's own firm entities in one group: the store disagrees with itself, which is why the string was
+                // queued; the group says so and offers the merge as its own action (the owner, 2026-11-06, at "Chris Beetles Ltd")
+                var firm = live.Where(m => item.Entities.TryGetValue(m.Uri, out var f) && !f.IsPlaceholder).Select(m => item.Entities[m.Uri].Entity).DistinctBy(e => e.Id).ToList();
+            }
+            @if (firm.Count >= 2 && Model.Method != "human" && Model.Plan is null)
+            {
+                <div class="notice small" style="margin:.75rem 0 .25rem">
+                    @firm.Count of the project's entities hold records of this group:
+                    @for (var i = 0; i < firm.Count; i++)
+                    {
+                        var e = firm[i];
+                        var held = e.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).Select(q => q.Source + "'s " + q.Uri.Split('/').Last()).ToList();
+                        <text>@(i == 0 ? "" : i == firm.Count - 1 ? " and " : ", ")</text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">@e.Label</a>@(held.Count > 0 ? " (holding " + string.Join(", ", held) + ")" : "")
+                    }. The authorities say they are one thing, and the string was queued because the store disagrees with itself.
+                    <form method="post" asp-page-handler="AcceptTogether" class="inline">
+                        <input type="hidden" name="id" value="@item.String.Id" />
+                        @foreach (var m in live) { <input type="hidden" name="targets" value="@m.Uri" /> }
+                        <button type="submit" class="secondary" title="You choose the survivor next, and see what will happen before it is done">Merge them and accept this string onto the survivor</button>
+                    </form>
+                </div>
+            }
             @foreach (var m in group.Members)
             {
                 item.Records.TryGetValue(m.Uri, out var record);
+                item.Entities.TryGetValue(m.Uri, out var facts);
                 <div class="row" style="margin-top:.5rem; @(m.Veto == true || m.SetAside == true ? "opacity:.6" : "")">
                     <div style="flex:1">
                         @* a project entity's name is the link to its page, in another tab so the desk stays where it is; the URI below it is the
@@ -109,10 +157,26 @@ else
                         else { <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong> }
                         @if (record?.Lifespan?.Display is { } life) { <span class="muted">@life</span> }
                         @if (record?.Type is { } type) { <span class="tag">@type.ToLowerInvariant()</span> }
+                        @if (facts is not null) { <span class="tag">@facts.Entity.Class.ToString().ToLowerInvariant()</span> <span class="tag">@facts.Entity.Status.ToString().ToLowerInvariant()</span> }
                         <span class="tag">@m.Source</span>
                         <a class="small" href="@m.Uri" target="_blank" rel="noopener">@m.Uri</a>
                         @if (record is not null && record.Labels.Count > 1) { <div class="small muted">also: @string.Join(" · ", record.Labels.Where(l => l != record.Label).Take(6))</div> }
                         @if (record?.DataJson is { } data && System.Text.Json.JsonDocument.Parse(data).RootElement.TryGetProperty("description", out var desc)) { <div class="small">@desc.GetString()</div> }
+                        @if (facts is not null)
+                        {
+                            @* what put the project's entity in this group, and what it stands for, so the card can be judged without its page
+                               (the owner, 2026-11-06, at "Chris Beetles Ltd") *@
+                            var held = facts.Entity.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).Select(q => q.Source + "'s " + q.Uri.Split('/').Last()).ToList();
+                            var firstString = facts.Strings.OrderByDescending(s => s.String.Occurrences).FirstOrDefault();
+                            <div class="small muted">
+                                @if (held.Count > 0) { <text>the project's entity, holding @string.Join(" and ", held)</text> }
+                                else if (facts.Entity.Equivalents.Count > 0) { <text>the project's entity, aligned to @string.Join(", ", facts.Entity.Equivalents.Select(q => q.Source).Distinct())</text> }
+                                else if (facts.IsPlaceholder) { <text>a placeholder@(firstString is null ? "" : $" for \"{firstString.String.Raw}\" in {firstString.String.Context}")</text> }
+                                else { <text>the project's own local authority</text> }
+                                · stands for @facts.Strings.Count string@(facts.Strings.Count == 1 ? "" : "s")@(facts.Contexts.Count > 0 ? " in " + string.Join(", ", facts.Contexts) : "")
+                                @if (facts.Examples.Count > 0) { <text>· seen in: @string.Join(" · ", facts.Examples.Select(x => (x.Title ?? x.RecordId) + (x.Date is null ? "" : $" ({x.Date})")))</text> }
+                            </div>
+                        }
                         <div class="reason">@m.Reason</div>
                     </div>
                     @if (m.Veto != true && Model.Method != "human" && ev.Groups.Count > 1)

@@ -218,22 +218,10 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
-- A group that holds two of the project's own entities (2026-11-06, the owner at "Chris Beetles Ltd": the reconciler's
-  group of four, ULAN's Chris Beetles and LoC's Chris Beetles Limited joined as each source's one record of the body,
-  and the project's "Chris Beetles" and "Chris Beetles Limited" in it because each holds one of the two records as its
-  equivalent; beside them the string's placeholder at 1.00 and a person placeholder "Chris Beetles" at 0.95. Ticking
-  every card gave "Two of the project's own entities are ticked: merge them on the entity page first", and the owner
-  found the desk unclear on what the grey box is and what ticking does). The desk should say, before any tick: on each
-  store card its class (the person placeholder shows "store" and nothing says person) and what put it in the group
-  ("the project's entity, holding loc's n89672369"; "a placeholder for 'Chris Beetles' in persauthorfull"), with the
-  entity page's facts in one line (the strings it stands for and their fields, the records it was seen in, the first
-  titles), so that the cards can be judged without a tab each; and at the head of a group holding two firm entities of
-  ours, that the store disagrees with itself ("two of the project's entities hold records of this group: Chris Beetles
-  (ULAN's) and Chris Beetles Limited (LoC's); the authorities say they are one thing"), with the merge offered there,
-  as the group's own action, the survivor chosen on the card, placeholders ticked with them folding in, and this string
-  decided onto the survivor, a confirm step listing what will happen in place of the warning after the fact (the warning
-  itself to name the two, with links, until then). The design is the owner's to settle; the data is there since
-  "In the records".
+- ~~A group that holds two of the project's own entities~~ (built 2026-11-06, the owner at "Chris Beetles Ltd": every
+  card of the project's own says its class and status, what put it in its group and what it stands for, with the
+  records behind it; a group holding two firm entities of ours says the store disagrees with itself and offers the
+  merge; "Accept the ticked together" with two or more of ours shows the plan and asks; doc 12 section 5, doc 13).
 - Twins that share a record (2026-11-05: "Lawrence" in corpauthor on the desk and "Lawrence" in publisher as a search result, two placeholders, the same three Crewkerne sale catalogues behind both, the name in both fields of each record). When another placeholder of the string's name has a record in common with the string's own, the desk says so on its card or search result ("in the same records as this string"), as a hint towards "Same as" or "Accept together"; the reconciler keeps twins apart on purpose (finding 104), so the hint is the desk's, not a rule. The ticks are on the candidate cards only; a twin met among the search results has "Same as this" and nothing to tick, and the hint must say which action it points at where it appears.
 - The publisher strings without a record behind them (2026-11-05: the entity page of a placeholder "Stanley", one string, publisher, no "In the records"; the collection covered 10,608 of the field's 11,141 strings, this one not among them). List them beside what the export's publisher element holds for the same records and find the cleaning the 2024 process applied, as the cleaned-keywords table closed the keywords gap; a `collect-examples` report of the export values that matched no string would do the listing.
 - ~~Help for the reviewer who asks what to do~~ (built 2026-10-26 evening, the owner's ask at the desk: a fold at the

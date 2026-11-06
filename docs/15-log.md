@@ -29,7 +29,10 @@ The desk, continued, at "Chris Beetles Ltd": a reconciler's group holding two of
 aligned to a different authority, with two placeholders beside it, and the owner, ticking every card, met the warning
 to merge on the entity page first and found the desk unclear on what the group is and what the ticks do. The design
 proposed and recorded in plan section 7 (Workbench and desk): the class and the ground on every store card, the entity
-page's facts in a line, and the merge offered at the head of such a group as its own action with a confirm step.
+page's facts in a line, and the merge offered at the head of such a group as its own action with a confirm step. Built
+on the owner's word the same morning (ReviewService: EntityFacts on the item, PlanTogetherAsync, AcceptTogetherAsync
+merging on the reviewer's word; the desk's cards, group head and confirm panel; the guide), with a service test and a
+page test; every test project green.
 
 ## 2026-11-05
 

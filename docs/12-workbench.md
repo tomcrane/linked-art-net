@@ -82,7 +82,13 @@ score band, run, assignment, and a search box; a count of what is left; and the 
 - the candidate groups, best first: each group as one card with its score, the sources that agree, each member's
   label, dates, type, description and a link to the external record, and the reasons the scorer gave ("dates agree",
   "type Group not allowed here"); vetoed members shown greyed with their veto;
-- entities already in the store that resemble the string, from the store stage, marked as such;
+- entities already in the store that resemble the string, from the store stage, marked as such; a card that is one
+  of the project's own entities carries its class and status, what put it in its group (the record it holds, or the
+  string it is a placeholder for), the strings it stands for and the records behind them (2026-11-06, the owner at
+  "Chris Beetles Ltd": two aligned entities and two placeholders of the name in one group, told apart only by their
+  pages); a group holding two firm entities of the project's says the store disagrees with itself and offers the
+  merge as its own action, through "Accept the ticked together", which with two or more of our entities among the
+  ticked shows the plan (survivor, merging, identifiers added) and asks before it is done;
 - the model's proposal when one has been asked for, with its capped confidence and the note it gave.
 
 Actions, each a key: **accept** a group (decision `human`; the entity is created or reused exactly as a vote would do

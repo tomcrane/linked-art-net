@@ -143,4 +143,79 @@ public class ReviewServiceTests(PostgresFixture pg)
         Assert.Equal("check this", Assert.Single(await pg.Store.NotesAsync(ds, "string:1")).Text);
         Assert.True(note.Id > 0);
     }
+
+    [PostgresFact]
+    public async Task Two_of_the_projects_entities_ticked_together_are_merged_on_the_reviewers_word()
+    {
+        // the owner, 2026-11-06, at "Chris Beetles Ltd": the firm's two entities, "Chris Beetles" holding ULAN's record and "Chris Beetles
+        // Limited" holding LoC's, in one group with the string's placeholder and a person placeholder of the name; ticking every card met
+        // "merge them on the entity page first". The desk now shows the facts of each entity on its card, says what accepting them together
+        // will do, and does the merge on the reviewer's word
+        var ds = "rv-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        const string ulan = "http://vocab.getty.edu/ulan/500301722", loc = "http://id.loc.gov/authorities/names/n89672369";
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord(ulan, "ulan", "Chris Beetles", ["Chris Beetles"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord(loc, "loc", "Chris Beetles Limited", ["Chris Beetles Limited", "Beetles Limited"], "Group", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var beetles = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Chris Beetles", ["Chris Beetles"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(beetles.Id, new Equivalent(ulan, "ulan", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var limited = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Chris Beetles Limited", ["Chris Beetles Limited"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(limited.Id, new Equivalent(loc, "loc", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var person = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Chris Beetles", ["Chris Beetles"]), scheme);
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
+        var desk = new ReviewService(pg.Store, scheme, reconciler);
+        // a string of each entity's own, so the cards have something to stand for
+        var earlier = await pg.Store.CollectAsync(ds, "corpauthor", "Chris Beetles");
+        await pg.Store.DecideAsync(earlier.Id, beetles.Id, DecisionMethod.Human, "{}", "tester");
+        var man = await pg.Store.CollectAsync(ds, "persauthorfull", "Chris Beetles");
+        await pg.Store.DecideAsync(man.Id, person.Id, DecisionMethod.Queued, "{}");
+        // the string under review, queued onto its own placeholder with the run's evidence: the four in one group, the placeholders beside
+        var ltd = await pg.Store.CollectAsync(ds, "corpauthor", "Chris Beetles Ltd");
+        var placeholder = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Chris Beetles Ltd", ["Chris Beetles Ltd"]), scheme);
+        static ScoredCandidate Member(string uri, string source, string label, double score, string? entityId = null) =>
+            new(new Candidate(uri, source, label, EntityClass.Group, null, [], source == "store" ? "store" : "local", score, entityId), score, false, $"name {score:0.00}");
+        var group = new CandidateGroup([Member(ulan, "ulan", "Chris Beetles", 0.97), Member(loc, "loc", "Chris Beetles Limited", 0.97), Member(limited.Id, "store", "Chris Beetles Limited", 0.95, limited.Id), Member(beetles.Id, "store", "Chris Beetles", 0.95, beetles.Id)], 0.97, ["ulan", "loc"], [ulan, loc, limited.Id, beetles.Id]);
+        var own = new CandidateGroup([Member(placeholder.Id, "store", "Chris Beetles Ltd", 1.0, placeholder.Id)], 1.0, ["store"], [placeholder.Id]);
+        var him = new CandidateGroup([Member(person.Id, "store", "Chris Beetles", 0.95, person.Id)], 0.95, ["store"], [person.Id]);
+        var reading = reconciler.Read(ltd);
+        await pg.Store.DecideAsync(ltd.Id, placeholder.Id, DecisionMethod.Queued, Reconciler.Evidence("queued", reading, [own, group, him], null));
+
+        // the cards carry the entities' facts: class, status, the strings they stand for
+        var item = (await desk.GetAsync(ltd.Id))!;
+        Assert.Equal(4, item.Entities.Count);
+        Assert.Equal(EntityClass.Person, item.Entities[person.Id].Entity.Class);
+        Assert.True(item.Entities[person.Id].IsPlaceholder);
+        Assert.False(item.Entities[beetles.Id].IsPlaceholder);
+        Assert.Equal(["corpauthor"], item.Entities[beetles.Id].Contexts);
+        Assert.Single(item.Entities[beetles.Id].Strings);
+
+        // every card ticked: refused until the plan has been seen; the plan names the survivor (the first with authority behind it), the
+        // entities merging into it, and the records to add (none: each is held already)
+        string[] all = [placeholder.Id, ulan, loc, limited.Id, beetles.Id, person.Id];
+        await Assert.ThrowsAsync<InvalidOperationException>(() => desk.AcceptTogetherAsync(ds, ltd.Id, all, "tester"));
+        var plan = await desk.PlanTogetherAsync(ds, ltd.Id, all);
+        Assert.Equal(limited.Id, plan.Survivor.Id);
+        Assert.Equal([placeholder.Id, beetles.Id, person.Id], plan.Merging.Select(e => e.Id));
+        Assert.Empty(plan.Identifiers);
+        // the reviewer chooses the other survivor and leaves the person out
+        string[] firm = [placeholder.Id, ulan, loc, limited.Id, beetles.Id];
+        var chosen = await desk.PlanTogetherAsync(ds, ltd.Id, firm, beetles.Id);
+        Assert.Equal(beetles.Id, chosen.Survivor.Id);
+        Assert.Equal([placeholder.Id, limited.Id], chosen.Merging.Select(e => e.Id));
+
+        var entity = await desk.AcceptTogetherAsync(ds, ltd.Id, firm, "tester", "the gallery", beetles.Id, mergeOurs: true);
+        Assert.Equal(beetles.Id, entity.Id);
+        Assert.Equal([loc, ulan], entity.Equivalents.Select(q => q.Uri).OrderBy(x => x));
+        Assert.Equal(beetles.Id, (await pg.Store.ResolveEntityAsync(limited.Id))!.Id); // merged into the survivor
+        Assert.Equal(beetles.Id, (await pg.Store.ResolveEntityAsync(placeholder.Id))!.Id); // the string's own placeholder folded in
+        Assert.Equal(EntityStatus.Provisional, (await pg.Store.GetEntityAsync(person.Id))!.Status); // the man, left alone
+        var decision = (await pg.Store.DecisionForAsync(ltd.Id))!;
+        Assert.Equal(DecisionMethod.Human, decision.Method); Assert.Equal(beetles.Id, decision.EntityId);
+        Assert.Contains(limited.Id, decision.EvidenceJson); // the merge is in the evidence
+        Assert.Equal(2, (await pg.Store.StringsForEntityAsync(beetles.Id)).Count); // its own string and this one; the merged entity had none
+        Assert.Single(await pg.Store.NotesAsync(ds, ReviewService.StringTarget(ltd.Id)));
+        // undo takes back the decision, not the merge
+        await desk.UndoAsync(ds, ltd.Id);
+        Assert.Equal(DecisionMethod.Queued, (await pg.Store.DecisionForAsync(ltd.Id))!.Method);
+        Assert.Equal(beetles.Id, (await pg.Store.ResolveEntityAsync(limited.Id))!.Id);
+    }
 }

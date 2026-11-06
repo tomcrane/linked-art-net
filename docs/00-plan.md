@@ -218,6 +218,14 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
+- Evidence overtaken by a merge (2026-11-06, the owner at the next Chris Beetles string: three store cards with three
+  URIs, the survivor, the entity merged into it that morning and the placeholder folded in, each with the survivor's
+  facts line and the run's old label and reason, "a placeholder awaiting review: carries nothing" among them; the
+  owner feared the paths differed, and none does: "Same as" follows the merge, "Accept" on a record finds the entity
+  holding it). The card of an entity merged since the evidence was written says "now merged into X"; cards that are now
+  one entity are marked the same as the one above; a line above the candidates says the store has changed since this
+  evidence was written, with "Look again" beside it. Small: the facts are loaded already, and the test is a merge
+  between the decision and the desk.
 - ~~The desk finishes a name before it leaves it~~ (built 2026-11-06, the owner after the first merge: "Also waiting
   under this name" on every item, the next item drawn from those first with the banner saying so, the entity page's
   "Waiting at the desk under this name"; `QueuedByKeysAsync` in the store; doc 12 section 5, doc 13).

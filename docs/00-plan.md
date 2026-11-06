@@ -509,10 +509,9 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Housekeeping and release** (Phase 4):
 
-- `manifest --use-default` says what it replaced (2026-11-06, the owner, told it would print the drift and seeing
-  "the PMC library rules are now its saved manifest" alone): print the differences the saved manifest had from the
-  library rules, as the plain `manifest` command and the reconcile's header do, before saving. One line in
-  tools/Align, after the run that is using it.
+- ~~`manifest --use-default` says what it replaced~~ (built 2026-11-06: "replacing the trades (none against auction,
+  ...)" before the save, "already equals the PMC library rules; saved again unchanged" when nothing drifted, "no saved
+  manifest" when the project had none).
 - 1.0 releases of both packages (decoupled; NuGet publishing deferred, owner 2026-10-13); submit the parser and service
   to linked.art/software.
 - Weekly scheduled jobs (site JSON refresh, Getty label check); no workflow has a `schedule` trigger yet.

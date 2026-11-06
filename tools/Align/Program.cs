@@ -284,6 +284,9 @@ switch (args[0])
             var project = await store.GetProjectAsync(dataset);
             var now = DateTimeOffset.UtcNow;
             var json = ProjectManifest.PmcDefault.ToJson();
+            // say what is being replaced before it goes (the owner, 2026-11-06, told the command would print the drift and shown only that it saved)
+            var replaced = project?.ManifestJson is null ? ["no saved manifest"] : ProjectManifest.FromJson(project.ManifestJson).Differences(ProjectManifest.PmcDefault, "the saved manifest", "the library rules");
+            Console.WriteLine(replaced.Count == 0 ? $"project {dataset}: the saved manifest already equals the PMC library rules; saved again unchanged" : $"project {dataset}: replacing {string.Join("; ", replaced)}");
             await store.UpsertProjectAsync(project is null ? new Project(dataset, dataset, null, scheme.Base, json, now, now) : project with { ManifestJson = json, UpdatedAt = now });
             Console.WriteLine($"project {dataset}: the PMC library rules are now its saved manifest");
             return 0;

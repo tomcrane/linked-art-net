@@ -73,6 +73,18 @@
             </div>
         }
 
+        @if (Model.Waiting.Count > 0)
+        {
+            <h2>Waiting at the desk under this name (@Model.Waiting.Count)</h2>
+            <p class="small">
+            @for (var i = 0; i < Model.Waiting.Count; i++)
+            {
+                var w = Model.Waiting[i];
+                if (i > 0) { <text> · </text> }
+                <a href="/p/@Model.Dataset/review?id=@w.String.Id">"@w.String.Raw" in @w.String.Context</a>
+            }
+            </p>
+        }
         <h2>Strings that resolve here (@v.Strings.Count)</h2>
         <form method="post" asp-page-handler="Reopen">
             <input type="hidden" name="id" value="@e.Id" />

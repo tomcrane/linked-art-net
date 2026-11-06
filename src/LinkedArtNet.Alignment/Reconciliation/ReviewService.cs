@@ -37,7 +37,8 @@ public sealed record TogetherPlan(Entity Survivor, IReadOnlyList<Entity> Merging
 
 /// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, the records behind the candidates, the project's own entities among the candidates with their facts, and the catalogue records the string was seen in.</summary>
 /// <param name="LookedAgain">Set when the evidence shown is a fresh evaluation under today's rules, not the decision's own: what the string would be decided as now ("queued", "accepted", ...). The stored decision is unchanged.</param>
-public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, string? LookedAgain = null)
+/// <param name="Siblings">The other queued strings under this string's name (its own key, its reading's keys, its entity's labels), in list order: the desk finishes a name before it leaves it (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd").</param>
+public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, IReadOnlyList<DecidedString> Siblings, string? LookedAgain = null)
 {
     public bool IsQueued => Decision.Method == DecisionMethod.Queued;
 }
@@ -96,8 +97,36 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var entities = new Dictionary<string, EntityFacts>(StringComparer.Ordinal);
         foreach (var uri in evidence.Groups.SelectMany(g => g.Members).Where(m => m.IsStore || scheme.Owns(m.Uri)).Select(m => m.Uri).Distinct(StringComparer.Ordinal).Take(12))
             if (await FactsAsync(uri, ct) is { } facts) entities[uri] = facts;
-        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, lookedAgain);
+        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, await SiblingsAsync(decided.String, entity, ct), lookedAgain);
     }
+
+    /// <summary>
+    /// The other queued strings under a string's name, in list order, so that the desk finishes a name before it leaves it (the owner,
+    /// 2026-11-06: after the merge at "Chris Beetles Ltd" the desk moved on while the person placeholder's own "Chris Beetles" and the
+    /// other fields' strings of the name were still waiting). The name is the string's own key, its reading's keys and the labels of the
+    /// entity it was decided onto, the one just made or chosen when an action has run.
+    /// </summary>
+    public async Task<IReadOnlyList<DecidedString>> SiblingsAsync(string dataset, long stringId, Entity? entity = null, CancellationToken ct = default)
+    {
+        var decided = await OwnAsync(dataset, stringId, ct);
+        entity ??= decided.Decision.EntityId is null ? null : await store.ResolveEntityAsync(decided.Decision.EntityId, ct);
+        return await SiblingsAsync(decided.String, entity, ct);
+    }
+
+    /// <summary>The queued strings under an entity's name, for its page: what is still waiting at the desk for it.</summary>
+    public async Task<IReadOnlyList<DecidedString>> WaitingForAsync(string dataset, Entity entity, CancellationToken ct = default) =>
+        (await store.QueuedByKeysAsync(dataset, LabelKeys(entity).ToList(), 20, ct)).Where(x => x.Decision.EntityId != entity.Id).ToList();
+
+    private async Task<IReadOnlyList<DecidedString>> SiblingsAsync(SourceString s, Entity? entity, CancellationToken ct)
+    {
+        var keys = new HashSet<string>(StringComparer.Ordinal) { s.Normalised };
+        foreach (var k in reconciler.Read(s).Keys) keys.Add(k);
+        if (entity is not null) foreach (var k in LabelKeys(entity)) keys.Add(k);
+        return (await store.QueuedByKeysAsync(s.Dataset, keys.ToList(), 20, ct)).Where(x => x.String.Id != s.Id).ToList();
+    }
+
+    private static IEnumerable<string> LabelKeys(Entity entity) =>
+        entity.Labels.Append(entity.Label).OfType<string>().Distinct(StringComparer.Ordinal).SelectMany(l => NameMatcher.Keys(l).Append(StringKey.Normalise(l))).Distinct(StringComparer.Ordinal);
 
     /// <summary>The facts of one of the project's own entities for its card: the entity (followed through a merge), its strings, and the records behind the most frequent of them, three at most.</summary>
     public async Task<EntityFacts?> FactsAsync(string entityId, CancellationToken ct = default)

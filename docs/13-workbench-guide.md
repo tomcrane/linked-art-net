@@ -112,6 +112,10 @@ Actions:
   judged without opening its page. When two of the project's entities hold records of one group, the authorities say
   they are one thing and the store has two: the group says so and offers to merge them and accept the string onto
   the survivor, through the same confirm step.
+- **Also waiting under this name**, above the records: the other queued strings of the same name, in any field, each
+  a link. After an action the desk goes to those first, and says so in the message, before it moves on down the
+  list, so a name is finished before the desk leaves it. The entity page lists the same under "Waiting at the desk
+  under this name".
 - **Skip for now** leaves it in the queue. **Add note** leaves a message for another reviewer. **Undo last decision**
   puts the previous decision back.
 - After an action, the message at the top of the next item names the entity it made or chose, with a link, so you

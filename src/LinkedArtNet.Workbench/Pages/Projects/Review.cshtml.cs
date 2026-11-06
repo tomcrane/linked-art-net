@@ -106,6 +106,12 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         {
             return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id });
         }
-        return Flash(done.Message, new { dataset = Dataset, method = Method, context = Context, after = id }, done.Entity);
+        // the desk finishes a name before it leaves it: the other queued strings under this one's name come next, in list order, and only
+        // then the list goes on (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd")
+        var siblings = await Project.Desk.SiblingsAsync(Dataset, id, done.Entity);
+        if (siblings.Count == 0) return Flash(done.Message, new { dataset = Dataset, method = Method, context = Context, after = id }, done.Entity);
+        var next = siblings[0];
+        var more = siblings.Count - 1;
+        return Flash($"{done.Message} Next: \"{next.String.Raw}\" in {next.String.Context}, also under this name{(more == 0 ? "" : $" ({more} more)")}.", new { dataset = Dataset, method = Method, context = Context, id = next.String.Id }, done.Entity);
     }
 }

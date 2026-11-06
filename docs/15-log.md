@@ -34,7 +34,8 @@ on the owner's word the same morning (ReviewService: EntityFacts on the item, Pl
 merging on the reviewer's word; the desk's cards, group head and confirm panel; the guide), with a service test and a
 page test; every test project green. Used at once, and the owner found the desk moving on while the name still had
 work in the queue (the person placeholder's string, the other fields' strings): the desk finishing a name before it
-leaves it is the next desk item, recorded in plan section 7.
+leaves it was built on the word the same morning ("Also waiting under this name" on the item and the entity page, the
+next item drawn from them first; the store's queued-by-key lookup; the two desk tests extended).
 
 ## 2026-11-05
 

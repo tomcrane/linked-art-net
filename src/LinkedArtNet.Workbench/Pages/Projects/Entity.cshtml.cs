@@ -17,6 +17,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<AuthorityRecord> Found { get; private set; } = [];
     /// <summary>The catalogue records the entity's strings were seen in, by string (the owner, 2026-11-05: on a placeholder's page, nothing said what the records it stood in were about).</summary>
     public IReadOnlyList<(SourceString String, IReadOnlyList<StringExample> Examples)> Examples { get; private set; } = [];
+    /// <summary>The queued strings under this entity's name, still waiting at the desk (the owner, 2026-11-06, after the first merge: the banner's link to the survivor should show what is left to do under its name).</summary>
+    public IReadOnlyList<DecidedString> Waiting { get; private set; } = [];
     public string? Message { get; private set; }
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
@@ -39,6 +41,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
             if (seen.Count >= 8) break;
         }
         Examples = examples;
+        Waiting = await Project.Desk.WaitingForAsync(Dataset, view.Entity);
         return Page();
     }
 

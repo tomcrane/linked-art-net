@@ -33,7 +33,8 @@
     <strong>Same as this</strong> (an entity the project already has); search for <strong>something else</strong>; or
     <strong>Keep as local authority</strong> when it is real and none of the cards is it. A card that is one of the project's own
     entities says what it stands for and holds; when two of them hold records of one group, the group says so and offers to merge them
-    and accept the string onto the survivor, showing what will happen first. Not sure? <strong>Skip for now</strong>,
+    and accept the string onto the survivor, showing what will happen first. The other queued strings under the same name are listed
+    above the records, and after an action the desk goes to them before it moves on. Not sure? <strong>Skip for now</strong>,
     or leave a <strong>note</strong> for another reviewer. Every decision can be undone. <a href="/help#the-desk">The guide</a>
     has the rest.</p>
 </details>
@@ -61,6 +62,18 @@ else
             @if (reading.Nationalities is { Count: > 0 }) { <dt>Nationality</dt><dd>@string.Join(", ", reading.Nationalities)</dd> }
             @if (item.Entity is not null) { <dt>Currently</dt><dd><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener" title="The entity's page">@item.Entity.Label</a> <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span> <code class="small">@item.Entity.Id</code></dd> }
         </dl>
+    }
+    @if (item.Siblings.Count > 0)
+    {
+        @* the other queued strings under this name; after an action the desk goes to these first (the owner, 2026-11-06) *@
+        <p class="small"><strong>Also waiting under this name:</strong>
+        @for (var i = 0; i < item.Siblings.Count; i++)
+        {
+            var sib = item.Siblings[i];
+            if (i > 0) { <text> · </text> }
+            <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = sib.String.Id })">"@sib.String.Raw" in @sib.String.Context</a>
+        }
+        <span class="muted">· after an action the desk goes to these first</span></p>
     }
     @if (item.Examples.Count > 0)
     {

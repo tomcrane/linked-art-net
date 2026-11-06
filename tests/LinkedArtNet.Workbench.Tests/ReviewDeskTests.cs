@@ -210,9 +210,15 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var group = new LinkedArtNet.Alignment.Reconciliation.CandidateGroup([Member(ulan, "ulan", "Chris Beetles", 0.97), Member(loc, "loc", "Chris Beetles Limited", 0.97), Member(limited.Id, "store", "Chris Beetles Limited", 0.95, limited.Id), Member(beetles.Id, "store", "Chris Beetles", 0.95, beetles.Id)], 0.97, ["ulan", "loc"], [ulan, loc, limited.Id, beetles.Id]);
         var own = new LinkedArtNet.Alignment.Reconciliation.CandidateGroup([Member(placeholder.Id, "store", "Chris Beetles Ltd", 1.0, placeholder.Id)], 1.0, ["store"], [placeholder.Id]);
         await store.DecideAsync(ltd.Id, placeholder.Id, DecisionMethod.Queued, LinkedArtNet.Alignment.Reconciliation.Reconciler.Evidence("queued", project.Reconciler.Read(ltd), [own, group], null));
+        // the man, queued under the same name in another field
+        var man = await store.CollectAsync(ds, "persauthorfull", "Chris Beetles");
+        var person = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Chris Beetles", ["Chris Beetles"]), project.Scheme);
+        await store.DecideAsync(man.Id, person.Id, DecisionMethod.Queued, "{}");
 
-        // the cards say what the entities are and what put them in the group; the group offers the merge
+        // the cards say what the entities are and what put them in the group; the group offers the merge; the man's string is listed as waiting
         var desk = await owner.GetStringAsync($"/p/{ds}/review?id={ltd.Id}");
+        Assert.Contains("Also waiting under this name", desk);
+        Assert.Contains($"id={man.Id}\"", desk); // the link to the man's string (the page's own link carries the list's method first)
         Assert.Contains("the project's entity, holding ulan&#x27;s 500301722", desk); // Razor encodes the apostrophe the view writes
         Assert.Contains("the project's entity, holding loc&#x27;s n89672369", desk);
         Assert.Contains("a placeholder for &quot;Chris Beetles Ltd&quot; in corpauthor", desk);
@@ -241,7 +247,15 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Equal([loc, ulan], survivor.Equivalents.Select(q => q.Uri).OrderBy(x => x));
         var decision = (await store.DecisionForAsync(ltd.Id))!;
         Assert.Equal(DecisionMethod.Human, decision.Method); Assert.Equal(limited.Id, decision.EntityId);
-        Assert.Contains("Merged and accepted together", await owner.GetStringAsync(done.Headers.Location!.ToString()));
+        // the desk goes to the man's string next, not down the list, and says so; the survivor's page lists it as waiting
+        Assert.Contains($"id={man.Id}", done.Headers.Location!.ToString());
+        var next = await owner.GetStringAsync(done.Headers.Location!.ToString());
+        Assert.Contains("Merged and accepted together", next);
+        Assert.Contains("also under this name", next);
+        Assert.Contains("persauthorfull", next);
+        var page = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(limited.Id)}");
+        Assert.Contains("Waiting at the desk under this name (1)", page);
+        Assert.Contains($"review?id={man.Id}", page);
     }
 
     private static string Token(string page)

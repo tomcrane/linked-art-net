@@ -187,6 +187,8 @@ public class ReviewServiceTests(PostgresFixture pg)
         Assert.False(item.Entities[beetles.Id].IsPlaceholder);
         Assert.Equal(["corpauthor"], item.Entities[beetles.Id].Contexts);
         Assert.Single(item.Entities[beetles.Id].Strings);
+        // and the other queued string under the name, the man's; the earlier string, decided, is not waiting
+        Assert.Equal([man.Id], item.Siblings.Select(x => x.String.Id));
 
         // every card ticked: refused until the plan has been seen; the plan names the survivor (the first with authority behind it), the
         // entities merging into it, and the records to add (none: each is held already)
@@ -213,6 +215,9 @@ public class ReviewServiceTests(PostgresFixture pg)
         Assert.Contains(limited.Id, decision.EvidenceJson); // the merge is in the evidence
         Assert.Equal(2, (await pg.Store.StringsForEntityAsync(beetles.Id)).Count); // its own string and this one; the merged entity had none
         Assert.Single(await pg.Store.NotesAsync(ds, ReviewService.StringTarget(ltd.Id)));
+        // the desk finishes the name before it leaves it: the man's string is what comes next, and the survivor's page knows it is waiting
+        Assert.Equal([man.Id], (await desk.SiblingsAsync(ds, ltd.Id, entity)).Select(x => x.String.Id));
+        Assert.Equal([man.Id], (await desk.WaitingForAsync(ds, entity)).Select(x => x.String.Id));
         // undo takes back the decision, not the merge
         await desk.UndoAsync(ds, ltd.Id);
         Assert.Equal(DecisionMethod.Queued, (await pg.Store.DecisionForAsync(ltd.Id))!.Method);

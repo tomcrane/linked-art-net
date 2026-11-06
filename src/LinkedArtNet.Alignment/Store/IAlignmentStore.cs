@@ -108,6 +108,8 @@ public interface IAlignmentStore
 
     /// <summary>Strings of the dataset with a valid decision to an entity, by string id after <paramref name="afterStringId"/>, optionally of one method and context; <paramref name="sample"/> returns a random page instead.</summary>
     Task<IReadOnlyList<DecidedString>> DecidedStringsAsync(string dataset, string? method = null, string? context = null, long afterStringId = 0, int limit = 500, bool sample = false, CancellationToken ct = default);
+    /// <summary>The queued strings of a dataset whose normalised text is one of the keys, in id order: a string's siblings under its name, for the desk to finish a name before it leaves it (2026-11-06).</summary>
+    Task<IReadOnlyList<DecidedString>> QueuedByKeysAsync(string dataset, IReadOnlyList<string> keys, int limit = 20, CancellationToken ct = default);
 
     /// <summary>The valid decisions a run made, oldest first, optionally of one method ("queued", "minted"), with their strings.</summary>
     Task<IReadOnlyList<DecidedString>> DecisionsForRunAsync(string runId, string? method = null, int limit = 50, string? context = null, CancellationToken ct = default);

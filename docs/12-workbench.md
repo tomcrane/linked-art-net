@@ -88,7 +88,10 @@ score band, run, assignment, and a search box; a count of what is left; and the 
   "Chris Beetles Ltd": two aligned entities and two placeholders of the name in one group, told apart only by their
   pages); a group holding two firm entities of the project's says the store disagrees with itself and offers the
   merge as its own action, through "Accept the ticked together", which with two or more of our entities among the
-  ticked shows the plan (survivor, merging, identifiers added) and asks before it is done;
+  ticked shows the plan (survivor, merging, identifiers added) and asks before it is done; the other queued strings
+  under the string's name (its key, its reading's keys, its entity's labels) are listed on the item, and after an
+  action the desk goes to them before it moves on down the list (2026-11-06, the owner after the first merge: the
+  desk had moved on while the name still had work in the queue); the entity page lists the same as waiting;
 - the model's proposal when one has been asked for, with its capped confidence and the note it gave.
 
 Actions, each a key: **accept** a group (decision `human`; the entity is created or reused exactly as a vote would do

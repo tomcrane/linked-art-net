@@ -622,6 +622,25 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    public async Task<IReadOnlyList<DecidedString>> QueuedByKeysAsync(string dataset, IReadOnlyList<string> keys, int limit = 20, CancellationToken ct = default)
+    {
+        if (keys.Count == 0) return [];
+        await using var cmd = _db.CreateCommand(
+            $"select s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences, {DecisionColumns} " +
+            "from source_strings s join decisions d on d.source_string_id = s.id and d.valid and d.entity_id is not null " +
+            "where s.dataset = @dataset and d.method = 'queued' and s.normalised = any(@keys) order by s.id limit @limit");
+        Add(cmd, "dataset", dataset); Add(cmd, "keys", keys.ToArray()); Add(cmd, "limit", limit);
+        var list = new List<DecidedString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+        {
+            var s = ReadString(r);
+            var d = new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18), r.IsDBNull(19) ? null : r.GetInt64(19));
+            list.Add(new DecidedString(s, d));
+        }
+        return list;
+    }
+
     public async Task LinkPartAsync(long parentId, int position, long partId, string? role = null, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand("insert into source_string_parts (parent_id, position, part_id, role) values (@parent, @position, @part, @role) on conflict (parent_id, position) do update set part_id = excluded.part_id, role = excluded.role");

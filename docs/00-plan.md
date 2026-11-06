@@ -488,6 +488,21 @@ and the log (doc 15) records that. The order within an area is rough value.
         and not exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source in ('tgn', 'loc', 'lcsh', 'ulan', 'aat'))
       group by 1 order by 2 desc;
 
+  Counted (the owner, 2026-11-06): of the 2,191, 2,126 have their Wikidata item in the store's index and 2,023 reach a
+  local record through it (Person 1,566 of 1,642; Place 369 of 453; Group 88 of 96). The pass, shaped and waiting on
+  the owner's word: an Align command `align-through-wikidata [--dataset]`, a run of its own (so `undo-run` takes it
+  back, equivalents and all). For each aligned entity of the dataset with a Wikidata equivalent and no record of the
+  local indexes: read the Wikidata record from the store; of its `same_as`, the URIs of the local indexes whose record
+  the store holds and whose class fits the entity's (TGN for a place; ULAN and LoC for a person or a body; AAT for a
+  type); when the item links one record per source, each becomes an equivalent of the entity with method
+  `through-wikidata`, confidence 1, the pass's run id; an item linking two records of one source (a city and its
+  borough) is reported and left alone. The report: entities read, equivalents added by source, items skipped and why.
+  Then the next reconcile measures it on the 104 strings (plan command 4): "Birmingham (England)" onto the project's
+  Birmingham by finding 35 once its group holds TGN's city, two legacy Birminghams of England both holding it sent to
+  the desk by the holders check, and the duplicates page listing such pairs. Test: an entity aligned to a Wikidata
+  item whose record links TGN gains the TGN id; one linking two TGN records gains nothing and is reported; a heading
+  of the name is then accepted onto the entity by finding 35.
+
 - A queued string's placeholder takes the context's first class (keywords:head: a Type), and a qualified place string's
   placeholder ("Colchester (England)", "Birmingham (England)") is a concept on its entity page until the desk decides it.
   The placeholder's class should follow the reading where the reading is plain: a qualifier that places it, a place.

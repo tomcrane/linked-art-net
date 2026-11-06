@@ -489,8 +489,9 @@ and the log (doc 15) records that. The order within an area is rough value.
       group by 1 order by 2 desc;
 
   Counted (the owner, 2026-11-06): of the 2,191, 2,126 have their Wikidata item in the store's index and 2,023 reach a
-  local record through it (Person 1,566 of 1,642; Place 369 of 453; Group 88 of 96). The pass, shaped and waiting on
-  the owner's word: an Align command `align-through-wikidata [--dataset]`, a run of its own (so `undo-run` takes it
+  local record through it (Person 1,566 of 1,642; Place 369 of 453; Group 88 of 96). The pass, built on the owner's
+  word the same evening (doc 10 7.6 "Built 2026-11-06, the pass through Wikidata"; ThroughWikidataTests; the next
+  reconcile after it is run measures it on the 104 strings): an Align command `align-through-wikidata [--dataset]`, a run of its own (so `undo-run` takes it
   back, equivalents and all). For each aligned entity of the dataset with a Wikidata equivalent and no record of the
   local indexes: read the Wikidata record from the store; of its `same_as`, the URIs of the local indexes whose record
   the store holds and whose class fits the entity's (TGN for a place; ULAN and LoC for a person or a body; AAT for a

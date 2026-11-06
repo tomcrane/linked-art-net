@@ -87,7 +87,14 @@ the name, but three of the project's legacy places labelled "Birmingham", aligne
 TGN or LoC record, unplaced, which nothing joins to the index groups, so finding 35 cannot reach and the strings are
 the desk's; the count of 35 had taken other strings' Type placeholders for bodies. The rule to shape, on the plan with
 three counts: an aligned entity joins the group whose TGN or LoC record reaches its Wikidata item. And the way from a
-placeholder's entity page to its own desk page, missing, a desk item.
+placeholder's entity page to its own desk page, missing, a desk item. The counts (the owner): different classes 4,
+the same class 108, 104 with a legacy aligned entity at 1.00; the reach 2,191 such entities, 2,023 reaching a local
+record through the Wikidata records the store holds. So a pass over the store rather than a rule at evaluation time,
+shaped on the plan, the owner's word given ("yes to the pass, if you think it worthwhile") while the rerun measuring
+finding 110 ran, and built as the run ran: `align-through-wikidata`, a run of its own, one record per source, method
+`through-wikidata`, reversible by undo-run (doc 10 7.6 "Built 2026-11-06, the pass through Wikidata";
+ThroughWikidataTests, where the heading goes from queued to the England entity by the store stage itself once the
+entity is placed through its TGN record; every test project green).
 
 ## 2026-11-05
 

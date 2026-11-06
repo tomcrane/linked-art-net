@@ -295,6 +295,20 @@ switch (args[0])
         return 0;
     }
 
+    case "align-through-wikidata":
+    {
+        // the pass over the legacy alignments (2026-11-06): aligned entities with a Wikidata item and no local record gain the TGN,
+        // LoC, ULAN and AAT records their item names, one per source, as a run of its own (undo-run takes it back)
+        var run = await store.StartRunAsync(dataset, null, "{\"pass\":\"through-wikidata\"}");
+        Console.Error.WriteLine($"run {run.Id}: through wikidata over {dataset}");
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {DateTime.Now:HH:mm:ss} {m}"));
+        var report = await new ThroughWikidata(store).RunAsync(dataset, run.Id, progress);
+        await store.FinishRunAsync(run.Id, System.Text.Json.JsonSerializer.Serialize(report), report.ToString());
+        Console.WriteLine($"run {run.Id}: {report}");
+        foreach (var a in report.Ambiguous) Console.WriteLine($"  left alone: {a}");
+        return 0;
+    }
+
     case "undo-run":
     {
         var runId = Option("--run");
@@ -366,6 +380,9 @@ static void Usage() => Console.WriteLine(
                                              flagged ones (--all includes the clean gains too)
       manifest [--dataset] [--use-default]   print the manifest in force and whether it matches the PMC library rules;
                                              --use-default saves the library rules as the project's manifest
+      align-through-wikidata [--dataset]     the legacy alignments: an aligned entity with a Wikidata item and no record of the local
+                                             indexes gains the TGN, LoC, ULAN and AAT records its item names, one per source, as a run
+                                             of its own; an item naming two records of one source is listed and left alone
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
       collect-examples --file <export.xml> [--source name] [--per-string 3] [--keywords <pmc_subjects_csv.sql>] [--dataset]
                                              the records behind the strings, for the desk: reads a Heritage library export and keeps up

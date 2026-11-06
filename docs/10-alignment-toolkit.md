@@ -1259,6 +1259,25 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-06, the pass through Wikidata (the owner's word, after "Birmingham (England)" at the desk): three of the
+project's places labelled "Birmingham", aligned by the legacy pipeline to Wikidata, VIAF and LUX and to no TGN or LoC
+record, unplaced, stood at 1.00 beside TGN's city with LoC's heading whole, and nothing in the index stage could join
+them, so the heading and the bare name in keywords:sub were the desk's; 108 queued strings tie between two or more
+such entities of one class, 104 of them with a legacy one at 1.00, and the shape is 2,191 aligned entities of that
+kind (Person 1,642, Place 453, Group 96), 2,023 of which reach a local record through their item, since the store
+holds the Wikidata records whose sameAs carries the TGN, LoC and ULAN URIs (the prominence lookup reads them). The
+pass (`align-through-wikidata`, a run of its own, so `undo-run` takes it back): for each such entity, the records its
+item names that the store holds and that are of the entity's class become equivalents with method `through-wikidata`,
+one per source; an item naming two records of one source (a city and its borough) is listed and that source left
+alone; an item the store lacks, or one reaching no record of the class, is counted. Then the rules reach the legacy
+entities unchanged, and sooner than expected: an entity placed through its new TGN record is taken by the store stage
+itself when the heading's qualifier bears the placement out (findings 84 and 106), before the indexes are asked, and
+an entity of the name placed elsewhere is left; two legacy entities of one place, both holding its record, meet at
+the desk as holders to merge. ThroughWikidataTests: the England and Alabama Birminghams gain their records, Cambridge's
+item naming two TGN records gains none and is listed, Antwerp's absent item is counted, the heading goes from queued to
+the England entity, and the undo leaves the entities aligned by their items. Measured by the run after the pass is
+run: the 104 strings, and whatever the holders check sends to the desk.
+
 Built 2026-11-06, finding 110: a record that lost in the first pass does not answer silently in the second. Counted on
 jr8hf5 over the second pass's exact-name settlements onto an entity whose label is not the string (87): 73 had one of
 the entity's records at the string's own top score, 11 were onto an entity with no records (the lookalike policy, a

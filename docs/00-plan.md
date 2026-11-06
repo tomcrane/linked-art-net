@@ -71,7 +71,17 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. ~~The runs of 2026-11-05~~ (v6gjx5 and cpxv7k, read in doc 10 7.6; nothing stands).
+2. Findings 108 and 109 measured by a run (doc 10 7.6 "Built 2026-11-06, findings 108 and 109"): the saved manifest
+   brought up to the library rules first, since the `trades` key is new to it; cpxv7k taken back and its strings
+   decided again (the desk's own decisions stand); then the standing diff of command 4 against cpxv7k. Expected: some
+   140 queued strings to single (the heading as written in keywords, keywords:head, keywords:sub and place; the
+   honorific names in publisher and corpauthor, "Mr Hone"'s kind staying queued), the day's desk decisions reaching
+   their twins by exact name, and nothing else moving. With the workbench stopped:
+
+       dotnet run --project tools/Align -- manifest --use-default
+       dotnet run --project tools/Align -- undo-run --run run-20261105-151954-cpxv7k
+       dotnet run --project tools/Align -- reconcile
+
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):

@@ -225,9 +225,11 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     /// and every other target an equivalent the reviewer vouched for. Two or more of our entities among them are a merge (the owner,
     /// 2026-11-06, at "Chris Beetles Ltd": the firm's two entities, each aligned to a different authority, in one group with two
     /// placeholders): done here, into the survivor chosen, only when <paramref name="mergeOurs"/> says the reviewer has seen the
-    /// <see cref="TogetherPlan"/> and agreed, since a merge is not undone by Undo.
+    /// <see cref="TogetherPlan"/> and agreed, since a merge is not undone by Undo. With <paramref name="always"/>, the spelling is
+    /// overridden to the entity in the string's field as well, as <see cref="OverrideAsync"/> does for one record (the group's own
+    /// "Always, in this field", 2026-11-06).
     /// </summary>
-    public async Task<Entity> AcceptTogetherAsync(string dataset, long stringId, IReadOnlyList<string> targetUris, string reviewer, string? note = null, string? survivorId = null, bool mergeOurs = false, CancellationToken ct = default)
+    public async Task<Entity> AcceptTogetherAsync(string dataset, long stringId, IReadOnlyList<string> targetUris, string reviewer, string? note = null, string? survivorId = null, bool mergeOurs = false, bool always = false, CancellationToken ct = default)
     {
         var decided = await OwnAsync(dataset, stringId, ct);
         var targets = Targets(targetUris);
@@ -248,7 +250,17 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         foreach (var t in targets.Where(t => !scheme.Owns(t)))
             if (entity.Equivalents.All(q => q.Uri != t)) await store.AddEquivalentAsync(entity.Id, new Equivalent(t, AuthorityUris.SourceOf(t), DecisionMethod.Human, 1.0, now), ct);
         await FoldProvisionalAsync(decided, entity, reviewer, ct);
-        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept-together", reading, new { targets, entity = entity.Id, merged = plan?.Merging.Select(m => m.Id).ToList(), note }), reviewer, ct: ct);
+        var merged = plan?.Merging.Select(m => m.Id).ToList();
+        if (always)
+        {
+            // the override this one replaces, in the same scope, is kept in the evidence so an undo can put it back
+            var scope = decided.String.Context;
+            var previous = await store.OverrideForAsync(dataset, scope, decided.String.Normalised, ct);
+            previous = previous is not null && previous.Context == scope ? previous : null;
+            await store.PutOverrideAsync(new Override(dataset, scope, decided.String.Normalised, entity.Id, "workbench:" + reviewer, $"\"{decided.String.Raw}\" → {entity.Id}" + (note is null ? "" : $" ({note})")), ct);
+            await store.DecideAsync(stringId, entity.Id, DecisionMethod.Override, Evidence("accept-together", reading, new { targets, entity = entity.Id, merged, note, overrideKey = decided.String.Normalised, overrideContext = scope, previousOverride = previous is null ? null : new { previous.Target, previous.Source, previous.Note } }), reviewer, ct: ct);
+        }
+        else await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept-together", reading, new { targets, entity = entity.Id, merged, note }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }

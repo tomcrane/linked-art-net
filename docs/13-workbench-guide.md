@@ -94,19 +94,28 @@ record's does. The entity under "Currently" and the project's entities among the
 
 Actions:
 
+- Each box is a group: one authority record, or several records the software says are the same thing, with the
+  project's own entities among them when they hold those records. The group's button is its action; a row of a group
+  of several has only a quiet **just this one**, for the rare case where one record is the answer and the rest are
+  not.
 - **Accept**: the string is this record. An entity is created for it, or reused if one already has that identifier.
+  **Accept these as one**: the string is this group, one entity with all its identifiers. **Same as X** on a group:
+  the string is the project's entity that holds the group's records, which gets any it does not hold yet.
 - **Always**: the same, and this exact spelling will mean this from now on in any field. Use it for a spelling that
   recurs.
 - **Same as this**: the string is an entity the project already has.
 - **Something else**: search the project's entities and the indexes for anything not among the candidates. The string's own provisional entity, the one under "Currently", is left out of the results: it is not something else.
 - **Keep as local authority**: none of the candidates is right and the thing is real. Give it the label it should be
   published under and, if useful, a note. The software stops asking about it.
-- **Accept the ticked together**: when two or more cards are the same thing (an auction house in ULAN and the same
+- **Accept the ticked together**: when two or more groups are the same thing (an auction house in ULAN and the same
   house as a person in the Library of Congress), tick "together" on each and accept them as one. One entity is made
   with all their identifiers. When two or more of the project's own entities are among the ticked, the desk first
   shows what will happen (which survives, which merge into it with their strings and identifiers, which identifiers
   are added) and asks; a merge is permanent, and Undo takes back the string's decision only.
-- A card that is one of the project's own entities says what it is (person, group, place; placeholder, aligned,
+- When the store has changed since the evidence was written (an entity here has since merged into another), a line
+  above the candidates says so, the merged entity's row says what it is now part of, and a row that stands for an
+  entity a row above already stands for says so; **Look again** shows the string as today's rules see it.
+- A row that is one of the project's own entities says what it is (person, group, place; placeholder, aligned,
   confirmed), what put it in its group ("holding ulan's 500301722"; "a placeholder for 'Chris Beetles' in
   persauthorfull"), how many strings it stands for and in which fields, and the records it was seen in, so it can be
   judged without opening its page. When two of the project's entities hold records of one group, the authorities say

@@ -222,5 +222,18 @@ public class ReviewServiceTests(PostgresFixture pg)
         await desk.UndoAsync(ds, ltd.Id);
         Assert.Equal(DecisionMethod.Queued, (await pg.Store.DecisionForAsync(ltd.Id))!.Method);
         Assert.Equal(beetles.Id, (await pg.Store.ResolveEntityAsync(limited.Id))!.Id);
+
+        // the group's "Always, in this field": accepted together and the spelling overridden to the entity in this field; undo removes the override
+        var pub = await pg.Store.CollectAsync(ds, "publisher", "Chris Beetles Ltd");
+        var pubPlaceholder = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Chris Beetles Ltd", ["Chris Beetles Ltd"]), scheme);
+        await pg.Store.DecideAsync(pub.Id, pubPlaceholder.Id, DecisionMethod.Queued, "{}");
+        var always = await desk.AcceptTogetherAsync(ds, pub.Id, [ulan, loc, beetles.Id], "tester", always: true);
+        Assert.Equal(beetles.Id, always.Id);
+        Assert.Equal(DecisionMethod.Override, (await pg.Store.DecisionForAsync(pub.Id))!.Method);
+        var rule = (await pg.Store.OverrideForAsync(ds, "publisher", pub.Normalised))!;
+        Assert.Equal(beetles.Id, rule.Target); Assert.Equal("publisher", rule.Context);
+        await desk.UndoAsync(ds, pub.Id);
+        Assert.Null(await pg.Store.OverrideForAsync(ds, "publisher", pub.Normalised));
+        Assert.Equal(DecisionMethod.Queued, (await pg.Store.DecisionForAsync(pub.Id))!.Method);
     }
 }

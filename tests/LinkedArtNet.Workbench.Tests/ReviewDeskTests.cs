@@ -214,6 +214,12 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var man = await store.CollectAsync(ds, "persauthorfull", "Chris Beetles");
         var person = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Chris Beetles", ["Chris Beetles"]), project.Scheme);
         await store.DecideAsync(man.Id, person.Id, DecisionMethod.Queued, "{}");
+        // and a second string of the name with the same evidence, to be read again after the merge (a decided string shows its decision's
+        // evidence, which has no candidates)
+        var pub = await store.CollectAsync(ds, "publisher", "Chris Beetles Ltd");
+        var pubPlaceholder = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Chris Beetles Ltd", ["Chris Beetles Ltd"]), project.Scheme);
+        var ownPub = new LinkedArtNet.Alignment.Reconciliation.CandidateGroup([Member(pubPlaceholder.Id, "store", "Chris Beetles Ltd", 1.0, pubPlaceholder.Id)], 1.0, ["store"], [pubPlaceholder.Id]);
+        await store.DecideAsync(pub.Id, pubPlaceholder.Id, DecisionMethod.Queued, LinkedArtNet.Alignment.Reconciliation.Reconciler.Evidence("queued", project.Reconciler.Read(pub), [ownPub, group], null));
 
         // the cards say what the entities are and what put them in the group; the group offers the merge; the man's string is listed as waiting
         var desk = await owner.GetStringAsync($"/p/{ds}/review?id={ltd.Id}");
@@ -225,9 +231,12 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("2 of the project's entities hold records of this group", desk);
         Assert.Contains("Merge them and accept this string onto the survivor", desk);
 
-        // ticking both of ours and accepting together goes to the confirm step, carrying the ticked cards; nothing is decided yet
+        Assert.Contains("just this one", desk); // the rows of a group of several carry the quiet link, not buttons
+        Assert.DoesNotContain("<button type=\"submit\">Accept</button>", desk);
+        // ticking the group (its tick carries the members in one value) and accepting together goes to the confirm step, carrying every
+        // member as a target of its own; nothing is decided yet
         var asked = await owner.PostAsync($"/p/{ds}/review?handler=AcceptTogether", new FormUrlEncodedContent(
-            [new("id", ltd.Id.ToString()), new("targets", ulan), new("targets", loc), new("targets", beetles.Id), new("targets", limited.Id), new("__RequestVerificationToken", Token(desk))]));
+            [new("id", ltd.Id.ToString()), new("targets", $"{ulan} {loc} {beetles.Id} {limited.Id}"), new("__RequestVerificationToken", Token(desk))]));
         Assert.Equal(HttpStatusCode.Redirect, asked.StatusCode);
         var where = asked.Headers.Location!.ToString();
         Assert.Contains("confirm=True", where);
@@ -253,9 +262,17 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("Merged and accepted together", next);
         Assert.Contains("also under this name", next);
         Assert.Contains("persauthorfull", next);
+        // the evidence, read again after the merge: the merged entity's row says so, the desk says the store has changed, and the group,
+        // now one entity holding both records, has one action
+        var after = await owner.GetStringAsync($"/p/{ds}/review?id={pub.Id}");
+        Assert.Contains("now merged into", after);
+        Assert.Contains("The store has changed since this evidence was written", after);
+        Assert.Contains("the same entity as a row above", after);
+        Assert.Contains("Same as Chris Beetles Limited", after);
+        Assert.DoesNotContain("Merge them and accept this string", after);
         var page = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(limited.Id)}");
-        Assert.Contains("Waiting at the desk under this name (1)", page);
-        Assert.Contains("1 waiting at the desk", page); // and the signal at the top of the page, beside the title (the owner, 2026-11-06)
+        Assert.Contains("Waiting at the desk under this name (2)", page);
+        Assert.Contains("2 waiting at the desk", page); // and the signal at the top of the page, beside the title (the owner, 2026-11-06)
         Assert.Contains($"review?id={man.Id}", page);
     }
 

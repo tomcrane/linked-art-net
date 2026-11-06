@@ -23,6 +23,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     [BindProperty(SupportsGet = true)] public bool Confirm { get; set; }
     [BindProperty(SupportsGet = true)] public string[]? Targets { get; set; }
     [BindProperty(SupportsGet = true)] public string? Survivor { get; set; }
+    /// <summary>"Always, in this field" on a group: accepted together and the spelling overridden to the entity in this field.</summary>
+    [BindProperty(SupportsGet = true)] public bool Always { get; set; }
 
     public ReviewItem? Item { get; private set; }
     public IReadOnlyList<ContextMethodCount> Queue { get; private set; } = [];
@@ -61,15 +63,18 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public Task<IActionResult> OnPostAcceptAsync(long id, string target, string? note) =>
         Act(id, async () => ("Accepted.", await Project.Desk.AcceptAsync(Dataset, id, target, Reviewer, note)));
 
-    public Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note, string? survivor, bool confirmed)
+    public Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note, string? survivor, bool confirmed, bool always)
     {
+        // a group's tick carries its members' URIs in one value, space-joined (the group is the card, 2026-11-06)
+        var all = (targets ?? []).SelectMany(t => t.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).Distinct(StringComparer.Ordinal).ToArray();
         // two or more of the project's own entities among the ticked are a merge: shown first, done on the reviewer's word
-        var ours = (targets ?? []).Where(Project.Scheme.Owns).Distinct(StringComparer.Ordinal).ToList();
-        if (ours.Count > 1 && !confirmed) return Task.FromResult<IActionResult>(RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, confirm = true, targets, survivor }));
+        var ours = all.Where(Project.Scheme.Owns).ToList();
+        if (ours.Count > 1 && !confirmed) return Task.FromResult<IActionResult>(RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, confirm = true, targets = all, survivor, always }));
         return Act(id, async () =>
         {
-            var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, targets ?? [], Reviewer, note, survivor, confirmed);
-            return (ours.Count > 1 ? $"Merged and accepted together: {entity.Label}, with {entity.Equivalents.Count} identifiers." : $"Accepted together, with {entity.Equivalents.Count} identifiers.", entity);
+            var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, all, Reviewer, note, survivor, confirmed, always);
+            var message = ours.Count > 1 ? $"Merged and accepted together: {entity.Label}, with {entity.Equivalents.Count} identifiers." : $"Accepted together, with {entity.Equivalents.Count} identifiers.";
+            return (always ? message + " This spelling will always mean it in this field." : message, entity);
         });
     }
 

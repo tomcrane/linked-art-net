@@ -40,7 +40,10 @@ page signals the waiting strings beside its title, a mark that jumps to the list
 next Chris Beetles string the owner asked what each path would do, five cards that were by then one entity under three
 URIs with the run's old reasons: every path lands on the survivor, and the desk's failure to say so is the next desk
 item (plan section 7: evidence overtaken by a merge). And at the same group, ten actions on the rows of a box that is
-one thing, and "card" read as the row: one action per group, the tick on the group, the rows quiet (plan section 7).
+one thing, and "card" read as the row: one action per group, the tick on the group, the rows quiet. Both built on the
+word the same day (doc 12 section 5, doc 13): the group's tick and action in its header, "Always, in this field" on a
+group as accept-together with the override, the rows of a group of several quiet; the merged entity's row says so, the
+desk says the store has changed, a second row for one entity says so; the two desk tests extended.
 
 ## 2026-11-05
 

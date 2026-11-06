@@ -91,7 +91,12 @@ score band, run, assignment, and a search box; a count of what is left; and the 
   ticked shows the plan (survivor, merging, identifiers added) and asks before it is done; the other queued strings
   under the string's name (its key, its reading's keys, its entity's labels) are listed on the item, and after an
   action the desk goes to them before it moves on down the list (2026-11-06, the owner after the first merge: the
-  desk had moved on while the name still had work in the queue); the entity page lists the same as waiting;
+  desk had moved on while the name still had work in the queue); the entity page lists the same as waiting; the group
+  is the card: its tick and its action ("Accept these as one", "Same as X" when it holds the project's entity, "Always,
+  in this field") are in its header and the rows of a group of several carry only a quiet "just this one" (2026-11-06,
+  the owner at the next Chris Beetles string: ten actions on the rows of a box that is one thing); and when an entity
+  in the evidence has merged since it was written, the desk says so above the candidates and on the row, and marks a
+  row that stands for an entity a row above already stands for;
 - the model's proposal when one has been asked for, with its capped confidence and the note it gave.
 
 Actions, each a key: **accept** a group (decision `human`; the entity is created or reused exactly as a vote would do

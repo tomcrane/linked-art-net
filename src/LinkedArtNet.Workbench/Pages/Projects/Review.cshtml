@@ -27,10 +27,12 @@
 <details class="help">
     <summary>What am I supposed to do here?</summary>
     <p>One string at a time, as the catalogue wrote it, with the records it was seen in under <strong>In the records</strong>.
-    Below it, what the software found: each card is one authority record, or a group of records that say they are the same
-    thing, best first; greyed cards were ruled out and the reason says why. Say what the string is: <strong>Accept</strong> a
-    card (it is this record); <strong>Always, in this field</strong> (the same, and this spelling means this from now on);
-    <strong>Same as this</strong> (an entity the project already has); search for <strong>something else</strong>; or
+    Below it, what the software found: each box is a group, one authority record or several records that say they are the
+    same thing, best first; greyed rows were ruled out and the reason says why. Say what the string is with the group's own
+    button: <strong>Accept</strong> (it is this record), <strong>Accept these as one</strong> (it is this group, one entity with
+    all its identifiers), <strong>Same as</strong> an entity the project already has; <strong>Always, in this field</strong>
+    (the same, and this spelling means this from now on); <strong>just this one</strong> on a row of a group takes that record
+    alone; search for <strong>something else</strong>; or
     <strong>Keep as local authority</strong> when it is real and none of the cards is it. A card that is one of the project's own
     entities says what it stands for and holds; when two of them hold records of one group, the group says so and offers to merge them
     and accept the string onto the survivor, showing what will happen first. The other queued strings under the same name are listed
@@ -99,6 +101,7 @@ else
            one group, and a warning after the fact that sent them to the entity page) *@
         <form method="post" asp-page-handler="AcceptTogether" class="notice" id="confirm-together">
             <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="confirmed" value="true" />
+            @if (Model.Always) { <input type="hidden" name="always" value="true" /> }
             @foreach (var t in Model.Targets ?? []) { <input type="hidden" name="targets" value="@t" /> }
             <h3 style="margin-top:0">@plan.Ours.Count of the project's own entities are ticked: they become one</h3>
             <p class="small">Choose which survives. The others merge into it, and their strings, identifiers and labels follow. A merge is permanent: <strong>Undo</strong> takes back this string's decision, not the merge.</p>
@@ -115,13 +118,24 @@ else
             <div class="actions"><button type="submit">Merge and accept</button> <a class="button secondary" href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id })">Back</a></div>
         </form>
     }
+        // the store has moved on since this evidence was written: an entity merged into another shows under the survivor's facts, and the
+        // desk says so above the candidates rather than let three rows stand for one entity with the run's old reasons (the owner,
+        // 2026-11-06, at the next Chris Beetles string)
+        var overtaken = item.Entities.Where(kv => kv.Value.Entity.Id != kv.Key)
+            .Select(kv => (Was: ev.Groups.SelectMany(g => g.Members).FirstOrDefault(m => m.Uri == kv.Key)?.Label ?? kv.Key, Now: kv.Value.Entity)).ToList();
+        var seenEntities = new HashSet<string>(StringComparer.Ordinal);
+    @if (overtaken.Count > 0 && item.LookedAgain is null)
+    {
+        <p class="flash small">The store has changed since this evidence was written: @string.Join("; ", overtaken.Select(o => $"\"{o.Was}\" has merged into {o.Now.Label ?? o.Now.Id}")). The rows below say which.
+        <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, look = true })">Look again</a> shows the string as today's rules see it.</p>
+    }
     @if (ev.Groups.Count == 0) { <p class="muted">The reconciler found nothing in the local indexes for this string.</p> }
     @if (ev.Groups.Count > 1 && Model.Method != "human")
     {
         <form method="post" asp-page-handler="AcceptTogether" id="together" class="row" style="gap:.5rem; margin:.25rem 0 .75rem">
             <input type="hidden" name="id" value="@item.String.Id" />
-            <button type="submit" class="secondary" title="The ticked cards are one thing: one entity with all their identifiers">Accept the ticked together</button>
-            <span class="small muted">tick "together" on two or more cards that are the same thing</span>
+            <button type="submit" class="secondary" title="The ticked groups are one thing: one entity with all their identifiers">Accept the ticked together</button>
+            <span class="small muted">tick "together" on two or more groups that are the same thing</span>
         </form>
     }
     var first = true;
@@ -129,19 +143,34 @@ else
     {
         var live = group.Members.Where(m => m.Veto != true && m.SetAside != true).ToList();
         var allVeto = live.Count == 0;
+        // the project's own firm entities in the group, each followed through a merge and counted once
+        var firm = live.Where(m => item.Entities.TryGetValue(m.Uri, out var f) && !f.IsPlaceholder).Select(m => item.Entities[m.Uri].Entity).DistinctBy(e => e.Id).ToList();
         <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")">
             <div class="row">
                 <span class="score">@group.Score.ToString("0.00")</span>
                 @foreach (var s in group.Sources) { if (group.Members.FirstOrDefault(m => m.Source == s)?.Uri is { } su) { <a class="tag src" href="@su" target="_blank" rel="noopener" title="@su">@s</a> } else { <span class="tag src">@s</span> } }
                 @if (group.Members.Count > 1) { <span class="muted small">@group.Members.Count records agree they are one thing</span> }
+                @* the group is the card: its tick and its action are in its header, and the rows of a group of several go quiet (the owner,
+                   2026-11-06: ten actions on the rows of a box that is one thing, and "card" read as the row) *@
+                @if (!allVeto && Model.Method != "human")
+                {
+                    <span style="margin-left:auto"></span>
+                    @if (ev.Groups.Count > 1) { <label class="small inline" style="white-space:nowrap" title="This group is one of the things to accept together"><input type="checkbox" name="targets" value="@string.Join(" ", live.Select(m => m.Uri))" form="together" /> together</label> }
+                    @if (live.Count > 1 && firm.Count <= 1)
+                    {
+                        <form method="post" asp-page-handler="AcceptTogether" class="inline">
+                            <input type="hidden" name="id" value="@item.String.Id" />
+                            @foreach (var m in live) { <input type="hidden" name="targets" value="@m.Uri" /> }
+                            <button type="submit" title="@(firm.Count == 1 ? "The string is this entity, which gets any record of the group it does not hold yet" : "The string is this group: one entity with all its identifiers")">@(firm.Count == 1 ? $"Same as {firm[0].Label}" : "Accept these as one")</button>
+                            <button type="submit" name="always" value="true" class="secondary" title="The same, and this exact spelling means it from now on in this field; the variants page can widen a rule to every field">Always, in this field</button>
+                        </form>
+                    }
+                }
             </div>
-            @{
-                // two or more of the project's own firm entities in one group: the store disagrees with itself, which is why the string was
-                // queued; the group says so and offers the merge as its own action (the owner, 2026-11-06, at "Chris Beetles Ltd")
-                var firm = live.Where(m => item.Entities.TryGetValue(m.Uri, out var f) && !f.IsPlaceholder).Select(m => item.Entities[m.Uri].Entity).DistinctBy(e => e.Id).ToList();
-            }
             @if (firm.Count >= 2 && Model.Method != "human" && Model.Plan is null)
             {
+                @* two or more of the project's own firm entities in one group: the store disagrees with itself, which is why the string was
+                   queued; the group says so and offers the merge as its own action (the owner, 2026-11-06, at "Chris Beetles Ltd") *@
                 <div class="notice small" style="margin:.75rem 0 .25rem">
                     @firm.Count of the project's entities hold records of this group:
                     @for (var i = 0; i < firm.Count; i++)
@@ -161,6 +190,7 @@ else
             {
                 item.Records.TryGetValue(m.Uri, out var record);
                 item.Entities.TryGetValue(m.Uri, out var facts);
+                var sameAsAbove = facts is not null && !seenEntities.Add(facts.Entity.Id);
                 <div class="row" style="margin-top:.5rem; @(m.Veto == true || m.SetAside == true ? "opacity:.6" : "")">
                     <div style="flex:1">
                         @* a project entity's name is the link to its page, in another tab so the desk stays where it is; the URI below it is the
@@ -177,11 +207,14 @@ else
                         @if (record?.DataJson is { } data && System.Text.Json.JsonDocument.Parse(data).RootElement.TryGetProperty("description", out var desc)) { <div class="small">@desc.GetString()</div> }
                         @if (facts is not null)
                         {
-                            @* what put the project's entity in this group, and what it stands for, so the card can be judged without its page
-                               (the owner, 2026-11-06, at "Chris Beetles Ltd") *@
+                            @* what put the project's entity in this group, and what it stands for, so the row can be judged without its page
+                               (the owner, 2026-11-06, at "Chris Beetles Ltd"); and when the entity has merged since the evidence was written, or
+                               is one a row above already stands for, the row says so first *@
                             var held = facts.Entity.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).Select(q => q.Source + "'s " + q.Uri.Split('/').Last()).ToList();
                             var firstString = facts.Strings.OrderByDescending(s => s.String.Occurrences).FirstOrDefault();
                             <div class="small muted">
+                                @if (facts.Entity.Id != m.Uri) { <strong>now merged into <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(facts.Entity.Id)" target="_blank" rel="noopener">@(facts.Entity.Label ?? facts.Entity.Id)</a></strong><text> · </text> }
+                                @if (sameAsAbove) { <strong>the same entity as a row above</strong><text> · </text> }
                                 @if (held.Count > 0) { <text>the project's entity, holding @string.Join(" and ", held)</text> }
                                 else if (facts.Entity.Equivalents.Count > 0) { <text>the project's entity, aligned to @string.Join(", ", facts.Entity.Equivalents.Select(q => q.Source).Distinct())</text> }
                                 else if (facts.IsPlaceholder) { <text>a placeholder@(firstString is null ? "" : $" for \"{firstString.String.Raw}\" in {firstString.String.Context}")</text> }
@@ -192,26 +225,34 @@ else
                         }
                         <div class="reason">@m.Reason</div>
                     </div>
-                    @if (m.Veto != true && Model.Method != "human" && ev.Groups.Count > 1)
+                    @if (m.Veto != true && Model.Method != "human" && live.Count == 1)
                     {
-                        <label class="small inline" style="white-space:nowrap" title="This card is one of the things to accept together"><input type="checkbox" name="targets" value="@m.Uri" form="together" /> together</label>
+                        @* a group of one record: the row's actions are the group's *@
+                        @if (!m.IsStore)
+                        {
+                            <form method="post" asp-page-handler="Accept" class="inline">
+                                <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
+                                <button type="submit">Accept</button>
+                            </form>
+                            <form method="post" asp-page-handler="Override" class="inline">
+                                <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
+                                <button type="submit" class="secondary" title="Always read this exact spelling as this record when it occurs in this field; the variants page can widen a rule to every field">Always, in this field</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="SameAs" class="inline">
+                                <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@m.Uri" />
+                                <button type="submit">Same as this</button>
+                            </form>
+                        }
                     }
-                    @if (m.Veto != true && !m.IsStore && Model.Method != "human")
+                    else if (m.Veto != true && Model.Method != "human")
                     {
-                        <form method="post" asp-page-handler="Accept" class="inline">
-                            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
-                            <button type="submit">Accept</button>
-                        </form>
-                        <form method="post" asp-page-handler="Override" class="inline">
-                            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
-                            <button type="submit" class="secondary" title="Always read this exact spelling as this record when it occurs in this field; the variants page can widen a rule to every field">Always, in this field</button>
-                        </form>
-                    }
-                    @if (m.Veto != true && m.IsStore && Model.Method != "human")
-                    {
-                        <form method="post" asp-page-handler="SameAs" class="inline">
-                            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@m.Uri" />
-                            <button type="submit">Same as this</button>
+                        @* a quiet way to take one row of a group that is one thing, for the rare case the rest are not it *@
+                        <form method="post" asp-page-handler="@(m.IsStore ? "SameAs" : "Accept")" class="inline">
+                            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="@(m.IsStore ? "entity" : "target")" value="@m.Uri" />
+                            <button type="submit" class="link small" title="@(m.IsStore ? "Only this entity, not the rest of the group" : "Only this record, not the rest of the group")">just this one</button>
                         </form>
                     }
                 </div>

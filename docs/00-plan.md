@@ -425,6 +425,48 @@ and the log (doc 15) records that. The order within an area is rough value.
   record's own "Birmingham (England). City Council."; a jurisdiction heading cut at its full stop, by the collector of
   the time or the catalogue's own export, to look at with the collector when the next export is collected).
 
+  Read on the desk (2026-11-06, "Birmingham (England)" in keywords:head and "Birmingham" in keywords:sub, jr8hf5): no
+  body of the name at all. The heading's string ties between TGN's city with LoC's heading whole and three bodies
+  placed through it (five records), TGN's borough of the name (one source, placed), the keywords:sub string's
+  placeholder, and three of the project's own aligned places labelled "Birmingham", each aligned to VIAF, Wikidata
+  and LUX and to no TGN or LoC record, none placed, one of them Alabama's by its string's record (the Stuart legacy
+  exhibition) and two England's. Nothing joins those entities to the index groups, so finding 35 (the entity in a
+  two-source group) does not reach, the outvoted policy declines over firm entities, and the string is the desk's;
+  the bare string in keywords:sub ties the same three against seven Birminghams of the world. So the count of 35 is
+  two shapes mixed: real bodies of the name (Colchester's, with ULAN's record) and placeholders of other queued strings
+  classed Type beside places, which the count took for bodies; and the shape that matters is the legacy aligned entity
+  of the name that nothing joins. The rule to shape: an aligned entity whose Wikidata item is the one a TGN or LoC
+  record reaches (the prominence lookup already walks from a candidate's URI to its Wikidata item) joins that record's
+  group; then finding 35 takes the heading onto it, the entity gains the TGN and LoC ids, and two legacy entities of
+  the one place meet at the desk as holders to merge. Three counts first:
+
+      -- the 35 again, placeholders out: two or more non-provisional project entities among the live store members
+      select count(*) filter (where classes >= 2) as different_classes, count(*) filter (where n >= 2 and classes = 1) as same_class,
+             (array_agg(raw order by raw) filter (where n >= 2 and classes = 1))[1:12] as same_class_examples
+      from (select s.raw,
+              (select count(distinct e.class) from jsonb_array_elements(d.evidence->'groups') g, jsonb_array_elements(g->'members') m join entities e on e.id = m->>'uri'
+               where coalesce(g->>'vetoed', 'false') <> 'true' and m->>'stage' = 'store' and e.status <> 'provisional') as classes,
+              (select count(*) from jsonb_array_elements(d.evidence->'groups') g, jsonb_array_elements(g->'members') m join entities e on e.id = m->>'uri'
+               where coalesce(g->>'vetoed', 'false') <> 'true' and m->>'stage' = 'store' and e.status <> 'provisional' and (m->>'score')::numeric >= 0.97) as n
+            from decisions d join source_strings s on s.id = d.source_string_id
+            where d.run_id = 'run-20261106-140520-jr8hf5' and d.method = 'queued' and d.valid) x
+      where n >= 2 or classes >= 2;
+
+      -- the join's reach: aligned entities with a Wikidata item and no record of the local indexes
+      select e.class, count(*) from entities e where e.dataset = 'pmc' and e.status = 'aligned'
+        and exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source = 'wikidata')
+        and not exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source in ('tgn', 'loc', 'lcsh', 'ulan', 'aat'))
+      group by 1 order by 2 desc;
+
+      -- queued strings with such an entity among their live store members at 1.00
+      select count(*), (array_agg(s.raw order by s.raw))[1:12]
+      from decisions d join source_strings s on s.id = d.source_string_id
+      where d.run_id = 'run-20261106-140520-jr8hf5' and d.method = 'queued' and d.valid
+        and exists (select 1 from jsonb_array_elements(d.evidence->'groups') g, jsonb_array_elements(g->'members') m join entities e on e.id = m->>'uri'
+                    where coalesce(g->>'vetoed', 'false') <> 'true' and m->>'stage' = 'store' and e.status = 'aligned' and (m->>'score')::numeric >= 0.97
+                      and exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source = 'wikidata')
+                      and not exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source in ('tgn', 'loc', 'lcsh')));
+
 - A queued string's placeholder takes the context's first class (keywords:head: a Type), and a qualified place string's
   placeholder ("Colchester (England)", "Birmingham (England)") is a concept on its entity page until the desk decides it.
   The placeholder's class should follow the reading where the reading is plain: a qualifier that places it, a place.

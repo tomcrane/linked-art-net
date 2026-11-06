@@ -81,7 +81,13 @@ saved had not shown in the workbench until the page saved it: the workbench had 
 and desk once per process and kept them until its own saves, so the desk had decided with the manifest without the
 trades between the tool run and the page save. The services are rebuilt when the project row has moved on, one row
 read per request (ProjectServices; the desk test saves a manifest behind the workbench's back and finds it in force
-at the next request; the guide told). And `manifest --use-default` says what it replaces before saving.
+at the next request; the guide told). And `manifest --use-default` says what it replaces before saving. The two
+Birmingham desk pages read in the browser (the keywords:head heading and the bare keywords:sub string): no body of
+the name, but three of the project's legacy places labelled "Birmingham", aligned to VIAF, Wikidata and LUX and to no
+TGN or LoC record, unplaced, which nothing joins to the index groups, so finding 35 cannot reach and the strings are
+the desk's; the count of 35 had taken other strings' Type placeholders for bodies. The rule to shape, on the plan with
+three counts: an aligned entity joins the group whose TGN or LoC record reaches its Wikidata item. And the way from a
+placeholder's entity page to its own desk page, missing, a desk item.
 
 ## 2026-11-05
 

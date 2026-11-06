@@ -83,13 +83,13 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, whenever it comes, against jr8hf5, the last full run (each run's last
+4. The standing method diff after the next run, whenever it comes, against krbnw6, the last full run (each run's last
    decision per string, since a string the second pass settled has two; an undone run keeps its evidence, though the
    undo removes the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for
    those and true or false only where the entity survived: the desk's, and the ones made before the run undone).
    A method change on the same entity is a label, not a decision (the 77 of a98vpa):
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261106-140520-jr8hf5' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261106-153608-krbnw6' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
@@ -230,6 +230,10 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
+- The second pass's reasons on a string it leaves queued (finding 110's "its records are not at the top here") are not
+  persisted: the first pass's queued decision stands and the second writes none, so the desk shows the first pass's
+  evidence and the reason reaches it only through "Look again". The second pass should save its evidence on the
+  string it leaves queued (a new queued decision, or the standing one's evidence replaced), so the desk reads why.
 - The way from a placeholder's entity page to its own desk page (the owner, 2026-11-06, at "Colchester (England)"): the
   entity page's "Waiting at the desk" list is the other strings of the name, and leaves out the strings that resolve
   here, which sit under "Strings that resolve here" with "queued" as plain text. A placeholder whose only string is its
@@ -347,8 +351,9 @@ and the log (doc 15) records that. The order within an area is rough value.
   afternoon, and run jr8hf5 showed the 77 back to vote on the same entities, nothing else moving).
 - ~~The second pass's silent exact-name onto an entity the first pass made from a qualified heading~~ (built 2026-11-06
   as finding 110, doc 10 7.6 "Built 2026-11-06, finding 110": an entity with records answers a queued string silently
-  only when the string's own index stage puts one of its records at the top; Finding110Tests; the next run to show
-  seven strings from exact-name to queued and nothing else). The measure that shaped it, kept: whose bare label the
+  only when the string's own index stage puts one of its records at the top; Finding110Tests; measured by run krbnw6,
+  doc 10 7.6 "Measured 2026-11-06 (run krbnw6)": five to queued by the rule, fourteen to vote on the same entity by
+  the ladder's own rules with evidence, "St Ives (Cornwall)" to read). The measure that shaped it, kept: whose bare label the
   string bears while the first pass had left it tied at 1.00 among others ("Apollo" bare, tied between ULAN's Apollo and
   LoC's "Apollo, 1980-", taken in the second pass by the "Apollo (Deity)" entity finding 108 made minutes earlier, a
   record the first pass scored 0.85; run a98vpa). The standing policy, not the rule, and a record that lost in the

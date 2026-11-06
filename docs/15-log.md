@@ -94,7 +94,12 @@ shaped on the plan, the owner's word given ("yes to the pass, if you think it wo
 finding 110 ran, and built as the run ran: `align-through-wikidata`, a run of its own, one record per source, method
 `through-wikidata`, reversible by undo-run (doc 10 7.6 "Built 2026-11-06, the pass through Wikidata";
 ThroughWikidataTests, where the heading goes from queued to the England entity by the store stage itself once the
-entity is placed through its TGN record; every test project green).
+entity is placed through its TGN record; every test project green). Run krbnw6 at 15:36 measured finding 110 (doc 10
+7.6 "Measured 2026-11-06 (run krbnw6)"): five strings to queued by the rule, fourteen to vote where the ladder took the
+same entity by its own rules with evidence, one ("St Ives (Cornwall)") to read; the last full run is krbnw6. The
+second pass's reasons on a string left queued are not persisted, a desk item. The pass run by the owner at 16:23 (run
+zpcmrz): 2,013 of 2,191 given a record, LoC 1,848, ULAN 807, TGN 150, none ambiguous; the reconcile after it measures
+it.
 
 ## 2026-11-05
 

@@ -1259,6 +1259,28 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-06 (run krbnw6, 15:36; jr8hf5 taken back): finding 110. Matched in the store 5,975 (twenty fewer),
+accepted 9,461 (vote 4,013, fourteen more; single 2,158; exact-single 3,290), queued 3,938 (six more), minted 10,876;
+the second pass settled 101 of 4,039 where jr8hf5 settled 107. The diff against jr8hf5, three rows and twenty strings:
+
+- exact-name to queued, 5, the rule's own: "Apollo", "Sarah Roberts", "Western Isles" of the seven read, and "Duranty,
+  Charles, 1918-2006" and "Morris, Richard (author)", whose entities hold records the string's candidates did not
+  include, which the rule as written also declines ("none of its records is a candidate here"). "Boughton House" and
+  "Sudeley Castle" of the seven went the other way (the next row), and "Messrs Ellis & Smith" and "City Art Gallery,
+  Leeds" stayed where they were, their records at the top this time round.
+- exact-name to vote, 14, the same entity every one, by label ("Abbotsford" to Abbotsford (Roxburghshire), "Boughton
+  House" and "Boughton House (England)" to the Northamptonshire one, "Sudeley Castle" twice, "West Country" to West
+  Country (England), "Cawdor Castle (Tourism) Ltd" to the castle still): the rule declined the silent answer, the
+  string fell through to the ladder, and the ladder took the same entity by its own rules, finding 35's "the project's
+  own aligned entity breaks the tie" for the places, with the evidence written where exact-name had none. The right
+  outcome, and the method now says why. The class crossing of Cawdor Castle's company onto the castle stands as it
+  stood, a separate fault.
+- exact-name to queued, 1, "St Ives (Cornwall)", not the rule's: its reason line carries no finding 110, and it is to
+  be read in evidence.
+
+The second pass's annotations on a string it leaves queued are not persisted (the first pass's queued decision stands
+and the second writes none), so the rule's reason reaches the desk only through "Look again": a desk item.
+
 Built 2026-11-06, the pass through Wikidata (the owner's word, after "Birmingham (England)" at the desk): three of the
 project's places labelled "Birmingham", aligned by the legacy pipeline to Wikidata, VIAF and LUX and to no TGN or LoC
 record, unplaced, stood at 1.00 beside TGN's city with LoC's heading whole, and nothing in the index stage could join
@@ -1275,8 +1297,11 @@ itself when the heading's qualifier bears the placement out (findings 84 and 106
 an entity of the name placed elsewhere is left; two legacy entities of one place, both holding its record, meet at
 the desk as holders to merge. ThroughWikidataTests: the England and Alabama Birminghams gain their records, Cambridge's
 item naming two TGN records gains none and is listed, Antwerp's absent item is counted, the heading goes from queued to
-the England entity, and the undo leaves the entities aligned by their items. Measured by the run after the pass is
-run: the 104 strings, and whatever the holders check sends to the desk.
+the England entity, and the undo leaves the entities aligned by their items. Run by the owner at 16:23 (run zpcmrz,
+six seconds): 2,191 entities read, 2,013 given a record (LoC 1,848, ULAN 807, TGN 150, LCSH 8), none naming two
+records of one source, 65 items not in the index, 113 reaching no record of the entity's class (a class the item's
+records do not share, to look at). Measured by the reconcile after it, against krbnw6: the 104 strings, and whatever
+the holders check sends to the desk.
 
 Built 2026-11-06, finding 110: a record that lost in the first pass does not answer silently in the second. Counted on
 jr8hf5 over the second pass's exact-name settlements onto an entity whose label is not the string (87): 73 had one of

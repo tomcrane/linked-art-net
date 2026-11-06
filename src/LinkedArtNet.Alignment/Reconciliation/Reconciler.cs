@@ -399,6 +399,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // 2. the store: entities already minted whose labels match
         var candidates = new List<Candidate>();
         var storeMatches = new Dictionary<string, Entity>(StringComparer.Ordinal);
+        ScoredCandidate? fromTheTop = null; // the store's one answer to a queued string, held until the indexes say it is at the top (finding 110)
         if (includeStore)
         {
             foreach (var cls in reading.Classes)
@@ -410,7 +411,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // string on everything, and every rule that reads agreement among candidates was a hole until told otherwise (findings 95, 101
             // and 102 closed three, one rule each; those exclusions stay for twins' placeholders, which may still be the entity a sibling
             // is accepted onto). The string's own current decision names it
-            if (await store.DecisionForAsync(s.Id, ct) is { Method: DecisionMethod.Queued, EntityId: { } own }) storeMatches.Remove(own);
+            var standing = await store.DecisionForAsync(s.Id, ct);
+            if (standing is { Method: DecisionMethod.Queued, EntityId: { } own }) storeMatches.Remove(own);
             foreach (var e in storeMatches.Values)
                 candidates.Add(await StoreCandidateAsync(e, reading, ct));
             Time("store", sw);
@@ -444,6 +446,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 if (ofWhole.Count == 1) chosen = ofWhole[0];
             }
             if (chosen is not null && chosen.Candidate.ProvisionalQueued) chosen = null;
+            // a queued string reconsidered (the second pass, the desk looking again) is one its own indexes could not settle, and an entity
+            // with records behind it answers it silently only from the top: when the string's index stage puts one of those records at the
+            // top score (finding 110, 2026-11-06, run jr8hf5: seven of the second pass's 107 settlements were onto an entity whose record
+            // the first pass had scored below the top, "Apollo" in publisher onto the deity made minutes earlier from "Apollo (Deity)",
+            // under ULAN's body and LoC's "Apollo, 1980-" at 1.00; three of the seven wrong, no score separating them from the four right,
+            // so the desk reads all seven). An entity with no records, a lookalike minted for a name nothing knew, answers as before: the
+            // same unknown name across contexts is one local authority
+            if (chosen is not null && standing is { Method: DecisionMethod.Queued } && storeMatches[chosen.Candidate.EntityId!].Equivalents.Count > 0) { fromTheTop = chosen; chosen = null; }
             if (chosen is not null)
                 return new Evaluation(Outcome.MatchedStore, reading, [Group([chosen])], StoreMatch: storeMatches[chosen.Candidate.EntityId!], StoreChoice: chosen);
         }
@@ -462,6 +472,20 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         Time("score", sw);
         var live = groups.Where(g => !g.Vetoed).ToList();
         var top = live.FirstOrDefault();
+        if (fromTheTop is not null && top is not null)
+        {
+            // the entity's own label scores as a member too, and would lift its group to the top by the very name in question ("Apollo" among
+            // the deity's labels): the records are read by their own scores
+            var entityId = fromTheTop.Candidate.EntityId!;
+            var uris = storeMatches[entityId].Equivalents.Select(q => q.Uri).ToHashSet(StringComparer.Ordinal);
+            var records = live.SelectMany(g => g.Members).Where(m => !m.Veto && !m.SetAside && m.Candidate.EntityId is null && uris.Contains(m.Candidate.Uri)).ToList();
+            if (records.Count > 0 && records.Max(m => m.Score) >= top.Score - 0.001)
+                return new Evaluation(Outcome.MatchedStore, reading, [Group([fromTheTop])], StoreMatch: storeMatches[entityId], StoreChoice: fromTheTop);
+            var why = records.Count == 0 ? "none of its records is a candidate here" : $"its records are not at the top here ({records.Max(m => m.Score):0.00} under {top.Score:0.00})";
+            groups = groups.Select(g => g with { Members = g.Members.Select(m => m.Candidate.EntityId == entityId ? m with { Reason = m.Reason + $"; the project's entity, but {why}: no silent answer to a queued string (finding 110)" } : m).ToList() }).ToList();
+            live = groups.Where(g => !g.Vetoed).ToList();
+            top = live.FirstOrDefault();
+        }
         // at acceptance score, a group two independent sources carry outranks one source's higher-scoring record (TGN's Waihou at 1.00
         // through its variant "Thames River", against TGN's Thames with LCSH's heading at 0.97): the owner's outvoted-rivals policy,
         // read at acceptance score rather than at an equal score (finding 50, 2026-10-22)

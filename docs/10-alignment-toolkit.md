@@ -1259,6 +1259,23 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-06, finding 110: a record that lost in the first pass does not answer silently in the second. Counted on
+jr8hf5 over the second pass's exact-name settlements onto an entity whose label is not the string (87): 73 had one of
+the entity's records at the string's own top score, 11 were onto an entity with no records (the lookalike policy, a
+name nothing knew made one local authority across contexts, left as it is), and 7 were onto an entity whose record
+the first pass had scored below the top, read by name: four right ("Boughton House", "Sudeley Castle", "Western
+Isles" to the project's place of the name, its heading at 0.85 for the qualifier the string lacks; "Messrs Ellis &
+Smith" to Ellis & Smith) and three wrong ("Apollo" in publisher to the deity under ULAN's body at 1.00; "City Art
+Gallery, Leeds" to a City Art Gallery of no city; "Sarah Roberts" in natural order to a dated "Roberts, Sarah"), no
+score separating the four from the three. The rule, on the owner's word: a queued string reconsidered (the second
+pass, the desk looking again) is one its own indexes could not settle, and an entity with records behind it answers
+it silently only when the string's index stage puts one of those records at the top score, read by the records' own
+scores and not the entity's label, which bears the very name in question. Otherwise the string stays queued with the
+entity on its card and the reason on it ("its records are not at the top here (0.85 under 1.00)", or "none of its
+records is a candidate here"). Finding110Tests: Apollo's shape queued with the deity told why, and the project's
+Apollo holding ULAN's body, one of the two at the top, answering as before. The next run measures it: seven strings
+from exact-name to queued, nothing else.
+
 Measured 2026-11-06 (run jr8hf5, 14:05; a98vpa taken back): findings 108 and 109 behind the acceptance line. Accepted
 9,447 (vote 3,999, single 2,158, exact-single 3,290), queued 3,932, minted 10,876, matched in the store 5,995: the
 77 moved from single to vote and no other count moved by one. The diff against a98vpa is one change, single to vote,

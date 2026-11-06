@@ -69,7 +69,14 @@ pass scored 0.85, a second-pass question on the plan with its count. Both counts
 the second pass's shape, mostly the good radiating, a sharper query written for Apollo's own; 35 place names between
 the project's place and a body of the name, two to read on the desk). Then run jr8hf5 at 14:05, a98vpa taken back,
 measuring the fix to the string: the 77 back to vote, the same 35 and 42, the diff one row and no other count moved
-(doc 10 7.6 "Measured 2026-11-06 (run jr8hf5)"); the last full run is jr8hf5.
+(doc 10 7.6 "Measured 2026-11-06 (run jr8hf5)"); the last full run is jr8hf5. The sharper Apollo count on jr8hf5
+(73 at the top, 11 onto entities with no records, 7 below the top) and the seven read by name, four right and three
+wrong with no score between them: the rule proposed and the owner's word given, finding 110 built (doc 10 7.6 "Built
+2026-11-06, finding 110": an entity with records answers a queued string silently only when the string's index stage
+puts one of its records at the top, read by the records' own scores; Finding110Tests, Apollo's shape silent before and
+queued after; every test project green). The owner's three pages for the two-project-entities item read: two
+placeholder pages classed Type (a plan item of its own) and a corpauthor "Birmingham (England)" that is a jurisdiction
+used as a body, the keywords:head pages still to read.
 
 ## 2026-11-05
 

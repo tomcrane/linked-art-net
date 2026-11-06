@@ -340,7 +340,10 @@ and the log (doc 15) records that. The order within an area is rough value.
   relabelled single because the rule's tie was any live group at the top score, a queued namesake's placeholder among
   them, which the acceptance line votes past; the rule stands aside wherever the line would accept, built the same
   afternoon, and run jr8hf5 showed the 77 back to vote on the same entities, nothing else moving).
-- The second pass's silent exact-name onto an entity the first pass made from a qualified heading, whose bare label the
+- ~~The second pass's silent exact-name onto an entity the first pass made from a qualified heading~~ (built 2026-11-06
+  as finding 110, doc 10 7.6 "Built 2026-11-06, finding 110": an entity with records answers a queued string silently
+  only when the string's own index stage puts one of its records at the top; Finding110Tests; the next run to show
+  seven strings from exact-name to queued and nothing else). The measure that shaped it, kept: whose bare label the
   string bears while the first pass had left it tied at 1.00 among others ("Apollo" bare, tied between ULAN's Apollo and
   LoC's "Apollo, 1980-", taken in the second pass by the "Apollo (Deity)" entity finding 108 made minutes earlier, a
   record the first pass scored 0.85; run a98vpa). The standing policy, not the rule, and a record that lost in the
@@ -380,7 +383,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   is the plain one: in the second pass an entity with records behind it answers a queued string silently only when
   the string's own index stage puts one of its records at the top score; otherwise the string stays queued with the
   entity shown on its first card. Seven strings, four of them a click each at the desk, three silent errors stopped.
-  Waiting on the owner's word.
+  The owner's word given the same afternoon, and built.
 - The placement join missing LoC's English form against TGN's vernacular label, to measure (seen in the forty: "Crete
   (Greece)" tied with TGN's Kríti, "Picardy (France)" with Picardie, "Cumberland (England)" with TGN's Cumberland,
   "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108
@@ -408,7 +411,19 @@ and the log (doc 15) records that. The order within an area is rough value.
   qualified ones the heading says the place. Before the rule: read two on the desk after the next run ("Colchester
   (England)" and "Birmingham (England)"; the cards say which entity holds what and why the store stage declined), since
   the shape of the rule depends on whether the place entity is aligned or a bare provisional, and on what made the
-  bodies.
+  bodies. First look (the owner, 2026-11-06, after jr8hf5): the two entity pages are the placeholders of the queued
+  keywords:head strings, both classed Type because keywords:head reads a Type first (a small wrong of its own, below);
+  and a "Birmingham (England)" in corpauthor is a jurisdiction used as a body ("Birmingham (England). City Council"),
+  read as a person or group with ULAN's owner named Birmingham at the top. The keywords:head review pages, with the
+  store cards, still to read; and where the corpauthor string came from, since the collector takes each corpauthor
+  element whole:
+
+      select s.context, s.raw, s.occurrences from source_strings s where s.dataset = 'pmc' and s.raw like 'Birmingham (England)%' order by 1, 2;
+
+- A queued string's placeholder takes the context's first class (keywords:head: a Type), and a qualified place string's
+  placeholder ("Colchester (England)", "Birmingham (England)") is a concept on its entity page until the desk decides it.
+  The placeholder's class should follow the reading where the reading is plain: a qualifier that places it, a place.
+  Count the queued strings with a placing qualifier whose placeholder is a concept, before changing MintAsync.
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

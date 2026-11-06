@@ -230,6 +230,11 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
+- The way from a placeholder's entity page to its own desk page (the owner, 2026-11-06, at "Colchester (England)"): the
+  entity page's "Waiting at the desk" list is the other strings of the name, and leaves out the strings that resolve
+  here, which sit under "Strings that resolve here" with "queued" as plain text. A placeholder whose only string is its
+  own shows no way to the desk. The decided column should link a queued string to its desk page, and the title's
+  signal should count it. Small; the entity page and its test.
 - ~~One action per group~~ (built 2026-11-06, the owner at the next Chris Beetles string: the group's tick and action in
   its header, "Accept these as one" or "Same as X", "Always, in this field" beside it; the rows of a group of several
   carry only "just this one"; the words say "group"; doc 12 section 5, doc 13).
@@ -416,9 +421,9 @@ and the log (doc 15) records that. The order within an area is rough value.
   and a "Birmingham (England)" in corpauthor is a jurisdiction used as a body ("Birmingham (England). City Council"),
   read as a person or group with ULAN's owner named Birmingham at the top. The keywords:head review pages, with the
   store cards, still to read; and where the corpauthor string came from, since the collector takes each corpauthor
-  element whole:
-
-      select s.context, s.raw, s.occurrences from source_strings s where s.dataset = 'pmc' and s.raw like 'Birmingham (England)%' order by 1, 2;
+  element whole (the owner's query, 2026-11-06: one corpauthor string "Birmingham (England)", once, against the
+  record's own "Birmingham (England). City Council."; a jurisdiction heading cut at its full stop, by the collector of
+  the time or the catalogue's own export, to look at with the collector when the next export is collected).
 
 - A queued string's placeholder takes the context's first class (keywords:head: a Type), and a qualified place string's
   placeholder ("Colchester (England)", "Birmingham (England)") is a concept on its entity page until the desk decides it.

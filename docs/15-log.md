@@ -65,7 +65,11 @@ strings read one by one: "Mr Winstanley" to ULAN's body by 109 where cpxv7k had 
 made first; "Colchester (England)" queued between the project's place and a body of the name the first pass made,
 the different-classes case added to the plan's two-project-entities item with its count; and "Apollo" bare, tied at
 1.00 in the first pass, taken in the second by the "Apollo (Deity)" entity made minutes earlier, a record the first
-pass scored 0.85, a second-pass question on the plan with its count.
+pass scored 0.85, a second-pass question on the plan with its count. Both counts run by the owner on a98vpa (87 for
+the second pass's shape, mostly the good radiating, a sharper query written for Apollo's own; 35 place names between
+the project's place and a body of the name, two to read on the desk). Then run jr8hf5 at 14:05, a98vpa taken back,
+measuring the fix to the string: the 77 back to vote, the same 35 and 42, the diff one row and no other count moved
+(doc 10 7.6 "Measured 2026-11-06 (run jr8hf5)"); the last full run is jr8hf5.
 
 ## 2026-11-05
 

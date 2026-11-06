@@ -73,11 +73,9 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
 2. ~~Findings 108 and 109 measured by a run~~ (run a98vpa, 2026-11-06 12:56, read in doc 10 7.6 "Measured 2026-11-06
    (run a98vpa)": 71 queued strings to single as measured, 77 votes relabelled single by the rule sitting before the
-   acceptance line, put behind it the same afternoon; three strings read one by one). The next run measures the fix:
-   the 77 back to vote on the same entities, and nothing else moving. With the workbench stopped:
-
-       dotnet run --project tools/Align -- undo-run --run run-20261106-125611-a98vpa
-       dotnet run --project tools/Align -- reconcile
+   acceptance line, put behind it the same afternoon; three strings read one by one. Run jr8hf5 at 14:05 measured the
+   fix: the 77 back to vote on the same entities, the diff one row, nothing else moving; doc 10 7.6 "Measured
+   2026-11-06 (run jr8hf5)". The last full run is jr8hf5.)
 
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
@@ -85,13 +83,13 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, whenever it comes, against a98vpa, the last full run (each run's last
+4. The standing method diff after the next run, whenever it comes, against jr8hf5, the last full run (each run's last
    decision per string, since a string the second pass settled has two; an undone run keeps its evidence, though the
    undo removes the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for
    those and true or false only where the entity survived: the desk's, and the ones made before the run undone).
    A method change on the same entity is a label, not a decision (the 77 of a98vpa):
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261106-125611-a98vpa' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261106-140520-jr8hf5' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
@@ -341,7 +339,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   measured by run a98vpa, doc 10 7.6 "Measured 2026-11-06 (run a98vpa)": 71 queued strings to single, and 77 votes
   relabelled single because the rule's tie was any live group at the top score, a queued namesake's placeholder among
   them, which the acceptance line votes past; the rule stands aside wherever the line would accept, built the same
-  afternoon, the next run to show the 77 back to vote).
+  afternoon, and run jr8hf5 showed the 77 back to vote on the same entities, nothing else moving).
 - The second pass's silent exact-name onto an entity the first pass made from a qualified heading, whose bare label the
   string bears while the first pass had left it tied at 1.00 among others ("Apollo" bare, tied between ULAN's Apollo and
   LoC's "Apollo, 1980-", taken in the second pass by the "Apollo (Deity)" entity finding 108 made minutes earlier, a

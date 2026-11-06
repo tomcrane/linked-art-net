@@ -1259,6 +1259,12 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-06 (run jr8hf5, 14:05; a98vpa taken back): findings 108 and 109 behind the acceptance line. Accepted
+9,447 (vote 3,999, single 2,158, exact-single 3,290), queued 3,932, minted 10,876, matched in the store 5,995: the
+77 moved from single to vote and no other count moved by one. The diff against a98vpa is one change, single to vote,
+77, the same 35 on the same entity and the same 42 whose entity the undo had removed ("Andalusia (Spain)", "Blackpool
+(England)", "Davies, Tim, 1960-"), and nothing else. The second pass settled 107 of 4,039 in two rounds, as before.
+
 Measured 2026-11-06 (run a98vpa, 12:56; the saved manifest brought up to the library rules first, cpxv7k taken back):
 accepted 9,447 (vote 3,922, single 2,235, exact-single 3,290), queued 3,932, minted 10,876, matched in the store 5,995.
 The standing diff against cpxv7k, by method and, from this run on, by whether the entity is the same:

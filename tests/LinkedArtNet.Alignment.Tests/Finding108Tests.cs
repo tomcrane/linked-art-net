@@ -77,4 +77,30 @@ public class Finding108Tests(PostgresFixture pg)
         Assert.Equal(Outcome.Queued, (await without.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "publisher", "Mr Farebrother"), includeStore: true)).Outcome);
         Assert.Equal(Outcome.Accepted, (await without.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "publisher", "Mr Evans"), includeStore: true)).Outcome);
     }
+
+    [PostgresFact]
+    public async Task The_rule_stands_aside_when_the_ladder_would_accept_the_string_anyway()
+    {
+        // run a98vpa (2026-11-06): 77 strings cpxv7k had voted came back single, 35 of them confirmed on the very same entity ("Blake,
+        // William, 1757-1827", "Adam, Robert, 1728-1792"). The heading's two-source group was not in a tie the ladder knew: the other live
+        // group at 1.00 was a provisional lookalike of the project's own, the placeholder of a bare "Blake, William" queued among ULAN's
+        // namesakes, which the store stage declines (finding 95) and the ladder's `second` skips (finding 38), so the acceptance line took
+        // the vote. Findings 108 and 109 were measured over queued strings, and a string the line accepts is not one of them: the vote
+        // stands, with its method
+        var ds = "f108c" + Guid.NewGuid().ToString("N")[..5];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        const string loc = "http://id.loc.gov/authorities/names/n78095331";
+        const string ulan = "http://vocab.getty.edu/ulan/500012489";
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord(ulan, "ulan", "Blake, William", ["Blake, William", "William Blake"], "Person", GettyVocabLoader.LifespanFromYears("1757", "1827"), [], "{\"description\":\"English painter and poet, 1757-1827\"}", DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(Ulan("500300002", "Blake, William", "Person", ["Blake, William"], "English architect, 1868-1940"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord(loc, "loc", "Blake, William, 1757-1827", ["Blake, William, 1757-1827", "Blake, William"], "Person", GettyVocabLoader.LifespanFromYears("1757", "1827"), [ulan], "{\"headingDates\":\"1757-1827\"}", DateTimeOffset.UtcNow, "test"));
+        var lookalike = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Blake, William", ["Blake, William"]), scheme);
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "persauthorfull", "Blake, William")).Id, lookalike.Id, DecisionMethod.Queued);
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
+        var blake = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "persauthorfull", "Blake, William, 1757-1827"), includeStore: true);
+        Assert.Equal(Outcome.Accepted, blake.Outcome);
+        Assert.Equal(DecisionMethod.Vote, blake.AcceptedMethod);
+        Assert.Contains(loc, blake.Accepted!.Uris); Assert.Contains(ulan, blake.Accepted.Uris);
+        Assert.DoesNotContain(blake.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("finding 108"));
+    }
 }

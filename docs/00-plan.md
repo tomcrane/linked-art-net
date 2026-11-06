@@ -71,15 +71,12 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. Findings 108 and 109 measured by a run (doc 10 7.6 "Built 2026-11-06, findings 108 and 109"): the saved manifest
-   brought up to the library rules first, since the `trades` key is new to it; cpxv7k taken back and its strings
-   decided again (the desk's own decisions stand); then the standing diff of command 4 against cpxv7k. Expected: some
-   140 queued strings to single (the heading as written in keywords, keywords:head, keywords:sub and place; the
-   honorific names in publisher and corpauthor, "Mr Hone"'s kind staying queued), the day's desk decisions reaching
-   their twins by exact name, and nothing else moving. With the workbench stopped:
+2. ~~Findings 108 and 109 measured by a run~~ (run a98vpa, 2026-11-06 12:56, read in doc 10 7.6 "Measured 2026-11-06
+   (run a98vpa)": 71 queued strings to single as measured, 77 votes relabelled single by the rule sitting before the
+   acceptance line, put behind it the same afternoon; three strings read one by one). The next run measures the fix:
+   the 77 back to vote on the same entities, and nothing else moving. With the workbench stopped:
 
-       dotnet run --project tools/Align -- manifest --use-default
-       dotnet run --project tools/Align -- undo-run --run run-20261105-151954-cpxv7k
+       dotnet run --project tools/Align -- undo-run --run run-20261106-125611-a98vpa
        dotnet run --project tools/Align -- reconcile
 
 
@@ -88,15 +85,18 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, whenever it comes, against cpxv7k, the last full run (each run's last
-   decision per string, since a string the second pass settled has two; an undone run keeps its evidence):
+4. The standing method diff after the next run, whenever it comes, against a98vpa, the last full run (each run's last
+   decision per string, since a string the second pass settled has two; an undone run keeps its evidence, though the
+   undo removes the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for
+   those and true or false only where the entity survived: the desk's, and the ones made before the run undone).
+   A method change on the same entity is a label, not a decision (the 77 of a98vpa):
 
-       with a as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = 'run-20261105-151954-cpxv7k' order by source_string_id, id desc),
-            b as (select distinct on (source_string_id) source_string_id, method from decisions where run_id = '<new run id>' order by source_string_id, id desc)
-       select a.method as before, b.method as after, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261106-125611-a98vpa' order by source_string_id, id desc),
+            b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
+       select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
        join source_strings s on s.id = a.source_string_id
-       where a.method <> b.method group by 1, 2 order by 3 desc;
+       where a.method <> b.method group by 1, 2, 3 order by 4 desc;
 
 ## 1. Objectives (in priority order)
 
@@ -338,8 +338,22 @@ and the log (doc 15) records that. The order within an area is rough value.
 - ~~Findings 108 and 109~~ (built 2026-11-06, doc 10 7.6 "Built 2026-11-06, findings 108 and 109": the heading as written
   carries a tie in the heading fields, a name with an honorific carries a tie when one tied record bears it whole as a
   name and is of the trade, the manifest's `trades`; the natural-order form and the placeholder ties left out;
-  measured by the next run, the standing diff of command 4, expected some 140 queued strings to single. The saved
-  manifest lacks `trades` until `manifest --use-default` is run, which the run needs first).
+  measured by run a98vpa, doc 10 7.6 "Measured 2026-11-06 (run a98vpa)": 71 queued strings to single, and 77 votes
+  relabelled single because the rule's tie was any live group at the top score, a queued namesake's placeholder among
+  them, which the acceptance line votes past; the rule stands aside wherever the line would accept, built the same
+  afternoon, the next run to show the 77 back to vote).
+- The second pass's silent exact-name onto an entity the first pass made from a qualified heading, whose bare label the
+  string bears while the first pass had left it tied at 1.00 among others ("Apollo" bare, tied between ULAN's Apollo and
+  LoC's "Apollo, 1980-", taken in the second pass by the "Apollo (Deity)" entity finding 108 made minutes earlier, a
+  record the first pass scored 0.85; run a98vpa). The standing policy, not the rule, and a record that lost in the
+  first pass should not answer silently in the second. Count the second-pass exact-name decisions onto an entity whose
+  label is not the string before any rule:
+
+      with q as (select distinct source_string_id from decisions where run_id = 'run-20261106-125611-a98vpa' and method = 'queued'),
+           x as (select d.source_string_id, d.entity_id from decisions d join q using (source_string_id) where d.run_id = 'run-20261106-125611-a98vpa' and d.method = 'exact-name' and d.valid)
+      select count(*), count(*) filter (where e.status = 'provisional') as onto_provisional, (array_agg(s.raw || ' -> ' || coalesce(e.label, '?') order by s.raw))[1:12] as examples
+      from x join source_strings s on s.id = x.source_string_id join entities e on e.id = x.entity_id
+      where lower(coalesce(e.label, '')) <> lower(s.raw);
 - The placement join missing LoC's English form against TGN's vernacular label, to measure (seen in the forty: "Crete
   (Greece)" tied with TGN's Kríti, "Picardy (France)" with Picardie, "Cumberland (England)" with TGN's Cumberland,
   "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108
@@ -347,8 +361,19 @@ and the log (doc 15) records that. The order within an area is rough value.
   holds a LoC heading and a TGN record whose chain contains the heading's parenthetical, before any change to the join.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or
-  a qualifier that is no level word means the inhabited place, LoC's own convention; persons stay the desk's. Count the
-  strings queued between two project entities at the top score before building it.
+  a qualifier that is no level word means the inhabited place, LoC's own convention; persons stay the desk's. And the
+  entities of different classes (a98vpa: "Colchester (England)" between the project's place Colchester and a body of
+  the name the first pass made from a publisher string, three groups at 1.00, finding 108 declining over project
+  entities), where the heading's own class says which. Count the strings queued between two project entities at the
+  top score before building it; the different-classes part of that count:
+
+      select count(*), (array_agg(s.raw order by s.raw))[1:12] as examples
+      from decisions d join source_strings s on s.id = d.source_string_id
+      where d.run_id = 'run-20261106-125611-a98vpa' and d.method = 'queued' and d.valid
+        and (select count(distinct split_part(m->>'uri', '/', 4))
+             from jsonb_array_elements(d.evidence->'groups') g, jsonb_array_elements(g->'members') m
+             where coalesce(g->>'vetoed', 'false') <> 'true' and m->>'stage' = 'store'
+               and m->>'uri' like 'https://data.paul-mellon-centre.ac.uk/%' and m->>'uri' not like '%/unrec_%') >= 2;
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

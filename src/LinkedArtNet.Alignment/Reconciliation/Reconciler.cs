@@ -564,8 +564,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // project's knowledge and not the toolkit's; a painter bearing "Mr. Hone" from the sale of his collection is shown and left to
         // the desk, the question being a specialist's. Neither over a project entity
         // (finding 35), and never the natural-order form every ULAN person bears as a display name, which would choose between two men by
-        // nothing ("Christopher Gibbs")
-        if (top is not null && (reading.Qualifier is not null || reading.HasLifespan || reading.Agent is { Honorifics.Count: > 0 }))
+        // nothing ("Christopher Gibbs"). And never where the ladder would accept the string anyway: the rules were measured over queued
+        // strings, and a string the acceptance line takes is in no tie the ladder knows (its other group at the top score is the placeholder
+        // of a queued namesake, which `second` skips, or an outvoted rival); run a98vpa relabelled 77 of cpxv7k's votes single, 35 confirmed
+        // on the same entity ("Blake, William, 1757-1827"), and the vote stands with its method
+        var wouldAccept = top is not null && top.Score >= _options.AcceptScore && !truncated && carried is not null && (second is null || second.Score < _options.AcceptScore || outvoted);
+        if (top is not null && !wouldAccept && (reading.Qualifier is not null || reading.HasLifespan || reading.Agent is { Honorifics.Count: > 0 }))
         {
             static string Written(string x) => StringKey.Bare(StringKey.Normalise(x)); // the index's bare form: "Mr. Evans" and "Mr Evans" are one
             var key = Written(reading.String.Raw);
@@ -629,7 +633,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks)" }).ToList() } : g).ToList();
             }
         }
-        if (top is not null && top.Score >= _options.AcceptScore && !truncated && carried is not null && (second is null || second.Score < _options.AcceptScore || outvoted))
+        if (top is not null && wouldAccept)
         {
             // the group's ids already on two different entities of ours means the store disagrees with itself: review, not a vote onto the first
             if (includeStore && await HoldersAsync(dataset, top.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);

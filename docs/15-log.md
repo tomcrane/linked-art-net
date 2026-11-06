@@ -54,7 +54,18 @@ and a join gap beside them (LoC's English form against TGN's vernacular label). 
 (doc 10 7.6 "Built 2026-11-06, findings 108 and 109"; Finding108Tests), 109 in the cautious form, the Hone question
 owed to a specialist (plan section 0, decision 16); the next run measures them. The trades had gone into the reconciler
 as a regex and the owner asked where a PMC rule was kept: they are the manifest's `trades` now (PmcDefault lists them,
-an empty list carries no person, the manifest command reports the drift), guide and docs told.
+an empty list carries no person, the manifest command reports the drift), guide and docs told. Run a98vpa at 12:56
+(the manifest brought up to the rules, cpxv7k taken back, 46,296 decisions and 37,830 provisional entities), and its
+diff read with the entity column added to the standing query (doc 10 7.6 "Measured 2026-11-06 (run a98vpa)"): 71
+queued strings to single as measured, and 77 votes relabelled single, 35 on the very same entity, because the rule's
+tie was any live group at the top score, a queued namesake's placeholder among them, which the ladder's `second` skips
+and the acceptance line votes past. The rule stands aside wherever the line would accept, built the same afternoon
+with the Blake case in Finding108Tests failing single before and voting after; the next run shows the 77 back. Three
+strings read one by one: "Mr Winstanley" to ULAN's body by 109 where cpxv7k had matched it onto a Winstanley that run
+made first; "Colchester (England)" queued between the project's place and a body of the name the first pass made,
+the different-classes case added to the plan's two-project-entities item with its count; and "Apollo" bare, tied at
+1.00 in the first pass, taken in the second by the "Apollo (Deity)" entity made minutes earlier, a record the first
+pass scored 0.85, a second-pass question on the plan with its count.
 
 ## 2026-11-05
 

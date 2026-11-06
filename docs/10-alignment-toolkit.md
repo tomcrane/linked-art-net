@@ -1259,6 +1259,44 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-06 (run a98vpa, 12:56; the saved manifest brought up to the library rules first, cpxv7k taken back):
+accepted 9,447 (vote 3,922, single 2,235, exact-single 3,290), queued 3,932, minted 10,876, matched in the store 5,995.
+The standing diff against cpxv7k, by method and, from this run on, by whether the entity is the same:
+
+- queued to single, 71: findings 108 and 109 to the string ("Abbott, Paul, 1960-", "Adam, John (Architect)", "Apollo
+  (Deity)", "Barry, James, 1741-1806", "Biba (Firm)", "Biggin Hill (London, England)", the sample's own cases among
+  them). Fewer than the 140 expected: some of the measured ties were not ties the ladder knew (the next row), and the
+  desk's day had taken others.
+- vote to single, 77, 35 of them on the very same entity ("Adam, Robert, 1728-1792", "Blake, William, 1757-1827",
+  "Cox, David, 1783-1859") and 42 whose cpxv7k entity the undo had removed, so the column cannot say ("Andalusia
+  (Spain)", "Blackpool (England)", "Bonn (Germany)"): the rule relabelling votes. Its tie was any live group at the
+  top score, and the other group was the placeholder of a queued namesake (a bare "Blake, William" between ULAN's
+  William Blakes), which the ladder's `second` skips (finding 38) and the acceptance line votes past; the rule, sitting
+  before the line, took the heading's group first and called it single. Built the same afternoon: the rule stands
+  aside wherever the acceptance line would take the string, since it was measured over queued strings and a string
+  the line accepts is in no tie the ladder knows (Finding108Tests, the Blake case: accepted, vote, no word of finding
+  108). The next run's diff measures it: these 77 back to vote, on the same entities.
+- queued to exact-name, 34: the store stage meeting entities made that day, the owner's at the desk ("Evans", "Chris
+  Beetles Limited (London)") and the first pass's new singles ("[Farebrother]" to the auctioneer, "Cumberland" to the
+  county made from "Cumberland (England)"). One read in evidence and not liked: "Apollo" bare, queued in the first
+  pass at 1.00 between ULAN's Apollo and LoC's "Apollo, 1980-" with "Apollo (Deity)" at 0.85 below them, was taken in
+  the second pass by the entity finding 108 had made minutes earlier from the string "Apollo (Deity)", which carries
+  the bare "Apollo" among its labels: the standing exact-name policy meeting a new entity, not the rule, and a record
+  that scored 0.85 in the first pass answering silently in the second. A second-pass question for the plan, to count
+  first.
+- vote to exact-name 2 ("Cooper", "Westmorland"), single to exact-name 1 ("Jamestown (Accra, Ghana)"): the same
+  meeting, not read.
+- exact-name to single, "Mr Winstanley": finding 109 to ULAN's 500451703, the body bearing "Mr Winstanley" as a name,
+  where cpxv7k's second pass had matched it by exact name onto a "Winstanley" that run had made from another string
+  (gone with the undo); "Winstanley and Son", exact-name then, is an exact-single now. The order of making changed,
+  and what the new entity holds is the owner's to glance at on its page.
+- exact-name to queued, "Colchester (England)": cpxv7k's store stage had one project entity "Colchester", the place,
+  and took it silently, the qualifier unread; this run's had two, the place and a body of the name the first pass made
+  from a publisher string (ULAN's 500451842), declined to choose, and the index stage found three at 1.00 (TGN's
+  Colchester with LoC's heading whole, the body's group, the place's), finding 108 declining over project entities
+  (finding 35). Queued is right for the ladder as it stands, and the case belongs to the plan's two-project-entities
+  item: entities of different classes, where the heading's own class (a qualified place) says which. To count first.
+
 Built 2026-11-06, findings 108 and 109: the string as written carries a tie (the owner at "Mr Evans" in publisher: nine
 candidates at 1.00, ordered by nothing but the source's order and the record's id, "Evans, George" the landscapist first
 and ULAN's 500451791, the auction house, sixth, bearing "Mr. Evans" as a Provenance Index lookup name). Measured over the

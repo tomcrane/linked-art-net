@@ -321,6 +321,29 @@ and the log (doc 15) records that. The order within an area is rough value.
 - Place drift between runs (2026-10-20, seen again 2026-10-26): the same strings move between runs as the order makes
   entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns in awn284); undo and redo are not
   idempotent on the store side. Look at it with the store-stage work.
+- The whole string as written breaks a tie among persons and bodies, to measure first (2026-11-06, the owner at "Mr
+  Evans" in publisher: nine at 1.00, ordered by nothing but the source's order and the record's id, "Evans, George" the
+  landscapist first; ULAN's 500451791, the auction house, lists "Mr. Evans" as a Provenance Index lookup name and no
+  other of the nine holds the whole string). Finding 91 does this for qualified places only. The measure, before any
+  rule: among queued strings whose top score is tied, how many have exactly one tied record holding the string as
+  written, by field, with examples:
+
+      with q as (select s.id, s.raw, s.normalised, s.context, d.evidence from decisions d join source_strings s on s.id = d.source_string_id
+                 where s.dataset = 'pmc' and d.valid and d.method = 'queued'),
+           tops as (select q.id, q.raw, q.context, q.normalised, (g->>'score')::numeric as score, m->>'uri' as uri
+                    from q cross join lateral jsonb_array_elements(q.evidence->'groups') g cross join lateral jsonb_array_elements(g->'members') m
+                    where (g->>'vetoed') is null and (m->>'veto') is null),
+           best as (select id, max(score) as top from tops group by id),
+           tied as (select t.* from tops t join best b on b.id = t.id and t.score = b.top),
+           counts as (select id, count(distinct uri) as n from tied group by id having count(distinct uri) > 1),
+           whole as (select t.id, t.raw, t.context, c.n, count(distinct t.uri) filter (where a.normalised_labels @> array[t.normalised]) as holding
+                     from tied t join counts c on c.id = t.id left join authority_records a on a.uri = t.uri group by t.id, t.raw, t.context, c.n)
+      select context, count(*) filter (where holding = 1) as one_holds_whole, count(*) as ties,
+             (array_agg(raw order by raw) filter (where holding = 1))[1:10] as examples
+      from whole group by context order by 2 desc;
+
+  The tie's order itself is a smaller thing: ties at the top score could be ordered by fit to the field (a body for
+  publisher) rather than by id, which decides nothing and would put the likelier card first.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or
   a qualifier that is no level word means the inhabited place, LoC's own convention; persons stay the desk's. Count the

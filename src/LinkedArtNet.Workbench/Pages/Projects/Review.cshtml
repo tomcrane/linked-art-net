@@ -122,7 +122,8 @@ else
         // desk says so above the candidates rather than let three rows stand for one entity with the run's old reasons (the owner,
         // 2026-11-06, at the next Chris Beetles string)
         var overtaken = item.Entities.Where(kv => kv.Value.Entity.Id != kv.Key)
-            .Select(kv => (Was: ev.Groups.SelectMany(g => g.Members).FirstOrDefault(m => m.Uri == kv.Key)?.Label ?? kv.Key, Now: kv.Value.Entity)).ToList();
+            .Select(kv => (Was: ev.Groups.SelectMany(g => g.Members).FirstOrDefault(m => m.Uri == kv.Key)?.Label ?? kv.Key, Now: kv.Value.Entity))
+            .DistinctBy(o => (o.Was, o.Now.Id)).ToList(); // two placeholders of one label say it once
         var seenEntities = new HashSet<string>(StringComparer.Ordinal);
     @if (overtaken.Count > 0 && item.LookedAgain is null)
     {

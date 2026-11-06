@@ -270,9 +270,16 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("the same entity as a row above", after);
         Assert.Contains("Same as Chris Beetles Limited", after);
         Assert.DoesNotContain("Merge them and accept this string", after);
+        // the group's action with two rows for one entity among its targets is no merge: decided at once, no confirm step
+        var same = await owner.PostAsync($"/p/{ds}/review?handler=AcceptTogether", new FormUrlEncodedContent(
+            [new("id", pub.Id.ToString()), new("targets", $"{ulan} {loc} {beetles.Id} {limited.Id}"), new("__RequestVerificationToken", Token(after))]));
+        Assert.Equal(HttpStatusCode.Redirect, same.StatusCode);
+        Assert.DoesNotContain("confirm=", same.Headers.Location!.ToString());
+        Assert.Equal(limited.Id, (await store.DecisionForAsync(pub.Id))!.EntityId);
+        Assert.Equal(DecisionMethod.Human, (await store.DecisionForAsync(pub.Id))!.Method);
         var page = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(limited.Id)}");
-        Assert.Contains("Waiting at the desk under this name (2)", page);
-        Assert.Contains("2 waiting at the desk", page); // and the signal at the top of the page, beside the title (the owner, 2026-11-06)
+        Assert.Contains("Waiting at the desk under this name (1)", page); // the man's; the publisher string was decided above
+        Assert.Contains("1 waiting at the desk", page); // and the signal at the top of the page, beside the title (the owner, 2026-11-06)
         Assert.Contains($"review?id={man.Id}", page);
     }
 

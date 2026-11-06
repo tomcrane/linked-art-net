@@ -43,7 +43,10 @@ item (plan section 7: evidence overtaken by a merge). And at the same group, ten
 one thing, and "card" read as the row: one action per group, the tick on the group, the rows quiet. Both built on the
 word the same day (doc 12 section 5, doc 13): the group's tick and action in its header, "Always, in this field" on a
 group as accept-together with the override, the rows of a group of several quiet; the merged entity's row says so, the
-desk says the store has changed, a second row for one entity says so; the two desk tests extended.
+desk says the store has changed, a second row for one entity says so; the two desk tests extended. Used at once: two
+rows for one entity had been counted as two entities and sent the owner to a confirm step with nothing to merge; the
+page now asks the plan whether anything merges before it asks the reviewer, and the changed-store line names each
+merge once.
 
 ## 2026-11-05
 

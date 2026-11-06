@@ -63,17 +63,24 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public Task<IActionResult> OnPostAcceptAsync(long id, string target, string? note) =>
         Act(id, async () => ("Accepted.", await Project.Desk.AcceptAsync(Dataset, id, target, Reviewer, note)));
 
-    public Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note, string? survivor, bool confirmed, bool always)
+    public async Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note, string? survivor, bool confirmed, bool always)
     {
         // a group's tick carries its members' URIs in one value, space-joined (the group is the card, 2026-11-06)
         var all = (targets ?? []).SelectMany(t => t.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).Distinct(StringComparer.Ordinal).ToArray();
-        // two or more of the project's own entities among the ticked are a merge: shown first, done on the reviewer's word
-        var ours = all.Where(Project.Scheme.Owns).ToList();
-        if (ours.Count > 1 && !confirmed) return Task.FromResult<IActionResult>(RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, confirm = true, targets = all, survivor, always }));
-        return Act(id, async () =>
+        // two or more of the project's own entities among the ticked are a merge: shown first, done on the reviewer's word. Entities, not
+        // URIs: two rows for one entity (a merge since the evidence was written) are no merge (the owner, 2026-11-06, sent to a confirm
+        // step with one entity on it)
+        var merging = false;
+        if (all.Count(Project.Scheme.Owns) > 1 && !confirmed)
         {
-            var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, all, Reviewer, note, survivor, confirmed, always);
-            var message = ours.Count > 1 ? $"Merged and accepted together: {entity.Label}, with {entity.Equivalents.Count} identifiers." : $"Accepted together, with {entity.Equivalents.Count} identifiers.";
+            try { merging = (await Project.Desk.PlanTogetherAsync(Dataset, id, all, survivor)).Merging.Count > 0; }
+            catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+            if (merging) return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, confirm = true, targets = all, survivor, always });
+        }
+        return await Act(id, async () =>
+        {
+            var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, all, Reviewer, note, survivor, mergeOurs: true, always);
+            var message = confirmed ? $"Merged and accepted together: {entity.Label}, with {entity.Equivalents.Count} identifiers." : $"Accepted together, with {entity.Equivalents.Count} identifiers.";
             return (always ? message + " This spelling will always mean it in this field." : message, entity);
         });
     }

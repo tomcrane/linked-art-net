@@ -76,7 +76,12 @@ wrong with no score between them: the rule proposed and the owner's word given, 
 puts one of its records at the top, read by the records' own scores; Finding110Tests, Apollo's shape silent before and
 queued after; every test project green). The owner's three pages for the two-project-entities item read: two
 placeholder pages classed Type (a plan item of its own) and a corpauthor "Birmingham (England)" that is a jurisdiction
-used as a body, the keywords:head pages still to read.
+used as a body, the keywords:head pages still to read. The owner mentioned, by the way, that the manifest the tool
+saved had not shown in the workbench until the page saved it: the workbench had built a project's manifest, reconciler
+and desk once per process and kept them until its own saves, so the desk had decided with the manifest without the
+trades between the tool run and the page save. The services are rebuilt when the project row has moved on, one row
+read per request (ProjectServices; the desk test saves a manifest behind the workbench's back and finds it in force
+at the next request; the guide told). And `manifest --use-default` says what it replaces before saving.
 
 ## 2026-11-05
 

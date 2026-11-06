@@ -186,7 +186,8 @@ The manifest is the project's reading rules, shown and edited on the project pag
 Above the editor, *In effect now* says what the project is being read with: no manifest (anything goes), the PMC
 library rules as the toolkit currently defines them, or the project's own rules and how they differ from those. The
 library rules are built into the toolkit and change as it grows; *Replace with the PMC library rules* copies the
-current version over the saved manifest, and the command line does the same with `manifest --use-default`. A context
+current version over the saved manifest, and the command line does the same with `manifest --use-default`; a manifest
+saved either way is in force at the workbench's next request, with no restart. A context
 may also set `qualified` (place names with their container, "Hammersmith, London"), `parts` (a list or a compound
 heading made of strings of their own), `home` (the vocabulary whose one exact term decides: another vocabulary's one
 exact term of the same class becomes an equivalent, several are set aside), `parseDatedOnly` (the agent

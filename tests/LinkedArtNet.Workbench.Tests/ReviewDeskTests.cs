@@ -53,6 +53,17 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         await new GettyVocabLoader((PostgresAlignmentStore)store).LoadAsync(NTriples.ReadText(UlanSample), GettyVocabulary.Ulan, "test");
         var project = (await wb.Factory.Services.GetRequiredService<ProjectServices>().GetAsync(ds))!;
         Assert.Equal(LinkedArtNet.Alignment.Reconciliation.ProjectManifest.PmcDefault.Contexts.Count, project.Manifest.Contexts.Count); // the library rules as the toolkit currently defines them
+        // a manifest saved behind the workbench's back (the command line's manifest --use-default, the owner on 2026-11-06) is in force
+        // at the next request, on the page and in the desk's services, with no restart and no save from the page
+        var services = wb.Factory.Services.GetRequiredService<ProjectServices>();
+        var saved = (await store.GetProjectAsync(ds))!;
+        Assert.Contains("auction", await owner.GetStringAsync("/p/" + ds));
+        await store.UpsertProjectAsync(saved with { ManifestJson = (LinkedArtNet.Alignment.Reconciliation.ProjectManifest.PmcDefault with { Trades = [] }).ToJson(), UpdatedAt = DateTimeOffset.UtcNow });
+        Assert.Empty((await services.GetAsync(ds))!.Manifest.Trades);
+        Assert.Contains("the trades (none against auction", await owner.GetStringAsync("/p/" + ds)); // the page reads the store's manifest and reports its drift
+        await store.UpsertProjectAsync(saved with { UpdatedAt = DateTimeOffset.UtcNow }); // the library rules back, for the strings below
+        project = (await services.GetAsync(ds))!;
+        Assert.NotEmpty(project.Manifest.Trades);
         var smith = await store.CollectAsync(ds, "persauthorfull", "Smith, John (author)");
         await project.Reconciler.RunAsync(ds);
 

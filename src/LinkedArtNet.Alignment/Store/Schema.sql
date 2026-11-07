@@ -245,3 +245,11 @@ insert into schema_version (version) values (8) on conflict do nothing;
 alter table source_strings add column if not exists skipped_at timestamptz;
 
 insert into schema_version (version) values (9) on conflict do nothing;
+
+-- version 10 (2026-11-07): deleting a string cascades to its decisions, and each decision deleted is checked against every
+-- decision's `supersedes`, which had no index, and found by `source_string_id`, whose index covered the valid rows only: the
+-- first cleanup-parts timed out on 168 strings. Both paths indexed.
+create index if not exists decisions_string on decisions (source_string_id);
+create index if not exists decisions_supersedes on decisions (supersedes);
+
+insert into schema_version (version) values (10) on conflict do nothing;

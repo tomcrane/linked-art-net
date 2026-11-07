@@ -724,6 +724,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     {
         if (stringIds.Count == 0) return 0;
         await using var cmd = _db.CreateCommand("delete from source_strings where id = any(@ids)");
+        cmd.CommandTimeout = 0; // the cascades over decisions, parts and examples; no client timeout, the transaction keeps it whole
         Add(cmd, "ids", stringIds.ToArray());
         return await cmd.ExecuteNonQueryAsync(ct);
     }

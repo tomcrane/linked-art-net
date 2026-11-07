@@ -19,7 +19,8 @@ public sealed record EvidenceMember(string Uri, string Source, string? Label, st
 /// but "store"): the entity itself, with its class and status, the strings that resolve to it, and the catalogue records behind the
 /// most frequent of them.
 /// </summary>
-public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<StringExample> Examples)
+/// <param name="Placement">Where the entity is, read from the LoC heading it holds ("Ala." from "Birmingham (Ala.)") or its TGN record's parents, so that namesake project entities on one page can be told apart (the owner, 2026-11-07, at "Birmingham" in keywords:sub: both buttons "Same as Birmingham"); null when its own label already says, or nothing does.</param>
+public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<StringExample> Examples, string? Placement = null)
 {
     /// <summary>The fields the strings came from, the most frequent first.</summary>
     public IReadOnlyList<string> Contexts => Strings.GroupBy(s => s.String.Context, StringComparer.Ordinal).OrderByDescending(g => g.Sum(x => x.String.Occurrences)).Select(g => g.Key).ToList();
@@ -38,7 +39,8 @@ public sealed record TogetherPlan(Entity Survivor, IReadOnlyList<Entity> Merging
 /// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, the records behind the candidates, the project's own entities among the candidates with their facts, and the catalogue records the string was seen in.</summary>
 /// <param name="LookedAgain">Set when the evidence shown is a fresh evaluation under today's rules, not the decision's own: what the string would be decided as now ("queued", "accepted", ...). The stored decision is unchanged.</param>
 /// <param name="Siblings">The other queued strings under this string's name (its own key, its reading's keys, its entity's labels), in list order: the desk finishes a name before it leaves it (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd").</param>
-public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, IReadOnlyList<DecidedString> Siblings, string? LookedAgain = null)
+/// <param name="Holders">By a record's URI on a card, the project entity that holds that record now and was not a member when the evidence was written (an identifier added by hand since, or a later run's acceptance), so the card can offer it (the owner, 2026-11-07: "does adding the identifier take effect in the desk?").</param>
+public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, IReadOnlyList<DecidedString> Siblings, string? LookedAgain = null, IReadOnlyDictionary<string, EntityFacts>? Holders = null)
 {
     public bool IsQueued => Decision.Method == DecisionMethod.Queued;
 }
@@ -97,7 +99,16 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var entities = new Dictionary<string, EntityFacts>(StringComparer.Ordinal);
         foreach (var uri in evidence.Groups.SelectMany(g => g.Members).Where(m => m.IsStore || scheme.Owns(m.Uri)).Select(m => m.Uri).Distinct(StringComparer.Ordinal).Take(12))
             if (await FactsAsync(uri, ct) is { } facts) entities[uri] = facts;
-        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, await SiblingsAsync(decided.String, entity, ct), lookedAgain);
+        // the project entity that holds a card's record now and is not on the card: the stored evidence is the run's, and an identifier
+        // added by hand since reaches the desk through this lookup rather than "Look again" (the owner, 2026-11-07, at Arthur Ackermann & Son)
+        var holders = new Dictionary<string, EntityFacts>(StringComparer.Ordinal);
+        foreach (var uri in records.Keys)
+            foreach (var h in await store.FindEntitiesByEquivalentAsync(uri, ct))
+            {
+                if (h.Dataset != decided.String.Dataset || h.MergedInto is not null || h.Id == entity?.Id || entities.Values.Any(f => f.Entity.Id == h.Id)) continue;
+                if (await FactsAsync(h.Id, ct) is { } facts) { holders[uri] = facts; break; }
+            }
+        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, await SiblingsAsync(decided.String, entity, ct), lookedAgain, holders);
     }
 
     /// <summary>
@@ -141,7 +152,21 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
                 if (examples.All(e => e.RecordId != x.RecordId)) examples.Add(x);
             if (examples.Count >= 3) break;
         }
-        return new EntityFacts(entity, strings, examples.Take(3).ToList());
+        return new EntityFacts(entity, strings, examples.Take(3).ToList(), await PlacementAsync(entity, ct));
+    }
+
+    /// <summary>Where an entity is, for telling namesakes apart: LoC's parenthetical first ("Ala."), else the first two of its TGN record's parents ("Jefferson, Alabama"); null when the entity's own label carries a qualifier or nothing says.</summary>
+    private async Task<string?> PlacementAsync(Entity entity, CancellationToken ct)
+    {
+        if (entity.Class != EntityClass.Place || (entity.Label?.Contains('(') ?? false)) return null;
+        foreach (var q in entity.Equivalents.Where(q => q.Source == "loc").Concat(entity.Equivalents.Where(q => q.Source == "tgn")).Take(4))
+        {
+            if (await store.GetAuthorityAsync(q.Uri, ct) is not { } r) continue;
+            if (q.Source == "loc" && r.Label is { } l && l.IndexOf('(') is var i and > 0 && l.EndsWith(')')) return l[(i + 1)..^1];
+            if (q.Source == "tgn" && r.DataJson is { } d && System.Text.Json.JsonDocument.Parse(d).RootElement.TryGetProperty("parentString", out var p) && p.GetString() is { } ps)
+                return string.Join(", ", ps.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).Take(2));
+        }
+        return null;
     }
 
     /// <summary>The catalogue records a string was seen in (design doc 12 section 5), up to three; a part string with none of its own (a keyword's head, a place in a list) shows its parents'.</summary>
@@ -343,7 +368,8 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     }
 
     /// <summary>The reviewer says none of the candidates is right and the thing is real: the provisional entity becomes a confirmed local authority, renamed if asked.</summary>
-    public async Task<Entity> KeepLocalAsync(string dataset, long stringId, string reviewer, string? label = null, string? note = null, CancellationToken ct = default)
+    /// <param name="knownAt">A URL the thing is known at (an ArchivesSpace agent, a VIAF cluster), kept as its identifier in one step (the owner, 2026-10-26: Dowell's Ltd at the NLS archive).</param>
+    public async Task<Entity> KeepLocalAsync(string dataset, long stringId, string reviewer, string? label = null, string? note = null, string? knownAt = null, CancellationToken ct = default)
     {
         var decided = await OwnAsync(dataset, stringId, ct);
         var reading = reconciler.Read(decided.String);
@@ -356,7 +382,16 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             await store.UpdateEntityAsync(entity with { Label = string.IsNullOrWhiteSpace(label) ? entity.Label : label, Labels = labels, Status = EntityStatus.Confirmed }, ct);
             entity = (await store.GetEntityAsync(entity.Id, ct))!;
         }
-        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("local", reading, new { entity = entity.Id, label, note }), reviewer, ct: ct);
+        if (!string.IsNullOrWhiteSpace(knownAt))
+        {
+            var uri = knownAt.Trim();
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new InvalidOperationException("\"Known elsewhere\" is not a URL.");
+            if (scheme.Owns(uri)) throw new InvalidOperationException("\"Known elsewhere\" is one of our own entities: use Same as.");
+            if (await store.GetAuthorityAsync(uri, ct) is null && AuthorityUris.SourceOf(uri) == "other") throw new InvalidOperationException("\"Known elsewhere\" is not a known authority record and not in a recognised namespace (ULAN, AAT, TGN, VIAF, Wikidata, GND, LoC, LUX, PeriodO, or an ArchivesSpace agent's URL).");
+            if (entity.Equivalents.All(q => q.Uri != uri)) await store.AddEquivalentAsync(entity.Id, new Equivalent(uri, AuthorityUris.SourceOf(uri), DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow), ct);
+            entity = (await store.GetEntityAsync(entity.Id, ct))!;
+        }
+        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("local", reading, new { entity = entity.Id, label, note, knownAt }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return entity;
     }

@@ -88,7 +88,11 @@ sale catalogue it heads and a keyword from the books it describes. Below: the ca
 one authority record, or a group of records from different files that say they are the same thing, with its score,
 the files that agree, the record's own label, dates and description, a link to the record, and the reasons the
 software gave, such as "dates agree" or "a placeholder awaiting review: carries nothing". Greyed cards were ruled
-out, and the reason says why. On a card that is one of the project's own entities, the name is the link to the
+out, and the reason says why; a greyed row keeps a quiet **accept anyway** for when you know better (a catalogue's
+birth year two out from the authorities'), recorded as yours. A project entity on a card is named with where it is
+when that is known ("Birmingham (Ala.)"), so two of one name can be told apart. When a record on a card has since
+been given to one of the project's entities (an identifier added by hand, say), the row says "now held by" with a
+Same as, without "Look again". On a card that is one of the project's own entities, the name is the link to the
 entity's page, opened in another tab so the desk stays where it is, and the URI beneath it opens the URI, as every
 record's does. The entity under "Currently" and the project's entities among the search results link the same way.
 
@@ -106,7 +110,8 @@ Actions:
 - **Same as this**: the string is an entity the project already has.
 - **Something else**: search the project's entities and the indexes for anything not among the candidates. The string's own provisional entity, the one under "Currently", is left out of the results: it is not something else.
 - **Keep as local authority**: none of the candidates is right and the thing is real. Give it the label it should be
-  published under and, if useful, a note. The software stops asking about it.
+  published under and, if useful, a note, and a URL it is known at (an archive's agent page, a VIAF cluster), which is
+  kept as its identifier. The software stops asking about it.
 - **Accept the ticked together**: when two or more groups are the same thing (an auction house in ULAN and the same
   house as a person in the Library of Congress), tick "together" on each and accept them as one. One entity is made
   with all their identifiers. When two or more of the project's own entities are among the ticked, the desk first
@@ -153,9 +158,9 @@ waiting string there at the desk, over changing the class. When the two entities
 row on the entity page and the confirm step on the desk offer the merged entity's class; the survivor's stands unless
 chosen.
 
-An identifier added by hand is in force at once for the next reconcile, for "Look again" and for the searches; the
-card of a string already queued still shows the run's evidence, so use "Look again" there to see the entity on the
-card that holds the record.
+An identifier added by hand is in force at once for the next reconcile, for "Look again" and for the searches, and a
+queued string's card says "now held by" on the record's row. On an entity's page, a string still queued links to its
+desk page from the decided column, and the title's count includes it.
 
 Merging a placeholder into another entity settles its strings: each string that was queued or minted on the
 placeholder is decided onto the survivor as your decision, with the merge as the reason, and leaves the queue; Undo on

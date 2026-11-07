@@ -79,6 +79,14 @@ public class ReviewServiceTests(PostgresFixture pg)
         Assert.Equal("Nobody, Zedekiah", local.Label);
         Assert.Contains("Nobody, Zed", local.Labels);
         Assert.Equal(DecisionMethod.Human, (await pg.Store.DecisionForAsync(nobody.Id))!.Method);
+        // keep local with a URL the thing is known at: the identifier in one step; a URL in no recognised namespace is refused
+        var dowell = await pg.Store.CollectAsync(ds, "corpauthor", "Dowell's Ltd");
+        await reconciler.RunAsync(ds);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => desk.KeepLocalAsync(ds, dowell.Id, "tester", knownAt: "https://example.org/nothing/1"));
+        var known = await desk.KeepLocalAsync(ds, dowell.Id, "tester", note: "Edinburgh auctioneers", knownAt: "http://viaf.org/viaf/123456789");
+        Assert.Equal(EntityStatus.Confirmed, known.Status);
+        Assert.Contains(known.Equivalents, q => q.Uri == "http://viaf.org/viaf/123456789" && q.Source == "viaf" && q.Method == DecisionMethod.Human);
+        Assert.Contains("knownAt", (await pg.Store.DecisionForAsync(dowell.Id))!.EvidenceJson!);
 
         // same as: a third string is the same as the accepted Smith
         var smithToo = await pg.Store.CollectAsync(ds, "corpauthor", "J. Smith");

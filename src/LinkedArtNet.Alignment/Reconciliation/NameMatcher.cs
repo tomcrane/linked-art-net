@@ -93,6 +93,10 @@ public static class NameMatcher
     /// <summary>The bare possessive of a one-word name as a lookup key ("dowells" for "Dowell"), the form a possessive firm name is indexed under once its apostrophe and legal suffix are gone; null for a name of several words.</summary>
     public static string? PossessiveKey(string name)
     {
+        // a name written in capitals is an acronym ("ICA"), not a man a firm could be named for: no possessive key (finding 105's
+        // follow-up, run evhvuw: "ICA" went from 82 to 102 groups through the key "icas")
+        var letters = name.Where(char.IsLetter).ToList();
+        if (letters.Count >= 2 && letters.All(char.IsUpper)) return null;
         var a = BodyForm(name);
         return a.Length == 0 || a.Contains(' ') ? null : a + "s";
     }

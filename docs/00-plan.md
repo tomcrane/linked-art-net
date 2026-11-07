@@ -303,7 +303,7 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 
-- The second pass's reasons on a string it leaves queued (finding 110's "its records are not at the top here") are not
+- ~~The second pass's reasons on a string it leaves queued~~ (built 2026-11-07: the last evaluation of each string still queued at the end of the second pass is written as its queued decision, the placeholder unchanged, with `secondPass` in the evidence; DeskEvidenceTests) (finding 110's "its records are not at the top here") are not
   persisted: the first pass's queued decision stands and the second writes none, so the desk shows the first pass's
   evidence and the reason reaches it only through "Look again". The second pass should save its evidence on the
   string it leaves queued (a new queued decision, or the standing one's evidence replaced), so the desk reads why.
@@ -331,23 +331,23 @@ and the log (doc 15) records that. The order within an area is rough value.
   to the confirm step the page opened at the top and the step sat under the records and the candidates, "if I didn't
   know it was waiting there below the fold, I'd be lost". The redirect now carries the step's fragment, so the page
   opens on it, and a line at the top says a confirm is waiting, with a link to it.)
-- A vetoed card keeps a quiet accept (the owner, 2026-11-07, at "Hall, Harry, 1815-1882": ULAN's and LoC's Harry Hall
+- ~~A vetoed card keeps a quiet accept~~ (built 2026-11-07: a greyed row carries "accept anyway", Accept or Same as by the row, recorded as human) (the owner, 2026-11-07, at "Hall, Harry, 1815-1882": ULAN's and LoC's Harry Hall
   of 1813-1882, the painter the string names, greyed at 0.00 for the two years' difference on the birth, with no button,
   while two undated LoC Harry Halls stood above at 1.00 and 0.85; the way round is "Something else" and a search). The
   person outranks a veto: a greyed group keeps a quiet "Accept anyway" (and "Same as" when a project entity holds it),
   recorded as human with the veto's reason in the evidence, so the catalogue's two years do not cost a detour.
-- A project entity on a card named with its placement (the owner, 2026-11-07, at "Birmingham" in keywords:sub, string
+- ~~A project entity on a card named with its placement~~ (built 2026-11-07: `EntityFacts.Placement` from the LoC heading's parenthetical or the TGN parents, shown on the row, in the group's button, the merge notice and the confirm step; DeskEvidenceTests) (the owner, 2026-11-07, at "Birmingham" in keywords:sub, string
   79377: two groups at 1.00, each holding a project entity labelled "Birmingham", Alabama's above England's, and both
   buttons reading "Same as Birmingham"). When a namesake project entity is on the page, the button and the row name the
   entity with its placement, read from the LoC heading it holds ("Birmingham (Ala.)") or its TGN record's parent:
   "Same as Birmingham (Alabama)", "Same as Birmingham (England)".
-- The card's holders, live (2026-11-07, the owner's question after adding LoC's and Wikidata's Arthur Ackermann & Son
+- ~~The card's holders, live~~ (built 2026-11-07: `ReviewItem.Holders`, the project entity holding a card's record now and not on the card, shown under the row with "Same as"; DeskEvidenceTests) (2026-11-07, the owner's question after adding LoC's and Wikidata's Arthur Ackermann & Son
   to the firm's entity by hand: "does that take effect in the desk?"). It does in the next reconcile, in "Look again",
   and in the searches; not on the stored card of a string already queued, whose project entities are the members the
   run wrote. As the desk already looks up what a card's entities have become since (a merge shows under the survivor),
   it should look up which project entity now holds each card's records and say so, with "Same as" offered, so a hand-
   added identifier reaches the queue without "Look again".
-- The way from a placeholder's entity page to its own desk page (the owner, 2026-11-06, at "Colchester (England)"): the
+- ~~The way from a placeholder's entity page to its own desk page~~ (built 2026-11-07: the decided column links a queued string to its desk page and the title's signal counts the entity's own queued strings) (the owner, 2026-11-06, at "Colchester (England)"): the
   entity page's "Waiting at the desk" list is the other strings of the name, and leaves out the strings that resolve
   here, which sit under "Strings that resolve here" with "queued" as plain text. A placeholder whose only string is its
   own shows no way to the desk. The decided column should link a queued string to its desk page, and the title's
@@ -376,7 +376,7 @@ and the log (doc 15) records that. The order within an area is rough value.
 - ~~"Look again" at the desk~~ (built 2026-10-26 evening: a link beside the decision date re-evaluates the string
   under today's rules and shows the fresh evidence with what the outcome would be, deciding nothing; the actions act
   on what is shown).
-- The possessive key of an acronym (finding 105's follow-up, run evhvuw): "ICA" went from 82 to 102 groups through
+- ~~The possessive key of an acronym~~ (built 2026-11-07: a name in capitals has no possessive key; PossessiveTests) (finding 105's follow-up, run evhvuw): "ICA" went from 82 to 102 groups through
   the key "icas"; a name written in capitals gets no possessive key. One line and a test line, with the next library
   change.
 - ~~ULAN's "1200~-~2080" on the desk~~ (2026-10-26 evening, the owner: confusing on every undated owner. It is
@@ -394,7 +394,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   Forename" by the matcher (it scored 0.93 for the "Mr."; size S), and, to measure before building, a join for an
   undated string whose two sources hold one exact record each with compatible dates (LoC's working span inside ULAN's
   window), the shape of finding 79 without the string's own dates; namesakes are the risk.
-- An identifier on "Keep as local authority" (the same desk item): the NLS archive is the one authority for
+- ~~An identifier on "Keep as local authority"~~ (built 2026-11-07: "Known elsewhere (URL, optional)" on the keep-local form, kept as the entity's identifier under the namespace guard; ReviewServiceTests. The manifest list of ArchivesSpace instances stays open below) (the same desk item): the NLS archive is the one authority for
   Dowell's Ltd (https://manuscripts.nls.uk/agents/corporate_entities/1476), and the entity page already takes a URI
   as an identifier (since 2026-10-26 evening it takes an ArchivesSpace agent's public URL on any host, by the shape
   of the path, source "archivesspace"; before that the namespace guard refused NLS's); the keep-local form wants an

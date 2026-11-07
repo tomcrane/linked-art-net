@@ -1,5 +1,13 @@
 @page "/p/{dataset}/review"
 @model ReviewModel
+@functions {
+    // a project entity named with its placement when known ("Birmingham (Ala.)"), so namesakes on one page can be told apart (the owner, 2026-11-07)
+    string Named(LinkedArtNet.Alignment.Entity e)
+    {
+        var f = Model.Item?.Entities.Values.FirstOrDefault(x => x.Entity.Id == e.Id);
+        return (e.Label ?? e.Id) + (f?.Placement is { } p ? $" ({p})" : "");
+    }
+}
 @{
     ViewData["Title"] = "Review";
     var item = Model.Item;
@@ -110,7 +118,7 @@ else
             {
                 item.Entities.TryGetValue(e.Id, out var ef);
                 <label class="small inline" style="display:block; margin:.3rem 0"><input type="radio" name="survivor" value="@e.Id" checked="@(e.Id == plan.Survivor.Id)" />
-                    <strong>@e.Label</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
+                    <strong>@Named(e)</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
                     @if (e.Equivalents.Count > 0) { <text>holds @string.Join(", ", e.Equivalents.Select(q => q.Source + "'s " + q.Uri.Split('/').Last()));</text> } else { <text>no identifier;</text> }
                     @if (ef is not null) { <text>stands for @ef.Strings.Count string@(ef.Strings.Count == 1 ? "" : "s")@(ef.Contexts.Count > 0 ? " in " + string.Join(", ", ef.Contexts) : "")</text> }
                     · <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">its page</a></label>
@@ -171,7 +179,7 @@ else
                         <form method="post" asp-page-handler="AcceptTogether" class="inline">
                             <input type="hidden" name="id" value="@item.String.Id" />
                             @foreach (var m in live) { <input type="hidden" name="targets" value="@m.Uri" /> }
-                            <button type="submit" title="@(firm.Count == 1 ? "The string is this entity, which gets any record of the group it does not hold yet" : "The string is this group: one entity with all its identifiers")">@(firm.Count == 1 ? $"Same as {firm[0].Label}" : "Accept these as one")</button>
+                            <button type="submit" title="@(firm.Count == 1 ? "The string is this entity, which gets any record of the group it does not hold yet" : "The string is this group: one entity with all its identifiers")">@(firm.Count == 1 ? $"Same as {Named(firm[0])}" : "Accept these as one")</button>
                             <button type="submit" name="always" value="true" class="secondary" title="The same, and this exact spelling means it from now on in this field; the variants page can widen a rule to every field">Always, in this field</button>
                         </form>
                     }
@@ -187,7 +195,7 @@ else
                     {
                         var e = firm[i];
                         var held = e.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).Select(q => q.Source + "'s " + q.Uri.Split('/').Last()).ToList();
-                        <text>@(i == 0 ? "" : i == firm.Count - 1 ? " and " : ", ")</text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">@e.Label</a>@(held.Count > 0 ? " (holding " + string.Join(", ", held) + ")" : "")
+                        <text>@(i == 0 ? "" : i == firm.Count - 1 ? " and " : ", ")</text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">@Named(e)</a>@(held.Count > 0 ? " (holding " + string.Join(", ", held) + ")" : "")
                     }. The authorities say they are one thing, and the string was queued because the store disagrees with itself.
                     <form method="post" asp-page-handler="AcceptTogether" class="inline">
                         <input type="hidden" name="id" value="@item.String.Id" />
@@ -208,6 +216,7 @@ else
                            onto it, and nothing to tell them apart but their records) *@
                         @if (m.IsStore || m.Uri.StartsWith(Model.Project.Project.IdentifierBase, StringComparison.Ordinal)) { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(m.Uri)" target="_blank" rel="noopener" title="The entity's page: its identifiers, the strings that resolve to it and the records they were seen in">@(m.Label ?? m.Uri)</a></strong> }
                         else { <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong> }
+                        @if (facts?.Placement is { } where) { <span class="muted">(@where)</span> }
                         @if (record?.Lifespan?.Display is { } life) { <span class="muted">@life</span> }
                         @if (record?.Type is { } type) { <span class="tag">@type.ToLowerInvariant()</span> }
                         @if (facts is not null) { <span class="tag">@facts.Entity.Class.ToString().ToLowerInvariant()</span> <span class="tag">@facts.Entity.Status.ToString().ToLowerInvariant()</span> }
@@ -234,8 +243,24 @@ else
                             </div>
                         }
                         <div class="reason">@m.Reason</div>
+                        @if (!m.IsStore && item.Holders is { } holders && holders.TryGetValue(m.Uri, out var holder))
+                        {
+                            @* the project entity that holds this record now, since the evidence was written: an identifier added by hand, or a later run *@
+                            <div class="small muted">now held by the project's entity <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Entity.Id)" target="_blank" rel="noopener">@Named(holder.Entity)</a> <span class="tag">@holder.Entity.Status.ToString().ToLowerInvariant()</span>, since this evidence was written
+                                @if (Model.Method != "human") { <form method="post" asp-page-handler="SameAs" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@holder.Entity.Id" /><button type="submit" class="link small">Same as @Named(holder.Entity)</button></form> }
+                            </div>
+                        }
                     </div>
-                    @if (m.Veto != true && Model.Method != "human" && live.Count == 1)
+                    @if (m.Veto == true && Model.Method != "human")
+                    {
+                        @* ruled out by dates or class, and the person knows better: the catalogue's two years on a birth should not cost a detour
+                           through "Something else" (the owner, 2026-11-07, at "Hall, Harry, 1815-1882") *@
+                        <form method="post" asp-page-handler="@(m.IsStore ? "SameAs" : "Accept")" class="inline">
+                            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="@(m.IsStore ? "entity" : "target")" value="@m.Uri" />
+                            <button type="submit" class="link small" title="Ruled out for the reason shown; you know better. Recorded as your decision.">accept anyway</button>
+                        </form>
+                    }
+                    else if (m.Veto != true && Model.Method != "human" && live.Count == 1)
                     {
                         @* a group of one record: the row's actions are the group's *@
                         @if (!m.IsStore)
@@ -304,6 +329,8 @@ else
             <input type="text" id="label" name="label" value="@(item.Entity?.Label ?? reading?.Text)" />
             <label for="lnote">Note</label>
             <input type="text" id="lnote" name="note" placeholder="Edinburgh dealer, not the national gallery" />
+            <label for="lurl">Known elsewhere (URL, optional)</label>
+            <input type="text" id="lurl" name="url" placeholder="https://manuscripts.nls.uk/agents/corporate_entities/1476" title="An archive's agent page, a VIAF cluster: kept as the entity's identifier" />
             <div class="actions"><button type="submit">Keep as local authority</button></div>
         </form>
     </div>

@@ -19,6 +19,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<(SourceString String, IReadOnlyList<StringExample> Examples)> Examples { get; private set; } = [];
     /// <summary>The queued strings under this entity's name, still waiting at the desk (the owner, 2026-11-06, after the first merge: the banner's link to the survivor should show what is left to do under its name).</summary>
     public IReadOnlyList<DecidedString> Waiting { get; private set; } = [];
+    /// <summary>This entity's own strings still queued (a placeholder's own string), which the name's list leaves out: the way from a placeholder's page to its desk page (the owner, 2026-11-06, at "Colchester (England)").</summary>
+    public IReadOnlyList<DecidedString> OwnQueued { get; private set; } = [];
     public string? Message { get; private set; }
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
@@ -42,6 +44,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         }
         Examples = examples;
         Waiting = await Project.Desk.WaitingForAsync(Dataset, view.Entity);
+        OwnQueued = view.Strings.Where(s => s.Decision.Method == DecisionMethod.Queued && Waiting.All(w => w.String.Id != s.String.Id)).ToList();
         return Page();
     }
 

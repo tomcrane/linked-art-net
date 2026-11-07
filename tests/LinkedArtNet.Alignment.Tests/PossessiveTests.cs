@@ -6,6 +6,16 @@ namespace LinkedArtNet.Alignment.Tests;
 [Collection("postgres")]
 public class PossessiveTests(PostgresFixture pg)
 {
+    [Fact]
+    public void A_name_in_capitals_is_an_acronym_and_has_no_possessive_key()
+    {
+        // finding 105's follow-up (run evhvuw): "ICA" went from 82 to 102 groups through the key "icas"
+        Assert.Null(NameMatcher.PossessiveKey("ICA"));
+        Assert.Null(NameMatcher.PossessiveKey("RIBA"));
+        Assert.Equal("dowells", NameMatcher.PossessiveKey("Dowell"));
+        Assert.Equal("christies", NameMatcher.PossessiveKey("Christie"));
+    }
+
     [PostgresFact]
     public async Task A_firm_named_for_the_man_is_offered_for_his_name_and_never_carried_alone()
     {

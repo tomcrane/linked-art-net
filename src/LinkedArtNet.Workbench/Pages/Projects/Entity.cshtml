@@ -11,7 +11,7 @@
 <h1 style="margin-top:0">@e.Label <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
     @if (v.IsCompound) { <a class="tag" href="#parts" title="A compound heading's own concept, coordinated from its parts, listed below">compound</a> }
     @* desk work under this name is signalled at the top, where the eye lands, with the list further down (the owner, 2026-11-06) *@
-    @if (Model.Waiting.Count > 0) { <a class="tag src" href="#waiting" title="Queued strings under this name, listed below">@Model.Waiting.Count waiting at the desk</a> }</h1>
+    @if (Model.Waiting.Count + Model.OwnQueued.Count > 0) { <a class="tag src" href="@(Model.Waiting.Count > 0 ? "#waiting" : "#strings")" title="Queued strings under this name, and this entity's own strings still at the desk">@(Model.Waiting.Count + Model.OwnQueued.Count) waiting at the desk</a> }</h1>
 <div class="grid">
     <div>
         <dl class="facts">
@@ -108,7 +108,7 @@
             }
             </p>
         }
-        <h2>Strings that resolve here (@v.Strings.Count)</h2>
+        <h2 id="strings">Strings that resolve here (@v.Strings.Count)</h2>
         <form method="post" asp-page-handler="Reopen">
             <input type="hidden" name="id" value="@e.Id" />
             <table>
@@ -116,7 +116,7 @@
                 <tbody>
                 @foreach (var s in v.Strings)
                 {
-                    <tr><td><input type="checkbox" name="strings" value="@s.String.Id" aria-label="select" /></td><td>@s.String.Raw</td><td class="small">@s.String.Context ×@s.String.Occurrences</td><td class="small muted">@s.Decision.Method@(s.Decision.Reviewer is null ? "" : $" · {s.Decision.Reviewer}")</td></tr>
+                    <tr><td><input type="checkbox" name="strings" value="@s.String.Id" aria-label="select" /></td><td>@s.String.Raw</td><td class="small">@s.String.Context ×@s.String.Occurrences</td><td class="small muted">@if (s.Decision.Method == DecisionMethod.Queued) { <a href="/p/@Model.Dataset/review?id=@s.String.Id" title="Waiting at the desk: open it there">queued · at the desk</a> } else { @s.Decision.Method }@(s.Decision.Reviewer is null ? "" : $" · {s.Decision.Reviewer}")</td></tr>
                 }
                 </tbody>
             </table>

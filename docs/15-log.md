@@ -88,6 +88,13 @@ reconciler item, count first (dates that miss by a year or two on one side). At 
 and England's legacy entities each in a group at 1.00, Alabama's first, prominence standing aside for both (the second
 example on that item), both buttons reading "Same as Birmingham" (a desk item: name the entity with its placement), and
 the heading's sibling part "England" unread (a reconciler item, count first: a subdivision placed by its sibling parts).
+The owner asked for a build to clear the decks, and the desk session script went into section 0 (what to look for,
+what is the assistant's). Built in one batch with the workbench stopped: the second pass keeps its reasons on a string
+it leaves queued (the last evaluation written as its queued decision, `secondPass` in the evidence); a greyed row's
+"accept anyway"; a project entity named with its placement on the card, the group's button, the merge notice and the
+confirm step; a card's live holders ("now held by", with Same as); the entity page's queued strings linked to the
+desk and counted in the title; the ICA key; the URL on "Keep as local authority". DeskEvidenceTests, PossessiveTests,
+ReviewServiceTests; doc 13; seven desk items struck.
 
 ## 2026-11-06
 

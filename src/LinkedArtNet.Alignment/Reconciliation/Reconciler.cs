@@ -148,6 +148,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // round reconsiders only the strings still queued; three rounds at most, since a round that settles nothing changes nothing
         int reconsidered = 0, settled = 0, rounds = 0;
         var pending = queuedStrings;
+        // the reasons the second pass gives a string it leaves queued (finding 110's "its records are not at the top here") reached the desk
+        // only through "Look again", since the first pass's queued decision stood and the second wrote none (the desk, 2026-11-07): the
+        // last evaluation of each string still queued at the end is written as its queued decision, the placeholder unchanged
+        var lastQueued = new Dictionary<long, Evaluation>();
+        var stillQueued = pending;
         while (pending.Count > 0 && rounds < 3)
         {
             rounds++;
@@ -160,7 +165,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 ct.ThrowIfCancellationRequested();
                 if (rounds == 1) reconsidered++;
                 var e = await EvaluateAsync(dataset, s, includeStore: true, ct);
-                if (e.Outcome is not (Outcome.MatchedStore or Outcome.Accepted)) { still.Add(s); continue; }
+                if (e.Outcome is not (Outcome.MatchedStore or Outcome.Accepted)) { still.Add(s); if (e.Outcome == Outcome.Queued) lastQueued[s.Id] = e; continue; }
                 var old = await store.DecisionForAsync(s.Id, ct);
                 await CommitAsync(dataset, s, e, runId, ct);
                 if (old?.EntityId is { } placeholder) await store.RemoveProvisionalIfUnreferencedAsync(placeholder, ct);
@@ -169,8 +174,23 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             Time("second-pass", sw);
             progress?.Report(rounds == 1 ? $"second pass: {reconsidered} reconsidered, {settledThisRound} settled" : $"second pass, round {rounds}: {settledThisRound} settled");
+            stillQueued = still;
             if (settledThisRound == 0) break;
             pending = still;
+        }
+        if (stillQueued.Count > 0)
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var kept = 0;
+            foreach (var s in stillQueued)
+            {
+                ct.ThrowIfCancellationRequested();
+                if (!lastQueued.TryGetValue(s.Id, out var e) || await store.DecisionForAsync(s.Id, ct) is not { Method: DecisionMethod.Queued } old) continue;
+                await store.DecideAsync(s.Id, old.EntityId, DecisionMethod.Queued, Evidence("queued", e.Reading, e.Groups, new { secondPass = true, rounds, e.Note }), runId: runId, ct: ct);
+                kept++;
+            }
+            Time("second-pass-evidence", sw);
+            progress?.Report($"second pass: the reasons kept on {kept} strings still queued");
         }
         return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier, reconsidered, settled, rounds);
     }

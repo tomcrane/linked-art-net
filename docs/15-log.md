@@ -111,6 +111,8 @@ HeadingResplitTests. The owner ran it (PowerShell wrote the file as UTF-16, read
 listed, 14 by the indexes' rule and every one right; the rest largely two artefacts of the comparison, the leftover
 rows of re-splits after finding 4 (120, the repair's to delete) and the text of shared part strings, no-break spaces
 and trailing stops (some 350), both taken out of the listing; the real set under the splitter's rule is a few dozen.
+The second run: 167 would change, 33 by the splitter (linking words and prefixes, all right), 14 by the indexes, 119
+leftover rows, one stale; nothing wrong in it. The word on `--apply` next.
 
 ## 2026-11-06
 

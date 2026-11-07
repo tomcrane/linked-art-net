@@ -1281,9 +1281,13 @@ re-split with fewer parts after finding 4 and keeping their old last row, since 
 differ only in the text of a shared part string ("portraits" for "Portraits", the spelling of the first heading to
 carry it), a no-break space, or a trailing stop, which the comparison by key now passes over. What is left under the
 splitter's rule is the real set: "Franco-British Exhibition", "Garton-on-the-Wolds", "Sens-sur-Yonne",
-"Stoke-on-Trent", the "Pre-Raphaelites" and "Wood-engravers" heads split before finding 4. Next: the dry run again,
-read; on the word, `--apply` (the old rows deleted, the new parts collected, the composite decision rewritten) and
-rule (b) in the reconciler's decomposition.
+"Stoke-on-Trent", the "Pre-Raphaelites" and "Wood-engravers" heads split before finding 4. The second run (18:05):
+15,559 read, 167 would change: by the splitter's rules 33, every one a place name's linking words or a bound prefix
+("Garton-on-the-Wolds", "Hutton-in-the-Forest", "Sens-sur-Yonne", "Stratford-upon-Avon", "Weston-super-Mare",
+"Coton-in-the-Elms", "Anglo-Irish Treaty", "Counter-Reformation", "Franco-British Exhibition"); by the indexes' rule
+14, as before; leftover rows 119; and one stale, "Architecture, Domestic--England--to 1500", whose old parts had
+joined "to 1500" to "England" and kept a leftover "To 1500", now three parts with the chronological subdivision
+whole. Nothing in the 167 is wrong. Next, on the word: `--apply`, and rule (b) in the reconciler's decomposition.
 
 Read 2026-11-07, finding 112 shaped (the owner at "New" in keywords:head, string 79768, then the count of one-word
 heads): the hyphen inside a heading. The stored heading is "New--York Historical Society (New York, New York, USA)"

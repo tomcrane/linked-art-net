@@ -393,8 +393,12 @@ and the log (doc 15) records that. The order within an area is rough value.
   collecting the new; "not a compound" at the desk is the pass for one heading. The dry run is built (doc 10 7.6
   "Built 2026-11-07, finding 112's dry run"): the lower-case rule was finding 4's already and the store's parts are
   stale from before it; the splitter gained the wider prefixes and the linking words of a hyphenated name; rule (b)
-  is in the pass. Next: the owner runs `dotnet run --project tools/Align -- resplit-headings` and reads the listing;
-  on the word, `--apply` and rule (b) in the reconciler's decomposition. The desk's view of a part's parents stands.
+  is in the pass. The owner read two listings (the second: 167, of which 33 by the splitter, 14 by the indexes, 119
+  leftover rows of re-splits after finding 4, one stale; nothing wrong) and gave the word: `--apply` and rule (b) in
+  the reconciler's reading are built (doc 10 7.6 "Built 2026-11-07, finding 112's repair and rule (b)"). Next: the
+  owner runs `dotnet run --project tools/Align -- resplit-headings --apply` (a run of its own; the workbench stopped),
+  then the dry run again to see it empty. Still open here: the desk's view of a part's parents, and "not a compound"
+  as the pass for one heading from the desk.
 - Twins that share a record (2026-11-05: "Lawrence" in corpauthor on the desk and "Lawrence" in publisher as a search result, two placeholders, the same three Crewkerne sale catalogues behind both, the name in both fields of each record). When another placeholder of the string's name has a record in common with the string's own, the desk says so on its card or search result ("in the same records as this string"), as a hint towards "Same as" or "Accept together"; the reconciler keeps twins apart on purpose (finding 104), so the hint is the desk's, not a rule. The ticks are on the candidate cards only; a twin met among the search results has "Same as this" and nothing to tick, and the hint must say which action it points at where it appears.
 - The publisher strings without a record behind them (2026-11-05: the entity page of a placeholder "Stanley", one string, publisher, no "In the records"; the collection covered 10,608 of the field's 11,141 strings, this one not among them). List them beside what the export's publisher element holds for the same records and find the cleaning the 2024 process applied, as the cleaned-keywords table closed the keywords gap; a `collect-examples` report of the export values that matched no string would do the listing.
 - ~~Help for the reviewer who asks what to do~~ (built 2026-10-26 evening, the owner's ask at the desk: a fold at the

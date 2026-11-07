@@ -112,7 +112,10 @@ listed, 14 by the indexes' rule and every one right; the rest largely two artefa
 rows of re-splits after finding 4 (120, the repair's to delete) and the text of shared part strings, no-break spaces
 and trailing stops (some 350), both taken out of the listing; the real set under the splitter's rule is a few dozen.
 The second run: 167 would change, 33 by the splitter (linking words and prefixes, all right), 14 by the indexes, 119
-leftover rows, one stale; nothing wrong in it. The word on `--apply` next.
+leftover rows, one stale; nothing wrong in it. The word given, both built: `--apply` as a run of its own (the old
+rows removed, the new parts collected and reconciled, the composite decision written again, a one-part heading
+reconciled whole, orphaned part strings reported), and rule (b) in the reconciler's reading, so a new hyphenated head
+is read whole from its first run; HeadingResplitTests. The owner to run the apply.
 
 ## 2026-11-06
 

@@ -388,6 +388,21 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return whole.Any(a => a.Type is nameof(EntityClass.Type) or nameof(EntityClass.Period) or nameof(EntityClass.Event)) ? StringReading.Read(s, rule, null) : reading;
     }
 
+    /// <summary>
+    /// A compound heading whose one-word head and next part are a hyphenated name the LCSH or LoC indexes hold ("New--York Historical
+    /// Society", "Kit--Cat Club") is read with the two joined, and read whole when nothing is left to subdivide (finding 112, 2026-11-07,
+    /// rule (b): the library's export writes one hyphen for the separator and for a hyphen, and the 2024 cleaning doubled every one).
+    /// The splitter's own rules (lower case, bound prefixes, linking words) are synchronous and already in the reading.
+    /// </summary>
+    private async Task<StringReading> WithHyphenatedHeadAsync(SourceString s, StringReading reading, CancellationToken ct)
+    {
+        if (reading.Shape != PartsShape.Compound || reading.Parts is not { Count: > 1 } parts || parts[0].Contains(' ') || reading.PartsRule is not { } pr) return reading;
+        if (!await HeadingResplit.KnownHyphenatedAsync(store, parts[0], parts[1], ct)) return reading;
+        var joined = new List<string> { parts[0] + "-" + parts[1] }; joined.AddRange(parts.Skip(2));
+        var rule = _options.Contexts.TryGetValue(s.Context, out var r) ? r : _options.DefaultContext;
+        return StringReading.Read(s with { Raw = string.Join(pr.Separator, joined) }, rule, ParserFor(rule.AgentProfile));
+    }
+
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>
     public StringReading Read(SourceString s)
     {
@@ -399,7 +414,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Evaluation> EvaluateAsync(string dataset, SourceString s, bool includeStore = true, CancellationToken ct = default)
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        var reading = await WithQualifierAncestorsAsync(await WithWholeConceptAsync(s, Read(s), ct), ct);
+        var reading = await WithQualifierAncestorsAsync(await WithWholeConceptAsync(s, await WithHyphenatedHeadAsync(s, Read(s), ct), ct), ct);
         Time("read", sw);
         if (reading.Key.Length == 0) return new Evaluation(Outcome.Skipped, reading, []);
 

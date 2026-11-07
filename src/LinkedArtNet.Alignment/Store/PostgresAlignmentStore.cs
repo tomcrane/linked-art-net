@@ -700,6 +700,13 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
+    public async Task ClearPartsAsync(long parentId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("delete from source_string_parts where parent_id = @id");
+        Add(cmd, "id", parentId);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
     public Task<IReadOnlyList<SourceString>> PartsAsync(long parentId, CancellationToken ct = default) =>
         StringsAsync($"select {StringColumns} from source_string_parts p join source_strings s on s.id = p.part_id where p.parent_id = @id order by p.position", parentId, ct);
 

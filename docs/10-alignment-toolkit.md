@@ -1259,6 +1259,21 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-07, finding 112's repair and rule (b) (the owner's word after the second listing): `resplit-headings
+--apply` is a run of its own; for each heading whose parts differ, the old part rows go (`ClearPartsAsync`), the new
+parts are collected in the head and sub contexts and linked, a part without a decision is reconciled, and the
+heading's composite decision is written again with the parts and the rule in its evidence; a heading with one part
+left is no compound: its decision is reopened, its concept entity removed when nothing else points at it, and the
+heading reconciled whole. A part string no heading carries any more is reported, not removed. The decisions carry
+the run, so `undo-run` takes them back; the part rows are structural and stay as repaired. Rule (b) is in the
+reconciler's own reading too (`WithHyphenatedHeadAsync`, before the whole-concept and qualifier readings): a compound
+heading whose one-word head and next part are a hyphenated name LCSH or LoC holds is read with the two joined, and
+whole when nothing is left to subdivide, so a new "New--York Historical Society" is decided onto LoC's society from
+its first run. HeadingResplitTests: the reconciler reads the society whole onto its record and "Kit--Cat Club
+(London)--Portraits" as two parts; the repair splits the stale heading again, drops the leftover row, reads a stale
+one-part heading whole under the run, reports the old sub no heading carries, and leaves the dry run empty. Measured
+by the owner's `--apply` and the next reconcile.
+
 Built 2026-11-07, finding 112's dry run (`resplit-headings`): building it showed that the lower-case rule below is
 finding 4's already (`StringReading.Read` rejoins a lower-case piece, and a piece after "pre", "post", "anti" and six
 more prefixes), so the broken heads in the store are parts made in the first runs of 2026-10-20, before finding 4, and

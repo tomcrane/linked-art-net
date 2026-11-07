@@ -254,11 +254,24 @@ switch (args[0])
     case "resplit-headings":
     {
         // finding 112: the dry run lists every compound heading whose split changes under the hyphen rules, old parts and new; nothing is written
-        var report = await new HeadingResplit(store).DryRunAsync(dataset, new Progress<string>(m => Console.Error.WriteLine("  " + m)));
-        foreach (var c in report.Changes)
-            Console.WriteLine($"  [{c.Rule}] {c.Heading.Raw}" + Environment.NewLine + $"        was: {string.Join(" | ", c.OldParts)}" + Environment.NewLine + $"        now: {string.Join(" | ", c.NewParts)}");
-        Console.WriteLine($"dataset {dataset}: {report}");
-        if (args.Contains("--apply")) Console.WriteLine("--apply is not built yet: the repair waits on the owner's word after this listing is read");
+        var progress = new Progress<string>(m => Console.Error.WriteLine("  " + m));
+        if (!args.Contains("--apply"))
+        {
+            var report = await new HeadingResplit(store).DryRunAsync(dataset, progress);
+            foreach (var c in report.Changes)
+                Console.WriteLine($"  [{c.Rule}] {c.Heading.Raw}" + Environment.NewLine + $"        was: {string.Join(" | ", c.OldParts)}" + Environment.NewLine + $"        now: {string.Join(" | ", c.NewParts)}");
+            Console.WriteLine($"dataset {dataset}: {report}");
+            return 0;
+        }
+        // --apply: a run of its own, the reconciler with the project's indexes, so the new parts and the headings read whole are decided now
+        var manifestOptions = (await ManifestAsync(store, dataset)).ToOptions();
+        var sources = await SourcesAsync(store, dataset);
+        var run = await store.StartRunAsync(dataset, null, "{\"pass\":\"resplit-headings\"}");
+        var reconciler = new Reconciler(store, scheme, sources, manifestOptions);
+        var applied = await new HeadingResplit(store).ApplyAsync(dataset, reconciler, run.Id, progress);
+        foreach (var o in applied.Orphans) Console.WriteLine($"  no heading carries {o} now");
+        await store.FinishRunAsync(run.Id, null, applied.ToString());
+        Console.WriteLine($"run {run.Id}: {applied}");
         return 0;
     }
 
@@ -417,10 +430,12 @@ static void Usage() => Console.WriteLine(
                                              the one-off pass over duplicate entities of one class and label: a dry run listing every
                                              label with what would merge and what is kept apart; --apply carries it out
       cleanup-orphans [--dataset]            remove provisional entities nothing points at any more
-      resplit-headings [--dataset]           finding 112, a dry run: the compound headings whose split would change under the hyphen
-                                             rules (lower-case after "--" is a hyphen; a bound prefix joins; a one-word head whose
-                                             join is a label LCSH or LoC holds with the hyphen), each with its parts as stored and
-                                             under the rule; nothing is written
+      resplit-headings [--dataset] [--apply] finding 112: the compound headings whose split would change under the hyphen rules
+                                             (lower-case after "--" is a hyphen; a bound prefix joins; a one-word head whose join is
+                                             a label LCSH or LoC holds with the hyphen), each with its parts as stored and under the
+                                             rule, and the leftover rows of an earlier re-split; --apply splits them again as a run of
+                                             its own (the old rows removed, the new parts collected and reconciled, the composite
+                                             decision written again; a heading with one part left is reconciled whole)
       settle-merged [--dataset] [--apply] [--reviewer r]
                                              strings whose queued or minted decision points at an entity that is no longer a placeholder
                                              (a person merged their placeholder into it before merges settled strings): listed; --apply

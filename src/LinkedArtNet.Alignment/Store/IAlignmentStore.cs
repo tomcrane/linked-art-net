@@ -72,6 +72,8 @@ public interface IAlignmentStore
     Task<SourceString> CollectAsync(string dataset, string context, string raw, string? parsedJson = null, CancellationToken ct = default, bool count = true);
     /// <summary>Records that a string is made of parts: <paramref name="partId"/> is the part at <paramref name="position"/> of <paramref name="parentId"/> (doc 10, section 7.6).</summary>
     Task LinkPartAsync(long parentId, int position, long partId, string? role = null, CancellationToken ct = default);
+    /// <summary>Removes every part row of a heading, before it is split again (finding 112's repair); the part strings themselves stay.</summary>
+    Task ClearPartsAsync(long parentId, CancellationToken ct = default);
     /// <summary>The parts of a string, in order; empty when it has none.</summary>
     Task<IReadOnlyList<SourceString>> PartsAsync(long parentId, CancellationToken ct = default);
     /// <summary>The strings a string is a part of.</summary>

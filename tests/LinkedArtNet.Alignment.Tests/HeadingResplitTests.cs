@@ -65,5 +65,37 @@ public class HeadingResplitTests(PostgresFixture pg)
         Assert.Equal("leftover", extra.Rule);
         Assert.Equal(["Art", "16th century", "England", "England"], extra.OldParts);
         Assert.Equal(["Art", "16th century", "England"], extra.NewParts);
+
+        // the reconciler's own reading joins a known hyphenated head (rule (b)), and reads the heading whole when nothing is left to subdivide
+        var nyhs = await pg.Store.CollectAsync(ds, "keywords", "New--York Historical Society (New York, New York, USA)");
+        var kitcat = await pg.Store.CollectAsync(ds, "keywords", "Kit--Cat Club (London)--Portraits");
+        await reconciler.RunAsync(ds);
+        var nyhsDecision = (await pg.Store.DecisionForAsync(nyhs.Id))!;
+        Assert.NotEqual(DecisionMethod.Composite, nyhsDecision.Method);
+        Assert.Contains((await pg.Store.GetEntityAsync(nyhsDecision.EntityId!))!.Equivalents, q => q.Uri == "http://id.loc.gov/authorities/names/n79041977");
+        Assert.Equal(["Kit-Cat Club (London)", "Portraits"], (await pg.Store.PartsAsync(kitcat.Id)).Select(p => p.Raw));
+
+        // the repair: the stale heading split again, the leftover row gone, and a stale one-part heading read whole
+        var stale2 = await pg.Store.CollectAsync(ds, "keywords", "Palais--Royal (Paris, France)");
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n80052580", "loc", "Palais-Royal (Paris, France)", ["Palais-Royal (Paris, France)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        var palais = await pg.Store.CollectAsync(ds, "keywords:head", "Palais");
+        var royal = await pg.Store.CollectAsync(ds, "keywords:sub", "Royal (Paris, France)");
+        await pg.Store.LinkPartAsync(stale2.Id, 0, palais.Id, "head"); await pg.Store.LinkPartAsync(stale2.Id, 1, royal.Id, "sub");
+        var concept2 = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Type, "Palais--Royal (Paris, France)", ["Palais--Royal (Paris, France)"]), scheme);
+        await pg.Store.DecideAsync(stale2.Id, concept2.Id, DecisionMethod.Composite);
+        var run = await pg.Store.StartRunAsync(ds);
+        var applied = await resplit.ApplyAsync(ds, reconciler, run.Id);
+        Assert.Equal(3, applied.DryRun.Changes.Count);
+        Assert.Equal(1, applied.Whole);
+        Assert.Equal(["Wood-carving", "England"], (await pg.Store.PartsAsync(stale.Id)).Select(p => p.Raw));
+        Assert.Equal(["Art", "16th century", "England"], (await pg.Store.PartsAsync(art.Id)).Select(p => p.Raw));
+        Assert.Equal(DecisionMethod.Composite, (await pg.Store.DecisionForAsync(stale.Id))!.Method);
+        Assert.Contains("resplit", (await pg.Store.DecisionForAsync(stale.Id))!.EvidenceJson!);
+        Assert.Empty(await pg.Store.PartsAsync(stale2.Id));
+        var whole = (await pg.Store.DecisionForAsync(stale2.Id))!;
+        Assert.NotEqual(DecisionMethod.Composite, whole.Method);
+        Assert.Equal(run.Id, whole.RunId);
+        Assert.Contains("\"carving\"", string.Join(" ", applied.Orphans)); // the old sub no heading carries now, reported
+        Assert.Empty(await resplit.DryRunAsync(ds).ContinueWith(t => t.Result.Changes)); // nothing left to change
     }
 }

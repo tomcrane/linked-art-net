@@ -369,6 +369,23 @@ and the log (doc 15) records that. The order within an area is rough value.
   session. `source_strings.skipped_at` (schema version 9), set by Skip; the desk's order is the unskipped by id, then
   the skipped in the order they were skipped, and "after" follows that order (`NextForDeskAsync`); Unskip on a skipped
   string puts it back; ReviewServiceTests.)
+- A part's parents on the desk, and "not a compound" (the owner, 2026-11-07, at "New" in keywords:head, string 79768:
+  the record's keyword "New-York Historical Society (New York, New York, USA)", the society's own hyphenated spelling,
+  split at the hyphen into the head "New" and a sub, with ULAN's unknown-artist "New" at 1.00 and nothing on the card
+  to say where the string came from). Two parts: the desk shows a keywords:head or keywords:sub string's parent
+  headings, each a link to the heading's entity page (the other half of the compounds item, 7.5 item 4); and an action
+  on a part or a heading, "not a compound", that reads the heading whole as one string (its parts detached from it,
+  the heading re-collected in the keywords context and decided by the ladder, where LoC's corporate name takes it).
+  Count first, the one-word heads, where mis-splits hide:
+
+      select h.raw, count(*) as headings, (array_agg(p.raw order by p.raw))[1:3] as examples
+      from source_strings h join source_string_parts sp on sp.part_id = h.id join source_strings p on p.id = sp.parent_id
+      where h.dataset = 'pmc' and h.context = 'keywords:head' and h.raw not like '% %'
+      group by h.raw order by 2 desc, 1;
+
+  and the question for the source: the stored headings carry "--" where the record shows "-", so if the 2024 cleaning
+  made "--" of single hyphens by rule, every hyphenated name in a heading is split the same way, which is the
+  cleaning's to fix (the cataloguers' report, Exports and reports), not the ladder's.
 - Twins that share a record (2026-11-05: "Lawrence" in corpauthor on the desk and "Lawrence" in publisher as a search result, two placeholders, the same three Crewkerne sale catalogues behind both, the name in both fields of each record). When another placeholder of the string's name has a record in common with the string's own, the desk says so on its card or search result ("in the same records as this string"), as a hint towards "Same as" or "Accept together"; the reconciler keeps twins apart on purpose (finding 104), so the hint is the desk's, not a rule. The ticks are on the candidate cards only; a twin met among the search results has "Same as this" and nothing to tick, and the hint must say which action it points at where it appears.
 - The publisher strings without a record behind them (2026-11-05: the entity page of a placeholder "Stanley", one string, publisher, no "In the records"; the collection covered 10,608 of the field's 11,141 strings, this one not among them). List them beside what the export's publisher element holds for the same records and find the cleaning the 2024 process applied, as the cleaned-keywords table closed the keywords gap; a `collect-examples` report of the export values that matched no string would do the listing.
 - ~~Help for the reviewer who asks what to do~~ (built 2026-10-26 evening, the owner's ask at the desk: a fold at the

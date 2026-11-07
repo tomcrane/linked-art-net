@@ -96,7 +96,9 @@ confirm step; a card's live holders ("now held by", with Same as); the entity pa
 desk and counted in the title; the ICA key; the URL on "Keep as local authority". DeskEvidenceTests, PossessiveTests,
 ReviewServiceTests; doc 13; seven desk items struck. The owner's idea next: Skip sends a string to the back of the desk
 rather than leaving it at the front for the next session; built (schema version 9, `skipped_at`; the desk's order the
-unskipped by id then the skipped by when; Unskip on a skipped string, at the owner's ask; ReviewServiceTests).
+unskipped by id then the skipped by when; Unskip on a skipped string, at the owner's ask; ReviewServiceTests). Then "New" in keywords:head, the head of "New-York Historical Society" split at its
+hyphen: a desk item (a part's parents on the desk, and "not a compound"), count first on the one-word heads, and a
+question for the 2024 cleaning.
 
 ## 2026-11-06
 

@@ -94,7 +94,9 @@ it leaves queued (the last evaluation written as its queued decision, `secondPas
 "accept anyway"; a project entity named with its placement on the card, the group's button, the merge notice and the
 confirm step; a card's live holders ("now held by", with Same as); the entity page's queued strings linked to the
 desk and counted in the title; the ICA key; the URL on "Keep as local authority". DeskEvidenceTests, PossessiveTests,
-ReviewServiceTests; doc 13; seven desk items struck.
+ReviewServiceTests; doc 13; seven desk items struck. The owner's idea next: Skip sends a string to the back of the desk
+rather than leaving it at the front for the next session; built (schema version 9, `skipped_at`; the desk's order the
+unskipped by id then the skipped by when; Unskip on a skipped string, at the owner's ask; ReviewServiceTests).
 
 ## 2026-11-06
 

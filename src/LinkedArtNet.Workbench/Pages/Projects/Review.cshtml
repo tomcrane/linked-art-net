@@ -336,7 +336,14 @@ else
     </div>
 
     <div class="actions" style="margin-top:1.5rem">
-        <form method="post" asp-page-handler="Skip" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet">Skip for now</button></form>
+        @if (item.SkippedAt is { } skipped)
+        {
+            <form method="post" asp-page-handler="Unskip" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="Skipped @skipped.ToString("yyyy-MM-dd HH:mm"): back to its place in the desk's order">Unskip</button></form>
+        }
+        else
+        {
+            <form method="post" asp-page-handler="Skip" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="To the back of the desk: it comes round again after everything else, in this session or the next">Skip for now</button></form>
+        }
         <form method="post" asp-page-handler="Undo" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="Take back the latest decision on this string">Undo last decision</button></form>
         <form method="post" asp-page-handler="Flag" class="row inline" style="gap:.4rem"><input type="hidden" name="id" value="@item.String.Id" /><input type="text" name="text" placeholder="Note for another reviewer" style="width:18rem" /><button type="submit" class="quiet">Add note</button></form>
         <a class="button secondary" href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, after = item.String.Id })">Next →</a>

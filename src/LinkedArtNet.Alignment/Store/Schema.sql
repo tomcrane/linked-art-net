@@ -239,3 +239,9 @@ create table if not exists string_examples (
 create index if not exists string_examples_source on string_examples (source);
 
 insert into schema_version (version) values (8) on conflict do nothing;
+
+-- version 9 (2026-11-07): a skipped string goes to the back of the desk (the owner: "these ones come back to the front of
+-- the desk in the next session"). The desk's order is the unskipped by id, then the skipped by when they were skipped.
+alter table source_strings add column if not exists skipped_at timestamptz;
+
+insert into schema_version (version) values (9) on conflict do nothing;

@@ -101,7 +101,21 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         return Flash("Note added.", new { dataset = Dataset, method = Method, context = Context, id });
     }
 
-    public IActionResult OnPostSkip(long id) => RedirectToPage(new { dataset = Dataset, method = Method, context = Context, after = id });
+    /// <summary>Skip sends the string to the back of the desk's order, kept in the store, so it does not come back to the front next session (the owner, 2026-11-07).</summary>
+    public async Task<IActionResult> OnPostSkipAsync(long id)
+    {
+        try { await Project.Desk.SkipAsync(Dataset, id); }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+        // from the front: the skipped string is now at the back, and the next unskipped one is the desk's next
+        return RedirectToPage(new { dataset = Dataset, method = Method, context = Context });
+    }
+
+    public async Task<IActionResult> OnPostUnskipAsync(long id)
+    {
+        try { await Project.Desk.UnskipAsync(Dataset, id); }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+        return Flash("Back in its place.", new { dataset = Dataset, method = Method, context = Context, id });
+    }
 
     public async Task<IActionResult> OnPostUndoAsync(long id)
     {

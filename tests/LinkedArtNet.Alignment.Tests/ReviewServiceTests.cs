@@ -122,6 +122,27 @@ public class ReviewServiceTests(PostgresFixture pg)
         // searching for "same as" and for other records
         Assert.Contains(await desk.SearchEntitiesAsync(ds, "john smith"), e => e.Id == accepted.Id);
         Assert.Equal(2, (await desk.SearchIndexesAsync("Smith, John", "ulan")).Count);
+
+        // skip sends a string to the back of the desk, kept across sessions (the owner, 2026-11-07): two queued namesakes, the first skipped,
+        // the second is the desk's next from the front; after the last unskipped comes the skipped; after the last skipped, nothing
+        var jones = await pg.Store.CollectAsync(ds, "persauthorfull", "Jones, Tom");
+        var jones2 = await pg.Store.CollectAsync(ds, "corpauthor", "Jones, Tom");
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500000011", "ulan", "Jones, Tom", ["Jones, Tom"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500000012", "ulan", "Jones, Tom", ["Jones, Tom"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await reconciler.RunAsync(ds);
+        Assert.Equal(jones.Id, (await desk.NextAsync(ds))!.String.Id);
+        await desk.SkipAsync(ds, jones.Id);
+        Assert.Equal(jones2.Id, (await desk.NextAsync(ds))!.String.Id); // from the front: the unskipped first (Skip's redirect goes to the front)
+        Assert.Equal(jones.Id, (await desk.NextAsync(ds, afterStringId: jones2.Id))!.String.Id); // after the last unskipped: the skipped
+        Assert.Null(await desk.NextAsync(ds, afterStringId: jones.Id)); // nothing after the last skipped one: the desk is done
+        await desk.SkipAsync(ds, jones2.Id); // both skipped: the order is the order of skipping
+        Assert.Equal(jones.Id, (await desk.NextAsync(ds))!.String.Id);
+        Assert.Equal(jones2.Id, (await desk.NextAsync(ds, afterStringId: jones.Id))!.String.Id);
+        Assert.NotNull((await desk.GetAsync(jones.Id))!.SkippedAt);
+        await desk.UnskipAsync(ds, jones2.Id); // unskipped, it is in its place by id again, ahead of the skipped one
+        Assert.Null((await desk.GetAsync(jones2.Id))!.SkippedAt);
+        Assert.Equal(jones2.Id, (await desk.NextAsync(ds))!.String.Id);
+        Assert.Equal(jones.Id, (await desk.NextAsync(ds, afterStringId: jones2.Id))!.String.Id);
     }
 
     [PostgresFact]

@@ -16,7 +16,7 @@ PostgreSQL only (decision 2), plain Npgsql, one schema file applied idempotently
 |---|---|---|
 | `entities` | something we minted a URI for: class, best label, alternate labels, lifespan as four instants plus the text, nationalities, roles, status, `merged_into` | URI |
 | `entity_equivalents` | an authority URI an entity is the same as, with source, method, confidence, when, dataset version, run | (entity, uri) |
-| `source_strings` | a string as it occurred: dataset, context, raw, normalised, parsed JSON, first/last seen, occurrences | (dataset, context, normalised) |
+| `source_strings` | a string as it occurred: dataset, context, raw, normalised, parsed JSON, first/last seen, occurrences, `skipped_at` (the desk's skip, schema version 9) | (dataset, context, normalised) |
 | `decisions` | what a string refers to: entity or null, method, evidence JSON, reviewer, when, run, `valid` | serial; one valid per string |
 | `overrides` | curated answers: (dataset, context or any, normalised) → entity or authority URI, with the source | (dataset, context, normalised) |
 | `authority_records` | a cached external record: source, labels, type, lifespan, sameAs, raw data, fetched, version | URI |

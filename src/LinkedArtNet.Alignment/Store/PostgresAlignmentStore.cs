@@ -614,6 +614,47 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return await cmd.ExecuteNonQueryAsync(ct);
     }
 
+    public async Task<DecidedString?> NextForDeskAsync(string dataset, string method, string? context = null, long afterStringId = 0, CancellationToken ct = default)
+    {
+        // the order is (skipped?, skipped_at, id); "after" a string means later than it in that order: after an unskipped string, the
+        // unskipped with a greater id and then every skipped one; after a skipped string, the skipped ones skipped later (or later by id)
+        await using var cmd = _db.CreateCommand(
+            $"with a as (select skipped_at from source_strings where id = @after) " +
+            $"select s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences, {DecisionColumns} " +
+            "from source_strings s join decisions d on d.source_string_id = s.id and d.valid and d.entity_id is not null " +
+            "where s.dataset = @dataset and d.method = @method" + (context is null ? "" : " and s.context = @context") +
+            " and (@after = 0" +
+            "   or ((select skipped_at from a) is null and ((s.skipped_at is null and s.id > @after) or s.skipped_at is not null))" +
+            "   or ((select skipped_at from a) is not null and s.skipped_at is not null and (s.skipped_at, s.id) > ((select skipped_at from a), @after)))" +
+            " order by (s.skipped_at is not null), s.skipped_at, s.id limit 1");
+        Add(cmd, "dataset", dataset); Add(cmd, "method", method); Add(cmd, "after", afterStringId); if (context is not null) Add(cmd, "context", context);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        if (!await r.ReadAsync(ct)) return null;
+        return new DecidedString(ReadString(r), new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18), r.IsDBNull(19) ? null : r.GetInt64(19)));
+    }
+
+    public async Task SkipAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("update source_strings set skipped_at = now() where id = @id");
+        Add(cmd, "id", stringId);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task UnskipAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("update source_strings set skipped_at = null where id = @id");
+        Add(cmd, "id", stringId);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<DateTimeOffset?> SkippedAtAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select skipped_at from source_strings where id = @id");
+        Add(cmd, "id", stringId);
+        var v = await cmd.ExecuteScalarAsync(ct);
+        return v is DateTimeOffset t ? t : v is DateTime d ? new DateTimeOffset(d, TimeSpan.Zero) : null;
+    }
+
     public async Task<IReadOnlyList<DecidedString>> DecidedStringsAsync(string dataset, string? method = null, string? context = null, long afterStringId = 0, int limit = 500, bool sample = false, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

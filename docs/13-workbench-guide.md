@@ -130,7 +130,8 @@ Actions:
   a link. After an action the desk goes to those first, and says so in the message, before it moves on down the
   list, so a name is finished before the desk leaves it. The entity page lists the same under "Waiting at the desk
   under this name".
-- **Skip for now** leaves it in the queue. **Add note** leaves a message for another reviewer. **Undo last decision**
+- **Skip for now** sends it to the back of the desk: it comes round again after everything else, in this session or
+  the next; on a skipped string the button reads **Unskip**, which puts it back in its place. **Add note** leaves a message for another reviewer. **Undo last decision**
   puts the previous decision back.
 - After an action, the message at the top of the next item names the entity it made or chose, with a link, so you
   can add an identifier or a note there before going on. The entity page takes an identifier as a URI, or searches

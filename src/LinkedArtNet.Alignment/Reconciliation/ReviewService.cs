@@ -40,7 +40,7 @@ public sealed record TogetherPlan(Entity Survivor, IReadOnlyList<Entity> Merging
 /// <param name="LookedAgain">Set when the evidence shown is a fresh evaluation under today's rules, not the decision's own: what the string would be decided as now ("queued", "accepted", ...). The stored decision is unchanged.</param>
 /// <param name="Siblings">The other queued strings under this string's name (its own key, its reading's keys, its entity's labels), in list order: the desk finishes a name before it leaves it (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd").</param>
 /// <param name="Holders">By a record's URI on a card, the project entity that holds that record now and was not a member when the evidence was written (an identifier added by hand since, or a later run's acceptance), so the card can offer it (the owner, 2026-11-07: "does adding the identifier take effect in the desk?").</param>
-public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, IReadOnlyList<DecidedString> Siblings, string? LookedAgain = null, IReadOnlyDictionary<string, EntityFacts>? Holders = null)
+public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, IReadOnlyList<DecidedString> Siblings, string? LookedAgain = null, IReadOnlyDictionary<string, EntityFacts>? Holders = null, DateTimeOffset? SkippedAt = null)
 {
     public bool IsQueued => Decision.Method == DecisionMethod.Queued;
 }
@@ -65,8 +65,22 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     /// <summary>The next item after a string id in the filtered queue, or null at the end.</summary>
     public async Task<ReviewItem?> NextAsync(string dataset, string method = DecisionMethod.Queued, string? context = null, long afterStringId = 0, CancellationToken ct = default)
     {
-        var page = await store.DecidedStringsAsync(dataset, method, context, afterStringId, 1, false, ct);
-        return page.Count == 0 ? null : await LoadAsync(page[0], ct);
+        var next = await store.NextForDeskAsync(dataset, method, context, afterStringId, ct);
+        return next is null ? null : await LoadAsync(next, ct);
+    }
+
+    /// <summary>The reviewer skips the string: it goes to the back of the desk's order, in this session and the next (the owner, 2026-11-07).</summary>
+    public async Task SkipAsync(string dataset, long stringId, CancellationToken ct = default)
+    {
+        await OwnAsync(dataset, stringId, ct);
+        await store.SkipAsync(stringId, ct);
+    }
+
+    /// <summary>The skip taken back: the string is in its place by id again.</summary>
+    public async Task UnskipAsync(string dataset, long stringId, CancellationToken ct = default)
+    {
+        await OwnAsync(dataset, stringId, ct);
+        await store.UnskipAsync(stringId, ct);
     }
 
     public async Task<ReviewItem?> GetAsync(long stringId, CancellationToken ct = default)
@@ -108,7 +122,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
                 if (h.Dataset != decided.String.Dataset || h.MergedInto is not null || h.Id == entity?.Id || entities.Values.Any(f => f.Entity.Id == h.Id)) continue;
                 if (await FactsAsync(h.Id, ct) is { } facts) { holders[uri] = facts; break; }
             }
-        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, await SiblingsAsync(decided.String, entity, ct), lookedAgain, holders);
+        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, await SiblingsAsync(decided.String, entity, ct), lookedAgain, holders, await store.SkippedAtAsync(decided.String.Id, ct));
     }
 
     /// <summary>

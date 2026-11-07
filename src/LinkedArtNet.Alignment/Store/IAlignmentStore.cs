@@ -110,6 +110,14 @@ public interface IAlignmentStore
 
     /// <summary>Strings of the dataset with a valid decision to an entity, by string id after <paramref name="afterStringId"/>, optionally of one method and context; <paramref name="sample"/> returns a random page instead.</summary>
     Task<IReadOnlyList<DecidedString>> DecidedStringsAsync(string dataset, string? method = null, string? context = null, long afterStringId = 0, int limit = 500, bool sample = false, CancellationToken ct = default);
+    /// <summary>The desk's next string: the unskipped in id order, then the skipped in the order they were skipped; <paramref name="afterStringId"/> is the string the desk is leaving, so the next is the one after it in that order.</summary>
+    Task<DecidedString?> NextForDeskAsync(string dataset, string method, string? context = null, long afterStringId = 0, CancellationToken ct = default);
+    /// <summary>A reviewer skipped the string: it goes to the back of the desk's order (schema version 9).</summary>
+    Task SkipAsync(long stringId, CancellationToken ct = default);
+    /// <summary>The skip taken back: the string is in its place by id again.</summary>
+    Task UnskipAsync(long stringId, CancellationToken ct = default);
+    /// <summary>When the string was skipped, or null.</summary>
+    Task<DateTimeOffset?> SkippedAtAsync(long stringId, CancellationToken ct = default);
     /// <summary>The queued strings of a dataset whose normalised text is one of the keys, in id order: a string's siblings under its name, for the desk to finish a name before it leaves it (2026-11-06).</summary>
     Task<IReadOnlyList<DecidedString>> QueuedByKeysAsync(string dataset, IReadOnlyList<string> keys, int limit = 20, CancellationToken ct = default);
 

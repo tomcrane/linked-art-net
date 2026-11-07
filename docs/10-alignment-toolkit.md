@@ -1268,7 +1268,18 @@ given as a string, so that the desk would show them and the next reconcile mint 
 `cleanup-parts [--apply]` lists the strings of the manifest's part contexts that no heading carries and deletes them
 with their decisions and examples (the cascade) and their placeholders when nothing else points at them; a fragment
 was never a string the catalogue wrote, so this is the one place a string is deleted rather than retired. The dry run
-after the apply lists nothing. HeadingResplitTests.
+after the apply lists nothing. HeadingResplitTests. The owner's `cleanup-parts --apply` (after schema version 10 gave
+the decisions table the two indexes a string's delete cascades through; the first attempt timed out): 168 fragments
+deleted with their decisions, 119 placeholders removed, the finding 4 re-splits of October having left fragments of
+their own ("Co", "Copper", "Horse", "Navy", "Wrought", "operative societies", "drawn vehicles"). The run's decisions
+(`decisions --run jsf3ur`): composite 147, the re-split headings; of the headings and parts read whole, exact-name 16
+("New-York Historical Society" onto the project's own society, "Potteries Museum and Art Gallery (Stoke-on-Trent)"
+onto its museum, "Garton-on-the-Wolds" onto its place), vote 8 ("Sens-sur-Yonne" onto TGN's Sens with LoC's heading
+placed through it), single 2, exact-single 1, queued 8 ("Franco-British Exhibition (1908 : London, England)" beside
+its own lower-case twin "Franco-British exhibition (1908 : London)" at 0.85, a pair for the desk; "Beecroft Art
+Gallery (Westcliff-on-Sea)" against LoC's "(Southend-on-Sea, England)", the qualifier not placed, the desk's), minted
+7. One catalogue error surfaced: "Art, Baroque--Italy--ome", a heading missing the "R" of "Rome", which the lower-case
+rule read as "Italy-ome" and minted; a line for the cataloguers' report.
 
 Built 2026-11-07, finding 112's repair and rule (b) (the owner's word after the second listing): `resplit-headings
 --apply` is a run of its own; for each heading whose parts differ, the old part rows go (`ClearPartsAsync`), the new

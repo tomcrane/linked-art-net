@@ -118,6 +118,12 @@ reconciled whole, orphaned part strings reported), and rule (b) in the reconcile
 is read whole from its first run; HeadingResplitTests. The owner ran the apply (run jsf3ur): 167 split again, 20 read
 whole, 22 parts reconciled, 95 fragments left with their old decisions, so `cleanup-parts` was built to list and
 delete them (the one deletion of strings: fragments, never the catalogue's own); the dry run after it lists nothing.
+The first `cleanup-parts --apply` timed out: a string's delete cascades to its decisions, and each decision deleted was
+checked against every decision's `supersedes` and found through a partial index, both table scans; schema version 10
+indexes both, `init` applied it, and the second apply deleted 168 fragments (October's finding 4 re-splits had left
+some too) and 119 placeholders. The run's decisions read: the society, the museum and Garton-on-the-Wolds onto the
+project's own entities by exact-name, Sens-sur-Yonne voted, the Franco-British Exhibition's two spellings queued as a
+pair, "Art, Baroque--Italy--ome" a catalogue error for the cataloguers' report.
 
 ## 2026-11-06
 

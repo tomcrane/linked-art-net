@@ -47,6 +47,8 @@ public interface IAlignmentStore
 
     /// <summary>Strings whose valid decision points at the entity, with those decisions.</summary>
     Task<IReadOnlyList<DecidedString>> StringsForEntityAsync(string entityId, int limit = 200, CancellationToken ct = default);
+    /// <summary>Of the entities given, those that are a compound heading's own concept (a valid decision of method composite points at them), for a list to tag.</summary>
+    Task<IReadOnlySet<string>> CompositeEntityIdsAsync(IReadOnlyCollection<string> entityIds, CancellationToken ct = default);
 
     /// <summary>Strings of the dataset whose normalised text contains the word.</summary>
     Task<IReadOnlyList<SourceString>> FindStringsAsync(string dataset, string containing, int limit = 200, CancellationToken ct = default);

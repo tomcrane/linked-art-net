@@ -137,4 +137,75 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Equal(EntityClass.Group, merged.Class);
         Assert.Contains(await pg.Store.NotesAsync(ds, person.Id), n => n.Text.Contains("Class changed from Person to Group"));
     }
+
+    /// <summary>
+    /// The owner, 2026-11-07, after merging the "Ackermann" placeholder into the firm from its entity page: the string stayed queued, since a
+    /// merge re-points a decision and leaves its method. A person's merge settles the loser's queued and minted strings as the person's own;
+    /// the ones merged before that are listed and settled by settle-merged.
+    /// </summary>
+    [PostgresFact]
+    public async Task A_persons_merge_settles_the_placeholders_strings()
+    {
+        var ds = "cu-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(UlanSample), GettyVocabulary.Ulan, "test");
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan")], ProjectManifest.PmcDefault.ToOptions());
+        var curation = new CurationService(pg.Store, scheme, reconciler);
+        var firm = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Thomas Agnew & Sons", ["Thomas Agnew & Sons"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(firm.Id, new Equivalent("http://vocab.getty.edu/ulan/500301417", "ulan", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        // two bare strings the run can only mint or queue, each with a placeholder of its own
+        var agnew = await pg.Store.CollectAsync(ds, "corpauthor", "Agnew");
+        var agnews = await pg.Store.CollectAsync(ds, "publisher", "Agnews of Bond St");
+        await reconciler.RunAsync(ds);
+        var before = (await pg.Store.DecisionForAsync(agnew.Id))!;
+        Assert.Contains(before.Method, new[] { DecisionMethod.Queued, DecisionMethod.Minted });
+        var placeholder = (await pg.Store.GetEntityAsync(before.EntityId!))!;
+        Assert.Equal(EntityStatus.Provisional, placeholder.Status);
+
+        // the person merges the placeholder into the firm from its page: the string is decided, as theirs, and resolves to the firm
+        await curation.MergeAsync(ds, placeholder.Id, firm.Id, "tester");
+        var after = (await pg.Store.DecisionForAsync(agnew.Id))!;
+        Assert.Equal(DecisionMethod.Human, after.Method);
+        Assert.Equal(firm.Id, after.EntityId);
+        Assert.Contains("same-as-by-merge", after.EvidenceJson!);
+        Assert.Contains(before.Method, after.EvidenceJson!);
+        Assert.DoesNotContain(await pg.Store.DecidedStringsAsync(ds, DecisionMethod.Queued), d => d.String.Id == agnew.Id);
+        Assert.DoesNotContain(await pg.Store.DecidedStringsAsync(ds, DecisionMethod.Minted), d => d.String.Id == agnew.Id);
+
+        // a merge made before merges settled strings (the store's own, as the earlier workbench did it): listed, then settled on --apply
+        var other = (await pg.Store.DecisionForAsync(agnews.Id))!;
+        await pg.Store.MergeAsync(other.EntityId!, firm.Id, "tester");
+        Assert.Equal(other.Method, (await pg.Store.DecisionForAsync(agnews.Id))!.Method);
+        var listed = await curation.SettleResolvedAsync(ds, "tester", apply: false);
+        Assert.Single(listed); Assert.Equal(agnews.Id, listed[0].String.String.Id); Assert.Equal(firm.Id, listed[0].Entity.Id);
+        Assert.Equal(other.Method, (await pg.Store.DecisionForAsync(agnews.Id))!.Method); // a dry run decides nothing
+        var settled = await curation.SettleResolvedAsync(ds, "tester", apply: true);
+        Assert.Single(settled);
+        Assert.Equal(DecisionMethod.Human, (await pg.Store.DecisionForAsync(agnews.Id))!.Method);
+        Assert.Empty(await curation.SettleResolvedAsync(ds, "tester", apply: false));
+    }
+
+    /// <summary>The owner, 2026-11-07, at "Ackermann & Son, Arthur (London)--History" in the entities list: a compound heading's own concept says what it is coordinated from.</summary>
+    [PostgresFact]
+    public async Task A_compound_headings_concept_lists_its_parts()
+    {
+        var ds = "cu-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(UlanSample), GettyVocabulary.Ulan, "test");
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan")], ProjectManifest.PmcDefault.ToOptions());
+        var curation = new CurationService(pg.Store, scheme, reconciler);
+        var heading = await pg.Store.CollectAsync(ds, "keywords", "Thomas Agnew & Sons--History");
+        await reconciler.RunAsync(ds);
+        var decision = (await pg.Store.DecisionForAsync(heading.Id))!;
+        Assert.Equal(DecisionMethod.Composite, decision.Method);
+        var view = (await curation.EntityAsync(ds, decision.EntityId!))!;
+        Assert.True(view.IsCompound);
+        Assert.Equal(["Thomas Agnew & Sons", "History"], view.Parts.Select(p => p.Part.Raw));
+        Assert.Equal("keywords:head", view.Parts[0].Part.Context);
+        Assert.NotNull(view.Parts[0].Decision);
+        Assert.Contains(decision.EntityId!, await pg.Store.CompositeEntityIdsAsync([decision.EntityId!, "https://data.example.org/nothing"]));
+        // an ordinary entity has no parts
+        var firmView = (await curation.EntityAsync(ds, view.Parts[0].Entity!.Id))!;
+        Assert.False(firmView.IsCompound);
+    }
 }

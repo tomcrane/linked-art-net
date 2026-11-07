@@ -74,7 +74,14 @@ it says to merge into the entity of the right class instead, the owner's questio
 a merge across classes offers the class on the entity page and in the desk's confirm step; CurationServiceTests; the
 workbench stopped for the build. The owner's question whether a hand-added identifier reaches the desk at once: yes
 for the next reconcile, "Look again" and the searches, not for the stored card of a string already queued; a desk
-item (the card's holders, live).
+item (the card's holders, live). Then two more from the entities list and the firm's page: "Ackermann & Son, Arthur
+(London)--History", a compound heading's own concept that said nothing of what it was, now tagged in the list and its
+parts listed on its page with what each resolved to; and "Ackermann" still queued after its placeholder was merged
+into the firm, since a merge re-pointed the decision and left its method: a person's merge now settles the loser's
+queued and minted strings as human, on the entity page and at the desk's confirm step, and `settle-merged --apply`
+settles the ones merged before (the owner's count paste was the finding 111 count again; the tool's listing is the
+count). CurationServiceTests for both; the merge row's class choice tidied with CSS. The owner's thought for later,
+written to the plan: a second project from the same PMC sources, from scratch, once the process is trusted.
 
 ## 2026-11-06
 

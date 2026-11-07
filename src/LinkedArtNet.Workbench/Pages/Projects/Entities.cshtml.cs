@@ -14,6 +14,8 @@ public sealed class EntitiesModel(ProjectServices services, ProjectAccess access
     [BindProperty(SupportsGet = true)] public string? After { get; set; }
 
     public IReadOnlyList<Entity> Entities { get; private set; } = [];
+    /// <summary>The listed entities that are a compound heading's own concept, tagged so (the owner, 2026-11-07, at "Ackermann & Son, Arthur (London)--History").</summary>
+    public IReadOnlySet<string> Compounds { get; private set; } = new HashSet<string>();
     public IReadOnlyList<EntityCount> Counts { get; private set; } = [];
     public long Total => Counts.Sum(c => c.Count);
     /// <summary>How many entities the current status and class filters select.</summary>
@@ -30,5 +32,6 @@ public sealed class EntitiesModel(ProjectServices services, ProjectAccess access
             Entities = found.Where(e => (Status is null || e.Status == Status) && (Class is null || e.Class == Class)).ToList();
         }
         else Entities = await Services.Store.BrowseEntitiesAsync(Dataset, Status, Class, After, PageSize);
+        Compounds = await Services.Store.CompositeEntityIdsAsync(Entities.Select(e => e.Id).ToList());
     }
 }

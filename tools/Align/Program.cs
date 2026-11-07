@@ -251,6 +251,18 @@ switch (args[0])
         return 0;
     }
 
+    case "settle-merged":
+    {
+        var project = await store.GetProjectAsync(dataset);
+        var curation = new CurationService(store, scheme, new Reconciler(store, scheme, [], (project is null ? ProjectManifest.PmcDefault : ProjectManifest.FromJson(project.ManifestJson)).ToOptions()));
+        var apply = args.Contains("--apply");
+        var settled = await curation.SettleResolvedAsync(dataset, Option("--reviewer") ?? "settle-merged", apply);
+        foreach (var (s, e) in settled) Console.WriteLine($"  {s.Decision.Method,-7} {s.String.Context,-16} {s.String.Raw}  ->  {e.Label} ({e.Status.ToString().ToLowerInvariant()}, {e.Id})");
+        Console.WriteLine(apply ? $"dataset {dataset}: {settled.Count} strings decided as human onto the entity their placeholder was merged into"
+            : $"dataset {dataset}: {settled.Count} strings whose queued or minted decision points at an entity that is no longer a placeholder; add --apply to decide them as human");
+        return 0;
+    }
+
     case "cleanup-orphans":
     {
         var removed = await store.RemoveOrphanProvisionalsAsync(dataset);
@@ -394,6 +406,10 @@ static void Usage() => Console.WriteLine(
                                              the one-off pass over duplicate entities of one class and label: a dry run listing every
                                              label with what would merge and what is kept apart; --apply carries it out
       cleanup-orphans [--dataset]            remove provisional entities nothing points at any more
+      settle-merged [--dataset] [--apply] [--reviewer r]
+                                             strings whose queued or minted decision points at an entity that is no longer a placeholder
+                                             (a person merged their placeholder into it before merges settled strings): listed; --apply
+                                             decides them as human, the earlier method kept in the evidence
       export-overrides [--dataset] [--out f] the project's overrides in the pmc-lux JSON shape
       import-legacy [--dataset] [--base]     import the earlier PMC tables (LINKEDART_LEGACY_PG)
         [--reuse-by-equivalent] [--only-referenced] [--version v]

@@ -154,6 +154,17 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     public Task<IReadOnlyList<Entity>> FindEntitiesByEquivalentAsync(string uri, CancellationToken ct = default) =>
         QueryEntitiesAsync($"select {EntityColumns} from entities e join entity_equivalents q on q.entity_id = e.id where q.uri = @uri order by e.created_at", cmd => Add(cmd, "uri", uri), ct);
 
+    public async Task<IReadOnlySet<string>> CompositeEntityIdsAsync(IReadOnlyCollection<string> entityIds, CancellationToken ct = default)
+    {
+        var found = new HashSet<string>(StringComparer.Ordinal);
+        if (entityIds.Count == 0) return found;
+        await using var cmd = _db.CreateCommand("select distinct entity_id from decisions where valid and method = 'composite' and entity_id = any(@ids)");
+        Add(cmd, "ids", entityIds.ToArray());
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) found.Add(r.GetString(0));
+        return found;
+    }
+
     public async Task UpdateEntityAsync(Entity entity, CancellationToken ct = default)
     {
         var labels = entity.Labels.Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();

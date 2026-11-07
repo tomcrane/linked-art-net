@@ -243,7 +243,11 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         {
             if (!mergeOurs) throw new InvalidOperationException($"{ours.Count} of the project's own entities are ticked ({string.Join(", ", ours.Select(e => e.Label ?? e.Id))}): the desk shows what merging them will do and asks first.");
             plan = await PlanTogetherAsync(dataset, stringId, targets, survivorId, ct);
-            foreach (var loser in plan.Merging) await store.MergeAsync(loser.Id, plan.Survivor.Id, reviewer, ct);
+            foreach (var loser in plan.Merging)
+            {
+                await MergeSettlement.SettleAsync(store, reconciler, loser, plan.Survivor, reviewer, stringId, ct);
+                await store.MergeAsync(loser.Id, plan.Survivor.Id, reviewer, ct);
+            }
             entity = (await store.ResolveEntityAsync(plan.Survivor.Id, ct))!;
             if (cls is { } chosen && chosen != entity.Class)
             {

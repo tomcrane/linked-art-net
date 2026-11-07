@@ -10,7 +10,14 @@ public sealed record VariantGroup(Entity? Entity, IReadOnlyList<DecidedOrOpenStr
 public sealed record DecidedOrOpenString(SourceString String, Decision? Decision);
 
 /// <summary>An entity with the strings that resolve to it and its notes, for the entity page.</summary>
-public sealed record EntityView(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records);
+/// <param name="Parts">When the entity is a compound heading's own concept: its parts in order, each with its standing decision and the entity it resolves to.</param>
+public sealed record EntityView(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<CompoundPart> Parts)
+{
+    public bool IsCompound => Parts.Count > 0;
+}
+
+/// <summary>A part of a compound heading as the entity page shows it: the part string, what was decided about it, and the entity that decision points at.</summary>
+public sealed record CompoundPart(SourceString Part, Decision? Decision, Entity? Entity);
 
 /// <summary>
 /// Collection knowledge as a first-class input (design doc 12, section 6): clustering a set of variant spellings
@@ -30,7 +37,17 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         var notes = await store.NotesAsync(dataset, entity.Id, ct);
         var records = new Dictionary<string, AuthorityRecord>(StringComparer.Ordinal);
         foreach (var q in entity.Equivalents) if (await store.GetAuthorityAsync(q.Uri, ct) is { } r) records[q.Uri] = r;
-        return new EntityView(entity, strings, notes, records);
+        // a compound heading's own concept (the owner, 2026-11-07, at "Ackermann & Son, Arthur (London)--History" in the entities list,
+        // a provisional Type that said nothing of what it was): its parts, each with what it resolved to
+        var parts = new List<CompoundPart>();
+        if (strings.FirstOrDefault(s => s.Decision.Method == DecisionMethod.Composite) is { } heading)
+            foreach (var part in await store.PartsAsync(heading.String.Id, ct))
+            {
+                var decision = await store.DecisionForAsync(part.Id, ct);
+                var target = decision?.EntityId is null ? null : await store.ResolveEntityAsync(decision.EntityId, ct);
+                parts.Add(new CompoundPart(part, decision, target));
+            }
+        return new EntityView(entity, strings, notes, records, parts);
     }
 
     /// <summary>Strings of the dataset containing a word, with the entity each resolves to, so a cluster of spellings can be seen as one screen.</summary>
@@ -189,14 +206,49 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
-    /// <summary>Merges the loser into the survivor; <paramref name="cls"/>, given, is the merged entity's class (the two differed, and the person chose).</summary>
+    /// <summary>
+    /// Merges the loser into the survivor; <paramref name="cls"/>, given, is the merged entity's class (the two differed, and the person
+    /// chose). The loser's queued and minted strings are decided onto the survivor first, as the person's own (<see cref="MergeSettlement"/>).
+    /// </summary>
     public async Task<Entity> MergeAsync(string dataset, string loserId, string survivorId, string reviewer, EntityClass? cls = null, CancellationToken ct = default)
     {
-        await OwnEntityAsync(dataset, loserId, ct);
+        var loser = await OwnEntityAsync(dataset, loserId, ct);
         var survivor = await OwnEntityAsync(dataset, survivorId, ct);
+        await MergeSettlement.SettleAsync(store, reconciler, loser, survivor, reviewer, null, ct);
         await store.MergeAsync(loserId, survivor.Id, reviewer, ct);
         if (cls is { } chosen && chosen != survivor.Class) await SetClassAsync(dataset, survivor.Id, chosen, reviewer, ct);
         return (await store.ResolveEntityAsync(survivor.Id, ct))!;
+    }
+
+    /// <summary>
+    /// The strings whose standing queued or minted decision points at an entity that is no longer a placeholder: a person merged their
+    /// placeholder into it before merges settled strings (2026-11-07). Listed, and with <paramref name="apply"/> decided onto that entity as
+    /// human, with the earlier method in the evidence.
+    /// </summary>
+    public async Task<IReadOnlyList<(DecidedString String, Entity Entity)>> SettleResolvedAsync(string dataset, string reviewer, bool apply, CancellationToken ct = default)
+    {
+        var found = new List<(DecidedString, Entity)>();
+        foreach (var method in new[] { DecisionMethod.Queued, DecisionMethod.Minted })
+        {
+            long after = 0;
+            while (true)
+            {
+                var page = await store.DecidedStringsAsync(dataset, method, null, after, 500, ct: ct);
+                if (page.Count == 0) break;
+                after = page[^1].String.Id;
+                foreach (var s in page)
+                {
+                    if (s.Decision.EntityId is null) continue;
+                    var entity = await store.ResolveEntityAsync(s.Decision.EntityId, ct);
+                    if (entity is null || entity.Status == EntityStatus.Provisional) continue;
+                    found.Add((s, entity));
+                    if (apply)
+                        await store.DecideAsync(s.String.Id, entity.Id, DecisionMethod.Human,
+                            Reconciler.Evidence("same-as-by-merge", reconciler.Read(s.String), [], new { entity = entity.Id, merged = s.Decision.EntityId, was = s.Decision.Method, settledLater = true }), reviewer, ct: ct);
+                }
+            }
+        }
+        return found;
     }
 
     /// <summary>Takes chosen strings away from an entity: their decisions are invalidated and they are undecided again for the next reconcile.</summary>

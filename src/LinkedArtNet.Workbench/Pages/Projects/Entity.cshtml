@@ -9,6 +9,7 @@
 @if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
 <p class="small muted"><a href="/p/@Model.Dataset/entities">Entities</a> › <code>@e.Id</code></p>
 <h1 style="margin-top:0">@e.Label <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
+    @if (v.IsCompound) { <a class="tag" href="#parts" title="A compound heading's own concept, coordinated from its parts, listed below">compound</a> }
     @* desk work under this name is signalled at the top, where the eye lands, with the list further down (the owner, 2026-11-06) *@
     @if (Model.Waiting.Count > 0) { <a class="tag src" href="#waiting" title="Queued strings under this name, listed below">@Model.Waiting.Count waiting at the desk</a> }</h1>
 <div class="grid">
@@ -21,8 +22,28 @@
             <dt>Created</dt><dd>@e.CreatedAt.ToString("yyyy-MM-dd")@(e.RunId is null ? "" : $" in run {e.RunId}")</dd>
         </dl>
 
+        @if (v.IsCompound)
+        {
+            @* a compound heading's concept says what it is coordinated from (the owner, 2026-11-07, at "Ackermann & Son, Arthur (London)--History") *@
+            <h2 id="parts">A compound heading</h2>
+            <p class="small muted">A concept of the project coordinated from its parts, each a string of its own with its own decision; the heading holds no identifier itself.</p>
+            <table>
+                <thead><tr><th>Part</th><th>Context</th><th>Resolves to</th></tr></thead>
+                <tbody>
+                @foreach (var p in v.Parts)
+                {
+                    <tr><td>@p.Part.Raw</td><td class="small">@p.Part.Context</td>
+                        <td class="small">
+                            @if (p.Entity is not null) { <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(p.Entity.Id)">@p.Entity.Label</a> <span class="tag">@p.Entity.Class.ToString().ToLowerInvariant()</span> <span class="tag">@p.Entity.Status.ToString().ToLowerInvariant()</span> }
+                            @if (p.Decision is null) { <span class="muted">undecided</span> }
+                            else { <span class="muted">@p.Decision.Method</span> @if (p.Decision.Method == DecisionMethod.Queued) { <a href="/p/@Model.Dataset/review?id=@p.Part.Id">at the desk</a> } }
+                        </td></tr>
+                }
+                </tbody>
+            </table>
+        }
         <h2>Identifiers</h2>
-        @if (e.Equivalents.Count == 0) { <p class="muted">None: a local authority.</p> }
+        @if (e.Equivalents.Count == 0) { <p class="muted">None@(v.IsCompound ? "" : ": a local authority").</p> }
         <table>
             <tbody>
             @foreach (var q in e.Equivalents)

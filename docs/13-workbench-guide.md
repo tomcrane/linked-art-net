@@ -157,6 +157,15 @@ An identifier added by hand is in force at once for the next reconcile, for "Loo
 card of a string already queued still shows the run's evidence, so use "Look again" there to see the entity on the
 card that holds the record.
 
+Merging a placeholder into another entity settles its strings: each string that was queued or minted on the
+placeholder is decided onto the survivor as your decision, with the merge as the reason, and leaves the queue; Undo on
+such a string puts the earlier decision back. So going from an entity's page to search for its variants and merge
+them in is as good as deciding each at the desk.
+
+A compound subject heading ("Ackermann & Son, Arthur (London)--History") is a concept of the project coordinated from
+its parts, each a string of its own with its own decision. The entities list tags such an entity *compound*, and its
+page lists the parts with what each resolved to; the heading holds no identifier itself.
+
 **Variants** is for the knowledge only a specialist has. Type a string or a word. The workbench picks its most
 distinctive word ("agnew" from "Thos. Agnew & Sons Ltd") and lists every string containing it, grouped by what each
 resolves to now. Tick the ones that are one thing, choose the entity they belong to or type a label for a new local
@@ -241,6 +250,9 @@ store's connection string in the `LINKEDART_PG` environment variable:
 A reconcile report reads: *considered 500: overridden 7, matched in store 23, accepted 0, queued 88, minted 382*.
 Overridden and matched were answered by the project's own knowledge; accepted by the authority files; queued is the
 desk's work; minted is what no file knows.
+
+For an operator, `settle-merged` on the command line lists the strings whose queued or minted decision points at an
+entity that is no longer a placeholder (merged in before merges settled strings), and `--apply` decides them.
 
 ## 7. What is not there yet
 

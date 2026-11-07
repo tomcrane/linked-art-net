@@ -283,21 +283,15 @@ and the log (doc 15) records that. The order within an area is rough value.
   `MergeAsync(cls)`, `AcceptTogetherAsync(cls)`, `UpdateEntityAsync` writing the class; CurationServiceTests). The
   identifier keeps its minted path. Left: a count of entities whose class disagrees with the type of the records they
   hold, the legacy side, on the legacy-classes item below.)
-- A queued string settled by a merge keeps saying queued (2026-11-07, the firm's entity page after the owner merged the
-  "Ackermann" placeholder into Arthur Ackermann & Son: "Ackermann" in corpauthor and in publisher listed under the
-  strings that resolve here, decided "queued", and "Ackermann's" decided "minted"). A merge re-points the loser's
-  valid decisions to the survivor and leaves their method, so the strings stay in the queue and the desk will ask again
-  about a string a person has in fact settled, and the record never says a person did. When a person merges a
-  placeholder into another entity (the entity page's merge, the desk's merge), each string whose standing decision on
-  the loser is queued or minted gets a new decision, method `human`, evidence "same as, by the merge of X into Y", and
-  leaves the queue; undo of that decision puts the queued one back. Count first: the project's valid queued and minted
-  decisions whose entity is not provisional:
-
-      select d.method, e.status, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
-      from decisions d join entities e on e.id = d.entity_id join source_strings s on s.id = d.source_string_id
-      where s.dataset = 'pmc' and d.valid and d.method in ('queued', 'minted') and e.status <> 'provisional'
-      group by 1, 2 order by 3 desc;
-
+- ~~A queued string settled by a merge keeps saying queued~~ (built 2026-11-07, the owner's word: the firm's entity page
+  after the owner merged the "Ackermann" placeholder into Arthur Ackermann & Son showed "Ackermann" in corpauthor and
+  publisher decided "queued" and "Ackermann's" "minted", since a merge re-points the loser's valid decisions and leaves
+  their method, so the desk would ask again. Now a person's merge, on the entity page or at the desk's confirm step,
+  first decides each of the loser's queued and minted strings onto the survivor, method `human`, evidence
+  "same-as-by-merge" with the earlier method, so they leave the queue and undo puts the earlier decision back
+  (`MergeSettlement`; the string being decided at the desk gets its own decision after). The ones merged before this,
+  the Ackermanns and any since the 5th, are listed by `settle-merged` and decided by `settle-merged --apply`; the
+  count the owner pasted was the finding 111 count again, so the tool's listing is the count. CurationServiceTests.)
 - The card's holders, live (2026-11-07, the owner's question after adding LoC's and Wikidata's Arthur Ackermann & Son
   to the firm's entity by hand: "does that take effect in the desk?"). It does in the next reconcile, in "Look again",
   and in the searches; not on the stored card of a string already queued, whose project entities are the members the
@@ -400,10 +394,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   desk showing a part's parents (7.5 item 4) (2026-10-20). The owner, 2026-11-07, in the entities list at "Ackermann &
   Son, Arthur (London)--History", a provisional Type beside the firm: "should we not recognise this as a compound
   heading?" It is one (method `composite`; the entity is the heading's own concept, its head and subdivision strings
-  of their own), but nothing on the list or the page says so. The shape: the list tags such an entity "compound"
-  and the page lists its parts in order, each with what it resolved to (the head onto the firm's entity, "History"
-  onto LCSH's subdivision), each a link, and says the whole is coordinated from them; a part still queued is a link
-  to its desk page.
+  of their own), but nothing on the list or the page said so. Built the same day, the owner's word: the list tags such
+  an entity "compound" (`CompositeEntityIdsAsync`, one query per page) and the page lists its parts in order, each
+  with its decision and the entity it resolves to, a part still queued linking to its desk page, under a line saying
+  the whole is coordinated from them and holds no identifier itself (`EntityView.Parts`; CurationServiceTests). Still
+  open here: the export as coordinated concepts and the desk showing a part's parents.
 - Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides the
   owner (2026-10-21).
 - Legacy data for the desk: entities whose class disagrees with their label ("Crimean War, 1853-1856", the two World
@@ -720,6 +715,15 @@ and the log (doc 15) records that. The order within an area is rough value.
   diffed string by string (a second alignment of the same strings is the check on the first, and the places where they
   differ are the rules' or the desk's to read). It is also the first run of the collect stage from an export and so the
   rehearsal of the schedule above; the identifiers it mints are its own and never published.
+- A report back to the cataloguers (the owner's observation, 2026-11-07): alignment shows up errors and imprecisions in
+  the catalogue that librarians and archivists will want to fix at source, the type case a firm whose name changed
+  slightly, two authorities, one string in the data; the desk decides the string one way, the cataloguers then make
+  the records precise, and on the next run the two variants arrive as two strings (the old string leaves, as the item
+  above has it, and the new ones reconcile; the records the old string resolved to the wrong firm are corrected by the
+  next export's Updates). Actionable in a small way, with the collect stage: a report of what the desk found that the
+  catalogue should carry (a string kept as a local authority with a note; a string decided "something else" from what
+  its field said; a record-level exception, once there are such), per record id, in a shape a cataloguer can work
+  from; and the split (above) for the case where the string must be two things before the catalogue is fixed.
 - Authority reloads (2026-11-07): a reload of ULAN, TGN, LoC or LCSH lists the equivalents whose record is gone or
   now redirects to another, and marks the decisions on them for a look (doc 10 section 4's `valid = false` on an
   authority update is not built); the audit command is the start, since it already walks entities against the index.

@@ -114,6 +114,14 @@ else
                     @if (ef is not null) { <text>stands for @ef.Strings.Count string@(ef.Strings.Count == 1 ? "" : "s")@(ef.Contexts.Count > 0 ? " in " + string.Join(", ", ef.Contexts) : "")</text> }
                     · <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">its page</a></label>
             }
+            @{ var classes = plan.Ours.Select(e => e.Class).Distinct().ToList(); }
+            @if (classes.Count > 1)
+            {
+                @* a Person and a Group do not merge silently: the merged entity's class is chosen here (the owner, 2026-11-07, at "Ackermann and Son") *@
+                <p class="small">They differ in class. The merged entity is a
+                    <select name="cls">@foreach (var c in classes) { <option value="@c" selected="@(c == plan.Survivor.Class)">@c.ToString().ToLowerInvariant()</option> }</select>
+                    (the survivor's unless you choose; the change is noted on it).</p>
+            }
             <p class="small">Then @(plan.Identifiers.Count == 0 ? "no new identifier is added" : plan.Identifiers.Count + " identifier" + (plan.Identifiers.Count == 1 ? "" : "s") + " added: " + string.Join(", ", plan.Identifiers)), and "@item.String.Raw" is decided onto the survivor.</p>
             <div class="actions"><button type="submit">Merge and accept</button> <a class="button secondary" href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id })">Back</a></div>
         </form>

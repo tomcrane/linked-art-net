@@ -144,9 +144,18 @@ reviewed the same way, and to those a person already decided.
 its labels, dates, identifiers with the authority record behind each, the catalogue records its strings were seen
 in ("In the records", as on the desk, the most frequent strings first, eight records at most), the strings that
 resolve to it, and notes. A
-reviewer can rename it, add an identifier (a URI from ULAN, LoC, VIAF, Wikidata, AAT, TGN or LUX), remove one,
-confirm it, merge it into another entity found by search, add a note, or *reopen* chosen strings, which takes them
-away from the entity so the software reconsiders them next time.
+reviewer can rename it, change its class (person, group, place, type, period, event: an identifier added by hand can
+say what the field could not; the change is noted on the entity, and the identifier keeps its path), add an identifier
+(a URI from ULAN, LoC, VIAF, Wikidata, AAT, TGN or LUX), remove one, confirm it, merge it into another entity found by
+search, add a note, or *reopen* chosen strings, which takes them away from the entity so the software reconsiders them
+next time. On a placeholder the class card says to prefer merging into the entity of the right class, or deciding its
+waiting string there at the desk, over changing the class. When the two entities of a merge differ in class, the merge
+row on the entity page and the confirm step on the desk offer the merged entity's class; the survivor's stands unless
+chosen.
+
+An identifier added by hand is in force at once for the next reconcile, for "Look again" and for the searches; the
+card of a string already queued still shows the run's evidence, so use "Look again" there to see the entity on the
+card that holds the record.
 
 **Variants** is for the knowledge only a specialist has. Type a string or a word. The workbench picks its most
 distinctive word ("agnew" from "Thos. Agnew & Sons Ltd") and lists every string containing it, grouped by what each

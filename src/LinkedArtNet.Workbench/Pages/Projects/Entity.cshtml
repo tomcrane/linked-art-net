@@ -109,6 +109,23 @@
             <input type="text" name="label" value="@e.Label" />
             <div class="actions"><button type="submit" class="secondary">Save label</button></div>
         </form>
+        @* what kind of thing it is, changeable by a person: an identifier added by hand can say what the field could not (the owner,
+           2026-11-07, at "Ackermann and Son", a Person holding ULAN's corporate body) *@
+        <form method="post" asp-page-handler="Class" class="card">
+            <input type="hidden" name="id" value="@e.Id" />
+            <h3 style="margin-top:0">Class</h3>
+            <select name="cls">
+                @foreach (var c in Enum.GetValues<EntityClass>()) { <option value="@c" selected="@(c == e.Class)">@c.ToString().ToLowerInvariant()</option> }
+            </select>
+            @if (e.Status == EntityStatus.Provisional)
+            {
+                @* a placeholder's class is the reading's guess; the thing it stands for often has an entity of the right class already
+                   (the owner, 2026-11-07, at the "Ackermann" placeholder beside the firm's entity) *@
+                <p class="small muted">This is a placeholder. If the thing it stands for already has an entity of the right class, merge into that one, or decide its waiting string there at the desk, rather than change the class here.</p>
+            }
+            <p class="small muted">A change is noted on the entity. The identifier keeps its path.</p>
+            <div class="actions"><button type="submit" class="secondary">Save class</button></div>
+        </form>
         @if (e.Status != EntityStatus.Confirmed)
         {
             <form method="post" asp-page-handler="Confirm" class="card">
@@ -126,8 +143,10 @@
             <form method="get" class="row"><input type="hidden" name="id" value="@e.Id" /><input type="search" name="merge" value="@Model.Merge" placeholder="Search for the survivor" style="flex:1" /><button type="submit" class="secondary">Search</button></form>
             @foreach (var other in Model.MergeCandidates)
             {
-                <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@other.Label</strong> <span class="tag">@other.Status.ToString().ToLowerInvariant()</span> <span class="small muted">@string.Join(" ", other.Equivalents.Select(q => q.Source))</span></div>
-                    <form method="post" asp-page-handler="Merge" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="survivor" value="@other.Id" /><button type="submit">Merge into this</button></form></div>
+                <div class="row" style="margin-top:.4rem"><div style="flex:1"><strong>@other.Label</strong> <span class="tag">@other.Class.ToString().ToLowerInvariant()</span> <span class="tag">@other.Status.ToString().ToLowerInvariant()</span> <span class="small muted">@string.Join(" ", other.Equivalents.Select(q => q.Source))</span></div>
+                    <form method="post" asp-page-handler="Merge" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="survivor" value="@other.Id" />
+                        @if (other.Class != e.Class) { <text>as a </text><select name="cls" title="The two differ in class: the merged entity's class"><option value="@other.Class" selected>@other.Class.ToString().ToLowerInvariant()</option><option value="@e.Class">@e.Class.ToString().ToLowerInvariant()</option></select> }
+                        <button type="submit">Merge into this</button></form></div>
             }
         </div>
         <form method="post" asp-page-handler="Note" class="card">

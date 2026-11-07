@@ -229,7 +229,8 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     /// overridden to the entity in the string's field as well, as <see cref="OverrideAsync"/> does for one record (the group's own
     /// "Always, in this field", 2026-11-06).
     /// </summary>
-    public async Task<Entity> AcceptTogetherAsync(string dataset, long stringId, IReadOnlyList<string> targetUris, string reviewer, string? note = null, string? survivorId = null, bool mergeOurs = false, bool always = false, CancellationToken ct = default)
+    /// <param name="cls">The merged entity's class when the entities merging differ in class and the person chose (the owner, 2026-11-07, at "Ackermann and Son"); null keeps the survivor's.</param>
+    public async Task<Entity> AcceptTogetherAsync(string dataset, long stringId, IReadOnlyList<string> targetUris, string reviewer, string? note = null, string? survivorId = null, bool mergeOurs = false, bool always = false, EntityClass? cls = null, CancellationToken ct = default)
     {
         var decided = await OwnAsync(dataset, stringId, ct);
         var targets = Targets(targetUris);
@@ -244,6 +245,12 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             plan = await PlanTogetherAsync(dataset, stringId, targets, survivorId, ct);
             foreach (var loser in plan.Merging) await store.MergeAsync(loser.Id, plan.Survivor.Id, reviewer, ct);
             entity = (await store.ResolveEntityAsync(plan.Survivor.Id, ct))!;
+            if (cls is { } chosen && chosen != entity.Class)
+            {
+                await store.UpdateEntityAsync(entity with { Class = chosen }, ct);
+                await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Class changed from {entity.Class} to {chosen} at the merge.", ct);
+                entity = (await store.GetEntityAsync(entity.Id, ct))!;
+            }
         }
         else entity = await reconciler.EntityForUriAsync(dataset, ours.Count == 1 ? ours[0].Id : targets[0], reading, null, ct);
         var now = DateTimeOffset.UtcNow;

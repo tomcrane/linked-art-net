@@ -96,4 +96,45 @@ public class CurationServiceTests(PostgresFixture pg)
         // orphan housekeeping: the provisional entities the cluster re-pointed away from were folded in or are gone
         Assert.Equal(0, await pg.Store.RemoveOrphanProvisionalsAsync(ds));
     }
+
+    /// <summary>
+    /// The owner, 2026-11-07, at "Ackermann and Son": a cluster of persauthorfull strings given ULAN's corporate body was a confirmed Person
+    /// holding a Group's record, and the owner would not merge a Person with a Group. The cluster takes the record's class when the field
+    /// allows it; a person can change the class on the entity page, noted; a merge whose two entities differ in class can take the chosen one.
+    /// </summary>
+    [PostgresFact]
+    public async Task An_entity_takes_its_records_class_and_a_person_can_change_it()
+    {
+        var ds = "cu-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        await new GettyVocabLoader(pg.Store).LoadAsync(NTriples.ReadText(UlanSample), GettyVocabulary.Ulan, "test");
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan")], ProjectManifest.PmcDefault.ToOptions());
+        var curation = new CurationService(pg.Store, scheme, reconciler);
+        var a = await pg.Store.CollectAsync(ds, "persauthorfull", "Agnew and Son");
+        var b = await pg.Store.CollectAsync(ds, "persauthorfull", "A. Agnew & Son");
+        await reconciler.RunAsync(ds);
+
+        // the field says Person; ULAN's record says Group, and corpauthor's field would allow it, but persauthorfull allows only Person: the field's class stands
+        var firm = await curation.ClusterAsync(ds, [a.Id, b.Id], null, "Agnew and Son", ["http://vocab.getty.edu/ulan/500301417"], "tester");
+        Assert.Equal(EntityClass.Person, firm.Class);
+        // a person says what it is: the class changes, the note says from what, the identifier keeps its path
+        var group = await curation.SetClassAsync(ds, firm.Id, EntityClass.Group, "tester");
+        Assert.Equal(EntityClass.Group, group.Class);
+        Assert.Equal(firm.Id, group.Id);
+        Assert.Contains(await pg.Store.NotesAsync(ds, firm.Id), n => n.Text.Contains("Class changed from Person to Group"));
+        Assert.Equal(EntityClass.Group, (await pg.Store.GetEntityAsync(firm.Id))!.Class);
+
+        // a cluster from a field that allows both takes the record's class
+        var c = await pg.Store.CollectAsync(ds, "corpauthor", "Agnew's of Bond Street");
+        await reconciler.RunAsync(ds);
+        var other = await curation.ClusterAsync(ds, [c.Id], null, "Agnew's of Bond Street", ["http://vocab.getty.edu/ulan/500301417"], "tester");
+        Assert.Equal(EntityClass.Group, other.Class);
+
+        // a merge of two entities that differ in class takes the chosen class
+        var person = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Agnew & Sons Ltd", ["Agnew & Sons Ltd"], Status: EntityStatus.Confirmed), scheme);
+        var merged = await curation.MergeAsync(ds, other.Id, person.Id, "tester", EntityClass.Group);
+        Assert.Equal(person.Id, merged.Id);
+        Assert.Equal(EntityClass.Group, merged.Class);
+        Assert.Contains(await pg.Store.NotesAsync(ds, person.Id), n => n.Text.Contains("Class changed from Person to Group"));
+    }
 }

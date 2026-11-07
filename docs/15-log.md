@@ -67,7 +67,14 @@ as the run had it and Sheffield's control accepted onto LoC's engraver, then the
 of its ULAN and LoC records agrees with the string, the first when none does), both green, every test project run
 before the commit. Run wsw254 at 13:42 measured it (doc 10 7.6 "Measured 2026-11-07 (run wsw254)"): the eight minted
 and the five queued of the count back onto their entities, nothing else; the last full run is wsw254. The owner to the
-desk and the UI next.
+desk and the UI next. At the desk, "Ackermann and Son": a confirmed Person holding ULAN's corporate body, made that
+day by a persauthorfull cluster, and the owner unwilling to merge a Person with a Group. Built on the word: the
+cluster takes the record's class when the field allows it, a class control on the entity page (noted; on a placeholder
+it says to merge into the entity of the right class instead, the owner's question at the "Ackermann" placeholder), and
+a merge across classes offers the class on the entity page and in the desk's confirm step; CurationServiceTests; the
+workbench stopped for the build. The owner's question whether a hand-added identifier reaches the desk at once: yes
+for the next reconcile, "Look again" and the searches, not for the stored card of a string already queued; a desk
+item (the card's holders, live).
 
 ## 2026-11-06
 

@@ -166,6 +166,12 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var relabel = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/entity?handler=Label", $"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}", new() { ["id"] = kept.Id, ["label"] = "Smith, John (author of the review)" });
         Assert.Equal(HttpStatusCode.Redirect, relabel.StatusCode);
         Assert.Equal("Smith, John (author of the review)", (await store.GetEntityAsync(kept.Id))!.Label);
+        // the class is a person's to change (the owner, 2026-11-07, at "Ackermann and Son", a Person holding ULAN's corporate body): noted on the entity
+        Assert.Contains("Save class", entityPage);
+        var reclass = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/entity?handler=Class", $"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}", new() { ["id"] = kept.Id, ["cls"] = "Group" });
+        Assert.Equal(HttpStatusCode.Redirect, reclass.StatusCode);
+        Assert.Equal(EntityClass.Group, (await store.GetEntityAsync(kept.Id))!.Class);
+        Assert.Contains(await store.NotesAsync(ds, kept.Id), n => n.Text.Contains("Class changed from Person to Group"));
 
         var other = await store.CollectAsync(ds, "corpauthor", "J. Smith & Co");
         await project.Reconciler.ReconcileOneAsync(ds, other);

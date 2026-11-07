@@ -94,7 +94,10 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             if (string.IsNullOrWhiteSpace(newLabel)) throw new InvalidOperationException("Give the new entity a label, or choose an existing one.");
             var first = await OwnAsync(dataset, stringIds[0], ct);
             var reading = reconciler.Read(first);
-            entity = await store.AddEntityAsync(dataset, new NewEntity(reading.Classes[0], newLabel.Trim(), [], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed), scheme, ct);
+            // the class is the record's when an identifier given here has one the field allows, the field's first otherwise (the owner,
+            // 2026-11-07, at "Ackermann and Son": a persauthorfull cluster given ULAN's corporate body was a Person holding a Group's record)
+            var cls = await ClassFromRecordsAsync(externalUris, reading, ct) ?? reading.Classes[0];
+            entity = await store.AddEntityAsync(dataset, new NewEntity(cls, newLabel.Trim(), [], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed), scheme, ct);
         }
         foreach (var uri in externalUris.Where(u => !string.IsNullOrWhiteSpace(u)).Distinct(StringComparer.Ordinal))
             await AddEquivalentAsync(dataset, entity.Id, uri, reviewer, ct);
@@ -124,6 +127,28 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     }
 
     // ---- entity actions --------------------------------------------------------------------------------------------
+
+    /// <summary>The class of the first record among the URIs whose type is a class the string's field allows; null when none says.</summary>
+    private async Task<EntityClass?> ClassFromRecordsAsync(IEnumerable<string> uris, StringReading reading, CancellationToken ct)
+    {
+        foreach (var uri in uris.Where(u => !string.IsNullOrWhiteSpace(u)))
+            if (await store.GetAuthorityAsync(uri.Trim(), ct) is { Type: { } type } && Enum.TryParse<EntityClass>(type, true, out var cls) && reading.Classes.Contains(cls))
+                return cls;
+        return null;
+    }
+
+    /// <summary>
+    /// A person says what kind of thing the entity is (the owner, 2026-11-07, at "Ackermann and Son", a Person holding ULAN's corporate
+    /// body): the class changes and a note on the entity says from what, by whom. The identifier keeps its minted path.
+    /// </summary>
+    public async Task<Entity> SetClassAsync(string dataset, string entityId, EntityClass cls, string reviewer, CancellationToken ct = default)
+    {
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        if (entity.Class == cls) return entity;
+        await store.UpdateEntityAsync(entity with { Class = cls }, ct);
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Class changed from {entity.Class} to {cls}.", ct);
+        return (await store.GetEntityAsync(entity.Id, ct))!;
+    }
 
     public async Task<Entity> SetLabelAsync(string dataset, string entityId, string label, CancellationToken ct = default)
     {
@@ -164,11 +189,13 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
-    public async Task<Entity> MergeAsync(string dataset, string loserId, string survivorId, string reviewer, CancellationToken ct = default)
+    /// <summary>Merges the loser into the survivor; <paramref name="cls"/>, given, is the merged entity's class (the two differed, and the person chose).</summary>
+    public async Task<Entity> MergeAsync(string dataset, string loserId, string survivorId, string reviewer, EntityClass? cls = null, CancellationToken ct = default)
     {
         await OwnEntityAsync(dataset, loserId, ct);
         var survivor = await OwnEntityAsync(dataset, survivorId, ct);
         await store.MergeAsync(loserId, survivor.Id, reviewer, ct);
+        if (cls is { } chosen && chosen != survivor.Class) await SetClassAsync(dataset, survivor.Id, chosen, reviewer, ct);
         return (await store.ResolveEntityAsync(survivor.Id, ct))!;
     }
 

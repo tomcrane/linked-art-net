@@ -272,18 +272,23 @@ and the log (doc 15) records that. The order within an area is rough value.
   persisted: the first pass's queued decision stands and the second writes none, so the desk shows the first pass's
   evidence and the reason reaches it only through "Look again". The second pass should save its evidence on the
   string it leaves queued (a new queued decision, or the standing one's evidence replaced), so the desk reads why.
-- An entity's class is the field's, not the record's (the owner, 2026-11-07, at "Ackermann and Son": a confirmed entity
-  classed Person, created at the desk that day from a persauthorfull string, holding ULAN's corporate body 500436349 by
-  override and LoC's and Wikidata's Arthur Ackermann & Son by hand, with the firm's variants merged in, and the owner
-  unwilling to merge a Person with a Group). The desk's accept and the variants view's cluster give a new entity the
-  field's first class (`ReviewService` and `CurationService`, `reading.Classes[0]`), where the reconciler's own
-  acceptance gives it the record's class. Three parts: the desk's accept and the cluster take the record's class when
-  the record accepted has one and the field allows it, the field's first class otherwise; the entity page gets a class
-  control (Person, Group, Place, Type, Period, Event), a human change noted on the entity, since an identifier added
-  by hand can say what the field could not; and a merge whose two entities differ in class says so in the confirm step
-  and offers the survivor the loser's class, instead of merging silently (`MergeAsync` does not look). The identifier
-  keeps its minted path (`/person/`) after a class change, as identifiers are minted once; a count of entities whose
-  class disagrees with the type of the records they hold sizes the legacy side (the item below on legacy classes).
+- ~~An entity's class is the field's, not the record's~~ (built 2026-11-07, the owner's word, at "Ackermann and Son": a
+  confirmed Person holding ULAN's corporate body, made that day by a persauthorfull cluster, the owner unwilling to
+  merge a Person with a Group. The variants view's cluster now takes the record's class when an identifier given with
+  it has one the field allows, the field's first otherwise (the desk's accept already took the record's class through
+  the reconciler); the entity page has a class control, the change noted on the entity, and on a placeholder it says
+  to merge into the entity of the right class, or decide the waiting string there, rather than change the class (the
+  owner's question at the "Ackermann" placeholder); a merge whose two entities differ in class offers the class, on the
+  entity page's merge row and in the desk's confirm step, the change noted (`CurationService.SetClassAsync`,
+  `MergeAsync(cls)`, `AcceptTogetherAsync(cls)`, `UpdateEntityAsync` writing the class; CurationServiceTests). The
+  identifier keeps its minted path. Left: a count of entities whose class disagrees with the type of the records they
+  hold, the legacy side, on the legacy-classes item below.)
+- The card's holders, live (2026-11-07, the owner's question after adding LoC's and Wikidata's Arthur Ackermann & Son
+  to the firm's entity by hand: "does that take effect in the desk?"). It does in the next reconcile, in "Look again",
+  and in the searches; not on the stored card of a string already queued, whose project entities are the members the
+  run wrote. As the desk already looks up what a card's entities have become since (a merge shows under the survivor),
+  it should look up which project entity now holds each card's records and say so, with "Same as" offered, so a hand-
+  added identifier reaches the queue without "Look again".
 - The way from a placeholder's entity page to its own desk page (the owner, 2026-11-06, at "Colchester (England)"): the
   entity page's "Waiting at the desk" list is the other strings of the name, and leaves out the strings that resolve
   here, which sit under "Strings that resolve here" with "queued" as plain text. A placeholder whose only string is its
@@ -572,7 +577,8 @@ and the log (doc 15) records that. The order within an area is rough value.
   item whose record links TGN gains the TGN id; one linking two TGN records gains nothing and is reported; a heading
   of the name is then accepted onto the entity by finding 35.
 
-- A queued string's placeholder takes the context's first class (keywords:head: a Type), and a qualified place string's
+- A queued string's placeholder takes the context's first class (keywords:head: a Type), and a qualified place string's Another on 2026-11-07: the "Ackermann" placeholder in corpauthor, a Person (the reading's guess from a bare
+  surname; the field's first class is Group) standing for the firm, beside the firm's own entity.
   placeholder ("Colchester (England)", "Birmingham (England)") is a concept on its entity page until the desk decides it.
   The placeholder's class should follow the reading where the reading is plain: a qualifier that places it, a place.
   Count the queued strings with a placing qualifier whose placeholder is a concept, before changing MintAsync.
@@ -687,6 +693,12 @@ and the log (doc 15) records that. The order within an area is rough value.
   entity by exact-name when the name agrees, and the report says where it did not, so the desk can say "same as" and
   the entity keeps its URI. An entity none of whose strings is current is retired in the next export (a Delete, or a
   record that says so), never deleted from the store. The first real collect's report is the measure.
+- A second project from the same PMC sources (the owner's thought, 2026-11-07): once the runs and the desk are trusted,
+  a new project over the same exports, from scratch, with no legacy import and no desk history, to see how the toolkit
+  does alone: the residue from zero, the desk's work measured in strings and minutes, and the two projects' answers
+  diffed string by string (a second alignment of the same strings is the check on the first, and the places where they
+  differ are the rules' or the desk's to read). It is also the first run of the collect stage from an export and so the
+  rehearsal of the schedule above; the identifiers it mints are its own and never published.
 - Authority reloads (2026-11-07): a reload of ULAN, TGN, LoC or LCSH lists the equivalents whose record is gone or
   now redirects to another, and marks the decisions on them for a look (doc 10 section 4's `valid = false` on an
   authority update is not built); the audit command is the start, since it already walks entities against the index.

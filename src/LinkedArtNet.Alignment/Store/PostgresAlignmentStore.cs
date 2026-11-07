@@ -159,11 +159,11 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         var labels = entity.Labels.Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();
         await using var cmd = _db.CreateCommand(
             """
-            update entities set label = @label, labels = @labels, normalised_labels = @normalised, begin_earliest = @b1, begin_latest = @b2, end_earliest = @e1, end_latest = @e2,
+            update entities set class = @class, label = @label, labels = @labels, normalised_labels = @normalised, begin_earliest = @b1, begin_latest = @b2, end_earliest = @e1, end_latest = @e2,
                 lifespan_text = @ltext, nationalities = @nat, roles = @roles, status = @status, updated_at = @now
             where id = @id
             """);
-        Add(cmd, "id", entity.Id); Add(cmd, "label", entity.Label); Add(cmd, "labels", labels); Add(cmd, "normalised", NormalisedLabels(entity.Label, labels));
+        Add(cmd, "id", entity.Id); Add(cmd, "class", entity.Class.ToString()); Add(cmd, "label", entity.Label); Add(cmd, "labels", labels); Add(cmd, "normalised", NormalisedLabels(entity.Label, labels));
         AddLifespan(cmd, entity.Lifespan); Add(cmd, "nat", entity.Nationalities.ToArray()); Add(cmd, "roles", entity.Roles.ToArray());
         Add(cmd, "status", Status(entity.Status)); Add(cmd, "now", DateTimeOffset.UtcNow);
         if (await cmd.ExecuteNonQueryAsync(ct) == 0) throw new KeyNotFoundException($"No entity {entity.Id}.");

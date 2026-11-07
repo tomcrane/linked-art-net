@@ -12,6 +12,7 @@
 | [06-corpus-and-testing.md](06-corpus-and-testing.md) | Corpus format and lifecycle, metrics, whole-repo test strategy |
 | [08-corpus-contributions.md](08-corpus-contributions.md) | Operating guide: how trainer inputs become proposed entries, pull requests, and verified corpus; what is manual today |
 | [09-hosting.md](09-hosting.md) | One virtual server at Mythic Beasts: Caddy, the site and the service under compose; DNS, images, GitHub app, backups |
+| [../src/LinkedArtNet.Alignment/README.md](../src/LinkedArtNet.Alignment/README.md) | The alignment toolkit in a page: the approach, the store, how a string is read and decided, runs and undo, the desk; read this before doc 10 |
 | [10-alignment-toolkit.md](10-alignment-toolkit.md) | Design for the transformation and alignment toolkit: goals, what to keep from PMC, the store (entities, strings, decisions), pipeline stages, the agent-string parser, reconciliation and the LUX self-echo rule, PMC and Wellcome instances, order of work |
 | [07-later-alignment-toolkit.md](07-later-alignment-toolkit.md) | Earlier notes the design grew from (LUX, QLever, Postgres) |
 | [11-alignment-store.md](11-alignment-store.md) | The alignment store on PostgreSQL: schema, loaders for the authority files and the Wikidata extract, what the loads and runs taught |

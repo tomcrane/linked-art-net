@@ -36,6 +36,11 @@ string's candidates, and wrote nothing, which is the desk item already standing.
 mints a placeholder beside the entity that holds its LoC record, so the record is not reached by "st. ives" (the
 "Saint" spelling expected, to be read), a sibling of the English-against-vernacular join gap; the spellings and a
 count are command 5, the item under section 7, Reconciler. Doc 10 7.6's krbnw6 paragraph closed on its third row.
+While the reconcile still ran, the owner asked for a short overview of the alignment toolkit for someone who has done
+authority reconciliation or crosswalked collection data before: written as `src/LinkedArtNet.Alignment/README.md` (the
+approach in five sentences, what is here, the store, reading a string, candidates and groups, the ladder as a diagram,
+runs and undo, the desk, status and what is designed but not built), linked from the repository README's project table
+and the docs index as the page to read before doc 10.
 
 ## 2026-11-06
 

@@ -10,7 +10,10 @@ museums, libraries and archives to describe art and cultural heritage.
 | `src/LinkedArtNet.Dates.Service` | Kestrel service over the parser: `GET /v1/timespan?s=late%201950s`, batch POST, profiles, OpenAPI at `/docs`; Dockerfile. |
 | `src/LinkedArtNet.ExamplesSite` | Razor Pages site: every linked.art example as C# beside its JSON, coverage dashboard, date playground, corpus browser. |
 | `src/LinkedArtNet.Examples` | One C# method per example published on linked.art; the tests compare each method's JSON with the site's. Coverage: [examples/coverage.md](examples/coverage.md). |
-| `tools/` | Code generators and the site crawler (`ExampleManifest`). |
+| `src/LinkedArtNet.Alignment` | The alignment toolkit: a PostgreSQL store of entities, strings, decisions and cached authority records; loaders for the Getty, Library of Congress and Wikidata dumps; the reconciler. Overview: [src/LinkedArtNet.Alignment/README.md](src/LinkedArtNet.Alignment/README.md). |
+| `src/LinkedArtNet.Agents` | Agent strings ("Name, 1800-1870 (publisher)") to a name, lifespan, roles and nationality, by profile, with a corpus. |
+| `src/LinkedArtNet.Workbench` | The review workbench: projects, the desk where a person decides what the reconciler could not, entities and variants. |
+| `tools/` | Code generators, the site crawler (`ExampleManifest`) and the alignment command line (`Align`). |
 | `tests/` | Test projects. |
 | `docs/` | Plan and design documents, starting with [docs/00-plan.md](docs/00-plan.md). |
 

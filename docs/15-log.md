@@ -65,7 +65,9 @@ count-first item of its own (prominence when every live group holds a project en
 (minted 8, queued 5, single 2) with the word, and finding 111 was built: Finding111Tests first, Gillray's shape minted
 as the run had it and Sheffield's control accepted onto LoC's engraver, then the rule (the entity dated by whichever
 of its ULAN and LoC records agrees with the string, the first when none does), both green, every test project run
-before the commit. The next reconcile measures it (section 0, command 2).
+before the commit. Run wsw254 at 13:42 measured it (doc 10 7.6 "Measured 2026-11-07 (run wsw254)"): the eight minted
+and the five queued of the count back onto their entities, nothing else; the last full run is wsw254. The owner to the
+desk and the UI next.
 
 ## 2026-11-06
 

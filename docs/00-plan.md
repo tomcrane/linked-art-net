@@ -23,10 +23,10 @@ the one that wrote this); (2) the pass through Wikidata measured by run d6h8va o
 entity and a run-made entity of one person or place share a record, twins the store had never joined: 28 to the desk
 as holders to merge (right), 23 switched entity silently and 9 minted (a fault, "Gillray, James, 1757-1815" finding
 nothing), read in evidence the same day: finding 111, an entity dated through its records agrees when any of its
-dated records agrees (it borrowed the first), counted (fifteen), the word given and built with Finding111Tests (doc
-10 7.6 "Built 2026-11-07, finding 111"), to be measured by the next reconcile (Commands on return, 2: undo d6h8va,
-reconcile, the diff of command 4 against d6h8va; expected the eight minted and the five queued of the count back onto
-their entities, nothing else); "St Ives (Cornwall)" was read on the 7th while that reconcile ran (finding 110's sixth, the ground a placeholder; the
+dated records agrees (it borrowed the first), counted (fifteen), the word given, built with Finding111Tests (doc 10
+7.6 "Built 2026-11-07, finding 111") and measured by run wsw254 at 13:42 (doc 10 7.6 "Measured 2026-11-07 (run
+wsw254)": the eight minted and the five queued back onto their entities, nothing else; the last full run); "St Ives
+(Cornwall)" was read on the 7th while the first reconcile ran (finding 110's sixth, the ground a placeholder; the
 St/Saint key gap behind it is command 5, a count); (3) the desk, continued: start the workbench (command 1) and review from
 the queue, each thing the desk fails to show, do or get right becoming an item in section 7 and built; the desk items
 standing (section 7, Workbench and desk): the second pass's reasons on a string it leaves queued not persisted, the
@@ -44,7 +44,8 @@ and 354,991 of its undated person records their Wikidata item's dates (finding 8
 `authority_records` ends with `vacuum (analyze)`). The store has had two duplicate passes and four hand merges, and
 since 16:23 today the pass through Wikidata (run zpcmrz: 2,013 of the 2,191 legacy alignments to Wikidata, VIAF and
 LUX now hold the TGN, LoC, ULAN or LCSH record their item names, method `through-wikidata`, reversible by
-`undo-run`), measured by run d6h8va on the 7th (the last full run: accepted 9,500, queued 3,930, minted 10,886). The manifest was refreshed today with the `trades` key (`manifest
+`undo-run`), measured by run d6h8va on the 7th; finding 111 from its twins, measured by wsw254 (the last full run,
+2026-11-07 13:42: accepted 9,500, queued 3,925, minted 10,878). The manifest was refreshed today with the `trades` key (`manifest
 --use-default`, which now says what it replaces); the workbench rebuilds a project's services when the project row
 changes, so a tool-side save is in force at its next request. Runs are occasional and a run is measured by its diff
 against the run before (command 4), never by the queue count, which is the desk's residue by design. The last full
@@ -80,12 +81,11 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. The reconcile that measures finding 111 (doc 10 7.6 "Built 2026-11-07, finding 111"): d6h8va taken back, the
-   strings decided again, then the diff of command 4 against d6h8va. Expected: the fifteen of the count, the eight
-   minted and the five queued back onto their entities by exact-name, the two single unchanged in entity, and nothing
-   else; a wider diff is to be read. With the workbench stopped:
+2. No reconcile is pending (wsw254 of 2026-11-07 13:42 is the last full run, finding 111 measured by it). The next
+   one comes with the next rule built from the desk, as always: the last full run taken back, `reconcile`, then
+   command 4 against the run before. With the workbench stopped:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261107-114818-d6h8va
+       dotnet run --project tools/Align -- undo-run --run run-20261107-134248-wsw254
        dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
@@ -93,13 +93,13 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, whenever it comes, against d6h8va, the last full run (each run's last
+4. The standing method diff after the next run, whenever it comes, against wsw254, the last full run (each run's last
    decision per string, since a string the second pass settled has two; an undone run keeps its evidence, though the
    undo removes the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for
    those and true or false only where the entity survived: the desk's, and the ones made before the run undone).
    A method change on the same entity is a label, not a decision (the 77 of a98vpa, the 14 of krbnw6):
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261107-114818-d6h8va' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261107-134248-wsw254' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id

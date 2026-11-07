@@ -1259,6 +1259,18 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-07 (run wsw254, 13:42; d6h8va taken back): finding 111. Matched in store 5,947 (thirteen more),
+accepted 9,500 (unchanged: vote 4,045, single 2,164, exact-single 3,291), queued 3,925 (five fewer), minted 10,878
+(eight fewer); the second pass settled 99 of 4,024. The diff against d6h8va, two rows and thirteen strings, exactly
+the count's: minted to exact-name 8 ("Gentileschi, Orazio, 1563-1639", "Gillray, James, 1757-1815", "Laurencin,
+Marie, 1885-1956", "McEvoy, Ambrose, 1878-1927", "Pistrucci, Benedetto, 1784-1855", "Pocock, Nicholas, 1741-1821",
+"Pratt, Roger, Sir, 1620-1685", "Wootton, John, c.1682-1764"), queued to exact-name 5 ("Abbott, John White,
+1763-1851", "Catesby, Mark, 1682-1749", "Jackson, Francis Ernest, 1872-1945", "Macdonald, Frances, 1874-1921",
+"Woodroffe, Paul, 1875-1954"), each back onto the legacy entity that holds its records; the two singles of the count
+kept their entity, so they are not in the diff; nothing else moved. The rule did what it was shaped to do and no
+more. Stage times: store 1,073 s, second pass 307 s, commit 222 s (d6h8va's 1,673, 533 and 462 were the battery).
+The last full run is wsw254.
+
 Built 2026-11-07, finding 111: an entity dated through its records agrees when any of its dated records does. Counted
 on run d6h8va (the owner's query: strings whose top group holds a project entity in date conflict beside a ULAN or LoC
 record that agrees): fifteen, minted 8 ("Gentileschi, Orazio, 1563-1639", "Gillray, James, 1757-1815", "Laurencin,

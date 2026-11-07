@@ -283,6 +283,21 @@ and the log (doc 15) records that. The order within an area is rough value.
   `MergeAsync(cls)`, `AcceptTogetherAsync(cls)`, `UpdateEntityAsync` writing the class; CurationServiceTests). The
   identifier keeps its minted path. Left: a count of entities whose class disagrees with the type of the records they
   hold, the legacy side, on the legacy-classes item below.)
+- A queued string settled by a merge keeps saying queued (2026-11-07, the firm's entity page after the owner merged the
+  "Ackermann" placeholder into Arthur Ackermann & Son: "Ackermann" in corpauthor and in publisher listed under the
+  strings that resolve here, decided "queued", and "Ackermann's" decided "minted"). A merge re-points the loser's
+  valid decisions to the survivor and leaves their method, so the strings stay in the queue and the desk will ask again
+  about a string a person has in fact settled, and the record never says a person did. When a person merges a
+  placeholder into another entity (the entity page's merge, the desk's merge), each string whose standing decision on
+  the loser is queued or minted gets a new decision, method `human`, evidence "same as, by the merge of X into Y", and
+  leaves the queue; undo of that decision puts the queued one back. Count first: the project's valid queued and minted
+  decisions whose entity is not provisional:
+
+      select d.method, e.status, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
+      from decisions d join entities e on e.id = d.entity_id join source_strings s on s.id = d.source_string_id
+      where s.dataset = 'pmc' and d.valid and d.method in ('queued', 'minted') and e.status <> 'provisional'
+      group by 1, 2 order by 3 desc;
+
 - The card's holders, live (2026-11-07, the owner's question after adding LoC's and Wikidata's Arthur Ackermann & Son
   to the firm's entity by hand: "does that take effect in the desk?"). It does in the next reconcile, in "Look again",
   and in the searches; not on the stored card of a string already queued, whose project entities are the members the

@@ -296,6 +296,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   to the confirm step the page opened at the top and the step sat under the records and the candidates, "if I didn't
   know it was waiting there below the fold, I'd be lost". The redirect now carries the step's fragment, so the page
   opens on it, and a line at the top says a confirm is waiting, with a link to it.)
+- A vetoed card keeps a quiet accept (the owner, 2026-11-07, at "Hall, Harry, 1815-1882": ULAN's and LoC's Harry Hall
+  of 1813-1882, the painter the string names, greyed at 0.00 for the two years' difference on the birth, with no button,
+  while two undated LoC Harry Halls stood above at 1.00 and 0.85; the way round is "Something else" and a search). The
+  person outranks a veto: a greyed group keeps a quiet "Accept anyway" (and "Same as" when a project entity holds it),
+  recorded as human with the veto's reason in the evidence, so the catalogue's two years do not cost a detour.
 - The card's holders, live (2026-11-07, the owner's question after adding LoC's and Wikidata's Arthur Ackermann & Son
   to the firm's entity by hand: "does that take effect in the desk?"). It does in the next reconcile, in "Look again",
   and in the searches; not on the stored card of a string already queued, whose project entities are the members the
@@ -480,6 +485,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   beside the legacy entity that holds its record, and a bare namesake is accepted onto that placeholder on no record
   (jr8hf5) or declined by finding 110 (krbnw6). The spellings to read and the strings to count are command 5 of
   section 0; then "St", "St." and "Saint" as one token in the key's variants, if the count says so.
+- Dates that miss by a year or two on one side (2026-11-07, "Hall, Harry, 1815-1882" at the desk: ULAN's and LoC's
+  painter of 1813-1882 vetoed, the death agreeing exactly, the birth two years out, and no record saying 1815 to excuse
+  it as finding 111's shape does). Painters' birth years wobble between references; a conflict by at most two years on
+  one side while the other side agrees exactly is a near miss, not another person, when no namesake with agreeing
+  dates stands beside it. Count first: queued strings of wsw254 whose top group is vetoed on dates with one side
+  within two years and the other agreeing, by context, with examples; then the rule, if the count and the examples say
+  so (a tolerance of a year on a side, or the near miss sent to the desk at its name score rather than vetoed to 0.00).
 - Prominence when every live group holds a project entity (2026-11-07, "Boston" bare after the pass: the legacy Boston
   placed through TGN's Boston, Massachusetts in one group, "Boston (England)" in the other, each a project entity, and
   prominence standing aside because a project entity is among the live groups, so the bare name went from exact-name

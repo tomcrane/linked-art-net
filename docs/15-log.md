@@ -82,7 +82,9 @@ queued and minted strings as human, on the entity page and at the desk's confirm
 settles the ones merged before (the owner's count paste was the finding 111 count again; the tool's listing is the
 count). CurationServiceTests for both; the merge row's class choice tidied with CSS. The owner's thought for later,
 written to the plan: a second project from the same PMC sources, from scratch, once the process is trusted. `settle-merged` listed three, the Ackermanns only: the gap had bitten nothing before today. At "Harewood House (Yorkshire)" the confirm step was below the fold after the
-redirect: the redirect now lands on it and a line at the top says it is waiting.
+redirect: the redirect now lands on it and a line at the top says it is waiting. At "Hall, Harry, 1815-1882" the painter's records
+greyed at 0.00 for two years on the birth with no button: a desk item (a vetoed card keeps a quiet accept) and a
+reconciler item, count first (dates that miss by a year or two on one side).
 
 ## 2026-11-06
 

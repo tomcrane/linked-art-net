@@ -1275,8 +1275,19 @@ the second pass settled 101 of 4,039 where jr8hf5 settled 107. The diff against 
   own aligned entity breaks the tie" for the places, with the evidence written where exact-name had none. The right
   outcome, and the method now says why. The class crossing of Cawdor Castle's company onto the castle stands as it
   stood, a separate fault.
-- exact-name to queued, 1, "St Ives (Cornwall)", not the rule's: its reason line carries no finding 110, and it is to
-  be read in evidence.
+- exact-name to queued, 1, "St Ives (Cornwall)", read in evidence on 2026-11-07 and the rule's after all, its sixth:
+  the persisted row is the first pass's (the second pass writes none on a string it leaves queued), so "no word of
+  finding 110" proved nothing. jr8hf5's exact-name (its second pass) reads "the project's one St Ives joins the placed
+  store record": the anchor was a placed *store* entity, the provisional one minted in the same run from the heading
+  "St. Ives (Cornwall, England)" (minted in both runs, so its own LoC record is not reached by its key), and the
+  project's legacy St Ives (qpm6npcj: LoC n80103996, VIAF, LUX, Wikidata Q724182, no TGN record; the pass left it
+  alone, it holds a local record) joined that placeholder and was accepted on no record at all. In krbnw6 the second
+  pass found the same shape, the standing decision was queued, the entity holds records, and none of them was among
+  the string's candidates, so the rule declined ("none of its records is a candidate here"), as for Duranty and
+  Morris. The right outcome: the ground was a placeholder. What stops the string is the key: the legacy entity's LoC
+  heading and TGN's record are not reached from "st ives" (LoC's form is to be read; "Saint Ives" is the expected
+  spelling, from the assistant's knowledge of LoC practice, not yet seen), a sibling of the English-against-vernacular
+  join gap, counted first (plan section 7, Reconciler).
 
 The second pass's annotations on a string it leaves queued are not persisted (the first pass's queued decision stands
 and the second writes none), so the rule's reason reaches the desk only through "Look again": a desk item.

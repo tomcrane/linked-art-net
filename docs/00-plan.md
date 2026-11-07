@@ -20,8 +20,9 @@ current in their status lines.
 **On return, in order:** (1) `git push` if the day's commits are not up (forty-seven as of this writing; the last is
 the one that wrote this); (2) the reconcile that measures the pass through Wikidata (Commands on return, 2: undo
 krbnw6, reconcile, the diff of command 4 against krbnw6), read with the entity column, expected the 104 queued strings
-between legacy entities of one name moving onto them and some strings sent to the desk as holders to merge; and "St
-Ives (Cornwall)" read in evidence (command 5); (3) the desk, continued: start the workbench (command 1) and review from
+between legacy entities of one name moving onto them and some strings sent to the desk as holders to merge; "St
+Ives (Cornwall)" was read on the 7th while that reconcile ran (finding 110's sixth, the ground a placeholder; the
+St/Saint key gap behind it is command 5, a count); (3) the desk, continued: start the workbench (command 1) and review from
 the queue, each thing the desk fails to show, do or get right becoming an item in section 7 and built; the desk items
 standing (section 7, Workbench and desk): the second pass's reasons on a string it leaves queued not persisted, the
 way from a placeholder's entity page to its own desk page, the twins that share a record, the publisher strings
@@ -103,14 +104,21 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2, 3 order by 4 desc;
 
-5. "St Ives (Cornwall)", exact-name in jr8hf5 and queued in krbnw6 with no word of finding 110 (its reason, if the
-   rule's, was not persisted; section 7, Workbench and desk): the first group of each run's evidence, to see what
-   answered it and what stopped it:
+5. The St/Saint key gap behind "St Ives (Cornwall)" (read 2026-11-07, doc 10 7.6 "Measured 2026-11-06 (run krbnw6)",
+   third row): first the records' own spellings, then the count of strings the gap holds back. The legacy St Ives
+   entities hold LoC n80103996 (Cornwall) and n81035494 (Cambridgeshire); TGN's are looked up by the three spellings:
 
-       select d.run_id, d.method, jsonb_pretty(d.evidence->'groups'->0) as first_group
-       from decisions d join source_strings s on s.id = d.source_string_id
-       where s.dataset = 'pmc' and s.raw = 'St Ives (Cornwall)' and d.run_id in ('run-20261106-140520-jr8hf5', 'run-20261106-153608-krbnw6')
-       order by d.id;
+       select uri, source, label, labels, type, data->>'parentString' as parent from authority_records
+       where uri in ('http://id.loc.gov/authorities/names/n80103996', 'http://id.loc.gov/authorities/names/n81035494')
+          or (source = 'tgn' and normalised_labels && array['st ives', 'st. ives', 'saint ives']);
+
+   then, if LoC or TGN spells "Saint" where the strings write "St" or "St.", the strings so held: queued strings whose
+   key begins "st " or "st. " beside the records of the saint form (`pmc` strings, the standing queued decision):
+
+       select s.context, count(*), (array_agg(s.raw order by s.raw))[1:12] as examples
+       from source_strings s join decisions d on d.source_string_id = s.id and d.valid
+       where s.dataset = 'pmc' and d.method = 'queued' and (lower(s.raw) like 'st %' or lower(s.raw) like 'st. %')
+       group by 1 order by 2 desc;
 
 ## 1. Objectives (in priority order)
 
@@ -415,6 +423,12 @@ and the log (doc 15) records that. The order within an area is rough value.
   "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108
   would take LoC's record alone and lose TGN's id). Count the queued place-field and keywords strings whose top tie
   holds a LoC heading and a TGN record whose chain contains the heading's parenthetical, before any change to the join.
+  Its sibling, 2026-11-07, from "St Ives (Cornwall)" (doc 10 7.6, run krbnw6's third row): the strings write "St" or
+  "St." and the records the project's own entity holds are reached only by another spelling (LoC's heading, "Saint"
+  expected), so the string's key finds no record, the heading "St. Ives (Cornwall, England)" mints a placeholder
+  beside the legacy entity that holds its record, and a bare namesake is accepted onto that placeholder on no record
+  (jr8hf5) or declined by finding 110 (krbnw6). The spellings to read and the strings to count are command 5 of
+  section 0; then "St", "St." and "Saint" as one token in the key's variants, if the count says so.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or
   a qualifier that is no level word means the inhabited place, LoC's own convention; persons stay the desk's. And the

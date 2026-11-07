@@ -23,6 +23,20 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-07
+
+The owner undid krbnw6 and started the reconcile that measures the pass through Wikidata (run d6h8va, 11:48), on
+battery; a "slow label lookup 4.9s" line on "Martin, Peter" against LoC persons was read as the diagnostic working (a
+common name's rows materialised before the limit; the slow end of normal). While it ran, "St Ives (Cornwall)" read in
+evidence (plan command 5, both runs' decisions and the four St Ives entities): finding 110's sixth, not an unexplained
+one. jr8hf5's exact-name had accepted the legacy St Ives entity (LoC n80103996, VIAF, LUX, Wikidata, no TGN) by
+joining it to a placed store entity, the placeholder minted in the same run from the heading "St. Ives (Cornwall,
+England)", on no record; krbnw6's second pass found the same and declined it, the entity's records not among the
+string's candidates, and wrote nothing, which is the desk item already standing. Behind it a key gap: the heading
+mints a placeholder beside the entity that holds its LoC record, so the record is not reached by "st. ives" (the
+"Saint" spelling expected, to be read), a sibling of the English-against-vernacular join gap; the spellings and a
+count are command 5, the item under section 7, Reconciler. Doc 10 7.6's krbnw6 paragraph closed on its third row.
+
 ## 2026-11-06
 
 The desk, continued, at "Chris Beetles Ltd": a reconciler's group holding two of the project's own firm entities, each

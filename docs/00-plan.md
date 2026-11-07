@@ -301,6 +301,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   while two undated LoC Harry Halls stood above at 1.00 and 0.85; the way round is "Something else" and a search). The
   person outranks a veto: a greyed group keeps a quiet "Accept anyway" (and "Same as" when a project entity holds it),
   recorded as human with the veto's reason in the evidence, so the catalogue's two years do not cost a detour.
+- A project entity on a card named with its placement (the owner, 2026-11-07, at "Birmingham" in keywords:sub, string
+  79377: two groups at 1.00, each holding a project entity labelled "Birmingham", Alabama's above England's, and both
+  buttons reading "Same as Birmingham"). When a namesake project entity is on the page, the button and the row name the
+  entity with its placement, read from the LoC heading it holds ("Birmingham (Ala.)") or its TGN record's parent:
+  "Same as Birmingham (Alabama)", "Same as Birmingham (England)".
 - The card's holders, live (2026-11-07, the owner's question after adding LoC's and Wikidata's Arthur Ackermann & Son
   to the firm's entity by hand: "does that take effect in the desk?"). It does in the next reconcile, in "Look again",
   and in the searches; not on the stored card of a string already queued, whose project entities are the members the
@@ -485,6 +490,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   beside the legacy entity that holds its record, and a bare namesake is accepted onto that placeholder on no record
   (jr8hf5) or declined by finding 110 (krbnw6). The spellings to read and the strings to count are command 5 of
   section 0; then "St", "St." and "Saint" as one token in the key's variants, if the count says so.
+- A subdivision placed by its sibling parts (2026-11-07, "Birmingham" in keywords:sub, string 79377: its parent
+  headings read "Architecture--England--Birmingham" and "Art, Modern--19th century--England--Birmingham", the sibling
+  part "England" beside it, and the desk showed Alabama's group first). A place subdivision whose parent heading has
+  another place part is placed by it, as a qualifier places a name (findings 84 and 106 read the placement), so the
+  group whose TGN chain or LoC qualifier holds the sibling stands and the others are set aside. Count first: queued
+  keywords:sub strings read as places whose parent headings carry another part decided as a place, by the number of
+  groups that tie at the top, with examples.
 - Dates that miss by a year or two on one side (2026-11-07, "Hall, Harry, 1815-1882" at the desk: ULAN's and LoC's
   painter of 1813-1882 vetoed, the death agreeing exactly, the birth two years out, and no record saying 1815 to excuse
   it as finding 111's shape does). Painters' birth years wobble between references; a conflict by at most two years on
@@ -497,7 +509,9 @@ and the log (doc 15) records that. The order within an area is rough value.
   prominence standing aside because a project entity is among the live groups, so the bare name went from exact-name
   to the desk; "Geneva" the same). When one group holds a project entity, that entity is the evidence and prominence
   stands aside rightly; when every live group holds one, the evidence cancels, and prominence (Q100 against Boston,
-  Lincolnshire) could decide as it does when none holds one. Count first: queued strings of d6h8va whose top two
+  Lincolnshire) could decide as it does when none holds one. A second on the 7th at the desk: "Birmingham" in
+  keywords:sub, Alabama's legacy entity (right for its one string, the Birmingham Museum of Art's 1991 Stuart legacy
+  exhibition) and England's each in a group at 1.00, Alabama's first. Count first: queued strings of d6h8va whose top two
   groups each hold a project entity and whose Wikidata sitelinks would separate them.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or

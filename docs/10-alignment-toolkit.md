@@ -1259,6 +1259,32 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Read 2026-11-07, finding 112 shaped (the owner at "New" in keywords:head, string 79768, then the count of one-word
+heads): the hyphen inside a heading. The stored heading is "New--York Historical Society (New York, New York, USA)"
+(string 36905): the library's export writes a single hyphen both as the subdivision separator ("Architecture-England-
+Birmingham") and as the hyphen of a name or a word, the 2024 cleaning made "--" of every one, and the legacy import
+brought the doubled forms in, so the split at "--" breaks hyphenated words and names into a one-word head and a sub.
+The count (the owner's query, one-word heads with their headings, through "H" where the paste ended): some 330 heads,
+of which the broken ones are of two kinds. Words, where the part after the hyphen is lower-case: "Wood--carving" (9
+headings), "Self--control" (8), "Still--life" (5), "Avant--garde", "Anti--racism", "Hand--painted", "Doll--houses",
+"Client--centered", "Cross--cultural", "Barrier--free", "Architect--designed", "Silver--plated", "Transfer--printing",
+"Metal--work", "Wrought--iron", "Burley--on--the--Hill", "Barton--upon--Humber". Names, where it is capitalised:
+"Pre--Raphaelites" and "Pre--Raphaelitism" (5 as "Pre", and nine more headings that kept "Pre-Raphaelites" whole,
+so the doubling was not uniform), "Anglo--Saxons", "Kit--Cat Club", "Counter--Reformation", "Franco--British",
+"New--York Historical Society", "Albright--Knox", "Cooper--Hewitt", "Fleming--Wyfold", "Galli--Bibiena", and the
+double-barrelled surnames ("Drury--Lowe", "Gathorne--Hardy", "Granger--Taylor", "Gwynne--Jones", "Battie--Wrightson",
+"Bevan--Petman", "Campbell--Wilson", "Clayton--Stamm", "Fauchier--Magnan", "Golder--Thompson"). The rule, at the
+split: (a) a "--" followed by a lower-case letter is a hyphen, not a separator, since LCSH subdivisions are
+capitalised; (b) a one-word head whose join with the next part by a hyphen is a heading or a name the indexes hold
+whole ("Pre-Raphaelitism" in LCSH, "Anglo-Saxons", "New-York Historical Society" in LoC, "Kit-Cat Club") is a
+hyphenated name, and the parts are joined; otherwise the split stands ("Wood--engraving" is "Wood" + "engraving" by
+(a), joined; "Art--16th century" is two). For the strings already in the store, a repair pass over the keywords
+strings with parts (`resplit-headings`): each heading split again under the rule, and where the parts differ the old
+parts are detached from it (their decisions stand for the other headings they serve), the new parts collected, and
+the heading's composite decision rewritten, the new parts for the next reconcile; "not a compound" at the desk is the
+same pass for one heading with every "--" read as a hyphen. Count the repair before it runs: headings whose split
+changes under (a), and under (b), as two numbers. Waiting on the word.
+
 Measured 2026-11-07 (run wsw254, 13:42; d6h8va taken back): finding 111. Matched in store 5,947 (thirteen more),
 accepted 9,500 (unchanged: vote 4,045, single 2,164, exact-single 3,291), queued 3,925 (five fewer), minted 10,878
 (eight fewer); the second pass settled 99 of 4,024. The diff against d6h8va, two rows and thirteen strings, exactly

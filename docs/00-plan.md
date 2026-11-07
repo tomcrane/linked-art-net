@@ -383,9 +383,15 @@ and the log (doc 15) records that. The order within an area is rough value.
       where h.dataset = 'pmc' and h.context = 'keywords:head' and h.raw not like '% %'
       group by h.raw order by 2 desc, 1;
 
-  and the question for the source: the stored headings carry "--" where the record shows "-", so if the 2024 cleaning
-  made "--" of single hyphens by rule, every hyphenated name in a heading is split the same way, which is the
-  cleaning's to fix (the cataloguers' report, Exports and reports), not the ladder's.
+  The count came back the same day (doc 10 7.6 "Read 2026-11-07, finding 112 shaped"): the export writes one hyphen
+  for the separator and for a hyphen, the 2024 cleaning doubled every one, and the legacy import brought the doubled
+  forms in; some fifty one-word heads through "H" are broken words ("Wood--carving", "Still--life", "Self--control")
+  or broken names ("Pre--Raphaelites", "Anglo--Saxons", "New--York Historical Society", "Kit--Cat Club", the
+  double-barrelled surnames). Finding 112, shaped: at the split, a "--" followed by a lower-case letter is a hyphen,
+  and a one-word head whose join with the next part is a heading or name the indexes hold whole is a hyphenated name;
+  a repair pass (`resplit-headings`) re-splits the stored headings under the rule, detaching the old parts and
+  collecting the new; "not a compound" at the desk is the pass for one heading. Count the repair first (headings whose
+  split changes under each rule), then the word.
 - Twins that share a record (2026-11-05: "Lawrence" in corpauthor on the desk and "Lawrence" in publisher as a search result, two placeholders, the same three Crewkerne sale catalogues behind both, the name in both fields of each record). When another placeholder of the string's name has a record in common with the string's own, the desk says so on its card or search result ("in the same records as this string"), as a hint towards "Same as" or "Accept together"; the reconciler keeps twins apart on purpose (finding 104), so the hint is the desk's, not a rule. The ticks are on the candidate cards only; a twin met among the search results has "Same as this" and nothing to tick, and the hint must say which action it points at where it appears.
 - The publisher strings without a record behind them (2026-11-05: the entity page of a placeholder "Stanley", one string, publisher, no "In the records"; the collection covered 10,608 of the field's 11,141 strings, this one not among them). List them beside what the export's publisher element holds for the same records and find the cleaning the 2024 process applied, as the cleaned-keywords table closed the keywords gap; a `collect-examples` report of the export values that matched no string would do the listing.
 - ~~Help for the reviewer who asks what to do~~ (built 2026-10-26 evening, the owner's ask at the desk: a fold at the

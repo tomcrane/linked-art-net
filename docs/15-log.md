@@ -98,7 +98,11 @@ ReviewServiceTests; doc 13; seven desk items struck. The owner's idea next: Skip
 rather than leaving it at the front for the next session; built (schema version 9, `skipped_at`; the desk's order the
 unskipped by id then the skipped by when; Unskip on a skipped string, at the owner's ask; ReviewServiceTests). Then "New" in keywords:head, the head of "New-York Historical Society" split at its
 hyphen: a desk item (a part's parents on the desk, and "not a compound"), count first on the one-word heads, and a
-question for the 2024 cleaning.
+question for the 2024 cleaning. The count answered it: the export writes one hyphen for both uses, the 2024 cleaning
+doubled every one, and the legacy import brought them in, so hyphenated words and names are split ("Wood--carving",
+"Still--life", "Pre--Raphaelites", "New--York Historical Society", the double-barrelled surnames). Finding 112 shaped
+(doc 10 7.6): lower-case after "--" is a hyphen, and a one-word head that joins with the next part into a heading or
+name the indexes hold is a name; a repair pass for the stored headings; the count of the repair next, then the word.
 
 ## 2026-11-06
 

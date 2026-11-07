@@ -79,7 +79,42 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
        dotnet run --project src/LinkedArtNet.Workbench
 
-   then http://localhost:5200.
+   then http://localhost:5200. **The desk session script** (written 2026-11-07 for the owner, who asked what to look
+   for; the open desk items of section 7 are faults already found and are the assistant's to build, not the owner's to
+   test, so the session is: decide strings, and notice). What to notice on any card, and paste when seen: the wrong
+   thing at the top, or the right thing greyed; a candidate missing that the records plainly name; a button that says
+   something ambiguous or does something other than it says; a detour (two actions where one would do, a search for
+   what should have been offered); text that only makes sense if you know the code. In order:
+
+   - The holder pairs (two project entities in one group, from the pass): open each by id from the query below. Right:
+     the card's head says two of the project's entities hold the group's records and offers the merge; pressing it
+     opens a confirm step in view, naming the survivor, the losers, the identifiers added, and the class if they
+     differ; after it, the string and the name's other strings are off the queue. Wrong: a pair offered that are two
+     different things (the two Grosvenor Galleries, 1877-1890 and the later dealer), with nothing on the card to tell
+     them apart; a merge done with no confirm step; the siblings left in the queue.
+
+         select s.id, s.raw, s.context from decisions d join source_strings s on s.id = d.source_string_id
+         where d.run_id = '<the last full run>' and d.method = 'queued'
+           and (select count(*) from jsonb_array_elements(d.evidence->'groups'->0->'members') m where m->>'source' = 'store') >= 2
+         order by s.raw;
+
+   - "Boston" and "Geneva" bare (ids by `select id, raw, context from source_strings where dataset = 'pmc' and raw in
+     ('Boston', 'Geneva')`): two placed project entities at 1.00. Right: decide by the records shown ("In the
+     records"); the answer is usually the English or Swiss one. Notice: whether the records make it decidable, and
+     that the two buttons both say "Same as Boston" (section 7: named with its placement).
+   - Ten strings each from publisher, corpauthor, keywords:sub and place (the context dropdown), deciding them as a
+     reviewer would. Notice the five things above. A string you cannot decide from what the card shows is the paste
+     that matters most: say what you would have needed.
+   - The things built today, each once: the Class card on an entity page (change a firm classed person to group; the
+     tag changes and a note appears); a merge from an entity page where the classes differ (the row offers "as a"
+     with a select; after it the survivor has the chosen class); a compound heading's page (`/p/pmc/entities?q=history&cls=Type`:
+     the row tagged compound, the page listing the parts with what each resolved to, a queued part linking to the
+     desk); a placeholder merged from its page into the right entity (the entity's page then shows the string decided
+     human and the queue count is one lower).
+   - Not to test (known, section 7, Workbench and desk, the assistant's): the second pass's reasons unpersisted, the
+     vetoed card's missing accept, the ambiguous "Same as" name, the hand-added identifier absent from a stored card,
+     the placeholder page's missing way to the desk, the publisher strings without a record, the ICA key, the URL on
+     "Keep as local authority".
 
 2. No reconcile is pending (wsw254 of 2026-11-07 13:42 is the last full run, finding 111 measured by it). The next
    one comes with the next rule built from the desk, as always: the last full run taken back, `reconcile`, then

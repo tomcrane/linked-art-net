@@ -22,6 +22,7 @@
         </select>
     </form>
 </div>
+@if (Model.Plan is { } waiting) { <p class="notice"><strong>Confirm first:</strong> @waiting.Ours.Count of the project's own entities are ticked and would become one. <a href="#confirm-together">What will happen, and the choice, is under the candidates</a>; nothing is done until you press Merge and accept there.</p> }
 @if (Model.Message is not null) { <p class="notice">@Model.Message @if (Model.Decided is { } d) { <text>· </text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.Id)"><strong>@d.Label</strong></a><text>, to add identifiers or notes before going on</text> }</p> }
 
 <details class="help">

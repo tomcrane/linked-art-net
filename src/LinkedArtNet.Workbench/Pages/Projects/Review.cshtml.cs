@@ -75,7 +75,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         {
             try { merging = (await Project.Desk.PlanTogetherAsync(Dataset, id, all, survivor)).Merging.Count > 0; }
             catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
-            if (merging) return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id, confirm = true, targets = all, survivor, always });
+            // the confirm step lands in view: the page scrolls to it, and a line at the top says it is there (the owner, 2026-11-07: "I'd be lost")
+            if (merging) return RedirectToPage(pageName: null, pageHandler: null, routeValues: new { dataset = Dataset, method = Method, context = Context, id, confirm = true, targets = all, survivor, always }, fragment: "confirm-together");
         }
         return await Act(id, async () =>
         {

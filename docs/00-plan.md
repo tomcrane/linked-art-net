@@ -292,6 +292,10 @@ and the log (doc 15) records that. The order within an area is rough value.
   (`MergeSettlement`; the string being decided at the desk gets its own decision after). The ones merged before this,
   the Ackermanns and any since the 5th, are listed by `settle-merged` and decided by `settle-merged --apply`; the
   count the owner pasted was the finding 111 count again, so the tool's listing is the count. CurationServiceTests.)
+- ~~The confirm step below the fold~~ (built 2026-11-07, the owner at "Harewood House (Yorkshire)": after the redirect
+  to the confirm step the page opened at the top and the step sat under the records and the candidates, "if I didn't
+  know it was waiting there below the fold, I'd be lost". The redirect now carries the step's fragment, so the page
+  opens on it, and a line at the top says a confirm is waiting, with a link to it.)
 - The card's holders, live (2026-11-07, the owner's question after adding LoC's and Wikidata's Arthur Ackermann & Son
   to the firm's entity by hand: "does that take effect in the desk?"). It does in the next reconcile, in "Look again",
   and in the searches; not on the stored card of a string already queued, whose project entities are the members the

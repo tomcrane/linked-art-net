@@ -275,6 +275,19 @@ switch (args[0])
         return 0;
     }
 
+    case "cleanup-parts":
+    {
+        // finding 112's fragments: strings of the part contexts no heading carries (listed; --apply deletes them with their decisions and placeholders)
+        var options = (await ManifestAsync(store, dataset)).ToOptions();
+        var contexts = HeadingResplit.PartContexts(options);
+        var (orphans, deleted, placeholders) = await new HeadingResplit(store).RemoveOrphanPartsAsync(dataset, contexts, args.Contains("--apply"));
+        foreach (var o in orphans) Console.WriteLine($"  {o.Context,-14} {o.Raw}");
+        Console.WriteLine(args.Contains("--apply")
+            ? $"dataset {dataset}: {deleted} fragment strings deleted with their decisions, {placeholders} placeholders removed"
+            : $"dataset {dataset}: {orphans.Count} strings of {string.Join(", ", contexts)} that no heading carries; add --apply to delete them with their decisions and placeholders");
+        return 0;
+    }
+
     case "settle-merged":
     {
         var project = await store.GetProjectAsync(dataset);
@@ -436,6 +449,9 @@ static void Usage() => Console.WriteLine(
                                              rule, and the leftover rows of an earlier re-split; --apply splits them again as a run of
                                              its own (the old rows removed, the new parts collected and reconciled, the composite
                                              decision written again; a heading with one part left is reconciled whole)
+      cleanup-parts [--dataset] [--apply]    the fragments a repaired split leaves behind: strings of the manifest's part contexts
+                                             (keywords:head, keywords:sub) that no heading carries, listed; --apply deletes them with
+                                             their decisions and examples and removes their placeholders
       settle-merged [--dataset] [--apply] [--reviewer r]
                                              strings whose queued or minted decision points at an entity that is no longer a placeholder
                                              (a person merged their placeholder into it before merges settled strings): listed; --apply

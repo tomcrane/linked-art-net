@@ -97,5 +97,18 @@ public class HeadingResplitTests(PostgresFixture pg)
         Assert.Equal(run.Id, whole.RunId);
         Assert.Contains("\"carving\"", string.Join(" ", applied.Orphans)); // the old sub no heading carries now, reported
         Assert.Empty(await resplit.DryRunAsync(ds).ContinueWith(t => t.Result.Changes)); // nothing left to change
+
+        // the fragments: listed, then deleted with their decisions, their placeholders gone; the parts still carried stay
+        var contexts = HeadingResplit.PartContexts(ProjectManifest.PmcDefault.ToOptions());
+        Assert.Contains("keywords:head", contexts); Assert.Contains("keywords:sub", contexts);
+        var (listed, _, _) = await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: false);
+        Assert.Contains(listed, o => o.Id == carving.Id);
+        Assert.Contains(listed, o => o.Id == palais.Id);
+        Assert.DoesNotContain(listed, o => o.Id == england.Id);
+        var (_, deleted, _) = await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: true);
+        Assert.Equal(listed.Count, deleted);
+        Assert.Null(await pg.Store.DecisionForAsync(carving.Id));
+        Assert.Empty((await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: false)).Orphans);
+        Assert.NotNull(await pg.Store.DecisionForAsync(england.Id));
     }
 }

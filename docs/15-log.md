@@ -115,7 +115,9 @@ The second run: 167 would change, 33 by the splitter (linking words and prefixes
 leftover rows, one stale; nothing wrong in it. The word given, both built: `--apply` as a run of its own (the old
 rows removed, the new parts collected and reconciled, the composite decision written again, a one-part heading
 reconciled whole, orphaned part strings reported), and rule (b) in the reconciler's reading, so a new hyphenated head
-is read whole from its first run; HeadingResplitTests. The owner to run the apply.
+is read whole from its first run; HeadingResplitTests. The owner ran the apply (run jsf3ur): 167 split again, 20 read
+whole, 22 parts reconciled, 95 fragments left with their old decisions, so `cleanup-parts` was built to list and
+delete them (the one deletion of strings: fragments, never the catalogue's own); the dry run after it lists nothing.
 
 ## 2026-11-06
 

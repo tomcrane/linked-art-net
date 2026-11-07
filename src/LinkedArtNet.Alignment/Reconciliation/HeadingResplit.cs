@@ -113,6 +113,25 @@ public sealed class HeadingResplit(IAlignmentStore store)
         return new ResplitApplied(dry, whole, partsReconciled, orphans);
     }
 
+    /// <summary>
+    /// The fragments a repaired split leaves behind ("New", "Palais", "Stoke-on", "Wolds", "Sea)": the owner's apply of 2026-11-07 left
+    /// 95): strings of the part contexts no heading carries, never a string the catalogue wrote, each with a placeholder or a queued
+    /// decision that would otherwise sit at the desk or be minted again by the next reconcile. Listed, and with apply deleted outright
+    /// with their decisions and examples (the cascade), their placeholders removed when nothing else points at them.
+    /// </summary>
+    public async Task<(IReadOnlyList<SourceString> Orphans, int Deleted, int PlaceholdersRemoved)> RemoveOrphanPartsAsync(string dataset, IReadOnlyCollection<string> partContexts, bool apply, CancellationToken ct = default)
+    {
+        var orphans = await store.OrphanPartStringsAsync(dataset, partContexts, ct);
+        if (!apply || orphans.Count == 0) return (orphans, 0, 0);
+        var deleted = await store.DeleteStringsAsync(orphans.Select(o => o.Id).ToList(), ct);
+        var placeholders = await store.RemoveOrphanProvisionalsAsync(dataset, ct);
+        return (orphans, deleted, placeholders);
+    }
+
+    /// <summary>The part contexts a manifest's compound rules name (head and sub), where fragments can only ever live.</summary>
+    public static IReadOnlyList<string> PartContexts(ReconcilerOptions options) =>
+        options.Contexts.Values.Where(r => r.Parts is { Shape: PartsShape.Compound }).SelectMany(r => new[] { r.Parts!.HeadContext, r.Parts!.Context }).OfType<string>().Distinct(StringComparer.Ordinal).ToList();
+
     /// <summary>The dry run over a dataset's compound headings: each heading whose parts would differ under the rule.</summary>
     public async Task<ResplitReport> DryRunAsync(string dataset, IProgress<string>? progress = null, CancellationToken ct = default)
     {

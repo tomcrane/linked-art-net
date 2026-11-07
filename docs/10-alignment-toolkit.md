@@ -1259,6 +1259,17 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-07 (run jsf3ur, 17:59, `resplit-headings --apply`): 15,559 headings read, 167 split again (34 by the
+splitter's rules, 14 by the indexes', 119 leftover rows, one stale), 20 read whole as no compound ("New-York
+Historical Society", "Palais-Royal", "Franco-British Exhibition", the one-part names), 22 new parts reconciled, and
+95 part strings no heading carries now: the fragments of the old splits ("New", "Palais", "Saro", "Stoke-on",
+"Hutton-in-the", "Wolds", "Sea)", "Humber", "the"), each still holding the placeholder or queued decision it was
+given as a string, so that the desk would show them and the next reconcile mint them again. Built the same hour:
+`cleanup-parts [--apply]` lists the strings of the manifest's part contexts that no heading carries and deletes them
+with their decisions and examples (the cascade) and their placeholders when nothing else points at them; a fragment
+was never a string the catalogue wrote, so this is the one place a string is deleted rather than retired. The dry run
+after the apply lists nothing. HeadingResplitTests.
+
 Built 2026-11-07, finding 112's repair and rule (b) (the owner's word after the second listing): `resplit-headings
 --apply` is a run of its own; for each heading whose parts differ, the old part rows go (`ClearPartsAsync`), the new
 parts are collected in the head and sub contexts and linked, a part without a decision is reconciled, and the

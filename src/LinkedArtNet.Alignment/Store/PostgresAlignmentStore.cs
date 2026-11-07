@@ -707,6 +707,27 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
+    public async Task<IReadOnlyList<SourceString>> OrphanPartStringsAsync(string dataset, IReadOnlyCollection<string> partContexts, CancellationToken ct = default)
+    {
+        if (partContexts.Count == 0) return [];
+        await using var cmd = _db.CreateCommand(
+            $"select {StringColumns} from source_strings s where s.dataset = @dataset and s.context = any(@contexts) " +
+            "and not exists (select 1 from source_string_parts p where p.part_id = s.id) order by s.context, s.raw");
+        Add(cmd, "dataset", dataset); Add(cmd, "contexts", partContexts.ToArray());
+        var list = new List<SourceString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(ReadString(r));
+        return list;
+    }
+
+    public async Task<int> DeleteStringsAsync(IReadOnlyCollection<long> stringIds, CancellationToken ct = default)
+    {
+        if (stringIds.Count == 0) return 0;
+        await using var cmd = _db.CreateCommand("delete from source_strings where id = any(@ids)");
+        Add(cmd, "ids", stringIds.ToArray());
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
     public Task<IReadOnlyList<SourceString>> PartsAsync(long parentId, CancellationToken ct = default) =>
         StringsAsync($"select {StringColumns} from source_string_parts p join source_strings s on s.id = p.part_id where p.parent_id = @id order by p.position", parentId, ct);
 

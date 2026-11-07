@@ -1259,6 +1259,22 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-07, finding 111: an entity dated through its records agrees when any of its dated records does. Counted
+on run d6h8va (the owner's query: strings whose top group holds a project entity in date conflict beside a ULAN or LoC
+record that agrees): fifteen, minted 8 ("Gentileschi, Orazio, 1563-1639", "Gillray, James, 1757-1815", "Laurencin,
+Marie, 1885-1956", "McEvoy, Ambrose, 1878-1927", "Pistrucci, Benedetto, 1784-1855", "Pocock, Nicholas, 1741-1821",
+"Pratt, Roger, Sir, 1620-1685", "Wootton, John, c.1682-1764"), queued 5 ("Abbott, John White, 1763-1851", "Catesby,
+Mark, 1682-1749", "Jackson, Francis Ernest, 1872-1945", "Macdonald, Frances, 1874-1921", "Woodroffe, Paul,
+1875-1954"), single 2 ("Keane, Tina, 1946-", "Lewis, John Frederick, 1805-1876"); the owner's word given. The rule
+(`StoreCandidateAsync`): an entity with no lifespan of its own reads every dated ULAN and LoC record among its
+equivalents, not the first three, and is dated by the one that agrees with the string's dates; when none agrees, by
+the first, and the conflict is real; without a string lifespan, by the first, as before. Finding111Tests: Gillray's
+shape (the legacy "James Gillray" in natural order, LoC's 1756-08-13 before ULAN's 1757 among its equivalents, the
+string "Gillray, James, 1757-1815") minted before the rule and matched in the store after; Sheffield's shape (the
+legacy "George Sheffield" holding ULAN's painter of 1839-1892 only, the string "Sheffield, George, 1800-1852" with
+LoC's engraver in the index) accepted onto LoC's record and not the entity, before and after. Measured by the next
+reconcile, d6h8va taken back: the fifteen, expected the eight minted and the five queued back onto their entities.
+
 Read 2026-11-07 (run d6h8va's twins, in evidence; finding 111 shaped, waiting on the count and the word): the legacy
 entities of the twins carry their labels in natural order ("James Gillray", "John White Abbott", "Orazio Gentileschi",
 "William Hazlitt", "George Sheffield"; the LUX form), which is why a lookup by the catalogue's inverted form misses them

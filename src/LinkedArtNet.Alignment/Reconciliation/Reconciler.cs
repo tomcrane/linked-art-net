@@ -768,14 +768,27 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return holders.Count;
     }
 
-    /// <summary>A store entity as a candidate: its lifespan from itself or, when it has none (an imported entity, say), from the authority records behind its equivalents; and whether it is a lookalike awaiting review.</summary>
+    /// <summary>
+    /// A store entity as a candidate: its lifespan from itself or, when it has none (an imported entity, say), from the authority records
+    /// behind its equivalents; and whether it is a lookalike awaiting review. An entity dated through its records agrees with the string
+    /// when any of its dated records does (finding 111, 2026-11-07, run d6h8va: the legacy "James Gillray", given LoC's 1756 and ULAN's 1757
+    /// by the pass through Wikidata, borrowed the first and conflicted with the string's 1757, and its veto spread through the group it
+    /// holds ULAN's record in, which agreed: minted, with the right record and the right entity in hand; the authorities' year of
+    /// disagreement is tolerated in the index stage already). So the record that agrees is the one the entity is dated by; when none
+    /// agrees the first dated record stands, and the conflict is real (the legacy "George Sheffield" whose item named the painter of
+    /// 1839-1892 against a string of 1800-1852).
+    /// </summary>
     private async Task<Candidate> StoreCandidateAsync(Entity e, StringReading reading, CancellationToken ct)
     {
         var labels = e.Label is null ? e.Labels : e.Labels.Prepend(e.Label);
         var lifespan = e.Lifespan is { IsEmpty: false } ? e.Lifespan : null;
         if (lifespan is null)
-            foreach (var q in e.Equivalents.Where(q => q.Source is "ulan" or "loc").Take(3))
-                if (await store.GetAuthorityAsync(q.Uri, ct) is { Lifespan: { IsEmpty: false } } record) { lifespan = record.Lifespan; break; }
+            foreach (var q in e.Equivalents.Where(q => q.Source is "ulan" or "loc"))
+                if (await store.GetAuthorityAsync(q.Uri, ct) is { Lifespan: { IsEmpty: false } } record)
+                {
+                    lifespan ??= record.Lifespan;
+                    if (!reading.HasLifespan || record.Lifespan.Compare(reading.Lifespan!, _options.MaxPersonLifetimeYears) == DateAgreement.Agree) { lifespan = record.Lifespan; break; }
+                }
         var provisional = e.Status == EntityStatus.Provisional;
         var queued = provisional && await store.HasValidDecisionAsync(e.Id, DecisionMethod.Queued, ct);
         // an entity's own placement is the qualifier its label carries ("Heaton, Bradford"), kept there by EntityForGroupAsync and MintAsync

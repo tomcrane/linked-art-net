@@ -22,10 +22,11 @@ the one that wrote this); (2) the pass through Wikidata measured by run d6h8va o
 2026-11-07 (run d6h8va)"): 36 strings onto their entities as predicted, and 65 strings where the pass made a legacy
 entity and a run-made entity of one person or place share a record, twins the store had never joined: 28 to the desk
 as holders to merge (right), 23 switched entity silently and 9 minted (a fault, "Gillray, James, 1757-1815" finding
-nothing), read in evidence the same day: finding 111 shaped (doc 10 7.6 "Read 2026-11-07 (run d6h8va's twins)"), an
-entity dated through its records agrees when any of its dated records agrees, today it borrows the first; the count
-is command 2, then the word, then Finding111Tests failing as the run did, then the rule and the next reconcile; "St
-Ives (Cornwall)" was read on the 7th while that reconcile ran (finding 110's sixth, the ground a placeholder; the
+nothing), read in evidence the same day: finding 111, an entity dated through its records agrees when any of its
+dated records agrees (it borrowed the first), counted (fifteen), the word given and built with Finding111Tests (doc
+10 7.6 "Built 2026-11-07, finding 111"), to be measured by the next reconcile (Commands on return, 2: undo d6h8va,
+reconcile, the diff of command 4 against d6h8va; expected the eight minted and the five queued of the count back onto
+their entities, nothing else); "St Ives (Cornwall)" was read on the 7th while that reconcile ran (finding 110's sixth, the ground a placeholder; the
 St/Saint key gap behind it is command 5, a count); (3) the desk, continued: start the workbench (command 1) and review from
 the queue, each thing the desk fails to show, do or get right becoming an item in section 7 and built; the desk items
 standing (section 7, Workbench and desk): the second pass's reasons on a string it leaves queued not persisted, the
@@ -79,19 +80,13 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. The count for finding 111 (doc 10 7.6 "Read 2026-11-07 (run d6h8va's twins)"): the strings of run d6h8va whose top
-   group holds a project entity in date conflict beside a ULAN or LoC record that agrees with the string, by outcome.
-   The rule is built on this count and the owner's word:
+2. The reconcile that measures finding 111 (doc 10 7.6 "Built 2026-11-07, finding 111"): d6h8va taken back, the
+   strings decided again, then the diff of command 4 against d6h8va. Expected: the fifteen of the count, the eight
+   minted and the five queued back onto their entities by exact-name, the two single unchanged in entity, and nothing
+   else; a wider diff is to be read. With the workbench stopped:
 
-       with top as (
-         select s.raw, d.method, d.evidence->'groups'->0 as g
-         from source_strings s join decisions d on d.source_string_id = s.id and d.run_id = 'run-20261107-114818-d6h8va'
-         where s.dataset = 'pmc')
-       select method, count(*), (array_agg(raw order by raw))[1:8] as examples
-       from top
-       where exists (select 1 from jsonb_array_elements(g->'members') m where m->>'source' = 'store' and m->>'reason' like '%dates conflict%')
-         and exists (select 1 from jsonb_array_elements(g->'members') m where m->>'source' in ('ulan', 'loc') and m->>'reason' like '%dates agree%')
-       group by 1 order by 2 desc;
+       dotnet run --project tools/Align -- undo-run --run run-20261107-114818-d6h8va
+       dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):

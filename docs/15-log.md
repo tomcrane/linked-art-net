@@ -61,7 +61,11 @@ LoC equivalents, so "James Gillray" took LoC's 1756-08-13 against the string's 1
 through the group it holds ULAN's record in, which agreed: minted. Hazlitt and Sheffield switched rightly, the pass
 having exposed a legacy item naming the father and the later painter. Finding 111 shaped (an entity dated through its
 records agrees when any of its dated records does), the count as command 2, waiting on the word; "Boston" bare a
-count-first item of its own (prominence when every live group holds a project entity).
+count-first item of its own (prominence when every live group holds a project entity). The count came back fifteen
+(minted 8, queued 5, single 2) with the word, and finding 111 was built: Finding111Tests first, Gillray's shape minted
+as the run had it and Sheffield's control accepted onto LoC's engraver, then the rule (the entity dated by whichever
+of its ULAN and LoC records agrees with the string, the first when none does), both green, every test project run
+before the commit. The next reconcile measures it (section 0, command 2).
 
 ## 2026-11-06
 

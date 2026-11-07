@@ -1259,6 +1259,38 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Read 2026-11-07 (run d6h8va's twins, in evidence; finding 111 shaped, waiting on the count and the word): the legacy
+entities of the twins carry their labels in natural order ("James Gillray", "John White Abbott", "Orazio Gentileschi",
+"William Hazlitt", "George Sheffield"; the LUX form), which is why a lookup by the catalogue's inverted form misses them
+and why they scored 0.93 in the store stage, and the pass gave them LoC's or ULAN's record. The fault is in how a
+store entity borrows dates: an entity with no lifespan of its own takes the lifespan of the first dated record among
+its ULAN and LoC equivalents (`StoreCandidateAsync`, the first of up to three), and that one record's dates are then
+the entity's for the check. "Gillray, James, 1757-1815": ULAN's Gillray agrees with the string, LoC's "Gillray, James,
+1756-1815" conflicts by a year on the birth, and the index stage already tolerates that ("linked to ulan's record,
+which agrees with the string: the authorities disagree among themselves, and the cluster stands"); but the legacy
+entity "James Gillray" borrowed LoC's 1756-08-13 and conflicts, is vetoed, and holds the ULAN record the group is
+built on, so the veto spreads ("a vetoed member linked by the authorities to a live one") and the group dies: minted,
+with the right record in the index and the right entity in the store. "Gentileschi, Orazio, 1563-1639" the same with
+LoC's "1638?". "Abbott, John White, 1763-1851" the mirror: ULAN's 1764 conflicts and LoC agrees, the entity borrowed
+ULAN's, and the string went to the desk by the one-record-conflicting rule where the store stage had taken the entity
+before. The ones that switched entity rightly: "Hazlitt, William, 1778-1830" left the legacy "William Hazlitt", whose
+item named LoC's Hazlitt of 1737-1820 (the father), for the imported "Hazlitt, William, 1778-1830", ULAN and LoC
+agreeing; "Sheffield, George, 1800-1852" left the legacy "George Sheffield", whose item named ULAN's painter of
+1839-1892, for an entity of its own on LoC's record: the pass exposed two legacy alignments that were wrong or
+conflated, and the ladder did the right thing with them. "Boston" bare is a different matter: two placed project
+entities now, Massachusetts and Lincolnshire, each in a live group, and prominence stands aside because a project
+entity is among the live groups; when every live group holds one, that evidence cancels and prominence could decide
+(a count-first item, plan section 7, Reconciler).
+
+Finding 111, shaped: an entity dated through its records agrees with a string when any of its dated records does.
+The check reads every dated ULAN and LoC record among the entity's equivalents, not the first: agreement with any is
+agreement (the record that agrees is the one the string names, and the others' year's difference is the authorities'
+own disagreement, tolerated already in the index stage); conflict only when all conflict (Sheffield's 1839-1892,
+Hazlitt's 1737-1820: the entity is not this person, and the ladder goes on to the record or entity that is); no dated
+record, neutral as now. Expected on d6h8va's diff: the nine minted back to their entities, Abbott's kind of the
+twenty-eight back to exact-name, Hazlitt's and Sheffield's kinds unchanged, Boston's unchanged. Count first: the
+strings whose top group holds a project entity in date conflict beside a ULAN or LoC record that agrees, by outcome.
+
 Measured 2026-11-07 (run d6h8va, 11:48; krbnw6 taken back, the pass zpcmrz in place): the pass through Wikidata.
 Considered 46,296: overridden 84, matched in store 5,934 (41 fewer), accepted 9,500 (vote 4,045, 32 more; single
 2,164, 6 more; exact-single 3,291), queued 3,930 (8 fewer), minted 10,886 (10 more); the second pass settled 99 of

@@ -22,7 +22,9 @@ the one that wrote this); (2) the pass through Wikidata measured by run d6h8va o
 2026-11-07 (run d6h8va)"): 36 strings onto their entities as predicted, and 65 strings where the pass made a legacy
 entity and a run-made entity of one person or place share a record, twins the store had never joined: 28 to the desk
 as holders to merge (right), 23 switched entity silently and 9 minted (a fault, "Gillray, James, 1757-1815" finding
-nothing), to be read in evidence first (Commands on return, 2) and then, on the owner's word, a rule; "St
+nothing), read in evidence the same day: finding 111 shaped (doc 10 7.6 "Read 2026-11-07 (run d6h8va's twins)"), an
+entity dated through its records agrees when any of its dated records agrees, today it borrows the first; the count
+is command 2, then the word, then Finding111Tests failing as the run did, then the rule and the next reconcile; "St
 Ives (Cornwall)" was read on the 7th while that reconcile ran (finding 110's sixth, the ground a placeholder; the
 St/Saint key gap behind it is command 5, a count); (3) the desk, continued: start the workbench (command 1) and review from
 the queue, each thing the desk fails to show, do or get right becoming an item in section 7 and built; the desk items
@@ -77,26 +79,19 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. The twins the pass uncovered (run d6h8va, doc 10 7.6 "Measured 2026-11-07 (run d6h8va)"): the evidence of the
-   nine minted, a few of the twenty-eight queued and of the twenty-three that switched entity, as the members of the
-   first two groups with their reasons, and the entities of those names with their records and the run that added
-   each:
+2. The count for finding 111 (doc 10 7.6 "Read 2026-11-07 (run d6h8va's twins)"): the strings of run d6h8va whose top
+   group holds a project entity in date conflict beside a ULAN or LoC record that agrees with the string, by outcome.
+   The rule is built on this count and the owner's word:
 
-       select s.raw, d.method, g.ord as grp, m.value->>'label' as label, m.value->>'source' as src,
-              (m.value->>'score')::numeric as score, m.value->>'reason' as reason
-       from source_strings s join decisions d on d.source_string_id = s.id and d.run_id = 'run-20261107-114818-d6h8va'
-       cross join lateral jsonb_array_elements(d.evidence->'groups') with ordinality g(value, ord)
-       cross join lateral jsonb_array_elements(g.value->'members') m(value)
-       where s.dataset = 'pmc' and g.ord <= 2
-         and s.raw in ('Gillray, James, 1757-1815', 'Gentileschi, Orazio, 1563-1639', 'Abbott, John White, 1763-1851', 'Boston', 'Hazlitt, William, 1778-1830', 'Sheffield, George, 1800-1852')
-       order by s.raw, d.id, g.ord, score desc;
-
-       select e.id, e.label, e.status, e.lifespan_text, e.run_id as made_by, q.uri, q.source, q.method, q.run_id as added_by
-       from entities e left join entity_equivalents q on q.entity_id = e.id
-       where e.dataset = 'pmc' and e.merged_into is null
-         and (e.label ilike 'gillray, james%' or e.label ilike 'gentileschi, orazio%' or e.label ilike 'abbott, john white%'
-              or e.label = 'Boston' or e.label ilike 'hazlitt, william%' or e.label ilike 'sheffield, george%')
-       order by e.label, e.id, q.source;
+       with top as (
+         select s.raw, d.method, d.evidence->'groups'->0 as g
+         from source_strings s join decisions d on d.source_string_id = s.id and d.run_id = 'run-20261107-114818-d6h8va'
+         where s.dataset = 'pmc')
+       select method, count(*), (array_agg(raw order by raw))[1:8] as examples
+       from top
+       where exists (select 1 from jsonb_array_elements(g->'members') m where m->>'source' = 'store' and m->>'reason' like '%dates conflict%')
+         and exists (select 1 from jsonb_array_elements(g->'members') m where m->>'source' in ('ulan', 'loc') and m->>'reason' like '%dates agree%')
+       group by 1 order by 2 desc;
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
@@ -453,6 +448,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   beside the legacy entity that holds its record, and a bare namesake is accepted onto that placeholder on no record
   (jr8hf5) or declined by finding 110 (krbnw6). The spellings to read and the strings to count are command 5 of
   section 0; then "St", "St." and "Saint" as one token in the key's variants, if the count says so.
+- Prominence when every live group holds a project entity (2026-11-07, "Boston" bare after the pass: the legacy Boston
+  placed through TGN's Boston, Massachusetts in one group, "Boston (England)" in the other, each a project entity, and
+  prominence standing aside because a project entity is among the live groups, so the bare name went from exact-name
+  to the desk; "Geneva" the same). When one group holds a project entity, that entity is the evidence and prominence
+  stands aside rightly; when every live group holds one, the evidence cancels, and prominence (Q100 against Boston,
+  Lincolnshire) could decide as it does when none holds one. Count first: queued strings of d6h8va whose top two
+  groups each hold a project entity and whose Wikidata sitelinks would separate them.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or
   a qualifier that is no level word means the inhabited place, LoC's own convention; persons stay the desk's. And the

@@ -55,7 +55,13 @@ queued 3,930, minted 10,886; store stage 1,673 s on battery) and its diff agains
 legacy entity the record a run-made entity of the same person or place already held, twins the store had never
 joined: 28 to the desk as holders to merge, 23 switched entity silently, 9 minted (a fault to read: the vetoed holder
 spreading its veto through the group is the suspicion). The evidence queries are command 2 of section 0; the last
-full run is d6h8va.
+full run is d6h8va. The evidence (the owner's two queries): the legacy twins carry natural-order labels ("James
+Gillray"), the LUX form; a store entity without dates borrows the first dated record's lifespan among its ULAN and
+LoC equivalents, so "James Gillray" took LoC's 1756-08-13 against the string's 1757, was vetoed, and its veto spread
+through the group it holds ULAN's record in, which agreed: minted. Hazlitt and Sheffield switched rightly, the pass
+having exposed a legacy item naming the father and the later painter. Finding 111 shaped (an entity dated through its
+records agrees when any of its dated records does), the count as command 2, waiting on the word; "Boston" bare a
+count-first item of its own (prominence when every live group holds a project entity).
 
 ## 2026-11-06
 

@@ -382,7 +382,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   trainer moving in (date and agent items on the desk), pictures (coverage by context run over run, the equivalents
   graph, places on a map).
 - Compounds: export as coordinated concepts (doc 10 7.5 item 2), the entity page listing a heading's parts and the
-  desk showing a part's parents (7.5 item 4) (2026-10-20).
+  desk showing a part's parents (7.5 item 4) (2026-10-20). The owner, 2026-11-07, in the entities list at "Ackermann &
+  Son, Arthur (London)--History", a provisional Type beside the firm: "should we not recognise this as a compound
+  heading?" It is one (method `composite`; the entity is the heading's own concept, its head and subdivision strings
+  of their own), but nothing on the list or the page says so. The shape: the list tags such an entity "compound"
+  and the page lists its parts in order, each with what it resolved to (the head onto the firm's entity, "History"
+  onto LCSH's subdivision), each a link, and says the whole is coordinated from them; a part still queued is a link
+  to its desk page.
 - Keying workbench users by GitHub id (`github:<id>`, the local user `local:<name>`), with the first user besides the
   owner (2026-10-21).
 - Legacy data for the desk: entities whose class disagrees with their label ("Crimean War, 1853-1856", the two World

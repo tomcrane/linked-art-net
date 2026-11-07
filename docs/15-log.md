@@ -81,7 +81,7 @@ into the firm, since a merge re-pointed the decision and left its method: a pers
 queued and minted strings as human, on the entity page and at the desk's confirm step, and `settle-merged --apply`
 settles the ones merged before (the owner's count paste was the finding 111 count again; the tool's listing is the
 count). CurationServiceTests for both; the merge row's class choice tidied with CSS. The owner's thought for later,
-written to the plan: a second project from the same PMC sources, from scratch, once the process is trusted.
+written to the plan: a second project from the same PMC sources, from scratch, once the process is trusted. `settle-merged` listed three, the Ackermanns only: the gap had bitten nothing before today.
 
 ## 2026-11-06
 

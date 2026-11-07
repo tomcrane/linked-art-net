@@ -1259,6 +1259,22 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-07, finding 112's dry run (`resplit-headings`): building it showed that the lower-case rule below is
+finding 4's already (`StringReading.Read` rejoins a lower-case piece, and a piece after "pre", "post", "anti" and six
+more prefixes), so the broken heads in the store are parts made in the first runs of 2026-10-20, before finding 4, and
+never split again: the stored parts are stale, not the rule wrong. The one splitter (`StringReading.JoinHyphenated`)
+now also knows the wider prefixes the count showed ("Anglo", "Avant", "Counter", "Franco", "pro", "co", "re", "sub",
+"multi", "inter", "trans", "quasi", "ultra") and the linking words of a hyphenated place or church name ("by-the-Tower",
+"Barton-upon-Humber", "Burley-on-the-Hill": the part after a joined "the", "on", "upon", "de", "la" and their kind
+belongs to the name whatever its case), and keeps the catalogue's lower-case chronological subdivision ("to 1500") as a
+subdivision. Rule (b), the indexes asked whether a one-word head and the next part are a hyphenated name they hold
+("New-York Historical Society", "Kit-Cat Club"), lives in the pass (`HeadingResplit.SplitAsync`), since the reading is
+synchronous; the reconciler's own decomposition will ask the same once the pass's listing says the rule is sound.
+The dry run reads every composite heading, splits it under today's rules, and lists each whose stored parts differ,
+by rule: the splitter's ("a"), the indexes' ("b"), or stale with no rule of today's naming it. HeadingResplitTests.
+Next: the owner runs the dry run and reads the listing; on the word, `--apply` (the old parts detached, the new
+collected, the composite decision rewritten) and rule (b) in the reconciler's decomposition.
+
 Read 2026-11-07, finding 112 shaped (the owner at "New" in keywords:head, string 79768, then the count of one-word
 heads): the hyphen inside a heading. The stored heading is "New--York Historical Society (New York, New York, USA)"
 (string 36905): the library's export writes a single hyphen both as the subdivision separator ("Architecture-England-

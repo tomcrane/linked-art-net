@@ -251,6 +251,17 @@ switch (args[0])
         return 0;
     }
 
+    case "resplit-headings":
+    {
+        // finding 112: the dry run lists every compound heading whose split changes under the hyphen rules, old parts and new; nothing is written
+        var report = await new HeadingResplit(store).DryRunAsync(dataset, new Progress<string>(m => Console.Error.WriteLine("  " + m)));
+        foreach (var c in report.Changes)
+            Console.WriteLine($"  [{c.Rule}] {c.Heading.Raw}" + Environment.NewLine + $"        was: {string.Join(" | ", c.OldParts)}" + Environment.NewLine + $"        now: {string.Join(" | ", c.NewParts)}");
+        Console.WriteLine($"dataset {dataset}: {report}");
+        if (args.Contains("--apply")) Console.WriteLine("--apply is not built yet: the repair waits on the owner's word after this listing is read");
+        return 0;
+    }
+
     case "settle-merged":
     {
         var project = await store.GetProjectAsync(dataset);
@@ -406,6 +417,10 @@ static void Usage() => Console.WriteLine(
                                              the one-off pass over duplicate entities of one class and label: a dry run listing every
                                              label with what would merge and what is kept apart; --apply carries it out
       cleanup-orphans [--dataset]            remove provisional entities nothing points at any more
+      resplit-headings [--dataset]           finding 112, a dry run: the compound headings whose split would change under the hyphen
+                                             rules (lower-case after "--" is a hyphen; a bound prefix joins; a one-word head whose
+                                             join is a label LCSH or LoC holds with the hyphen), each with its parts as stored and
+                                             under the rule; nothing is written
       settle-merged [--dataset] [--apply] [--reviewer r]
                                              strings whose queued or minted decision points at an entity that is no longer a placeholder
                                              (a person merged their placeholder into it before merges settled strings): listed; --apply

@@ -60,7 +60,35 @@ public sealed record StringReading(
 
     // a part that is only a prefix was split from its word at the hyphen ("Pre--Raphaelitism"); from the assistant's knowledge of
     // English prefixes that LCSH joins with a hyphen, not from a file
-    private static readonly HashSet<string> Prefixes = new(StringComparer.OrdinalIgnoreCase) { "pre", "post", "anti", "neo", "non", "proto", "pseudo", "semi", "mid", "ex" };
+    /// <summary>Prefixes that never stand alone as a heading, so a "--" after them is a hyphen (finding 4; widened 2026-11-07 for finding 112 from the one-word heads: "Anglo", "Avant", "Counter", "Franco"; from general knowledge of English word formation).</summary>
+    public static readonly HashSet<string> Prefixes = new(StringComparer.OrdinalIgnoreCase)
+        { "pre", "post", "anti", "neo", "non", "proto", "pseudo", "semi", "mid", "ex", "anglo", "avant", "counter", "franco", "pro", "co", "re", "sub", "multi", "inter", "trans", "quasi", "ultra" };
+
+    /// <summary>Linking words inside a hyphenated place or church name ("by-the-Tower", "Barton-upon-Humber", "Burley-on-the-Hill"): once joined, the part after them belongs to the name whatever its case (finding 112, 2026-11-07; general knowledge of English place-name formation).</summary>
+    public static readonly HashSet<string> LinkingWords = new(StringComparer.OrdinalIgnoreCase)
+        { "the", "on", "upon", "under", "by", "in", "of", "de", "la", "le", "les", "du", "des", "en", "sur", "am", "an", "im", "y", "cum", "juxta", "super", "next", "atte" };
+
+    /// <summary>Whether a "--" before this piece is a hyphen: the piece is in lower case (a subdivision begins with a capital, LCSH's own rule), except the catalogue's lower-case chronological subdivision ("to 1500").</summary>
+    private static bool IsHyphenTail(string piece) => piece.Length > 0 && char.IsLower(piece[0]) && !(piece.StartsWith("to ", StringComparison.OrdinalIgnoreCase) && piece.Length > 3 && char.IsDigit(piece[3]));
+
+    /// <summary>
+    /// The pieces of a heading split at "--" with the hyphens inside words and names rejoined (finding 4: "Stage--setting and scenery";
+    /// finding 112: "Wood--carving", "Anglo--Saxons", "All Hallows by--the--Tower"): a lower-case piece, a piece after a bound prefix,
+    /// and a piece after a linking word already joined are the tail of a hyphenated word or name, not a subdivision.
+    /// </summary>
+    public static string[] JoinHyphenated(string[] pieces)
+    {
+        if (pieces.Length < 2) return pieces;
+        var joined = new List<string> { pieces[0] };
+        foreach (var piece in pieces.Skip(1))
+        {
+            var last = joined[^1];
+            var tail = last[(last.LastIndexOf('-') + 1)..];
+            if (IsHyphenTail(piece) || Prefixes.Contains(last) || (last.Contains('-') && !tail.Contains(' ') && LinkingWords.Contains(tail))) joined[^1] = last + "-" + piece;
+            else joined.Add(piece);
+        }
+        return joined.Count == pieces.Length ? pieces : joined.ToArray();
+    }
 
     /// <summary>Reads a string under its context's rule, through the agent parser when the rule names a profile.</summary>
     private static readonly System.Text.RegularExpressions.Regex ApproximateMarker = new(@"(?i)(?<![a-z])(c|ca|circa|approx\w*|about)(?![a-z])|\?|~", System.Text.RegularExpressions.RegexOptions.Compiled);
@@ -84,11 +112,9 @@ public sealed record StringReading(
             {
                 // a subdivision begins with a capital (LCSH's own rule), so a part in lower case is the tail of a hyphenated heading
                 // whose hyphen was keyed as the separator: "Stage--setting and scenery" is "Stage-setting and scenery", rejoined and
-                // looked up whole (doc 10, section 7.6 finding 4)
-                var joined = new List<string> { pieces[0] };
-                foreach (var piece in pieces.Skip(1))
-                    if (char.IsLower(piece[0]) || Prefixes.Contains(joined[^1])) joined[^1] = joined[^1] + "-" + piece; else joined.Add(piece);
-                if (joined.Count != pieces.Length) { pieces = joined.ToArray(); whole = string.Join(pr.Separator, pieces); }
+                // looked up whole (doc 10, section 7.6 finding 4; the prefixes and linking words of finding 112, JoinHyphenated)
+                var joined = JoinHyphenated(pieces);
+                if (!ReferenceEquals(joined, pieces)) { pieces = joined; whole = string.Join(pr.Separator, pieces); }
             }
             if (pieces.Length >= 2)
             {

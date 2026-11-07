@@ -102,7 +102,12 @@ question for the 2024 cleaning. The count answered it: the export writes one hyp
 doubled every one, and the legacy import brought them in, so hyphenated words and names are split ("Wood--carving",
 "Still--life", "Pre--Raphaelites", "New--York Historical Society", the double-barrelled surnames). Finding 112 shaped
 (doc 10 7.6): lower-case after "--" is a hyphen, and a one-word head that joins with the next part into a heading or
-name the indexes hold is a name; a repair pass for the stored headings; the count of the repair next, then the word.
+name the indexes hold is a name; a repair pass for the stored headings. The owner's count queries ran long (the first
+scanned the authority table for every head; a rewrite with one literal source per branch, then a corrected one that
+reads the raw labels for the hyphen, since the key forms erase it) and the dry run was built instead: the lower-case
+rule turned out to be finding 4's already, so the broken heads are stale parts from the first runs; the splitter
+gained the wider prefixes and the linking words; rule (b) sits in the pass; `resplit-headings` lists what would change.
+HeadingResplitTests. The owner to run it and read the listing; the word after.
 
 ## 2026-11-06
 

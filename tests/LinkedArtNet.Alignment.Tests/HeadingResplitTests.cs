@@ -42,7 +42,7 @@ public class HeadingResplitTests(PostgresFixture pg)
         var ds = "rs-" + Guid.NewGuid().ToString("N")[..5];
         var scheme = new IdentifierScheme("https://data.example.org/" + ds);
         var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "lcsh"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
-        await pg.Store.CollectAsync(ds, "keywords", "Art--16th century--England");
+        var art = await pg.Store.CollectAsync(ds, "keywords", "Art--16th century--England");
         await reconciler.RunAsync(ds);
         var stale = await pg.Store.CollectAsync(ds, "keywords", "Wood--carving--England");
         var wood = await pg.Store.CollectAsync(ds, "keywords:head", "Wood");
@@ -51,12 +51,19 @@ public class HeadingResplitTests(PostgresFixture pg)
         await pg.Store.LinkPartAsync(stale.Id, 0, wood.Id, "head"); await pg.Store.LinkPartAsync(stale.Id, 1, carving.Id, "sub"); await pg.Store.LinkPartAsync(stale.Id, 2, england.Id, "sub");
         var concept = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Type, "Wood--carving--England", ["Wood--carving--England"]), scheme);
         await pg.Store.DecideAsync(stale.Id, concept.Id, DecisionMethod.Composite);
+        // and a heading re-split with fewer parts kept its old last row beyond the new count: a leftover, not a rule
+        var leftover = await pg.Store.CollectAsync(ds, "keywords:sub", "England");
+        await pg.Store.LinkPartAsync(art.Id, 3, leftover.Id, "sub");
         var report = await resplit.DryRunAsync(ds);
         Assert.Equal(2, report.Read);
-        var change = Assert.Single(report.Changes);
-        Assert.Equal(stale.Id, change.Heading.Id);
+        Assert.Equal(2, report.Changes.Count);
+        var change = report.Changes.Single(c => c.Heading.Id == stale.Id);
         Assert.Equal(["Wood", "carving", "England"], change.OldParts);
         Assert.Equal(["Wood-carving", "England"], change.NewParts);
         Assert.Equal("a", change.Rule);
+        var extra = report.Changes.Single(c => c.Heading.Id == art.Id);
+        Assert.Equal("leftover", extra.Rule);
+        Assert.Equal(["Art", "16th century", "England", "England"], extra.OldParts);
+        Assert.Equal(["Art", "16th century", "England"], extra.NewParts);
     }
 }

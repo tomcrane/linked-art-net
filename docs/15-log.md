@@ -107,7 +107,10 @@ scanned the authority table for every head; a rewrite with one literal source pe
 reads the raw labels for the hyphen, since the key forms erase it) and the dry run was built instead: the lower-case
 rule turned out to be finding 4's already, so the broken heads are stale parts from the first runs; the splitter
 gained the wider prefixes and the linking words; rule (b) sits in the pass; `resplit-headings` lists what would change.
-HeadingResplitTests. The owner to run it and read the listing; the word after.
+HeadingResplitTests. The owner ran it (PowerShell wrote the file as UTF-16, read with a decode): 15,559 headings, 523
+listed, 14 by the indexes' rule and every one right; the rest largely two artefacts of the comparison, the leftover
+rows of re-splits after finding 4 (120, the repair's to delete) and the text of shared part strings, no-break spaces
+and trailing stops (some 350), both taken out of the listing; the real set under the splitter's rule is a few dozen.
 
 ## 2026-11-06
 

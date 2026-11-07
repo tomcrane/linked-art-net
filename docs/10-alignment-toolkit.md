@@ -1272,8 +1272,18 @@ subdivision. Rule (b), the indexes asked whether a one-word head and the next pa
 synchronous; the reconciler's own decomposition will ask the same once the pass's listing says the rule is sound.
 The dry run reads every composite heading, splits it under today's rules, and lists each whose stored parts differ,
 by rule: the splitter's ("a"), the indexes' ("b"), or stale with no rule of today's naming it. HeadingResplitTests.
-Next: the owner runs the dry run and reads the listing; on the word, `--apply` (the old parts detached, the new
-collected, the composite decision rewritten) and rule (b) in the reconciler's decomposition.
+The owner's first run of it (17:40): 15,559 headings read, 523 listed; 14 by rule (b), every one right ("New-York
+Historical Society", "Nelson-Atkins Museum of Art", "Palais-Royal", "Saro-Wiwa, Zina", "Fleming-Wyfold", "Pont-Aven",
+"Russell-Cotes", "Gathorne-Hardy, Robert", "Albright-Knox", "Fauchier-Magnan, Adrien", "Spink-Leger", "Orange-Nassau,
+House of"); the rest mostly two artefacts of the first listing's comparison, now taken out: 120 "leftover" headings,
+re-split with fewer parts after finding 4 and keeping their old last row, since a part is written by position
+("Wood-engravers | Great Britain | Biography | Biography"), which the repair deletes; and some 350 headings whose parts
+differ only in the text of a shared part string ("portraits" for "Portraits", the spelling of the first heading to
+carry it), a no-break space, or a trailing stop, which the comparison by key now passes over. What is left under the
+splitter's rule is the real set: "Franco-British Exhibition", "Garton-on-the-Wolds", "Sens-sur-Yonne",
+"Stoke-on-Trent", the "Pre-Raphaelites" and "Wood-engravers" heads split before finding 4. Next: the dry run again,
+read; on the word, `--apply` (the old rows deleted, the new parts collected, the composite decision rewritten) and
+rule (b) in the reconciler's decomposition.
 
 Read 2026-11-07, finding 112 shaped (the owner at "New" in keywords:head, string 79768, then the count of one-word
 heads): the hyphen inside a heading. The stored heading is "New--York Historical Society (New York, New York, USA)"

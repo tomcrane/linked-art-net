@@ -10,7 +10,8 @@ public sealed record ResplitReport(int Read, IReadOnlyList<ResplitChange> Change
 {
     public int ByRule(string rule) => Changes.Count(c => c.Rule.Contains(rule, StringComparison.Ordinal));
     public override string ToString() =>
-        $"resplit: {Read:N0} headings read, {Changes.Count:N0} would change (by the splitter's rules {ByRule("a"):N0}, by a hyphenated name the indexes hold {ByRule("b"):N0}, stale parts with no rule of today's {ByRule("stale"):N0})";
+        $"resplit: {Read:N0} headings read, {Changes.Count:N0} would change (by the splitter's rules {ByRule("a"):N0}, by a hyphenated name the indexes hold {ByRule("b"):N0}, " +
+        $"leftover rows of an earlier re-split {ByRule("leftover"):N0}, stale parts with no rule of today's {ByRule("stale"):N0})";
 }
 
 /// <summary>
@@ -73,7 +74,14 @@ public sealed class HeadingResplit(IAlignmentStore store)
                 read++;
                 var (parts, rule) = await SplitAsync(d.String.Raw, ct);
                 var old = (await store.PartsAsync(d.String.Id, ct)).Select(p => p.Raw).ToList();
-                if (old.SequenceEqual(parts, StringComparer.Ordinal)) continue;
+                // compared by key, not text: a part string is shared by every heading that carries it and keeps the spelling of the first
+                // ("portraits" for "Portraits"), and the key folds the no-break spaces and trailing stops of the catalogue's forms
+                var oldKeys = old.Select(StringKey.Normalise).ToList();
+                var newKeys = parts.Select(StringKey.Normalise).ToList();
+                if (oldKeys.SequenceEqual(newKeys, StringComparer.Ordinal)) continue;
+                // a heading split again with fewer parts (finding 4's rejoining, 2026-10-21) kept the old rows beyond the new count, since
+                // a part is written by position: "Wood-engravers | Great Britain | Biography | Biography"
+                if (oldKeys.Count > newKeys.Count && oldKeys.Take(newKeys.Count).SequenceEqual(newKeys, StringComparer.Ordinal)) rule = "leftover";
                 // parts made before today's rules and never re-split differ with no rule of today's to name: "stale"
                 changes.Add(new ResplitChange(d.String, old, parts, rule.Length == 0 ? "stale" : rule));
                 if (changes.Count % 50 == 0) progress?.Report($"{read:N0} read, {changes.Count:N0} would change");

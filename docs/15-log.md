@@ -40,7 +40,16 @@ While the reconcile still ran, the owner asked for a short overview of the align
 authority reconciliation or crosswalked collection data before: written as `src/LinkedArtNet.Alignment/README.md` (the
 approach in five sentences, what is here, the store, reading a string, candidates and groups, the ladder as a diagram,
 runs and undo, the desk, status and what is designed but not built), linked from the repository README's project table
-and the docs index as the page to read before doc 10.
+and the docs index as the page to read before doc 10. Then the owner's question about real-world workflows: whether
+the process has one-way streets that only show once a project settles into export, reconcile, write and import, LUX's
+early import the case in point, with catalogue corrections, strings that change and a long-standing entity found to be
+X not Y. The assessment, written into the plan as a risk (section 5) and five items under Exports and reports with one
+under Store: the schedule is not yet a path in this code (collect from an export and the write stage are designed,
+not built), publication must be a recorded act with the delta computed from the previous export's stored output,
+nothing published is ever deleted (undo-run and cleanup-orphans delete provisional entities today), a withdrawn
+equivalent must reach the consumer as a retraction, a split is missing and a record-level exception is beyond the
+string key, strings that leave the catalogue need reporting and retiring, authority reloads need a stale-equivalent
+report, and one dataset key per institution.
 
 ## 2026-11-06
 

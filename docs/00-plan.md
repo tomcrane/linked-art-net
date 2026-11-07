@@ -225,6 +225,18 @@ docs/                             these documents
   run-to-run diff are the guard; new rules come from the desk's decisions, not from samples.
 - **The desk's cost**: the queue of some 4,000 is a person's work; the desk must make each decision cheap, or the
   residue stays minted and provisional.
+- **One-way streets in the lifecycle** (the owner's question, 2026-11-07; LUX's import of the earlier export before it
+  was ready the case in point): the schedule a project settles into (source export, reconcile, write, import into LUX,
+  again next quarter) is not yet a path in this code (collecting strings from a fresh export and the write stage are
+  designed, not built), and the faults that only show in real use live there. Named so far: a published URI the store
+  can still delete (undo-run and cleanup-orphans delete a provisional entity nothing points at; the desk merges a
+  placeholder into the entity it accepts, which keeps it resolvable, but only a bare provisional one); an equivalent
+  withdrawn after publication that reaches the consumer as an absence, not a retraction, when a consumer that merged on
+  it needs to unmerge; a merge that is permanent and a split that does not exist; a string's identity (dataset, field,
+  normalised text) that cannot say "in this one record it means someone else"; a spelling corrected in the catalogue
+  that arrives as a new string beside the old, which nothing retires; an authority dump reloaded with records merged or
+  retired under our equivalents. The guard is publication as a recorded act and the rule that nothing published is
+  ever deleted (section 7, Exports and reports), settled before the write stage is designed.
 
 ## 6. Open questions for the owner
 
@@ -564,6 +576,10 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Store** (doc 11):
 
+- One dataset per institution (2026-11-07): the library, the archive and the photo archive share the key `pmc`, so a
+  person has one URI across them; a second dataset key for one of them would mint a second URI for the same person,
+  since a project never sees another's entities. The manifest's contexts tell the sources apart (`library.author`,
+  `archive.creator`), not the dataset key. Written down so the archive's collect stage does not start a dataset.
 - Store-stage speed: 1,012 s of a 33-minute run on 2026-10-26 (738 s of 19 on 2026-10-19); plan the entity side on the
   real store as the authority side was.
 - Npgsql's infinity conversion off (year 1 became -infinity; LoC n82239358) (2026-10-19).
@@ -625,6 +641,34 @@ and the log (doc 15) records that. The order within an area is rough value.
   roles, nationality and the archive's URI as the reference, for a person to review and submit; confirmed entities
   only (2026-10-23).
 - Reports outward to Getty and LoC: ULAN's person-typed bodies, the Orovida label, stale LUX ids (above).
+- Publication as a recorded act (2026-11-07, the owner's question about real-world workflows; section 5's lifecycle
+  risk): an export is a run of its own, recording the store state it was taken from (the last reconcile, the rules'
+  version, the counts, the queue's size, a readiness line a person reads before the consumer is told), and every
+  entity and record it carries is marked with the export it first appeared in (`published_in` on entities, or an
+  `exports` table with the ids carried). The delta the consumer takes (Activity Streams Create, Update, Delete) is
+  computed by comparing the new output with the stored output of the previous export, never from source changes
+  alone, so a decision changed at the desk reaches the consumer as an Update of every record that cited the string.
+  Decided before the write stage is designed; it shapes decision 15.
+- Nothing published is ever deleted (2026-11-07): undo-run, cleanup-orphans and the desk's accept treat a published
+  provisional entity as merged into its successor (`merged_into`, as a hand merge does), never removed; an equivalent
+  withdrawn after publication is kept as a retraction (the row kept with a `withdrawn_at`, or a method `retracted`),
+  so the next export says so and a consumer that merged on it can unmerge; decision 15's question to the LUX team
+  gains "how does LUX take an equivalent we withdraw". Count first: the entities the legacy export published that are
+  provisional in the store today (the imported ones carry published ids; the minted ones are not yet out).
+- A split, the opposite of merge, is missing (2026-11-07): a new entity, the chosen strings' decisions re-pointed to
+  it, the old URI keeping the rest, the equivalents divided by hand on the two entity pages; cheap in the store, since
+  decisions are per string. The one case the string key cannot express, one string that is two people across records
+  ("Smith, J." the engraver and the publisher), wants a record-level exception, an override scoped to the record id
+  ("this string, in this record, means Z"), designed with the collect stage, which is where the record ids come from.
+- Strings that leave the catalogue (2026-11-07): collecting from a fresh export marks every string of the dataset seen
+  in it (`last_seen` and the export's version), and the run's report lists the strings not seen, since a corrected
+  spelling arrives as a new string beside the old one; the store stage takes the new string onto the old string's
+  entity by exact-name when the name agrees, and the report says where it did not, so the desk can say "same as" and
+  the entity keeps its URI. An entity none of whose strings is current is retired in the next export (a Delete, or a
+  record that says so), never deleted from the store. The first real collect's report is the measure.
+- Authority reloads (2026-11-07): a reload of ULAN, TGN, LoC or LCSH lists the equivalents whose record is gone or
+  now redirects to another, and marks the decisions on them for a look (doc 10 section 4's `valid = false` on an
+  authority update is not built); the audit command is the start, since it already walks entities against the index.
 
 **Housekeeping and release** (Phase 4):
 

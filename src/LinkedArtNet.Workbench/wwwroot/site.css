@@ -110,7 +110,9 @@ button.quiet { background: transparent; color: var(--muted); border-color: var(-
 button.quiet:hover { color: var(--bad); border-color: var(--bad); background: transparent; }
 button.link { border: none; background: none; color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; padding: 0; font-weight: 500; }
 button.link:hover { color: var(--accent); background: none; }
-form.inline { display: inline; }
+form.inline { display: inline-flex; gap: .4rem; align-items: center; white-space: nowrap; }
+/* a choice beside a button stays on the button's line, narrow (the entity page's merge rows, 2026-11-07: a class select per row wrapped each into three lines) */
+form.inline select { width: auto; padding: .3rem .5rem; }
 label { display: block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0.9rem 0 0.3rem; }
 label.inline, label[style], .row label, .small label { display: inline; font-size: inherit; font-weight: 400; letter-spacing: 0; text-transform: none; color: inherit; margin: 0; }
 .kbd { border: 1px solid var(--rule); padding: 0 0.3rem; color: var(--muted); font-size: 0.8rem; }

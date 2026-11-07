@@ -123,7 +123,9 @@ checked against every decision's `supersedes` and found through a partial index,
 indexes both, `init` applied it, and the second apply deleted 168 fragments (October's finding 4 re-splits had left
 some too) and 119 placeholders. The run's decisions read: the society, the museum and Garton-on-the-Wolds onto the
 project's own entities by exact-name, Sens-sur-Yonne voted, the Franco-British Exhibition's two spellings queued as a
-pair, "Art, Baroque--Italy--ome" a catalogue error for the cataloguers' report.
+pair, "Art, Baroque--Italy--ome" a catalogue error for the cataloguers' report. The owner stopped at about 18:30: section 0 rewritten as the resume point (the desk
+and its script first, then the counts waiting on queries, then section 7), seventy-six commits unpushed, the last full
+run wsw254 with jsf3ur and the cleanups on top.
 
 ## 2026-11-06
 

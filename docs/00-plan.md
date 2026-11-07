@@ -15,63 +15,62 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-06 evening; the one place to read first)
+## 0. Resume point (written 2026-11-07 evening; the one place to read first)
 
-**On return, in order:** (1) `git push` if the day's commits are not up (forty-seven as of this writing; the last is
-the one that wrote this); (2) the pass through Wikidata measured by run d6h8va on the 7th (doc 10 7.6 "Measured
-2026-11-07 (run d6h8va)"): 36 strings onto their entities as predicted, and 65 strings where the pass made a legacy
-entity and a run-made entity of one person or place share a record, twins the store had never joined: 28 to the desk
-as holders to merge (right), 23 switched entity silently and 9 minted (a fault, "Gillray, James, 1757-1815" finding
-nothing), read in evidence the same day: finding 111, an entity dated through its records agrees when any of its
-dated records agrees (it borrowed the first), counted (fifteen), the word given, built with Finding111Tests (doc 10
-7.6 "Built 2026-11-07, finding 111") and measured by run wsw254 at 13:42 (doc 10 7.6 "Measured 2026-11-07 (run
-wsw254)": the eight minted and the five queued back onto their entities, nothing else; the last full run); "St Ives
-(Cornwall)" was read on the 7th while the first reconcile ran (finding 110's sixth, the ground a placeholder; the
-St/Saint key gap behind it is command 5, a count); (3) the desk, continued: start the workbench (command 1) and review from
-the queue, each thing the desk fails to show, do or get right becoming an item in section 7 and built; the desk items
-standing (section 7, Workbench and desk): the second pass's reasons on a string it leaves queued not persisted, the
-way from a placeholder's entity page to its own desk page, the twins that share a record, the publisher strings
-without a record, and the 26th's two; (4) the reconciler's items (section 7): a queued string's placeholder taking the
-context's first class (count first), the 113 entities whose item reaches no record of their class (to look at), the
-placement join missing LoC's English form against TGN's vernacular label (count first), the collector and the
-jurisdiction heading cut at its full stop (with the next export); then the open items of section 7 as the owner orders
-them.
+**On return, in order:** (1) `git push` if the day's commits are not up (seventy-six as of this writing; the last is
+the one that wrote this); (2) the desk, continued: start the workbench (command 1) and follow the desk session script
+there, deciding strings and noticing, each thing the desk fails to show, do or get right becoming an item in section
+7 and built the same session (the owner's way on the 7th: "build things as we find them to clear the decks"); the
+desk items standing (section 7, Workbench and desk): a part's parents on the desk and "not a compound" as the
+repair pass for one heading, the twins that share a record, the publisher strings without a record; (3) the counts
+waiting on the owner's queries, each a reconciler item of section 7 with its query in place: the St/Saint key gap
+(command 5), a subdivision placed by its sibling parts ("Birmingham" under "Architecture--England--Birmingham"),
+dates that miss by a year or two on one side ("Hall, Harry, 1815-1882"), prominence when every live group holds a
+project entity ("Boston", "Geneva"), a queued string's placeholder taking the context's first class (the Type-classed
+"Harewood House" placeholders); (4) the open items of section 7 as the owner orders them, and the lifecycle design
+(section 5's risk, the Exports and reports items) before any write stage is designed.
 
-**Where things stand.** Branch `de-pmc`, all work committed, every test project green (3,211 tests). Six authority
+**Where things stand.** Branch `de-pmc`, all work committed, every test project green (3,220 tests). Six authority
 sources loaded: the manifest's five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M
-records that carry another authority's id; doc 11 section 8.11); the LoC index's "active" headings carry working spans
-and 354,991 of its undated person records their Wikidata item's dates (finding 88; every staged mass write to
-`authority_records` ends with `vacuum (analyze)`). The store has had two duplicate passes and four hand merges, and
-since 16:23 today the pass through Wikidata (run zpcmrz: 2,013 of the 2,191 legacy alignments to Wikidata, VIAF and
-LUX now hold the TGN, LoC, ULAN or LCSH record their item names, method `through-wikidata`, reversible by
-`undo-run`), measured by run d6h8va on the 7th; finding 111 from its twins, measured by wsw254 (the last full run,
-2026-11-07 13:42: accepted 9,500, queued 3,925, minted 10,878). The manifest was refreshed today with the `trades` key (`manifest
---use-default`, which now says what it replaces); the workbench rebuilds a project's services when the project row
-changes, so a tool-side save is in force at its next request. Runs are occasional and a run is measured by its diff
-against the run before (command 4), never by the queue count, which is the desk's residue by design. The last full
-run is krbnw6 (2026-11-06 15:36: accepted 9,461, queued 3,938, minted 10,876; doc 10 7.6 "Measured 2026-11-06 (run
-krbnw6)"). Today, from "Mr Evans" at the desk: findings 108 (the heading as written carries a tie in the heading
-fields) and 109 (a name with an honorific carries a tie when one record bears it whole and is a body or of the
-manifest's trades), measured by a98vpa, which also showed them relabelling 77 votes; put behind the acceptance line and
-measured by jr8hf5 (the 77 back, nothing else); finding 110 (a record that lost in the first pass does not answer a
-queued string silently in the second), measured by krbnw6 (five to the desk, fourteen to vote on the same entity by
-the ladder's own rules). Findings 1 to 110 are in doc 10 7.6, newest first. Also today, from the owner at the desk:
-the group is the card with one action, the merge offered at its head with a confirm step only when something merges,
-the desk finishing a name before leaving it, the entity page's signal of waiting strings, the overtaken evidence
-marked (doc 12 section 5, doc 13).
+records; doc 11 section 8.11); the LoC index's "active" headings carry working spans and 354,991 of its undated
+person records their Wikidata item's dates (finding 88). The store is at schema version 10 (`skipped_at` on strings,
+the decision indexes a string's delete needs); the pass through Wikidata (run zpcmrz, 2026-11-06) gave 2,013 legacy
+alignments their TGN, LoC or ULAN record. Runs are occasional and a run is measured by its diff against the run
+before (command 4), never by the queue count. The last full run is wsw254 (2026-11-07 13:42: accepted 9,500, queued
+3,925, minted 10,878; doc 10 7.6 "Measured 2026-11-07 (run wsw254)"), which measured finding 111; on top of it the
+same day: run jsf3ur, the repair of finding 112 (167 compound headings split again under the hyphen rules, 20 read
+whole, their decisions in doc 10 7.6 "Measured 2026-11-07 (run jsf3ur)"), `cleanup-parts` (168 fragment strings
+deleted with their decisions, 119 placeholders), and `settle-merged` (the three Ackermann strings decided as the
+owner's). Findings 1 to 112 are in doc 10 7.6, newest first; 112 is the hyphen inside a heading (the export writes one
+hyphen for the separator and for a hyphen, the 2024 cleaning doubled every one): the one splitter knows the bound
+prefixes and the linking words of a place name, the reconciler asks the indexes whether a one-word head and the next
+part are a hyphenated name they hold, and the stale parts of the first runs are repaired. Built on the 7th from the
+desk, all measured or in force: the pass through Wikidata and its twins (finding 111); the class of an entity a
+person's to change, the cluster taking the record's class, a merge across classes offering the class; a person's
+merge settling the placeholder's strings; the compound heading's concept tagged and its parts listed; the confirm step
+in view; the second pass keeping its reasons on a string it leaves queued (from the next reconcile); "accept anyway"
+on a greyed row; a project entity named with its placement; a card's live holders; the entity page's queued strings
+linked to the desk; the ICA key; the URL on "Keep as local authority"; Skip to the back of the desk and Unskip. Also
+on the 7th: `src/LinkedArtNet.Alignment/README.md`, the overview for a practitioner; the lifecycle assessment (section
+5's risk and six items under Exports and reports and Store: publication as a recorded act, nothing published ever
+deleted, a split, strings that leave the catalogue, authority reloads, one dataset per institution); the owner's
+thoughts for later, a second project from the same PMC sources and a report back to the cataloguers.
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
-team whether a source reload replaces by URI and whether records absent from a full dump are retired; the merged-away
-identifiers (`merged_into` on 381 entities and the four hand merges) are written as equivalents of the survivor so LUX
-merges its copies; a reviewed Wikidata contribution export of confirmed local authorities belongs beside it (section 7,
-exports and reports). 16, *"Mr Hone"* (finding 109, 2026-11-06): whether a sale catalogue's corpauthor or publisher may
-be the owner whose collection was sold, as the Provenance Index names him ("Mr. Hone" on Nathaniel Hone the painter),
-or is always the auctioneer; a specialist's question, the owner says, and PMC's own. Until it is answered the rule
-carries a person's Index name only when his biography names one of the manifest's `trades`, and Hone's kind stays
-queued, the match shown on the card. Open question 7 (section 6). Every decision taken is in doc 10 section 13 and the log.
+team whether a source reload replaces by URI, whether records absent from a full dump are retired, and how LUX takes
+an equivalent we withdraw; the merged-away identifiers (`merged_into` on 381 entities and the hand merges) are written
+as equivalents of the survivor so LUX merges its copies; a reviewed Wikidata contribution export of confirmed local
+authorities belongs beside it (section 7, Exports and reports). 16, *"Mr Hone"* (finding 109, 2026-11-06): whether a
+sale catalogue's corpauthor or publisher may be the owner whose collection was sold, as the Provenance Index names
+him, or is always the auctioneer; a specialist's question, the owner says, and PMC's own. Until it is answered the
+rule carries a person's Index name only when his biography names one of the manifest's `trades`, and Hone's kind
+stays queued, the match shown on the card. Open question 7 (section 6). Every decision taken is in doc 10 section 13
+and the log.
 
 **Commands on return** (the owner runs all of them; the assistant never runs anything against the real store; the
-answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 section 8.11).
+answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 section 8.11; the Align tool's commands
+each `init` the schema or not, so after a schema change run `init` first; PowerShell writes a redirected file as
+UTF-16, which the assistant reads with a decode, and `reports/` is git-ignored).
 
 1. The desk: start the workbench against the real store (`LINKEDART_PG` set; Development allows the typed sign-in,
    the name `local` is an owner) and review from the queue; the assistant does not build the workbench project while
@@ -80,59 +79,61 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        dotnet run --project src/LinkedArtNet.Workbench
 
    then http://localhost:5200. **The desk session script** (written 2026-11-07 for the owner, who asked what to look
-   for; the open desk items of section 7 are faults already found and are the assistant's to build, not the owner's to
-   test, so the session is: decide strings, and notice). What to notice on any card, and paste when seen: the wrong
-   thing at the top, or the right thing greyed; a candidate missing that the records plainly name; a button that says
-   something ambiguous or does something other than it says; a detour (two actions where one would do, a search for
-   what should have been offered); text that only makes sense if you know the code. In order:
+   for; the open desk items of section 7 are faults already found and are the assistant's to build, so the session
+   is: decide strings, and notice). What to notice on any card, and paste when seen: the wrong thing at the top, or
+   the right thing greyed; a candidate missing that the records plainly name; a button that says something ambiguous
+   or does something other than it says; a detour (two actions where one would do, a search for what should have
+   been offered); text that only makes sense if you know the code. In order:
 
-   - The holder pairs (two project entities in one group, from the pass): open each by id from the query below. Right:
-     the card's head says two of the project's entities hold the group's records and offers the merge; pressing it
-     opens a confirm step in view, naming the survivor, the losers, the identifiers added, and the class if they
-     differ; after it, the string and the name's other strings are off the queue. Wrong: a pair offered that are two
-     different things (the two Grosvenor Galleries, 1877-1890 and the later dealer), with nothing on the card to tell
-     them apart; a merge done with no confirm step; the siblings left in the queue.
+   - The holder pairs (two project entities in one group): open each by id from the query below. Right: the card's
+     head says two of the project's entities hold the group's records and offers the merge; pressing it opens a
+     confirm step in view, naming the survivor, the losers, the identifiers added, and the class if they differ;
+     after it, the string and the name's other strings are off the queue. Wrong: a pair offered that are two
+     different things (the two Grosvenor Galleries, 1877-1890 and the later dealer) with nothing on the card to tell
+     them apart; a merge done with no confirm step; the siblings left in the queue. Fifteen were listed on the 7th
+     (Petworth twice, Harewood House twice, the Grosvenor Galleries, Waterman Fine Art Ltd, University of Oxford,
+     Westminster (London)).
 
          select s.id, s.raw, s.context from decisions d join source_strings s on s.id = d.source_string_id
-         where d.run_id = '<the last full run>' and d.method = 'queued'
+         where d.run_id = 'run-20261107-134248-wsw254' and d.method = 'queued'
            and (select count(*) from jsonb_array_elements(d.evidence->'groups'->0->'members') m where m->>'source' = 'store') >= 2
          order by s.raw;
 
    - "Boston" and "Geneva" bare (ids by `select id, raw, context from source_strings where dataset = 'pmc' and raw in
-     ('Boston', 'Geneva')`): two placed project entities at 1.00. Right: decide by the records shown ("In the
-     records"); the answer is usually the English or Swiss one. Notice: whether the records make it decidable, and
-     that the two buttons both say "Same as Boston" (section 7: named with its placement).
+     ('Boston', 'Geneva')`): two placed project entities at 1.00, each now named with its placement on the card.
+     Decide by the records shown ("In the records"); notice whether they make it decidable.
+   - From run jsf3ur: "Franco-British Exhibition (1908 : London, England)" beside its lower-case twin, a pair; and
+     "Beecroft Art Gallery (Westcliff-on-Sea)" against LoC's "(Southend-on-Sea, England)", the qualifier not placed.
    - Ten strings each from publisher, corpauthor, keywords:sub and place (the context dropdown), deciding them as a
-     reviewer would. Notice the five things above. A string you cannot decide from what the card shows is the paste
-     that matters most: say what you would have needed.
-   - The things built today, each once: the Class card on an entity page (change a firm classed person to group; the
-     tag changes and a note appears); a merge from an entity page where the classes differ (the row offers "as a"
-     with a select; after it the survivor has the chosen class); a compound heading's page (`/p/pmc/entities?q=history&cls=Type`:
-     the row tagged compound, the page listing the parts with what each resolved to, a queued part linking to the
-     desk); a placeholder merged from its page into the right entity (the entity's page then shows the string decided
-     human and the queue count is one lower).
-   - Not to test (known, section 7, Workbench and desk, the assistant's): the second pass's reasons unpersisted, the
-     vetoed card's missing accept, the ambiguous "Same as" name, the hand-added identifier absent from a stored card,
-     the placeholder page's missing way to the desk, the publisher strings without a record, the ICA key, the URL on
-     "Keep as local authority".
+     reviewer would. A string you cannot decide from what the card shows is the paste that matters most: say what you
+     would have needed.
+   - The things built on the 7th, each once if not yet seen: "accept anyway" on a greyed row; "now held by" under a
+     record whose entity gained it since the run; a project entity's placement in its "Same as" name; Skip, then
+     Unskip on the skipped string; a compound heading's page (`/p/pmc/entities?q=history&cls=Type`); the Class card
+     on an entity page; a merge where the classes differ; a placeholder merged from its page (the string decided
+     human, the queue one lower).
 
-2. No reconcile is pending (wsw254 of 2026-11-07 13:42 is the last full run, finding 111 measured by it). The next
-   one comes with the next rule built from the desk, as always: the last full run taken back, `reconcile`, then
-   command 4 against the run before. With the workbench stopped:
+2. No reconcile is pending. wsw254 (13:42) is the last full run; jsf3ur and the cleanups sit on top as runs of their
+   own. The next reconcile comes with the next rule built from the desk, as always, and will also show the second
+   pass's reasons kept on the strings it leaves queued and rule (b) on any new heading: the last full run taken back,
+   `reconcile`, then command 4 against the run before. With the workbench stopped:
 
        dotnet run --project tools/Align -- undo-run --run run-20261107-134248-wsw254
        dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
-   record ids, so the newer export's records replace the older's):
+   record ids, so the newer export's records replace the older's); the publisher strings without a record, and the
+   cataloguers' report ("Art, Baroque--Italy--ome", the collector and jurisdiction headings cut at a full stop), wait
+   on it:
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
 4. The standing method diff after the next run, whenever it comes, against wsw254, the last full run (each run's last
    decision per string, since a string the second pass settled has two; an undone run keeps its evidence, though the
    undo removes the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for
-   those and true or false only where the entity survived: the desk's, and the ones made before the run undone).
-   A method change on the same entity is a label, not a decision (the 77 of a98vpa, the 14 of krbnw6):
+   those and true or false only where the entity survived). The strings jsf3ur re-decided (167 headings and their
+   parts) will show against wsw254 as its changes, not the new run's. A method change on the same entity is a label,
+   not a decision:
 
        with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261107-134248-wsw254' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
@@ -142,8 +143,9 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
        where a.method <> b.method group by 1, 2, 3 order by 4 desc;
 
 5. The St/Saint key gap behind "St Ives (Cornwall)" (read 2026-11-07, doc 10 7.6 "Measured 2026-11-06 (run krbnw6)",
-   third row): first the records' own spellings, then the count of strings the gap holds back. The legacy St Ives
-   entities hold LoC n80103996 (Cornwall) and n81035494 (Cambridgeshire); TGN's are looked up by the three spellings:
+   third row; not yet run): first the records' own spellings, then the count of strings the gap holds back. The
+   legacy St Ives entities hold LoC n80103996 (Cornwall) and n81035494 (Cambridgeshire); TGN's are looked up by the
+   three spellings:
 
        select uri, source, label, labels, type, data->>'parentString' as parent from authority_records
        where uri in ('http://id.loc.gov/authorities/names/n80103996', 'http://id.loc.gov/authorities/names/n81035494')

@@ -18,9 +18,11 @@ current in their status lines.
 ## 0. Resume point (written 2026-11-06 evening; the one place to read first)
 
 **On return, in order:** (1) `git push` if the day's commits are not up (forty-seven as of this writing; the last is
-the one that wrote this); (2) the reconcile that measures the pass through Wikidata (Commands on return, 2: undo
-krbnw6, reconcile, the diff of command 4 against krbnw6), read with the entity column, expected the 104 queued strings
-between legacy entities of one name moving onto them and some strings sent to the desk as holders to merge; "St
+the one that wrote this); (2) the pass through Wikidata measured by run d6h8va on the 7th (doc 10 7.6 "Measured
+2026-11-07 (run d6h8va)"): 36 strings onto their entities as predicted, and 65 strings where the pass made a legacy
+entity and a run-made entity of one person or place share a record, twins the store had never joined: 28 to the desk
+as holders to merge (right), 23 switched entity silently and 9 minted (a fault, "Gillray, James, 1757-1815" finding
+nothing), to be read in evidence first (Commands on return, 2) and then, on the owner's word, a rule; "St
 Ives (Cornwall)" was read on the 7th while that reconcile ran (finding 110's sixth, the ground a placeholder; the
 St/Saint key gap behind it is command 5, a count); (3) the desk, continued: start the workbench (command 1) and review from
 the queue, each thing the desk fails to show, do or get right becoming an item in section 7 and built; the desk items
@@ -39,7 +41,7 @@ and 354,991 of its undated person records their Wikidata item's dates (finding 8
 `authority_records` ends with `vacuum (analyze)`). The store has had two duplicate passes and four hand merges, and
 since 16:23 today the pass through Wikidata (run zpcmrz: 2,013 of the 2,191 legacy alignments to Wikidata, VIAF and
 LUX now hold the TGN, LoC, ULAN or LCSH record their item names, method `through-wikidata`, reversible by
-`undo-run`), not yet measured by a reconcile. The manifest was refreshed today with the `trades` key (`manifest
+`undo-run`), measured by run d6h8va on the 7th (the last full run: accepted 9,500, queued 3,930, minted 10,886). The manifest was refreshed today with the `trades` key (`manifest
 --use-default`, which now says what it replaces); the workbench rebuilds a project's services when the project row
 changes, so a tool-side save is in force at its next request. Runs are occasional and a run is measured by its diff
 against the run before (command 4), never by the queue count, which is the desk's residue by design. The last full
@@ -75,29 +77,39 @@ answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 se
 
    then http://localhost:5200.
 
-2. The reconcile that measures the pass through Wikidata (doc 10 7.6 "Built 2026-11-06, the pass through Wikidata"):
-   krbnw6 taken back (the pass is a run of its own, zpcmrz, and stays), the strings decided again against the
-   enriched entities, then the diff of command 4 against krbnw6. Expected: the 104 queued strings that tied between
-   legacy entities of one name ("Andover", "Antwerp", "Athens", "Birmingham (England)", "Cambridge") moving onto them,
-   by the store stage where the qualifier bears the placement out and by finding 35 where a heading's group holds the
-   entity's record, and some queued still as holders for the desk to merge (two legacy Birminghams of England). With
-   the workbench stopped:
+2. The twins the pass uncovered (run d6h8va, doc 10 7.6 "Measured 2026-11-07 (run d6h8va)"): the evidence of the
+   nine minted, a few of the twenty-eight queued and of the twenty-three that switched entity, as the members of the
+   first two groups with their reasons, and the entities of those names with their records and the run that added
+   each:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261106-153608-krbnw6
-       dotnet run --project tools/Align -- reconcile
+       select s.raw, d.method, g.ord as grp, m.value->>'label' as label, m.value->>'source' as src,
+              (m.value->>'score')::numeric as score, m.value->>'reason' as reason
+       from source_strings s join decisions d on d.source_string_id = s.id and d.run_id = 'run-20261107-114818-d6h8va'
+       cross join lateral jsonb_array_elements(d.evidence->'groups') with ordinality g(value, ord)
+       cross join lateral jsonb_array_elements(g.value->'members') m(value)
+       where s.dataset = 'pmc' and g.ord <= 2
+         and s.raw in ('Gillray, James, 1757-1815', 'Gentileschi, Orazio, 1563-1639', 'Abbott, John White, 1763-1851', 'Boston', 'Hazlitt, William, 1778-1830', 'Sheffield, George, 1800-1852')
+       order by s.raw, d.id, g.ord, score desc;
+
+       select e.id, e.label, e.status, e.lifespan_text, e.run_id as made_by, q.uri, q.source, q.method, q.run_id as added_by
+       from entities e left join entity_equivalents q on q.entity_id = e.id
+       where e.dataset = 'pmc' and e.merged_into is null
+         and (e.label ilike 'gillray, james%' or e.label ilike 'gentileschi, orazio%' or e.label ilike 'abbott, john white%'
+              or e.label = 'Boston' or e.label ilike 'hazlitt, william%' or e.label ilike 'sheffield, george%')
+       order by e.label, e.id, q.source;
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
    record ids, so the newer export's records replace the older's):
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, whenever it comes, against krbnw6, the last full run (each run's last
+4. The standing method diff after the next run, whenever it comes, against d6h8va, the last full run (each run's last
    decision per string, since a string the second pass settled has two; an undone run keeps its evidence, though the
    undo removes the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for
    those and true or false only where the entity survived: the desk's, and the ones made before the run undone).
    A method change on the same entity is a label, not a decision (the 77 of a98vpa, the 14 of krbnw6):
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261106-153608-krbnw6' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261107-114818-d6h8va' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id

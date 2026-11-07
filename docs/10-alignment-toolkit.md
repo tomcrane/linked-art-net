@@ -1259,6 +1259,43 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-07 (run d6h8va, 11:48; krbnw6 taken back, the pass zpcmrz in place): the pass through Wikidata.
+Considered 46,296: overridden 84, matched in store 5,934 (41 fewer), accepted 9,500 (vote 4,045, 32 more; single
+2,164, 6 more; exact-single 3,291), queued 3,930 (8 fewer), minted 10,886 (10 more); the second pass settled 99 of
+4,029. The diff against krbnw6, eleven rows and 102 strings, read with the entity column:
+
+- The predicted gains, 36: queued to exact-name 23 ("Banks, Joseph, 1743-1820" and "Banks, Joseph, Sir, 1743-1820",
+  "Blake, Peter, 1932-", "Cambridge (Mass.)" and "Cambridge, Massachusetts", "Christchurch, New Zealand", "Durham
+  (England : County)", "Durham, New Hampshire"), the store stage taking a legacy entity now placed through its TGN
+  record or dated through its ULAN or LoC record; queued to vote 12 ("Athens, Georgia", "Baltimore, MA", "Columbus,
+  OH", "Durham (England)", "Evanston, Illinois", "Los Angeles", "Milwaukee, WI"), finding 35 where the group holds the
+  entity's new record; queued to single 1 ("Williamsburg (Va.)"). Of the 104 counted, a third; the rest to be looked
+  for among the still queued.
+- The twins the pass uncovered, 65, not predicted in this shape. A legacy entity that held only its Wikidata, VIAF or
+  LUX id and a run-made entity of the same person or place that held ULAN's or TGN's record were two entities with
+  nothing in common; the pass gave the legacy one the same record, and the two now meet in one group. Three
+  outcomes, for one shape: exact-name to queued 28 ("Abbott, John White, 1763-1851", "Adam, James, 1730-1794",
+  "Boston", "Catesby, Mark, 1682-1749", "Draper, Herbert James, 1863-1920", "East, Alfred, 1849-1913", "Geneva"), the
+  holders check sending the pair to the desk to merge, as the design said; exact-name to vote 18 and to single 5,
+  the entity changed ("Andrews, Sybil, 1898-1992", "Boston (England)", "Hazlitt, William, 1778-1830", "Middlesex
+  (England)", "Moore, Henry (Spencer), 1898-1986"; "Bentley, Richard [1794-1871] (publisher)", "Sheffield, George,
+  1800-1852"), the ladder taking one holder over the other silently where the desk should have been asked; and
+  exact-name to minted 9 ("Gentileschi, Orazio, 1563-1639", "Gillray, James, 1757-1815", "Laurencin, Marie,
+  1885-1956", "McEvoy, Ambrose, 1878-1927", "Pistrucci, Benedetto, 1784-1855", "Pocock, Nicholas, 1741-1821", "Pratt,
+  Roger, Sir, 1620-1685", "Pricke, Robert, fl.1646-1700"), a fault: a string that matched its entity in the store and
+  now finds nothing at all, with ULAN's Gillray in the index. The likely chain, to be read in evidence before anything
+  is built: the legacy entity, dated now through its new record, conflicts with the string's dates (or the record the
+  item named is the wrong one), is vetoed, and the veto spreads through the group to the authority records it holds
+  ("a vetoed member linked by the authorities to a live one"), leaving nothing live. The same chain may explain the
+  silent switch: one holder vetoed, the other taken.
+- The rest: vote to queued 1 ("Geneva", the bare name now between two placed entities), queued to minted 1
+  ("Williamsburg, Virginia", beside "Williamsburg (Va.)" going to single, to read together), exact-name to vote 3 and
+  to exact-single 1 with the earlier entity gone with the undo ("Glin, Knight of (editor)", "Saint Petersburg
+  (Russia)", "Spielmann, Marion Harry (preface by)", "Clarke, David T-D. (author)").
+
+Stage times: store 1,673 s (1,012 s on 2026-10-26; the owner on battery), second pass 533 s, commit 462 s, the five
+indexes 180 to 280 s each. The pass stands; the twins are the next thing to read, by name, before any rule.
+
 Measured 2026-11-06 (run krbnw6, 15:36; jr8hf5 taken back): finding 110. Matched in the store 5,975 (twenty fewer),
 accepted 9,461 (vote 4,013, fourteen more; single 2,158; exact-single 3,290), queued 3,938 (six more), minted 10,876;
 the second pass settled 101 of 4,039 where jr8hf5 settled 107. The diff against jr8hf5, three rows and twenty strings:

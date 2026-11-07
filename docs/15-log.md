@@ -49,7 +49,13 @@ not built), publication must be a recorded act with the delta computed from the 
 nothing published is ever deleted (undo-run and cleanup-orphans delete provisional entities today), a withdrawn
 equivalent must reach the consumer as a retraction, a split is missing and a record-level exception is beyond the
 string key, strings that leave the catalogue need reporting and retiring, authority reloads need a stale-equivalent
-report, and one dataset key per institution.
+report, and one dataset key per institution. The reconcile finished at about 12:40 (run d6h8va: accepted 9,500,
+queued 3,930, minted 10,886; store stage 1,673 s on battery) and its diff against krbnw6 read (doc 10 7.6 "Measured
+2026-11-07 (run d6h8va)"): 36 of the 104 predicted strings onto their entities, and 65 strings where the pass gave a
+legacy entity the record a run-made entity of the same person or place already held, twins the store had never
+joined: 28 to the desk as holders to merge, 23 switched entity silently, 9 minted (a fault to read: the vetoed holder
+spreading its veto through the group is the suspicion). The evidence queries are command 2 of section 0; the last
+full run is d6h8va.
 
 ## 2026-11-06
 

@@ -272,6 +272,18 @@ and the log (doc 15) records that. The order within an area is rough value.
   persisted: the first pass's queued decision stands and the second writes none, so the desk shows the first pass's
   evidence and the reason reaches it only through "Look again". The second pass should save its evidence on the
   string it leaves queued (a new queued decision, or the standing one's evidence replaced), so the desk reads why.
+- An entity's class is the field's, not the record's (the owner, 2026-11-07, at "Ackermann and Son": a confirmed entity
+  classed Person, created at the desk that day from a persauthorfull string, holding ULAN's corporate body 500436349 by
+  override and LoC's and Wikidata's Arthur Ackermann & Son by hand, with the firm's variants merged in, and the owner
+  unwilling to merge a Person with a Group). The desk's accept and the variants view's cluster give a new entity the
+  field's first class (`ReviewService` and `CurationService`, `reading.Classes[0]`), where the reconciler's own
+  acceptance gives it the record's class. Three parts: the desk's accept and the cluster take the record's class when
+  the record accepted has one and the field allows it, the field's first class otherwise; the entity page gets a class
+  control (Person, Group, Place, Type, Period, Event), a human change noted on the entity, since an identifier added
+  by hand can say what the field could not; and a merge whose two entities differ in class says so in the confirm step
+  and offers the survivor the loser's class, instead of merging silently (`MergeAsync` does not look). The identifier
+  keeps its minted path (`/person/`) after a class change, as identifiers are minted once; a count of entities whose
+  class disagrees with the type of the records they hold sizes the legacy side (the item below on legacy classes).
 - The way from a placeholder's entity page to its own desk page (the owner, 2026-11-06, at "Colchester (England)"): the
   entity page's "Waiting at the desk" list is the other strings of the name, and leaves out the strings that resolve
   here, which sit under "Strings that resolve here" with "queued" as plain text. A placeholder whose only string is its

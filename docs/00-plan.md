@@ -373,6 +373,12 @@ and the log (doc 15) records that. The order within an area is rough value.
   2026-11-08: "beware of our data-pollution problem"). Nothing is fetched on page load or inside a run; a polite client
   with a budget; the same fetchers become step 3b's remote candidates. Doc 12 section 13 has the comparison with the
   earlier Authority Server that never fetched them.
+- A map (the owner, 2026-11-08): an entity that is a place shows where it is on a map on its page, and wherever the
+  UI puts namesake places side by side (the desk's cards for "St Ives", "Boston", "Birmingham"; the merge tray; the
+  entities list filtered to places) the candidates are shown together on one map, since seeing the St Iveses apart
+  is how a person picks the right one. Coordinates from TGN's record (it carries them) and Wikidata's P625, cached on
+  the record; a small static-tile map (Leaflet over OpenStreetMap tiles, attribution kept), one marker per candidate,
+  the chosen one emphasised; no map when nothing has coordinates. Doc 12 section 13.
 - Notes as the audit log, History on the entity page, Recent changes on the home page (doc 12 section 13, item 1):
   every hand change writes a note with before and after (label, class, an identifier added or removed, a merge and
   what merged, a reopen), the entity page gains a History of its notes and the human decisions on its strings, and the

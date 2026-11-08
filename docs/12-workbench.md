@@ -275,6 +275,12 @@ What it had that the workbench lacks, taken as items (plan section 7, Workbench 
    to keep is that the published id should win, which the lifecycle items (publication as a recorded act) make
    decidable.
 
+And one thing neither had, from the owner on the same day: a map. An entity that is a place shows where it is, and
+wherever namesake places stand side by side (the desk's cards, a merge tray, the entities list filtered to places)
+they stand together on one map, since seeing the St Iveses apart is how a person picks the right one. Coordinates
+from TGN's record and Wikidata's P625, cached on the record; a small Leaflet map over OpenStreetMap tiles with the
+attribution kept; one marker per candidate, the chosen one emphasised; no map when nothing has coordinates.
+
 What not to take: the attach-by-exact-label rule at ingest (arbitrary when several match, no review); history without
 values; ids that could be re-minted after a merge; no export, no bulk operations, no split, no roles. The identifier
 scheme (8 characters, no 0/o/i/l/1, a letter first) is close to ours.

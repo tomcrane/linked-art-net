@@ -96,7 +96,7 @@ owner's to start and stop. The answered queries and one-off SQL of earlier days 
      Westminster (London)).
 
          select s.id, s.raw, s.context from decisions d join source_strings s on s.id = d.source_string_id
-         where d.run_id = 'run-20261107-134248-wsw254' and d.method = 'queued'
+         where d.run_id = 'run-20261108-152102-zke4u7' and d.method = 'queued'
            and (select count(*) from jsonb_array_elements(d.evidence->'groups'->0->'members') m where m->>'source' = 'store') >= 2
          order by s.raw;
 
@@ -114,12 +114,12 @@ owner's to start and stop. The answered queries and one-off SQL of earlier days 
      on an entity page; a merge where the classes differ; a placeholder merged from its page (the string decided
      human, the queue one lower).
 
-2. No reconcile is pending. wsw254 (13:42) is the last full run; jsf3ur and the cleanups sit on top as runs of their
-   own. The next reconcile comes with the next rule built from the desk, as always, and will also show the second
-   pass's reasons kept on the strings it leaves queued and rule (b) on any new heading: the last full run taken back,
-   `reconcile`, then command 4 against the run before. With the workbench stopped:
+2. No reconcile is pending. zke4u7 (2026-11-08 15:21, doc 10 7.6 "Measured 2026-11-08 (run zke4u7)") is the last
+   full run: findings 113 to 116 measured in their final form, queued 3,778. The next reconcile comes with the next
+   rule, as always: the last full run taken back, `reconcile`, then command 4 against the run before. The assistant
+   runs it now, with the workbench stopped:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261107-134248-wsw254
+       dotnet run --project tools/Align -- undo-run --run run-20261108-152102-zke4u7
        dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
@@ -129,14 +129,14 @@ owner's to start and stop. The answered queries and one-off SQL of earlier days 
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, whenever it comes, against wsw254, the last full run (each run's last
+4. The standing method diff after the next run, whenever it comes, against zke4u7, the last full run (each run's last
    decision per string, since a string the second pass settled has two; an undone run keeps its evidence, though the
    undo removes the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for
    those and true or false only where the entity survived). The strings jsf3ur re-decided (167 headings and their
    parts) will show against wsw254 as its changes, not the new run's. A method change on the same entity is a label,
    not a decision:
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261107-134248-wsw254' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261108-152102-zke4u7' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id

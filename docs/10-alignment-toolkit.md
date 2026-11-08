@@ -1259,6 +1259,26 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-08 (run zke4u7, 15:21 to 16:05; m6dfm6 taken back): findings 113 to 116 in their final form, the
+last full run. Matched in store 6,031, accepted 9,456 (vote 4,087, single 2,100, exact-single 3,269), queued 3,778
+(147 fewer than wsw254's 3,925), minted 10,785 (93 fewer); the second pass settled 99 and kept its reasons on 3,777.
+Against m6dfm6 the tie-breaker gave back the cities the country qualifier had tied ("Hull", "Nottingham", "Hereford",
+"Livorno", "Padua" queued to exact-name; "Genoa", "Newcastle", "Hannover", "St Ives" queued to vote) and otherwise
+relabelled (53 exact-names to votes and 39 votes to exact-names, the same entities, the two readings' methods
+swapping). The sibling's place now marks 30 strings, 18 exact-name and 12 vote, only where it settled something.
+Against wsw254, the measure of the four rules: 27 rows, some 270 strings. Better: 51 dated persons queued to vote and
+47 strings queued to exact-name (finding 115's artists; finding 114's "Athens", "Boston", "Chatsworth",
+"Christchurch", "Coventry"; finding 113's "St Ives (Cornwall)"), 65 singles to votes with a second source, five minted
+to exact-name ("St. Ives (Cornwall, England)", "Williamsburg, Virginia"), four minted to queued; and 54 votes to
+exact-name on the same entity, a relabel. Worse, seventeen: six votes to queued on another entity ("Hamden, CT",
+"Stanford, Ca", "Taunton, Eng.?", "Art Gallery of Hamilton (Hamilton, Canada)", "Mead Art Museum (Amherst,
+Massachusetts, USA)"), where finding 113 placed the legacy entity through its LoC heading and the string's own
+qualifier is written otherwise ("CT" against "Conn.", "Canada" against "Ont."), the abbreviations item of section 7;
+five exact-names to queued on another entity ("'Country Life'" in three spellings, the periodical and the firm now two
+placed entities; "Glasgow" in keywords between two project Glasgows; "Poughkeepsie, New York"); and five singles
+("Sea", "Harris, Tomás, 1908-1964" among them). The desk's, and seventeen against two hundred and seventy. The queue
+stands at 3,778.
+
 Measured 2026-11-08 (run m6dfm6, 14:34 to 15:16; jnagjy taken back): finding 114 refined to TGN-known ancestors.
 Matched in store 6,025 (52 more than jnagjy), accepted 9,435, queued 3,805 (46 fewer), minted 10,785; the second pass
 settled 102. Against jnagjy the refinement gave back what the first form had taken: 25 queued to vote ("Alabama",

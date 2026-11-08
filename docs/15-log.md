@@ -50,7 +50,10 @@ unneeded this run, and 114 over-reaching (a narrower sibling, and subjects besid
 of the name, and run again (m6dfm6, 14:34 to 15:16): the first form's losses given back, and a second kind seen, a
 country too coarse to separate TGN's namesakes within it ("Hull", "Nottingham", "Hereford", "Newcastle", "Genoa"), so
 finding 114 became a tie-breaker, run only when the plain reading leaves the string queued or minted and kept only
-when it settles it; the third reconcile next. The US state abbreviations a new item from the diff.
+when it settles it; the third reconcile (zke4u7, 15:21 to 16:05) measured the four rules in their final form: some 270
+strings better against wsw254 (the dated artists, the placed subdivisions, 65 singles to votes), seventeen worse and
+the desk's (the abbreviation gap "CT" against "Conn.", the periodical and firm "Country Life" as two placed entities),
+the queue 3,778 from 3,925; the last full run. The US state abbreviations a new item from the diff.
 
 ## 2026-11-07
 

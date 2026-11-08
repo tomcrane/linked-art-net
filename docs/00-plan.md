@@ -374,7 +374,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   panel from the cache. Left for later: LUX's works that cite the entity as a count, a pull from the desk itself, a
   budget across a session.) Seen at once from it: a LUX identifier the project holds answers 404
   ("Peabody"'s concept neighbour, `concept/a277azwt`, 2026-11-08), the re-mint doc 10 7.5 found in October; the
-  pull says the status now. An item of its own: count the project's LUX identifiers that no longer resolve (a HEAD
+  pull says the status now. Sampled the same evening (the owner's question whether the 404 went with the heading
+  being a compound, "Violence--Press coverage"): of the 17,454 LUX identifiers the import brought, a sample of 15
+  persons all resolved, 9 of 10 groups and 9 of 10 places, but only 5 of 15 concepts; among 24 concepts read with
+  their labels, 9 of 12 compound headings were gone against 3 of 12 simple ones ("Dwellings", "Manners and
+  customs", "Romanticism"). So the re-mint fell on the subject concepts above all and on the compounds hardest, as
+  doc 10 7.5 saw for the "Art, Modern--19th century" family, though not only on them. An item of its own: count the
+  project's LUX identifiers that no longer resolve (a HEAD
   pass with the polite client, outside any run) and decide whether they are withdrawn as equivalents or re-found by
   the PMC identifier LUX still carries in the records it kept; decision 15's shape. The design as agreed (the owner, 2026-11-08: the project's entity store is becoming the local authority
   librarians and archivists correct MARC and CALM records against, so an entity page should pull in what the aligned

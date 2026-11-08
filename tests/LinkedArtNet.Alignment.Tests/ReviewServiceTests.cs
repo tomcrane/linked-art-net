@@ -83,6 +83,11 @@ public class ReviewServiceTests(PostgresFixture pg)
         var dowell = await pg.Store.CollectAsync(ds, "corpauthor", "Dowell's Ltd");
         await reconciler.RunAsync(ds);
         await Assert.ThrowsAsync<InvalidOperationException>(() => desk.KeepLocalAsync(ds, dowell.Id, "tester", knownAt: "https://example.org/nothing/1"));
+        // a URL another entity of the project holds is refused with the holder named (doc 12 section 13, item 3)
+        var holder = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Dowell's of Edinburgh", ["Dowell's of Edinburgh"], Status: EntityStatus.Confirmed), scheme);
+        await pg.Store.AddEquivalentAsync(holder.Id, new Equivalent("http://viaf.org/viaf/999999999", "viaf", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        var inUse = await Assert.ThrowsAsync<IdentifierInUseException>(() => desk.KeepLocalAsync(ds, dowell.Id, "tester", knownAt: "http://viaf.org/viaf/999999999"));
+        Assert.Equal(holder.Id, inUse.Holder.Id);
         var known = await desk.KeepLocalAsync(ds, dowell.Id, "tester", note: "Edinburgh auctioneers", knownAt: "http://viaf.org/viaf/123456789");
         Assert.Equal(EntityStatus.Confirmed, known.Status);
         Assert.Contains(known.Equivalents, q => q.Uri == "http://viaf.org/viaf/123456789" && q.Source == "viaf" && q.Method == DecisionMethod.Human);

@@ -40,6 +40,12 @@
 <main>
     @RenderBody()
 </main>
+@if (ViewData["Dataset"] is string trayDs)
+{
+    @* the tray (doc 12 section 13, item 2): entities collected across pages for one merge, held in this browser; wwwroot/tray.js fills it *@
+    <div id="tray" class="tray" data-dataset="@trayDs" hidden></div>
+    <script src="~/tray.js" asp-append-version="true"></script>
+}
 <footer>
     <p>Part of <a href="https://github.com/tomcrane/linked-art-net">linked-art-net</a>. Authority data: Getty ULAN, AAT and TGN under ODC-By; Library of Congress Name Authority File.</p>
 </footer>

@@ -253,6 +253,8 @@ returned 404; labels that follow a merge, so "Clemens" still finds "Mark Twain" 
 records behind an entity on its page; undo of a decision; roles per project; the manifest; runs. Their `seeAlso`
 data was inlined into API responses only for the UAL systems' own files, never fetched for Wikidata, which is the
 feature the owner now wants built the other way round (on demand, cached; section 7 of the plan, Workbench and desk).
+Built the same day: `SourcePull` fetches Wikidata (with Wikipedia and Commons), ULAN, LoC and LUX on "Pull in", caches
+the answer on the record, and the entity page shows a "From the sources" panel from the cache.
 
 What it had that the workbench lacks, taken as items (plan section 7, Workbench and desk):
 
@@ -267,6 +269,7 @@ What it had that the workbench lacks, taken as items (plan section 7, Workbench 
    list rows and entity pages, acted on at a merge page with the survivor, label and class chosen; our merge is from
    one entity's page by search, or the desk's together tick on one card. The owner's walk through the Ackermanns
    ("once I was in the various Ackermanns it seemed the easiest flow to go back and search for more") is the case.
+   Built 2026-11-08: `wwwroot/tray.js` and the merge page, `Pages/Projects/Merge.cshtml`.
 3. **An identifier in use says so.** Their Add form checked live whether `source:type:id` already belonged to an
    authority and linked to it. Our "Add identifier" on an entity page writes the equivalent without asking whether
    another entity holds that URI, which would make a twin; it should say "held by X" and offer the merge.
@@ -279,7 +282,9 @@ And one thing neither had, from the owner on the same day: a map. An entity that
 wherever namesake places stand side by side (the desk's cards, a merge tray, the entities list filtered to places)
 they stand together on one map, since seeing the St Iveses apart is how a person picks the right one. Coordinates
 from TGN's record and Wikidata's P625, cached on the record; a small Leaflet map over OpenStreetMap tiles with the
-attribution kept; one marker per candidate, the chosen one emphasised; no map when nothing has coordinates.
+attribution kept; one marker per candidate, the chosen one emphasised; no map when nothing has coordinates. Built the
+same day on the entity page and the desk (`_Map.cshtml`, `Authorities/Coordinates`); the entities list and the tray
+still to come.
 
 What not to take: the attach-by-exact-label rule at ingest (arbitrary when several match, no review); history without
 values; ids that could be re-minted after a merge; no export, no bulk operations, no split, no roles. The identifier

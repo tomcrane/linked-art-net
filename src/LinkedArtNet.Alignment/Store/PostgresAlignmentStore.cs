@@ -874,6 +874,20 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list.SingleOrDefault();
     }
 
+    public async Task PutPulledAsync(string uri, string source, string? label, string pulledJson, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            insert into authority_records (uri, source, label, labels, normalised_labels, data)
+            values (@uri, @source, @label, @labels, @normalised, jsonb_build_object('pulled', @pulled::jsonb))
+            on conflict (uri) do update set data = coalesce(authority_records.data, '{}'::jsonb) || jsonb_build_object('pulled', @pulled::jsonb)
+            """);
+        var labels = label is null ? Array.Empty<string>() : [label];
+        Add(cmd, "uri", uri); Add(cmd, "source", source); Add(cmd, "label", label); Add(cmd, "labels", labels); Add(cmd, "normalised", NormalisedLabels(label, labels));
+        cmd.Parameters.Add(new NpgsqlParameter("pulled", NpgsqlTypes.NpgsqlDbType.Text) { Value = pulledJson });
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
     public async Task PutAuthorityAsync(AuthorityRecord record, CancellationToken ct = default)
     {
         var labels = record.Labels.Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();
@@ -1243,6 +1257,29 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await using var r = await cmd.ExecuteReaderAsync(ct);
         await r.ReadAsync(ct);
         return new Note(r.GetInt64(0), dataset, target, author, text, r.GetFieldValue<DateTimeOffset>(1));
+    }
+
+    public async Task<IReadOnlyList<Note>> RecentNotesAsync(string dataset, int limit = 50, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select id, dataset, target, author, text, created_at from notes where dataset = @dataset order by created_at desc, id desc limit @limit");
+        Add(cmd, "dataset", dataset); Add(cmd, "limit", limit);
+        var list = new List<Note>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new Note(r.GetInt64(0), r.GetString(1), r.GetString(2), Str(r, 3), r.GetString(4), r.GetFieldValue<DateTimeOffset>(5)));
+        return list;
+    }
+
+    public async Task<IReadOnlyList<DecidedString>> RecentHumanDecisionsAsync(string dataset, int limit = 50, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            $"select {StringColumns}, {DecisionColumns} " +
+            "from decisions d join source_strings s on s.id = d.source_string_id where s.dataset = @dataset and d.reviewer is not null order by d.decided_at desc, d.id desc limit @limit");
+        Add(cmd, "dataset", dataset); Add(cmd, "limit", limit);
+        var list = new List<DecidedString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+            list.Add(new DecidedString(ReadString(r), new Decision(r.GetInt64(9), r.GetInt64(10), Str(r, 11), r.GetString(12), Str(r, 13), Str(r, 14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16), Str(r, 17), r.GetBoolean(18), r.IsDBNull(19) ? null : r.GetInt64(19))));
+        return list;
     }
 
     public async Task<IReadOnlyList<Note>> NotesAsync(string dataset, string target, CancellationToken ct = default)

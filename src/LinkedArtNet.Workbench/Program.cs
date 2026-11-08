@@ -22,6 +22,8 @@ builder.Services.AddSingleton<IAlignmentStore>(sp =>
     if (string.IsNullOrWhiteSpace(connection)) throw new InvalidOperationException("Set LINKEDART_PG (or ConnectionStrings:Store) to the alignment store's connection string.");
     return new PostgresAlignmentStore(connection);
 });
+// the live sources (plan section 7, "From the sources, on demand"): one HttpClient for the process, as the runtime recommends
+builder.Services.AddSingleton<LinkedArtNet.Alignment.Authorities.IWebFetch>(_ => new LinkedArtNet.Alignment.Authorities.HttpWebFetch(new HttpClient()));
 builder.Services.AddSingleton<ProjectServices>();
 builder.Services.AddSingleton<ProjectAccess>();
 builder.Services.AddRazorPages(o =>

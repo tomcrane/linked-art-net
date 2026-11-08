@@ -20,7 +20,7 @@ public sealed record EvidenceMember(string Uri, string Source, string? Label, st
 /// most frequent of them.
 /// </summary>
 /// <param name="Placement">Where the entity is, read from the LoC heading it holds ("Ala." from "Birmingham (Ala.)") or its TGN record's parents, so that namesake project entities on one page can be told apart (the owner, 2026-11-07, at "Birmingham" in keywords:sub: both buttons "Same as Birmingham"); null when its own label already says, or nothing does.</param>
-public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<StringExample> Examples, string? Placement = null)
+public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<StringExample> Examples, string? Placement = null, (double Lat, double Long)? Coordinates = null)
 {
     /// <summary>The fields the strings came from, the most frequent first.</summary>
     public IReadOnlyList<string> Contexts => Strings.GroupBy(s => s.String.Context, StringComparer.Ordinal).OrderByDescending(g => g.Sum(x => x.String.Occurrences)).Select(g => g.Key).ToList();
@@ -166,7 +166,15 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
                 if (examples.All(e => e.RecordId != x.RecordId)) examples.Add(x);
             if (examples.Count >= 3) break;
         }
-        return new EntityFacts(entity, strings, examples.Take(3).ToList(), await PlacementAsync(entity, ct));
+        return new EntityFacts(entity, strings, examples.Take(3).ToList(), await PlacementAsync(entity, ct), await CoordinatesAsync(entity, ct));
+    }
+
+    /// <summary>Where the entity is, from the first of its TGN, Wikidata or LUX records that places it (Authorities.Coordinates), for the map.</summary>
+    private async Task<(double Lat, double Long)?> CoordinatesAsync(Entity entity, CancellationToken ct)
+    {
+        foreach (var q in entity.Equivalents.Where(q => q.Source is "tgn" or "wikidata" or "lux").OrderBy(q => q.Source == "tgn" ? 0 : 1).Take(4))
+            if (Authorities.Coordinates.Of(await store.GetAuthorityAsync(q.Uri, ct)) is { } c) return c;
+        return null;
     }
 
     /// <summary>Where an entity is, for telling namesakes apart: LoC's parenthetical first ("Ala."), else the first two of its TGN record's parents ("Jefferson, Alabama"); null when the entity's own label carries a qualifier or nothing says.</summary>
@@ -284,8 +292,10 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             plan = await PlanTogetherAsync(dataset, stringId, targets, survivorId, ct);
             foreach (var loser in plan.Merging)
             {
+                var loserStrings = (await store.StringsForEntityAsync(loser.Id, 1000, ct)).Count;
                 await MergeSettlement.SettleAsync(store, reconciler, loser, plan.Survivor, reviewer, stringId, ct);
                 await store.MergeAsync(loser.Id, plan.Survivor.Id, reviewer, ct);
+                await CurationService.MergeNotesAsync(store, dataset, loser, plan.Survivor, loserStrings, reviewer, ct);
             }
             entity = (await store.ResolveEntityAsync(plan.Survivor.Id, ct))!;
             if (cls is { } chosen && chosen != entity.Class)
@@ -401,6 +411,8 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             var uri = knownAt.Trim();
             if (!Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new InvalidOperationException("\"Known elsewhere\" is not a URL.");
             if (scheme.Owns(uri)) throw new InvalidOperationException("\"Known elsewhere\" is one of our own entities: use Same as.");
+            foreach (var other in await store.FindEntitiesByEquivalentAsync(uri, ct))
+                if (other.Dataset == dataset && other.MergedInto is null && other.Id != entity.Id) throw new IdentifierInUseException(uri, other);
             if (await store.GetAuthorityAsync(uri, ct) is null && AuthorityUris.SourceOf(uri) == "other") throw new InvalidOperationException("\"Known elsewhere\" is not a known authority record and not in a recognised namespace (ULAN, AAT, TGN, VIAF, Wikidata, GND, LoC, LUX, PeriodO, or an ArchivesSpace agent's URL).");
             if (entity.Equivalents.All(q => q.Uri != uri)) await store.AddEquivalentAsync(entity.Id, new Equivalent(uri, AuthorityUris.SourceOf(uri), DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow), ct);
             entity = (await store.GetEntityAsync(entity.Id, ct))!;

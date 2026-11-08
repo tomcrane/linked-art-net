@@ -47,5 +47,12 @@ public class DeskEvidenceTests(PostgresFixture pg)
         var facts = (await desk.FactsAsync(boston.Id))!;
         Assert.Equal("Mass.", facts.Placement);
         Assert.Null((await desk.FactsAsync(harry.Id))!.Placement);
+        // and its coordinates for the map, from a TGN record it holds (the owner, 2026-11-08), none without one
+        Assert.Null(facts.Coordinates);
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/tgn/7013445", "tgn", "Boston", ["Boston"], "Place", null, [], """{"lat":"42.3584","long":"-71.0598","parentString":"Suffolk, Massachusetts, United States"}""", DateTimeOffset.UtcNow, "test"));
+        await pg.Store.AddEquivalentAsync(boston.Id, new Equivalent("http://vocab.getty.edu/tgn/7013445", "tgn", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        var placed = (await desk.FactsAsync(boston.Id))!.Coordinates;
+        Assert.NotNull(placed);
+        Assert.Equal(42.3584, placed.Value.Lat, 4); Assert.Equal(-71.0598, placed.Value.Long, 4);
     }
 }

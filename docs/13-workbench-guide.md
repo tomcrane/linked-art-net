@@ -159,6 +159,39 @@ waiting string there at the desk, over changing the class. When the two entities
 row on the entity page and the confirm step on the desk offer the merged entity's class; the survivor's stands unless
 chosen.
 
+Every change made by hand is written as a note on the entity, with before and after: a label or class changed, an
+identifier added or removed, a confirmation, a cluster, a merge (on both entities), strings reopened. The entity page's
+"History and notes" shows them, newest first, with the decisions a person made on the entity's strings; the project
+home's "Recent changes" shows the latest across the project, each with a link to the entity or the string.
+
+An identifier another entity of the project already holds is refused, with the holder named, and the page lists that
+entity under Merge so that, if they are one thing, this entity merges into it in one click rather than becoming its
+twin; the same holds for a URL on "Keep as local authority" and for identifiers given with a cluster.
+
+**From the sources.** Below the identifiers, the page can show what the aligned sources say about the entity: Wikidata's
+description and aliases, the opening of its English Wikipedia article, its picture from Wikimedia Commons with the
+author and licence Commons asks to be shown; ULAN's biography, dates and nationality; the Library of Congress's
+variants and the sources its heading was "found in"; LUX's names, statements and what LUX holds it the same as.
+Nothing is fetched to show the page: press "Pull in from the sources" (or "pull" on one card) and the answers are
+kept on the records and shown from then on, dated, with "refresh" to ask again. Every fact is the source's own; a LUX
+record that carries one of the project's own identifiers is marked as our earlier export reflected back, not a second
+witness. On the desk, "show pictures" in the line above the string puts the pulled thumbnails and descriptions on the
+cards whose records have them; it is off by default, since most cards have none.
+
+**The tray.** When the same thing turns out to be several entities found on several pages (the Ackermanns: a firm, a
+placeholder, a misspelling), collect them: "Add to tray" at the top of an entity's page, "Tray" at the end of a row
+in the entities list or beside a project entity on a desk card. The tray is a bar at the foot of the window, kept in
+your browser for this project; "Merge these" opens the merge page, which shows the collected entities side by side,
+suggests the survivor (the one with most strings, then the firmer status, then more identifiers), lets you choose
+another, the label after the merge and, when they differ, the class, and merges the rest into it with one button.
+Every merge is written on both entities' histories, and the losers' ids keep resolving to the survivor.
+
+**The map.** An entity any of whose records places it (TGN's coordinates, or Wikidata's or LUX's after a pull) shows
+where it is on a small map at the top of its page. On the desk, when any candidate for a place name is placed, one
+map above the cards shows them all, a marker each with its label and where TGN puts it, the best group's markers
+larger: the St Iveses apart, so the right one can be picked. The tiles are OpenStreetMap's; hover a marker for its
+label when there are too many to show at once.
+
 An identifier added by hand is in force at once for the next reconcile, for "Look again" and for the searches, and a
 queued string's card says "now held by" on the record's row. On an entity's page, a string still queued links to its
 desk page from the decided column, and the title's count includes it.

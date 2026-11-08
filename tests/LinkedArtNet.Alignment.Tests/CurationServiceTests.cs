@@ -124,7 +124,9 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Contains(await pg.Store.NotesAsync(ds, firm.Id), n => n.Text.Contains("Class changed from Person to Group"));
         Assert.Equal(EntityClass.Group, (await pg.Store.GetEntityAsync(firm.Id))!.Class);
 
-        // a cluster from a field that allows both takes the record's class
+        // a cluster from a field that allows both takes the record's class (the identifier first taken off the first entity: since
+        // doc 12 section 13 item 3 an identifier another entity holds is refused, and this test wants a fresh entity)
+        await curation.RemoveEquivalentAsync(ds, firm.Id, "http://vocab.getty.edu/ulan/500301417");
         var c = await pg.Store.CollectAsync(ds, "corpauthor", "Agnew's of Bond Street");
         await reconciler.RunAsync(ds);
         var other = await curation.ClusterAsync(ds, [c.Id], null, "Agnew's of Bond Street", ["http://vocab.getty.edu/ulan/500301417"], "tester");
@@ -183,6 +185,72 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Single(settled);
         Assert.Equal(DecisionMethod.Human, (await pg.Store.DecisionForAsync(agnews.Id))!.Method);
         Assert.Empty(await curation.SettleResolvedAsync(ds, "tester", apply: false));
+    }
+
+    /// <summary>Doc 12 section 13, item 1 (2026-11-08): notes are the audit log, every hand change written with before and after, and the project's recent changes read from them.</summary>
+    [PostgresFact]
+    public async Task Every_hand_change_writes_a_note_and_the_recent_changes_read_them()
+    {
+        var ds = "cu-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var reconciler = new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions());
+        var curation = new CurationService(pg.Store, scheme, reconciler);
+        var a = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Agnews", ["Agnews"]), scheme);
+        var b = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Thos. Agnew & Sons", ["Thos. Agnew & Sons"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(b.Id, new Equivalent("http://vocab.getty.edu/ulan/500301417", "ulan", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+
+        await curation.SetLabelAsync(ds, a.Id, "Agnew's", "tester");
+        await curation.AddEquivalentAsync(ds, a.Id, "http://viaf.org/viaf/135146590", "tester");
+        await curation.RemoveEquivalentAsync(ds, a.Id, "http://viaf.org/viaf/135146590", "tester");
+        await curation.ConfirmAsync(ds, a.Id, "tester", "the Bond Street firm");
+        var notes = await pg.Store.NotesAsync(ds, a.Id);
+        Assert.Contains(notes, n => n.Text == "Label changed from \"Agnews\" to \"Agnew's\"." && n.Author == "tester");
+        Assert.Contains(notes, n => n.Text.StartsWith("Identifier added: http://viaf.org/viaf/135146590 (viaf)"));
+        Assert.Contains(notes, n => n.Text.StartsWith("Identifier removed: http://viaf.org/viaf/135146590"));
+        Assert.Contains(notes, n => n.Text.StartsWith("Confirmed (was ") && n.Text.EndsWith("): the Bond Street firm"));
+        // the same label again writes nothing
+        await curation.SetLabelAsync(ds, a.Id, "Agnew's", "tester");
+        Assert.Equal(4, (await pg.Store.NotesAsync(ds, a.Id)).Count);
+
+        // a merge writes on both sides
+        await curation.MergeAsync(ds, a.Id, b.Id, "tester");
+        Assert.Contains(await pg.Store.NotesAsync(ds, b.Id), n => n.Text.StartsWith("Merged in \"Agnew's\"") && n.Text.Contains("0 strings"));
+        Assert.Contains(await pg.Store.NotesAsync(ds, a.Id), n => n.Text.StartsWith("Merged into \"Thos. Agnew & Sons\""));
+
+        // the project's recent changes, newest first, and the human decisions beside them
+        var recent = await pg.Store.RecentNotesAsync(ds, 10);
+        Assert.True(recent.Count >= 6);
+        Assert.True(recent[0].CreatedAt >= recent[^1].CreatedAt);
+        Assert.StartsWith("Merged", recent[0].Text);
+        Assert.Empty(await pg.Store.RecentHumanDecisionsAsync(ds));
+        var s = await pg.Store.CollectAsync(ds, "corpauthor", "Agnew & Son");
+        await pg.Store.DecideAsync(s.Id, b.Id, DecisionMethod.Human, null, "tester");
+        var decided = await pg.Store.RecentHumanDecisionsAsync(ds);
+        Assert.Equal(s.Id, Assert.Single(decided).String.Id);
+    }
+
+    /// <summary>Doc 12 section 13, item 3 (2026-11-08): an identifier another entity holds is refused with the holder named, so a twin is never made by hand.</summary>
+    [PostgresFact]
+    public async Task An_identifier_another_entity_holds_is_refused_with_the_holder_named()
+    {
+        var ds = "cu-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var reconciler = new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions());
+        var curation = new CurationService(pg.Store, scheme, reconciler);
+        var one = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Agnew's", ["Agnew's"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(one.Id, new Equivalent("http://vocab.getty.edu/ulan/500301417", "ulan", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var two = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Thos. Agnew & Sons", ["Thos. Agnew & Sons"], Status: EntityStatus.Confirmed), scheme);
+        var refused = await Assert.ThrowsAsync<IdentifierInUseException>(() => curation.AddEquivalentAsync(ds, two.Id, "http://vocab.getty.edu/ulan/500301417", "tester"));
+        Assert.Equal(one.Id, refused.Holder.Id);
+        Assert.Contains("Agnew's", refused.Message);
+        Assert.Empty((await pg.Store.GetEntityAsync(two.Id))!.Equivalents);
+        // the same URI on the holder itself is no refusal, and a URI nobody holds is added
+        Assert.Null(await curation.HolderOfAsync(ds, "http://vocab.getty.edu/ulan/500301417", one.Id));
+        var added = await curation.AddEquivalentAsync(ds, two.Id, "http://viaf.org/viaf/135146590", "tester");
+        Assert.Contains(added.Equivalents, q => q.Source == "viaf");
+        // merged-away holders do not count: after the merge the URI sits on the survivor, which is the entity being added to
+        await curation.MergeAsync(ds, one.Id, two.Id, "tester");
+        Assert.Null(await curation.HolderOfAsync(ds, "http://vocab.getty.edu/ulan/500301417", two.Id));
     }
 
     /// <summary>The owner, 2026-11-07, at "Ackermann & Son, Arthur (London)--History" in the entities list: a compound heading's own concept says what it is coordinated from.</summary>

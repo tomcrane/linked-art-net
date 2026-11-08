@@ -25,6 +25,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     [BindProperty(SupportsGet = true)] public string? Survivor { get; set; }
     /// <summary>"Always, in this field" on a group: accepted together and the spelling overridden to the entity in this field.</summary>
     [BindProperty(SupportsGet = true)] public bool Always { get; set; }
+    /// <summary>Thumbnails on the cards whose records a pull has given a picture (plan section 7: the desk stays text by default, since pictures slow it and most cards have none).</summary>
+    [BindProperty(SupportsGet = true)] public bool Pictures { get; set; }
 
     public ReviewItem? Item { get; private set; }
     public IReadOnlyList<ContextMethodCount> Queue { get; private set; } = [];

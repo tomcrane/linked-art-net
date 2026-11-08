@@ -359,7 +359,20 @@ and the log (doc 15) records that. The order within an area is rough value.
   session. `source_strings.skipped_at` (schema version 9), set by Skip; the desk's order is the unskipped by id, then
   the skipped in the order they were skipped, and "after" follows that order (`NextForDeskAsync`); Unskip on a skipped
   string puts it back; ReviewServiceTests.)
-- From the sources, on demand (the owner, 2026-11-08: the project's entity store is becoming the local authority
+- ~~From the sources, on demand~~ (built 2026-11-08: `Authorities/SourcePull` with a fetcher for Wikidata's entity JSON,
+  then the English Wikipedia summary for its sitelink and Commons' licence and author for its image, P18 first and the
+  Wikipedia page image when there is none; ULAN through Getty's SPARQL endpoint (biography, dates, nationality, note;
+  the vocabulary's own JSON endpoint failed with a certificate error on their side that day); LoC's JSON-LD (variants,
+  "found in" sources, same-as, the real-world object's dates); LUX's Linked Art record (names, statements, dates,
+  equivalents, a polygon's centre, a Commons representation), marked a self-echo when its `equivalent` carries one of
+  our identifiers. Cached under `pulled` in the record's `data` by `PutPulledAsync`, a row made when the cache has
+  none; nothing fetched on page load or in a run; one identifying User-Agent, a 20-second timeout, no retry. The
+  entity page's "From the sources" panel, one card per identifier, "Pull in" for all or one, each fact the source's
+  own and dated, the self-echo a notice, the first picture at the top of the page with its attribution and never
+  without it; the desk's "show pictures" link puts the cached thumbnails and descriptions on the cards. SourcePullTests
+  against canned copies of the live answers for John Robert Cozens and LUX's "King's Gallery"; ReviewDeskTests the
+  panel from the cache. Left for later: LUX's works that cite the entity as a count, a pull from the desk itself, a
+  budget across a session.) The design as agreed (the owner, 2026-11-08: the project's entity store is becoming the local authority
   librarians and archivists correct MARC and CALM records against, so an entity page should pull in what the aligned
   sources say, Wikidata and through it Wikipedia above all; "on-demand rather than on page-load, perhaps, or combined
   with heavy caching"). A "Pull in" action on the entity page, per identifier or once for all, fetches the live record
@@ -379,22 +392,38 @@ and the log (doc 15) records that. The order within an area is rough value.
   text by default, since pictures slow it and most cards have none; a "show pictures" toggle on the desk puts a
   thumbnail on the cards whose records have one, which is the one place a face separates two John Smiths. Commons
   licences require the attribution to be shown, so the thumbnail is never shown without it.
-- A map (the owner, 2026-11-08): an entity that is a place shows where it is on a map on its page, and wherever the
+- ~~A map~~ (built 2026-11-08: `Authorities/Coordinates` reads TGN's lat/long from the record's data or a pull's under
+  `pulled`; `EntityFacts.Coordinates` for the desk's project entities; the entity page shows a map at the top when any
+  of its records places it, and the desk one map above the cards when any candidate is placed, a marker per candidate
+  labelled with its record's label and TGN parents or the entity's name and placement, the best group's markers
+  emphasised; `Pages/Shared/_Map.cshtml`, Leaflet 1.9.4 from unpkg with its integrity hash over OpenStreetMap tiles,
+  their attribution shown; CoordinatesTests, DeskEvidenceTests, ReviewDeskTests. Left for later: the entities list
+  filtered to places on one map, and the merge tray's map when the tray exists.) The design (the owner, 2026-11-08): an entity that is a place shows where it is on a map on its page, and wherever the
   UI puts namesake places side by side (the desk's cards for "St Ives", "Boston", "Birmingham"; the merge tray; the
   entities list filtered to places) the candidates are shown together on one map, since seeing the St Iveses apart
   is how a person picks the right one. Coordinates from TGN's record (it carries them) and Wikidata's P625, cached on
   the record; a small static-tile map (Leaflet over OpenStreetMap tiles, attribution kept), one marker per candidate,
   the chosen one emphasised; no map when nothing has coordinates. Doc 12 section 13.
-- Notes as the audit log, History on the entity page, Recent changes on the home page (doc 12 section 13, item 1):
-  every hand change writes a note with before and after (label, class, an identifier added or removed, a merge and
-  what merged, a reopen), the entity page gains a History of its notes and the human decisions on its strings, and the
-  project home a Recent changes list across the project (who, what, when, a link), beside Recent runs.
-- A tray for merging across pages (doc 12 section 13, item 2): entities collected from search results, list rows and
-  entity pages into a browser-held tray, acted on at a merge page with the survivor, label and class chosen and the
-  same confirm step as the desk's; the Ackermann walk of 2026-11-07 is the case.
-- An identifier in use says so (doc 12 section 13, item 3): "Add identifier" on an entity page, given a URI another
-  entity of the project holds, says "held by X" with a link and offers the merge instead of making a twin; the same
-  check on the keep-local URL and the cluster's identifiers.
+- ~~Notes as the audit log, History on the entity page, Recent changes on the home page~~ (built 2026-11-08, doc 12
+  section 13, item 1: every hand change writes a note with before and after, label, class, an identifier added or
+  removed, a confirm with the status it came from, a cluster as one note with its identifiers, a merge on both sides
+  with the strings and identifiers that moved, a reopen with the strings; the entity page's "History and notes" lists
+  them with the human decisions on its strings, newest first; the project home's "Recent changes" lists the latest
+  notes and human decisions across the project, who, what, when, a link; `RecentNotesAsync`,
+  `RecentHumanDecisionsAsync`, `CurationService.MergeNotesAsync`; CurationServiceTests).
+- ~~A tray for merging across pages~~ (built 2026-11-08, doc 12 section 13, item 2: "Add to tray" on an entity's page, "Tray"
+  on the entities list's rows and beside the desk's project entities; the tray a bar at the foot of the window, held
+  per project in the browser (`wwwroot/tray.js`, localStorage), with the entities named, each removable, "Merge
+  these" and "Clear"; the merge page `/p/{dataset}/merge?ids=` lists them side by side with strings, queued, status
+  and identifiers, suggests the survivor (most strings, then the firmer status, then more identifiers), takes the
+  label and, when the classes differ, the class, and merges the rest into it in one post, each merge written on both
+  histories; the redirect's `#tray-cleared` empties the tray. The desk's confirm step is not repeated here: the page
+  itself is the confirm, everything shown before the one button. ReviewDeskTests. Left for later: the published id as
+  the suggested survivor once publication is a recorded act, doc 12 section 13, item 4.)
+- ~~An identifier in use says so~~ (built 2026-11-08, doc 12 section 13, item 3: "Add identifier" on an entity page, a
+  cluster's identifiers and the keep-local URL refuse a URI another entity of the project holds, naming the holder
+  (`IdentifierInUseException`, `CurationService.HolderOfAsync`); the entity page then lists the holder alone under
+  Merge with a line saying so, so the merge is one click; CurationServiceTests, ReviewServiceTests, ReviewDeskTests).
 - A part's parents on the desk, and "not a compound" (the owner, 2026-11-07, at "New" in keywords:head, string 79768:
   the record's keyword "New-York Historical Society (New York, New York, USA)", the society's own hyphenated spelling,
   split at the hyphen into the head "New" and a sub, with ULAN's unknown-artist "New" at 1.00 and nothing on the card

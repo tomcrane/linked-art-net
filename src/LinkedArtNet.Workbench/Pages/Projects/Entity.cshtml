@@ -10,10 +10,21 @@
 <p class="small muted"><a href="/p/@Model.Dataset/entities">Entities</a> › <code>@e.Id</code></p>
 <h1 style="margin-top:0">@e.Label <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
     @if (v.IsCompound) { <a class="tag" href="#parts" title="A compound heading's own concept, coordinated from its parts, listed below">compound</a> }
+    @if (e.Status != EntityStatus.Merged) { <button type="button" class="tray-add small" data-tray="@e.Id" data-tray-label="@e.Label">Add to tray</button> }
     @* desk work under this name is signalled at the top, where the eye lands, with the list further down (the owner, 2026-11-06) *@
     @if (Model.Waiting.Count + Model.OwnQueued.Count > 0) { <a class="tag src" href="@(Model.Waiting.Count > 0 ? "#waiting" : "#strings")" title="Queued strings under this name, and this entity's own strings still at the desk">@(Model.Waiting.Count + Model.OwnQueued.Count) waiting at the desk</a> }</h1>
 <div class="grid">
     <div>
+        @if (Model.Picture is { ThumbUrl: { } thumbUrl } picture)
+        {
+            @* the first picture a pull brought, with the attribution Commons' licences require beside it, never without (plan section 7) *@
+            <figure class="picture"><a href="@picture.FilePage" target="_blank" rel="noopener"><img src="@thumbUrl" alt="@picture.FileName" loading="lazy" /></a><figcaption class="small muted">@picture.Attribution · <a href="@picture.FilePage" target="_blank" rel="noopener">Commons</a></figcaption></figure>
+        }
+        @if (Model.Coordinates is { } at)
+        {
+            @* the map (the owner, 2026-11-08): where the entity is, from TGN's coordinates or a pull's; Leaflet over OpenStreetMap tiles, attribution kept *@
+            <div id="map" class="map" data-points='@System.Text.Json.JsonSerializer.Serialize(new[] { new { lat = at.Lat, lng = at.Long, label = e.Label ?? e.Id, chosen = true } })' aria-label="Map"></div>
+        }
         <dl class="facts">
             @if (e.Labels.Any(l => l != e.Label)) { <dt>Also</dt><dd>@string.Join(" · ", e.Labels.Where(l => l != e.Label))</dd> }
             @if (e.Lifespan?.Display is { } life) { <dt>Dates</dt><dd>@life</dd> }
@@ -76,6 +87,49 @@
             {
                 <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Display is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag">@r.Source</span><br /><a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
                     <form method="post" asp-page-handler="AddEquivalent" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@r.Uri" /><button type="submit" class="secondary">Add as identifier</button></form></div>
+            }
+        }
+
+        @if (!v.IsCompound)
+        {
+            @* From the sources, on demand (the owner, 2026-11-08): what Wikidata (and through it Wikipedia and Commons), ULAN, the Library
+               of Congress and LUX say about this entity, fetched when asked and kept on the records; nothing is fetched to show the page *@
+            <h2 id="sources">From the sources</h2>
+            @if (Model.Pullable.Count == 0) { <p class="small muted">Nothing to pull: none of the identifiers is in Wikidata, ULAN, the Library of Congress or LUX.</p> }
+            else
+            {
+                <form method="post" asp-page-handler="Pull" class="row" style="gap:.6rem; align-items:center">
+                    <input type="hidden" name="id" value="@e.Id" />
+                    <button type="submit" class="secondary" title="Fetch what each source says now and keep it here; pressed again, it refreshes">@(Model.Pulled.Count == 0 ? "Pull in from the sources" : "Pull in again")</button>
+                    <span class="small muted">@Model.Pullable.Count identifier@(Model.Pullable.Count == 1 ? "" : "s") with a live record@(Model.Pulled.Count == 0 ? ", not yet pulled" : $"; last pulled {Model.Pulled.Values.Max(p => p.At).ToLocalTime():yyyy-MM-dd HH:mm}"). Each fact is the source's own, dated; nothing here is ours.</span>
+                </form>
+                @foreach (var q in Model.Pullable)
+                {
+                    var p = Model.Pulled.GetValueOrDefault(q.Uri);
+                    <div class="card source">
+                        <h3 style="margin-top:0"><span class="tag src">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>
+                            @if (p is not null) { <span class="muted" style="font-weight:400; text-transform:none; letter-spacing:0">· pulled @p.At.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</span> }
+                            <form method="post" asp-page-handler="Pull" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@q.Uri" /><button type="submit" class="quiet small">@(p is null ? "pull" : "refresh")</button></form></h3>
+                        @if (p is null) { <p class="small muted">Not pulled yet.</p> }
+                        else
+                        {
+                            @if (p.SelfEcho) { <p class="notice small" style="margin:.4rem 0">@p.Note</p> }
+                            else if (p.Note is not null) { <p class="small muted">@p.Note</p> }
+                            @if (p.Picture is { ThumbUrl: { } th } pic) { <figure class="picture small"><a href="@pic.FilePage" target="_blank" rel="noopener"><img src="@th" alt="@pic.FileName" loading="lazy" /></a><figcaption class="small muted">@pic.Attribution</figcaption></figure> }
+                            @if (p.Label is not null || p.Description is not null) { <p><strong>@p.Label</strong>@if (p.Description is not null) { <text> · </text>@p.Description }</p> }
+                            @if (p.Aliases.Count > 0) { <p class="small muted">also: @string.Join(" · ", p.Aliases)</p> }
+                            @if (p.Extract is not null) { <p class="small">@p.Extract @if (p.ExtractUrl is not null) { <a href="@p.ExtractUrl" target="_blank" rel="noopener">@(p.ExtractFrom ?? "source")</a> }</p> }
+                            @if (p.Facts.Count > 0)
+                            {
+                                <dl class="facts small">
+                                @foreach (var f in p.Facts) { <dt>@f.Key</dt><dd>@if (f.Url is not null) { <a href="@f.Url" target="_blank" rel="noopener">@f.Value</a> } else { @f.Value }</dd> }
+                                </dl>
+                            }
+                            @if (p.Lat is { } lat && p.Long is { } lon) { <p class="small muted">at @lat.ToString("0.0000"), @lon.ToString("0.0000")</p> }
+                            @if (!p.HasAnything) { <p class="small muted">The source answered with nothing to show.</p> }
+                        }
+                    </div>
+                }
             }
         }
 
@@ -161,6 +215,7 @@
            the browser, and its button then submits the search (the 2026-10-21 bug: "Merge into this" did nothing) *@
         <div class="card">
             <h3 style="margin-top:0">Merge into another entity</h3>
+            @if (Model.Held is not null && Model.MergeCandidates.Count == 1) { <p class="small notice">The identifier you added is held by the entity below. If they are one thing, merge this entity into it; its strings, labels and identifiers follow.</p> }
             <form method="get" class="row"><input type="hidden" name="id" value="@e.Id" /><input type="search" name="merge" value="@Model.Merge" placeholder="Search for the survivor" style="flex:1" /><button type="submit" class="secondary">Search</button></form>
             @foreach (var other in Model.MergeCandidates)
             {
@@ -172,10 +227,25 @@
         </div>
         <form method="post" asp-page-handler="Note" class="card">
             <input type="hidden" name="id" value="@e.Id" />
-            <h3 style="margin-top:0">Notes</h3>
-            @foreach (var n in v.Notes) { <p class="small"><strong>@n.Author</strong> <span class="muted">@n.CreatedAt.ToString("yyyy-MM-dd")</span><br />@n.Text</p> }
+            <h3 style="margin-top:0">History and notes</h3>
+            @* the audit log (doc 12 section 13, item 1): every hand change is a note with before and after, and the decisions a person made
+               on this entity's strings stand beside them, newest first *@
+            @{
+                var history = v.Notes.Select(n => (When: n.CreatedAt, Who: n.Author ?? "", Text: n.Text, StringId: (long?)null))
+                    .Concat(v.Strings.Where(s => s.Decision.Reviewer is not null).Select(s => (When: s.Decision.DecidedAt, Who: s.Decision.Reviewer!, Text: $"\"{s.String.Raw}\" ({s.String.Context}) decided here, {s.Decision.Method}", StringId: (long?)s.String.Id)))
+                    .OrderByDescending(h => h.When).ToList();
+            }
+            @if (history.Count == 0) { <p class="small muted">No hand changes yet.</p> }
+            @foreach (var h in history)
+            {
+                <p class="small"><strong>@h.Who</strong> <span class="muted">@h.When.ToString("yyyy-MM-dd HH:mm")</span><br />@h.Text
+                    @if (h.StringId is { } sid) { <a class="small" href="/p/@Model.Dataset/review?id=@sid">the string</a> }</p>
+            }
             <input type="text" name="text" placeholder="Add a note" />
             <div class="actions"><button type="submit" class="quiet">Add note</button></div>
         </form>
     </div>
 </div>
+@section Scripts {
+    @if (Model.Coordinates is not null) { <partial name="_Map" /> }
+}

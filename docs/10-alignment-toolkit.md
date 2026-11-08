@@ -261,7 +261,9 @@ identifiers, or when LUX attributes it to the PMC source. Self-echoes never vote
 URI of the record that already represents this entity, stored as an `equivalent` with method `lux-self`, so the
 re-export carries the same identifier and `equivalent` set that lets LUX merge rather than duplicate. A non-echo LUX
 hit is a candidate like any other, with the extra value that LUX has already done the alignment to the authorities it
-loads; its `equivalent` list is read as a candidate group.
+loads; its `equivalent` list is read as a candidate group. The entity page's pull from LUX (2026-11-08,
+`Authorities/SourcePull`) applies the rule to a record fetched by hand: one carrying our identifier is shown as a
+self-echo, its facts read as our old data reflected back.
 
 Whether to ask LUX to withdraw or merge the premature records is the owner's conversation and independent of this
 design; the design makes a clean re-export possible either way.

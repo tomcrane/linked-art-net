@@ -77,6 +77,28 @@ details.help p { margin: 0.75rem 0 0; max-width: 60rem; color: inherit; }
 .card { background: var(--panel); border: 0; padding: 1.1rem 1.25rem; margin: 1rem 0; }
 .card.best { background: var(--tint); }
 .card.veto { opacity: 0.55; }
+/* a picture pulled from the sources: small, to the right, never without its attribution (plan section 7, "From the sources, on demand") */
+figure.picture { float: right; margin: 0 0 0.75rem 1rem; max-width: 180px; text-align: right; }
+figure.picture img { max-width: 180px; max-height: 180px; display: block; margin-left: auto; }
+figure.picture.small, figure.picture.small img { max-width: 96px; }
+figure.picture.small img { max-height: 96px; }
+figure.picture figcaption { margin-top: 0.2rem; line-height: 1.2; }
+.card.source h3 form.inline { display: inline; margin-left: 0.4rem; }
+/* the tray (doc 12 section 13, item 2): a bar at the foot of the window while it holds anything; the buttons that fill it */
+.tray { position: sticky; bottom: 0; z-index: 20; background: var(--ink); color: var(--paper); padding: 0.5rem 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; font-size: 0.9rem; box-shadow: 0 -2px 8px rgba(0,0,0,.15); }
+.tray a { color: var(--paper); }
+.tray .tray-title { font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.75rem; }
+.tray .tray-item { white-space: nowrap; }
+.tray button.link { color: var(--paper); background: none; border: 0; padding: 0 0.2rem; cursor: pointer; font: inherit; }
+.tray a.button { background: var(--paper); color: var(--ink); border-color: var(--paper); padding: 0.2rem 0.7rem; }
+.tray a.button[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+button.tray-add { background: transparent; color: var(--muted); border-color: var(--rule); font-weight: 500; padding: 0.1rem 0.5rem; vertical-align: middle; }
+button.tray-add:hover { color: var(--accent); border-color: var(--accent); background: transparent; }
+button.tray-add.in-tray { background: var(--tint); border-color: var(--accent); color: var(--ink); }
+/* the map (plan section 7): small, above the facts or the cards; Leaflet draws into it */
+.map { height: 260px; margin: 0.5rem 0 1rem; border: 1px solid var(--line, #ddd); background: var(--panel, #f6f6f6); }
+.map .leaflet-tooltip { font-size: 0.8rem; }
+dl.facts.small dt, dl.facts.small dd { font-size: 0.85rem; }
 .card > :last-child, .card > form:last-child > :last-child { margin-bottom: 0; }
 .card .tag { background: var(--paper); }
 .card input[type=text], .card input[type=search], .card select, .card textarea { background: var(--paper); }

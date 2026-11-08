@@ -6,7 +6,7 @@ using LinkedArtNet.Alignment.Store;
 namespace LinkedArtNet.Workbench.Services;
 
 /// <summary>A project with the services built from its manifest: the identifier scheme, the reconciler and the review desk.</summary>
-public sealed record ProjectContext(Project Project, IdentifierScheme Scheme, ProjectManifest Manifest, Reconciler Reconciler, ReviewService Desk, CurationService Curation);
+public sealed record ProjectContext(Project Project, IdentifierScheme Scheme, ProjectManifest Manifest, Reconciler Reconciler, ReviewService Desk, CurationService Curation, LinkedArtNet.Alignment.Authorities.SourcePull Pull);
 
 /// <summary>
 /// Builds and caches the per-project services, rebuilt when the project row has moved on: a manifest saved from the command line while
@@ -14,7 +14,7 @@ public sealed record ProjectContext(Project Project, IdentifierScheme Scheme, Pr
 /// the manifest it had built at its first request until its own page saved) reaches the desk at the next request, at the cost of one
 /// row read. <see cref="Invalidate"/> after this process's own saves.
 /// </summary>
-public sealed class ProjectServices(IAlignmentStore store)
+public sealed class ProjectServices(IAlignmentStore store, LinkedArtNet.Alignment.Authorities.IWebFetch web)
 {
     private readonly ConcurrentDictionary<string, ProjectContext> _cache = new(StringComparer.Ordinal);
 
@@ -29,7 +29,8 @@ public sealed class ProjectServices(IAlignmentStore store)
         var scheme = new IdentifierScheme(project.IdentifierBase);
         var sources = manifest.Sources.Select(s => (IAuthoritySource)new LocalIndexSource(store, s)).ToList();
         var reconciler = new Reconciler(store, scheme, sources, manifest.ToOptions());
-        var context = new ProjectContext(project, scheme, manifest, reconciler, new ReviewService(store, scheme, reconciler), new CurationService(store, scheme, reconciler));
+        var context = new ProjectContext(project, scheme, manifest, reconciler, new ReviewService(store, scheme, reconciler), new CurationService(store, scheme, reconciler),
+            new LinkedArtNet.Alignment.Authorities.SourcePull(store, web, scheme));
         _cache[dataset] = context;
         return context;
     }

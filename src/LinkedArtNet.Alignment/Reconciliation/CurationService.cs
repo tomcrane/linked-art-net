@@ -10,6 +10,17 @@ public sealed record VariantGroup(Entity? Entity, IReadOnlyList<DecidedOrOpenStr
 public sealed record DecidedOrOpenString(SourceString String, Decision? Decision);
 
 /// <summary>An entity with the strings that resolve to it and its notes, for the entity page.</summary>
+/// <summary>
+/// An identifier another entity of the project already holds (doc 12 section 13, item 3, from the earlier Authority Server's live check):
+/// adding it here would make a twin, so the add is refused with the holder named, and the page offers the merge instead.
+/// </summary>
+public sealed class IdentifierInUseException(string uri, Entity holder)
+    : InvalidOperationException($"{uri} is already held by the project's entity \"{holder.Label}\" ({holder.Id}): merge into it rather than make a twin.")
+{
+    public string Uri { get; } = uri;
+    public Entity Holder { get; } = holder;
+}
+
 /// <param name="Parts">When the entity is a compound heading's own concept: its parts in order, each with its standing decision and the entity it resolves to.</param>
 public sealed record EntityView(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<CompoundPart> Parts)
 {
@@ -101,9 +112,10 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     {
         if (stringIds.Count == 0) throw new InvalidOperationException("Choose at least one string.");
         Entity entity;
-        if (!string.IsNullOrWhiteSpace(entityId))
+        var created = string.IsNullOrWhiteSpace(entityId);
+        if (!created)
         {
-            entity = await store.ResolveEntityAsync(entityId, ct) ?? throw new KeyNotFoundException($"No entity {entityId}.");
+            entity = await store.ResolveEntityAsync(entityId!, ct) ?? throw new KeyNotFoundException($"No entity {entityId}.");
             if (entity.Dataset != dataset) throw new InvalidOperationException("The entity belongs to another project.");
         }
         else
@@ -116,8 +128,9 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             var cls = await ClassFromRecordsAsync(externalUris, reading, ct) ?? reading.Classes[0];
             entity = await store.AddEntityAsync(dataset, new NewEntity(cls, newLabel.Trim(), [], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed), scheme, ct);
         }
+        var added = new List<string>();
         foreach (var uri in externalUris.Where(u => !string.IsNullOrWhiteSpace(u)).Distinct(StringComparer.Ordinal))
-            await AddEquivalentAsync(dataset, entity.Id, uri, reviewer, ct);
+            added.Add(await AddIdentifierAsync(dataset, entity, uri, ct));
 
         var labels = new List<string>();
         foreach (var id in stringIds.Distinct())
@@ -139,7 +152,10 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         var fresh = (await store.GetEntityAsync(entity.Id, ct))!;
         var allLabels = fresh.Labels.Concat(labels).Where(l => !string.IsNullOrWhiteSpace(l) && l != fresh.Label).Distinct(StringComparer.Ordinal).ToList();
         if (allLabels.Count != fresh.Labels.Count) await store.UpdateEntityAsync(fresh with { Labels = allLabels }, ct);
-        if (!string.IsNullOrWhiteSpace(note)) await store.AddNoteAsync(dataset, entity.Id, reviewer, note, ct);
+        // one audit note for the whole cluster (doc 12 section 13, item 1), the person's own words after it
+        var n = stringIds.Distinct().Count();
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"{n} string{(n == 1 ? "" : "s")} clustered {(created ? "into this new entity" : "here")}"
+            + (added.Count == 0 ? "" : ", with " + string.Join(", ", added)) + (string.IsNullOrWhiteSpace(note) ? "." : ": " + note.Trim()), ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
@@ -167,13 +183,16 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
-    public async Task<Entity> SetLabelAsync(string dataset, string entityId, string label, CancellationToken ct = default)
+    /// <summary>Notes are the audit log (doc 12 section 13, item 1, 2026-11-08): every hand change writes one with before and after, so the entity page's History and the home page's Recent changes read them.</summary>
+    public async Task<Entity> SetLabelAsync(string dataset, string entityId, string label, string? reviewer = null, CancellationToken ct = default)
     {
         var entity = await OwnEntityAsync(dataset, entityId, ct);
         label = label.Trim();
         if (label.Length == 0) throw new InvalidOperationException("A label is needed.");
+        if (label == entity.Label) return entity;
         var labels = entity.Labels.Append(entity.Label).OfType<string>().Where(l => l != label).Distinct(StringComparer.Ordinal).ToList();
         await store.UpdateEntityAsync(entity with { Label = label, Labels = labels }, ct);
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Label changed from \"{entity.Label}\" to \"{label}\".", ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
@@ -181,19 +200,37 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     public async Task<Entity> AddEquivalentAsync(string dataset, string entityId, string uri, string reviewer, CancellationToken ct = default)
     {
         var entity = await OwnEntityAsync(dataset, entityId, ct);
-        uri = uri.Trim();
-        if (!Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new InvalidOperationException("The identifier is not a URI.");
-        if (scheme.Owns(uri)) throw new InvalidOperationException("Use merge for one of our own entities.");
-        var known = await store.GetAuthorityAsync(uri, ct) is not null;
-        if (!known && AuthorityUris.SourceOf(uri) == "other") throw new InvalidOperationException("Not a known authority record and not in a recognised namespace (ULAN, AAT, TGN, VIAF, Wikidata, GND, LoC, LUX, PeriodO, or an ArchivesSpace agent's URL).");
-        await store.AddEquivalentAsync(entity.Id, new Equivalent(uri, AuthorityUris.SourceOf(uri), DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow), ct);
+        uri = await AddIdentifierAsync(dataset, entity, uri, ct);
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Identifier added: {uri} ({AuthorityUris.SourceOf(uri)}).", ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
-    public async Task<Entity> RemoveEquivalentAsync(string dataset, string entityId, string uri, CancellationToken ct = default)
+    /// <summary>The checks and the write behind "Add identifier", without its note: the cluster writes one note for all of its identifiers.</summary>
+    private async Task<string> AddIdentifierAsync(string dataset, Entity entity, string uri, CancellationToken ct)
+    {
+        uri = uri.Trim();
+        if (!Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new InvalidOperationException("The identifier is not a URI.");
+        if (scheme.Owns(uri)) throw new InvalidOperationException("Use merge for one of our own entities.");
+        if (await HolderOfAsync(dataset, uri, entity.Id, ct) is { } holder) throw new IdentifierInUseException(uri, holder);
+        var known = await store.GetAuthorityAsync(uri, ct) is not null;
+        if (!known && AuthorityUris.SourceOf(uri) == "other") throw new InvalidOperationException("Not a known authority record and not in a recognised namespace (ULAN, AAT, TGN, VIAF, Wikidata, GND, LoC, LUX, PeriodO, or an ArchivesSpace agent's URL).");
+        await store.AddEquivalentAsync(entity.Id, new Equivalent(uri, AuthorityUris.SourceOf(uri), DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow), ct);
+        return uri;
+    }
+
+    /// <summary>The project's other entity that holds this URI, if any: not merged away, and not the entity it is being added to.</summary>
+    public async Task<Entity?> HolderOfAsync(string dataset, string uri, string? exceptEntityId, CancellationToken ct = default)
+    {
+        foreach (var e in await store.FindEntitiesByEquivalentAsync(uri.Trim(), ct))
+            if (e.Dataset == dataset && e.MergedInto is null && e.Id != exceptEntityId) return e;
+        return null;
+    }
+
+    public async Task<Entity> RemoveEquivalentAsync(string dataset, string entityId, string uri, string? reviewer = null, CancellationToken ct = default)
     {
         var entity = await OwnEntityAsync(dataset, entityId, ct);
-        await store.RemoveEquivalentAsync(entity.Id, uri, ct);
+        if (await store.RemoveEquivalentAsync(entity.Id, uri, ct))
+            await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Identifier removed: {uri} ({entity.Equivalents.FirstOrDefault(q => q.Uri == uri)?.Source ?? AuthorityUris.SourceOf(uri)}).", ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
@@ -202,7 +239,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     {
         var entity = await OwnEntityAsync(dataset, entityId, ct);
         await store.UpdateEntityAsync(entity with { Status = EntityStatus.Confirmed }, ct);
-        if (!string.IsNullOrWhiteSpace(note)) await store.AddNoteAsync(dataset, entity.Id, reviewer, note, ct);
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Confirmed (was {entity.Status.ToString().ToLowerInvariant()}){(string.IsNullOrWhiteSpace(note) ? "." : ": " + note.Trim())}", ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
@@ -214,8 +251,10 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     {
         var loser = await OwnEntityAsync(dataset, loserId, ct);
         var survivor = await OwnEntityAsync(dataset, survivorId, ct);
+        var loserStrings = (await store.StringsForEntityAsync(loser.Id, 1000, ct)).Count;
         await MergeSettlement.SettleAsync(store, reconciler, loser, survivor, reviewer, null, ct);
         await store.MergeAsync(loserId, survivor.Id, reviewer, ct);
+        await MergeNotesAsync(store, dataset, loser, survivor, loserStrings, reviewer, ct);
         if (cls is { } chosen && chosen != survivor.Class) await SetClassAsync(dataset, survivor.Id, chosen, reviewer, ct);
         return (await store.ResolveEntityAsync(survivor.Id, ct))!;
     }
@@ -251,11 +290,25 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return found;
     }
 
+    /// <summary>The merge written on both sides: what the survivor took in, and where the loser went (the audit log, doc 12 section 13).</summary>
+    public static async Task MergeNotesAsync(IAlignmentStore store, string dataset, Entity loser, Entity survivor, int loserStrings, string? reviewer, CancellationToken ct)
+    {
+        var ids = loser.Equivalents.Select(q => $"{q.Source}'s {q.Uri.Split('/').Last()}").ToList();
+        await store.AddNoteAsync(dataset, survivor.Id, reviewer, $"Merged in \"{loser.Label}\" ({loser.Id}): {loserStrings} string{(loserStrings == 1 ? "" : "s")}{(ids.Count == 0 ? ", no identifier" : ", identifiers " + string.Join(", ", ids))}.", ct);
+        await store.AddNoteAsync(dataset, loser.Id, reviewer, $"Merged into \"{survivor.Label}\" ({survivor.Id}).", ct);
+    }
+
     /// <summary>Takes chosen strings away from an entity: their decisions are invalidated and they are undecided again for the next reconcile.</summary>
-    public async Task<int> ReopenAsync(string dataset, IReadOnlyList<long> stringIds, CancellationToken ct = default)
+    public async Task<int> ReopenAsync(string dataset, IReadOnlyList<long> stringIds, string? reviewer = null, string? entityId = null, CancellationToken ct = default)
     {
         var n = 0;
-        foreach (var id in stringIds.Distinct()) { await OwnAsync(dataset, id, ct); if (await store.ReopenStringAsync(id, ct)) n++; }
+        var raws = new List<string>();
+        foreach (var id in stringIds.Distinct())
+        {
+            var s = await OwnAsync(dataset, id, ct);
+            if (await store.ReopenStringAsync(id, ct)) { n++; raws.Add($"\"{s.Raw}\" ({s.Context})"); }
+        }
+        if (n > 0 && entityId is not null) await store.AddNoteAsync(dataset, entityId, reviewer, $"{n} string{(n == 1 ? "" : "s")} reopened for the next reconcile: {string.Join(", ", raws.Take(6))}{(raws.Count > 6 ? ", ..." : "")}.", ct);
         return n;
     }
 

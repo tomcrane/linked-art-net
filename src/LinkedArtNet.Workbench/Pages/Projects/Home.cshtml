@@ -58,6 +58,21 @@
     </form>
 }
 
+<h2>Recent changes</h2>
+@if (Model.RecentChanges.Count == 0) { <p class="muted">No hand changes yet: decisions at the desk, and label, class, identifier and merge changes on entity pages, appear here.</p> }
+else
+{
+    <table>
+        <thead><tr><th>When</th><th>Who</th><th>What</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var c in Model.RecentChanges)
+        {
+            <tr><td class="small">@c.When.ToString("yyyy-MM-dd HH:mm")</td><td class="small">@c.Who</td><td class="small">@c.What</td><td class="small"><a href="@c.Link">@c.LinkText</a></td></tr>
+        }
+        </tbody>
+    </table>
+}
+
 <h2>Recent runs</h2>
 @if (Model.Runs.Count == 0) { <p class="muted">No runs recorded for this project.</p> }
 else

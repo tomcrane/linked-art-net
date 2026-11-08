@@ -45,7 +45,10 @@ implementation is `PostgresAlignmentStore`. The groups:
   entity following merges; `InvalidateDecisionsForEntityAsync` reopens every string decided to an entity.
 - **Overrides**: `PutOverrideAsync`, `OverrideForAsync` (the context's own override first, then the one for any
   context).
-- **Authority records**: `GetAuthorityAsync`, `PutAuthorityAsync`, `FindAuthoritiesByLabelAsync(key, source)`.
+- **Authority records**: `GetAuthorityAsync`, `PutAuthorityAsync`, `FindAuthoritiesByLabelAsync(key, source)`;
+  `PutPulledAsync(uri, source, label, json)` keeps what a live source said under `data->'pulled'` (Authorities.SourcePull,
+  2026-11-08), inserting a minimal row when the cache has none and leaving an existing row's labels and dates alone; a
+  dump reload replaces `data` whole and so drops the pull.
 - **Runs**: `StartRunAsync`, `FinishRunAsync`, `GetRunAsync`, `RunsAsync`; `CountsAsync` for the overview.
 
 `StringKey.Normalise` is the key for strings, overrides and label matches: Unicode compatibility form, one kind of

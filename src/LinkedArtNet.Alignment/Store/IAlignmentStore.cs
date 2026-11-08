@@ -160,6 +160,12 @@ public interface IAlignmentStore
     Task<AuthorityRecord?> GetAuthorityAsync(string uri, CancellationToken ct = default);
 
     Task PutAuthorityAsync(AuthorityRecord record, CancellationToken ct = default);
+    /// <summary>
+    /// Caches what a live source said about a record under <c>pulled</c> in its <c>data</c> (Authorities.SourcePull), making the row when the
+    /// cache has none (a LUX record, a Wikidata item outside the dump); an existing row keeps its labels and dates. A dump reload replaces
+    /// <c>data</c> whole and so drops the pull, which the next "Pull in" restores.
+    /// </summary>
+    Task PutPulledAsync(string uri, string source, string? label, string pulledJson, CancellationToken ct = default);
 
     /// <summary>Cached authority records whose labels normalise to the key, optionally from one source ("ulan"). Not for the hot path: without a source literal the partial label indexes cannot be used and the table is scanned; the reconciler uses <see cref="FindAuthoritiesByLabelsAsync"/>.</summary>
     Task<IReadOnlyList<AuthorityRecord>> FindAuthoritiesByLabelAsync(string normalisedLabel, string? source = null, CancellationToken ct = default);
@@ -206,6 +212,10 @@ public interface IAlignmentStore
     Task<IReadOnlyList<Membership>> MembershipsForAsync(string login, CancellationToken ct = default);
     Task<Note> AddNoteAsync(string dataset, string target, string? author, string text, CancellationToken ct = default);
     Task<IReadOnlyList<Note>> NotesAsync(string dataset, string target, CancellationToken ct = default);
+    /// <summary>The project's latest notes across every target, newest first: the audit log's recent changes (doc 12 section 13, item 1).</summary>
+    Task<IReadOnlyList<Note>> RecentNotesAsync(string dataset, int limit = 50, CancellationToken ct = default);
+    /// <summary>The project's latest decisions made by a person (a reviewer named), newest first, each with its string.</summary>
+    Task<IReadOnlyList<DecidedString>> RecentHumanDecisionsAsync(string dataset, int limit = 50, CancellationToken ct = default);
 
     /// <summary>One string with its valid decision, or null when it has none.</summary>
     Task<DecidedString?> DecidedStringAsync(long stringId, CancellationToken ct = default);

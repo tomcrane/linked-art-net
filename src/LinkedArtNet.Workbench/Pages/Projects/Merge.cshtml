@@ -1,0 +1,51 @@
+@page "/p/{dataset}/merge"
+@model MergeModel
+@{
+    ViewData["Title"] = "Merge";
+}
+<h1 style="margin-top:0">Merge from the tray</h1>
+@if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
+<p class="small muted">The entities collected in the tray, side by side. Choose the one that survives: the others merge into it, their
+    strings, labels and identifiers follow, and their old ids keep resolving to it. The merge is written on every entity's history.</p>
+@if (Model.Rows.Count < 2)
+{
+    <p class="empty">@(Model.Rows.Count == 0 ? "The tray is empty, or its entities are not this project's." : "Only one entity here: collect at least two with \"Add to tray\" on an entity's page, in the entities list or on the desk's cards.") <a href="/p/@Model.Dataset/entities">Entities</a></p>
+}
+else
+{
+    <form method="post">
+        <input type="hidden" name="ids" value="@Model.Ids" />
+        <table>
+            <thead><tr><th>Survivor</th><th>Entity</th><th>Class</th><th>Status</th><th>Strings</th><th>Identifiers</th></tr></thead>
+            <tbody>
+            @foreach (var r in Model.Rows)
+            {
+                var e = r.Entity;
+                <tr>
+                    <td><input type="radio" name="survivor" value="@e.Id" id="s-@e.Id.GetHashCode()" checked="@(e.Id == Model.Suggested)" aria-label="Survivor: @e.Label" /></td>
+                    <td><label for="s-@e.Id.GetHashCode()"><strong>@e.Label</strong></label> <a class="small" href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">page</a>
+                        @if (e.Labels.Any(l => l != e.Label)) { <div class="small muted">@string.Join(" · ", e.Labels.Where(l => l != e.Label).Take(4))</div> }
+                        @if (e.Lifespan?.Display is { } life) { <div class="small muted">@life</div> }</td>
+                    <td>@e.Class.ToString().ToLowerInvariant()</td>
+                    <td><span class="tag">@e.Status.ToString().ToLowerInvariant()</span></td>
+                    <td class="small">@r.Strings@(r.Queued > 0 ? $" ({r.Queued} queued)" : "")</td>
+                    <td class="small">@foreach (var q in e.Equivalents.Take(6)) { <a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> }</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <div class="row" style="gap:.6rem; align-items:center; margin-top:.75rem; flex-wrap:wrap">
+            <label class="small" for="label">Label after the merge</label>
+            <input type="text" id="label" name="label" value="@Model.Rows.FirstOrDefault(r => r.Entity.Id == Model.Suggested)?.Entity.Label" style="flex:1; min-width:16rem" title="The survivor's label unless you write another; every other label is kept as a variant" />
+            @if (Model.ClassesDiffer)
+            {
+                <label class="small" for="cls">as a</label>
+                <select name="cls" id="cls" title="The entities differ in class: the merged entity's class">
+                    @foreach (var c in Model.Rows.Select(r => r.Entity.Class).Distinct()) { <option value="@c" selected="@(c == Model.Rows.FirstOrDefault(r => r.Entity.Id == Model.Suggested)?.Entity.Class)">@c.ToString().ToLowerInvariant()</option> }
+                </select>
+            }
+            <button type="submit">Merge @Model.Rows.Count into the survivor</button>
+        </div>
+        <p class="small muted">The survivor suggested is the one with most strings, then the firmer status, then the one with more identifiers; a published id, when one of them has been published, is the better choice (doc 12 section 13, item 4).</p>
+    </form>
+}

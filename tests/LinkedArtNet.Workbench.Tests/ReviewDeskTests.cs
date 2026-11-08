@@ -172,6 +172,76 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Equal(HttpStatusCode.Redirect, reclass.StatusCode);
         Assert.Equal(EntityClass.Group, (await store.GetEntityAsync(kept.Id))!.Class);
         Assert.Contains(await store.NotesAsync(ds, kept.Id), n => n.Text.Contains("Class changed from Person to Group"));
+        // an identifier another entity holds is refused with the holder named, and the page offers the merge into it (doc 12 section 13, item 3)
+        var twin = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Smith, J.", ["Smith, J."], Status: EntityStatus.Confirmed), new IdentifierScheme("https://data.example.org/" + ds + "/"));
+        await store.AddEquivalentAsync(twin.Id, new Equivalent("http://viaf.org/viaf/424242", "viaf", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        var refused = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/entity?handler=AddEquivalent", $"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}", new() { ["id"] = kept.Id, ["uri"] = "http://viaf.org/viaf/424242" });
+        Assert.Equal(HttpStatusCode.Redirect, refused.StatusCode);
+        Assert.Contains("held=", refused.Headers.Location!.ToString());
+        var offered = await owner.GetStringAsync(refused.Headers.Location!.ToString());
+        Assert.Contains("is already held by", offered);
+        Assert.Contains("Smith, J.", offered);
+        Assert.Contains("Merge into this", offered);
+        Assert.DoesNotContain((await store.GetEntityAsync(kept.Id))!.Equivalents, q => q.Uri == "http://viaf.org/viaf/424242");
+        // From the sources (plan section 7): the panel reads the records' cache and fetches nothing; a cached pull shows its facts, its
+        // picture with the attribution Commons requires, and the LUX self-echo as a notice
+        var sources = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}");
+        Assert.Contains("From the sources", sources);
+        Assert.Contains("Nothing to pull", sources);
+        await store.AddEquivalentAsync(kept.Id, new Equivalent("http://www.wikidata.org/entity/Q613852", "wikidata", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        await store.AddEquivalentAsync(kept.Id, new Equivalent("https://lux.collections.yale.edu/data/person/abc", "lux", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        sources = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}");
+        Assert.Contains("Pull in from the sources", sources);
+        Assert.Contains("Not pulled yet", sources);
+        var pulled = new LinkedArtNet.Alignment.Authorities.Pulled("http://www.wikidata.org/entity/Q613852", "wikidata", DateTimeOffset.UtcNow, "John Robert Cozens", "English painter", ["J. R. Cozens"],
+            [new LinkedArtNet.Alignment.Authorities.Fact("Born", "1752")], "John Robert Cozens was an English painter of watercolour landscapes.", "English Wikipedia", "https://en.wikipedia.org/wiki/John_Robert_Cozens",
+            new LinkedArtNet.Alignment.Authorities.Picture("Cozens.jpg", "https://commons.wikimedia.org/wiki/File:Cozens.jpg", "https://upload.wikimedia.org/thumb/Cozens.jpg", "Public domain", null, "John Robert Cozens", null, false));
+        await store.PutPulledAsync(pulled.Uri, "wikidata", pulled.Label, System.Text.Json.JsonSerializer.Serialize(pulled, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web)));
+        var echo = new LinkedArtNet.Alignment.Authorities.Pulled("https://lux.collections.yale.edu/data/person/abc", "lux", DateTimeOffset.UtcNow, "Cozens, John Robert", null, [], [], SelfEcho: true, Note: "LUX's record carries our identifier https://data.example.org/" + ds + "/person/x: this is our earlier export reflected back, not a second witness (doc 10 7.4).");
+        await store.PutPulledAsync(echo.Uri, "lux", echo.Label, System.Text.Json.JsonSerializer.Serialize(echo, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web)));
+        sources = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}");
+        Assert.Contains("Pull in again", sources);
+        Assert.Contains("English painter", sources);
+        Assert.Contains("J. R. Cozens", sources);
+        Assert.Contains("watercolour landscapes", sources);
+        Assert.Contains("https://upload.wikimedia.org/thumb/Cozens.jpg", sources);
+        Assert.Contains("John Robert Cozens, Public domain", sources); // the attribution beside the thumbnail
+        Assert.Contains("reflected back, not a second witness", sources);
+        Assert.Contains("1752", sources);
+        // the map (the owner, 2026-11-08): none until a record places the entity, then one marker with the label, and Leaflet in the page
+        Assert.DoesNotContain("id=\"map\"", sources);
+        await store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/tgn/7011781", "tgn", "London", ["London"], "Place", null, [], """{"lat":"51.5","long":"-0.1167","parentString":"Greater London, England, United Kingdom"}""", DateTimeOffset.UtcNow, "test"));
+        await store.AddEquivalentAsync(kept.Id, new Equivalent("http://vocab.getty.edu/tgn/7011781", "tgn", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        var mapped = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}");
+        Assert.Contains("id=\"map\"", mapped);
+        Assert.Contains("&quot;lat&quot;:51.5", mapped);
+        Assert.Contains("leaflet@1.9.4", mapped);
+        // the tray's merge page (doc 12 section 13, item 2): the collected entities side by side, the survivor suggested, one merge for all
+        var a1 = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Ackermann", ["Ackermann"]), new IdentifierScheme("https://data.example.org/" + ds + "/"));
+        var a2 = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Arthur Ackermann & Son", ["Arthur Ackermann & Son"], Status: EntityStatus.Confirmed), new IdentifierScheme("https://data.example.org/" + ds + "/"));
+        await store.AddEquivalentAsync(a2.Id, new Equivalent("http://vocab.getty.edu/ulan/500447821", "ulan", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        var a3 = await store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Ackermann & Son", ["Ackermann & Son"]), new IdentifierScheme("https://data.example.org/" + ds + "/"));
+        Assert.Contains("data-tray=", await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(a1.Id)}")); // the button that fills the tray
+        Assert.Contains("id=\"tray\"", await owner.GetStringAsync($"/p/{ds}/entities"));
+        var mergeUrl = $"/p/{ds}/merge?ids={Uri.EscapeDataString(string.Join(",", a1.Id, a2.Id, a3.Id))}";
+        var mergePage = await owner.GetStringAsync(mergeUrl);
+        Assert.Contains("Arthur Ackermann &amp; Son", mergePage);
+        Assert.Contains("Merge 3 into the survivor", mergePage);
+        Assert.Contains($"value=\"{a2.Id}\" id=", mergePage); // the confirmed one with the identifier is suggested
+        Assert.Contains("name=\"cls\"", mergePage); // the classes differ, so the class is chosen
+        var trayMerge = await WorkbenchFixture.PostFormAsync(owner, mergeUrl, mergeUrl, new() { ["ids"] = string.Join(",", a1.Id, a2.Id, a3.Id), ["survivor"] = a2.Id, ["label"] = "Arthur Ackermann & Son Ltd", ["cls"] = "Group" });
+        Assert.Equal(HttpStatusCode.Redirect, trayMerge.StatusCode);
+        Assert.EndsWith("#tray-cleared", trayMerge.Headers.Location!.ToString()); // the browser's tray empties itself
+        Assert.Equal(a2.Id, (await store.GetEntityAsync(a1.Id))!.MergedInto);
+        Assert.Equal(a2.Id, (await store.GetEntityAsync(a3.Id))!.MergedInto);
+        var survivor = (await store.GetEntityAsync(a2.Id))!;
+        Assert.Equal("Arthur Ackermann & Son Ltd", survivor.Label);
+        Assert.Contains("Arthur Ackermann & Son", survivor.Labels);
+        Assert.Equal(EntityClass.Group, survivor.Class);
+        Assert.Contains(await store.NotesAsync(ds, a2.Id), n => n.Text.StartsWith("Merged in \"Ackermann\""));
+        // one entity alone, or none, is told so
+        Assert.Contains("Only one entity here", await owner.GetStringAsync($"/p/{ds}/merge?ids={Uri.EscapeDataString(a2.Id)}"));
+        Assert.Contains("The tray is empty", await owner.GetStringAsync($"/p/{ds}/merge"));
 
         var other = await store.CollectAsync(ds, "corpauthor", "J. Smith & Co");
         await project.Reconciler.ReconcileOneAsync(ds, other);

@@ -53,7 +53,16 @@ finding 114 became a tie-breaker, run only when the plain reading leaves the str
 when it settles it; the third reconcile (zke4u7, 15:21 to 16:05) measured the four rules in their final form: some 270
 strings better against wsw254 (the dated artists, the placed subdivisions, 65 singles to votes), seventeen worse and
 the desk's (the abbreviation gap "CT" against "Conn.", the periodical and firm "Country Life" as two placed entities),
-the queue 3,778 from 3,925; the last full run. The US state abbreviations a new item from the diff.
+the queue 3,778 from 3,925; the last full run. The US state abbreviations a new item from the diff. Then the review's
+plan in the agreed order: "an identifier in use says so" (the add refused with the holder named and the merge offered
+on the page), then notes as the audit log (every hand change a note with before and after; History and notes on the
+entity page, Recent changes on the project home), then "From the sources, on demand": the shapes of Wikidata,
+Wikipedia, Commons, ULAN (through SPARQL), LoC and LUX read live for John Robert Cozens and the King's Gallery, the
+fetchers built against canned copies, the cache under `pulled` on the record, the entity page's panel with "Pull in",
+pictures with their attribution, the LUX self-echo as a notice, the desk's "show pictures"; then the map, TGN's
+coordinates or a pull's, on the entity page and above the desk's cards with the best group's markers emphasised; then
+the tray, collected across pages in the browser and merged at one page with the survivor, label and class chosen. The
+five items of the review's plan built in the agreed order; the workbench tests and the commits await a stop.
 
 ## 2026-11-07
 

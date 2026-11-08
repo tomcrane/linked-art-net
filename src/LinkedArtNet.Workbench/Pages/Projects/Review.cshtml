@@ -58,6 +58,7 @@ else
     var ev = item.Evidence;
     var reading = ev.Reading;
     <p class="small muted">@Model.Remaining in this list · string @item.String.Id · seen @item.String.Occurrences time@(item.String.Occurrences == 1 ? "" : "s") in <strong>@item.String.Context</strong> · decided <em>@item.Decision.Method</em>@(item.Decision.Reviewer is null ? "" : $" by {item.Decision.Reviewer}") @item.Decision.DecidedAt.ToString("yyyy-MM-dd")
+    <text>· </text><a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, pictures = !Model.Pictures })" title="Thumbnails on the cards whose records have been pulled from the sources with a picture; off by default">@(Model.Pictures ? "hide pictures" : "show pictures")</a>
     @if (item.LookedAgain is null) { <text>· </text><a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, look = true })" title="Show what today's rules would offer for this string, without deciding anything">Look again</a> }</p>
     @if (item.LookedAgain is { } outcome)
     {
@@ -156,6 +157,23 @@ else
             <span class="small muted">tick "together" on two or more groups that are the same thing</span>
         </form>
     }
+        // the map (the owner, 2026-11-08): namesake places side by side on one map, since seeing the St Iveses apart is how a person picks
+        // the right one; a marker per placed candidate, labelled with the record's label and its placement, the best group's markers emphasised
+        var points = new List<object>();
+        var bestGroup = ev.Groups.FirstOrDefault(g => g.Members.Any(m => m.Veto != true && m.SetAside != true));
+        foreach (var g in ev.Groups)
+            foreach (var m in g.Members)
+            {
+                item.Records.TryGetValue(m.Uri, out var rec);
+                item.Entities.TryGetValue(m.Uri, out var ef);
+                var at = ef?.Coordinates ?? LinkedArtNet.Alignment.Authorities.Coordinates.Of(rec);
+                if (at is null) continue;
+                var label = ef is not null ? Named(ef.Entity) : (m.Label ?? rec?.Label ?? m.Uri);
+                if (ef is null && rec?.DataJson is { } dj && System.Text.Json.JsonDocument.Parse(dj).RootElement.TryGetProperty("parentString", out var ps) && ps.GetString() is { } parents)
+                    label += " (" + string.Join(", ", parents.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).Take(2)) + ")";
+                points.Add(new { lat = at.Value.Lat, lng = at.Value.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, source = m.Source });
+            }
+    if (points.Count > 0) { <div id="map" class="map" data-points='@System.Text.Json.JsonSerializer.Serialize(points)' aria-label="The candidates on a map"></div> }
     var first = true;
     foreach (var group in ev.Groups)
     {
@@ -214,7 +232,7 @@ else
                         @* a project entity's name is the link to its page, in another tab so the desk stays where it is; the URI below it is the
                            URI's own link, as every record's (the owner, 2026-11-05: "Mr Stanley" beside placeholders of the name, which might fold
                            onto it, and nothing to tell them apart but their records) *@
-                        @if (m.IsStore || m.Uri.StartsWith(Model.Project.Project.IdentifierBase, StringComparison.Ordinal)) { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(m.Uri)" target="_blank" rel="noopener" title="The entity's page: its identifiers, the strings that resolve to it and the records they were seen in">@(m.Label ?? m.Uri)</a></strong> }
+                        @if (m.IsStore || m.Uri.StartsWith(Model.Project.Project.IdentifierBase, StringComparison.Ordinal)) { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(m.Uri)" target="_blank" rel="noopener" title="The entity's page: its identifiers, the strings that resolve to it and the records they were seen in">@(m.Label ?? m.Uri)</a></strong> <button type="button" class="tray-add small" data-tray="@(facts?.Entity.Id ?? m.Uri)" data-tray-label="@(facts?.Entity.Label ?? m.Label ?? m.Uri)" data-tray-text="Tray">Tray</button> }
                         else { <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong> }
                         @if (facts?.Placement is { } where) { <span class="muted">(@where)</span> }
                         @if (record?.Lifespan?.Display is { } life) { <span class="muted">@life</span> }
@@ -224,6 +242,11 @@ else
                         <a class="small" href="@m.Uri" target="_blank" rel="noopener">@m.Uri</a>
                         @if (record is not null && record.Labels.Count > 1) { <div class="small muted">also: @string.Join(" · ", record.Labels.Where(l => l != record.Label).Take(6))</div> }
                         @if (record?.DataJson is { } data && System.Text.Json.JsonDocument.Parse(data).RootElement.TryGetProperty("description", out var desc)) { <div class="small">@desc.GetString()</div> }
+                        @if (Model.Pictures && LinkedArtNet.Alignment.Authorities.SourcePull.Read(record) is { } pulled)
+                        {
+                            @if (pulled.Picture is { ThumbUrl: { } th } pic) { <figure class="picture small"><a href="@pic.FilePage" target="_blank" rel="noopener"><img src="@th" alt="@pic.FileName" loading="lazy" /></a><figcaption class="small muted">@pic.Attribution</figcaption></figure> }
+                            @if (pulled.Description is not null) { <div class="small">@pulled.Description <span class="muted">(@pulled.Source, pulled @pulled.At.ToLocalTime().ToString("yyyy-MM-dd"))</span></div> }
+                        }
                         @if (facts is not null)
                         {
                             @* what put the project's entity in this group, and what it stands for, so the row can be judged without its page
@@ -348,4 +371,7 @@ else
         <form method="post" asp-page-handler="Flag" class="row inline" style="gap:.4rem"><input type="hidden" name="id" value="@item.String.Id" /><input type="text" name="text" placeholder="Note for another reviewer" style="width:18rem" /><button type="submit" class="quiet">Add note</button></form>
         <a class="button secondary" href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, after = item.String.Id })">Next →</a>
     </div>
+}
+@section Scripts {
+    <partial name="_Map" />
 }

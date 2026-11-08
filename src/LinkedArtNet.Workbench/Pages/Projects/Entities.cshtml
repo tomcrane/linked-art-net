@@ -24,7 +24,7 @@ else
         else { <text>@Model.Matching.ToString("N0") match the filters; @(Model.After is null ? "" : "a later page of ")@Model.Entities.Count shown, by identifier</text> }
     </p>
     <table>
-        <thead><tr><th>Label</th><th>Class</th><th>Status</th><th>Dates</th><th>Identifiers</th></tr></thead>
+        <thead><tr><th>Label</th><th>Class</th><th>Status</th><th>Dates</th><th>Identifiers</th><th></th></tr></thead>
         <tbody>
         @foreach (var e in Model.Entities)
         {
@@ -34,6 +34,7 @@ else
                 <td><span class="tag">@e.Status.ToString().ToLowerInvariant()</span></td>
                 <td class="small">@e.Lifespan?.Display</td>
                 <td class="small">@foreach (var q in e.Equivalents.Take(5)) { <a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> }</td>
+                <td><button type="button" class="tray-add small" data-tray="@e.Id" data-tray-label="@e.Label" data-tray-text="Tray">Tray</button></td>
             </tr>
         }
         </tbody>

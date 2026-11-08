@@ -82,8 +82,14 @@ figure.picture { float: right; margin: 0 0 0.75rem 1rem; max-width: 180px; text-
 figure.picture img { max-width: 180px; max-height: 180px; display: block; margin-left: auto; }
 figure.picture.small, figure.picture.small img { max-width: 96px; }
 figure.picture.small img { max-height: 96px; }
-figure.picture figcaption { margin-top: 0.2rem; line-height: 1.2; }
-.card.source h3 form.inline { display: inline; margin-left: 0.4rem; }
+figure.picture figcaption { margin-top: 0.2rem; margin-bottom: 0.5rem; line-height: 1.2; }
+/* a section heading starts below a floated picture, so its rule never runs through the caption (the owner, 2026-11-08) */
+h2 { clear: both; }
+.card.source h3 { display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem; align-items: center; }
+.card.source h3 form.inline { display: inline; margin-left: auto; }
+/* a labelled row: label, field, button, aligned with the rows beside it (the entity page's two ways to add an identifier) */
+form.labelled { display: grid; grid-template-columns: 10rem 1fr auto; gap: 0.4rem; align-items: center; margin: 0.4rem 0; }
+form.labelled input[type=text], form.labelled input[type=search] { width: 100%; min-width: 0; }
 /* the tray (doc 12 section 13, item 2): a bar at the foot of the window while it holds anything; the buttons that fill it */
 .tray { position: sticky; bottom: 0; z-index: 20; background: var(--ink); color: var(--paper); padding: 0.5rem 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; font-size: 0.9rem; box-shadow: 0 -2px 8px rgba(0,0,0,.15); }
 .tray a { color: var(--paper); }

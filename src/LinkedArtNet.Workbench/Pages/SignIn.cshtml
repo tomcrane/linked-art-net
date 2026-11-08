@@ -5,6 +5,7 @@
 @if (Model.Options.GitHubLoginConfigured)
 {
     <form method="post" asp-page-handler="GitHub" class="card">
+        <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
         <p>Sign in with the GitHub account that your project membership names.</p>
         <button type="submit">Sign in with GitHub</button>
     </form>
@@ -12,6 +13,7 @@
 @if (Model.LocalSignInAvailable)
 {
     <form method="post" asp-page-handler="Local" class="card">
+        <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
         <p class="muted small">Development sign-in: type a name. Available only in Development, from this machine, when the configuration allows it.</p>
         <label for="name">Name</label>
         <input type="text" id="name" name="name" required autofocus />

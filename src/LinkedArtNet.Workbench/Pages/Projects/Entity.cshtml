@@ -69,15 +69,17 @@
             }
             </tbody>
         </table>
-        <form method="post" asp-page-handler="AddEquivalent" class="row" style="gap:.4rem; margin-top:.5rem">
+        @* two ways to add an identifier, as two rows of one grid, label, field, button, so they line up (the owner, 2026-11-08) *@
+        <form method="post" asp-page-handler="AddEquivalent" class="labelled" style="margin-top:.6rem">
             <input type="hidden" name="id" value="@e.Id" />
-            <input type="text" name="uri" placeholder="http://vocab.getty.edu/ulan/… or another authority URI" style="flex:1" />
+            <label for="uri" class="small muted">Add a URI</label>
+            <input type="text" id="uri" name="uri" placeholder="http://vocab.getty.edu/ulan/… or another authority URI" />
             <button type="submit" class="secondary">Add identifier</button>
         </form>
-        <form method="get" class="row" style="gap:.4rem; margin-top:.5rem">
+        <form method="get" class="labelled">
             <input type="hidden" name="id" value="@e.Id" />
-            <label for="find" class="small muted" style="white-space:nowrap">or search the local indexes</label>
-            <input type="search" id="find" name="find" value="@(Model.Find ?? e.Label)" style="flex:1" />
+            <label for="find" class="small muted">or search the indexes</label>
+            <input type="search" id="find" name="find" value="@(Model.Find ?? e.Label)" />
             <button type="submit" class="secondary">Search</button>
         </form>
         @if (Model.Find is not null)

@@ -178,6 +178,8 @@ record that carries one of the project's own identifiers is marked as our earlie
 witness. On the desk, "show pictures" in the line above the string puts the pulled thumbnails and descriptions on the
 cards whose records have them; it is off by default, since most cards have none.
 
+A page opened before signing in bounces to the sign-in page and comes back to it after.
+
 **The tray.** When the same thing turns out to be several entities found on several pages (the Ackermanns: a firm, a
 placeholder, a misspelling), collect them: "Add to tray" at the top of an entity's page, "Tray" at the end of a row
 in the entities list or beside a project entity on a desk card. The tray is a bar at the foot of the window, kept in

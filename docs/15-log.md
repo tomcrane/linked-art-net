@@ -62,7 +62,10 @@ fetchers built against canned copies, the cache under `pulled` on the record, th
 pictures with their attribution, the LUX self-echo as a notice, the desk's "show pictures"; then the map, TGN's
 coordinates or a pull's, on the entity page and above the desk's cards with the best group's markers emphasised; then
 the tray, collected across pages in the browser and merged at one page with the survivor, label and class chosen. The
-five items of the review's plan built in the agreed order; the workbench tests and the commits await a stop.
+five items of the review's plan built in the agreed order, committed on the stop. Then the owner's "tiny little
+improvement": the sign-in page returns to the page that bounced; and two layout faults from the Cozens page, the
+picture's caption under the next heading's rule (headings clear floats now) and the two add-identifier forms at odds
+(one grid: label, field, button).
 
 ## 2026-11-07
 

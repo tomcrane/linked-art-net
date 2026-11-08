@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Mvc.Testing;
 using LinkedArtNet.Alignment;
 using LinkedArtNet.Alignment.Authorities;
 using LinkedArtNet.Alignment.Store;
@@ -270,6 +271,25 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var response = await client.GetAsync(url);
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Contains("/signin", response.Headers.Location!.ToString());
+    }
+
+    /// <summary>The sign-in page sends the person back to the page that bounced them (the owner, 2026-11-08: "you need to enter the URL again"), and only to a page of this site.</summary>
+    [WorkbenchFact]
+    public async Task Signing_in_returns_to_the_page_that_bounced()
+    {
+        var client = wb.Factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = true });
+        var bounced = await client.GetAsync("/p/nowhere/entities?q=x");
+        Assert.Equal(HttpStatusCode.Redirect, bounced.StatusCode);
+        var signIn = bounced.Headers.Location!.ToString();
+        Assert.Contains("ReturnUrl=", signIn);
+        var page = await client.GetStringAsync(signIn);
+        Assert.Contains("name=\"returnUrl\" value=\"/p/nowhere/entities?q=x\"", page);
+        var back = await WorkbenchFixture.PostFormAsync(client, "/signin?handler=Local", signIn, new() { ["name"] = "returner", ["returnUrl"] = "/p/nowhere/entities?q=x" });
+        Assert.Equal(HttpStatusCode.Redirect, back.StatusCode);
+        Assert.Equal("/p/nowhere/entities?q=x", back.Headers.Location!.ToString());
+        // an address elsewhere is not followed
+        var away = await WorkbenchFixture.PostFormAsync(client, "/signin?handler=Local", "/signin", new() { ["name"] = "returner", ["returnUrl"] = "https://example.org/" });
+        Assert.Equal("/", away.Headers.Location!.ToString());
     }
 
     [WorkbenchFact]

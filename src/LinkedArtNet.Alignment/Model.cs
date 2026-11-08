@@ -102,6 +102,21 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
     /// </summary>
     public const int MaxWorkingYears = 80;
 
+    /// <summary>
+    /// A near miss: both lifespans dated on both sides, one side the same year and the other a year or two out ("1815-1882" against
+    /// "1813-1882"). Painters' birth years wobble between references, and a catalogue's year a little out from the authorities' names the
+    /// same person (finding 115, 2026-11-08, "Hall, Harry, 1815-1882" against ULAN's and LoC's painter of 1813-1882). Not agreement, which
+    /// would carry a single source; not a conflict, which would veto; the candidate stands at its name score.
+    /// </summary>
+    public bool NearMiss(Lifespan other, int years = 2)
+    {
+        if (IsWorking || other.IsWorking) return false;
+        if (!Tight(BeginEarliest, BeginLatest) || !Tight(other.BeginEarliest, other.BeginLatest) || !Tight(EndEarliest, EndLatest) || !Tight(other.EndEarliest, other.EndLatest)) return false;
+        var begin = Math.Abs(BeginEarliest!.Value.Year - other.BeginEarliest!.Value.Year);
+        var end = Math.Abs(EndEarliest!.Value.Year - other.EndEarliest!.Value.Year);
+        return (begin is >= 1 && begin <= years && end == 0) || (end is >= 1 && end <= years && begin == 0);
+    }
+
     public DateAgreement Compare(Lifespan other, int? maxLifetimeYears = null)
     {
         static bool Known(DateTimeOffset? a, DateTimeOffset? b) => a is not null || b is not null;

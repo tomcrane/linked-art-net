@@ -403,6 +403,32 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return StringReading.Read(s with { Raw = string.Join(pr.Separator, joined) }, rule, ParserFor(rule.AgentProfile));
     }
 
+    /// <summary>
+    /// A subdivision that is a place is placed by its sibling parts (finding 114, 2026-11-08, "Birmingham" in keywords:sub under
+    /// "Architecture--England--Birmingham" and "Art, Modern--19th century--England--Birmingham", shown Alabama's group first): a part string
+    /// of a compound heading's sub context, read as a place and carrying no qualifier of its own, takes as its qualifier the label of the
+    /// one place its sibling parts resolve to across the headings that carry it, so that the placement reading (findings 84 and 106) bears
+    /// out TGN's Birmingham under England and sets Alabama's aside. Siblings resolving to two different places leave the string as it was.
+    /// Counted 2026-11-08: 73 of the 106 queued keywords:sub strings have such a sibling.
+    /// </summary>
+    private async Task<StringReading> WithSiblingPlacementAsync(SourceString s, StringReading reading, CancellationToken ct)
+    {
+        if (reading.Qualifier is not null || reading.Parts is not null || !reading.Classes.Contains(EntityClass.Place)) return reading;
+        if (!_options.Contexts.Values.Any(r => r.Parts is { Shape: PartsShape.Compound } pr && pr.Context == s.Context)) return reading;
+        var places = new Dictionary<string, Entity>(StringComparer.OrdinalIgnoreCase);
+        foreach (var parent in await store.ParentsAsync(s.Id, ct))
+            foreach (var sibling in await store.PartsAsync(parent.Id, ct))
+            {
+                if (sibling.Id == s.Id || sibling.Normalised == s.Normalised) continue;
+                if (await store.DecisionForAsync(sibling.Id, ct) is not { EntityId: { } entityId }) continue;
+                if (await store.ResolveEntityAsync(entityId, ct) is not { Class: EntityClass.Place, Status: not EntityStatus.Provisional, Label: { } label } place) continue;
+                places.TryAdd(place.Id, place);
+            }
+        if (places.Count != 1) return reading;
+        var qualifier = Qualified.Split(places.Values.First().Label!).Name;
+        return reading with { Qualifier = qualifier, IsQualified = true, QualifierFrom = $"its heading's part {qualifier}" };
+    }
+
     /// <summary>How a string is read under its context's rule: the name part, keys, classes, lifespan.</summary>
     public StringReading Read(SourceString s)
     {
@@ -414,7 +440,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Evaluation> EvaluateAsync(string dataset, SourceString s, bool includeStore = true, CancellationToken ct = default)
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        var reading = await WithQualifierAncestorsAsync(await WithWholeConceptAsync(s, await WithHyphenatedHeadAsync(s, Read(s), ct), ct), ct);
+        var reading = await WithQualifierAncestorsAsync(await WithSiblingPlacementAsync(s, await WithWholeConceptAsync(s, await WithHyphenatedHeadAsync(s, Read(s), ct), ct), ct), ct);
         Time("read", sw);
         if (reading.Key.Length == 0) return new Evaluation(Outcome.Skipped, reading, []);
 
@@ -672,7 +698,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // a project entity in a live group outside the tie (two legacy entities of the name, or one in a group only one source carries)
             // leaves the string to the desk, and says so (finding 92, 2026-10-24, run rkjzag: "Sheffield" was queued with no word of why)
             var standing = live.FirstOrDefault(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm));
-            if (tied.Count >= 2 && standing is not null)
+            // when every tied group holds a project entity, the entities cancel as evidence and prominence decides as it does when none
+            // holds one (finding 116, 2026-11-08: "Boston" and "Birmingham" bare, each between two legacy entities placed by the pass, 41
+            // such strings; a project entity outside the tie, or a tied group without one, still leaves the string to the desk)
+            var everyTiedHolds = tied.Count >= 2 && tied.All(g => g.Members.Any(Firm)) && live.Where(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm)).All(tied.Contains);
+            if (tied.Count >= 2 && standing is not null && !everyTiedHolds)
                 groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence stands aside: the project's own entity {standing.Members.First(Firm).Candidate.Label} is among the live groups, the desk's" }).ToList() } : g).ToList();
             else if (tied.Count >= 2)
             {
@@ -687,6 +717,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                         : tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; less prominent: {ranked.First(x => x.Group == g).Sitelinks} sitelinks against {best.Sitelinks}" }).ToList() } : g).ToList();
                     if (includeStore && await HoldersAsync(dataset, best.Group.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
                     var annotated = groups.First(g => g.Uris.SequenceEqual(best.Group.Uris, StringComparer.Ordinal));
+                    if (everyTiedHolds) annotated = annotated with { Members = annotated.Members.Select(m => m with { Reason = m.Reason + "; every tied group holds a project entity, so the entities cancel and prominence decides (finding 116)" }).ToList() };
                     return new Evaluation(Outcome.Accepted, reading, groups, Accepted: annotated, AcceptedMethod: DecisionMethod.Vote);
                 }
                 groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks)" }).ToList() } : g).ToList();
@@ -848,6 +879,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                         if (parentAndType.PlaceType is { } typeUri) level = Qualified.LevelOf((await store.GetAuthorityAsync(typeUri, ct))?.Label);
                         break;
                     }
+            // and, with no TGN record, the LoC heading's parenthetical ("St. Ives (Cornwall, England)"): the legacy entities of a place
+            // hold LoC and not TGN, and read as unplaced they were carried into one group by an LCSH park and vetoed together
+            // (finding 113, 2026-11-08: "St Ives (Cornwall)" queued, "St. Ives (Cornwall, England)" minted, both at 1.00 in the indexes)
+            if (placement is null)
+                foreach (var q in e.Equivalents.Where(q => q.Source == "loc").Take(3))
+                    if (await store.GetAuthorityAsync(q.Uri, ct) is { Label: { } locLabel } && Qualified.Split(locLabel).Qualifier is { } locQualifier)
+                    { placement = locQualifier; break; }
             // the label's own qualifier, or the placement read from it, with the chain above its first segment that TGN knows as a county
             // or above, kept apart from the placement itself: the comparison reads the placement as written first and the chain only when
             // that fails, so that "(Copenhagen, Denmark)" still places the project's "(Denmark)" (a TGN parent string, ending in "World",
@@ -979,6 +1017,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var veto = false;
             var datesAgree = false;
             var datesConflict = false;
+            var datesNear = false;
             if (c.Class is { } cls && !reading.Classes.Contains(cls)) { veto = true; reasons.Add($"type {cls} not allowed here"); }
             if (c.ProvisionalQueued) reasons.Add("a placeholder awaiting review: carries nothing"); // finding 95: never a ground, see CarriedBy
             if (c.ByPossessive) reasons.Add("a firm named for the man: the possessive of the string's name, for the desk"); // finding 105
@@ -990,6 +1029,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 switch (rl.Compare(cl, person ? maxPersonLifetimeYears : null))
                 {
                     case DateAgreement.Agree: score = Math.Min(1, score + 0.05); datesAgree = true; reasons.Add("dates agree"); break;
+                    // a year or two out on one side with the other the same year is the catalogue's wobble, not another person: no veto,
+                    // no lift (finding 115, 2026-11-08: "Hall, Harry, 1815-1882" and the painter of 1813-1882, 65 such strings in the queue)
+                    case DateAgreement.Conflict when rl.NearMiss(cl): datesAgree = true; datesNear = true; reasons.Add($"dates near ({rl.Text} vs {cl.Text}): a year or two out on one side, the other the same"); break;
                     case DateAgreement.Conflict: veto = true; datesConflict = true; reasons.Add($"dates conflict ({rl.Text} vs {cl.Text})"); break;
                     default: reasons.Add($"dates not comparable ({rl.Text} vs {cl.Text})"); break;
                 }
@@ -1044,7 +1086,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                     break;
                 case false: reasons.Add($"qualifier not placed ({reading.Qualifier} vs {c.Placement})"); break;
             }
-            list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees, DatesConflict: datesConflict));
+            list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees, DatesConflict: datesConflict, DatesNear: datesNear));
         }
         // a linked cluster that disagrees with itself about the dates stands when one of its records agrees with the string's dates (the
         // whole heading as written agrees by its own): LoC's "Agar, Eileen, 1899-1991" is the string verbatim and ULAN's linked record says 1904-1991; ULAN's
@@ -1427,7 +1469,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // member set aside is not live
         var best = group.Members.Where(m => !m.Veto && !m.SetAside && !m.Candidate.ProvisionalQueued).OrderByDescending(m => m.Score).FirstOrDefault();
         if (best is null) return null;
-        return _options.AcceptSingleSourceWithDates && (best.DatesAgree || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97 ? DecisionMethod.Single : null;
+        // a near miss on the dates (finding 115) stands over undated namesakes but does not carry one source alone
+        return _options.AcceptSingleSourceWithDates && ((best.DatesAgree && !best.DatesNear) || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97 ? DecisionMethod.Single : null;
     }
 
     /// <summary>
@@ -1542,7 +1585,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         JsonSerializer.Serialize(new
         {
             stage,
-            reading = new { reading.Text, reading.Key, reading.Qualifier, classes = reading.Classes.Select(c => c.ToString()), lifespan = reading.Lifespan?.Text, nationalities = reading.Nationalities.Count == 0 ? null : reading.Nationalities, roles = reading.Roles.Count == 0 ? null : reading.Roles },
+            reading = new { reading.Text, reading.Key, reading.Qualifier, qualifierFrom = reading.QualifierFrom, classes = reading.Classes.Select(c => c.ToString()), lifespan = reading.Lifespan?.Text, nationalities = reading.Nationalities.Count == 0 ? null : reading.Nationalities, roles = reading.Roles.Count == 0 ? null : reading.Roles },
             groups = Shown(groups).Select(g => new
             {
                 g.Score, g.Sources, vetoed = g.Vetoed ? true : (bool?)null,

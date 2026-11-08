@@ -578,9 +578,9 @@ and the log (doc 15) records that. The order within an area is rough value.
   holds a LoC heading and a TGN record whose chain contains the heading's parenthetical, before any change to the join.
   Its supposed sibling of 2026-11-07, the St/Saint spelling behind "St Ives (Cornwall)", was read directly on the 8th and
   is not a key gap at all (LoC and TGN carry every form); the fault is finding 113, an entity placed through its
-  records when its label has no qualifier (doc 10 7.6 "Read 2026-11-08, finding 113 shaped"; three strings), waiting
-  on the word.
-- A subdivision placed by its sibling parts (2026-11-07, "Birmingham" in keywords:sub, string 79377: its parent
+  records when its label has no qualifier (doc 10 7.6 "Read 2026-11-08, finding 113 shaped"; three strings), built
+  2026-11-08 on the word (Finding113Tests), measured by the reconcile after.
+- ~~A subdivision placed by its sibling parts~~ (built 2026-11-08 as finding 114, doc 10 7.6 "Built 2026-11-08, findings 113 to 116"; measured by the reconcile after) (2026-11-07, "Birmingham" in keywords:sub, string 79377: its parent
   headings read "Architecture--England--Birmingham" and "Art, Modern--19th century--England--Birmingham", the sibling
   part "England" beside it, and the desk showed Alabama's group first). A place subdivision whose parent heading has
   another place part is placed by it, as a qualifier places a name (findings 84 and 106 read the placement), so the
@@ -588,7 +588,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   assistant's first direct query): of 106 queued keywords:sub strings, 73 have a sibling part in a parent heading
   decided as a place ("Aberdeen", "Antwerp", "Armagh", "Athens", "Boston", "Brescia", "Cambridge", "Camden",
   "Cardiff", "Christchurch", "Coventry", "Cyprus", "Dedham"), most of the keywords:sub queue. Waiting on the word.
-- Dates that miss by a year or two on one side (2026-11-07, "Hall, Harry, 1815-1882" at the desk: ULAN's and LoC's
+- ~~Dates that miss by a year or two on one side~~ (built 2026-11-08 as finding 115; measured by the reconcile after) (2026-11-07, "Hall, Harry, 1815-1882" at the desk: ULAN's and LoC's
   painter of 1813-1882 vetoed, the death agreeing exactly, the birth two years out, and no record saying 1815 to excuse
   it as finding 111's shape does). Painters' birth years wobble between references; a conflict by at most two years on
   one side while the other side agrees exactly is a near miss, not another person, when no namesake with agreeing
@@ -600,7 +600,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   "Cozens, John Robert, 1752-1798", "Chalon, Henry Bernard, 1771-1849", "Draper, Herbert James, 1863-1920", "Knight,
   Richard Payne, 1750-1824", "Landseer, Charles, 1799-1878", "Phillips, Claude [1848-1924] (author)"), the dated
   artists' headings almost all. Waiting on the word.
-- Prominence when every live group holds a project entity (2026-11-07, "Boston" bare after the pass: the legacy Boston
+- ~~Prominence when every live group holds a project entity~~ (built 2026-11-08 as finding 116; measured by the reconcile after) (2026-11-07, "Boston" bare after the pass: the legacy Boston
   placed through TGN's Boston, Massachusetts in one group, "Boston (England)" in the other, each a project entity, and
   prominence standing aside because a project entity is among the live groups, so the bare name went from exact-name
   to the desk; "Geneva" the same). When one group holds a project entity, that entity is the evidence and prominence

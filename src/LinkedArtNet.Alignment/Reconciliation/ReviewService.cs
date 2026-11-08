@@ -6,7 +6,7 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 
 /// <summary>The evidence a decision carried, read back for the desk.</summary>
 public sealed record EvidenceView(string? Stage, EvidenceReading? Reading, List<EvidenceGroup> Groups, JsonElement? Extra);
-public sealed record EvidenceReading(string? Text, string? Key, List<string>? Classes, string? Lifespan, List<string>? Nationalities, List<string>? Roles);
+public sealed record EvidenceReading(string? Text, string? Key, List<string>? Classes, string? Lifespan, List<string>? Nationalities, List<string>? Roles, string? Qualifier = null, string? QualifierFrom = null);
 public sealed record EvidenceGroup(double Score, List<string> Sources, List<EvidenceMember> Members);
 public sealed record EvidenceMember(string Uri, string Source, string? Label, string? Stage, double Score, bool? Veto, string? Reason, bool? SetAside = null)
 {

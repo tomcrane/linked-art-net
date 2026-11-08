@@ -108,7 +108,9 @@ public class SecondPassTests(PostgresFixture pg)
         var again = await reconciler.EvaluateAsync(ds, cozens, includeStore: true);
         Assert.Equal(Outcome.Queued, again.Outcome);
         Assert.DoesNotContain(again.Groups.SelectMany(g => g.Members), m => m.Candidate.EntityId == placeholder.Id);
-        Assert.Contains(again.Groups.SelectMany(g => g.Members), m => m.Candidate.Source == "loc" && m.Veto && m.DatesConflict); // the conflict that queued it, still there
+        // since finding 115 (2026-11-08) the two years on the death with the birth the same are a near miss, not a conflict: the record
+        // stands live, and one source with near dates does not carry the string alone, so it is still the desk's
+        Assert.Contains(again.Groups.SelectMany(g => g.Members), m => m.Candidate.Source == "loc" && !m.Veto && m.DatesNear && m.Reason.Contains("dates near"));
     }
 
     [PostgresFact]

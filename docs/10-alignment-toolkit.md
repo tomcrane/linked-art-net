@@ -1259,6 +1259,35 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-08, findings 113 to 116, the owner's word on the five counts ("let's do these rules, in your suggested
+order"), each test written to fail as the run did before the rule, every library test project green, measured by the
+reconcile that follows (the placeholder-class rule waits until that run shows what the sibling rule leaves):
+
+- Finding 113, an entity placed through its records: `StoreCandidateAsync` read a bare-labelled entity's placement
+  from its TGN record (finding 84) and now from its LoC heading's parenthetical when it has no TGN record; the two
+  legacy "St Ives" entities are placed, Cornwall's taken by the store stage for "St Ives (Cornwall)" and "St. Ives
+  (Cornwall, England)", Cambridgeshire's for "St Ives, Cambridgeshire" (Finding113Tests; before the rule the Cornwall
+  string was accepted onto a fresh group rather than matched, the fault's shape in the test store).
+- Finding 114, a subdivision placed by its sibling parts: `WithSiblingPlacementAsync`, in the reading before the
+  qualifier's ancestors are walked: a part string of a compound rule's sub context, read as a place with no qualifier,
+  takes as its qualifier the one place its sibling parts resolve to across the headings that carry it
+  (`QualifierFrom` in the reading and the evidence, "its heading's part England"); siblings resolving to two places
+  leave it as it was. Finding114Tests: "Architecture--England--Birmingham" run whole, England decided first, Birmingham
+  then onto TGN's Birmingham under England and not Alabama's (queued before the rule). 73 of the 106 queued
+  keywords:sub strings have such a sibling.
+- Finding 115, dates a year or two out on one side: `Lifespan.NearMiss` (both lifespans dated on both sides, one side
+  the same year, the other out by at most two); in the scoring a conflict that is a near miss is no veto and no lift,
+  reads "dates near", and counts as agreement for standing over a source's undated namesakes (`ScoredCandidate.DatesNear`)
+  but not for carrying a single source alone. Finding115Tests: "Hall, Harry, 1815-1882" accepted by vote onto ULAN's
+  and LoC's painter of 1813-1882 with LoC's undated Harry Hall set aside; "Sheffield, George, 1800-1852" against the
+  painter of 1839-1892 still a conflict. 65 strings in the queue had the shape.
+- Finding 116, prominence when every tied group holds a project entity: `everyTiedHolds`, when every group tied at
+  the top holds a project entity and no other live group at acceptance score holds one, the entities cancel as
+  evidence and prominence decides as when none holds one; a tied group without an entity, or an entity outside the
+  tie, still stands prominence aside (finding 92). Finding116Tests: "Boston" bare between the Massachusetts and
+  Lincolnshire legacy entities, 250 sitelinks against 60, onto Massachusetts; a third Boston in Georgia with no entity
+  in the tie, and the string is the desk's again. 41 strings had the shape, 29 of them places.
+
 Read 2026-11-08, finding 113 shaped (the assistant's first direct reads of the store, under the owner's new rule): the
 St/Saint key gap supposed behind "St Ives (Cornwall)" does not exist. The keys find every form: LoC writes "St. Ives
 (Cornwall, England)" with "Saint Ives" among its labels, TGN writes "Saint Ives" with "St Ives" and "St. Ives" among

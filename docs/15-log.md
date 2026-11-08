@@ -39,7 +39,11 @@ against, so an entity page should pull in what Wikidata, Wikipedia, ULAN and LoC
 earlier Digirati authority server for UAL (`ual-dac`) reviewed against the workbench so nothing is lost: doc 12
 section 13 (what it had: recent changes and history, a merge tray across pages, a live "id in use" check, the
 survivor chosen for the bookmarks; what not to take: attach by exact label, hard-deleted merges, history without
-values); four items under Workbench and desk. Then back to the opening tasks.
+values); four items under Workbench and desk, and a map for places (the owner) as a fifth. Then back to the opening
+tasks, the word given on all: findings 113 (an entity placed through its LoC heading), 114 (a subdivision placed by
+its sibling parts), 115 (near-miss dates), 116 (prominence when every tied group holds a project entity) built in
+that order, each test failing as the run did before its rule; the reconcile that measures them next, run by the
+assistant.
 
 ## 2026-11-07
 

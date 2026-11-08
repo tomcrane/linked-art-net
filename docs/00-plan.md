@@ -359,6 +359,30 @@ and the log (doc 15) records that. The order within an area is rough value.
   session. `source_strings.skipped_at` (schema version 9), set by Skip; the desk's order is the unskipped by id, then
   the skipped in the order they were skipped, and "after" follows that order (`NextForDeskAsync`); Unskip on a skipped
   string puts it back; ReviewServiceTests.)
+- From the sources, on demand (the owner, 2026-11-08: the project's entity store is becoming the local authority
+  librarians and archivists correct MARC and CALM records against, so an entity page should pull in what the aligned
+  sources say, Wikidata and through it Wikipedia above all; "on-demand rather than on page-load, perhaps, or combined
+  with heavy caching"). A "Pull in" action on the entity page, per identifier or once for all, fetches the live record
+  for each source with a fetcher (Wikidata's entity JSON: description, aliases, image, the English Wikipedia sitelink;
+  then the Wikipedia summary for that sitelink, extract and thumbnail; ULAN's biography and nationality; LoC's notes
+  and sources; LUX's record, with its names, dates, equivalents and the works that cite it, for PMC and any project
+  LUX holds) and writes it into the record's cached row in `authority_records` under its own key with the time; the
+  page then shows a "From the sources" panel from the cache, each fact attributed and dated, with a refresh link.
+  LUX's record is marked when it is a self-echo (doc 10 7.4: our own earlier export under PMC's id, or attributed to
+  the PMC source), so what it says is read as our old data reflected back and not as a second witness (the owner,
+  2026-11-08: "beware of our data-pollution problem"). Nothing is fetched on page load or inside a run; a polite client
+  with a budget; the same fetchers become step 3b's remote candidates. Doc 12 section 13 has the comparison with the
+  earlier Authority Server that never fetched them.
+- Notes as the audit log, History on the entity page, Recent changes on the home page (doc 12 section 13, item 1):
+  every hand change writes a note with before and after (label, class, an identifier added or removed, a merge and
+  what merged, a reopen), the entity page gains a History of its notes and the human decisions on its strings, and the
+  project home a Recent changes list across the project (who, what, when, a link), beside Recent runs.
+- A tray for merging across pages (doc 12 section 13, item 2): entities collected from search results, list rows and
+  entity pages into a browser-held tray, acted on at a merge page with the survivor, label and class chosen and the
+  same confirm step as the desk's; the Ackermann walk of 2026-11-07 is the case.
+- An identifier in use says so (doc 12 section 13, item 3): "Add identifier" on an entity page, given a URI another
+  entity of the project holds, says "held by X" with a link and offers the merge instead of making a twin; the same
+  check on the keep-local URL and the cluster's identifiers.
 - A part's parents on the desk, and "not a compound" (the owner, 2026-11-07, at "New" in keywords:head, string 79768:
   the record's keyword "New-York Historical Society (New York, New York, USA)", the society's own hyphenated spelling,
   split at the hyphen into the head "New" and a sub, with ULAN's unknown-artist "New" at 1.00 and nothing on the card

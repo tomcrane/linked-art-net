@@ -34,6 +34,12 @@ waiting since the 7th in one go (sibling-part placement 73 of 106 queued subs; n
 project entity in both groups 41; the placeholders' classes by context; and the St/Saint gap, which does not exist:
 the keys find every form, and "St Ives (Cornwall)" is finding 113, two bare-labelled legacy entities carried into one
 group by an LCSH park record, the one vetoed member killing the group; three strings; shaped, waiting on the word).
+A side-quest the owner posted early: the project's entity store as the local authority librarians correct records
+against, so an entity page should pull in what Wikidata, Wikipedia, ULAN and LoC say (on demand, cached), and the
+earlier Digirati authority server for UAL (`ual-dac`) reviewed against the workbench so nothing is lost: doc 12
+section 13 (what it had: recent changes and history, a merge tray across pages, a live "id in use" check, the
+survivor chosen for the bookmarks; what not to take: attach by exact label, hard-deleted merges, history without
+values); four items under Workbench and desk. Then back to the opening tasks.
 
 ## 2026-11-07
 

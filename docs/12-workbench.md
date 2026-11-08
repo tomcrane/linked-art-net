@@ -235,3 +235,46 @@ Open:
   contexts and counts today; example records need the pipeline runner to keep a sample per string (step 4).
 - Whether the model's proposals are asked for automatically for every queued item within the project's budget, or
   only on request, as in the trainer now.
+
+## 13. The earlier Authority Server (ual-dac), compared (2026-11-08)
+
+The owner asked, as the project's entity store grows into the local authority librarians and archivists will correct
+MARC and CALM records against, that nothing from the earlier Digirati authority server for University of the Arts
+London be lost (`digirati-co-uk/ual-dac`, `docs/tools/items-and-authorities.md`, read with its code on 2026-11-08).
+That server was a Quart app over Postgres: an authority is a cluster of *sources* (`source:type:id`, each with the
+label it bears in its system and a `seeAlso` link), with a label and a type (Agent, Category, Period, Medium); the
+synchroniser attached incoming source records to an authority by exact label and type or made a new one; a person
+merged authorities through a *tray* collected from any page, chose the surviving id, label and type, and saw the
+history; items linked to authorities by role, coverage or property, and an authority's page linked to its usages.
+
+What the workbench already has, and mostly better: decisions per string with evidence rather than a label-and-type
+attach; a merge that keeps the loser's id resolving (`merged_into`) where theirs hard-deleted the row, so old ids
+returned 404; labels that follow a merge, so "Clemens" still finds "Mark Twain" in both; the strings and the catalogue
+records behind an entity on its page; undo of a decision; roles per project; the manifest; runs. Their `seeAlso`
+data was inlined into API responses only for the UAL systems' own files, never fetched for Wikidata, which is the
+feature the owner now wants built the other way round (on demand, cached; section 7 of the plan, Workbench and desk).
+
+What it had that the workbench lacks, taken as items (plan section 7, Workbench and desk):
+
+1. **Recent changes** on the home page (their last 200 history rows: id, label, source, change, by, date) and a
+   **history** on the authority page (per source: change type, by, when, previous id). Ours has "Recent runs" and the
+   notes. The shape for us: notes as the audit log, written by the system for every hand change with before and
+   after ("Class changed from Person to Group", as the class control does already; the label, an identifier added or
+   removed, a merge and what merged), so the entity page's History is its notes and the human decisions on its
+   strings, and the project home's Recent changes is the same across the project. Theirs stored no before and after,
+   which the owner's "it was X all along" case needs.
+2. **A tray for merging across pages**, held in the browser (theirs in `localStorage`), filled from search results,
+   list rows and entity pages, acted on at a merge page with the survivor, label and class chosen; our merge is from
+   one entity's page by search, or the desk's together tick on one card. The owner's walk through the Ackermanns
+   ("once I was in the various Ackermanns it seemed the easiest flow to go back and search for more") is the case.
+3. **An identifier in use says so.** Their Add form checked live whether `source:type:id` already belonged to an
+   authority and linked to it. Our "Add identifier" on an entity page writes the equivalent without asking whether
+   another entity holds that URI, which would make a twin; it should say "held by X" and offer the merge.
+4. **The survivor's id chosen for the bookmarks' sake**: their merge page let the person keep the id already in
+   circulation. Ours chooses the survivor at the desk's confirm step and by direction on the entity page; the thought
+   to keep is that the published id should win, which the lifecycle items (publication as a recorded act) make
+   decidable.
+
+What not to take: the attach-by-exact-label rule at ingest (arbitrary when several match, no review); history without
+values; ids that could be re-minted after a merge; no export, no bulk operations, no split, no roles. The identifier
+scheme (8 characters, no 0/o/i/l/1, a letter first) is close to ours.

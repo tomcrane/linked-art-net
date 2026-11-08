@@ -39,8 +39,10 @@ psql="/c/Program Files/PostgreSQL/15/bin/psql.exe"
 [ -x "$psql" ] || psql="psql"
 export PGOPTIONS="-c default_transaction_read_only=on -c statement_timeout=600000"
 export PGCLIENTENCODING=UTF8
+# options before the connection string: psql stops reading options at the first positional argument
+conninfo="${conninfo# }"
 if [ "${1:-}" = "-f" ]; then
-  "$psql" "$conninfo" -X -v ON_ERROR_STOP=1 -f "$2"
+  "$psql" -X -v ON_ERROR_STOP=1 -d "$conninfo" -f "$2"
 else
-  "$psql" "$conninfo" -X -v ON_ERROR_STOP=1 -c "$1"
+  "$psql" -X -v ON_ERROR_STOP=1 -d "$conninfo" -c "$1"
 fi

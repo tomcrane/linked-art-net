@@ -6,10 +6,20 @@ using LinkedArtNet.Alignment.Store;
 
 namespace LinkedArtNet.Alignment.Authorities;
 
-/// <summary>A GET of a public URL, or null when it fails; one implementation over <see cref="HttpClient"/>, another canned for tests.</summary>
+/// <summary>What a GET of a public URL came back with: the body on a 200, otherwise the status or the failure, so the message can say which (the owner, 2026-11-08: "is that no response, or a specific HTTP error code?").</summary>
+public sealed record WebAnswer(string? Body, int Status, string? Failure = null)
+{
+    public bool Ok => Body is not null;
+    /// <summary>"answered 404 Not Found", or "did not answer: timed out".</summary>
+    public string Said => Failure is not null ? $"did not answer: {Failure}" : $"answered {Status}{(Enum.IsDefined(typeof(HttpStatusCode), Status) ? " " + Regex.Replace(((HttpStatusCode)Status).ToString(), "(?<=[a-z])(?=[A-Z])", " ") : "")}";
+    public static WebAnswer Of(string body) => new(body, 200);
+    public static WebAnswer NotFound => new(null, 404);
+}
+
+/// <summary>A GET of a public URL; one implementation over <see cref="HttpClient"/>, another canned for tests.</summary>
 public interface IWebFetch
 {
-    Task<string?> GetAsync(string url, string accept, CancellationToken ct = default);
+    Task<WebAnswer> GetAsync(string url, string accept, CancellationToken ct = default);
 }
 
 /// <summary>
@@ -20,7 +30,7 @@ public sealed class HttpWebFetch(HttpClient http) : IWebFetch
 {
     public const string UserAgent = "linked-art-net alignment workbench (+https://github.com/tomcrane/linked-art-net)";
 
-    public async Task<string?> GetAsync(string url, string accept, CancellationToken ct = default)
+    public async Task<WebAnswer> GetAsync(string url, string accept, CancellationToken ct = default)
     {
         try
         {
@@ -30,10 +40,11 @@ public sealed class HttpWebFetch(HttpClient http) : IWebFetch
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             cts.CancelAfter(TimeSpan.FromSeconds(20));
             using var response = await http.SendAsync(request, cts.Token);
-            if (!response.IsSuccessStatusCode) return null;
-            return await response.Content.ReadAsStringAsync(cts.Token);
+            if (!response.IsSuccessStatusCode) return new WebAnswer(null, (int)response.StatusCode);
+            return WebAnswer.Of(await response.Content.ReadAsStringAsync(cts.Token));
         }
-        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or OperationCanceledException) { return null; }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested) { return new WebAnswer(null, 0, "timed out after 20 seconds"); }
+        catch (HttpRequestException e) { return new WebAnswer(null, 0, e.Message); }
     }
 }
 
@@ -116,15 +127,17 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
         return result;
     }
 
-    private static Pulled Failed(string uri, string source, DateTimeOffset now, string what) => new(uri, source, now, null, null, [], [], Error: $"{what} did not answer.");
+    private static Pulled Failed(string uri, string source, DateTimeOffset now, string what, WebAnswer? answer = null) =>
+        new(uri, source, now, null, null, [], [], Error: answer is null ? $"{what} answered with nothing readable." : $"{what} {answer.Said}."
+            + (answer.Status == 404 && source == "lux" ? " LUX has re-minted its identifiers before (doc 10 7.5): the record may exist under another." : ""));
 
     // ---- Wikidata, Wikipedia, Commons ----
 
     private async Task<Pulled> WikidataAsync(string uri, DateTimeOffset now, CancellationToken ct)
     {
         var qid = uri.Split('/').Last();
-        var json = await web.GetAsync($"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json", "application/json", ct);
-        if (json is null) return Failed(uri, "wikidata", now, "Wikidata");
+        var answer = await web.GetAsync($"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json", "application/json", ct);
+        if (answer.Body is not { } json) return Failed(uri, "wikidata", now, "Wikidata", answer);
         using var doc = JsonDocument.Parse(json);
         if (!doc.RootElement.TryGetProperty("entities", out var entities) || !entities.TryGetProperty(qid, out var e))
             return Failed(uri, "wikidata", now, "Wikidata");
@@ -149,7 +162,7 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
         string? extract = null, extractUrl = null, imageFile = WikidataStrings(claims, "P18").FirstOrDefault();
         if (e.TryGetProperty("sitelinks", out var sl) && sl.TryGetProperty("enwiki", out var enwiki) && enwiki.TryGetProperty("title", out var t) && t.GetString() is { } title)
         {
-            var summary = await web.GetAsync("https://en.wikipedia.org/api/rest_v1/page/summary/" + Uri.EscapeDataString(title.Replace(' ', '_')), "application/json", ct);
+            var summary = (await web.GetAsync("https://en.wikipedia.org/api/rest_v1/page/summary/" + Uri.EscapeDataString(title.Replace(' ', '_')), "application/json", ct)).Body;
             if (summary is not null)
             {
                 using var wp = JsonDocument.Parse(summary);
@@ -169,8 +182,7 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
     public async Task<Picture?> CommonsAsync(string fileName, CancellationToken ct)
     {
         var url = "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=extmetadata%7Curl&iiurlwidth=240&format=json&titles=" + Uri.EscapeDataString("File:" + fileName);
-        var json = await web.GetAsync(url, "application/json", ct);
-        if (json is null) return null;
+        if ((await web.GetAsync(url, "application/json", ct)).Body is not { } json) return null;
         using var doc = JsonDocument.Parse(json);
         if (!doc.RootElement.TryGetProperty("query", out var q) || !q.TryGetProperty("pages", out var pages)) return null;
         foreach (var page in pages.EnumerateObject())
@@ -181,9 +193,19 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
             string? Meta(string key) => em.ValueKind == JsonValueKind.Object && em.TryGetProperty(key, out var m) ? StripHtml(Str(m, "value")) : null;
             var required = !string.Equals(Meta("AttributionRequired"), "false", StringComparison.OrdinalIgnoreCase);
             return new Picture(fileName, Str(ii, "descriptionurl") ?? "https://commons.wikimedia.org/wiki/File:" + Uri.EscapeDataString(fileName),
-                Str(ii, "thumburl"), Meta("LicenseShortName"), Meta("LicenseUrl"), Meta("Artist"), Meta("Credit"), required);
+                Str(ii, "thumburl"), Meta("LicenseShortName"), Meta("LicenseUrl"), CleanAuthor(Meta("Artist")), Meta("Credit"), required);
         }
         return null;
+    }
+
+    /// <summary>Commons' author field as a name: its boilerplate for an unstated author ("No machine-readable author provided. Ragesoss assumed (based on copyright claims).") becomes "Ragesoss (assumed)"; a long field is cut.</summary>
+    public static string? CleanAuthor(string? author)
+    {
+        if (author is null) return null;
+        var m = Regex.Match(author, @"No machine-readable author provided\.\s*(.+?)\s+assumed\b", RegexOptions.IgnoreCase);
+        if (m.Success) author = m.Groups[1].Value + " (assumed)";
+        author = author.Trim().TrimEnd('.');
+        return author.Length > 60 ? author[..57].TrimEnd() + "..." : author;
     }
 
     private static string? Lang(JsonElement e, string prop, string lang) =>
@@ -221,8 +243,8 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
     private async Task<Pulled> UlanAsync(string uri, DateTimeOffset now, CancellationToken ct)
     {
         var query = $"select ?label ?bio ?start ?end ?nat ?gender ?note where {{ <{uri}> gvp:prefLabelGVP/gvp:term ?label . optional {{ <{uri}> foaf:focus ?a . optional {{ ?a gvp:biographyPreferred ?b . ?b schema:description ?bio . optional {{ ?b gvp:estStart ?start }} optional {{ ?b gvp:estEnd ?end }} optional {{ ?b schema:gender/gvp:prefLabelGVP/gvp:term ?gender }} }} optional {{ ?a gvp:nationalityPreferred ?n . ?n gvp:prefLabelGVP/gvp:term ?nat }} }} optional {{ <{uri}> skos:scopeNote ?sn . ?sn rdf:value ?note }} }} limit 1";
-        var json = await web.GetAsync("https://vocab.getty.edu/sparql.json?query=" + Uri.EscapeDataString(query), "application/sparql-results+json", ct);
-        if (json is null) return Failed(uri, "ulan", now, "Getty's SPARQL endpoint");
+        var answer = await web.GetAsync("https://vocab.getty.edu/sparql.json?query=" + Uri.EscapeDataString(query), "application/sparql-results+json", ct);
+        if (answer.Body is not { } json) return Failed(uri, "ulan", now, "Getty's SPARQL endpoint", answer);
         using var doc = JsonDocument.Parse(json);
         if (!doc.RootElement.TryGetProperty("results", out var results) || !results.TryGetProperty("bindings", out var bindings) || bindings.GetArrayLength() == 0)
             return new Pulled(uri, "ulan", now, null, null, [], [], Note: "ULAN has no record at this URI.");
@@ -241,8 +263,8 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
 
     private async Task<Pulled> LocAsync(string uri, DateTimeOffset now, CancellationToken ct)
     {
-        var json = await web.GetAsync(uri.Replace("http://", "https://") + ".json", "application/json", ct);
-        if (json is null) return Failed(uri, "loc", now, "id.loc.gov");
+        var answer = await web.GetAsync(uri.Replace("http://", "https://") + ".json", "application/json", ct);
+        if (answer.Body is not { } json) return Failed(uri, "loc", now, "id.loc.gov", answer);
         const string Mads = "http://www.loc.gov/mads/rdf/v1#";
         using var doc = JsonDocument.Parse(json);
         if (doc.RootElement.ValueKind != JsonValueKind.Array) return Failed(uri, "loc", now, "id.loc.gov");
@@ -304,15 +326,15 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
 
     private async Task<Pulled> LuxAsync(string uri, DateTimeOffset now, CancellationToken ct)
     {
-        var json = await web.GetAsync(uri, "application/json", ct);
-        if (json is null) return Failed(uri, "lux", now, "LUX");
+        var answer = await web.GetAsync(uri, "application/json", ct);
+        if (answer.Body is not { } json) return Failed(uri, "lux", now, "LUX", answer);
         using var doc = JsonDocument.Parse(json);
         var r = doc.RootElement;
         var label = Str(r, "_label");
         var names = new List<string>();
         if (r.TryGetProperty("identified_by", out var ids))
             foreach (var n in ids.EnumerateArray())
-                if (Str(n, "type") == "Name" && Str(n, "content") is { } c && c != label) names.Add(c);
+                if (Str(n, "type") == "Name" && Str(n, "content") is { } c && c != label && EnglishOrUntagged(n)) names.Add(c);
         var facts = new List<Fact>();
         string? description = null;
         if (r.TryGetProperty("referred_to_by", out var statements))
@@ -320,7 +342,7 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
             {
                 var kind = s.TryGetProperty("classified_as", out var ca) && ca.GetArrayLength() > 0 ? Str(ca[0], "_label") : null;
                 var content = Str(s, "content");
-                if (content is null) continue;
+                if (content is null || !EnglishOrUntagged(s)) continue;
                 if (description is null && (kind is null || kind.Contains("Biography", StringComparison.OrdinalIgnoreCase) || kind == "Description")) description = content;
                 else facts.Add(new Fact(kind ?? "Statement", content));
                 if (facts.Count >= 6) break;
@@ -353,6 +375,15 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
         facts.Add(new Fact("In LUX", "the record and the works that cite it", uri.Replace("/data/", "/view/")));
         var note = selfEcho ? $"LUX's record carries our identifier {ours}: this is our earlier export reflected back, not a second witness (doc 10 7.4)." : null;
         return new Pulled(uri, "lux", now, label, description, names.Distinct().Take(8).ToList(), facts, Picture: picture, Lat: lat, Long: lon, SelfEcho: selfEcho, Note: note);
+    }
+
+    /// <summary>LUX writes names and statements in many languages; the panel keeps English and those with no language given (a library's own forms).</summary>
+    private static bool EnglishOrUntagged(JsonElement node)
+    {
+        if (!node.TryGetProperty("language", out var langs) || langs.ValueKind != JsonValueKind.Array || langs.GetArrayLength() == 0) return true;
+        foreach (var l in langs.EnumerateArray())
+            if (Str(l, "_label") is { } name && (name.Equals("English", StringComparison.OrdinalIgnoreCase) || Str(l, "id")?.EndsWith("/en", StringComparison.Ordinal) == true)) return true;
+        return false;
     }
 
     /// <summary>The centre of a WKT POINT or POLYGON (LUX's <c>defined_by</c>), as latitude and longitude; WKT writes longitude first.</summary>

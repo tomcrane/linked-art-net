@@ -65,7 +65,10 @@ the tray, collected across pages in the browser and merged at one page with the 
 five items of the review's plan built in the agreed order, committed on the stop. Then the owner's "tiny little
 improvement": the sign-in page returns to the page that bounced; and two layout faults from the Cozens page, the
 picture's caption under the next heading's rule (headings clear floats now) and the two add-identifier forms at odds
-(one grid: label, field, button).
+(one grid: label, field, button). The source cards tidied (a head row with the source's label and "refresh" at the
+right, the URI small beneath; LUX's names and statements in English or untagged only; Commons' author boilerplate
+cut to "X (assumed)"); and the owner's question on "LUX did not answer" answered by the fetch carrying its status
+(404: LUX re-minted that identifier), a plan item to count the dead ones.
 
 ## 2026-11-07
 

@@ -109,16 +109,20 @@
                 {
                     var p = Model.Pulled.GetValueOrDefault(q.Uri);
                     <div class="card source">
-                        <h3 style="margin-top:0"><span class="tag src">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>
-                            @if (p is not null) { <span class="muted" style="font-weight:400; text-transform:none; letter-spacing:0">· pulled @p.At.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</span> }
-                            <form method="post" asp-page-handler="Pull" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@q.Uri" /><button type="submit" class="quiet small">@(p is null ? "pull" : "refresh")</button></form></h3>
+                        <div class="source-head">
+                            <span class="tag src">@q.Source</span>
+                            <strong>@(p?.Label ?? q.Uri.Split('/').Last())</strong>
+                            @if (p is not null) { <span class="small muted">pulled @p.At.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</span> }
+                            <form method="post" asp-page-handler="Pull" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@q.Uri" /><button type="submit" class="quiet small">@(p is null ? "pull" : "refresh")</button></form>
+                        </div>
+                        <div class="small muted uri"><a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a></div>
                         @if (p is null) { <p class="small muted">Not pulled yet.</p> }
                         else
                         {
                             @if (p.SelfEcho) { <p class="notice small" style="margin:.4rem 0">@p.Note</p> }
                             else if (p.Note is not null) { <p class="small muted">@p.Note</p> }
                             @if (p.Picture is { ThumbUrl: { } th } pic) { <figure class="picture small"><a href="@pic.FilePage" target="_blank" rel="noopener"><img src="@th" alt="@pic.FileName" loading="lazy" /></a><figcaption class="small muted">@pic.Attribution</figcaption></figure> }
-                            @if (p.Label is not null || p.Description is not null) { <p><strong>@p.Label</strong>@if (p.Description is not null) { <text> · </text>@p.Description }</p> }
+                            @if (p.Description is not null) { <p>@p.Description</p> }
                             @if (p.Aliases.Count > 0) { <p class="small muted">also: @string.Join(" · ", p.Aliases)</p> }
                             @if (p.Extract is not null) { <p class="small">@p.Extract @if (p.ExtractUrl is not null) { <a href="@p.ExtractUrl" target="_blank" rel="noopener">@(p.ExtractFrom ?? "source")</a> }</p> }
                             @if (p.Facts.Count > 0)

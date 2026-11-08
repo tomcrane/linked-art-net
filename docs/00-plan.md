@@ -372,7 +372,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   without it; the desk's "show pictures" link puts the cached thumbnails and descriptions on the cards. SourcePullTests
   against canned copies of the live answers for John Robert Cozens and LUX's "King's Gallery"; ReviewDeskTests the
   panel from the cache. Left for later: LUX's works that cite the entity as a count, a pull from the desk itself, a
-  budget across a session.) The design as agreed (the owner, 2026-11-08: the project's entity store is becoming the local authority
+  budget across a session.) Seen at once from it: a LUX identifier the project holds answers 404
+  ("Peabody"'s concept neighbour, `concept/a277azwt`, 2026-11-08), the re-mint doc 10 7.5 found in October; the
+  pull says the status now. An item of its own: count the project's LUX identifiers that no longer resolve (a HEAD
+  pass with the polite client, outside any run) and decide whether they are withdrawn as equivalents or re-found by
+  the PMC identifier LUX still carries in the records it kept; decision 15's shape. The design as agreed (the owner, 2026-11-08: the project's entity store is becoming the local authority
   librarians and archivists correct MARC and CALM records against, so an entity page should pull in what the aligned
   sources say, Wikidata and through it Wikipedia above all; "on-demand rather than on page-load, perhaps, or combined
   with heavy caching"). A "Pull in" action on the entity page, per identifier or once for all, fetches the live record

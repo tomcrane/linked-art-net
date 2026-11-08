@@ -85,8 +85,12 @@ figure.picture.small img { max-height: 96px; }
 figure.picture figcaption { margin-top: 0.2rem; margin-bottom: 0.5rem; line-height: 1.2; }
 /* a section heading starts below a floated picture, so its rule never runs through the caption (the owner, 2026-11-08) */
 h2 { clear: both; }
-.card.source h3 { display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem; align-items: center; }
-.card.source h3 form.inline { display: inline; margin-left: auto; }
+.card.source .source-head { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; align-items: baseline; }
+.card.source .source-head form.inline { margin-left: auto; }
+.card.source .source-head button.quiet.small { padding: 0.1rem 0.5rem; font-size: 0.8rem; }
+.card.source .uri { margin: 0.1rem 0 0.6rem; overflow-wrap: anywhere; }
+.card.source .uri a { color: var(--muted); }
+.card.source p { margin: 0.4rem 0; }
 /* a labelled row: label, field, button, aligned with the rows beside it (the entity page's two ways to add an identifier) */
 form.labelled { display: grid; grid-template-columns: 10rem 1fr auto; gap: 0.4rem; align-items: center; margin: 0.4rem 0; }
 form.labelled input[type=text], form.labelled input[type=search] { width: 100%; min-width: 0; }

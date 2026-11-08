@@ -14,11 +14,11 @@ public class SourcePullTests(PostgresFixture pg)
     private sealed class Canned(Dictionary<string, string> answers) : IWebFetch
     {
         public List<string> Asked { get; } = [];
-        public Task<string?> GetAsync(string url, string accept, CancellationToken ct = default)
+        public Task<WebAnswer> GetAsync(string url, string accept, CancellationToken ct = default)
         {
             Asked.Add(url);
             var hit = answers.FirstOrDefault(a => url.Contains(a.Key, StringComparison.Ordinal));
-            return Task.FromResult(hit.Key is null ? null : hit.Value);
+            return Task.FromResult(hit.Key is null ? WebAnswer.NotFound : WebAnswer.Of(hit.Value));
         }
     }
 
@@ -64,9 +64,10 @@ public class SourcePullTests(PostgresFixture pg)
         """;
     private const string LuxJson = """
         {"id":"https://lux.collections.yale.edu/data/group/e5478e91","type":"Group","_label":"King's Gallery",
-         "identified_by":[{"type":"Name","content":"King's Gallery"},{"type":"Name","content":"Queen's Gallery"}],
+         "identified_by":[{"type":"Name","content":"King's Gallery"},{"type":"Name","content":"Queen's Gallery"},{"type":"Name","content":"女王美術館","language":[{"_label":"Chinese"}]}],
          "referred_to_by":[{"type":"LinguisticObject","content":"British repository, London, contemporary","classified_as":[{"_label":"Biography Statement"}]},
-                           {"type":"LinguisticObject","content":"In Buckingham Palace.","classified_as":[{"_label":"Description"}]}],
+                           {"type":"LinguisticObject","content":"In Buckingham Palace.","classified_as":[{"_label":"Description"}],"language":[{"_label":"English"}]},
+                           {"type":"LinguisticObject","content":"musée du palais de Buckingham","classified_as":[{"_label":"Description"}],"language":[{"_label":"French"}]}],
          "formed_by":{"type":"Formation","timespan":{"type":"TimeSpan","identified_by":[{"type":"Name","content":"1962-01-01"}]}},
          "equivalent":[{"id":"https://data.paul-mellon-centre.ac.uk/group/k3vhptjx"},{"id":"http://vocab.getty.edu/ulan/500230115"},{"id":"http://www.wikidata.org/entity/Q1434767"}],
          "defined_by":"POLYGON ((-71.27 42.40, -71.17 42.40, -71.17 42.50, -71.27 42.50, -71.27 42.40))"}
@@ -156,6 +157,7 @@ public class SourcePullTests(PostgresFixture pg)
         Assert.Equal(["Queen's Gallery"], lux.Aliases);
         Assert.Equal("British repository, London, contemporary", lux.Description);
         Assert.Contains(lux.Facts, f => f.Key == "Description" && f.Value == "In Buckingham Palace.");
+        Assert.DoesNotContain(lux.Facts, f => f.Value.Contains("musée")); // English and untagged only, from LUX's many languages
         Assert.Contains(lux.Facts, f => f.Key == "Formed" && f.Value == "1962-01-01");
         Assert.True(lux.SelfEcho);
         Assert.Contains("https://data.paul-mellon-centre.ac.uk/group/k3vhptjx", lux.Note);
@@ -175,7 +177,11 @@ public class SourcePullTests(PostgresFixture pg)
         var pull = new SourcePull(pg.Store, new Canned([]));
         var uri = "http://www.wikidata.org/entity/Q999999999";
         var p = await pull.PullAsync(uri);
-        Assert.Equal("Wikidata did not answer.", p.Error);
+        Assert.Equal("Wikidata answered 404 Not Found.", p.Error);
+        var lux = await pull.PullAsync("https://lux.collections.yale.edu/data/concept/gone");
+        Assert.StartsWith("LUX answered 404 Not Found. LUX has re-minted", lux.Error);
+        Assert.Equal("did not answer: timed out after 20 seconds", new WebAnswer(null, 0, "timed out after 20 seconds").Said);
+        Assert.Equal("answered 503 Service Unavailable", new WebAnswer(null, 503).Said);
         Assert.Null(await pg.Store.GetAuthorityAsync(uri));
         Assert.False(SourcePull.CanPull("http://viaf.org/viaf/1"));
         Assert.True(SourcePull.CanPull("https://lux.collections.yale.edu/data/place/abc"));
@@ -187,6 +193,9 @@ public class SourcePullTests(PostgresFixture pg)
     public void Wikidata_times_keep_their_precision_and_commons_html_is_stripped()
     {
         Assert.Equal("John Robert Cozens", SourcePull.StripHtml("<bdi><a href=\"x\">John Robert Cozens</a></bdi>"));
+        Assert.Equal("Ragesoss (assumed)", SourcePull.CleanAuthor("No machine-readable author provided. Ragesoss assumed (based on copyright claims)."));
+        Assert.Equal("John Robert Cozens", SourcePull.CleanAuthor("John Robert Cozens"));
+        Assert.Null(SourcePull.CleanAuthor(null));
         Assert.Null(SourcePull.StripHtml("<span></span>"));
         var c = SourcePull.Centroid("POLYGON ((-71.27 42.40, -71.17 42.40, -71.17 42.50, -71.27 42.50, -71.27 42.40))");
         Assert.NotNull(c);

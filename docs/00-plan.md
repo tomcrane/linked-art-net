@@ -372,7 +372,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   the PMC source), so what it says is read as our old data reflected back and not as a second witness (the owner,
   2026-11-08: "beware of our data-pollution problem"). Nothing is fetched on page load or inside a run; a polite client
   with a budget; the same fetchers become step 3b's remote candidates. Doc 12 section 13 has the comparison with the
-  earlier Authority Server that never fetched them.
+  earlier Authority Server that never fetched them. Pictures too (the owner, 2026-11-08): Wikidata's image (P18) and
+  the Wikipedia page image, kept as the Commons file name and its licence and author in the cache, never the bytes;
+  shown on the entity page in the panel as one small thumbnail with its attribution and a link to the file, loaded
+  from Commons' thumbnail service only when the page is viewed after a pull. The UI effect to weigh: the desk stays
+  text by default, since pictures slow it and most cards have none; a "show pictures" toggle on the desk puts a
+  thumbnail on the cards whose records have one, which is the one place a face separates two John Smiths. Commons
+  licences require the attribution to be shown, so the thumbnail is never shown without it.
 - A map (the owner, 2026-11-08): an entity that is a place shows where it is on a map on its page, and wherever the
   UI puts namesake places side by side (the desk's cards for "St Ives", "Boston", "Birmingham"; the merge tray; the
   entities list filtered to places) the candidates are shown together on one map, since seeing the St Iveses apart

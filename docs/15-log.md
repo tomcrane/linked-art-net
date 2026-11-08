@@ -47,7 +47,10 @@ first, run jnagjy (13:48 to 14:28; doc 10 7.6 "Measured 2026-11-08 (run jnagjy)"
 queued to vote, 16 to exact-name, 46 singles to votes with a second source), finding 113's three as expected, 116
 unneeded this run, and 114 over-reaching (a narrower sibling, and subjects beside a place, took a qualifier: "Alabama",
 "Audiences", "Architecture" under "Dublin" minted), refined the same hour to siblings TGN knows as ancestors of a place
-of the name, and run again. The US state abbreviations a new item from the diff.
+of the name, and run again (m6dfm6, 14:34 to 15:16): the first form's losses given back, and a second kind seen, a
+country too coarse to separate TGN's namesakes within it ("Hull", "Nottingham", "Hereford", "Newcastle", "Genoa"), so
+finding 114 became a tie-breaker, run only when the plain reading leaves the string queued or minted and kept only
+when it settles it; the third reconcile next. The US state abbreviations a new item from the diff.
 
 ## 2026-11-07
 

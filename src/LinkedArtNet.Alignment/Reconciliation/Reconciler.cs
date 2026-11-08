@@ -447,8 +447,23 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Evaluation> EvaluateAsync(string dataset, SourceString s, bool includeStore = true, CancellationToken ct = default)
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        var reading = await WithQualifierAncestorsAsync(await WithSiblingPlacementAsync(s, await WithWholeConceptAsync(s, await WithHyphenatedHeadAsync(s, Read(s), ct), ct), ct), ct);
+        var plain = await WithWholeConceptAsync(s, await WithHyphenatedHeadAsync(s, Read(s), ct), ct);
+        var reading = await WithQualifierAncestorsAsync(plain, ct);
         Time("read", sw);
+        var first = await EvaluateReadingAsync(dataset, s, reading, includeStore, ct);
+        if (first.Outcome is not (Outcome.Queued or Outcome.Minted)) return first;
+        // finding 114 as a tie-breaker, not a reading: a sibling part's place qualifies the string only when the plain reading could not
+        // settle it, since a country qualifier placed every English Hull and Nottingham equally and queued what the project's one entity
+        // of the name had taken (the second run of the rule, m6dfm6, 2026-11-08)
+        var sibling = await WithSiblingPlacementAsync(s, plain, ct);
+        if (sibling.Qualifier is null) return first;
+        var second = await EvaluateReadingAsync(dataset, s, await WithQualifierAncestorsAsync(sibling, ct), includeStore, ct);
+        return second.Outcome is Outcome.MatchedStore or Outcome.Accepted ? second : first;
+    }
+
+    private async Task<Evaluation> EvaluateReadingAsync(string dataset, SourceString s, StringReading reading, bool includeStore, CancellationToken ct)
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         if (reading.Key.Length == 0) return new Evaluation(Outcome.Skipped, reading, []);
 
         // 1. overrides, by the whole string and by the name part

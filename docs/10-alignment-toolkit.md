@@ -1259,6 +1259,23 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-08 (run m6dfm6, 14:34 to 15:16; jnagjy taken back): finding 114 refined to TGN-known ancestors.
+Matched in store 6,025 (52 more than jnagjy), accepted 9,435, queued 3,805 (46 fewer), minted 10,785; the second pass
+settled 102. Against jnagjy the refinement gave back what the first form had taken: 25 queued to vote ("Alabama",
+"Audiences", "Awards", "Catalogues raisonnés"), 24 queued to exact-name (the period subdivisions, "Aesthetics",
+"Belfast"), 8 to exact-single, 4 minted to exact-name ("Architecture", "Christianity", "Kolkata", "United States"),
+at a cost of 4 Italian cities queued ("Livorno", "Padua", "Turin", "Venice"). Against wsw254, the measure of the four
+rules together: 29 rows, the gains of jnagjy's reading kept (49 and 48 queued strings settled, 65 singles to votes,
+the three of finding 113), and some forty strings still worse than before, of one kind: a sibling's country is too
+coarse to separate TGN's namesakes within it ("Hull" placed Kingston upon Hull and the East Riding's Hull alike,
+"Nottingham" the city and the county, "Hereford" and Herefordshire, "Newcastle" upon Tyne and in Shropshire, "Genoa"
+and "Livorno" the city and the province), so a string the project's one entity of the name had taken in the store
+stage was read as qualified, tied in the indexes, and queued. Refined again: finding 114 is a tie-breaker, not a
+reading. The string is evaluated plain first, as before the rule; only when that leaves it queued or minted is it read
+again with the sibling's place as its qualifier, and that second reading stands only when it settles the string
+(`EvaluateAsync` over `EvaluateReadingAsync`). "Hull" keeps its entity; "Birmingham" under England is still placed.
+Measured by the reconcile after.
+
 Measured 2026-11-08 (run jnagjy, 13:48 to 14:28, the assistant's first reconcile; wsw254 taken back): findings 113 to
 116. Considered 45,928 (fewer than wsw254's 46,296: the finding 112 repair re-split 167 headings and the cleanup
 deleted 168 fragments), matched in store 5,973 (26 more), accepted 9,431 (vote 4,064, 19 more; single 2,111, 53 fewer;

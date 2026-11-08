@@ -1259,6 +1259,25 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Read 2026-11-08, finding 113 shaped (the assistant's first direct reads of the store, under the owner's new rule): the
+St/Saint key gap supposed behind "St Ives (Cornwall)" does not exist. The keys find every form: LoC writes "St. Ives
+(Cornwall, England)" with "Saint Ives" among its labels, TGN writes "Saint Ives" with "St Ives" and "St. Ives" among
+its, and the evidence of "St Ives (Cornwall)" (string 91107) and the heading "St. Ives (Cornwall, England)" (84685,
+minted) holds TGN's Cornwall record at 1.00 with the qualifier placed and LoC's heading at 1.00, "the whole heading".
+What kills them is the group: it holds both legacy "St Ives" entities (Cornwall's, with LoC n80103996, and
+Cambridgeshire's, with n81035494), each "carried by lcsh Saint Ives (England : Park)", a park in Dorset that the
+unqualified-heading join placed through TGN's Cornwall record as "the inhabited place among 2"; both entities are
+bare-labelled, so the store reads them as unplaced and lets the park carry them, Cambridgeshire's entity brings its
+LoC record, that record's qualifier is not placed ("Cornwall vs Cambridgeshire") and is vetoed, and a vetoed member
+linked to live ones vetoes the group: score 0, minted. Finding 111 was the same blindness on the date side. The rule:
+an entity whose label carries no qualifier is placed through its records, LoC's parenthetical first, then TGN's
+parents, exactly as the desk's `EntityFacts.Placement` reads it since the 7th; placed, Cornwall's entity is taken by
+the store stage for the Cornwall strings (findings 84 and 106), Cambridgeshire's is vetoed in a group of its own, and
+no park carries either. Counted: three strings in the queue have the shape (a group holding two project entities with
+LoC or TGN records and a vetoed member): "St Ives (Cornwall)", "St. Ives (Cornwall, England)", and "Williamsburg,
+Virginia" from d6h8va's diff. Small, but each a clear place wrongly minted or queued, and the rule makes the reconciler
+and the desk read an entity's placement the same way. Waiting on the word.
+
 Measured 2026-11-07 (run jsf3ur, 17:59, `resplit-headings --apply`): 15,559 headings read, 167 split again (34 by the
 splitter's rules, 14 by the indexes', 119 leftover rows, one stale), 20 read whole as no compound ("New-York
 Historical Society", "Palais-Royal", "Franco-British Exhibition", the one-part names), 22 new parts reconciled, and
@@ -1474,10 +1493,9 @@ the second pass settled 101 of 4,039 where jr8hf5 settled 107. The diff against 
   alone, it holds a local record) joined that placeholder and was accepted on no record at all. In krbnw6 the second
   pass found the same shape, the standing decision was queued, the entity holds records, and none of them was among
   the string's candidates, so the rule declined ("none of its records is a candidate here"), as for Duranty and
-  Morris. The right outcome: the ground was a placeholder. What stops the string is the key: the legacy entity's LoC
-  heading and TGN's record are not reached from "st ives" (LoC's form is to be read; "Saint Ives" is the expected
-  spelling, from the assistant's knowledge of LoC practice, not yet seen), a sibling of the English-against-vernacular
-  join gap, counted first (plan section 7, Reconciler).
+  Morris. The right outcome: the ground was a placeholder. What stops the string was supposed on the 7th to be the key
+  ("Saint" against "St"); read directly on the 8th it is not: the keys find every form, and the fault is the two
+  bare-labelled legacy entities carried into one group by an LCSH park record, finding 113 ("Read 2026-11-08").
 
 The second pass's annotations on a string it leaves queued are not persisted (the first pass's queued decision stands
 and the second writes none), so the rule's reason reaches the desk only through "Look again": a desk item.

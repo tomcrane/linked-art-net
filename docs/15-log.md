@@ -29,7 +29,11 @@ The owner changed the standing rule at the start of the day: the assistant may q
 Align tool's commands, saying what it does first, since relaying queries and results by hand between the console and
 DataGrip was costing the day's flow ("with lots of digressions and side-quests I find it hard to maintain context").
 `tools/pg.sh`, read-only SQL from the environment's connection string; the rule recorded in the plan's section 0 and in
-memory; writes still only through the Align commands, the workbench still the owner's to start and stop.
+memory; writes still only through the Align commands, the workbench still the owner's to start and stop. The first direct reads: the five counts
+waiting since the 7th in one go (sibling-part placement 73 of 106 queued subs; near-miss dates 65; prominence with a
+project entity in both groups 41; the placeholders' classes by context; and the St/Saint gap, which does not exist:
+the keys find every form, and "St Ives (Cornwall)" is finding 113, two bare-labelled legacy entities carried into one
+group by an LCSH park record, the one vetoed member killing the group; three strings; shaped, waiting on the word).
 
 ## 2026-11-07
 

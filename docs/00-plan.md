@@ -143,22 +143,9 @@ owner's to start and stop. The answered queries and one-off SQL of earlier days 
        join source_strings s on s.id = a.source_string_id
        where a.method <> b.method group by 1, 2, 3 order by 4 desc;
 
-5. The St/Saint key gap behind "St Ives (Cornwall)" (read 2026-11-07, doc 10 7.6 "Measured 2026-11-06 (run krbnw6)",
-   third row; not yet run): first the records' own spellings, then the count of strings the gap holds back. The
-   legacy St Ives entities hold LoC n80103996 (Cornwall) and n81035494 (Cambridgeshire); TGN's are looked up by the
-   three spellings:
-
-       select uri, source, label, labels, type, data->>'parentString' as parent from authority_records
-       where uri in ('http://id.loc.gov/authorities/names/n80103996', 'http://id.loc.gov/authorities/names/n81035494')
-          or (source = 'tgn' and normalised_labels && array['st ives', 'st. ives', 'saint ives']);
-
-   then, if LoC or TGN spells "Saint" where the strings write "St" or "St.", the strings so held: queued strings whose
-   key begins "st " or "st. " beside the records of the saint form (`pmc` strings, the standing queued decision):
-
-       select s.context, count(*), (array_agg(s.raw order by s.raw))[1:12] as examples
-       from source_strings s join decisions d on d.source_string_id = s.id and d.valid
-       where s.dataset = 'pmc' and d.method = 'queued' and (lower(s.raw) like 'st %' or lower(s.raw) like 'st. %')
-       group by 1 order by 2 desc;
+5. Done 2026-11-08 by the assistant's own reads: the St/Saint key gap does not exist (LoC and TGN carry every form);
+   the fault behind "St Ives (Cornwall)" is finding 113 (doc 10 7.6 "Read 2026-11-08, finding 113 shaped"), an entity
+   placed through its records when its label carries no qualifier, three strings in the queue, waiting on the word.
 
 ## 1. Objectives (in priority order)
 
@@ -559,19 +546,18 @@ and the log (doc 15) records that. The order within an area is rough value.
   "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108
   would take LoC's record alone and lose TGN's id). Count the queued place-field and keywords strings whose top tie
   holds a LoC heading and a TGN record whose chain contains the heading's parenthetical, before any change to the join.
-  Its sibling, 2026-11-07, from "St Ives (Cornwall)" (doc 10 7.6, run krbnw6's third row): the strings write "St" or
-  "St." and the records the project's own entity holds are reached only by another spelling (LoC's heading, "Saint"
-  expected), so the string's key finds no record, the heading "St. Ives (Cornwall, England)" mints a placeholder
-  beside the legacy entity that holds its record, and a bare namesake is accepted onto that placeholder on no record
-  (jr8hf5) or declined by finding 110 (krbnw6). The spellings to read and the strings to count are command 5 of
-  section 0; then "St", "St." and "Saint" as one token in the key's variants, if the count says so.
+  Its supposed sibling of 2026-11-07, the St/Saint spelling behind "St Ives (Cornwall)", was read directly on the 8th and
+  is not a key gap at all (LoC and TGN carry every form); the fault is finding 113, an entity placed through its
+  records when its label has no qualifier (doc 10 7.6 "Read 2026-11-08, finding 113 shaped"; three strings), waiting
+  on the word.
 - A subdivision placed by its sibling parts (2026-11-07, "Birmingham" in keywords:sub, string 79377: its parent
   headings read "Architecture--England--Birmingham" and "Art, Modern--19th century--England--Birmingham", the sibling
   part "England" beside it, and the desk showed Alabama's group first). A place subdivision whose parent heading has
   another place part is placed by it, as a qualifier places a name (findings 84 and 106 read the placement), so the
-  group whose TGN chain or LoC qualifier holds the sibling stands and the others are set aside. Count first: queued
-  keywords:sub strings read as places whose parent headings carry another part decided as a place, by the number of
-  groups that tie at the top, with examples.
+  group whose TGN chain or LoC qualifier holds the sibling stands and the others are set aside. Counted 2026-11-08 (the
+  assistant's first direct query): of 106 queued keywords:sub strings, 73 have a sibling part in a parent heading
+  decided as a place ("Aberdeen", "Antwerp", "Armagh", "Athens", "Boston", "Brescia", "Cambridge", "Camden",
+  "Cardiff", "Christchurch", "Coventry", "Cyprus", "Dedham"), most of the keywords:sub queue. Waiting on the word.
 - Dates that miss by a year or two on one side (2026-11-07, "Hall, Harry, 1815-1882" at the desk: ULAN's and LoC's
   painter of 1813-1882 vetoed, the death agreeing exactly, the birth two years out, and no record saying 1815 to excuse
   it as finding 111's shape does). Painters' birth years wobble between references; a conflict by at most two years on
@@ -579,6 +565,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   dates stands beside it. Count first: queued strings of wsw254 whose top group is vetoed on dates with one side
   within two years and the other agreeing, by context, with examples; then the rule, if the count and the examples say
   so (a tolerance of a year on a side, or the near miss sent to the desk at its name score rather than vetoed to 0.00).
+  Counted 2026-11-08: 65 queued strings whose top group holds a record vetoed by one side a year or two out with the
+  other side agreeing (keywords 44, keywords:head 20, persauthorfull 1: "Blacklock, William James, 1816-1858",
+  "Cozens, John Robert, 1752-1798", "Chalon, Henry Bernard, 1771-1849", "Draper, Herbert James, 1863-1920", "Knight,
+  Richard Payne, 1750-1824", "Landseer, Charles, 1799-1878", "Phillips, Claude [1848-1924] (author)"), the dated
+  artists' headings almost all. Waiting on the word.
 - Prominence when every live group holds a project entity (2026-11-07, "Boston" bare after the pass: the legacy Boston
   placed through TGN's Boston, Massachusetts in one group, "Boston (England)" in the other, each a project entity, and
   prominence standing aside because a project entity is among the live groups, so the bare name went from exact-name
@@ -586,7 +577,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   stands aside rightly; when every live group holds one, the evidence cancels, and prominence (Q100 against Boston,
   Lincolnshire) could decide as it does when none holds one. A second on the 7th at the desk: "Birmingham" in
   keywords:sub, Alabama's legacy entity (right for its one string, the Birmingham Museum of Art's 1991 Stuart legacy
-  exhibition) and England's each in a group at 1.00, Alabama's first. Count first: queued strings of d6h8va whose top two
+  exhibition) and England's each in a group at 1.00, Alabama's first. Counted 2026-11-08: 41 queued strings whose top
+  two groups both score 1.00 and each hold a project entity (place 15: "Athens", "Durham", "Gloucester", "New York,
+  NY", "Washington"; keywords:sub 14: "Athens", "Boston", "Durham", "Middlesex", "St Ives", "St. Petersburg",
+  "Victoria"; keywords:head 5; persauthorfull 5, the namesake authors: "Carter, George", "Roberts, William"; one each
+  in keywords and publisher). For the persons prominence is no help; for the places it is. Waiting on the word. Count first: queued strings of d6h8va whose top two
   groups each hold a project entity and whose Wikidata sitelinks would separate them.
 - Two project entities of one name tie (v6gjx5: "New York" bare, "New York, NY", "New York (Madison Avenue)" between
   the city's entity and the state's the run made; "Christopher Gibbs" between two persons): for a place, a bare name or
@@ -703,6 +698,10 @@ and the log (doc 15) records that. The order within an area is rough value.
   placeholder ("Colchester (England)", "Birmingham (England)") is a concept on its entity page until the desk decides it.
   The placeholder's class should follow the reading where the reading is plain: a qualifier that places it, a place.
   Count the queued strings with a placing qualifier whose placeholder is a concept, before changing MintAsync.
+  Counted 2026-11-08, the queued strings' placeholders by context and class: persauthorfull Person 1,285; publisher
+  Person 602 and Group 149; keywords Person 563, Type 411, Group 2; place Place 196; keywords:head Type 200, Person 188,
+  Group 1; corpauthor Person 140, Group 71; keywords:sub Type 106. The keywords:sub placeholders are all Type (the
+  context's first class) though the strings are places; the publisher ones Person four times in five, firms among them.
 - The remote sources (3b), LUX self-echo first (doc 10 section 8): also what a place shadow needs, since the 2024
   places carry VIAF, Wikidata and LUX ids and never TGN (2026-10-20).
 - The 2024 shadow again: a shadow sample after the stricter date agreement, and a human sample through the desk

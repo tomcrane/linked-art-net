@@ -1261,6 +1261,18 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-08 (run v7aq7v, 18:05 to 18:50, run by the assistant after the owner left the laptop on; zke4u7
+taken back): finding 117. Matched in store 6,053 (22 more), accepted 9,455, queued 3,757 (21 fewer), minted 10,784;
+the second pass settled 94. The diff against zke4u7 is five rows and 33 strings, every one of them the rule's and
+nothing worse: 11 queued to exact-name ("Hamden, CT", "Cambridge, MA", "Durham, NC", "New York, NY", "Rutherford,
+NJ" and "Rutherford, [NJ]", "Salem, MA", "San Marino, CA.", "Malibu, Ca.", "Stanford, Ca"), 10 queued to vote ("Ann
+Arbor, MI", "Bloomington, IN", "Dallas, TX", "Mesa, AZ", "Notre Dame, IN", "Petaluma, CA", "Waltham, MA"), 9 votes
+to exact-name on the same entity (a relabel: "Columbus, OH", "Milwaukee, WI", "Westport, Ct.", "Worcester, MA"), two
+votes to exact-name onto the legacy entity of the name ("Charlotte, NC" onto "Charlotte, North Carolina",
+"Ridgefield, CT" onto "Ridgefield, Conn."), and "Vero Beach, Fl." from exact-single to a vote on its own entity. Two
+place strings with a two-letter qualifier remain queued, "San Francisco, CA" (namesakes) and "Gainsville, Ga." (the
+misspelling). The queue stands at 3,757; v7aq7v is the last full run.
+
 Built 2026-11-08 (evening), finding 117, the postal codes in a qualifier (the plan's US state abbreviations item,
 seen in jnagjy's diff at "Hamden, CT", which finding 113's placing of the legacy entity through LoC's "Hamden
 (Conn.)" turned from a vote into a queued string, and again at the desk's map, where the chosen LoC candidate had no

@@ -17,25 +17,25 @@ current in their status lines.
 
 ## 0. Resume point (written 2026-11-08 evening; the one place to read first)
 
-**On return, in order:** (1) `git push` if the day's commits are not up (fifteen as of this writing; the last is the
-one that wrote this); (2) the reconcile that measures finding 117 (command 2), with the workbench stopped, its diff
-read against zke4u7 (command 4) and written to doc 10 7.6; (3) the desk, continued: start the workbench (command 1)
+**On return, in order:** (1) `git push` if the day's commits are not up (sixteen as of this writing; the last is the
+one that wrote this); (2) the desk, continued: start the workbench (command 1)
 and follow the desk session script there, deciding strings and noticing, each thing the desk fails to show, do or get
 right becoming an item in section 7 and built the same session; the desk items standing (section 7, Workbench and
 desk): a part's parents on the desk and "not a compound", the twins that share a record, the publisher strings
-without a record, the placeholder class rule (its count table in place); (4) the dead LUX identifiers to count
+without a record, the placeholder class rule (its count table in place); (3) the dead LUX identifiers to count
 (section 7, from the sources item; a HEAD pass with the polite client, outside any run), then decision 15 with the
-owner; (5) the open items of section 7 as the owner orders them, and the lifecycle design (section 5's risk, the
+owner; (4) the open items of section 7 as the owner orders them, and the lifecycle design (section 5's risk, the
 Exports and reports items) before any write stage is designed.
 
 **Where things stand.** Branch `de-pmc`, all work committed, every test project green (3,234 tests). Six authority
 sources loaded: the manifest's five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M
 records; doc 11 section 8.11). The store is at schema version 10; `authority_records.data` now also carries `pulled`,
 what a live source said when asked from an entity page. Runs are occasional and a run is measured by its diff against
-the run before (command 4), never by the queue count. The last full run is zke4u7 (2026-11-08 15:21: accepted 9,456,
-queued 3,778, minted 10,785; doc 10 7.6 "Measured 2026-11-08 (run zke4u7)"), which measured findings 113 to 116 in
-their final form against wsw254: some 270 strings better, seventeen worse and the desk's. Findings 1 to 117 are in doc
-10 7.6, newest first; 117 (the postal codes in a qualifier, "Hamden, CT") is built and not yet measured. Built on the
+the run before (command 4), never by the queue count. The last full run is v7aq7v (2026-11-08 18:05: accepted 9,455,
+queued 3,757, minted 10,784; doc 10 7.6 "Measured 2026-11-08 (run v7aq7v)"), which measured finding 117 against
+zke4u7: 33 strings, every one the rule's ("Hamden, CT" and its kind settled), nothing worse; zke4u7 before it had
+measured findings 113 to 116 against wsw254, some 270 strings better and seventeen worse. Findings 1 to 117 are in doc
+10 7.6, newest first, all measured. Built on the
 8th: the owner's new rule at the start of the day (the assistant runs read-only SQL through `tools/pg.sh` and the
 Align commands itself, saying what it does first); findings 113 to 116 through three reconciles (113 an entity placed
 through its LoC heading, 114 a subdivision placed by its sibling parts, refined twice to a tie-breaker, 115 the dates
@@ -46,7 +46,8 @@ Wikipedia and Commons, ULAN through Getty's SPARQL, LoC, LUX with the self-echo 
 pictures with their attribution; the desk's "show pictures"); the map (TGN's coordinates or a pull's, the entity page
 and above the desk's cards; a record without coordinates at its TGN parent, a LoC-placed candidate at TGN's namesake
 in the same state, both hollow and said so); the tray and its merge page. Also: the sign-in returns to the page that
-bounced; three layout faults from the Cozens page; and finding 117. The dead LUX identifiers: a sample of the
+bounced; three layout faults from the Cozens page; and finding 117, the postal codes in a qualifier, measured the
+same evening. The dead LUX identifiers: a sample of the
 import's 17,454 found persons all alive, groups and places nine in ten, concepts a third and compound headings a
 quarter (the re-mint of doc 10 7.5); the pull says "LUX answered 404 Not Found" and the count is an item.
 
@@ -88,12 +89,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      them apart; a merge done with no confirm step; the siblings left in the queue.
 
          select s.id, s.raw, s.context from decisions d join source_strings s on s.id = d.source_string_id
-         where d.run_id = '<the last full run>' and d.method = 'queued'
+         where d.run_id = 'run-20261108-180526-v7aq7v' and d.method = 'queued'
            and (select count(*) from jsonb_array_elements(d.evidence->'groups'->0->'members') m where m->>'source' = 'store') >= 2
          order by s.raw;
 
-   - Place names among namesakes, with the map ("Cambridge" in place, id 65756; "Newport", 65782; "Hamden, CT",
-     49846, after finding 117's run): the chosen candidate on the map, hollow when its coordinates are borrowed, and
+   - Place names among namesakes, with the map ("Cambridge" in place, id 65756; "Newport", 65782; "San Francisco,
+     CA" still queued among namesakes): the chosen candidate on the map, hollow when its coordinates are borrowed, and
      the unplaced named under it.
    - Ten strings each from publisher, corpauthor, keywords:sub and place (the context dropdown), deciding them as a
      reviewer would. A string you cannot decide from what the card shows is the paste that matters most: say what you
@@ -103,12 +104,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      pictures" on the desk; the tray from two entity pages and the merge page; Recent changes on the project home
      after a hand change; an identifier another entity holds, refused.
 
-2. A reconcile is pending: finding 117 (the postal codes in a qualifier) is built and not measured. With the
-   workbench stopped, the last full run taken back, `reconcile`, then command 4 against zke4u7; expect "Hamden, CT",
-   "Stanford, Ca", "Evanston, Illinois"-kind strings queued in zke4u7 to settle onto their placed entities, and
-   nothing else to move:
+2. No reconcile is pending. v7aq7v (2026-11-08 18:05, doc 10 7.6 "Measured 2026-11-08 (run v7aq7v)") is the last
+   full run: finding 117 measured, queued 3,757. The next reconcile comes with the next rule, as always: the last
+   full run taken back, `reconcile`, then command 4 against the run before, the assistant running it with the
+   workbench stopped:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261108-152102-zke4u7
+       dotnet run --project tools/Align -- undo-run --run run-20261108-180526-v7aq7v
        dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
@@ -118,12 +119,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, against zke4u7, the last full run (each run's last decision per
+4. The standing method diff after the next run, against v7aq7v, the last full run (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence, though the undo removes
    the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for those and
    true or false only where the entity survived). A method change on the same entity is a label, not a decision:
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261108-152102-zke4u7' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261108-180526-v7aq7v' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
@@ -603,7 +604,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   entity shown on its first card. Seven strings, four of them a click each at the desk, three silent errors stopped.
   The owner's word given the same afternoon, and built.
 - ~~US state abbreviations in a qualifier~~ (built 2026-11-08 evening as finding 117, doc 10 7.6 "Built 2026-11-08 (evening),
-  finding 117"; measured by the next reconcile, pending in section 0) ("Hamden, CT", "San Marino, CA.", "Durham, NC" against LoC's "(Conn.)", TGN's
+  finding 117"; measured by run v7aq7v the same evening, 33 strings settled or relabelled, nothing worse) ("Hamden, CT", "San Marino, CA.", "Durham, NC" against LoC's "(Conn.)", TGN's
   "Connecticut"): the qualifier reading knows neither the postal nor LoC's abbreviations, so a string placed by its
   state is not placed (seen in jnagjy's diff, 2026-11-08, when finding 113 placed the legacy entity through its
   heading and the string's "CT" then disagreed with "Conn."). A small table of the fifty states' postal and LoC forms,

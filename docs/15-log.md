@@ -74,7 +74,9 @@ giving the English castle no coordinates: a record without them now stands at it
 and a place with none anywhere is named under the map. Last, finding 117, the postal codes in a qualifier ("Hamden,
 CT" against LoC's "Hamden (Conn.)"), the count taken first (240 place strings end in a short qualifier, the states
 leading), built as a pass before folding in the qualifier reading and, on the desk, as the chosen candidate's borrowed
-marker at TGN's namesake in the same state; measured by the next reconcile. Fifteen commits on the day; section 0
+marker at TGN's namesake in the same state; measured the same evening by run v7aq7v (18:05 to 18:50, the owner
+leaving the laptop on): 33 strings, every one the rule's ("Hamden, CT", "Cambridge, MA", "Durham, NC" settled; nine
+relabelled), nothing worse, the queue 3,757; the last full run. Sixteen commits on the day; section 0
 rewritten for the evening. The day's shape: the owner reviewed in the workbench and pasted what was wrong (two maps,
 three layouts, one message), each built within the hour; the plan from the review done in one sitting.
 

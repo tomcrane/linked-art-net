@@ -38,6 +38,38 @@ public static class Qualified
         ("s. aust.", "south australia"), ("s.a.", "south australia"), ("tas.", "tasmania"), ("vic.", "victoria"), ("w.a.", "western australia"),
         ("s. australia", "south australia"), ("w. australia", "western australia"), // the cataloguers' own half-abbreviations ("Kent Town, S. Australia")
     ];
+    // Finding 117 (2026-11-08, "Hamden, CT" queued against LoC's "Hamden (Conn.)" since jnagjy's diff; 240 place strings end in a short
+    // qualifier, the states leading: "NY" 9, "MA" 8, "NJ" 5, "CA" 4, "IN" 3): the postal codes of the United States and the District of
+    // Columbia, the Canadian provinces and territories, and the Australian states and territories, written from the assistant's general
+    // knowledge and credited as such. Read only where a qualifier stands, after a comma or alone, capitalised ("CT", "Ca"), and
+    // followed by nothing but a closing bracket or a separator, so "Co Dublin" and "La Paz" are untouched.
+    private static readonly Dictionary<string, string> Postal = new(StringComparer.Ordinal)
+    {
+        ["AL"] = "alabama", ["AK"] = "alaska", ["AZ"] = "arizona", ["AR"] = "arkansas", ["CA"] = "california", ["CO"] = "colorado",
+        ["CT"] = "connecticut", ["DE"] = "delaware", ["DC"] = "district of columbia", ["FL"] = "florida", ["GA"] = "georgia", ["HI"] = "hawaii",
+        ["ID"] = "idaho", ["IL"] = "illinois", ["IN"] = "indiana", ["IA"] = "iowa", ["KS"] = "kansas", ["KY"] = "kentucky", ["LA"] = "louisiana",
+        ["ME"] = "maine", ["MD"] = "maryland", ["MA"] = "massachusetts", ["MI"] = "michigan", ["MN"] = "minnesota", ["MS"] = "mississippi",
+        ["MO"] = "missouri", ["MT"] = "montana", ["NE"] = "nebraska", ["NV"] = "nevada", ["NH"] = "new hampshire", ["NJ"] = "new jersey",
+        ["NM"] = "new mexico", ["NY"] = "new york", ["NC"] = "north carolina", ["ND"] = "north dakota", ["OH"] = "ohio", ["OK"] = "oklahoma",
+        ["OR"] = "oregon", ["PA"] = "pennsylvania", ["RI"] = "rhode island", ["SC"] = "south carolina", ["SD"] = "south dakota",
+        ["TN"] = "tennessee", ["TX"] = "texas", ["UT"] = "utah", ["VT"] = "vermont", ["VA"] = "virginia", ["WA"] = "washington",
+        ["WV"] = "west virginia", ["WI"] = "wisconsin", ["WY"] = "wyoming",
+        ["AB"] = "alberta", ["BC"] = "british columbia", ["MB"] = "manitoba", ["NB"] = "new brunswick", ["NL"] = "newfoundland",
+        ["NS"] = "nova scotia", ["NT"] = "northwest territories", ["NU"] = "nunavut", ["ON"] = "ontario", ["PE"] = "prince edward island",
+        ["QC"] = "quebec", ["SK"] = "saskatchewan", ["YT"] = "yukon",
+        ["ACT"] = "australian capital territory", ["NSW"] = "new south wales", ["QLD"] = "queensland", ["SA"] = "south australia",
+        ["TAS"] = "tasmania", ["VIC"] = "victoria", ["WA2"] = "western australia",
+    };
+    private static readonly Regex PostalCode = new(@"(?<=^|,)\s*([A-Z][A-Za-z]{1,2})\.?(?=\s*(?:$|[);,]))", RegexOptions.Compiled);
+
+    /// <summary>The postal codes written out, before folding: "Hamden, CT" reads "Hamden, connecticut"; "CT" alone, as a split qualifier, the same.</summary>
+    public static string ExpandPostal(string text) => PostalCode.Replace(text, m =>
+    {
+        var code = m.Groups[1].Value.ToUpperInvariant();
+        if (code == "WA" && text.Contains("Australia", StringComparison.OrdinalIgnoreCase)) code = "WA2";
+        return Postal.TryGetValue(code, out var name) ? m.Value[..(m.Value.Length - m.Value.TrimStart().Length)] + name : m.Value;
+    });
+
     // the normaliser drops a trailing period ("Princeton, N.J." folds to "princeton, n.j"), so the last one is optional at the end of
     // the text and required elsewhere: "La Paz" is not Louisiana, "Baton Rouge, La." is
     private static readonly (Regex Pattern, string Token)[] Expansions = Regions
@@ -90,7 +122,7 @@ public static class Qualified
     public static IReadOnlyList<string> Tokens(string? text)
     {
         if (string.IsNullOrWhiteSpace(text)) return [];
-        var folded = StringKey.Fold(StringKey.Normalise(text));
+        var folded = StringKey.Fold(StringKey.Normalise(ExpandPostal(text)));
         foreach (var (pattern, token) in Expansions) folded = pattern.Replace(folded, token);
         foreach (var (pattern, token) in Phrases) folded = pattern.Replace(folded, token);
         foreach (var (pattern, token) in Synonyms) folded = pattern.Replace(folded, token);

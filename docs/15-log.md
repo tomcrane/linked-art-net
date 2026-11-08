@@ -68,7 +68,15 @@ picture's caption under the next heading's rule (headings clear floats now) and 
 (one grid: label, field, button). The source cards tidied (a head row with the source's label and "refresh" at the
 right, the URI small beneath; LUX's names and statements in English or untagged only; Commons' author boilerplate
 cut to "X (assumed)"); and the owner's question on "LUX did not answer" answered by the fetch carrying its status
-(404: LUX re-minted that identifier), a plan item to count the dead ones.
+(404: LUX re-minted that identifier), a plan item to count the dead ones; the dead ones sampled (concepts a third,
+compounds a quarter, persons all alive). The map at "Windsor Castle" showed only the Pennsylvanian namesake, TGN
+giving the English castle no coordinates: a record without them now stands at its TGN parent as a hollow marker,
+and a place with none anywhere is named under the map. Last, finding 117, the postal codes in a qualifier ("Hamden,
+CT" against LoC's "Hamden (Conn.)"), the count taken first (240 place strings end in a short qualifier, the states
+leading), built as a pass before folding in the qualifier reading and, on the desk, as the chosen candidate's borrowed
+marker at TGN's namesake in the same state; measured by the next reconcile. Fifteen commits on the day; section 0
+rewritten for the evening. The day's shape: the owner reviewed in the workbench and pasted what was wrong (two maps,
+three layouts, one message), each built within the hour; the plan from the review done in one sitting.
 
 ## 2026-11-07
 

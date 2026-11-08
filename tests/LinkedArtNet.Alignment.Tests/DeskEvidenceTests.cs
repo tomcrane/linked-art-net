@@ -1,3 +1,4 @@
+using LinkedArtNet.Alignment.Authorities;
 using LinkedArtNet.Alignment.Reconciliation;
 
 namespace LinkedArtNet.Alignment.Tests;
@@ -53,6 +54,19 @@ public class DeskEvidenceTests(PostgresFixture pg)
         await pg.Store.AddEquivalentAsync(boston.Id, new Equivalent("http://vocab.getty.edu/tgn/7013445", "tgn", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
         var placed = (await desk.FactsAsync(boston.Id))!.Coordinates;
         Assert.NotNull(placed);
-        Assert.Equal(42.3584, placed.Value.Lat, 4); Assert.Equal(-71.0598, placed.Value.Long, 4);
+        Assert.Equal(42.3584, placed.Lat, 4); Assert.Equal(-71.0598, placed.Long, 4);
+        Assert.False(placed.Approximate);
+        // a record without coordinates stands at its TGN parent, said to be approximate (Windsor Castle in England, the owner, 2026-11-08)
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/tgn/1100372", "tgn", "Windsor Castle", ["Windsor Castle"], "Place", null, [], """{"broader":"http://vocab.getty.edu/tgn/7011919","parentString":"Windsor, Windsor and Maidenhead, England"}""", DateTimeOffset.UtcNow, "test"));
+        Assert.Null(await Coordinates.ResolveAsync(pg.Store, await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/tgn/1100372"))); // the parent unknown yet
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/tgn/7011919", "tgn", "Windsor", ["Windsor"], "Place", null, [], """{"lat":"51.4833","long":"-0.6","parentString":"Windsor and Maidenhead, England"}""", DateTimeOffset.UtcNow, "test"));
+        var castle = await Coordinates.ResolveAsync(pg.Store, await pg.Store.GetAuthorityAsync("http://vocab.getty.edu/tgn/1100372"));
+        Assert.NotNull(castle);
+        Assert.True(castle.Approximate);
+        Assert.Equal("Windsor", castle.Near);
+        Assert.Equal(51.4833, castle.Lat, 4);
+        var windsor = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Windsor Castle", ["Windsor Castle"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(windsor.Id, new Equivalent("http://vocab.getty.edu/tgn/1100372", "tgn", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        Assert.Equal("Windsor", (await desk.FactsAsync(windsor.Id))!.Coordinates?.Near);
     }
 }

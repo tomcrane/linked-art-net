@@ -191,8 +191,12 @@ Every merge is written on both entities' histories, and the losers' ids keep res
 **The map.** An entity any of whose records places it (TGN's coordinates, or Wikidata's or LUX's after a pull) shows
 where it is on a small map at the top of its page. On the desk, when any candidate for a place name is placed, one
 map above the cards shows them all, a marker each with its label and where TGN puts it, the best group's markers
-larger: the St Iveses apart, so the right one can be picked. The tiles are OpenStreetMap's; hover a marker for its
-label when there are too many to show at once.
+larger: the St Iveses apart, so the right one can be picked. A record TGN gives no coordinates (castles and buildings,
+about one record in 160) stands at its TGN parent as a hollow marker, "near Windsor"; a Library of Congress or project
+candidate, which never carries coordinates, stands at TGN's record of the same name in the same state when there is
+one, hollow and labelled so; and a place with none anywhere
+is named under the map, so a missing marker is never read as a missing candidate. The tiles are OpenStreetMap's;
+hover a marker for its label when there are too many to show at once.
 
 An identifier added by hand is in force at once for the next reconcile, for "Look again" and for the searches, and a
 queued string's card says "now held by" on the record's row. On an entity's page, a string still queued links to its

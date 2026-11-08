@@ -28,8 +28,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyDictionary<string, Pulled> Pulled { get; private set; } = new Dictionary<string, Pulled>();
     /// <summary>The identifiers a fetcher exists for, in the entity's order: what "Pull in" would ask.</summary>
     public IReadOnlyList<Equivalent> Pullable => View.Entity.Equivalents.Where(q => SourcePull.CanPull(q.Uri)).ToList();
-    /// <summary>Where the entity is, from the first of its records that places it (TGN's coordinates, or a pull's); the map at the top of the page when set.</summary>
-    public (double Lat, double Long)? Coordinates => LinkedArtNet.Alignment.Authorities.Coordinates.Of(View.Entity.Equivalents.Select(q => View.Records.GetValueOrDefault(q.Uri)));
+    /// <summary>Where the entity is, from the first of its records that places it (TGN's coordinates, or a pull's; its TGN parent's when the record has none); the map at the top of the page when set.</summary>
+    public Placed? Coordinates { get; private set; }
     /// <summary>The first cached picture among the sources, for the top of the page.</summary>
     public Picture? Picture => Pullable.Select(q => Pulled.GetValueOrDefault(q.Uri)?.Picture).FirstOrDefault(p => p?.ThumbUrl is not null);
     public string? Message { get; private set; }
@@ -41,6 +41,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         if (view is null) return NotFound();
         View = view;
         Pulled = view.Records.Select(r => (r.Key, Pulled: SourcePull.Read(r.Value))).Where(x => x.Pulled is not null).ToDictionary(x => x.Key, x => x.Pulled!);
+        foreach (var q in view.Entity.Equivalents.OrderBy(q => q.Source == "tgn" ? 0 : 1))
+            if (await LinkedArtNet.Alignment.Authorities.Coordinates.ResolveAsync(Services.Store, view.Records.GetValueOrDefault(q.Uri)) is { } placed && (Coordinates is null || !placed.Approximate)) { Coordinates = placed; if (!placed.Approximate) break; }
         if (!string.IsNullOrWhiteSpace(Held) && await Services.Store.ResolveEntityAsync(Held) is { } holder && holder.Id != view.Entity.Id)
             MergeCandidates = [holder];
         else if (!string.IsNullOrWhiteSpace(Merge))

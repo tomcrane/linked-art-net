@@ -160,20 +160,29 @@ else
         // the map (the owner, 2026-11-08): namesake places side by side on one map, since seeing the St Iveses apart is how a person picks
         // the right one; a marker per placed candidate, labelled with the record's label and its placement, the best group's markers emphasised
         var points = new List<object>();
+        var unplaced = new List<string>();
         var bestGroup = ev.Groups.FirstOrDefault(g => g.Members.Any(m => m.Veto != true && m.SetAside != true));
         foreach (var g in ev.Groups)
             foreach (var m in g.Members)
             {
                 item.Records.TryGetValue(m.Uri, out var rec);
                 item.Entities.TryGetValue(m.Uri, out var ef);
-                var at = ef?.Coordinates ?? LinkedArtNet.Alignment.Authorities.Coordinates.Of(rec);
-                if (at is null) continue;
+                var isPlace = ef?.Entity.Class == EntityClass.Place || rec?.Type == "Place";
                 var label = ef is not null ? Named(ef.Entity) : (m.Label ?? rec?.Label ?? m.Uri);
                 if (ef is null && rec?.DataJson is { } dj && System.Text.Json.JsonDocument.Parse(dj).RootElement.TryGetProperty("parentString", out var ps) && ps.GetString() is { } parents)
                     label += " (" + string.Join(", ", parents.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).Take(2)) + ")";
-                points.Add(new { lat = at.Value.Lat, lng = at.Value.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, source = m.Source });
+                if (item.Placed is null || !item.Placed.TryGetValue(m.Uri, out var at)) { if (isPlace) unplaced.Add(label); continue; }
+                if (at.Near is not null) label += $", near {at.Near}";
+                if (at.Via is not null) label += $" (the coordinates of {at.Via})";
+                points.Add(new { lat = at.Lat, lng = at.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, approximate = at.Approximate, source = m.Source });
             }
-    if (points.Count > 0) { <div id="map" class="map" data-points='@System.Text.Json.JsonSerializer.Serialize(points)' aria-label="The candidates on a map"></div> }
+    if (points.Count > 0)
+    {
+        <div id="map" class="map" data-points='@System.Text.Json.JsonSerializer.Serialize(points)' aria-label="The candidates on a map"></div>
+        @* a place with no coordinates anywhere is named, so the map's silence about it is not read as absence (the owner, 2026-11-08, at Windsor Castle) *@
+        @if (unplaced.Count > 0) { <p class="small muted" style="margin-top:-.6rem">Not on the map, no coordinates in its record: @string.Join(" · ", unplaced.Distinct().Take(6)).</p> }
+        @if (points.Any(p => (bool)p.GetType().GetProperty("approximate")!.GetValue(p)!)) { <p class="small muted" style="margin-top:-.4rem">A hollow marker stands where the record itself carries no coordinates: at its TGN parent, or where TGN puts the same name in the same place.</p> }
+    }
     var first = true;
     foreach (var group in ev.Groups)
     {

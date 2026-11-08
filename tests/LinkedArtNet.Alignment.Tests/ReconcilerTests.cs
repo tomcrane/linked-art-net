@@ -434,6 +434,20 @@ public class GroupingTests
         Assert.False(Qualified.Agrees("N.J.", "Princeton, Gibson, Indiana, United States, North and Central America, World"));
         Assert.False(Qualified.Agrees("N.Y.", "Secaucus, Hudson, New Jersey, United States, North and Central America, World"));
         Assert.False(Qualified.Agrees("Jersey", "Secaucus, Hudson, New Jersey, United States, North and Central America, World")); // the Channel Island is not the state
+        // finding 117: the postal codes, where a qualifier stands and capitalised, against LoC's forms and TGN's names
+        Assert.True(Qualified.Agrees("CT", "Conn."));
+        Assert.True(Qualified.Agrees("CT", "Hamden, New Haven, Connecticut, United States, North and Central America, World"));
+        Assert.True(Qualified.Agrees("Hamden, CT", "Hamden (Conn.)"));
+        Assert.True(Qualified.Agrees("MA", "Cambridge, Middlesex, Massachusetts, United States, North and Central America, World"));
+        Assert.True(Qualified.Agrees("Ca", "Stanford, Santa Clara, California, United States, North and Central America, World"));
+        Assert.True(Qualified.Agrees("DC", "Washington, District of Columbia, United States, North and Central America, World"));
+        Assert.True(Qualified.Agrees("Vic", "Melbourne, Victoria, Australia, Oceania, World"));
+        Assert.False(Qualified.Agrees("CT", "Hamden, Delaware, Ohio, United States, North and Central America, World"));
+        Assert.Null(Qualified.Agrees("ca", "California, United States")); // not capitalised, not a code: and two letters alone are no word
+        Assert.False(Qualified.Agrees("Co Dublin", "Blackrock, Cork, Ireland, Europe, World")); // "Co" before a word is the county, not Colorado
+        Assert.Equal("Hamden, connecticut", Qualified.ExpandPostal("Hamden, CT"));
+        Assert.Equal("La Paz", Qualified.ExpandPostal("La Paz"));
+        Assert.Equal("Perth, western australia", Qualified.ExpandPostal("Perth, WA, Australia").Replace(", Australia", ""));
         Assert.True(Qualified.Agrees("N.W.T.", "Tulita, Northwest Territories, Canada, North and Central America, World"));
         Assert.Equal(["kent", "southaustralia"], Qualified.Tokens("Kent Town (S. Aust.)").Order()); // "town" is noise
         Assert.True(Qualified.Agrees("S. Australia", "Kent Town, South Australia, Australia, Oceania, World")); // the cataloguers' half-abbreviation

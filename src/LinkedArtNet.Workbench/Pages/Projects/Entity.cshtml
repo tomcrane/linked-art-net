@@ -23,7 +23,8 @@
         @if (Model.Coordinates is { } at)
         {
             @* the map (the owner, 2026-11-08): where the entity is, from TGN's coordinates or a pull's; Leaflet over OpenStreetMap tiles, attribution kept *@
-            <div id="map" class="map" data-points='@System.Text.Json.JsonSerializer.Serialize(new[] { new { lat = at.Lat, lng = at.Long, label = e.Label ?? e.Id, chosen = true } })' aria-label="Map"></div>
+            <div id="map" class="map" data-points='@System.Text.Json.JsonSerializer.Serialize(new[] { new { lat = at.Lat, lng = at.Long, label = (e.Label ?? e.Id) + (at.Near is null ? "" : $", near {at.Near}"), chosen = true, approximate = at.Approximate } })' aria-label="Map"></div>
+            @if (at.Approximate) { <p class="small muted" style="margin-top:-.6rem">The marker stands at @at.Near, the record's TGN parent: the record itself carries no coordinates.</p> }
         }
         <dl class="facts">
             @if (e.Labels.Any(l => l != e.Label)) { <dt>Also</dt><dd>@string.Join(" · ", e.Labels.Where(l => l != e.Label))</dd> }

@@ -1261,6 +1261,22 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-08 (evening), finding 117, the postal codes in a qualifier (the plan's US state abbreviations item,
+seen in jnagjy's diff at "Hamden, CT", which finding 113's placing of the legacy entity through LoC's "Hamden
+(Conn.)" turned from a vote into a queued string, and again at the desk's map, where the chosen LoC candidate had no
+marker while TGN's seven Hamdens had). The count asked for first: 240 place strings end in a short qualifier of five
+letters or fewer, the states leading ("Mass." 13, "Calif." 11, "NY" 9, "MA" 8, "Conn." 7 and "Conn" 4, "Va." 6, "NJ"
+5, "CA" 4 and "Ca" 3, "IN" 3, "Ill." and "Ill" 6), English counties beside them ("Kent" 10, "Essex" 9), "Vic." and
+"Ont." for Australia and Canada. The qualifier reading already knew the AACR2 abbreviations LoC writes ("Conn.",
+"N.J.", "S. Aust."), so "Hamden, Conn." agreed and "Hamden, CT" did not. The rule: a postal code where a qualifier
+stands, after a comma or alone, capitalised, and followed by nothing but a bracket or a separator, is read as the
+state's name before folding (`Qualified.ExpandPostal`, the United States and the District of Columbia, the Canadian
+provinces and territories, the Australian states and territories, from the assistant's general knowledge and
+credited as such; "Co Dublin" and "La Paz" are untouched, lower-case "ca" is not a code). On the desk the same
+agreement lets a placed candidate without coordinates, LoC's or the project's own, borrow the coordinates of the
+TGN candidate of its name whose parents agree with its placement, drawn hollow and said so (`Coordinates.Borrow`).
+ReconcilerTests and CoordinatesTests; measured by the reconcile after.
+
 Measured 2026-11-08 (run zke4u7, 15:21 to 16:05; m6dfm6 taken back): findings 113 to 116 in their final form, the
 last full run. Matched in store 6,031, accepted 9,456 (vote 4,087, single 2,100, exact-single 3,269), queued 3,778
 (147 fewer than wsw254's 3,925), minted 10,785 (93 fewer); the second pass settled 99 and kept its reasons on 3,777.

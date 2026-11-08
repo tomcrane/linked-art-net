@@ -21,4 +21,27 @@ public class CoordinatesTests
         Assert.Null(Coordinates.Of((AuthorityRecord?)null));
         Assert.Equal((51.5, -0.12), Coordinates.Of([null, Record("{}"), Record("""{"pulled":{"lat":51.5,"long":-0.12}}""")]));
     }
+
+    /// <summary>The desk's chosen "Hamden (Conn.)" (LoC, no coordinates) borrows TGN's Hamden in Connecticut, not the six other Hamdens (the owner, 2026-11-08).</summary>
+    [Fact]
+    public void A_placed_candidate_without_coordinates_borrows_the_namesake_in_the_same_state()
+    {
+        AuthorityRecord Tgn(string id, string parents, double lat, double lon) => new("http://vocab.getty.edu/tgn/" + id, "tgn", "Hamden", ["Hamden"], "Place", null, [], $$$"""{"lat":"{{{lat}}}","long":"{{{lon}}}","parentString":"{{{parents}}}"}""", DateTimeOffset.UtcNow, null);
+        var candidates = new[]
+        {
+            Tgn("1", "Delaware, Ohio, United States, North and Central America, World", 40.4, -82.9),
+            Tgn("2", "New Haven, Connecticut, United States, North and Central America, World", 41.4, -72.9),
+            Tgn("3", "Hamilton, New York, United States, North and Central America, World", 42.5, -75.5),
+            new AuthorityRecord("http://vocab.getty.edu/tgn/4", "tgn", "Hampden", ["Hampden"], "Place", null, [], """{"lat":"42.1","long":"-72.4","parentString":"Hampden, Massachusetts, United States"}""", DateTimeOffset.UtcNow, null),
+        };
+        var borrowed = Coordinates.Borrow("Conn.", "Hamden", candidates);
+        Assert.NotNull(borrowed);
+        Assert.Equal(41.4, borrowed.Lat, 1); Assert.Equal(-72.9, borrowed.Long, 1);
+        Assert.True(borrowed.Approximate);
+        Assert.Equal("TGN's Hamden in New Haven, Connecticut", borrowed.Via);
+        Assert.Equal(borrowed.Lat, Coordinates.Borrow("CT", "Hamden (Conn.)", candidates)!.Lat); // the postal code and a label with its parenthetical
+        Assert.Null(Coordinates.Borrow("Mass.", "Hamden", candidates)); // Hampden is another name
+        Assert.Null(Coordinates.Borrow(null, "Hamden", candidates));
+        Assert.Null(Coordinates.Borrow("Conn.", "Hamden", []));
+    }
 }

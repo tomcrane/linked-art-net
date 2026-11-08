@@ -20,7 +20,7 @@ public sealed record EvidenceMember(string Uri, string Source, string? Label, st
 /// most frequent of them.
 /// </summary>
 /// <param name="Placement">Where the entity is, read from the LoC heading it holds ("Ala." from "Birmingham (Ala.)") or its TGN record's parents, so that namesake project entities on one page can be told apart (the owner, 2026-11-07, at "Birmingham" in keywords:sub: both buttons "Same as Birmingham"); null when its own label already says, or nothing does.</param>
-public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<StringExample> Examples, string? Placement = null, (double Lat, double Long)? Coordinates = null)
+public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Strings, IReadOnlyList<StringExample> Examples, string? Placement = null, Authorities.Placed? Coordinates = null)
 {
     /// <summary>The fields the strings came from, the most frequent first.</summary>
     public IReadOnlyList<string> Contexts => Strings.GroupBy(s => s.String.Context, StringComparer.Ordinal).OrderByDescending(g => g.Sum(x => x.String.Occurrences)).Select(g => g.Key).ToList();
@@ -40,7 +40,7 @@ public sealed record TogetherPlan(Entity Survivor, IReadOnlyList<Entity> Merging
 /// <param name="LookedAgain">Set when the evidence shown is a fresh evaluation under today's rules, not the decision's own: what the string would be decided as now ("queued", "accepted", ...). The stored decision is unchanged.</param>
 /// <param name="Siblings">The other queued strings under this string's name (its own key, its reading's keys, its entity's labels), in list order: the desk finishes a name before it leaves it (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd").</param>
 /// <param name="Holders">By a record's URI on a card, the project entity that holds that record now and was not a member when the evidence was written (an identifier added by hand since, or a later run's acceptance), so the card can offer it (the owner, 2026-11-07: "does adding the identifier take effect in the desk?").</param>
-public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, IReadOnlyList<DecidedString> Siblings, string? LookedAgain = null, IReadOnlyDictionary<string, EntityFacts>? Holders = null, DateTimeOffset? SkippedAt = null)
+public sealed record ReviewItem(SourceString String, Decision Decision, EvidenceView Evidence, Entity? Entity, IReadOnlyList<Note> Notes, IReadOnlyDictionary<string, AuthorityRecord> Records, IReadOnlyList<StringExample> Examples, IReadOnlyDictionary<string, EntityFacts> Entities, IReadOnlyList<DecidedString> Siblings, string? LookedAgain = null, IReadOnlyDictionary<string, EntityFacts>? Holders = null, DateTimeOffset? SkippedAt = null, IReadOnlyDictionary<string, Authorities.Placed>? Placed = null)
 {
     public bool IsQueued => Decision.Method == DecisionMethod.Queued;
 }
@@ -122,7 +122,15 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
                 if (h.Dataset != decided.String.Dataset || h.MergedInto is not null || h.Id == entity?.Id || entities.Values.Any(f => f.Entity.Id == h.Id)) continue;
                 if (await FactsAsync(h.Id, ct) is { } facts) { holders[uri] = facts; break; }
             }
-        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, await SiblingsAsync(decided.String, entity, ct), lookedAgain, holders, await store.SkippedAtAsync(decided.String.Id, ct));
+        // where each candidate is, for the map: the record's own coordinates or its TGN parent's, a project entity's through its records
+        var placed = new Dictionary<string, Authorities.Placed>(StringComparer.Ordinal);
+        foreach (var (uri, record) in records)
+            if (await Authorities.Coordinates.ResolveAsync(store, record, ct) is { } p) placed[uri] = p;
+            else if (record.Type == "Place" && Authorities.Coordinates.Borrow(Qualified.PlacementOf(null, record.Labels.Append(record.Label)), record.Label, records.Values) is { } borrowed) placed[uri] = borrowed;
+        foreach (var (uri, facts) in entities)
+            if (facts.Coordinates is { } p) placed[uri] = p;
+            else if (Authorities.Coordinates.Borrow(facts.Placement, facts.Entity.Label, records.Values) is { } borrowed) placed[uri] = borrowed;
+        return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, await SiblingsAsync(decided.String, entity, ct), lookedAgain, holders, await store.SkippedAtAsync(decided.String.Id, ct), placed);
     }
 
     /// <summary>
@@ -170,11 +178,16 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     }
 
     /// <summary>Where the entity is, from the first of its TGN, Wikidata or LUX records that places it (Authorities.Coordinates), for the map.</summary>
-    private async Task<(double Lat, double Long)?> CoordinatesAsync(Entity entity, CancellationToken ct)
+    private async Task<Authorities.Placed?> CoordinatesAsync(Entity entity, CancellationToken ct)
     {
+        Authorities.Placed? approximate = null;
         foreach (var q in entity.Equivalents.Where(q => q.Source is "tgn" or "wikidata" or "lux").OrderBy(q => q.Source == "tgn" ? 0 : 1).Take(4))
-            if (Authorities.Coordinates.Of(await store.GetAuthorityAsync(q.Uri, ct)) is { } c) return c;
-        return null;
+            if (await Authorities.Coordinates.ResolveAsync(store, await store.GetAuthorityAsync(q.Uri, ct), ct) is { } p)
+            {
+                if (!p.Approximate) return p;
+                approximate ??= p;
+            }
+        return approximate;
     }
 
     /// <summary>Where an entity is, for telling namesakes apart: LoC's parenthetical first ("Ala."), else the first two of its TGN record's parents ("Jefferson, Alabama"); null when the entity's own label carries a qualifier or nothing says.</summary>

@@ -14,7 +14,7 @@
         var map = L.map(el, { scrollWheelZoom: false });
         L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
         var markers = points.map(function (p) {
-            var m = L.circleMarker([p.lat, p.lng], { radius: p.chosen ? 9 : 6, weight: p.chosen ? 3 : 1.5, color: p.chosen ? "#b5451b" : "#365a7a", fillColor: p.chosen ? "#e8a07a" : "#9fb8cf", fillOpacity: 0.85 });
+            var m = L.circleMarker([p.lat, p.lng], { radius: p.chosen ? 9 : 6, weight: p.chosen ? 3 : 1.5, color: p.chosen ? "#b5451b" : "#365a7a", fillColor: p.chosen ? "#e8a07a" : "#9fb8cf", fillOpacity: p.approximate ? 0.15 : 0.85, dashArray: p.approximate ? "3 3" : null });
             m.bindTooltip(p.label, { permanent: points.length <= 8, direction: "top", offset: [0, -6] });
             return m.addTo(map);
         });

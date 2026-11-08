@@ -42,8 +42,12 @@ survivor chosen for the bookmarks; what not to take: attach by exact label, hard
 values); four items under Workbench and desk, and a map for places (the owner) as a fifth. Then back to the opening
 tasks, the word given on all: findings 113 (an entity placed through its LoC heading), 114 (a subdivision placed by
 its sibling parts), 115 (near-miss dates), 116 (prominence when every tied group holds a project entity) built in
-that order, each test failing as the run did before its rule; the reconcile that measures them next, run by the
-assistant.
+that order, each test failing as the run did before its rule; the reconcile that measures them, the assistant's
+first, run jnagjy (13:48 to 14:28; doc 10 7.6 "Measured 2026-11-08 (run jnagjy)"): finding 115 right throughout (49
+queued to vote, 16 to exact-name, 46 singles to votes with a second source), finding 113's three as expected, 116
+unneeded this run, and 114 over-reaching (a narrower sibling, and subjects beside a place, took a qualifier: "Alabama",
+"Audiences", "Architecture" under "Dublin" minted), refined the same hour to siblings TGN knows as ancestors of a place
+of the name, and run again. The US state abbreviations a new item from the diff.
 
 ## 2026-11-07
 

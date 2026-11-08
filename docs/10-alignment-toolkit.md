@@ -1259,6 +1259,42 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-08 (run jnagjy, 13:48 to 14:28, the assistant's first reconcile; wsw254 taken back): findings 113 to
+116. Considered 45,928 (fewer than wsw254's 46,296: the finding 112 repair re-split 167 headings and the cleanup
+deleted 168 fragments), matched in store 5,973 (26 more), accepted 9,431 (vote 4,064, 19 more; single 2,111, 53 fewer;
+exact-single 3,256, 35 fewer), queued 3,851 (74 fewer), minted 10,795 (83 fewer); the second pass settled 119 of 3,970
+and kept its reasons on the 3,848 left queued (the 7th's desk item, in force). The diff against wsw254, 35 rows and
+some 500 strings, read with the entity column and the rules' own markers in the evidence:
+
+- Finding 115, the near miss: 107 queued strings, 104 votes, 16 matched in the store and 4 singles carry "dates near".
+  Of the 65 counted, 49 went queued to vote ("Assheton Bennett, Edgar, 1873-1964", "Baker, William, 1705-1771",
+  "Beccafumi, Domenico, 1484-1551", "Blacklock, William James, 1816-1858", "Brodrick, Cuthbert, 1821-1905") and 16
+  queued to exact-name ("Adam, James, 1730-1794", "Cozens, John Robert, 1752-1798", "Draper, Herbert James,
+  1863-1920", "Landseer, Charles, 1799-1878"); and 46 singles became votes ("Atkinson, John Augustus, 1775-1831/1833",
+  "Bellotto, Bernardo, 1721-1780", "Bowler, Thomas William, 1812-1869"): a second source's record a year out, vetoed
+  before, now live and agreeing, so two sources carry what one did, with the extra identifier. Right throughout.
+- Finding 113: "St. Ives (Cornwall, England)" and "Williamsburg, Virginia" minted to exact-name onto the legacy
+  entities placed through their LoC headings; "St Ives (Cornwall)" queued to exact-name; "Williamsburg (Va.)" single
+  to exact-name on the same entity. The three of the count, as expected.
+- Finding 116 marked nothing: "Boston" bare was taken in the store stage by the project's one bare entity, the
+  Massachusetts one, before prominence was asked (the Lincolnshire entity's label carries its qualifier), and
+  "Birmingham" had been decided at the desk. The rule stands, tested, for the shape when it comes.
+- Finding 114 over-reached, and the diff showed it: 197 queued, 138 minted, 135 matched, 130 voted, 32 exact-single
+  and 14 single strings carry "its heading's part". The gains are real (48 queued to exact-name: "Athens", "Boston",
+  "Chatsworth", "Christchurch", "Coventry"; 98 votes to exact-name on the same entity, a relabel), but 31 votes went to
+  queued ("Alabama" under "Painters--Alabama--Birmingham" took the narrower sibling "Birmingham" as its qualifier;
+  "Audiences", "Awards", "Catalogues raisonnés" took "England" and lost LCSH's exact heading), 30 exact-names went to
+  queued ("Aesthetics", "Children", "Belfast", "Calcutta"), 15 more ("1603-1714" and the period subdivisions), and
+  "Architecture" under "Dublin" was minted ("a string placed in a known place is not an idea"). The rule applied to
+  every keywords:sub string, since the context allows Place among Type and Period, and to any sibling place whatever
+  its relation. Refined the same hour: the sibling qualifies only when TGN knows it as an ancestor of a place of the
+  string's name (a lookup of the string's keys in TGN, the parent string's segments compared), so a subject takes no
+  qualifier and a narrower sibling none; Finding114Tests gained "Alabama" beside "Birmingham" and "Audiences" beside
+  "England", neither qualified, neither queued. Measured by the reconcile after.
+- Besides the rules: "Hamden, CT" vote to queued, the legacy entity now placed through LoC's "Hamden (Conn.)" and the
+  string's "CT" not read as Connecticut: the US state abbreviations are a gap of the qualifier reading, an item.
+  "Halifax" in place queued as the less prominent project entity (finding 85), unchanged in kind.
+
 Built 2026-11-08, findings 113 to 116, the owner's word on the five counts ("let's do these rules, in your suggested
 order"), each test written to fail as the run did before the rule, every library test project green, measured by the
 reconcile that follows (the placeholder-class rule waits until that run shows what the sibling rule leaves):

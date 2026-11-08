@@ -426,6 +426,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
         if (places.Count != 1) return reading;
         var qualifier = Qualified.Split(places.Values.First().Label!).Name;
+        // only a sibling that TGN knows as an ancestor of a place of this name: the first run of the rule (jnagjy, 2026-11-08) put
+        // "Birmingham" on "Alabama" (the narrower sibling), "England" on "Audiences" and "Dublin" on "Architecture" (subjects, not places),
+        // and queued or minted what had been accepted. A string with no TGN record of its name, or none under the sibling, keeps its reading
+        var known = false;
+        foreach (var tgn in await store.FindAuthoritiesByLabelsAsync(reading.Keys, "tgn", null, 50, ct))
+            if (ParentAndType(tgn) is { Parent: { } parent } && parent.Split(',').Select(x => x.Trim()).Any(seg => string.Equals(seg, qualifier, StringComparison.OrdinalIgnoreCase))) { known = true; break; }
+        if (!known) return reading;
         return reading with { Qualifier = qualifier, IsQualified = true, QualifierFrom = $"its heading's part {qualifier}" };
     }
 

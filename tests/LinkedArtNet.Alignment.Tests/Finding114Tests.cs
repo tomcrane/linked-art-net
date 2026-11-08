@@ -40,5 +40,21 @@ public class Finding114Tests(PostgresFixture pg)
         Assert.Contains(entity.Equivalents, q => q.Uri == BhamEngland);
         Assert.DoesNotContain(entity.Equivalents, q => q.Uri == BhamAlabama);
         Assert.Contains("its heading's part England", decision.EvidenceJson!);
+
+        // the first run of the rule (jnagjy) over-reached: a sibling that is the narrower place ("Alabama" beside "Birmingham") and a
+        // subject with a place beside it ("Audiences" beside "England") took the sibling as a qualifier and were queued or minted; only
+        // a sibling TGN knows as an ancestor of a place of the string's name places it
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/subjects/sh85009394", "lcsh", "Audiences", ["Audiences"], "Type", null, [], "{\"collections\":[\"LCSHAuthorizedHeadings\"]}", DateTimeOffset.UtcNow, "test"));
+        var heading2 = await pg.Store.CollectAsync(ds, "keywords", "Painters--Alabama--Birmingham");
+        var heading3 = await pg.Store.CollectAsync(ds, "keywords", "Theaters--England--Audiences");
+        await reconciler.RunAsync(ds);
+        var alabama = (await pg.Store.PartsAsync(heading2.Id)).Single(p => p.Raw == "Alabama");
+        var alabamaDecision = (await pg.Store.DecisionForAsync(alabama.Id))!;
+        Assert.DoesNotContain("its heading's part", alabamaDecision.EvidenceJson!);
+        Assert.NotEqual(DecisionMethod.Queued, alabamaDecision.Method);
+        var audiences = (await pg.Store.PartsAsync(heading3.Id)).Single(p => p.Raw == "Audiences");
+        var audiencesDecision = (await pg.Store.DecisionForAsync(audiences.Id))!;
+        Assert.DoesNotContain("its heading's part", audiencesDecision.EvidenceJson!);
+        Assert.NotEqual(DecisionMethod.Queued, audiencesDecision.Method);
     }
 }

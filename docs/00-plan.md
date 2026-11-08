@@ -577,6 +577,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   the string's own index stage puts one of its records at the top score; otherwise the string stays queued with the
   entity shown on its first card. Seven strings, four of them a click each at the desk, three silent errors stopped.
   The owner's word given the same afternoon, and built.
+- US state abbreviations in a qualifier ("Hamden, CT", "San Marino, CA.", "Durham, NC" against LoC's "(Conn.)", TGN's
+  "Connecticut"): the qualifier reading knows neither the postal nor LoC's abbreviations, so a string placed by its
+  state is not placed (seen in jnagjy's diff, 2026-11-08, when finding 113 placed the legacy entity through its
+  heading and the string's "CT" then disagreed with "Conn."). A small table of the fifty states' postal and LoC forms,
+  from general knowledge, credited as such; count first the place strings whose qualifier is a two-letter capital.
 - The placement join missing LoC's English form against TGN's vernacular label, to measure (seen in the forty: "Crete
   (Greece)" tied with TGN's Kríti, "Picardy (France)" with Picardie, "Cumberland (England)" with TGN's Cumberland,
   "Cambridge (Mass.)" with TGN's Cambridge in Massachusetts, each the same place in two groups, so that finding 108

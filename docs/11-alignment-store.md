@@ -94,6 +94,10 @@ dotnet run --project tools/Align -- import-legacy --reuse-by-equivalent --only-r
 Connection strings come only from the environment: `LINKEDART_PG` for the store, `LINKEDART_LEGACY_PG` for the
 earlier PMC database. Nothing in the repository holds one.
 
+`tools/pg.sh "<sql>"` (or `-f file.sql`) is read-only SQL against the store for the assistant's questions, from
+2026-11-08: it takes `LINKEDART_PG` from the shell or the user-level environment, turns Npgsql's connection string into
+psql's, and opens the session with `default_transaction_read_only`, so a read cannot write.
+
 ## 6. Tests
 
 `tests/LinkedArtNet.Alignment.Tests` runs the store against a disposable PostgreSQL 15: the connection string in

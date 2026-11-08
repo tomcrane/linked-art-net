@@ -23,6 +23,14 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-08
+
+The owner changed the standing rule at the start of the day: the assistant may query Postgres directly and run the
+Align tool's commands, saying what it does first, since relaying queries and results by hand between the console and
+DataGrip was costing the day's flow ("with lots of digressions and side-quests I find it hard to maintain context").
+`tools/pg.sh`, read-only SQL from the environment's connection string; the rule recorded in the plan's section 0 and in
+memory; writes still only through the Align commands, the workbench still the owner's to start and stop.
+
 ## 2026-11-07
 
 The owner undid krbnw6 and started the reconcile that measures the pass through Wikidata (run d6h8va, 11:48), on

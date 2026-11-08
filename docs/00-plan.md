@@ -67,10 +67,11 @@ rule carries a person's Index name only when his biography names one of the mani
 stays queued, the match shown on the card. Open question 7 (section 6). Every decision taken is in doc 10 section 13
 and the log.
 
-**Commands on return** (the owner runs all of them; the assistant never runs anything against the real store; the
-answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 section 8.11; the Align tool's commands
-each `init` the schema or not, so after a schema change run `init` first; PowerShell writes a redirected file as
-UTF-16, which the assistant reads with a decode, and `reports/` is git-ignored).
+**Commands on return** (from 2026-11-08 the assistant runs them too: read-only SQL through `tools/pg.sh` and the Align
+tool's commands, saying what it does before it does it, the owner's word on 2026-11-08 after a day of relaying queries
+and results by hand; writes to the store only through the Align commands, never SQL; the workbench is still the
+owner's to start and stop. The answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11 section
+8.11; after a schema change run `init` first; `reports/` is git-ignored).
 
 1. The desk: start the workbench against the real store (`LINKEDART_PG` set; Development allows the typed sign-in,
    the name `local` is an owner) and review from the queue; the assistant does not build the workbench project while

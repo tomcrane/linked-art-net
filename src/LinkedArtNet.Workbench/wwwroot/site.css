@@ -174,3 +174,8 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 .pair-head { border-top: 1px solid var(--accent); margin-top: 0.75rem; }
 .pair-row { border-top: 1px solid var(--rule); }
 .pair-foot { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--accent); margin-bottom: 0.75rem; }
+
+/* an entity's identifiers in their sets: those that cite one another boxed together under what they are (the owner, 2026-11-13) */
+.idset { border: 1px solid var(--rule); border-left: 4px solid var(--rule); padding: 0.4rem 0.9rem; margin: 0.6rem 0; }
+.idset-head { align-items: center; padding-bottom: 0.3rem; border-bottom: 1px solid var(--rule); }
+.idset table { margin: 0; }

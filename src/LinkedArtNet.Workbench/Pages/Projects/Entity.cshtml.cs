@@ -72,6 +72,13 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         catch (IdentifierInUseException e) { return Flash(e.Message, new { dataset = Dataset, id, held = e.Holder.Id }); }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, id }); }
     }
+    /// <summary>A set of identifiers removed as one (the owner, 2026-11-13: a wrong Wikidata item goes with the VIAF number it gave), each removal noted as any other.</summary>
+    public Task<IActionResult> OnPostRemoveEquivalentsAsync(string id, string[]? uris) => Act(id, async () =>
+    {
+        var removed = 0;
+        foreach (var uri in (uris ?? []).Distinct(StringComparer.Ordinal)) { await Project.Curation.RemoveEquivalentAsync(Dataset, id, uri, Reviewer); removed++; }
+        return removed == 1 ? "Identifier removed." : $"{removed} identifiers removed.";
+    });
     public Task<IActionResult> OnPostRemoveEquivalentAsync(string id, string uri) => Act(id, async () => { await Project.Curation.RemoveEquivalentAsync(Dataset, id, uri, Reviewer); return "Identifier removed."; });
     public Task<IActionResult> OnPostConfirmAsync(string id, string? note) => Act(id, async () => { await Project.Curation.ConfirmAsync(Dataset, id, Reviewer, note); return "Confirmed."; });
     public Task<IActionResult> OnPostNoteAsync(string id, string text) => Act(id, async () => { if (!string.IsNullOrWhiteSpace(text)) await Project.Curation.NoteAsync(Dataset, id, Reviewer, text.Trim()); return "Note added."; });

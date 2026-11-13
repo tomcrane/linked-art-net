@@ -56,20 +56,52 @@
         }
         <h2>Identifiers</h2>
         @if (e.Equivalents.Count == 0) { <p class="muted">None@(v.IsCompound ? "" : ": a local authority").</p> }
-        <table>
-            <tbody>
-            @foreach (var q in e.Equivalents)
+        @* the identifiers in their sets (the owner, 2026-11-13, at the bare "Dagenham": Wikidata's parliamentary constituency, its VIAF
+           number and nothing on the page to say so): those that cite one another are boxed together under what they are, each row says
+           what its record is, a VIAF number through the record that gives it, and a set is removed as one *@
+        @{
+            var sets = LinkedArtNet.Alignment.Authorities.IdentifierSets.Of(e.Equivalents.Select(q => q.Uri).ToList(), v.Records);
+            var grouped = sets.Any(s => s.Count > 1);
+        }
+        @if (grouped && sets.Count > 1) { <p class="small muted">Identifiers that cite one another are boxed together. Sets that describe different things are a sign the entity is aligned to two things, or was merged from two.</p> }
+        @foreach (var set in sets)
+        {
+            var members = set.Select(u => e.Equivalents.First(q => q.Uri == u)).ToList();
+            var about = members.Select(q => v.Records.GetValueOrDefault(q.Uri)).Where(r => r is not null)
+                .OrderByDescending(r => r!.Source == "wikidata").Select(r => LinkedArtNet.Alignment.Authorities.RecordSummary.Says(r)).FirstOrDefault(x => x is not null);
+            <div class="@(grouped ? "idset" : "")">
+            @if (set.Count > 1)
             {
-                v.Records.TryGetValue(q.Uri, out var record);
-                <tr>
-                    <td><a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a></td>
-                    <td><a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>@if (record is not null) { <div class="small muted">@record.Label @record.Lifespan?.Display</div> }</td>
-                    <td class="small muted">@q.Method @q.Confidence.ToString("0.00")</td>
-                    <td><form method="post" asp-page-handler="RemoveEquivalent" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@q.Uri" /><button type="submit" class="quiet">Remove</button></form></td>
-                </tr>
+                <div class="row idset-head">
+                    <div style="flex:1"><strong>@(about ?? "A set")</strong> <span class="small muted">· @set.Count identifiers that cite one another</span></div>
+                    <form method="post" asp-page-handler="RemoveEquivalents" class="inline">
+                        <input type="hidden" name="id" value="@e.Id" />
+                        @foreach (var q in members) { <input type="hidden" name="uris" value="@q.Uri" /> }
+                        <button type="submit" class="quiet" title="Removes every identifier of this set from the entity; each removal is noted">Remove all @set.Count</button>
+                    </form>
+                </div>
             }
-            </tbody>
-        </table>
+            <table>
+                <tbody>
+                @foreach (var q in members)
+                {
+                    v.Records.TryGetValue(q.Uri, out var record);
+                    var giver = record is null ? LinkedArtNet.Alignment.Authorities.IdentifierSets.CitedBy(q.Uri, v.Records.Values) : null;
+                    <tr>
+                        <td><a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a></td>
+                        <td><a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>
+                            @if (record is not null) { <div class="small muted">@LinkedArtNet.Alignment.Authorities.RecordSummary.Says(record) @record.Lifespan?.Display</div> }
+                            else if (giver is not null) { <div class="small muted">the @q.Source identifier that @giver.Source's @giver.Uri.TrimEnd('/').Split('/').Last() gives (@LinkedArtNet.Alignment.Authorities.RecordSummary.Says(giver))</div> }
+                            else { <div class="small muted">no record of it in the store@(LinkedArtNet.Alignment.Authorities.SourcePull.CanPull(q.Uri) ? "; \"Pull in from the sources\" below asks it what it is" : "")</div> }
+                        </td>
+                        <td class="small muted">@q.Method @q.Confidence.ToString("0.00")</td>
+                        <td><form method="post" asp-page-handler="RemoveEquivalent" class="inline"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="uri" value="@q.Uri" /><button type="submit" class="quiet">Remove</button></form></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+        }
         @* two ways to add an identifier, as two rows of one grid, label, field, button, so they line up (the owner, 2026-11-08) *@
         <form method="post" asp-page-handler="AddEquivalent" class="labelled" style="margin-top:.6rem">
             <input type="hidden" name="id" value="@e.Id" />

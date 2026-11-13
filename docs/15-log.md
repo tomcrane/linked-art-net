@@ -39,7 +39,11 @@ Then the two Dagenhams, the owner asking why they hold different VIAF and Wikida
 one to the town and the other to the former parliamentary constituency, and the desk showed both as numbers. Built at
 once: each held identifier on the desk is a link and says what its record is (`RecordSummary.Says`). And the holder
 pair's notice, which did not say which rows it meant and carried its button in the flow of its text: a box, the
-sentence its head, the project's entities its rows, the merge at its foot.
+sentence its head, the project's entities its rows, the merge at its foot. Then the entity page, the owner meaning to
+remove the constituency's identifiers by hand and unable to tell what a VIAF number is from viaf.org: the identifiers
+in their sets (`IdentifierSets`), each set boxed under what it is and removed as one, a VIAF number described by
+the Wikidata record that gives it. The owner's word for the day: the aim is to clean and align the data accurately,
+and the tools are to make that smooth and satisfying.
 
 ## 2026-11-08
 

@@ -90,7 +90,10 @@ This is how Coventry was decided: the two entities merged through the tray, "Cov
   duplicates the authorities also hold twice, or two different things. "Dagenham" and "Dagenham (London, England)"
   were the second kind: one held Wikidata's record for the town, the other its record for the former parliamentary
   constituency, an old mistaken alignment. The project means the town by both, so merging is right, but the
-  constituency's identifiers come along and must then be removed on the survivor's page. Open each entity's page
-  ("its page") and look at what its identifiers are before merging.
+  constituency's identifiers come along and must then be removed on the survivor's page. Better, open the mistaken
+  entity's page first ("its page"): its identifiers are boxed in sets under what they are, and "Remove all" takes
+  the constituency's set off in one press; then merge. Do not relabel the entity to match its wrong identifiers
+  ("Dagenham (parliamentary constituency)"): an entity is what its strings mean, and this one stands for a place of
+  publication, the town.
 - *Different classes.* The confirm step says so when the two entities differ in class (a person and a group, say).
   That is usually a sign they are not duplicates.

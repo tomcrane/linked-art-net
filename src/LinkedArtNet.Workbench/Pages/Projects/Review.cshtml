@@ -15,6 +15,9 @@
         var enc = System.Text.Encodings.Web.HtmlEncoder.Default;
         source ??= LinkedArtNet.Alignment.AuthorityUris.SourceOf(uri);
         var says = Model.Item is { } it && it.Records.TryGetValue(uri, out var r) ? LinkedArtNet.Alignment.Authorities.RecordSummary.Says(r) : null;
+        // no record of it here (a VIAF number): the record on the card that gives it says what it is
+        if (says is null && Model.Item is { } card && !card.Records.ContainsKey(uri) && LinkedArtNet.Alignment.Authorities.IdentifierSets.CitedBy(uri, card.Records.Values) is { } giver)
+            says = $"given by {giver.Source}'s {giver.Uri.TrimEnd('/').Split('/').Last()}";
         return new Microsoft.AspNetCore.Html.HtmlString(
             $"<a href=\"{enc.Encode(uri)}\" target=\"_blank\" rel=\"noopener\">{enc.Encode(source + "'s " + uri.TrimEnd('/').Split('/').Last())}</a>"
             + (says is null ? "" : $" <span class=\"said\">({enc.Encode(says)})</span>"));

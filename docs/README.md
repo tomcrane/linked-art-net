@@ -18,6 +18,7 @@
 | [11-alignment-store.md](11-alignment-store.md) | The alignment store on PostgreSQL: schema, loaders for the authority files and the Wikidata extract, what the loads and runs taught |
 | [12-workbench.md](12-workbench.md) | The review workbench: users and projects, the desk, entities and variants, jobs, hosting, order of work |
 | [13-workbench-guide.md](13-workbench-guide.md) | The workbench's user guide |
+| [16-workbench-scenarios.md](16-workbench-scenarios.md) | Common situations at the desk, each with a real example, pictures and what the reviewer does; grows as scenarios are met |
 | [14-pmc-documents-sifted.md](14-pmc-documents-sifted.md) | The 2024 PMC documents sifted for what a project needs |
 | [15-log.md](15-log.md) | The record, by day: what was built and measured, the runs and the queue's path, the plan's struck items |
 | [upstream-issues.md](upstream-issues.md) | Findings to report to linked.art: id collisions, redirect loop, 38 examples the 1.0 schemas reject, schema file issues |

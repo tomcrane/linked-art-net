@@ -299,6 +299,9 @@ desk's work; minted is what no file knows.
 For an operator, `settle-merged` on the command line lists the strings whose queued or minted decision points at an
 entity that is no longer a placeholder (merged in before merges settled strings), and `--apply` decides them.
 
+Worked examples of common situations at the desk, each with pictures and what to do, are in
+the repository's `docs/16-workbench-scenarios.md` (not yet served from the workbench).
+
 ## 7. What is not there yet
 
 Running the commands above from the workbench with progress and history; a project wizard that chooses the source

@@ -15,6 +15,9 @@
   <ItemGroup>
     <!-- the user guide, rendered at /help from the committed text (docs/13-workbench-guide.md), never a second copy -->
     <EmbeddedResource Include="..\..\docs\13-workbench-guide.md" LogicalName="guide.md" />
+    <!-- the worked scenarios and their pictures, at /help/scenarios from the committed doc 16 and docs/img/scenarios (the owner, 2026-11-13) -->
+    <EmbeddedResource Include="..\..\docs\16-workbench-scenarios.md" LogicalName="scenarios.md" />
+    <EmbeddedResource Include="..\..\docs\img\scenarios\*.png" LogicalName="scenarios/%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>

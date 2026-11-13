@@ -924,12 +924,17 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                         placement = own; placementAncestors = ancestors.Chain; break;
                     }
         }
+        // what the entity's Wikidata items give for the same thing, in the candidate sources' terms: an entity aligned to the Madison
+        // of New Jersey is not the project's one Madison for a string placed in Wisconsin (finding 119)
+        var gives = new List<string>();
+        foreach (var q in e.Equivalents.Where(q => q.Source == "wikidata").Take(3))
+            if (await store.GetAuthorityAsync(q.Uri, ct) is { } item) gives.AddRange(item.SameAs);
         var nameScore = NameMatcher.Score(reading.Text, labels);
         // the project's own firm named for the man ("Dowell's Ltd" for "Mr Dowell"), as for a record (finding 105, 2026-10-26)
         var byPossessive = nameScore < 0.90 && e.Class == EntityClass.Group && reading.Classes.Contains(EntityClass.Group) && NameMatcher.PossessiveOf(reading.Text, labels);
         if (byPossessive) nameScore = 0.90;
         return new Candidate(e.Id, "store", e.Label, e.Class, lifespan ?? e.Lifespan, e.Equivalents.Select(q => q.Uri).ToArray(), "store", nameScore, e.Id, e.Nationalities, provisional, queued, Placement: placement,
-            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null, ByPossessive: byPossessive, Level: level, Labels: labels.ToList());
+            PlacementAncestors: placementAncestors, PlaceType: e.Class == EntityClass.Place ? Qualified.TypeOf(labels) : null, ByPossessive: byPossessive, Level: level, Labels: labels.ToList(), Gives: gives.Count == 0 ? null : gives);
     }
 
     /// <summary>Writes an evaluation: the decision with its evidence and, where needed, the entity.</summary>
@@ -1332,7 +1337,20 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             if (ranked[0].joined > ranked[1].joined) anchor = ranked[0].a;
         }
         if (anchor is not null && own.Count == 1)
-            list[own[0].i] = own[0].m with { JoinedTo = anchor.Candidate.Uri, Reason = own[0].m.Reason + $"; the project's one {reading.Text} joins the placed {anchor.Candidate.Source} record" + (anchors.Count > 1 ? $", the one of {anchors.Count} a heading joined" : "") };
+        {
+            // an entity whose Wikidata item gives another record of a source than the one the placed group holds is aligned to a
+            // namesake elsewhere, and is not the placed record's own entity (finding 119, the owner's desk, 2026-11-13, after the two
+            // Dagenhams; the count, run q9zpqk: ten bare entities so joined, "Madison" holding Wikidata's borough in New Jersey, which
+            // gives LoC's n50027836, joined to the Madison of Wisconsin, LoC's n79081547). Silent when the item gives nothing in the
+            // group's sources (a VIAF number only), and when it gives one of the group's own records
+            var groupRecords = list.Where(m => !m.Veto && m.Candidate.EntityId is null && (m.Candidate.Uri == anchor.Candidate.Uri || m.JoinedTo == anchor.Candidate.Uri)).Select(m => m.Candidate).ToList();
+            var given = own[0].m.Candidate.Gives ?? [];
+            var elsewhere = given.Any(g => groupRecords.Any(r => r.Uri == g)) ? null
+                : given.FirstOrDefault(g => groupRecords.Any(r => AuthorityUris.SourceOf(r.Uri) == AuthorityUris.SourceOf(g)));
+            list[own[0].i] = elsewhere is not null
+                ? own[0].m with { Reason = own[0].m.Reason + $"; the project's {reading.Text} is aligned elsewhere: its Wikidata item gives {AuthorityUris.SourceOf(elsewhere)}'s {elsewhere.TrimEnd('/').Split('/').Last()}, not the placed record" }
+                : own[0].m with { JoinedTo = anchor.Candidate.Uri, Reason = own[0].m.Reason + $"; the project's one {reading.Text} joins the placed {anchor.Candidate.Source} record" + (anchors.Count > 1 ? $", the one of {anchors.Count} a heading joined" : "") };
+        }
         // when the qualifier places one candidate, the namesakes it does not place are not what the string names
         for (var i = 0; i < list.Count; i++)
             if (list[i].QualifierAgrees == false && !inside.Contains(i) && !list[i].Veto) list[i] = list[i] with { Veto = true, Reason = list[i].Reason + "; the qualifier places another candidate" };

@@ -85,6 +85,17 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var guide = await help.Content.ReadAsStringAsync();
         Assert.Contains("id=\"the-desk\"", guide);
         Assert.Contains("Keep as local authority", guide);
+        Assert.Contains("href=\"/help/scenarios\"", guide); // the guide's link to doc 16 by file name, turned into the page's
+        // the worked scenarios (doc 16) beside it, their pictures served from the assembly (the owner, 2026-11-13)
+        var scenarios = await anonymous.GetStringAsync("/help/scenarios");
+        Assert.Contains("id=\"holder-pair\"", scenarios);
+        Assert.Contains("src=\"/help/img/scenarios/holder-pair-1-string.png\"", scenarios);
+        Assert.Contains("href=\"/help\"", scenarios);
+        var picture = await anonymous.GetAsync("/help/img/scenarios/holder-pair-1-string.png");
+        Assert.Equal(HttpStatusCode.OK, picture.StatusCode);
+        Assert.Equal("image/png", picture.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(HttpStatusCode.NotFound, (await anonymous.GetAsync("/help/img/scenarios/nothing.png")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await anonymous.GetAsync("/help/nothing")).StatusCode);
 
         // the desk's search leaves the string's own placeholder out of the results: it is under "Currently" already
         var searched = await owner.GetStringAsync($"/p/{ds}/review?id={smith.Id}&q=Smith");
@@ -335,7 +346,7 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         Assert.Contains("the project's entity, holding <a href=", desk); // each held identifier a link to its record, saying what it is when the store holds it (the owner, 2026-11-13)
         Assert.Contains(">ulan&#x27;s 500301722</a>", desk); // the encoder writes the apostrophe so
         Assert.Contains(">loc&#x27;s n89672369</a>", desk);
-        Assert.Contains("a placeholder for &quot;Chris Beetles Ltd&quot; in corpauthor", desk);
+        Assert.Contains("a placeholder for &quot;Chris Beetles Ltd&quot; (corpauthor)", desk); // the field by its own name: this project's manifest gives it no label (the owner, 2026-11-13)
         Assert.Contains("2 of the project's entities hold records of this group", desk);
         Assert.Contains("Merge them and accept this string onto the survivor", desk);
 

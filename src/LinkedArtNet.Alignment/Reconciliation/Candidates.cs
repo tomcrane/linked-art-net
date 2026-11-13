@@ -205,6 +205,7 @@ public sealed record StringReading(
 /// <param name="Placement">Where the record's own vocabulary puts it (TGN's parent string, a LoC heading's parenthetical), for a qualified string to check against.</param>
 /// <param name="PlacementAncestors">The TGN chain above a placement read from a label ("England, United Kingdom, Europe, World" above "Northamptonshire"), consulted only when the placement as written does not agree: ancestors widen agreement, never narrow it (finding 84, 2026-10-24).</param>
 /// <param name="Collections">The record's own vocabulary's collections it belongs to, by short name (LCSH's "Subdivisions"), for a context that wants some of them (<see cref="ContextRule.Collections"/>).</param>
+/// <param name="Gives">For a project entity, the identifiers its Wikidata items give for the same thing (their sameAs): what the entity is already aligned to, in the candidate sources' own terms (finding 119).</param>
 /// <param name="ByPossessive">The record is a firm named for the man the string names ("Dowell's Ltd" for "Mr Dowell"): a lookalike at 0.90, shown and never carried alone (finding 105).</param>
 /// <param name="ByVariant">The name matched only a variant label, not the record's heading or the heading without its dates: LoC's "Morgan, John Lester" through its variant "Morgan, John" is LoC's record of John Lester Morgan, not of the name (finding 74).</param>
 public sealed record Candidate(
@@ -228,7 +229,8 @@ public sealed record Candidate(
     bool ByVariant = false,
     bool ByPossessive = false,
     int? Level = null,
-    IReadOnlyList<string>? Labels = null);
+    IReadOnlyList<string>? Labels = null,
+    IReadOnlyList<string>? Gives = null);
 
 /// <summary>A candidate with the reconciler's verdict on it.</summary>
 /// <param name="DatesAgree">The string's dates and the candidate's were both known on the same side and overlapped; what the single-source rule needs.</param>

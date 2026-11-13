@@ -46,7 +46,12 @@ the Wikidata record that gives it. The owner's word for the day: the aim is to c
 and the tools are to make that smooth and satisfying. Last, the owner half-minded to relabel the bare Dagenham after
 its wrong identifiers, and on hearing why not, "we need to somehow make this super-clear in the UI": the entity page
 now begins with what the entity stands for, its strings, their fields and records, and says the label and identifiers
-are to describe that.
+are to describe that. Then the three things left open, at the owner's "do all these": a field's name in plain words
+(the manifest's `Label` and `About`, "place of publication" for `place`, used wherever a field is named to a
+reviewer); finding 119, counted first (10 of the 63 bare entities joined as "the project's one" hold a Wikidata item
+of a namesake elsewhere, "Madison" of New Jersey joined to Madison, Wisconsin) and built, a bare entity aligned
+elsewhere not joined; and the scenarios served at /help/scenarios with their pictures, linked from the guide and from
+the holder pair's box.
 
 ## 2026-11-08
 

@@ -58,6 +58,24 @@ public class CoordinatesTests
         Assert.Null(RecordSummary.Says(null));
     }
 
+    /// <summary>A field named to a reviewer in the manifest's plain words (the owner, 2026-11-13: "in the field place" on the entity page).</summary>
+    [Fact]
+    public void A_manifest_names_its_fields_in_plain_words_and_a_label_is_not_a_reading()
+    {
+        var pmc = LinkedArtNet.Alignment.Reconciliation.ProjectManifest.PmcDefault;
+        Assert.Equal("place of publication", pmc.FieldName("place"));
+        Assert.Equal("subject subdivision", pmc.FieldName("keywords:sub"));
+        Assert.Equal("unknown", pmc.FieldName("unknown"));
+        Assert.NotNull(pmc.FieldAbout("corpauthor"));
+        Assert.Equal("place", new LinkedArtNet.Alignment.Reconciliation.ProjectManifest().FieldName("place"));
+        var round = LinkedArtNet.Alignment.Reconciliation.ProjectManifest.FromJson(pmc.ToJson());
+        Assert.Equal("place of publication", round.FieldName("place"));
+        Assert.Empty(round.Differences(pmc));
+        var unnamed = pmc with { Contexts = pmc.Contexts.ToDictionary(kv => kv.Key, kv => kv.Value with { Label = null, About = null }, StringComparer.OrdinalIgnoreCase) };
+        Assert.All(unnamed.Differences(pmc), d => Assert.Contains("named or described differently", d));
+        Assert.Equal(pmc.Contexts.Count, unnamed.Differences(pmc).Count);
+    }
+
     /// <summary>An entity's identifiers in their sets (the owner, 2026-11-13: the merged Dagenham would hold a town's and a constituency's, and the VIAF numbers say nothing on viaf.org).</summary>
     [Fact]
     public void Identifiers_that_cite_one_another_are_one_set_and_a_number_is_described_by_what_gives_it()

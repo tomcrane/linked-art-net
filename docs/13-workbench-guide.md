@@ -314,7 +314,7 @@ For an operator, `settle-merged` on the command line lists the strings whose que
 entity that is no longer a placeholder (merged in before merges settled strings), and `--apply` decides them.
 
 Worked examples of common situations at the desk, each with pictures and what to do, are in
-the repository's `docs/16-workbench-scenarios.md` (not yet served from the workbench).
+[the worked scenarios](16-workbench-scenarios.md).
 
 ## 7. What is not there yet
 

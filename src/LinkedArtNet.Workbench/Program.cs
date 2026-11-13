@@ -76,6 +76,8 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
+// the scenarios' pictures, embedded with the document they illustrate (Help.cshtml.cs); open as the help is
+app.MapGet("/help/img/scenarios/{name}", (string name) => LinkedArtNet.Workbench.Pages.HelpModel.Picture(name) is { } picture ? Results.Stream(picture, "image/png") : Results.NotFound()).AllowAnonymous();
 app.MapGet("/healthz", async (IAlignmentStore store) => Results.Ok(new { projects = (await store.ListProjectsAsync()).Count }));
 
 // the schema is applied on start, and the configured owners exist as users

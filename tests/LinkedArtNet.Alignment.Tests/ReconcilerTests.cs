@@ -605,6 +605,17 @@ public class GroupingTests
         var own = new Candidate("e2", "store", "Adelaide", EntityClass.Place, null, [], "store", 1.0, "e2");
         var reused = Reconciler.Score(adelaide, [tgnAdelaide, own], 120);
         Assert.Equal("t5", reused[1].JoinedTo); Assert.Contains("the project's one Adelaide", reused[1].Reason);
+        // finding 119: not when the entity's Wikidata item gives another record of a source than the placed group holds ("Madison", the
+        // borough in New Jersey by its item, beside a string placed in Wisconsin); an item that gives the group's own record, or
+        // nothing in the group's sources, is no bar
+        var madison = Reading("Madison", EntityClass.Place) with { Qualifier = "Wisconsin" };
+        var tgnMadison = new Candidate("http://vocab.getty.edu/tgn/7013966", "tgn", "Madison", EntityClass.Place, null, [], "local", 1.0, Placement: "Dane, Wisconsin, United States, North and Central America, World");
+        var locMadison = new Candidate("http://id.loc.gov/authorities/names/n79081547", "loc", "Madison (Wis.)", EntityClass.Place, null, [], "local", 1.0, Placement: "Wis.");
+        Candidate Ours(params string[] gives) => new("e3", "store", "Madison", EntityClass.Place, null, ["http://www.wikidata.org/entity/Q938359"], "store", 1.0, "e3", Gives: gives);
+        var jersey = Reconciler.Score(madison, [tgnMadison, locMadison, Ours("http://viaf.org/viaf/123122796", "http://id.loc.gov/authorities/names/n50027836")], 120);
+        Assert.Null(jersey[2].JoinedTo); Assert.Contains("aligned elsewhere", jersey[2].Reason); Assert.Contains("loc's n50027836", jersey[2].Reason);
+        Assert.NotNull(Reconciler.Score(madison, [tgnMadison, locMadison, Ours("http://id.loc.gov/authorities/names/n79081547")], 120)[2].JoinedTo);
+        Assert.NotNull(Reconciler.Score(madison, [tgnMadison, locMadison, Ours("http://viaf.org/viaf/123122796")], 120)[2].JoinedTo);
         Assert.Equal("t5", Reconciler.Groups(reused)[0].Best.Candidate.Uri); Assert.Equal(2, Reconciler.Groups(reused)[0].Members.Count);
         // two of the project's own, or two placed records, and neither is chosen for it
         Assert.All(Reconciler.Score(adelaide, [tgnAdelaide, own, own with { Uri = "e3", EntityId = "e3" }], 120).Skip(1), m => Assert.Null(m.JoinedTo));

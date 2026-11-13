@@ -34,6 +34,12 @@ public sealed record ProjectManifest
 
     public string ToJson() => JsonSerializer.Serialize(this, JsonOptions);
 
+    /// <summary>A context named to a reviewer: the manifest's label for it ("place of publication"), or the context's own name.</summary>
+    public string FieldName(string? context) => context is not null && Contexts.TryGetValue(context, out var c) && !string.IsNullOrWhiteSpace(c.Label) ? c.Label : context ?? "";
+
+    /// <summary>What the field holds, in a sentence, when the manifest says.</summary>
+    public string? FieldAbout(string? context) => context is not null && Contexts.TryGetValue(context, out var c) && !string.IsNullOrWhiteSpace(c.About) ? c.About : null;
+
     public static ProjectManifest FromJson(string? json) => string.IsNullOrWhiteSpace(json) ? new ProjectManifest() : JsonSerializer.Deserialize<ProjectManifest>(json, JsonOptions) ?? new ProjectManifest();
 
     public ReconcilerOptions ToOptions() => new()
@@ -56,17 +62,19 @@ public sealed record ProjectManifest
         Trades = ["auction", "dealer", "bookseller", "book seller", "printseller", "print seller", "publisher", "stationer"], // the sale catalogues' own trades (finding 109)
         Contexts = new Dictionary<string, ContextRuleJson>(StringComparer.OrdinalIgnoreCase)
         {
-            ["persauthorfull"] = new([EntityClass.Person], "default"),
-            ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default"),
-            ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default"),
-            ["place"] = new([EntityClass.Place], Qualified: true, Parts: new(PartsShape.List, ";")),
+            // the labels and sentences are the assistant's reading of the PMC library export's field names and of the records seen in
+            // them (2026-11-13), not the library's own documentation: the cataloguers' to correct
+            ["persauthorfull"] = new([EntityClass.Person], "default", Label: "personal author", About: "A person named on the record as author, editor or other contributor, with the role when given."),
+            ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default", Label: "corporate author", About: "A body named as the record's author: a gallery, a society, and on a sale catalogue the auction house or dealer."),
+            ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default", Label: "publisher", About: "Who published the item, as the record gives it; on a sale catalogue often the auctioneer."),
+            ["place"] = new([EntityClass.Place], Qualified: true, Parts: new(PartsShape.List, ";"), Label: "place of publication", About: "Where the item was published, as the record gives it; several places are separated by semicolons."),
             // a precoordinated LCSH heading: looked up whole, else decided as its parts; the head may be a dated name heading
             // a heading without "--" is decided whole, and a dated name heading ("Atken, J, fl 1783", "Reuss, Albert, 1889-1975") reads
             // through the MARC profile as its head would (finding 46, 2026-10-22); the manifest needs refreshing for this
-            ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true, Parts: new(PartsShape.Compound, "--", Context: "keywords:sub", HeadContext: "keywords:head"), Collections: ["LCSHAuthorizedHeadings"]),
-            ["keywords:head"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true, Collections: ["LCSHAuthorizedHeadings"]),
+            ["keywords"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true, Parts: new(PartsShape.Compound, "--", Context: "keywords:sub", HeadContext: "keywords:head"), Collections: ["LCSHAuthorizedHeadings"], Label: "subject heading", About: "What the item is about: a subject heading as the cataloguer wrote it, whole."),
+            ["keywords:head"] = new([EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place], "marc", Home: "lcsh", ParseDatedOnly: true, Collections: ["LCSHAuthorizedHeadings"], Label: "subject, main heading", About: "The first part of a subject heading that has subdivisions: the person, body, place or topic the item is about."),
             // a library's subdivisions are more often forms ("--Catalogs", "--Exhibitions") than topics where LCSH has both
-            ["keywords:sub"] = new([EntityClass.Type, EntityClass.Place, EntityClass.Period], Home: "lcsh", Collections: ["GenreFormSubdivisions", "Subdivisions"]),
+            ["keywords:sub"] = new([EntityClass.Type, EntityClass.Place, EntityClass.Period], Home: "lcsh", Collections: ["GenreFormSubdivisions", "Subdivisions"], Label: "subject subdivision", About: "A later part of a subject heading: a form (\"Exhibitions\"), a place, a period or a narrower topic."),
         },
     };
 
@@ -81,7 +89,11 @@ public sealed record ProjectManifest
         foreach (var k in Contexts.Keys.Except(other.Contexts.Keys, cmp).OrderBy(x => x, cmp)) d.Add($"context {k} is in {thisName} only");
         foreach (var k in other.Contexts.Keys.Except(Contexts.Keys, cmp).OrderBy(x => x, cmp)) d.Add($"context {k} is in {otherName} only");
         foreach (var k in Contexts.Keys.Intersect(other.Contexts.Keys, cmp).OrderBy(x => x, cmp))
-            if (JsonSerializer.Serialize(Contexts[k], JsonOptions) != JsonSerializer.Serialize(other.Contexts[k], JsonOptions)) d.Add($"context {k} is read differently");
+        {
+            // a label or its sentence is how a field is named to a reviewer, not how it is read
+            if (JsonSerializer.Serialize(Contexts[k] with { Label = null, About = null }, JsonOptions) != JsonSerializer.Serialize(other.Contexts[k] with { Label = null, About = null }, JsonOptions)) d.Add($"context {k} is read differently");
+            else if (Contexts[k].Label != other.Contexts[k].Label || Contexts[k].About != other.Contexts[k].About) d.Add($"context {k} is named or described differently");
+        }
         if (!Sources.SequenceEqual(other.Sources, cmp)) d.Add($"the sources ({string.Join(", ", Sources)} against {string.Join(", ", other.Sources)})");
         if (AcceptScore != other.AcceptScore || ReviewScore != other.ReviewScore || MinIndependentSources != other.MinIndependentSources
             || AcceptSingleSourceWithDates != other.AcceptSingleSourceWithDates || AcceptUniqueExactSingleSource != other.AcceptUniqueExactSingleSource || MintWhenNothingFound != other.MintWhenNothingFound)
@@ -93,7 +105,9 @@ public sealed record ProjectManifest
 }
 
 /// <summary>A <see cref="ContextRule"/> as the manifest writes it.</summary>
-public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null, List<string>? Collections = null)
+/// <param name="Label">The field's name in plain words, for a reviewer ("place of publication" for <c>place</c>); the context's own name stands when there is none (the owner, 2026-11-13).</param>
+/// <param name="About">A sentence on what the field holds in this catalogue, for the desk's and the entity page's help.</param>
+public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null, List<string>? Collections = null, string? Label = null, string? About = null)
 {
     public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule(), Home, ParseDatedOnly ?? false, Collections);
 }

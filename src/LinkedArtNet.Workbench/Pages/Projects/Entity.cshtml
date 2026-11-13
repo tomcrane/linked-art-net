@@ -31,7 +31,7 @@
             @foreach (var ds in top)
             {
                 var seenIn = Model.Examples.Where(x => x.String.Id == ds.String.Id).SelectMany(x => x.Examples).Take(2).ToList();
-                <li><strong class="stands-string">"@ds.String.Raw"</strong> in the field <span class="tag">@ds.String.Context</span>, seen @ds.String.Occurrences time@(ds.String.Occurrences == 1 ? "" : "s")@if (seenIn.Count > 0) { <text>, in </text>@for (var n = 0; n < seenIn.Count; n++) { <text>@(n == 0 ? "" : "; ")<em>@(seenIn[n].Title ?? seenIn[n].RecordId)</em>@(seenIn[n].Date is null ? "" : $" ({seenIn[n].Date})")</text> } }</li>
+                <li><strong class="stands-string">"@ds.String.Raw"</strong> as <span class="tag" title="the field @ds.String.Context">@Model.Project.Manifest.FieldName(ds.String.Context)</span>@if (Model.Project.Manifest.FieldAbout(ds.String.Context) is { } about) { <span class="small muted"> (@about)</span> }, seen @ds.String.Occurrences time@(ds.String.Occurrences == 1 ? "" : "s")@if (seenIn.Count > 0) { <text>, in </text>@for (var n = 0; n < seenIn.Count; n++) { <text>@(n == 0 ? "" : "; ")<em>@(seenIn[n].Title ?? seenIn[n].RecordId)</em>@(seenIn[n].Date is null ? "" : $" ({seenIn[n].Date})")</text> } }</li>
             }
             </ul>
             @if (v.Strings.Count > top.Count) { <p class="small">and @(v.Strings.Count - top.Count) more: <a href="#strings">all the strings</a>.</p> }
@@ -204,7 +204,7 @@
             <div class="card">
             @foreach (var (s, examples) in Model.Examples)
             {
-                <p class="small muted" style="margin-bottom:.2rem">as "@s.Raw" in @s.Context</p>
+                <p class="small muted" style="margin-bottom:.2rem">as "@s.Raw", @Model.Project.Manifest.FieldName(s.Context)</p>
                 @foreach (var x in examples)
                 {
                     <p class="small"><strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @x.RecordId · from &lt;@x.Field&gt;</span>
@@ -223,7 +223,7 @@
             {
                 var w = Model.Waiting[i];
                 if (i > 0) { <text> · </text> }
-                <a href="/p/@Model.Dataset/review?id=@w.String.Id">"@w.String.Raw" in @w.String.Context</a>
+                <a href="/p/@Model.Dataset/review?id=@w.String.Id">"@w.String.Raw" (@Model.Project.Manifest.FieldName(w.String.Context))</a>
             }
             </p>
         }
@@ -235,7 +235,7 @@
                 <tbody>
                 @foreach (var s in v.Strings)
                 {
-                    <tr><td><input type="checkbox" name="strings" value="@s.String.Id" aria-label="select" /></td><td>@s.String.Raw</td><td class="small">@s.String.Context ×@s.String.Occurrences</td><td class="small muted">@if (s.Decision.Method == DecisionMethod.Queued) { <a href="/p/@Model.Dataset/review?id=@s.String.Id" title="Waiting at the desk: open it there">queued · at the desk</a> } else { @s.Decision.Method }@(s.Decision.Reviewer is null ? "" : $" · {s.Decision.Reviewer}")</td></tr>
+                    <tr><td><input type="checkbox" name="strings" value="@s.String.Id" aria-label="select" /></td><td>@s.String.Raw</td><td class="small"><span title="the field @s.String.Context">@Model.Project.Manifest.FieldName(s.String.Context)</span> ×@s.String.Occurrences</td><td class="small muted">@if (s.Decision.Method == DecisionMethod.Queued) { <a href="/p/@Model.Dataset/review?id=@s.String.Id" title="Waiting at the desk: open it there">queued · at the desk</a> } else { @s.Decision.Method }@(s.Decision.Reviewer is null ? "" : $" · {s.Decision.Reviewer}")</td></tr>
                 }
                 </tbody>
             </table>

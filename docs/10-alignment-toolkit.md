@@ -1261,6 +1261,21 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-13 (evening), finding 119, the project's one entity of a name that is aligned elsewhere (the owner's desk,
+after the two Dagenhams: a bare "Dagenham" joined the placed group as "the project's one" while holding Wikidata's
+parliamentary constituency). The count first, against q9zpqk: 63 bare entities joined a placed record by that rule; 30
+hold a Wikidata item that gives one of the group's own records, 17 hold no Wikidata item, 5 hold one that gives nothing
+in the group's sources, and 10 hold an item that gives another record than the group's while a different item gives
+the group's: "Madison" holding the borough in New Jersey (LoC's n50027836) joined to Madison, Wisconsin; "Newark" of
+New Jersey to Newark, Delaware; "Stamford" of New York to Stamford, Lincolnshire; "Huntingdon" of Quebec to
+Huntingdon, Cambridgeshire; "Stowe", "Lewiston", "Middleburg", "Freeport", "Ann Arbor", "Bridgend". The rule, where
+the bare entity is joined in `Reconciler.Score`: a store candidate carries `Gives`, the sameAs of its Wikidata
+items (read by key when the candidate is built), and it does not join when an identifier it gives is of a source the
+placed group holds a record of and none it gives is one of the group's records; the reason says "aligned elsewhere"
+and names the identifier. Silent on Dagenham's kind (its item gives a VIAF number only): a town against a
+constituency is told on the desk and the entity page, by what each identifier is, not by a rule.
+`GroupingTests` beside the Adelaide case. Measured by the next reconcile.
+
 Measured 2026-11-13 (run q9zpqk, 15:33 to 16:11, the workbench stopped; v7aq7v taken back): finding 118. Matched in
 store 6,053, accepted 9,455, queued 3,756, minted 10,784, overridden 84; the second pass settled 94. The method diff
 against v7aq7v is empty: no string changed method, since each city still has TGN's record and LoC's own agreeing, and

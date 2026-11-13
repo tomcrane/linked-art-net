@@ -1,6 +1,14 @@
 @page "/p/{dataset}/review"
 @model ReviewModel
 @functions {
+    // a field named to the reviewer in the manifest's plain words ("place of publication" for place), its own name on hover (the owner, 2026-11-13)
+    string F(string? context) => Model.Project.Manifest.FieldName(context);
+    Microsoft.AspNetCore.Html.IHtmlContent Field(string? context)
+    {
+        var enc = System.Text.Encodings.Web.HtmlEncoder.Default;
+        var about = Model.Project.Manifest.FieldAbout(context);
+        return new Microsoft.AspNetCore.Html.HtmlString($"<span title=\"{enc.Encode("the field " + context + (about is null ? "" : ": " + about))}\">{enc.Encode(F(context))}</span>");
+    }
     // a project entity named with its placement when known ("Birmingham (Ala.)"), so namesakes on one page can be told apart (the owner, 2026-11-07)
     string Named(LinkedArtNet.Alignment.Entity e)
     {
@@ -94,7 +102,7 @@ else
 {
     var ev = item.Evidence;
     var reading = ev.Reading;
-    <p class="small muted">@Model.Remaining in this list · string @item.String.Id · seen @item.String.Occurrences time@(item.String.Occurrences == 1 ? "" : "s") in <strong>@item.String.Context</strong> · decided <em>@item.Decision.Method</em>@(item.Decision.Reviewer is null ? "" : $" by {item.Decision.Reviewer}") @item.Decision.DecidedAt.ToString("yyyy-MM-dd")
+    <p class="small muted">@Model.Remaining in this list · string @item.String.Id · seen @item.String.Occurrences time@(item.String.Occurrences == 1 ? "" : "s") as <strong>@Field(item.String.Context)</strong> · decided <em>@item.Decision.Method</em>@(item.Decision.Reviewer is null ? "" : $" by {item.Decision.Reviewer}") @item.Decision.DecidedAt.ToString("yyyy-MM-dd")
     <text>· </text><a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, pictures = !Model.Pictures })" title="Thumbnails on the cards whose records have been pulled from the sources with a picture; off by default">@(Model.Pictures ? "hide pictures" : "show pictures")</a>
     @if (item.LookedAgain is null) { <text>· </text><a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, look = true })" title="Show what today's rules would offer for this string, without deciding anything">Look again</a> }</p>
     @if (item.LookedAgain is { } outcome)
@@ -120,7 +128,7 @@ else
         {
             var sib = item.Siblings[i];
             if (i > 0) { <text> · </text> }
-            <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = sib.String.Id })">"@sib.String.Raw" in @sib.String.Context</a>
+            <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = sib.String.Id })">"@sib.String.Raw" (@F(sib.String.Context))</a>
         }
         <span class="muted">· after an action the desk goes to these first</span></p>
     }
@@ -158,7 +166,7 @@ else
                 <label class="small inline" style="display:block; margin:.3rem 0"><input type="radio" name="survivor" value="@e.Id" checked="@(e.Id == plan.Survivor.Id)" />
                     <strong>@Named(e)</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
                     @if (e.Equivalents.Count > 0) { <text>holds @HeldAll(e.Equivalents);</text> } else { <text>no identifier;</text> }
-                    @if (ef is not null) { <text>stands for @ef.Strings.Count string@(ef.Strings.Count == 1 ? "" : "s")@(ef.Contexts.Count > 0 ? " in " + string.Join(", ", ef.Contexts) : "")</text> }
+                    @if (ef is not null) { <text>stands for @ef.Strings.Count string@(ef.Strings.Count == 1 ? "" : "s")@(ef.Contexts.Count > 0 ? " (" + string.Join(", ", ef.Contexts.Select(F)) + ")" : "")</text> }
                     · <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">its page</a></label>
             }
             @{ var classes = plan.Ours.Select(e => e.Class).Distinct().ToList(); }
@@ -260,6 +268,7 @@ else
                 <div class="pair-head small">
                     <strong>@firm.Count of the project's entities hold records of this group: the @firm.Count boxed here.</strong>
                     The authorities say they are one thing, and the string was queued because the store disagrees with itself.
+                    <a href="/help/scenarios#holder-pair" target="_blank" rel="noopener">How to decide this, with an example</a>.
                 </div>
                 pairLeft = firm.Count;
             }
@@ -305,9 +314,9 @@ else
                                 @if (sameAsAbove) { <strong>the same entity as a row above</strong><text> · </text> }
                                 @if (held.Count > 0) { <text>the project's entity, holding @HeldAll(held, " and ")@if (others.Count > 0) { <text>; also @HeldAll(others)</text> }</text> }
                                 else if (facts.Entity.Equivalents.Count > 0) { <text>the project's entity, aligned to @HeldAll(facts.Entity.Equivalents)</text> }
-                                else if (facts.IsPlaceholder) { <text>a placeholder@(firstString is null ? "" : $" for \"{firstString.String.Raw}\" in {firstString.String.Context}")</text> }
+                                else if (facts.IsPlaceholder) { <text>a placeholder@(firstString is null ? "" : $" for \"{firstString.String.Raw}\" ({F(firstString.String.Context)})")</text> }
                                 else { <text>the project's own local authority</text> }
-                                · stands for @facts.Strings.Count string@(facts.Strings.Count == 1 ? "" : "s")@(facts.Contexts.Count > 0 ? " in " + string.Join(", ", facts.Contexts) : "")
+                                · stands for @facts.Strings.Count string@(facts.Strings.Count == 1 ? "" : "s")@(facts.Contexts.Count > 0 ? " (" + string.Join(", ", facts.Contexts.Select(F)) + ")" : "")
                                 @if (facts.Examples.Count > 0) { <text>· seen in: @string.Join(" · ", facts.Examples.Select(x => (x.Title ?? x.RecordId) + (x.Date is null ? "" : $" ({x.Date})")))</text> }
                             </div>
                         }

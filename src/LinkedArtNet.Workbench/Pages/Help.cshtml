@@ -1,8 +1,9 @@
-@page "/help"
+@page "/help/{doc?}"
 @model HelpModel
 @{
     ViewData["Title"] = "Help";
 }
+<p class="small muted">@if (Model.Scenarios) { <a href="/help">The guide</a><text> · </text><strong>Worked scenarios</strong> } else { <strong>The guide</strong><text> · </text><a href="/help/scenarios">Worked scenarios</a> }</p>
 <article class="guide">
     @Html.Raw(Model.Html)
 </article>

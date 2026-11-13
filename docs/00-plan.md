@@ -15,43 +15,45 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-08 evening; the one place to read first)
+## 0. Resume point (written 2026-11-13 evening; the one place to read first)
 
-**On return, in order:** (1) `git push` if the day's commits are not up (sixteen as of this writing; the last is the
-one that wrote this); (2) the desk, continued: start the workbench (command 1)
-and follow the desk session script there, deciding strings and noticing, each thing the desk fails to show, do or get
-right becoming an item in section 7 and built the same session; the desk items standing (section 7, Workbench and
-desk): a part's parents on the desk and "not a compound", the twins that share a record, the publisher strings
-without a record, the placeholder class rule (its count table in place); (3) the dead LUX identifiers to count
-(section 7, from the sources item; a HEAD pass with the polite client, outside any run), then decision 15 with the
-owner; (4) the open items of section 7 as the owner orders them, and the lifecycle design (section 5's risk, the
-Exports and reports items) before any write stage is designed.
+**On return, in order:** (1) the reconcile that measures finding 119, run rhf5rg (`run-20261113-190556-rhf5rg`,
+started 19:05), was in its second pass when this was written and the owner about to shut the laptop down. Look first:
 
-**Where things stand.** Branch `de-pmc`, all work committed, every test project green (3,234 tests). Six authority
-sources loaded: the manifest's five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M
-records; doc 11 section 8.11). The store is at schema version 10; `authority_records.data` now also carries `pulled`,
-what a live source said when asked from an entity page. Runs are occasional and a run is measured by its diff against
-the run before (command 4), never by the queue count. The last full run is q9zpqk (2026-11-13 15:33: accepted 9,455,
-queued 3,756, minted 10,784; doc 10 7.6 "Measured 2026-11-13 (run q9zpqk)"), which measured finding 118 (a record of
-another class placed in a place is not that place; the dioceses off the cities) against v7aq7v: no string changed
-method, the wrong identifiers gone from some twenty place entities; v7aq7v had measured finding 117 against
-zke4u7: 33 strings, every one the rule's ("Hamden, CT" and its kind settled), nothing worse; zke4u7 before it had
-measured findings 113 to 116 against wsw254, some 270 strings better and seventeen worse. Findings 1 to 117 are in doc
-10 7.6, newest first, all measured. Built on the
-8th: the owner's new rule at the start of the day (the assistant runs read-only SQL through `tools/pg.sh` and the
-Align commands itself, saying what it does first); findings 113 to 116 through three reconciles (113 an entity placed
-through its LoC heading, 114 a subdivision placed by its sibling parts, refined twice to a tie-breaker, 115 the dates
-near miss, 116 prominence when every tied group holds a project entity); then the review's plan in the agreed order,
-all five items: an identifier in use refused with the holder named and the merge offered; notes as the audit log,
-History and notes on the entity page, Recent changes on the project home; From the sources on demand (Wikidata with
-Wikipedia and Commons, ULAN through Getty's SPARQL, LoC, LUX with the self-echo marked; the fetch says its status;
-pictures with their attribution; the desk's "show pictures"); the map (TGN's coordinates or a pull's, the entity page
-and above the desk's cards; a record without coordinates at its TGN parent, a LoC-placed candidate at TGN's namesake
-in the same state, both hollow and said so); the tray and its merge page. Also: the sign-in returns to the page that
-bounced; three layout faults from the Cozens page; and finding 117, the postal codes in a qualifier, measured the
-same evening. The dead LUX identifiers: a sample of the
-import's 17,454 found persons all alive, groups and places nine in ten, concepts a third and compound headings a
-quarter (the re-mint of doc 10 7.5); the pull says "LUX answered 404 Not Found" and the count is an item.
+    tools/pg.sh "select id, started_at, finished_at from runs order by started_at desc limit 2"
+
+If rhf5rg has a `finished_at`, it is the last full run: read its diff against q9zpqk (command 4, `<new run id>` =
+`run-20261113-190556-rhf5rg`), check the ten entities of finding 119 (doc 10 7.6 "Built 2026-11-13 (evening)") no
+longer join, and write "Measured" into doc 10 7.6 and the log. If `finished_at` is null it was cut off: take it back
+and run it again, with the workbench stopped (command 2). (2) `git push` (the day's commits are not up: some thirty,
+the last the one that wrote this). (3) Retake the holder pair's three pictures for doc 16 (stale since the same
+day's changes: the pair's box, identifiers as links, fields in plain words; "Pictures last checked" at the end of
+doc 16); Coventry is decided, so against a pair still queued (University of Oxford, 80550; Westminster, 107456), the
+example rewritten to match, the owner asked first whether to keep Coventry's story. (4) The scenarios the store holds
+live examples of, before the owner mends them: the bare "Dagenham" (`place/hvj4jgry`, aligned to a parliamentary
+constituency; its sibling `place/twqpnzjy` the town) and "Northampton" (`place/q4fpqxks`, a diocese and an
+archdeaconry among its identifiers), the list in doc 16 "Scenarios to write". (5) The desk, continued (command 1),
+and the open items of section 7 as the owner orders them; the lifecycle design before any write stage.
+
+**Where things stand.** Branch `de-pmc`, all work committed, every test project green. Six authority sources loaded
+(ULAN, AAT, TGN, LoC names, LCSH; the Wikidata extract). The store is at schema version 10. Runs are occasional and a
+run is measured by its diff against the run before (command 4), never by the queue count. The last finished run is
+q9zpqk (2026-11-13 15:33: accepted 9,455, queued 3,756, minted 10,784; doc 10 7.6 "Measured 2026-11-13 (run
+q9zpqk)"), which measured finding 118; it was taken back at 19:05 for rhf5rg, which measures finding 119 and is the
+store's present state, finished or not (above). Findings 1 to 119 are in doc 10 7.6, newest first. The owner's word
+for the work, 2026-11-13: the aim is to clean and align the data accurately, and the tools are to make that smooth
+and satisfying. Built on the 13th, all from the owner at the desk: the scenarios document for end users (doc 16:
+scenario, example, solution, watch for, with pictures; the holder pair written; the list to write and the table of
+pictures last checked at its end; served at /help/scenarios); finding 118 (a body placed in a city is not the city:
+the dioceses off some twenty place entities); on the desk, a held identifier is a link and says what its record is,
+and a holder pair is a box, the sentence its head, the entities its rows, the merge its foot; on the entity page,
+what the entity stands for at the head (its strings, their fields, their records) and the identifiers in sets that
+cite one another, each set under what it is and removed as one, a VIAF number described by the Wikidata record that
+gives it; a field's name in plain words from the manifest ("place of publication"; the PMC labels the assistant's
+reading, the cataloguers' to correct; the saved manifest refreshed); finding 119 (a bare entity aligned to a namesake
+elsewhere is not "the project's one": ten of 63). Left with the owner: "Northampton" and the bare "Dagenham" to mend
+by hand (or kept a day as scenario examples); six holder pairs still queued; `resplit.txt` in the repo root to
+delete.
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI, whether records absent from a full dump are retired, and how LUX takes
@@ -91,7 +93,7 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      them apart; a merge done with no confirm step; the siblings left in the queue.
 
          select s.id, s.raw, s.context from decisions d join source_strings s on s.id = d.source_string_id
-         where d.run_id = 'run-20261113-153353-q9zpqk' and d.method = 'queued'
+         where d.run_id = 'run-20261113-190556-rhf5rg' and d.method = 'queued'
            and (select count(*) from jsonb_array_elements(d.evidence->'groups'->0->'members') m where m->>'source' = 'store') >= 2
          order by s.raw;
 
@@ -106,12 +108,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      pictures" on the desk; the tray from two entity pages and the merge page; Recent changes on the project home
      after a hand change; an identifier another entity holds, refused.
 
-2. No reconcile is pending. q9zpqk (2026-11-13 15:33, doc 10 7.6 "Measured 2026-11-13 (run q9zpqk)") is the last
-   full run: finding 118 measured, queued 3,756. The next reconcile comes with the next rule, as always: the last
+2. A reconcile may be pending: rhf5rg (finding 119) was running at the day's end; see "On return" (1). If it did
+   not finish, the commands below take it back and run it again; if it did, they are the next rule's. The next reconcile comes with the next rule, as always: the last
    full run taken back, `reconcile`, then command 4 against the run before, the assistant running it with the
    workbench stopped:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261113-153353-q9zpqk
+       dotnet run --project tools/Align -- undo-run --run run-20261113-190556-rhf5rg
        dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same

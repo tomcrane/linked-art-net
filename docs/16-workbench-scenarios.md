@@ -86,5 +86,11 @@ This is how Coventry was decided: the two entities merged through the tray, "Cov
   that tells the pair apart, that is a fault in the desk: report it.
 - *Records in the group that are not the thing*, as with Coventry's dioceses. The count "6 records agree" is the
   software's claim, not a fact; the confirm step's list of identifiers is where you check it.
+- *The same name, different identifiers.* Two entities of one name with different Wikidata or VIAF numbers may be
+  duplicates the authorities also hold twice, or two different things. "Dagenham" and "Dagenham (London, England)"
+  were the second kind: one held Wikidata's record for the town, the other its record for the former parliamentary
+  constituency, an old mistaken alignment. The project means the town by both, so merging is right, but the
+  constituency's identifiers come along and must then be removed on the survivor's page. Open each entity's page
+  ("its page") and look at what its identifiers are before merging.
 - *Different classes.* The confirm step says so when the two entities differ in class (a person and a group, say).
   That is usually a sign they are not duplicates.

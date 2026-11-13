@@ -31,8 +31,10 @@ Exports and reports items) before any write stage is designed.
 sources loaded: the manifest's five (ULAN, AAT, TGN, LoC names, LCSH; 14.5M records) and the Wikidata extract (5.0M
 records; doc 11 section 8.11). The store is at schema version 10; `authority_records.data` now also carries `pulled`,
 what a live source said when asked from an entity page. Runs are occasional and a run is measured by its diff against
-the run before (command 4), never by the queue count. The last full run is v7aq7v (2026-11-08 18:05: accepted 9,455,
-queued 3,757, minted 10,784; doc 10 7.6 "Measured 2026-11-08 (run v7aq7v)"), which measured finding 117 against
+the run before (command 4), never by the queue count. The last full run is q9zpqk (2026-11-13 15:33: accepted 9,455,
+queued 3,756, minted 10,784; doc 10 7.6 "Measured 2026-11-13 (run q9zpqk)"), which measured finding 118 (a record of
+another class placed in a place is not that place; the dioceses off the cities) against v7aq7v: no string changed
+method, the wrong identifiers gone from some twenty place entities; v7aq7v had measured finding 117 against
 zke4u7: 33 strings, every one the rule's ("Hamden, CT" and its kind settled), nothing worse; zke4u7 before it had
 measured findings 113 to 116 against wsw254, some 270 strings better and seventeen worse. Findings 1 to 117 are in doc
 10 7.6, newest first, all measured. Built on the
@@ -104,12 +106,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      pictures" on the desk; the tray from two entity pages and the merge page; Recent changes on the project home
      after a hand change; an identifier another entity holds, refused.
 
-2. No reconcile is pending. v7aq7v (2026-11-08 18:05, doc 10 7.6 "Measured 2026-11-08 (run v7aq7v)") is the last
-   full run: finding 117 measured, queued 3,757. The next reconcile comes with the next rule, as always: the last
+2. No reconcile is pending. q9zpqk (2026-11-13 15:33, doc 10 7.6 "Measured 2026-11-13 (run q9zpqk)") is the last
+   full run: finding 118 measured, queued 3,756. The next reconcile comes with the next rule, as always: the last
    full run taken back, `reconcile`, then command 4 against the run before, the assistant running it with the
    workbench stopped:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261108-180526-v7aq7v
+       dotnet run --project tools/Align -- undo-run --run run-20261113-153353-q9zpqk
        dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
@@ -119,12 +121,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, against v7aq7v, the last full run (each run's last decision per
+4. The standing method diff after the next run, against q9zpqk, the last full run (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence, though the undo removes
    the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for those and
    true or false only where the entity survived). A method change on the same entity is a label, not a decision:
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261108-180526-v7aq7v' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261113-153353-q9zpqk' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
@@ -454,7 +456,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   entities, Sens-sur-Yonne voted, the Franco-British Exhibition's two spellings queued as a pair). Done, except: the
   desk's view of a part's parents and "not a compound" as the pass for one heading, below; and "Art, Baroque--Italy--ome"
   (the "R" of "Rome" missing in the catalogue) for the cataloguers' report (Exports and reports).
-- Records of another class in a place's group (2026-11-13, met writing the first scenario of doc 16: "Coventry (England)", string 82037). The first group, "6 records agree they are one thing", holds TGN's Coventry, LoC's "Coventry (England)", the project's two Coventrys, and two LoC groups, "Catholic Church. Diocese of Coventry and Lichfield (England)" (n88126694) and "Church of England. Diocese of Coventry" (nb2007002969), each "name 0.85; qualifier places it (England); placed through tgn Coventry, the inhabited place among 2". The holder pair's merge would add both dioceses' identifiers to the city (the confirm step lists them among "3 identifiers added"), and "Same as" on the group would do the same after a tray merge. Counted and built the same day as finding 118 (doc 10 7.6 "Built 2026-11-13, finding 118": 35 strings, 28 accepted by vote, the dioceses' identifiers written onto some twenty place entities by run v7aq7v; a record of another class joins only when its own name is the string's and its heading has no type word, so Balmoral Castle and the abbeys stay). Open until measured: the reconcile (v7aq7v taken back, which removes the equivalents it wrote), the diff, then doc 16's Coventry workaround paragraph rewritten; and "Northampton", confirmed by hand with a diocese and an archdeaconry among its identifiers, is the owner's to mend on its entity page.
+- ~~Records of another class in a place's group~~ (built and measured 2026-11-13, finding 118, run q9zpqk; open only: "Northampton", the owner's to mend by hand) (2026-11-13, met writing the first scenario of doc 16: "Coventry (England)", string 82037). The first group, "6 records agree they are one thing", holds TGN's Coventry, LoC's "Coventry (England)", the project's two Coventrys, and two LoC groups, "Catholic Church. Diocese of Coventry and Lichfield (England)" (n88126694) and "Church of England. Diocese of Coventry" (nb2007002969), each "name 0.85; qualifier places it (England); placed through tgn Coventry, the inhabited place among 2". The holder pair's merge would add both dioceses' identifiers to the city (the confirm step lists them among "3 identifiers added"), and "Same as" on the group would do the same after a tray merge. Counted and built the same day as finding 118 (doc 10 7.6 "Built 2026-11-13, finding 118": 35 strings, 28 accepted by vote, the dioceses' identifiers written onto some twenty place entities by run v7aq7v; a record of another class joins only when its own name is the string's and its heading has no type word, so Balmoral Castle and the abbeys stay). Measured by run q9zpqk the same day (the method diff empty, the dioceses' identifiers gone from the place entities, the buildings' kept), doc 16's Coventry paragraph rewritten; "Northampton", confirmed by hand with a diocese and an archdeaconry among its identifiers, is the owner's to mend on its entity page.
 - The scenarios document (doc 16, begun 2026-11-13 at the owner's asking: scenario, example, solution, with pictures): one scenario written, the holder pair; a scenario is added when one is met at the desk, the pictures taken from the running workbench at the time. To come: a place among namesakes, one record plainly right, two groups the same thing, a local authority, a publisher with no record, "Always". The workbench's Help renders doc 13 only (embedded at build); serving doc 16 and its pictures beside it, linked from the guide and from the card where the scenario is recognised, is part of this item.
 - Twins that share a record (2026-11-05: "Lawrence" in corpauthor on the desk and "Lawrence" in publisher as a search result, two placeholders, the same three Crewkerne sale catalogues behind both, the name in both fields of each record). When another placeholder of the string's name has a record in common with the string's own, the desk says so on its card or search result ("in the same records as this string"), as a hint towards "Same as" or "Accept together"; the reconciler keeps twins apart on purpose (finding 104), so the hint is the desk's, not a rule. The ticks are on the candidate cards only; a twin met among the search results has "Same as this" and nothing to tick, and the hint must say which action it points at where it appears.
 - The publisher strings without a record behind them (2026-11-05: the entity page of a placeholder "Stanley", one string, publisher, no "In the records"; the collection covered 10,608 of the field's 11,141 strings, this one not among them). List them beside what the export's publisher element holds for the same records and find the cleaning the 2024 process applied, as the cleaned-keywords table closed the keywords gap; a `collect-examples` report of the export values that matched no string would do the listing.

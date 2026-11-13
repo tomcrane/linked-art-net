@@ -62,18 +62,21 @@ the same book (*St Michael's Coventry*):
    takes back the string's decision, not the merge. Afterwards the string, and the other queued strings of the same
    name, leave the queue.
 
-*For Coventry, step 4 stops you.* The three identifiers to be added are TGN's Coventry (right) and two Library of
-Congress records that are not the city: "Catholic Church. Diocese of Coventry and Lichfield" and "Church of England.
-Diocese of Coventry", both groups, not places. The software put them in the group because they are placed in
-Coventry; that is a fault in the grouping (plan section 7, Workbench and desk). Merging from this button would give
-the city two dioceses' identifiers. Until the fault is fixed, do it in two steps instead:
+*For Coventry, step 4 stopped the reviewer.* When the pictures were taken, the three identifiers to be added were
+TGN's Coventry (right) and two Library of Congress records that are not the city: "Catholic Church. Diocese of
+Coventry and Lichfield" and "Church of England. Diocese of Coventry", both bodies, not places. The software had put
+them in the group because they are placed in Coventry. That was a fault, mended the same day (a body placed in a
+city no longer joins the city's group), so a card today lists only records of the place; the pictures are kept
+because they show why the line is worth reading. When a group does hold a record that is not the thing, leave the
+group's button alone and do it in two steps:
 
 1. Press "Back". On each of the two entity rows press **Tray**, then open the tray's merge page from the bar at the
-   foot of the screen, choose "Coventry (England)" as the survivor and merge. This merges the two entities and adds
-   nothing else.
+   foot of the screen, choose the survivor and merge. This merges the two entities and adds nothing else.
 2. Back at the desk, press **Look again** so the card shows the store as it now is, then **just this one** on the
    surviving entity's row. The string is decided onto the entity without the group's other records.
-3. If you want TGN's identifier on the entity, add it on the entity's page (`http://vocab.getty.edu/tgn/7011012`).
+3. Add any identifier you do want on the entity's page (for Coventry, TGN's `http://vocab.getty.edu/tgn/7011012`).
+
+This is how Coventry was decided: the two entities merged through the tray, "Coventry (England)" the survivor.
 
 **Watch for.**
 

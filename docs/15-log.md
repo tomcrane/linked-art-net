@@ -23,6 +23,19 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-13
+
+The owner back at the desk after five days, with a list of particulars asked for and given (the holder pairs, the
+places with the map, the things built on the 8th). Explaining the holder pair led to the owner's idea of a scenarios
+document for end users, scenario, example, solution, with pictures: doc 16 begun, the holder pair its first entry,
+"Coventry (England)" its example, three pictures taken from the running workbench. Writing it found a fault: the
+confirm step would have added two dioceses' identifiers to the city. Counted (35 strings of v7aq7v with a group of
+mixed classes joined by "placed through", 28 accepted by vote, the identifiers written onto some twenty place
+entities), built as finding 118 (a record of another class joins its holder only when its own name is the string's
+and its heading has no type word), and measured by run q9zpqk (15:33 to 16:11): no string changed method, the wrong
+identifiers gone, the buildings LoC holds as bodies kept; queued 3,756. The owner merged the two Coventrys through
+the tray meanwhile. "Northampton", confirmed by hand with a diocese and an archdeaconry, is the owner's to mend.
+
 ## 2026-11-08
 
 The owner changed the standing rule at the start of the day: the assistant may query Postgres directly and run the

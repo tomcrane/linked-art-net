@@ -1261,6 +1261,16 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-13 (run q9zpqk, 15:33 to 16:11, the workbench stopped; v7aq7v taken back): finding 118. Matched in
+store 6,053, accepted 9,455, queued 3,756, minted 10,784, overridden 84; the second pass settled 94. The method diff
+against v7aq7v is empty: no string changed method, since each city still has TGN's record and LoC's own agreeing, and
+the one string fewer in the queue is "Coventry (England)", decided by the owner on the desk. What changed is what the
+votes wrote: no place entity now holds a diocese's, archdeaconry's or parish's identifier from a run (30 such
+equivalents carried v7aq7v; none carries q9zpqk), and the right ones were written again (Balmoral Castle, Bayham
+Abbey, Castle Ashby, Fountains Abbey, Haddon Hall, Kirkstall Abbey, Welbeck Abbey as bodies in LoC and places in TGN;
+Trinity College and the University of Glasgow through ULAN). "Northampton" keeps its two by hand, the owner's.
+q9zpqk is the last full run.
+
 Built 2026-11-13, finding 118, a record of another class placed in a place is not that place (the owner's desk, writing
 doc 16's first scenario: "Coventry (England)" grouped LoC's "Church of England. Diocese of Coventry" and "Catholic
 Church. Diocese of Coventry and Lichfield (England)" with TGN's Coventry, each "placed through tgn Coventry", and the
@@ -1276,7 +1286,7 @@ the holder's joins only when its own name, the qualifier set aside, is the strin
 carries no type word (" : " in a parenthetical). `GroupingTests.A_record_of_another_class_placed_in_a_place_is_not_that_place`.
 Not the run's to mend: "Northampton", confirmed by hand with "Catholic Church. Diocese of Northampton (England)"
 and "Church of England. Archdeaconry of Northampton" among its identifiers, the owner's to remove on
-the entity page. Measured by the next reconcile.
+the entity page. Measured the same day, above.
 
 Measured 2026-11-08 (run v7aq7v, 18:05 to 18:50, run by the assistant after the owner left the laptop on; zke4u7
 taken back): finding 117. Matched in store 6,053 (22 more), accepted 9,455, queued 3,757 (21 fewer), minted 10,784;

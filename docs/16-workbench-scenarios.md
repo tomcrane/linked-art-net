@@ -15,9 +15,11 @@ The examples are from the PMC project. Pictures are in `img/scenarios/`, named b
 shows the store as it was on the date given; once the example is decided it leaves the queue, so the link then shows
 the decided string rather than the picture's state.
 
-Scenarios so far: [Holder pair](#holder-pair). To come, as they are met at the desk: a place among namesakes; one
-record is plainly right; two groups that are the same thing; nothing fits and the thing is real (a local authority);
-a publisher with no record anywhere; a spelling that recurs ("Always").
+Scenarios so far: [Holder pair](#holder-pair). The list to come is at the [end](#scenarios-to-write).
+
+**Keeping the pictures true.** A picture shows the workbench as it was built on the day it was taken. Each scenario
+says when its pictures were taken; when the desk or the entity page changes, the scenarios that show the changed
+part are retaken, and the table at the end records which were last checked against which change.
 
 ---
 
@@ -97,3 +99,56 @@ This is how Coventry was decided: the two entities merged through the tray, "Cov
   publication, the town.
 - *Different classes.* The confirm step says so when the two entities differ in class (a person and a group, say).
   That is usually a sign they are not duplicates.
+
+---
+
+## Scenarios to write
+
+The list, begun 2026-11-13 with the owner. A scenario is written when a good example is met at the desk, with its
+pictures taken then; the example column names one where one is known.
+
+**Deciding a string at the desk**
+
+| Scenario | What the reviewer sees | Example |
+|---|---|---|
+| One record is plainly right | one candidate, or one far ahead, and the records agree with it: Accept | |
+| Several records agree | a group of records from different files that are one thing: Accept these as one | |
+| It is an entity the project already has | a group one project entity holds: Same as | |
+| Two groups are the same thing | the same house as a body in one file and a person in another: tick together | an auction house in ULAN and the Library of Congress |
+| A place among namesakes | several places of one name, the map, hollow markers | "Cambridge", "San Francisco, CA" |
+| The right record is not offered | Something else: the search of the project's entities and the indexes | |
+| The right record is greyed out | a candidate ruled out for a reason you know better than: accept anyway | a birth year two out |
+| Nothing fits and the thing is real | Keep as local authority, the label, the note, "known elsewhere" | a publisher with no record anywhere |
+| A spelling that recurs | Always, and what it does to later strings | |
+| A person or a firm | a name in a body's field that is a person, or a firm named for one; the class question | "Ackermann and Son", "Mr Hone" (decision 16) |
+| A compound subject heading | the heading decided as its parts; a part that is not a compound | "Violence--Press coverage" |
+| Two placeholders of one name | the same name waiting in two fields, the same records behind both | "Lawrence" |
+| The cataloguer's slip | a truncated or misspelt string: what to decide, and what to report | "Art, Baroque--Italy--ome", "Gainsville, Ga." |
+| I cannot decide | Skip for now, Add note for another reviewer | |
+| The card is out of date | "now held by", "the same entity as a row above", Look again | |
+| Reviewing what was minted | the strings for which nothing was found | |
+
+**Cleaning an entity**
+
+| Scenario | What the reviewer sees | Example |
+|---|---|---|
+| An entity aligned to the wrong thing | the page's "stands for" panel against an identifier set that describes something else: Remove all | the bare "Dagenham" and the parliamentary constituency |
+| An entity holding two things' identifiers | two boxed sets, or identifiers of another class | "Northampton" with a diocese and an archdeaconry |
+| An identifier another entity holds | the refusal, the holder named, the merge offered | |
+| Two entities found to be one while browsing | the tray and its merge page | |
+| An identifier that no longer resolves | "LUX answered 404 Not Found" | the re-minted LUX concepts |
+| What a source says | Pull in from the sources, the pictures, the map, LUX's echo of the project's own export | Cozens, Peabody |
+
+**Putting something right**
+
+| Scenario | What the reviewer sees | Example |
+|---|---|---|
+| I decided a string wrongly | Undo last decision; the decided list; reopening strings from the entity page | |
+| I merged what should not have been merged | a merge is permanent: what can and cannot be taken back, and how to separate by hand | |
+| Who changed this, and when | History and notes on the entity, Recent changes on the project | |
+
+## Pictures last checked
+
+| Scenario | Pictures taken | Shows | Stale since |
+|---|---|---|---|
+| Holder pair | 2026-11-13, before the changes of the same day | the desk's head, the first group, the confirm step | 2026-11-13: the pair's box, identifiers as links with what they are, fields in plain words. To retake |

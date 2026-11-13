@@ -17,15 +17,10 @@ current in their status lines.
 
 ## 0. Resume point (written 2026-11-13 evening; the one place to read first)
 
-**On return, in order:** (1) the reconcile that measures finding 119, run rhf5rg (`run-20261113-190556-rhf5rg`,
-started 19:05), was in its second pass when this was written and the owner about to shut the laptop down. Look first:
-
-    tools/pg.sh "select id, started_at, finished_at from runs order by started_at desc limit 2"
-
-If rhf5rg has a `finished_at`, it is the last full run: read its diff against q9zpqk (command 4, `<new run id>` =
-`run-20261113-190556-rhf5rg`), check the ten entities of finding 119 (doc 10 7.6 "Built 2026-11-13 (evening)") no
-longer join, and write "Measured" into doc 10 7.6 and the log. If `finished_at` is null it was cut off: take it back
-and run it again, with the workbench stopped (command 2). (2) `git push` (the day's commits are not up: some thirty,
+**On return, in order:** (1) nothing is pending from the runs: rhf5rg (`run-20261113-190556-rhf5rg`, 19:05 to 19:50)
+finished and is read, the last full run (doc 10 7.6 "Measured 2026-11-13 (run rhf5rg)": finding 119, ten strings, all
+the rule's; nine places now queued that had been accepted onto a namesake's entity, "Madison, Wisconsin", "Newark,
+Delaware", "Stamford, Lincolnshire" among them, for the desk: http://localhost:5200/p/pmc/review?context=place). (2) `git push` (the day's commits are not up: some thirty,
 the last the one that wrote this). (3) Retake the holder pair's three pictures for doc 16 (stale since the same
 day's changes: the pair's box, identifiers as links, fields in plain words; "Pictures last checked" at the end of
 doc 16); Coventry is decided, so against a pair still queued (University of Oxford, 80550; Westminster, 107456), the
@@ -39,8 +34,8 @@ and the open items of section 7 as the owner orders them; the lifecycle design b
 (ULAN, AAT, TGN, LoC names, LCSH; the Wikidata extract). The store is at schema version 10. Runs are occasional and a
 run is measured by its diff against the run before (command 4), never by the queue count. The last finished run is
 q9zpqk (2026-11-13 15:33: accepted 9,455, queued 3,756, minted 10,784; doc 10 7.6 "Measured 2026-11-13 (run
-q9zpqk)"), which measured finding 118; it was taken back at 19:05 for rhf5rg, which measures finding 119 and is the
-store's present state, finished or not (above). Findings 1 to 119 are in doc 10 7.6, newest first. The owner's word
+q9zpqk)"), which measured finding 118; it was taken back at 19:05 for rhf5rg (accepted 9,448, queued 3,764, minted
+10,784), which measured finding 119 and is the last full run. Findings 1 to 119 are in doc 10 7.6, newest first. The owner's word
 for the work, 2026-11-13: the aim is to clean and align the data accurately, and the tools are to make that smooth
 and satisfying. Built on the 13th, all from the owner at the desk: the scenarios document for end users (doc 16:
 scenario, example, solution, watch for, with pictures; the holder pair written; the list to write and the table of
@@ -108,8 +103,8 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      pictures" on the desk; the tray from two entity pages and the merge page; Recent changes on the project home
      after a hand change; an identifier another entity holds, refused.
 
-2. A reconcile may be pending: rhf5rg (finding 119) was running at the day's end; see "On return" (1). If it did
-   not finish, the commands below take it back and run it again; if it did, they are the next rule's. The next reconcile comes with the next rule, as always: the last
+2. No reconcile is pending. rhf5rg (2026-11-13 19:05) is the last full run: finding 119 measured, queued 3,764. The
+   next reconcile comes with the next rule: the last full run taken back, `reconcile`, then command 4 against it. The next reconcile comes with the next rule, as always: the last
    full run taken back, `reconcile`, then command 4 against the run before, the assistant running it with the
    workbench stopped:
 
@@ -123,12 +118,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, against q9zpqk, the last full run (each run's last decision per
+4. The standing method diff after the next run, against rhf5rg, the last full run (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence, though the undo removes
    the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for those and
    true or false only where the entity survived). A method change on the same entity is a label, not a decision:
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261113-153353-q9zpqk' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261113-190556-rhf5rg' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id

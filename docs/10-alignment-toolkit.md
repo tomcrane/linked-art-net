@@ -1261,6 +1261,17 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-13 (run rhf5rg, 19:05 to 19:50, the workbench stopped; q9zpqk taken back): finding 119. Matched in
+store 6,052, accepted 9,448, queued 3,764, minted 10,784, overridden 84; the second pass settled 94. The diff against
+q9zpqk is ten strings and all the rule's. Nine were accepted onto a namesake's entity and are now queued for the desk,
+the bare entity no longer joined: by vote "Huntingdon, Cambs.", "Lewiston, New York", "Madison, Wisconsin",
+"Middleburg, Virginia", "Newark, Delaware", "Stamford, Lincolnshire", "Stowe, Buckingham"; "Lewiston, N.Y." from
+exact-name and "Lewiston [N.Y.]" from exact-single. The tenth, "Dagenham (London, England)", went from queued to a
+vote, the owner's work on the two Dagenhams between the runs. The queue is eight longer and rightly: each of the nine
+was a string for one place decided onto an entity aligned to another. Why they queue and do not settle on the placed
+record is the desk's to see first (the bare entity still stands beside the placed group at 1.00); an item if the
+cards do not make the choice plain. rhf5rg is the last full run.
+
 Built 2026-11-13 (evening), finding 119, the project's one entity of a name that is aligned elsewhere (the owner's desk,
 after the two Dagenhams: a bare "Dagenham" joined the placed group as "the project's one" while holding Wikidata's
 parliamentary constituency). The count first, against q9zpqk: 63 bare entities joined a placed record by that rule; 30
@@ -1274,7 +1285,7 @@ items (read by key when the candidate is built), and it does not join when an id
 placed group holds a record of and none it gives is one of the group's records; the reason says "aligned elsewhere"
 and names the identifier. Silent on Dagenham's kind (its item gives a VIAF number only): a town against a
 constituency is told on the desk and the entity page, by what each identifier is, not by a rule.
-`GroupingTests` beside the Adelaide case. Measured by the next reconcile.
+`GroupingTests` beside the Adelaide case. Measured the same evening, above.
 
 Measured 2026-11-13 (run q9zpqk, 15:33 to 16:11, the workbench stopped; v7aq7v taken back): finding 118. Matched in
 store 6,053, accepted 9,455, queued 3,756, minted 10,784, overridden 84; the second pass settled 94. The method diff

@@ -51,7 +51,9 @@ are to describe that. Then the three things left open, at the owner's "do all th
 reviewer); finding 119, counted first (10 of the 63 bare entities joined as "the project's one" hold a Wikidata item
 of a namesake elsewhere, "Madison" of New Jersey joined to Madison, Wisconsin) and built, a bare entity aligned
 elsewhere not joined; and the scenarios served at /help/scenarios with their pictures, linked from the guide and from
-the holder pair's box.
+the holder pair's box. Finding 119 measured by run rhf5rg (19:05 to 19:50): ten strings, all the rule's, nine places
+queued that had been accepted onto a namesake's entity; the last full run. The list of scenarios to write agreed and
+put in doc 16 with a table of when each scenario's pictures were last checked. Section 0 rewritten for the evening.
 
 ## 2026-11-08
 

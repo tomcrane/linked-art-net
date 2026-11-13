@@ -91,7 +91,7 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      them apart; a merge done with no confirm step; the siblings left in the queue.
 
          select s.id, s.raw, s.context from decisions d join source_strings s on s.id = d.source_string_id
-         where d.run_id = 'run-20261108-180526-v7aq7v' and d.method = 'queued'
+         where d.run_id = 'run-20261113-153353-q9zpqk' and d.method = 'queued'
            and (select count(*) from jsonb_array_elements(d.evidence->'groups'->0->'members') m where m->>'source' = 'store') >= 2
          order by s.raw;
 

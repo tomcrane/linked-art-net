@@ -179,3 +179,11 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 .idset { border: 1px solid var(--rule); border-left: 4px solid var(--rule); padding: 0.4rem 0.9rem; margin: 0.6rem 0; }
 .idset-head { align-items: center; padding-bottom: 0.3rem; border-bottom: 1px solid var(--rule); }
 .idset table { margin: 0; }
+
+/* what an entity stands for, at the head of its page: the strings, their fields, the records (the owner, 2026-11-13) */
+.stands { border: 2px solid var(--ink); padding: 0.75rem 1.1rem; margin: 0.75rem 0 1.5rem; background: var(--paper); }
+.stands p { margin: 0.2rem 0; }
+.stands ul { margin: 0.3rem 0 0.4rem 1.2rem; padding: 0; }
+.stands li { margin: 0.2rem 0; }
+.stands-string { font-size: 1.1em; }
+.idset tr:last-child td { border-bottom: none; }

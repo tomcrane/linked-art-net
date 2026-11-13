@@ -13,6 +13,32 @@
     @if (e.Status != EntityStatus.Merged) { <button type="button" class="tray-add small" data-tray="@e.Id" data-tray-label="@e.Label">Add to tray</button> }
     @* desk work under this name is signalled at the top, where the eye lands, with the list further down (the owner, 2026-11-06) *@
     @if (Model.Waiting.Count + Model.OwnQueued.Count > 0) { <a class="tag src" href="@(Model.Waiting.Count > 0 ? "#waiting" : "#strings")" title="Queued strings under this name, and this entity's own strings still at the desk">@(Model.Waiting.Count + Model.OwnQueued.Count) waiting at the desk</a> }</h1>
+@if (e.Status != EntityStatus.Merged)
+{
+    @* what the entity is, said first and plainly (the owner, 2026-11-13, at the bare "Dagenham", about to relabel it after its wrong
+       identifiers: "we need to somehow make this super-clear in the UI"): an entity is what its strings mean, so the strings, their
+       fields and the records they were seen in stand at the head of the page, above the label's facts and the identifiers *@
+    var top = v.Strings.OrderByDescending(x => x.String.Occurrences).Take(3).ToList();
+    <div class="stands">
+        @if (v.Strings.Count == 0)
+        {
+            <p><strong>No string of the catalogue resolves to this entity.</strong> It stands for nothing at present: its label and identifiers describe it, and nothing in the records uses it.</p>
+        }
+        else
+        {
+            <p><strong>This entity stands for @v.Strings.Count string@(v.Strings.Count == 1 ? "" : "s") of the catalogue, and is whatever @(v.Strings.Count == 1 ? "it means" : "they mean"):</strong></p>
+            <ul>
+            @foreach (var ds in top)
+            {
+                var seenIn = Model.Examples.Where(x => x.String.Id == ds.String.Id).SelectMany(x => x.Examples).Take(2).ToList();
+                <li><strong class="stands-string">"@ds.String.Raw"</strong> in the field <span class="tag">@ds.String.Context</span>, seen @ds.String.Occurrences time@(ds.String.Occurrences == 1 ? "" : "s")@if (seenIn.Count > 0) { <text>, in </text>@for (var n = 0; n < seenIn.Count; n++) { <text>@(n == 0 ? "" : "; ")<em>@(seenIn[n].Title ?? seenIn[n].RecordId)</em>@(seenIn[n].Date is null ? "" : $" ({seenIn[n].Date})")</text> } }</li>
+            }
+            </ul>
+            @if (v.Strings.Count > top.Count) { <p class="small">and @(v.Strings.Count - top.Count) more: <a href="#strings">all the strings</a>.</p> }
+            <p class="small muted">The label and the identifiers below should describe what @(v.Strings.Count == 1 ? "this string means" : "these strings mean") in @(v.Strings.Count == 1 ? "its record" : "their records"). An identifier that describes something else is wrong here, however well the name matches: remove it, and leave the label to say what the strings mean.</p>
+        }
+    </div>
+}
 <div class="grid">
     <div>
         @if (Model.Picture is { ThumbUrl: { } thumbUrl } picture)
@@ -90,7 +116,7 @@
                     <tr>
                         <td><a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a></td>
                         <td><a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a>
-                            @if (record is not null) { <div class="small muted">@LinkedArtNet.Alignment.Authorities.RecordSummary.Says(record) @record.Lifespan?.Display</div> }
+                            @if (record is not null) { <div class="small muted">@{ var said = LinkedArtNet.Alignment.Authorities.RecordSummary.Says(record); var recLife = record.Lifespan?.Display; }@said @(recLife is not null && said is not null && said.Contains(recLife) ? null : recLife)</div> }
                             else if (giver is not null) { <div class="small muted">the @q.Source identifier that @giver.Source's @giver.Uri.TrimEnd('/').Split('/').Last() gives (@LinkedArtNet.Alignment.Authorities.RecordSummary.Says(giver))</div> }
                             else { <div class="small muted">no record of it in the store@(LinkedArtNet.Alignment.Authorities.SourcePull.CanPull(q.Uri) ? "; \"Pull in from the sources\" below asks it what it is" : "")</div> }
                         </td>

@@ -127,6 +127,10 @@ Actions:
   they are one thing and the store has two: the group says so and offers to merge them and accept the string onto
   the survivor, through the same confirm step. The entities it means are boxed together under the sentence, and the
   merge button is at the foot of the box.
+- An entity's page begins with what the entity stands for: its strings, the field each is in and the records each
+  was seen in. An entity is whatever its strings mean. The label and the identifiers are there to describe that; when
+  an identifier describes something else (a parliamentary constituency, on an entity that stands for a place of
+  publication), remove the identifier, and do not relabel the entity to match it.
 - On an entity's page, identifiers that cite one another (a Wikidata item, the VIAF and Library of Congress numbers
   it gives, a LUX record that names them) are boxed together under what they are, and "Remove all" takes a whole set
   off the entity. Two boxes that describe different things mean the entity is aligned to two things: remove the

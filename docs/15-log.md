@@ -43,7 +43,10 @@ sentence its head, the project's entities its rows, the merge at its foot. Then 
 remove the constituency's identifiers by hand and unable to tell what a VIAF number is from viaf.org: the identifiers
 in their sets (`IdentifierSets`), each set boxed under what it is and removed as one, a VIAF number described by
 the Wikidata record that gives it. The owner's word for the day: the aim is to clean and align the data accurately,
-and the tools are to make that smooth and satisfying.
+and the tools are to make that smooth and satisfying. Last, the owner half-minded to relabel the bare Dagenham after
+its wrong identifiers, and on hearing why not, "we need to somehow make this super-clear in the UI": the entity page
+now begins with what the entity stands for, its strings, their fields and records, and says the label and identifiers
+are to describe that.
 
 ## 2026-11-08
 

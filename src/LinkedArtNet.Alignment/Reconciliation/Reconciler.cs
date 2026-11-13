@@ -1268,6 +1268,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var parts = b.Candidate.Placement.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(Qualified.Tokens).Where(w => w.Count > 0).ToList();
             if (parts.Count == 0) continue;
             var through = holders.Where(a => a.Candidate.Uri != b.Candidate.Uri && a.Candidate.Source != b.Candidate.Source && parts.Any(words => Qualified.Contains(a.Candidate.Placement, words))).ToList();
+            // a record of another class than its holder is in that place, not that place (finding 118, the owner's desk, 2026-11-13:
+            // "Coventry (England)" grouped LoC's "Church of England. Diocese of Coventry" and "Catholic Church. Diocese of Coventry
+            // and Lichfield (England)" with TGN's Coventry, and a vote gave Durham, Lincoln and Southwark their dioceses' identifiers).
+            // It joins only when its own name is the string's name and its heading carries no type word the string lacks: LoC's
+            // "Balmoral Castle (Scotland)", a body there, is TGN's Balmoral Castle; "Peterborough Abbey" is not Peterborough, nor
+            // "Herne (England : Parish)" the village
+            through = through.Where(a => SameClass(a.Candidate, b.Candidate) || NamesTheString(reading, b.Candidate)).ToList();
             // a holder this loop has already joined to another holder is that holder (the project's "Cornwall (England : County)"
             // placed through TGN's Cornwall is not a second Cornwall for LoC's heading to be "inside"): read the joins made so far
             through = through.Select(a => list.First(m => m.Candidate.Uri == a.Candidate.Uri)).ToList();
@@ -1409,6 +1416,17 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// <summary>A qualified heading's level: its type word's, or an inhabited place when it has none (LoC's default); null for a record that is not a heading with a placement (TGN's own records say their level in <see cref="Candidate.PlaceType"/>).</summary>
     private static int? HeadingLevel(Candidate c) =>
         c.Source is "loc" or "lcsh" or "store" && c.Placement is not null ? Qualified.LevelOf(c.PlaceType) ?? 2 : null;
+
+    private static bool SameClass(Candidate a, Candidate b) => a.Class is null || b.Class is null || a.Class == b.Class;
+
+    /// <summary>The record's own name, its qualifier set aside, is the string's name, and its heading has no type word ("Herne (England : Parish)", "Bonn (Kirchengemeinde : Germany)"), which says what kind of thing it is and that it is not the place itself (finding 118).</summary>
+    private static bool NamesTheString(StringReading reading, Candidate c)
+    {
+        if (c.Label is null || TypeWord.IsMatch(c.Label)) return false;
+        return NameMatcher.Score(reading.Text, [Qualified.Split(c.Label).Name]) >= 0.97;
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex TypeWord = new(@"\([^()]* : [^()]*\)", System.Text.RegularExpressions.RegexOptions.Compiled);
 
     private static bool SameThing(ScoredCandidate a, ScoredCandidate b) =>
         a.Candidate.SameAs.Contains(b.Candidate.Uri, StringComparer.Ordinal) || b.Candidate.SameAs.Contains(a.Candidate.Uri, StringComparer.Ordinal);

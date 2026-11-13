@@ -550,6 +550,27 @@ public class GroupingTests
     }
 
     [Fact]
+    public void A_record_of_another_class_placed_in_a_place_is_not_that_place()
+    {
+        // finding 118: "Coventry (England)" grouped two dioceses with the city; the merge on the desk would have given the city their identifiers
+        var reading = Reading("Coventry", EntityClass.Place) with { Qualifier = "England", Classes = [EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place] };
+        var tgn = new Candidate("t1", "tgn", "Coventry", EntityClass.Place, null, [], "local", 1.0, Placement: "Coventry, West Midlands, England, United Kingdom, Europe, World");
+        var loc = new Candidate("l1", "loc", "Coventry (England)", EntityClass.Place, null, [], "local", 1.0, Placement: "England");
+        var diocese = new Candidate("l2", "loc", "Church of England. Diocese of Coventry", EntityClass.Group, null, [], "local", 0.85, Placement: "England");
+        var catholic = new Candidate("l3", "loc", "Catholic Church. Diocese of Coventry and Lichfield (England)", EntityClass.Group, null, [], "local", 0.85, Placement: "England");
+        var parish = new Candidate("l4", "loc", "Coventry (England : Parish)", EntityClass.Group, null, [], "local", 1.0, Placement: "England");
+        var scored = Reconciler.Score(reading, [tgn, loc, diocese, catholic, parish], 120);
+        Assert.Equal("t1", scored[1].JoinedTo);
+        Assert.Null(scored[2].JoinedTo); Assert.Null(scored[3].JoinedTo); Assert.Null(scored[4].JoinedTo);
+        Assert.Equal(["l1", "t1"], Reconciler.Groups(scored)[0].Members.Select(m => m.Candidate.Uri).OrderBy(x => x, StringComparer.Ordinal));
+        // a building LoC holds as a body and TGN as a place is one thing: the record's own name is the string's
+        var castle = Reading("Balmoral Castle", EntityClass.Place) with { Qualifier = "Aberdeenshire", Classes = [EntityClass.Type, EntityClass.Person, EntityClass.Group, EntityClass.Place] };
+        var tgnCastle = new Candidate("t2", "tgn", "Balmoral Castle", EntityClass.Place, null, [], "local", 1.0, Placement: "Aberdeenshire, Scotland, United Kingdom, Europe, World");
+        var lcshCastle = new Candidate("s1", "lcsh", "Balmoral Castle (Scotland)", EntityClass.Group, null, [], "local", 0.85, Placement: "Scotland");
+        Assert.Equal("t2", Reconciler.Score(castle, [tgnCastle, lcshCastle], 120)[1].JoinedTo);
+    }
+
+    [Fact]
     public void A_coarser_placement_inside_the_placed_one_is_the_same_place_and_joins_its_group()
     {
         var reading = Reading("Princes Risborough", EntityClass.Place) with { Qualifier = "Buckinghamshire" };

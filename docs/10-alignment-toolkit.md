@@ -1261,6 +1261,23 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-13, finding 118, a record of another class placed in a place is not that place (the owner's desk, writing
+doc 16's first scenario: "Coventry (England)" grouped LoC's "Church of England. Diocese of Coventry" and "Catholic
+Church. Diocese of Coventry and Lichfield (England)" with TGN's Coventry, each "placed through tgn Coventry", and the
+holder pair's merge would have given the city both identifiers). The count first, against v7aq7v: 35 strings have a
+group of mixed classes joined by "placed through", 28 of them accepted by vote and 7 queued. Some twenty are a city
+with its dioceses, archdeaconries, parishes or abbey (Durham, Lincoln, Southwark, York, Leeds, Glasgow, Agrigento,
+Parma, Ibiza; "Herne (England : Parish)", "Bonn (Kirchengemeinde : Germany)", "Peterborough Abbey" under
+Peterborough), and the votes wrote those identifiers onto the place entities: 30 equivalents of class Group on Place
+entities carry run v7aq7v and a body's name. The rest are right and must stay: a building LoC holds as a body and TGN
+as a place (Balmoral Castle, Fountains Abbey, Haddon Hall, Kirkstall Abbey, Welbeck Abbey, Bayham Abbey, Castle
+Ashby). The rule, in the placed-through join of `Reconciler.Score`: a record whose class is known and differs from
+the holder's joins only when its own name, the qualifier set aside, is the string's name (0.97) and its heading
+carries no type word (" : " in a parenthetical). `GroupingTests.A_record_of_another_class_placed_in_a_place_is_not_that_place`.
+Not the run's to mend: "Northampton", confirmed by hand with "Catholic Church. Diocese of Northampton (England)"
+and "Church of England. Archdeaconry of Northampton" among its identifiers, the owner's to remove on
+the entity page. Measured by the next reconcile.
+
 Measured 2026-11-08 (run v7aq7v, 18:05 to 18:50, run by the assistant after the owner left the laptop on; zke4u7
 taken back): finding 117. Matched in store 6,053 (22 more), accepted 9,455, queued 3,757 (21 fewer), minted 10,784;
 the second pass settled 94. The diff against zke4u7 is five rows and 33 strings, every one of them the rule's and

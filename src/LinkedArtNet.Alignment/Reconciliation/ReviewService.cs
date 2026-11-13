@@ -113,6 +113,10 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var entities = new Dictionary<string, EntityFacts>(StringComparer.Ordinal);
         foreach (var uri in evidence.Groups.SelectMany(g => g.Members).Where(m => m.IsStore || scheme.Owns(m.Uri)).Select(m => m.Uri).Distinct(StringComparer.Ordinal).Take(12))
             if (await FactsAsync(uri, ct) is { } facts) entities[uri] = facts;
+        // the records the card's project entities hold, so an identifier on the desk can say what it is ("wikidata's Q3403624
+        // (Dagenham: Parliamentary constituency ...)") and not stand as a number (the owner, 2026-11-13, at the two Dagenhams)
+        foreach (var uri in entities.Values.SelectMany(f => f.Entity.Equivalents).Select(q => q.Uri).Distinct(StringComparer.Ordinal).Where(u => !records.ContainsKey(u)).Take(60))
+            if (await store.GetAuthorityAsync(uri, ct) is { } held) records[uri] = held;
         // the project entity that holds a card's record now and is not on the card: the stored evidence is the run's, and an identifier
         // added by hand since reaches the desk through this lookup rather than "Look again" (the owner, 2026-11-07, at Arthur Ackermann & Son)
         var holders = new Dictionary<string, EntityFacts>(StringComparer.Ordinal);

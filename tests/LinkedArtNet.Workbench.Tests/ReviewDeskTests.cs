@@ -332,8 +332,9 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var desk = await owner.GetStringAsync($"/p/{ds}/review?id={ltd.Id}");
         Assert.Contains("Also waiting under this name", desk);
         Assert.Contains($"id={man.Id}\"", desk); // the link to the man's string (the page's own link carries the list's method first)
-        Assert.Contains("the project's entity, holding ulan&#x27;s 500301722", desk); // Razor encodes the apostrophe the view writes
-        Assert.Contains("the project's entity, holding loc&#x27;s n89672369", desk);
+        Assert.Contains("the project's entity, holding <a href=", desk); // each held identifier a link to its record, saying what it is when the store holds it (the owner, 2026-11-13)
+        Assert.Contains(">ulan&#x27;s 500301722</a>", desk); // the encoder writes the apostrophe so
+        Assert.Contains(">loc&#x27;s n89672369</a>", desk);
         Assert.Contains("a placeholder for &quot;Chris Beetles Ltd&quot; in corpauthor", desk);
         Assert.Contains("2 of the project's entities hold records of this group", desk);
         Assert.Contains("Merge them and accept this string onto the survivor", desk);

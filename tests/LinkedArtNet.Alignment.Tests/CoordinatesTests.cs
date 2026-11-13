@@ -44,4 +44,17 @@ public class CoordinatesTests
         Assert.Null(Coordinates.Borrow(null, "Hamden", candidates));
         Assert.Null(Coordinates.Borrow("Conn.", "Hamden", []));
     }
+
+    /// <summary>An identifier on the desk says what its record is (the owner, 2026-11-13: the two Dagenhams, a town and a constituency, shown as two numbers).</summary>
+    [Fact]
+    public void A_record_says_what_it_is_in_a_phrase()
+    {
+        AuthorityRecord R(string source, string? label, string? data) => new("u", source, label, [], "Place", null, [], data, DateTimeOffset.UtcNow, null);
+        Assert.Equal("Dagenham: Parliamentary constituency in the United Kingdom, 1945-2010", RecordSummary.Says(R("wikidata", "Dagenham", """{"ids":{"viaf":"143706493"},"description":"Parliamentary constituency in the United Kingdom, 1945-2010"}""")));
+        Assert.Equal("Dagenham, Barking and Dagenham, Greater London", RecordSummary.Says(R("tgn", "Dagenham", """{"lat":51.55,"parentString":"Barking and Dagenham, Greater London, England, United Kingdom, Europe, World"}""")));
+        Assert.Equal("Dagenham (London, England)", RecordSummary.Says(R("loc", "Dagenham (London, England)", null)));
+        Assert.Equal("Cozens: a painter", RecordSummary.Says(R("ulan", "Cozens", """{"pulled":{"description":"a painter"}}""")));
+        Assert.Equal("Dagenham", RecordSummary.Says(R("loc", "Dagenham", "not json")));
+        Assert.Null(RecordSummary.Says(null));
+    }
 }

@@ -165,3 +165,6 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
   main { padding: 1.5rem 1rem 4rem; }
   .grid { grid-template-columns: 1fr; }
 }
+
+/* what a held identifier is, beside its link (the owner, 2026-11-13) */
+.said { color: var(--muted, #666); }

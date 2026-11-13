@@ -35,6 +35,9 @@ entities), built as finding 118 (a record of another class joins its holder only
 and its heading has no type word), and measured by run q9zpqk (15:33 to 16:11): no string changed method, the wrong
 identifiers gone, the buildings LoC holds as bodies kept; queued 3,756. The owner merged the two Coventrys through
 the tray meanwhile. "Northampton", confirmed by hand with a diocese and an archdeaconry, is the owner's to mend.
+Then the two Dagenhams, the owner asking why they hold different VIAF and Wikidata identifiers: the import had aligned
+one to the town and the other to the former parliamentary constituency, and the desk showed both as numbers. Built at
+once: each held identifier on the desk is a link and says what its record is (`RecordSummary.Says`).
 
 ## 2026-11-08
 

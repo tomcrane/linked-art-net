@@ -126,6 +126,10 @@ Actions:
   judged without opening its page. When two of the project's entities hold records of one group, the authorities say
   they are one thing and the store has two: the group says so and offers to merge them and accept the string onto
   the survivor, through the same confirm step.
+- Wherever the desk names an identifier an entity holds ("wikidata's Q3403624"), it is a link to the record, followed
+  in brackets by what the record is when the store knows: its label and description. Two entities of one name whose
+  identifiers describe different things (a town and a parliamentary constituency of the same name) are not
+  duplicates in the authorities' eyes, whatever the project meant by them; read the brackets before a merge.
 - **Also waiting under this name**, above the records: the other queued strings of the same name, in any field, each
   a link. After an action the desk goes to those first, and says so in the message, before it moves on down the
   list, so a name is finished before the desk leaves it. The entity page lists the same under "Waiting at the desk

@@ -7,6 +7,26 @@
         var f = Model.Item?.Entities.Values.FirstOrDefault(x => x.Entity.Id == e.Id);
         return (e.Label ?? e.Id) + (f?.Placement is { } p ? $" ({p})" : "");
     }
+
+    // an identifier as a link to its record, with what the record is when the store holds it: "wikidata's Q3403624 (Dagenham:
+    // Parliamentary constituency in the United Kingdom, 1945-2010)" (the owner, 2026-11-13, at the two Dagenhams)
+    Microsoft.AspNetCore.Html.IHtmlContent Held(string uri, string? source = null)
+    {
+        var enc = System.Text.Encodings.Web.HtmlEncoder.Default;
+        source ??= LinkedArtNet.Alignment.AuthorityUris.SourceOf(uri);
+        var says = Model.Item is { } it && it.Records.TryGetValue(uri, out var r) ? LinkedArtNet.Alignment.Authorities.RecordSummary.Says(r) : null;
+        return new Microsoft.AspNetCore.Html.HtmlString(
+            $"<a href=\"{enc.Encode(uri)}\" target=\"_blank\" rel=\"noopener\">{enc.Encode(source + "'s " + uri.TrimEnd('/').Split('/').Last())}</a>"
+            + (says is null ? "" : $" <span class=\"said\">({enc.Encode(says)})</span>"));
+    }
+
+    Microsoft.AspNetCore.Html.IHtmlContent HeldAll(IEnumerable<LinkedArtNet.Alignment.Equivalent> held, string separator = ", ")
+    {
+        var b = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+        var first = true;
+        foreach (var q in held) { if (!first) b.Append(separator); b.AppendHtml(Held(q.Uri, q.Source)); first = false; }
+        return b;
+    }
 }
 @{
     ViewData["Title"] = "Review";
@@ -120,7 +140,7 @@ else
                 item.Entities.TryGetValue(e.Id, out var ef);
                 <label class="small inline" style="display:block; margin:.3rem 0"><input type="radio" name="survivor" value="@e.Id" checked="@(e.Id == plan.Survivor.Id)" />
                     <strong>@Named(e)</strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
-                    @if (e.Equivalents.Count > 0) { <text>holds @string.Join(", ", e.Equivalents.Select(q => q.Source + "'s " + q.Uri.Split('/').Last()));</text> } else { <text>no identifier;</text> }
+                    @if (e.Equivalents.Count > 0) { <text>holds @HeldAll(e.Equivalents);</text> } else { <text>no identifier;</text> }
                     @if (ef is not null) { <text>stands for @ef.Strings.Count string@(ef.Strings.Count == 1 ? "" : "s")@(ef.Contexts.Count > 0 ? " in " + string.Join(", ", ef.Contexts) : "")</text> }
                     · <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">its page</a></label>
             }
@@ -132,7 +152,7 @@ else
                     <select name="cls">@foreach (var c in classes) { <option value="@c" selected="@(c == plan.Survivor.Class)">@c.ToString().ToLowerInvariant()</option> }</select>
                     (the survivor's unless you choose; the change is noted on it).</p>
             }
-            <p class="small">Then @(plan.Identifiers.Count == 0 ? "no new identifier is added" : plan.Identifiers.Count + " identifier" + (plan.Identifiers.Count == 1 ? "" : "s") + " added: " + string.Join(", ", plan.Identifiers)), and "@item.String.Raw" is decided onto the survivor.</p>
+            <p class="small">Then @if (plan.Identifiers.Count == 0) { <text>no new identifier is added</text> } else { <text>@plan.Identifiers.Count identifier@(plan.Identifiers.Count == 1 ? "" : "s") added: </text>@for (var n = 0; n < plan.Identifiers.Count; n++) { <text>@(n == 0 ? "" : ", ")</text>@Held(plan.Identifiers[n]) } }, and "@item.String.Raw" is decided onto the survivor.</p>
             <div class="actions"><button type="submit">Merge and accept</button> <a class="button secondary" href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id })">Back</a></div>
         </form>
     }
@@ -221,8 +241,8 @@ else
                     @for (var i = 0; i < firm.Count; i++)
                     {
                         var e = firm[i];
-                        var held = e.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).Select(q => q.Source + "'s " + q.Uri.Split('/').Last()).ToList();
-                        <text>@(i == 0 ? "" : i == firm.Count - 1 ? " and " : ", ")</text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">@Named(e)</a>@(held.Count > 0 ? " (holding " + string.Join(", ", held) + ")" : "")
+                        var held = e.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).ToList();
+                        <text>@(i == 0 ? "" : i == firm.Count - 1 ? " and " : ", ")</text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">@Named(e)</a>@if (held.Count > 0) { <text> (holding @HeldAll(held))</text> }
                     }. The authorities say they are one thing, and the string was queued because the store disagrees with itself.
                     <form method="post" asp-page-handler="AcceptTogether" class="inline">
                         <input type="hidden" name="id" value="@item.String.Id" />
@@ -261,13 +281,14 @@ else
                             @* what put the project's entity in this group, and what it stands for, so the row can be judged without its page
                                (the owner, 2026-11-06, at "Chris Beetles Ltd"); and when the entity has merged since the evidence was written, or
                                is one a row above already stands for, the row says so first *@
-                            var held = facts.Entity.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).Select(q => q.Source + "'s " + q.Uri.Split('/').Last()).ToList();
+                            var held = facts.Entity.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).ToList();
+                            var others = facts.Entity.Equivalents.Where(q => !group.Members.Any(x => x.Uri == q.Uri)).ToList();
                             var firstString = facts.Strings.OrderByDescending(s => s.String.Occurrences).FirstOrDefault();
                             <div class="small muted">
                                 @if (facts.Entity.Id != m.Uri) { <strong>now merged into <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(facts.Entity.Id)" target="_blank" rel="noopener">@(facts.Entity.Label ?? facts.Entity.Id)</a></strong><text> · </text> }
                                 @if (sameAsAbove) { <strong>the same entity as a row above</strong><text> · </text> }
-                                @if (held.Count > 0) { <text>the project's entity, holding @string.Join(" and ", held)</text> }
-                                else if (facts.Entity.Equivalents.Count > 0) { <text>the project's entity, aligned to @string.Join(", ", facts.Entity.Equivalents.Select(q => q.Source).Distinct())</text> }
+                                @if (held.Count > 0) { <text>the project's entity, holding @HeldAll(held, " and ")@if (others.Count > 0) { <text>; also @HeldAll(others)</text> }</text> }
+                                else if (facts.Entity.Equivalents.Count > 0) { <text>the project's entity, aligned to @HeldAll(facts.Entity.Equivalents)</text> }
                                 else if (facts.IsPlaceholder) { <text>a placeholder@(firstString is null ? "" : $" for \"{firstString.String.Raw}\" in {firstString.String.Context}")</text> }
                                 else { <text>the project's own local authority</text> }
                                 · stands for @facts.Strings.Count string@(facts.Strings.Count == 1 ? "" : "s")@(facts.Contexts.Count > 0 ? " in " + string.Join(", ", facts.Contexts) : "")

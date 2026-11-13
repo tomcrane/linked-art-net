@@ -125,7 +125,8 @@ Actions:
   persauthorfull"), how many strings it stands for and in which fields, and the records it was seen in, so it can be
   judged without opening its page. When two of the project's entities hold records of one group, the authorities say
   they are one thing and the store has two: the group says so and offers to merge them and accept the string onto
-  the survivor, through the same confirm step.
+  the survivor, through the same confirm step. The entities it means are boxed together under the sentence, and the
+  merge button is at the foot of the box.
 - Wherever the desk names an identifier an entity holds ("wikidata's Q3403624"), it is a link to the record, followed
   in brackets by what the record is when the store knows: its label and description. Two entities of one name whose
   identifiers describe different things (a town and a parliamentary constituency of the same name) are not

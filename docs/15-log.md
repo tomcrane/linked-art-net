@@ -37,7 +37,9 @@ identifiers gone, the buildings LoC holds as bodies kept; queued 3,756. The owne
 the tray meanwhile. "Northampton", confirmed by hand with a diocese and an archdeaconry, is the owner's to mend.
 Then the two Dagenhams, the owner asking why they hold different VIAF and Wikidata identifiers: the import had aligned
 one to the town and the other to the former parliamentary constituency, and the desk showed both as numbers. Built at
-once: each held identifier on the desk is a link and says what its record is (`RecordSummary.Says`).
+once: each held identifier on the desk is a link and says what its record is (`RecordSummary.Says`). And the holder
+pair's notice, which did not say which rows it meant and carried its button in the flow of its text: a box, the
+sentence its head, the project's entities its rows, the merge at its foot.
 
 ## 2026-11-08
 

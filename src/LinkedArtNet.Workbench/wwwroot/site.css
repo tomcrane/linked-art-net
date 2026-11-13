@@ -168,3 +168,9 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 
 /* what a held identifier is, beside its link (the owner, 2026-11-13) */
 .said { color: var(--muted, #666); }
+
+/* a holder pair's box on a candidate card: the notice its head, the project's entities its rows, the merge its foot (the owner, 2026-11-13) */
+.pair-head, .pair-row, .pair-foot { background: var(--paper); border-left: 4px solid var(--accent); border-right: 1px solid var(--accent); padding: 0.6rem 1rem; margin: 0; }
+.pair-head { border-top: 1px solid var(--accent); margin-top: 0.75rem; }
+.pair-row { border-top: 1px solid var(--rule); }
+.pair-foot { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--accent); margin-bottom: 0.75rem; }

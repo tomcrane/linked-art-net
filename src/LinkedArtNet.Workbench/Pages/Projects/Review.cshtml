@@ -20,6 +20,20 @@
             + (says is null ? "" : $" <span class=\"said\">({enc.Encode(says)})</span>"));
     }
 
+    // the merge of a holder pair, on its own line at the foot of the pair's box
+    Microsoft.AspNetCore.Html.IHtmlContent PairFoot(long id, IEnumerable<string> targets)
+    {
+        var enc = System.Text.Encodings.Web.HtmlEncoder.Default;
+        var b = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
+        b.AppendHtml($"<form method=\"post\" action=\"/p/{enc.Encode(Model.Dataset)}/review?handler=AcceptTogether\" class=\"pair-foot\">");
+        b.AppendHtml(Html.AntiForgeryToken());
+        b.AppendHtml($"<input type=\"hidden\" name=\"id\" value=\"{id}\" />");
+        foreach (var t in targets) b.AppendHtml($"<input type=\"hidden\" name=\"targets\" value=\"{enc.Encode(t)}\" />");
+        b.AppendHtml("<button type=\"submit\" class=\"secondary\" title=\"You choose the survivor next, and see what will happen before it is done\">Merge them and accept this string onto the survivor</button>");
+        b.AppendHtml(" <span class=\"small muted\">You choose the survivor next; nothing is merged until you confirm.</span></form>");
+        return b;
+    }
+
     Microsoft.AspNetCore.Html.IHtmlContent HeldAll(IEnumerable<LinkedArtNet.Alignment.Equivalent> held, string separator = ", ")
     {
         var b = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
@@ -210,6 +224,10 @@ else
         var allVeto = live.Count == 0;
         // the project's own firm entities in the group, each followed through a merge and counted once
         var firm = live.Where(m => item.Entities.TryGetValue(m.Uri, out var f) && !f.IsPlaceholder).Select(m => item.Entities[m.Uri].Entity).DistinctBy(e => e.Id).ToList();
+        // a holder pair's box (the owner, 2026-11-13, at Dagenham: the notice did not say which rows it meant, and its button sat in the
+        // flow of the text): the rows still to box, and the merge's own line under the last of them
+        var pairLeft = -1;
+        Func<IEnumerable<LinkedArtNet.Alignment.Reconciliation.EvidenceMember>, Microsoft.AspNetCore.Html.IHtmlContent> pairFoot = targets => PairFoot(item.String.Id, targets.Select(t => t.Uri));
         <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")">
             <div class="row">
                 <span class="score">@group.Score.ToString("0.00")</span>
@@ -236,27 +254,22 @@ else
             {
                 @* two or more of the project's own firm entities in one group: the store disagrees with itself, which is why the string was
                    queued; the group says so and offers the merge as its own action (the owner, 2026-11-06, at "Chris Beetles Ltd") *@
-                <div class="notice small" style="margin:.75rem 0 .25rem">
-                    @firm.Count of the project's entities hold records of this group:
-                    @for (var i = 0; i < firm.Count; i++)
-                    {
-                        var e = firm[i];
-                        var held = e.Equivalents.Where(q => group.Members.Any(x => x.Uri == q.Uri)).ToList();
-                        <text>@(i == 0 ? "" : i == firm.Count - 1 ? " and " : ", ")</text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">@Named(e)</a>@if (held.Count > 0) { <text> (holding @HeldAll(held))</text> }
-                    }. The authorities say they are one thing, and the string was queued because the store disagrees with itself.
-                    <form method="post" asp-page-handler="AcceptTogether" class="inline">
-                        <input type="hidden" name="id" value="@item.String.Id" />
-                        @foreach (var m in live) { <input type="hidden" name="targets" value="@m.Uri" /> }
-                        <button type="submit" class="secondary" title="You choose the survivor next, and see what will happen before it is done">Merge them and accept this string onto the survivor</button>
-                    </form>
+                <div class="pair-head small">
+                    <strong>@firm.Count of the project's entities hold records of this group: the @firm.Count boxed here.</strong>
+                    The authorities say they are one thing, and the string was queued because the store disagrees with itself.
                 </div>
+                pairLeft = firm.Count;
             }
             @foreach (var m in group.Members)
             {
                 item.Records.TryGetValue(m.Uri, out var record);
                 item.Entities.TryGetValue(m.Uri, out var facts);
                 var sameAsAbove = facts is not null && !seenEntities.Add(facts.Entity.Id);
-                <div class="row" style="margin-top:.5rem; @(m.Veto == true || m.SetAside == true ? "opacity:.6" : "")">
+                // the box of a holder pair: the project's entities the notice speaks of, each a boxed row, and the merge under the last
+                var boxed = pairLeft > 0 && facts is not null && !sameAsAbove && firm.Any(e => e.Id == facts.Entity.Id);
+                if (pairLeft == 0) { pairLeft = -1; @pairFoot(live) }
+                if (boxed) { pairLeft--; }
+                <div class="row @(boxed ? "pair-row" : "")" style="@(boxed ? "" : "margin-top:.5rem;") @(m.Veto == true || m.SetAside == true ? "opacity:.6" : "")">
                     <div style="flex:1">
                         @* a project entity's name is the link to its page, in another tab so the desk stays where it is; the URI below it is the
                            URI's own link, as every record's (the owner, 2026-11-05: "Mr Stanley" beside placeholders of the name, which might fold
@@ -345,6 +358,7 @@ else
                     }
                 </div>
             }
+            @if (pairLeft == 0) { pairLeft = -1; @pairFoot(live) }
         </div>
         first = false;
     }

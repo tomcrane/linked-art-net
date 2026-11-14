@@ -42,7 +42,13 @@ nearby candidate; then, after run b4qbn6 broke "St Ives, Huntingdon", only those
 with finding 122 beside it, a record that bears the name listed before one that only lists the spelling, an order
 among equals after the count showed a demotion would be wrong ("Rome" is TGN's Roma). Run vd2cg3 (16:10 to 16:46)
 measured them: four strings against kg6v85, Donington and Stratfield Saye on the project's own entities, the queue
-3,734; the last full run. Five reconciles in the day. Last, "Osterley Park": the owner changed the class of what
+3,734. In the evening, the owner away at dinner and the laptop left running: finding 123, the one at home among
+level namesakes ("Reading"), counted, built, read after its first run (twelve right, "Warwick", "Yarmouth" and
+"Hamilton" wrong), tightened, and measured by run wzkhhb (19:20 to 19:55): five strings, all right, the queue 3,722;
+the last full run. The audit of the import's mislabels counted, 44 entities, about half of them wrong alignments
+("Alice Austen" holding Anne Seymour Damer). The holder pair's box warns when its entities hold different records of
+one source. Seven reconciles in the day, and the lesson of them: a rule's first run is read decision by decision,
+since the method diff looked clean each time a rule had gone wrong. Section 0 rewritten for the evening. Last, "Osterley Park": the owner changed the class of what
 the assistant had wrongly called an import entity and was a run's placeholder for a publisher string; a placeholder's
 page now says it is one, that hand changes to it do not last, and links to its string at the desk; and the desk, which
 showed that string with "found nothing" and nothing to press, now runs the search under the string's name when a

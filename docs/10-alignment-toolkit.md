@@ -1293,6 +1293,22 @@ group through the placed-through join, so the project's entity answers. Two thin
 recorded as items, not built: an entity minted from a string with its post town is labelled "Donington, Spalding";
 and "Donnington" lists TGN's Donington first on a variant spelling, ahead of the two Donningtons.
 
+Measured 2026-11-14 (run wzkhhb, 19:20 to 19:55; e2xm63, the first run with finding 123, taken back for its
+tightening): finding 123. Matched in store 6,057, accepted 9,482 (vote 4,108, single 2,110, exact-single 3,264),
+queued 3,722, minted 10,775, overridden 84. The first run had the rule take fifteen names, twelve rightly, and
+"Warwick" (three strings) to Warwickshire, the county that lists the name as a variant and the only tied group at
+home, "Yarmouth" to the Isle of Wight's while Great Yarmouth stood in a live group below the tie, and "Hamilton" to
+South Lanarkshire against Ontario's 95 sitelinks to its 46. Tightened: the home group must bear the name as its
+heading (finding 122's test), no other live group at the accepting score may be at home, and `HomeGuard` is one and
+a half, not three ("Reading" passes at 63 against 91). In wzkhhb the rule decides five strings and all are right:
+"Hastings" (East Sussex, 67 against 50), "Woodstock" (Oxfordshire, 42 against 45), "Sandy" (Bedfordshire), and in
+the subject subdivisions "Halifax" (Calderdale, 56 against 34) and "Rutland" (78 against 50). The method diff against
+vd2cg3 is eight strings: those, "Camden" and "Camden (London Borough)" onto the London borough, "Reading" in a
+subdivision relabelled, and "Osterley Park (Middlesex)" from a single on TGN's record to exact-name on the local
+authority "Osterley Park" the owner kept that afternoon, which holds no identifier: the owner's to add TGN's.
+"Cawston", which the first run had moved from a vote to the queue as "Norfolk" was decided by another road, is a vote
+again. wzkhhb is the last full run.
+
 Built 2026-11-14 (evening, the owner away and the laptop left running for it), finding 123, the one at home among
 level namesakes ("Reading": eight Readings at 1.00 with two sources each, Kansas first, "prominence does not separate
 them (91, 63, 39, 33, 33, 0, 0, 0 sitelinks)", the place of publication of three books from a town in Berkshire). The

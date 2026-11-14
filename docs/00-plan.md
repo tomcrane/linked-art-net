@@ -15,40 +15,47 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-13 evening; the one place to read first)
+## 0. Resume point (written 2026-11-14 evening; the one place to read first)
 
-**On return, in order:** (1) nothing is pending from the runs: rhf5rg (`run-20261113-190556-rhf5rg`, 19:05 to 19:50)
-finished and is read, the last full run (doc 10 7.6 "Measured 2026-11-13 (run rhf5rg)": finding 119, ten strings, all
-the rule's; nine places now queued that had been accepted onto a namesake's entity, "Madison, Wisconsin", "Newark,
-Delaware", "Stamford, Lincolnshire" among them, for the desk: http://localhost:5200/p/pmc/review?context=place). (2) `git push` (the day's commits are not up: some thirty,
-the last the one that wrote this). (3) Retake the holder pair's three pictures for doc 16 (stale since the same
-day's changes: the pair's box, identifiers as links, fields in plain words; "Pictures last checked" at the end of
-doc 16); Coventry is decided, so against a pair still queued (University of Oxford, 80550; Westminster, 107456), the
-example rewritten to match, the owner asked first whether to keep Coventry's story. (4) The scenarios the store holds
-live examples of, before the owner mends them: the bare "Dagenham" (`place/hvj4jgry`, aligned to a parliamentary
-constituency; its sibling `place/twqpnzjy` the town) and "Northampton" (`place/q4fpqxks`, a diocese and an
-archdeaconry among its identifiers), the list in doc 16 "Scenarios to write". (5) The desk, continued (command 1),
-and the open items of section 7 as the owner orders them; the lifecycle design before any write stage.
+**On return, in order:** (1) nothing is pending from the runs: wzkhhb (`run-20261114-192034-wzkhhb`, 19:20 to 19:55)
+is the last full run and is read (doc 10 7.6 "Measured 2026-11-14 (run wzkhhb)", finding 123). (2) `git push` (the
+day's later commits are not up). (3) The desk, continued (command 1): the nine places finding 119 queued ("Madison,
+Wisconsin", 61369; "Newark, Delaware", 54364; "Stamford, Lincolnshire", 66064), the holder pairs still queued
+(command 1's query; "Peter Nahum at the Leicester Galleries", 112402; "Waterman Fine Art Ltd", 8474), "Hamilton,
+Thomas [(Bookseller)]" (9055), the bare "Dagenham" placeholder, and free play in the personal author and publisher
+fields, the least looked at; each thing the desk fails to show, do or get right becomes an item in section 7 and is
+built the same session. (4) The owner's to mend, from the audit of the import's mislabels (section 7, "An imported
+entity whose label and identifiers are of different things"; `reports/q-mislabel.txt`): "Alice Austen", "Mark
+Bradford", "Sybil Andrews", "Rodrigo Moynihan", "Farington", "Newport", and the entities with one stray record; and
+"Osterley Park", the local authority that now answers "Osterley Park (Middlesex)" too and holds no identifier (TGN's
+`http://vocab.getty.edu/tgn/1102996` to add). (5) Doc 16: a scenario is written when a good example is met, pictures
+taken then; the whole set is gone through at the fresh run of the PMC project. (6) Section 7 as the owner orders it:
+"Ask for help" with its teaching mode after more scenarios; the audit as a page; a body that is part of another;
+what the Wikidata extract leaves out; the lifecycle design before any write stage.
 
 **Where things stand.** Branch `de-pmc`, all work committed, every test project green. Six authority sources loaded
-(ULAN, AAT, TGN, LoC names, LCSH; the Wikidata extract). The store is at schema version 10. Runs are occasional and a
-run is measured by its diff against the run before (command 4), never by the queue count. The last finished run is
-q9zpqk (2026-11-13 15:33: accepted 9,455, queued 3,756, minted 10,784; doc 10 7.6 "Measured 2026-11-13 (run
-q9zpqk)"), which measured finding 118; it was taken back at 19:05 for rhf5rg (accepted 9,448, queued 3,764, minted
-10,784), which measured finding 119 and is the last full run. Findings 1 to 119 are in doc 10 7.6, newest first. The owner's word
-for the work, 2026-11-13: the aim is to clean and align the data accurately, and the tools are to make that smooth
-and satisfying. Built on the 13th, all from the owner at the desk: the scenarios document for end users (doc 16:
-scenario, example, solution, watch for, with pictures; the holder pair written; the list to write and the table of
-pictures last checked at its end; served at /help/scenarios); finding 118 (a body placed in a city is not the city:
-the dioceses off some twenty place entities); on the desk, a held identifier is a link and says what its record is,
-and a holder pair is a box, the sentence its head, the entities its rows, the merge its foot; on the entity page,
-what the entity stands for at the head (its strings, their fields, their records) and the identifiers in sets that
-cite one another, each set under what it is and removed as one, a VIAF number described by the Wikidata record that
-gives it; a field's name in plain words from the manifest ("place of publication"; the PMC labels the assistant's
-reading, the cataloguers' to correct; the saved manifest refreshed); finding 119 (a bare entity aligned to a namesake
-elsewhere is not "the project's one": ten of 63). Left with the owner: "Northampton" and the bare "Dagenham" to mend
-by hand (or kept a day as scenario examples); six holder pairs still queued; `resplit.txt` in the repo root to
-delete.
+(ULAN, AAT, TGN, LoC names, LCSH; the Wikidata extract). The store is at schema version 10 and was vacuumed on the
+14th (the Align `vacuum` command, new that day). Runs are occasional and a run is measured by its diff against the
+run before (command 4) and by reading every decision the new rule made, not the diff alone: the 14th's rules each
+needed mending after a first run whose method diff looked clean. The last full run is wzkhhb (2026-11-14 19:20:
+accepted 9,482, queued 3,722, minted 10,775). Findings 1 to 123 are in doc 10 7.6, newest first. The owner's word for
+the work: the aim is to clean and align the data accurately, and the tools are to make that smooth and satisfying.
+
+Built on the 14th, all from the owner at the desk. Rules: 120, a qualifier that is a nearby town ("Bottrop, Essen",
+"Barnsley, Cirencester"; towns at home only, and the records of the same county carried with the candidate); 121, two
+records of one source placed through one holder are two things ("Poughkeepsie (N.Y.)" and "(N.Y. : Town)"); 122, a
+record that bears the name listed before one that lists it as a variant ("Donnington"); 123, the one at home among
+level namesakes ("Reading"; it must bear the name, be the only live group at home, and no namesake abroad be more
+than one and a half times as written about). The desk: a card with no candidates is searched for the reviewer; a
+decided card says so at its head; a queued string on a settled entity offers to settle; the map's markers and the
+cards are lettered and light each other; a place record says where it is on its row; search results say what they
+are; the holder pair's box warns when its entities hold different records of one source; a string with no decision
+is reconciled as it is opened. Keeping local: the kind of thing is chosen; "known elsewhere" is checked before
+anything is changed; a pasted page address (Wikidata's /wiki/, VIAF, Getty, LoC, LUX) is read as its identifier. The
+entity page: a placeholder says it is one and sends the reviewer to its string. The collector reads a publisher with
+and without its square brackets, and every publisher string has its record. The project's home no longer scans the
+authority records. Doc 16 has two scenarios (the holder pair, retaken against "University of Oxford"; the authorities
+hold two, the project means one) and the list to write.
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI, whether records absent from a full dump are retired, and how LUX takes
@@ -88,27 +95,27 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      them apart; a merge done with no confirm step; the siblings left in the queue.
 
          select s.id, s.raw, s.context from decisions d join source_strings s on s.id = d.source_string_id
-         where d.run_id = 'run-20261114-161045-vd2cg3' and d.method = 'queued'
+         where d.run_id = 'run-20261114-192034-wzkhhb' and d.method = 'queued'
            and (select count(*) from jsonb_array_elements(d.evidence->'groups'->0->'members') m where m->>'source' = 'store') >= 2
          order by s.raw;
 
    - Place names among namesakes, with the map ("Cambridge" in place, id 65756; "Newport", 65782; "San Francisco,
-     CA" still queued among namesakes): the chosen candidate on the map, hollow when its coordinates are borrowed, and
-     the unplaced named under it.
+     CA", 53131): each candidate lettered on the map and on its card, the two lighting each other, a hollow marker
+     when the coordinates are borrowed, and the unplaced named under it.
    - Ten strings each from publisher, corpauthor, keywords:sub and place (the context dropdown), deciding them as a
      reviewer would. A string you cannot decide from what the card shows is the paste that matters most: say what you
      would have needed.
-   - The things built on the 8th, each once if not yet seen: "Pull in from the sources" on an entity with Wikidata
-     (Cozens, `person/kmzm64y9`), the pictures and the LUX self-echo notice (Peabody, `group/a3sfhumg`); "show
-     pictures" on the desk; the tray from two entity pages and the merge page; Recent changes on the project home
-     after a hand change; an identifier another entity holds, refused.
+   - The things built on the 13th and 14th, each once if not yet seen: a card from the minted list, searched for
+     you; a decided card opened by its link (the green notice); a placeholder's page (its notice and the link to its
+     string); "Keep as local authority" with a kind chosen and a Wikidata page address pasted as it stands; an
+     entity's identifiers in their sets with "Remove all"; the scenarios at /help/scenarios.
 
-2. No reconcile is pending. vd2cg3 (2026-11-14 16:10) is the last full run: findings 120 to 122 measured, queued 3,734. The
+2. No reconcile is pending. wzkhhb (2026-11-14 19:20) is the last full run: findings 120 to 123 measured, queued 3,722. The
    next reconcile comes with the next rule: the last full run taken back, `reconcile`, then command 4 against it. The next reconcile comes with the next rule, as always: the last
    full run taken back, `reconcile`, then command 4 against the run before, the assistant running it with the
    workbench stopped:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261114-161045-vd2cg3
+       dotnet run --project tools/Align -- undo-run --run run-20261114-192034-wzkhhb
        dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
@@ -118,12 +125,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
 
        dotnet run --project tools/Align -- collect-examples --file "C:\pmc\2024-03-18\2024-03-11_library\2024-03-11_library.xml" --source library-2024-03 --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, against vd2cg3, the last full run (each run's last decision per
+4. The standing method diff after the next run, against wzkhhb, the last full run (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence, though the undo removes
    the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for those and
    true or false only where the entity survived). A method change on the same entity is a label, not a decision:
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261114-161045-vd2cg3' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261114-192034-wzkhhb' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
@@ -463,7 +470,7 @@ and the log (doc 15) records that. The order within an area is rough value.
 - A body that is part of another (2026-11-14, the owner at "Improvements and Town Planning Committee", string 51, corporate author of the 1944 report on the post-war reconstruction of the City of London, kept as a local authority; the record's corporate authors are that and "Corporation of London", the cataloguer's two values for one body and its part). The store has no way to say that one entity is part of another: the label carries it for a reader ("Corporation of London. Improvements and Town Planning Committee", as authority files write a subordinate body) and nothing links the two entities. To design: a "part of" between entities, set by hand on the entity page and offered by the desk when a record's corporate authors are a body and what reads as its committee, department or branch; what Linked Art says of it (a Group's `member_of`) and how the export writes it; and LoC's subordinate headings ("Westerly (R.I.). Town Planning Committee"), whose first element is the parent, as a source of the same link for aligned bodies.
 - A heading placed in a village the gazetteer's chain does not name (2026-11-14, the owner at "Paxton House (Berwick upon Tweed)", string 36804: LoC's and the project's "Paxton House (Paxton, Scottish Borders, Scotland)" in one group, TGN's Paxton House, "Scottish Borders, Scotland, United Kingdom", in another, both at 1.00, and the desk left to tick them together). The placed-through join wants every word of the heading's placement in the holder's chain, and "Paxton" is not in TGN's; the same record is carried by finding 120 only because its placement names the county. A heading whose placement holds the chain's first segment and whose own name is the string's could join the holder whatever village it adds. Counted 2026-11-14 (`reports/q-village.txt`): 60 strings have a heading of the TGN record's name and county in another group, 28 of them queued, but most are a city beside a county, district or council area of its name (Aberdeen, Derby and Derbyshire, Leicester and Leicestershire, Durham), where two TGN records share the county word and the heading belongs to one of them; the houses and castles (Paxton House, Stirling Castle, Edinburgh Castle, Kenilworth Castle, Penrhyn Castle) are the clean cases. A rule would need to be for records that are not inhabited places or regions, or for a string with one TGN record of the name: to design, not built.
 - A place no loaded source holds (2026-11-14, the owner at "Brockley", string 52621, the place of publication of "St Peter's, Brockley : a short history from 1866 to 1893": "none of the candidates are correct. It's the London suburb"). TGN has three Brockleys (Suffolk, North Somerset, New South Wales) and not the district of Lewisham; LoC has no heading of the name; the Wikidata extract's one Brockley is the Suffolk village. The desk's answer today is a local authority of class place, with Wikidata's page for the district pasted as "known elsewhere" if the reviewer finds it. Two things to look at: what the Wikidata extract leaves out and why (a London district with its own article is not in it), since a fuller extract or a live lookup from the desk's search would have offered it; and the same place waiting twice, the placeholder "Brockley" for the place of publication and "Brockley (London)" for a subject subdivision, which the desk should offer to each other.
-- ~~A bare place name among namesakes, one of them at home~~ (built 2026-11-14 as finding 123, doc 10 7.6: the one tied group at home is presumed unless a group abroad has more than three times its sitelinks; measured by the next reconcile) (2026-11-14, the owner at "Reading", string 61081, the place of publication of three books from Research Publications and Spire Books: "pretty sure this should be Reading in Berkshire but that isn't the top hit"). Eight groups tie at 1.00 with two sources each, Kansas first, and "prominence does not separate them (91, 63, 39, 33, 33, 0, 0, 0 sitelinks)". The home place (finding 71) is used to resolve a qualifier, never to choose among bare namesakes. Counted against vd2cg3 (`reports/q-home.txt`): of the queued strings without a qualifier in the place and subject fields whose first groups tie, 29 have exactly one tied group in the home country, 39 several, 76 none. The 29 are mostly right for a British art library (Andover, Carlisle, Glasgow, Hastings, Manchester, Reading, Sheffield, Winchester, Woodstock, Strawberry Hill, Enfield, Sandy) and at least one is wrong: "Washington" would go to Washington in Tyne and Wear; "Hamilton", "Somerset", "Warwick" and "Charles" (a subject, not a place) are doubtful. So the rule to build is a presumption with a guard: among tied groups the one at home stands, unless a group abroad is far more prominent (the sitelinks the tie already reads; a factor to be set from these 29). Until then the desk could at least list the group at home first among equals, as finding 122 does for the bearer of the name.
+- ~~A bare place name among namesakes, one of them at home~~ (built 2026-11-14 as finding 123, doc 10 7.6, and tightened after its first run: the home group must bear the name and be the only live group at home, and no group abroad may have more than one and a half times its sitelinks; measured by run wzkhhb, five strings, all right. Left to the desk by the guard and right all the same: "Tain", "Dudley", "Monmouth", "Plymouth", "Otley") (2026-11-14, the owner at "Reading", string 61081, the place of publication of three books from Research Publications and Spire Books: "pretty sure this should be Reading in Berkshire but that isn't the top hit"). Eight groups tie at 1.00 with two sources each, Kansas first, and "prominence does not separate them (91, 63, 39, 33, 33, 0, 0, 0 sitelinks)". The home place (finding 71) is used to resolve a qualifier, never to choose among bare namesakes. Counted against vd2cg3 (`reports/q-home.txt`): of the queued strings without a qualifier in the place and subject fields whose first groups tie, 29 have exactly one tied group in the home country, 39 several, 76 none. The 29 are mostly right for a British art library (Andover, Carlisle, Glasgow, Hastings, Manchester, Reading, Sheffield, Winchester, Woodstock, Strawberry Hill, Enfield, Sandy) and at least one is wrong: "Washington" would go to Washington in Tyne and Wear; "Hamilton", "Somerset", "Warwick" and "Charles" (a subject, not a place) are doubtful. So the rule to build is a presumption with a guard: among tied groups the one at home stands, unless a group abroad is far more prominent (the sitelinks the tie already reads; a factor to be set from these 29). Until then the desk could at least list the group at home first among equals, as finding 122 does for the bearer of the name.
 - What the cataloguer says a person is, read against what a record says (2026-11-14, the owner at "Hamilton, Thomas [(Bookseller)] (publisher)", string 9055, one of nineteen names on the imprint of "The new pocket-dictionary of the Italian and English languages" (1819), "Printed for J. Mawman, J. Cuthell ... T. Hamilton, R. Fenner": "why is a Scottish architect the publisher?"). The first group at 1.00 is ULAN's and LoC's Thomas Hamilton, 1784-1858, "Scottish architect"; eleven more Thomas Hamiltons follow, none said to be a bookseller. The string carries its own answer in the cataloguer's bracket, "(Bookseller)", and the rules read it as nothing: a record whose description names another calling (architect, inventor) is not agreed with by it, and one that names the same would be. The manifest's `Trades` (finding 109) is the nearest thing. Count first: the strings carrying "[(...)]", what the brackets hold, and how many first groups carry a description that names another calling. Also the card's case for "Ask for help": the imprint, the date and the bracket together say a London bookseller, and the answer is a local authority.
 - "Ask for help" at the desk: an LLM's advice on the card in front of the reviewer, and its hand if wanted (the owner, 2026-11-14, after following doc 16's University of Oxford and meeting "Bottrop", a place unknown to him; noted for later, the scenarios first). The owner's brief: a button on the desk that sends the review in a clear, efficient prompt, as cheap to run as it can be without losing usefulness or accuracy; the answer tells the reviewer what to do so that they can do it themselves, and can offer to do it for them, which means an instruction format the desk can execute, including work beyond the card (the tray, an entity's identifiers); a brief exchange, not one shot; and a way of learning the workbench, since each answer names the steps. The assistant's design notes, agreed in outline and not built:
   - *When.* After more scenarios are written: doc 16 and doc 13 are the prompt's stable part (what each action does, when the usual answer is wrong), and the actions it may propose are the desk's own, which are still moving.

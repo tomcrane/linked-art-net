@@ -86,6 +86,14 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     public async Task<ReviewItem?> GetAsync(long stringId, CancellationToken ct = default)
     {
         var decided = await store.DecidedStringAsync(stringId, ct);
+        if (decided is null && await store.GetSourceStringAsync(stringId, ct) is { } undecided)
+        {
+            // a string with no standing decision (reopened from an entity's page) is reconciled as it is opened, under the rules as they
+            // stand, and shown: the page that reopened it sends the reviewer here, and "for the next reconcile" left the desk saying
+            // "Nothing waiting for review" (the owner, 2026-11-14, moving "Palais des Beaux-Arts de Lille" off the Tours entity)
+            await reconciler.ReconcileOneAsync(undecided.Dataset, undecided, null, ct);
+            decided = await store.DecidedStringAsync(stringId, ct);
+        }
         return decided is null ? null : await LoadAsync(decided, ct);
     }
 

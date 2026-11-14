@@ -92,6 +92,13 @@ public class ReviewServiceTests(PostgresFixture pg)
         // a URL another entity of the project holds is refused with the holder named (doc 12 section 13, item 3)
         var holder = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Dowell's of Edinburgh", ["Dowell's of Edinburgh"], Status: EntityStatus.Confirmed), scheme);
         await pg.Store.AddEquivalentAsync(holder.Id, new Equivalent("http://viaf.org/viaf/999999999", "viaf", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        // a string reopened from an entity's page has no standing decision; the desk reconciles it as it is opened and shows it (the owner, 2026-11-14)
+        Assert.True(await pg.Store.ReopenStringAsync(dowell.Id));
+        Assert.Null(await pg.Store.DecisionForAsync(dowell.Id));
+        var opened = await desk.GetAsync(dowell.Id);
+        Assert.NotNull(opened);
+        Assert.NotNull(await pg.Store.DecisionForAsync(dowell.Id));
+        Assert.Null(await desk.GetAsync(987654321)); // no such string: nothing, as before
         // a refused URL changes nothing: the entity is not confirmed or relabelled, and the string is as it was (the owner, 2026-11-14)
         var before = (await pg.Store.DecisionForAsync(dowell.Id))!;
         await Assert.ThrowsAsync<InvalidOperationException>(() => desk.KeepLocalAsync(ds, dowell.Id, "tester", label: "Not this", knownAt: "https://example.org/nothing"));

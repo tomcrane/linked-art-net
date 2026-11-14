@@ -17,6 +17,8 @@ current in their status lines.
 
 ## 0. Resume point (written 2026-11-14 evening; the one place to read first)
 
+**First thing on return (the owner, 2026-11-14 evening, shutting down after dinner: "lots of useful things to look at above, show them to me tomorrow"):** give the owner the evening's list again, with links, before anything else: the five strings finding 123 decided (Hastings, Woodstock, Sandy, Halifax, Rutland) and the names its guard left (Tain, Dudley, Monmouth, Plymouth, Otley); the "Look before merging" caution, built and not yet seen (a holder pair still queued: 112402, 8474; Poughkeepsie 66289); the mislabel audit's list (`reports/q-mislabel.txt`); "Osterley Park" wanting TGN's `http://vocab.getty.edu/tgn/1102996`; the push (17 commits); and the desk list of (3) below.
+
 **On return, in order:** (1) nothing is pending from the runs: wzkhhb (`run-20261114-192034-wzkhhb`, 19:20 to 19:55)
 is the last full run and is read (doc 10 7.6 "Measured 2026-11-14 (run wzkhhb)", finding 123). (2) `git push` (the
 day's later commits are not up). (3) The desk, continued (command 1): the nine places finding 119 queued ("Madison,

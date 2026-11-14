@@ -1389,6 +1389,35 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     // ---- overview --------------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// Vacuums and analyses the store's tables, unthrottled, each as a command of its own: the housekeeping a load does for itself at
+    /// its end, for the dead rows that come otherwise (the pulls rewrite a record's data; a run taken back leaves its decisions' and
+    /// entities' rows). The owner, 2026-11-14: <c>authority_records</c> last vacuumed on 2026-10-18, 2.26 million dead rows, and the
+    /// project's home page timing out on a cold scan of it. Returns each table with the dead rows the statistics counted before.
+    /// </summary>
+    public async Task<IReadOnlyList<(string Table, long DeadBefore)>> VacuumAsync(IProgress<string>? progress = null, CancellationToken ct = default)
+    {
+        string[] tables = ["authority_records", "decisions", "source_strings", "entities", "entity_equivalents"];
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        var done = new List<(string, long)>();
+        foreach (var table in tables)
+        {
+            long dead;
+            await using (var count = new NpgsqlCommand("select coalesce(n_dead_tup, 0) from pg_stat_user_tables where relname = @t", conn))
+            {
+                count.Parameters.AddWithValue("t", table);
+                dead = await count.ExecuteScalarAsync(ct) is long n ? n : 0;
+            }
+            progress?.Report($"{table}: {dead:N0} dead rows; vacuuming");
+            await using var vacuum = new NpgsqlCommand($"vacuum (analyze) {table}", conn) { CommandTimeout = 0 };
+            await vacuum.ExecuteNonQueryAsync(ct);
+            done.Add((table, dead));
+        }
+        return done;
+    }
+
+    // The authority records are counted from what the loaders wrote per source (authority_sources.records), never by scanning the table: nineteen
+    // million rows read cold took longer than the command's thirty seconds and the project's home page failed with a timeout (the owner, 2026-11-14)
     public async Task<StoreCounts> CountsAsync(string? dataset = null, CancellationToken ct = default)
     {
         var where = dataset is null ? "" : " where dataset = @dataset";
@@ -1400,7 +1429,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
               (select count(*) from source_strings s where exists (select 1 from decisions d where d.source_string_id = s.id and d.valid and d.entity_id is not null){(dataset is null ? "" : " and s.dataset = @dataset")}),
               (select count(*) from source_strings s where not exists (select 1 from decisions d where d.source_string_id = s.id and d.valid and d.entity_id is not null){(dataset is null ? "" : " and s.dataset = @dataset")}),
               (select count(*) from overrides{where}),
-              (select count(*) from authority_records),
+              (select coalesce(sum(records), 0)::bigint from authority_sources),
               (select count(*) from runs{where})
             """);
         if (dataset is not null) Add(cmd, "dataset", dataset);

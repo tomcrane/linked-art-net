@@ -358,6 +358,15 @@ switch (args[0])
         return 0;
     }
 
+    case "vacuum":
+    {
+        // the store's housekeeping, said as it goes; no row changes, only the space and the planner's statistics
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var done = await store.VacuumAsync(new Progress<string>(Console.WriteLine));
+        Console.WriteLine($"vacuumed and analysed {done.Count} tables ({string.Join(", ", done.Select(d => d.Table))}) in {sw.Elapsed.TotalSeconds:0}s");
+        return 0;
+    }
+
     case "undo-run":
     {
         var runId = Option("--run");
@@ -433,6 +442,7 @@ static void Usage() => Console.WriteLine(
                                              indexes gains the TGN, LoC, ULAN and AAT records its item names, one per source, as a run
                                              of its own; an item naming two records of one source is listed and left alone
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
+      vacuum                                 vacuum and analyse the store's tables (after pulls, undone runs, or when a page is slow); changes no row
       collect-examples --file <export.xml> [--source name] [--per-string 3] [--keywords <pmc_subjects_csv.sql>] [--dataset]
                                              the records behind the strings, for the desk: reads a Heritage library export and keeps up
                                              to three example records per string the store knows; a source collected again is replaced;

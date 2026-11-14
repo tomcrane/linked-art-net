@@ -187,3 +187,6 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 .stands li { margin: 0.2rem 0; }
 .stands-string { font-size: 1.1em; }
 .idset tr:last-child td { border-bottom: none; }
+
+/* the class choice in a merge's confirm step sits in its sentence, not across the box (2026-11-14) */
+.notice p select { width: auto; display: inline-block; margin: 0 0.3rem; }

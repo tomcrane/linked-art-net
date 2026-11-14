@@ -210,3 +210,7 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 
 /* the badge on a card: capitals sit high in their line box, so the letter is set a hair lower to look centred (2026-11-14) */
 .card .pin { line-height: 1; padding-top: 2px; }
+
+/* a card that is already decided says so before anything else (the owner, 2026-11-14) */
+.notice.settled { border-left-color: #2f7d4f; background: #edf6f0; }
+.notice.settled p { margin: 0.2rem 0; }

@@ -109,6 +109,22 @@ else
     {
         <p class="flash">Looked at again under today's rules: it would be <strong>@outcome</strong>. The stored decision is unchanged; the actions below act on what you see. <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id })">Back to the stored evidence</a></p>
     }
+    @if (item.LookedAgain is null && item.Decision.Method is not (DecisionMethod.Queued or "minted") && Model.Plan is null)
+    {
+        @* a card opened by its link after it was decided says so first (the owner, 2026-11-14, back at "Brockley" by an old queue link:
+           "nothing tells me it has been settled... or is that Currently?"). Who or what decided it, onto what, and the way back and on *@
+        var byPerson = item.Decision.Method == DecisionMethod.Human;
+        <div class="notice settled">
+            <p><strong>This string is decided and is not in the queue.</strong>
+                @if (byPerson) { <text>@(item.Decision.Reviewer ?? "A reviewer") decided it on @item.Decision.DecidedAt.ToString("yyyy-MM-dd")</text> }
+                else { <text>The rules decided it on @item.Decision.DecidedAt.ToString("yyyy-MM-dd") (@item.Decision.Method)</text> }
+                @if (item.Entity is not null) { <text>: it is </text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener">@item.Entity.Label</a> <span class="tag">@item.Entity.Class.ToString().ToLowerInvariant()</span> <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span>@(item.Entity.Equivalents.Count == 0 ? ", a local authority with no identifier elsewhere" : $", with {item.Entity.Equivalents.Count} identifier{(item.Entity.Equivalents.Count == 1 ? "" : "s")}")<text>.</text> }
+                else { <text>: left unresolved.</text> }
+            </p>
+            <p class="small">What you see below is the card as it was decided. You can decide it differently with any action here, take the decision back with <strong>Undo last decision</strong> at the foot, or go on:
+                <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = DecisionMethod.Queued, context = Model.Context, after = item.String.Id })">the next string in the queue →</a></p>
+        </div>
+    }
     <p class="string">@item.String.Raw</p>
     @if (reading is not null)
     {

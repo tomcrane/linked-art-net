@@ -23,6 +23,21 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-14
+
+The project's home page timed out on a cold start (a count of the authority records by scanning them): mended by
+summing the loaders' per-source totals, and an Align `vacuum` command added and run (2.26 million dead rows in the
+authority records). Doc 16's holder pair retaken against "University of Oxford", a group and a place holding one LoC
+record. The owner's brief for "Ask for help" at the desk, an LLM's advice and its hand, noted in the plan with design
+notes and the owner's three answers, to be built after more scenarios; the trainer's date interpreter of 2026-10-17
+is its pattern. At the desk: "Bottrop, Essen" led to finding 120 (a qualifier that is a nearby town), and
+"Poughkeepsie, New York" to finding 121 (two records of one source placed through one holder: LoC's city and town)
+and to doc 16's second scenario, "The authorities hold two, the project means one". Both counted first; the first
+run with them (j6ya7k) placed three strings on American namesakes, mended by measuring only against towns in the home
+country when TGN has the name there; run kg6v85 (14:15 to 14:52) measured both: 44 strings changed method, 41 placed
+by a nearby town and all right, the queue 3,735. The owner's note: the scenarios are gone through whole, pictures and
+text, at the fresh run of the PMC project.
+
 ## 2026-11-13
 
 The owner back at the desk after five days, with a list of particulars asked for and given (the holder pairs, the

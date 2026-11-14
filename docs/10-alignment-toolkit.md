@@ -1261,6 +1261,26 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Measured 2026-11-14 (run kg6v85, 14:15 to 14:52, the workbench stopped; j6ya7k, the first run with the two rules,
+taken back for finding 120's mending): findings 120 and 121. Matched in store 6,053, accepted 9,480 (vote 4,102,
+single 2,113, exact-single 3,265), queued 3,735 (29 fewer than rhf5rg), minted 10,777 (7 fewer), overridden 84. The
+method diff against rhf5rg is 44 strings. Finding 120 placed 41 strings by a nearby town, every one in the home
+country or Ireland and every one read and right: 23 queued to vote ("Barnsley, Cirencester", "Chatsworth, Bakewell",
+"Dedham, Colchester", "St Ives, Huntingdon" in both spellings, "Wilton, Salisbury", "Padiham, Nr Burnley?"), four
+queued to single ("Heaverham, Kemsing", "West Dean, Chichester", "Blairadam House (Kinross-shire)", "Paxton House
+(Berwick upon Tweed)"), seven minted to single ("Donington, Spalding", "Trentham, Stoke-on-Trent", "Osterley Park
+(Middlesex)", "Penrhyn Castle (Caernarvonshire)", "The Argory (Armagh)", "Tredegar Park (Monmouthshire)", "Walcot
+(Shropshire)"), and the rest relabelled on their entity; the three American namesakes of j6ya7k are gone. Finding
+121 moved few methods, as expected, since a city keeps its TGN record and LoC's own: "York" from queued to a vote and
+in another field from vote to exact-name, "Cornwall" and "Halifax" from exact-name to vote, and "Wilton, Cork" from a
+vote to queued (the vote had rested on two LoC headings in America). Its work is in what the votes write and what the
+desk shows: "Poughkeepsie, New York" now has the city's group first (TGN, LoC's city, the project's city entity) and
+LoC's town with the project's town entity set apart below it, still queued for the two entities. Thirty LoC headings
+with a type word were still written by the run, most of them rightly (churches and parishes whose only heading is the
+typed one); a handful to look at ("Mainz (... : Landgerichtsbezirk)", "Iona (Scotland : Parish)", "Antrim (N.H. :
+Town)", "Cornwall (England : Duchy)", "Sicily (Italy : Territory under Allied occupation, 1943-1947)"), where the
+untyped heading was not among the candidates or tied. kg6v85 is the last full run.
+
 Built 2026-11-14, findings 120 and 121, both from the owner's desk, each counted first against rhf5rg.
 
 Finding 120, a qualifier that is a nearby town ("Bottrop, Essen": the place of publication of a book published by

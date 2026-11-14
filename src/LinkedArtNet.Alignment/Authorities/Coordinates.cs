@@ -93,6 +93,14 @@ public static class Coordinates
         catch (JsonException) { return null; }
     }
 
+    /// <summary>The distance between two points on the earth, in kilometres (the haversine formula; good to well under a kilometre at the distances asked of it).</summary>
+    public static double Kilometres((double Lat, double Long) a, (double Lat, double Long) b)
+    {
+        static double Rad(double d) => d * Math.PI / 180;
+        var h = Math.Pow(Math.Sin(Rad(b.Lat - a.Lat) / 2), 2) + Math.Cos(Rad(a.Lat)) * Math.Cos(Rad(b.Lat)) * Math.Pow(Math.Sin(Rad(b.Long - a.Long) / 2), 2);
+        return 6371 * 2 * Math.Asin(Math.Sqrt(h));
+    }
+
     /// <summary>The first record among several that places something.</summary>
     public static (double Lat, double Long)? Of(IEnumerable<AuthorityRecord?> records) => records.Select(Of).FirstOrDefault(c => c is not null);
 

@@ -502,7 +502,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // one acceptable entity, or one acceptable entity with authority behind it among provisional lookalikes. An entity
             // minted for a string that is itself awaiting review never answers silently; an entity minted because nothing
             // was found anywhere does, so the same unknown name across contexts becomes one local authority.
-            var storeScored = Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct), _options.HomePlace).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore && !c.Candidate.ByPossessive).ToList(); // a firm named for the man is the desk's, never a silent match (finding 105)
+            var storeScored = (await ScoreWithNearbyAsync(reading, candidates, ct)).Where(c => !c.Veto && !c.SetAside && c.Score >= _options.AcceptScore && !c.Candidate.ByPossessive).ToList(); // a firm named for the man is the desk's, never a silent match (finding 105)
             // in a qualified context ("Heaton, Bradford") an entity answers silently only when its qualifier agrees with the string's, or
             // neither has one: a bare "Heaton" must meet the namesakes in the indexes, not fall to whichever Heaton was aligned first
             if (reading.IsQualified) storeScored = storeScored.Where(c => c.QualifierAgrees == true || (reading.Qualifier is null && c.Candidate.Placement is null)).ToList();
@@ -551,7 +551,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             Time("source:" + source.Name, sw);
         }
 
-        var groups = Groups(Score(reading, candidates, _options.MaxPersonLifetimeYears, await KnownPlacesAsync(reading, candidates, ct), _options.HomePlace));
+        var groups = Groups(await ScoreWithNearbyAsync(reading, candidates, ct));
         Time("score", sw);
         var live = groups.Where(g => !g.Vetoed).ToList();
         var top = live.FirstOrDefault();
@@ -984,6 +984,45 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// <summary>Name score, then dates (agreement lifts, conflict vetoes, dates that cannot be compared change nothing), type (a mismatch vetoes), nationality (agreement lifts).</summary>
     public IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates) => Score(reading, candidates, _options.MaxPersonLifetimeYears, null, _options.HomePlace);
 
+    /// <summary>How near a candidate must lie to the town a qualifier names for the qualifier to place it (finding 120): "Chillingham, Alnwick" is 18 km, "Tisbury, Salisbury" 21.</summary>
+    public const double NearKilometres = 20;
+
+    /// <summary>
+    /// Scores the candidates, and when the string's qualifier places none of them as a region would, reads it once more as a nearby town
+    /// (finding 120, the owner's desk, 2026-11-14, at "Bottrop, Essen"): the English postal habit of a village and its post town ("Firle,
+    /// Lewes", "Chatsworth, Bakewell", "Dedham, Colchester"). When the qualifier is the name of a TGN place and exactly one TGN candidate
+    /// of the string's name lies within <see cref="NearKilometres"/> of it, the qualifier places that candidate. The count first, run
+    /// rhf5rg: 25 of the 186 queued place strings, all rightly.
+    /// </summary>
+    private async Task<IReadOnlyList<ScoredCandidate>> ScoreWithNearbyAsync(StringReading reading, IReadOnlyList<Candidate> candidates, CancellationToken ct)
+    {
+        var known = await KnownPlacesAsync(reading, candidates, ct);
+        var scored = Score(reading, candidates, _options.MaxPersonLifetimeYears, known, _options.HomePlace);
+        if (reading.Qualifier is null || scored.Any(m => m.QualifierAgrees == true) || !scored.Any(m => m.QualifierAgrees == false)) return scored;
+        return await NearbyAsync(reading, candidates, ct) is { } near ? Score(reading, candidates, _options.MaxPersonLifetimeYears, known, _options.HomePlace, near) : scored;
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex NearWord = new(@"^\s*(nr\.?|near)\s+", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private async Task<(string Uri, string Says)?> NearbyAsync(StringReading reading, IReadOnlyList<Candidate> candidates, CancellationToken ct)
+    {
+        if (reading.Qualifier is null || !reading.Classes.Contains(EntityClass.Place)) return null;
+        var town = NearWord.Replace(reading.Qualifier, "").Trim();
+        var named = candidates.Where(c => c.Source == "tgn" && c.Class == EntityClass.Place && c.NameScore >= 0.97).Take(25).ToList();
+        if (town.Length == 0 || named.Count == 0) return null;
+        var towns = (await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(town), "tgn", nameof(EntityClass.Place), 50, ct))
+            .Select(r => (Record: r, At: Authorities.Coordinates.Of(r))).Where(x => x.At is not null).ToList();
+        if (towns.Count == 0) return null;
+        var near = new List<(string Uri, double Km, string? Town)>();
+        foreach (var c in named)
+        {
+            if (Authorities.Coordinates.Of(await store.GetAuthorityAsync(c.Uri, ct)) is not { } at) continue;
+            var closest = towns.Where(t => t.Record.Uri != c.Uri).Select(t => (Km: Authorities.Coordinates.Kilometres(at, t.At!.Value), t.Record.Label)).OrderBy(x => x.Km).FirstOrDefault();
+            if (closest != default && closest.Km <= NearKilometres) near.Add((c.Uri, closest.Km, closest.Label));
+        }
+        return near.Count == 1 ? (near[0].Uri, $"near {town}: {near[0].Km:0.#} km from TGN's {near[0].Town}") : null;
+    }
+
     /// <summary>
     /// The segments of the candidates' placements, outside the string's own qualifier chain, that TGN knows as a county or above: the places
     /// that make a candidate's placement "elsewhere" for finding 66's veto (finding 90, 2026-10-24). Kildare against "Newbridge (Dublin)" is
@@ -1026,7 +1065,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     }
 
     /// <param name="homePlace">The project's home place (the manifest's), for finding 98: a qualifier the home place resolved names a place at home, and a whole chain agreeing on its word outside the home country is a namesake abroad. Null when the project has none; then nothing is vetoed on that ground.</param>
-    public static IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates, int maxPersonLifetimeYears, IReadOnlySet<string>? knownPlaces = null, string? homePlace = null)
+    public static IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates, int maxPersonLifetimeYears, IReadOnlySet<string>? knownPlaces = null, string? homePlace = null, (string Uri, string Says)? near = null)
     {
         var list = new List<ScoredCandidate>();
         foreach (var candidate in candidates)
@@ -1084,7 +1123,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // as TGN prefers; a historic county is not the council area in a modern chain), is a guess, good enough to widen agreement
             // (finding 56), not to veto a chain that agrees as written. The home place's choice is a presumption about the project, and
             // the home country is spelt one way in TGN's chains, so the veto reads only that
-            if (qualifierAgrees == true && reading.QualifierAncestors is { } resolved && !veto && homePlace is { } home && c.Placement is { } chain
+            // the qualifier read as a nearby town places the one candidate that lies beside it (finding 120)
+            var nearby = near is { } beside && beside.Uri == c.Uri && qualifierAgrees != true && !veto;
+            if (nearby) qualifierAgrees = true;
+            if (!nearby && qualifierAgrees == true && reading.QualifierAncestors is { } resolved && !veto && homePlace is { } home && c.Placement is { } chain
                 && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Tokens(home) is { Count: > 0 } homeWords
                 && Qualified.Contains(resolved, homeWords) && !Qualified.Contains(chain, homeWords))
             { qualifierAgrees = false; veto = true; reasons.Add($"the qualifier names a place at home ({resolved}) and this {reading.Qualifier} is a namesake abroad"); }
@@ -1104,7 +1146,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             switch (qualifierAgrees)
             {
                 case true:
-                    score = Math.Min(1, score + 0.05); reasons.Add($"qualifier places it ({c.Placement})");
+                    score = Math.Min(1, score + 0.05); reasons.Add(nearby ? $"qualifier places it ({near!.Value.Says})" : $"qualifier places it ({c.Placement})");
                     // a qualified heading the string's qualifier places is exact on its name: "Carlton House (London, England)" for
                     // "Carlton House (London)" is the name exact and the parenthetical read as the placement, which the single-source
                     // rule may carry, not an 0.85 lookalike (finding 20)
@@ -1307,6 +1349,38 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 ? b with { JoinedTo = namesake[0].Candidate.Uri, Reason = b.Reason + $"; placed through {namesake[0].Candidate.Source} {namesake[0].Candidate.Label}, the one of {through.Count} that names the division above it" }
                 : b with { Reason = b.Reason + $"; inside {through.Count} placed candidates" };
         }
+        // a source that holds two records placed through one holder, neither naming the other, is saying they differ, and at most one
+        // of them is the holder's place (finding 121, the owner's desk, 2026-11-14, at "Poughkeepsie, New York": LoC's "Poughkeepsie
+        // (N.Y.)" and "Poughkeepsie (N.Y. : Town)", the city and the town around it, in one group, and the project's two entities
+        // offered as a pair; the count, run rhf5rg: 57 first groups hold a typed heading beside the untyped one, 42 of them accepted
+        // by vote with the Landkreis, the canton or the township written onto the city, and some twenty hold another place
+        // altogether, "Downton on the Rock (England)" beside Downton in Wiltshire, "Yorkshire (England)" beside York). The one kept:
+        // the heading without a type word, then the one whose own name is the string's, then the better name, then the fuller
+        // placement; the others are shown and set aside, and a project entity that holds only such a record leaves the group with it.
+        // Level on every count, both stay and the desk tells them apart
+        var apart = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var rivals in list.Select((m, i) => (m, i)).Where(x => x.m.JoinedTo is not null && x.m.Candidate.EntityId is null && !x.m.Veto && !x.m.SetAside)
+                     .GroupBy(x => (x.m.JoinedTo, x.m.Candidate.Source)).Where(g => g.Count() > 1).ToList())
+        {
+            (int, int, double, int) Rank(ScoredCandidate m) => (TypeWord.IsMatch(m.Candidate.Label ?? "") ? 0 : 1, NamesTheString(reading, m.Candidate) ? 1 : 0, m.Candidate.NameScore, Qualified.Tokens(m.Candidate.Placement).Count);
+            var ranked = rivals.OrderByDescending(x => Rank(x.m)).ToList();
+            if (Rank(ranked[0].m) == Rank(ranked[1].m)) continue;
+            foreach (var (m, i) in ranked.Skip(1))
+            {
+                if (SameThing(m, ranked[0].m)) continue;
+                apart.Add(m.Candidate.Uri);
+                list[i] = m with { JoinedTo = null, SetAside = true, Reason = m.Reason + $"; {m.Candidate.Source} holds this apart from its {ranked[0].m.Candidate.Label}, which is the one placed here" };
+            }
+        }
+        if (apart.Count > 0)
+            for (var i = 0; i < list.Count; i++)
+            {
+                var e = list[i];
+                if (e.Candidate.EntityId is null || e.JoinedTo is null || !e.Candidate.SameAs.Any(apart.Contains)) continue;
+                var kept = list.Where(m => m.Candidate.EntityId is null && !apart.Contains(m.Candidate.Uri) && (m.Candidate.Uri == e.JoinedTo || m.JoinedTo == e.JoinedTo)).Select(m => m.Candidate.Uri).ToHashSet(StringComparer.Ordinal);
+                if (e.Candidate.SameAs.Any(kept.Contains)) continue;
+                list[i] = e with { JoinedTo = null, Reason = e.Reason + "; holds a record its source keeps apart from the one placed here: not this group's" };
+            }
         // an unqualified LoC heading of a place ("China", "Canada") is one LoC gives to a place unique in its world: among TGN
         // namesakes of differing level it is the nation, or the highest level present when there is no nation and that level is
         // held by one record (the TGN level preference; hamlets called China and Canada lose)

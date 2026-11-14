@@ -1261,6 +1261,41 @@ samples, read:
   (decision 16, the desk); "Summers, S, op 1739" (two fuller forms); "Christian church"; "Stafford House (London)":
   as before.
 
+Built 2026-11-14, findings 120 and 121, both from the owner's desk, each counted first against rhf5rg.
+
+Finding 120, a qualifier that is a nearby town ("Bottrop, Essen": the place of publication of a book published by
+Pomp of Bottrop, queued because Essen is no region that contains it). Of the 186 place strings queued, 79 carried
+"qualifier not placed", 71 of them a name, a comma and a qualifier; in 25 the qualifier is the name of a TGN place
+and exactly one TGN candidate of the string's name lies within twenty kilometres of it, all 25 rightly ("Barnsley,
+Cirencester" among six Barnsleys, "Chatsworth, Bakewell", "Dedham, Colchester", "St Ives, Huntingdon"; "Chillingham,
+Alnwick" the farthest at 18.1 km, "Tisbury, Salisbury" the near miss at 21.0; `reports/q-near.txt`). The rule:
+`Reconciler.ScoreWithNearbyAsync` scores as before and, when the qualifier placed no candidate and failed to place
+at least one, looks up the qualifier in TGN (a leading "nr" or "near" dropped), measures each exact-named TGN
+candidate against the places so named (`Coordinates.Kilometres`), and when exactly one lies within
+`NearKilometres` scores again with that candidate placed, its reason "qualifier places it (near Cirencester: 6.9
+km from TGN's Cirencester)". Not touched by it, and counted: 33 strings whose qualifier names a TGN place with no
+candidate on the card near it (regions the present rules should place, "Enfield, Middlesex", "Swindon, Wilts";
+finding 119's nine; and strings whose right place is not among the candidates fetched, "Wilton, Salisbury", "Botley,
+Oxford"), and 12 whose qualifier is no TGN name.
+
+Finding 121, two records of one source placed through one holder ("Poughkeepsie, New York": LoC's "Poughkeepsie
+(N.Y.)", the city, and "Poughkeepsie (N.Y. : Town)", the town around it, both placed through TGN's one Poughkeepsie,
+the project's two entities each holding one and offered as a holder pair). The count (`reports/q-twins-top.txt`):
+of the first groups of rhf5rg, 57 hold a LoC heading with a type word beside the same heading without one, 42 of
+them accepted by vote, so that the city's entity was given the Landkreis, the canton, the district or the township
+("Bonn (Germany : Landkreis)", "Vézelay (France : Canton)", "Chichester (England : District)", "Ithaca (N.Y. :
+Town)", "Paris (France : Généralité)", "China (Republic : 1949- )"); some twenty more hold another place
+altogether placed through the same holder ("Downton on the Rock (England)" beside Downton in Wiltshire, "Yorkshire
+(England)" beside York, "Frankfurt (Oder)" beside Frankfurt am Main, "Paterson (N.J.)" beside Totowa); and beyond
+the first groups 190 more of the typed kind. The rule, after the placed-through join in `Reconciler.Score`: of one
+source's records joined to one holder, none naming another, one stays, chosen by the heading without a type word,
+then the one whose own name is the string's, then the better name, then the fuller placement; the others are
+unjoined and set aside with the reason "loc holds this apart from its Poughkeepsie (N.Y.), which is the one placed
+here", and a project entity that holds only a record so set apart leaves the group too. Level on every count, both
+stay. Finding 118 had barred a type word only across classes. `GroupingTests`, two cases. Measured by the next
+reconcile; expect the 42 votes to stand as votes with fewer identifiers written, and the holder pairs of the
+typed kind (Poughkeepsie) to stop being offered.
+
 Measured 2026-11-13 (run rhf5rg, 19:05 to 19:50, the workbench stopped; q9zpqk taken back): finding 119. Matched in
 store 6,052, accepted 9,448, queued 3,764, minted 10,784, overridden 84; the second pass settled 94. The diff against
 q9zpqk is ten strings and all the rule's. Nine were accepted onto a namesake's entity and are now queued for the desk,

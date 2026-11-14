@@ -550,6 +550,50 @@ public class GroupingTests
     }
 
     [Fact]
+    public void A_qualifier_that_is_a_nearby_town_places_the_one_candidate_beside_it()
+    {
+        // finding 120: "Barnsley, Cirencester" among six Barnsleys; the scorer is told which candidate lies near the town
+        var reading = Reading("Barnsley", EntityClass.Place) with { Qualifier = "Cirencester" };
+        var cotswold = new Candidate("t1", "tgn", "Barnsley", EntityClass.Place, null, [], "local", 1.0, Placement: "Gloucestershire, England, United Kingdom, Europe, World");
+        var yorkshire = new Candidate("t2", "tgn", "Barnsley", EntityClass.Place, null, [], "local", 1.0, Placement: "Barnsley, England, United Kingdom, Europe, World");
+        var plain = Reconciler.Score(reading, [cotswold, yorkshire], 120);
+        Assert.All(plain, m => Assert.NotEqual(true, m.QualifierAgrees));
+        var near = Reconciler.Score(reading, [cotswold, yorkshire], 120, near: ("t1", "near Cirencester: 6.9 km from TGN's Cirencester"));
+        Assert.True(near[0].QualifierAgrees); Assert.Contains("near Cirencester: 6.9 km", near[0].Reason);
+        Assert.NotEqual(true, near[1].QualifierAgrees);
+        Assert.True(near[1].Veto); // the namesake the qualifier does not place, as with any placed candidate
+        Assert.InRange(LinkedArtNet.Alignment.Authorities.Coordinates.Kilometres((51.5167, 6.9167), (51.45, 7.0167)), 9, 11); // Bottrop to Essen
+    }
+
+    [Fact]
+    public void Two_records_of_one_source_placed_through_one_holder_are_two_things_and_one_stays()
+    {
+        // finding 121: LoC's city and its town of one name, both placed through TGN's one Poughkeepsie, and the project's two entities
+        var reading = Reading("Poughkeepsie", EntityClass.Place) with { Qualifier = "New York" };
+        var tgn = new Candidate("t1", "tgn", "Poughkeepsie", EntityClass.Place, null, [], "local", 1.0, Placement: "Dutchess, New York, United States, North and Central America, World");
+        var city = new Candidate("l1", "loc", "Poughkeepsie (N.Y.)", EntityClass.Place, null, [], "local", 0.85, Placement: "N.Y.");
+        var town = new Candidate("l2", "loc", "Poughkeepsie (N.Y. : Town)", EntityClass.Place, null, [], "local", 0.85, Placement: "N.Y.", PlaceType: "Town");
+        var ourCity = new Candidate("e1", "store", "Poughkeepsie (N.Y.)", EntityClass.Place, null, ["l1"], "store", 0.85, "e1", Placement: "N.Y.");
+        var ourTown = new Candidate("e2", "store", "Poughkeepsie (N.Y. : Town)", EntityClass.Place, null, ["l2"], "store", 0.85, "e2", Placement: "N.Y.");
+        var scored = Reconciler.Score(reading, [tgn, city, town, ourCity, ourTown], 120);
+        Assert.Equal("t1", scored[1].JoinedTo);
+        Assert.Null(scored[2].JoinedTo); Assert.True(scored[2].SetAside); Assert.Contains("holds this apart from its Poughkeepsie (N.Y.)", scored[2].Reason);
+        Assert.Equal("t1", scored[3].JoinedTo);
+        Assert.Null(scored[4].JoinedTo); Assert.Contains("not this group's", scored[4].Reason);
+        Assert.Equal(["e1", "l1", "t1"], Reconciler.Groups(scored)[0].Members.Select(m => m.Candidate.Uri).OrderBy(x => x, StringComparer.Ordinal));
+        // another place altogether, placed through the same holder: the one whose own name is the string's stays
+        var downton = Reading("Downton", EntityClass.Place) with { Qualifier = "Wiltshire" };
+        var tgnDownton = new Candidate("t2", "tgn", "Downton", EntityClass.Place, null, [], "local", 1.0, Placement: "Wiltshire, England, United Kingdom, Europe, World");
+        var locDownton = new Candidate("l3", "loc", "Downton (Wiltshire, England)", EntityClass.Place, null, [], "local", 0.85, Placement: "Wiltshire, England");
+        var onTheRock = new Candidate("l4", "loc", "Downton on the Rock (England)", EntityClass.Place, null, [], "local", 0.85, Placement: "England");
+        var two = Reconciler.Score(downton, [tgnDownton, locDownton, onTheRock], 120);
+        Assert.Equal("t2", two[1].JoinedTo); Assert.Null(two[2].JoinedTo); Assert.True(two[2].SetAside);
+        // a typed heading alone is the place at its level, as before
+        var alone = Reconciler.Score(reading, [tgn, town], 120);
+        Assert.False(alone[1].SetAside);
+    }
+
+    [Fact]
     public void A_record_of_another_class_placed_in_a_place_is_not_that_place()
     {
         // finding 118: "Coventry (England)" grouped two dioceses with the city; the merge on the desk would have given the city their identifiers

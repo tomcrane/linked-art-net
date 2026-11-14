@@ -42,7 +42,9 @@ nearby candidate; then, after run b4qbn6 broke "St Ives, Huntingdon", only those
 with finding 122 beside it, a record that bears the name listed before one that only lists the spelling, an order
 among equals after the count showed a demotion would be wrong ("Rome" is TGN's Roma). Run vd2cg3 (16:10 to 16:46)
 measured them: four strings against kg6v85, Donington and Stratfield Saye on the project's own entities, the queue
-3,734; the last full run. Five reconciles in the day. The owner's note: the scenarios are gone through whole, pictures and
+3,734; the last full run. Five reconciles in the day. Last, "Osterley Park": the owner changed the class of what
+the assistant had wrongly called an import entity and was a run's placeholder for a publisher string; a placeholder's
+page now says it is one, that hand changes to it do not last, and links to its string at the desk. The owner's note: the scenarios are gone through whole, pictures and
 text, at the fresh run of the PMC project.
 
 ## 2026-11-13

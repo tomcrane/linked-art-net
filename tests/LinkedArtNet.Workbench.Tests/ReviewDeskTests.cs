@@ -102,6 +102,10 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var placeholder = (await store.DecisionForAsync(smith.Id))!.EntityId!;
         Assert.Contains(placeholder, searched); // named under "Currently"
         Assert.DoesNotContain($"name=\"entity\" value=\"{placeholder}\"", searched); // but no "Same as" onto itself
+        // a placeholder's own page says it is one, that hand changes to it do not last, and sends the reviewer to the string at the desk (the owner, 2026-11-14)
+        var placeholderPage = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(placeholder)}");
+        Assert.Contains("This is a placeholder, not yet a decision.", placeholderPage);
+        Assert.Contains($"/p/{ds}/review?id={smith.Id}\"", placeholderPage);
 
         // look again: the evidence as today's rules give it, deciding nothing
         var again = await owner.GetStringAsync($"/p/{ds}/review?id={smith.Id}&look=true");

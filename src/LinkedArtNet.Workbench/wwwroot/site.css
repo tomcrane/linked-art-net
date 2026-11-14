@@ -190,3 +190,7 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 
 /* the class choice in a merge's confirm step sits in its sentence, not across the box (2026-11-14) */
 .notice p select { width: auto; display: inline-block; margin: 0 0.3rem; }
+
+/* a run's placeholder says so at the head of its page (the owner, 2026-11-14) */
+.placeholder-note { margin: 0.75rem 0; }
+.placeholder-note p { margin: 0.25rem 0; }

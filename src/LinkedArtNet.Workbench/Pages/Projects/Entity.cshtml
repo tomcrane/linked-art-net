@@ -13,6 +13,25 @@
     @if (e.Status != EntityStatus.Merged) { <button type="button" class="tray-add small" data-tray="@e.Id" data-tray-label="@e.Label">Add to tray</button> }
     @* desk work under this name is signalled at the top, where the eye lands, with the list further down (the owner, 2026-11-06) *@
     @if (Model.Waiting.Count + Model.OwnQueued.Count > 0) { <a class="tag src" href="@(Model.Waiting.Count > 0 ? "#waiting" : "#strings")" title="Queued strings under this name, and this entity's own strings still at the desk">@(Model.Waiting.Count + Model.OwnQueued.Count) waiting at the desk</a> }</h1>
+@if (e.Status == EntityStatus.Provisional && e.Equivalents.Count == 0)
+{
+    @* a placeholder is a run's, and what is changed on it by hand goes when the run is taken back (the owner, 2026-11-14, having
+       changed the class of the publisher placeholder "Osterley Park" to join it to the place: "But I already edited the placeholder
+       no?"). The page says so before anything else and sends the reviewer to the desk, where a decision on the string lasts *@
+    <div class="notice placeholder-note">
+        <p><strong>This is a placeholder, not yet a decision.</strong> The software made it to stand in for @(v.Strings.Count == 1 ? "its string" : "its strings") until someone decides what @(v.Strings.Count == 1 ? "it means" : "they mean"). It lasts only as long as the run that made it: a label, a class or an identifier changed here, or a merge, is lost when the rules are next run.</p>
+        @if (v.Strings.Count > 0)
+        {
+            <p><strong>To settle it, decide the string at the desk</strong>, where a decision is kept:
+            @{ var n = 0; }
+            @foreach (var ds in v.Strings.OrderByDescending(x => x.String.Occurrences).Take(5))
+            {
+                <text>@(n++ == 0 ? "" : " · ")</text><a href="/p/@Model.Dataset/review?id=@ds.String.Id">"@ds.String.Raw" (@Model.Project.Manifest.FieldName(ds.String.Context))</a>
+            }@(v.Strings.Count > 5 ? $" · and {v.Strings.Count - 5} more, listed below" : "")</p>
+            <p class="small muted">There you can say it is the same as an entity the project already has, accept a record for it, or keep it as a local authority.</p>
+        }
+    </div>
+}
 @if (e.Status != EntityStatus.Merged)
 {
     @* what the entity is, said first and plainly (the owner, 2026-11-13, at the bare "Dagenham", about to relabel it after its wrong

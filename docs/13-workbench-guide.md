@@ -127,6 +127,10 @@ Actions:
   they are one thing and the store has two: the group says so and offers to merge them and accept the string onto
   the survivor, through the same confirm step. The entities it means are boxed together under the sentence, and the
   merge button is at the foot of the box.
+- A placeholder's page says so first. A placeholder is an entity the software made to stand in for a string nobody
+  has decided; it belongs to the run that made it, and a label, class or identifier changed on it by hand, or a
+  merge, is lost when the rules are next run. Decide its string at the desk instead (the page links to it): "Same as"
+  an entity the project has, a record accepted, or "Keep as local authority". Those decisions are kept.
 - An entity's page begins with what the entity stands for: its strings, the field each is in and the records each
   was seen in. An entity is whatever its strings mean. The label and the identifiers are there to describe that; when
   an identifier describes something else (a parliamentary constituency, on an entity that stands for a place of

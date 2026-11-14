@@ -1081,6 +1081,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public static IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates, int maxPersonLifetimeYears, IReadOnlySet<string>? knownPlaces = null, string? homePlace = null, (string Uri, string Says)? near = null)
     {
         var list = new List<ScoredCandidate>();
+        // the chain of the candidate a nearby town places, for the records of the same place it carries with it (finding 120)
+        var nearChain = near is { } placedNear ? candidates.FirstOrDefault(x => x.Uri == placedNear.Uri)?.Placement : null;
         foreach (var candidate in candidates)
         {
             var c = candidate;
@@ -1139,7 +1141,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // the qualifier read as a nearby town places the one candidate that lies beside it (finding 120)
             var nearby = near is { } beside && beside.Uri == c.Uri && qualifierAgrees != true && !veto;
             if (nearby) qualifierAgrees = true;
-            if (!nearby && qualifierAgrees == true && reading.QualifierAncestors is { } resolved && !veto && homePlace is { } home && c.Placement is { } chain
+            // and a record whose own placement lies in that candidate's chain is the same place said by another source: LoC's and the
+            // project's "Donington (Lincolnshire, England)" beside TGN's Donington near Spalding. Without this the qualifier, a known
+            // place that the heading does not name, ruled them out as elsewhere and the run minted a second Donington (the owner's desk,
+            // 2026-11-14, run kg6v85: four such duplicates, Donington, Osterley Park, Paxton House, Stratfield Saye)
+            var withNearby = !nearby && nearChain is not null && qualifierAgrees == false && !veto && c.Placement is not null && Qualified.Agrees(c.Placement, nearChain) == true;
+            if (withNearby) qualifierAgrees = true;
+            if (!nearby && !withNearby && qualifierAgrees == true && reading.QualifierAncestors is { } resolved && !veto && homePlace is { } home && c.Placement is { } chain
                 && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Tokens(home) is { Count: > 0 } homeWords
                 && Qualified.Contains(resolved, homeWords) && !Qualified.Contains(chain, homeWords))
             { qualifierAgrees = false; veto = true; reasons.Add($"the qualifier names a place at home ({resolved}) and this {reading.Qualifier} is a namesake abroad"); }
@@ -1159,7 +1167,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             switch (qualifierAgrees)
             {
                 case true:
-                    score = Math.Min(1, score + 0.05); reasons.Add(nearby ? $"qualifier places it ({near!.Value.Says})" : $"qualifier places it ({c.Placement})");
+                    score = Math.Min(1, score + 0.05); reasons.Add(nearby ? $"qualifier places it ({near!.Value.Says})" : withNearby ? $"qualifier places it ({c.Placement}, where the record {near!.Value.Says} is)" : $"qualifier places it ({c.Placement})");
                     // a qualified heading the string's qualifier places is exact on its name: "Carlton House (London, England)" for
                     // "Carlton House (London)" is the name exact and the parenthetical read as the placement, which the single-source
                     // rule may carry, not an 0.85 lookalike (finding 20)
@@ -1567,6 +1575,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 return new CandidateGroup(members, vetoed ? 0 : live.Max(m => m.Score), sourcesAgreeing, uris, vetoed);
             })
             .OrderBy(g => g.Vetoed).ThenByDescending(g => g.Score).ThenByDescending(g => g.Sources.Count)
+            // among groups level on score and sources, one with a record that bears the name as its heading stands before one that only
+            // lists it as a variant (finding 122, the owner's desk, 2026-11-14: "Donnington" listed TGN's Donington in Lincolnshire first,
+            // through its variant spelling, ahead of the two Donningtons: "they are spelled differently, and Donnington is more notable a
+            // place too"). An order among equals only: the count, run kg6v85, found 61 place strings whose first group matches on a
+            // variant while another bears the name, and in 43 the variant is the place meant and was rightly decided so by prominence or
+            // the whole heading ("Rome" is TGN's Roma, "Austria" its Österreich, and the bearers are hamlets in Ohio and Missouri), so
+            // nothing is demoted or vetoed by it
+            .ThenBy(g => g.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.NameScore >= 0.97 && !m.Candidate.ByVariant) ? 0 : 1)
             .ToList();
     }
 

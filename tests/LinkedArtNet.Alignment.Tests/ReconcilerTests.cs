@@ -550,6 +550,19 @@ public class GroupingTests
     }
 
     [Fact]
+    public void Among_equals_a_record_that_bears_the_name_stands_before_one_that_lists_it_as_a_variant()
+    {
+        // finding 122: "Donnington" and TGN's Donington, Lincolnshire, which lists the spelling among its variants
+        var reading = Reading("Donnington", EntityClass.Place);
+        var variant = new Candidate("t1", "tgn", "Donington", EntityClass.Place, null, [], "local", 1.0, Placement: "Lincolnshire, England, United Kingdom, Europe, World", ByVariant: true);
+        var shropshire = new Candidate("t2", "tgn", "Donnington", EntityClass.Place, null, [], "local", 1.0, Placement: "Telford and Wrekin, England, United Kingdom, Europe, World");
+        var berkshire = new Candidate("t3", "tgn", "Donnington", EntityClass.Place, null, [], "local", 1.0, Placement: "West Berkshire, England, United Kingdom, Europe, World");
+        var groups = Reconciler.Groups(Reconciler.Score(reading, [variant, shropshire, berkshire], 120));
+        Assert.Equal(["t2", "t3", "t1"], groups.Select(g => g.Best.Candidate.Uri));
+        Assert.Equal(groups[0].Score, groups[2].Score); // an order among equals: nothing is scored down
+    }
+
+    [Fact]
     public void A_qualifier_that_is_a_nearby_town_places_the_one_candidate_beside_it()
     {
         // finding 120: "Barnsley, Cirencester" among six Barnsleys; the scorer is told which candidate lies near the town
@@ -562,6 +575,16 @@ public class GroupingTests
         Assert.True(near[0].QualifierAgrees); Assert.Contains("near Cirencester: 6.9 km", near[0].Reason);
         Assert.NotEqual(true, near[1].QualifierAgrees);
         Assert.True(near[1].Veto); // the namesake the qualifier does not place, as with any placed candidate
+        // the records of the same place come with it: LoC's heading and the project's entity labelled from it, placed in the nearby
+        // candidate's county, join its group, and the namesake's heading does not (run kg6v85 minted a second Donington without this)
+        var loc = new Candidate("l1", "loc", "Barnsley (Gloucestershire, England)", EntityClass.Place, null, [], "local", 0.85, Placement: "Gloucestershire, England");
+        var ours = new Candidate("e1", "store", "Barnsley (Gloucestershire, England)", EntityClass.Place, null, ["l1"], "store", 0.85, "e1", Placement: "Gloucestershire, England");
+        var other = new Candidate("l2", "loc", "Barnsley (South Yorkshire, England)", EntityClass.Place, null, [], "local", 0.85, Placement: "South Yorkshire, England");
+        var known = Reading("Barnsley", EntityClass.Place) with { Qualifier = "Cirencester", QualifierAncestors = "Gloucestershire, England, United Kingdom, Europe, World" };
+        var all = Reconciler.Score(reading, [cotswold, yorkshire, loc, ours, other], 120, near: ("t1", "near Cirencester: 6.9 km from TGN's Cirencester"));
+        Assert.False(all[2].Veto); Assert.False(all[3].Veto); Assert.True(all[4].Veto);
+        Assert.Equal(["e1", "l1", "t1"], Reconciler.Groups(all)[0].Members.Select(m => m.Candidate.Uri).OrderBy(x => x, StringComparer.Ordinal));
+        _ = known;
         Assert.InRange(LinkedArtNet.Alignment.Authorities.Coordinates.Kilometres((51.5167, 6.9167), (51.45, 7.0167)), 9, 11); // Bottrop to Essen
         // a town of the name at home is the one meant: "New Haven, London" is not the New Haven in Ohio beside the London there
         AuthorityRecord Town(string uri, string parents) => new(uri, "tgn", "London", [], "Place", null, [], $$"""{"lat":1,"long":1,"parentString":"{{parents}}"}""", DateTimeOffset.UtcNow, null);

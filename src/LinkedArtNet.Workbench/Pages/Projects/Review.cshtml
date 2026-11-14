@@ -324,7 +324,7 @@ else
                         @if (!m.IsStore && item.Holders is { } holders && holders.TryGetValue(m.Uri, out var holder))
                         {
                             @* the project entity that holds this record now, since the evidence was written: an identifier added by hand, or a later run *@
-                            <div class="small muted">now held by the project's entity <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Entity.Id)" target="_blank" rel="noopener">@Named(holder.Entity)</a> <span class="tag">@holder.Entity.Status.ToString().ToLowerInvariant()</span>, since this evidence was written
+                            <div class="small muted">now held by the project's entity <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Entity.Id)" target="_blank" rel="noopener">@Named(holder.Entity)</a> <span class="tag">@holder.Entity.Status.ToString().ToLowerInvariant()</span>, which was not among the candidates when this card was written
                                 @if (Model.Method != "human") { <form method="post" asp-page-handler="SameAs" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@holder.Entity.Id" /><button type="submit" class="link small">Same as @Named(holder.Entity)</button></form> }
                             </div>
                         }

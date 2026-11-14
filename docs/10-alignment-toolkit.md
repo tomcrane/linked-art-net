@@ -1281,6 +1281,31 @@ typed one); a handful to look at ("Mainz (... : Landgerichtsbezirk)", "Iona (Sco
 Town)", "Cornwall (England : Duchy)", "Sicily (Italy : Territory under Allied occupation, 1943-1947)"), where the
 untyped heading was not among the candidates or tied. kg6v85 is the last full run.
 
+Mended 2026-11-14 (afternoon), finding 120 again, from the owner's desk at "Donnington" (string 27535), whose card
+said the first candidate was "now held by the project's entity Donington, Spalding": a second Donington. Run kg6v85
+had placed TGN's Donington near Spalding and left LoC's and the project's own "Donington (Lincolnshire, England)"
+vetoed, "the qualifier names a known place and this is elsewhere", so the string was accepted on TGN alone and a new
+entity minted beside the old. Read across all 41 placements: four such duplicates (Donington, Osterley Park, Paxton
+House, Stratfield Saye) and two LoC headings of the same place ruled out (Penrhyn Castle, Syon House). The mending,
+in `Reconciler.Score`: a record whose own placement lies in the nearby candidate's chain is placed with it ("qualifier
+places it (Lincolnshire, England, where the record near Spalding: 13.2 km from TGN's Spalding is)") and joins its
+group through the placed-through join, so the project's entity answers. Two things seen on the same card and
+recorded as items, not built: an entity minted from a string with its post town is labelled "Donington, Spalding";
+and "Donnington" lists TGN's Donington first on a variant spelling, ahead of the two Donningtons.
+
+Built 2026-11-14 (afternoon), finding 122, a record that bears the name before one that lists it as a variant, among
+equals (the owner, at the same card: "they are spelled differently, and Donnington is more notable a place too").
+The count against kg6v85 (`reports/q-variant.txt`): 61 place strings whose first group's TGN record only lists the
+name as a variant while another group's bears it. In 43 of them the string was decided, and rightly, onto the
+variant: TGN's headings are the vernacular ("Rome" is Roma, "Austria" Österreich, "Lisbon" Lisboa, "Denmark"
+Danmark, "India" Bhārat), the bearers of the English name are hamlets in America, and prominence or the whole heading
+had already chosen ("Berlin" onto Berlin, "Chester" onto the city, not the county listed first). So a variant is not
+scored down. The 18 queued are where nothing decides and the order misleads: "Donnington" (Donington first),
+"Reading" (Redding, California), "Brockley" (Brockley Green), "Sutton" (Sutton West, Ontario), "Tain"
+(Tain-l'Hermitage), "Ormesby", "Studley Royal". The rule, in `Reconciler.Groups`: after score and the number of
+sources, a group with a live record that bears the name (`NameScore` 0.97 and not `ByVariant`) stands before one
+without. `GroupingTests`. Measured by the next reconcile; expect no method to change and the order on those cards to.
+
 Built 2026-11-14, findings 120 and 121, both from the owner's desk, each counted first against rhf5rg.
 
 Finding 120, a qualifier that is a nearby town ("Bottrop, Essen": the place of publication of a book published by

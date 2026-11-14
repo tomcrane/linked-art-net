@@ -88,7 +88,7 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      them apart; a merge done with no confirm step; the siblings left in the queue.
 
          select s.id, s.raw, s.context from decisions d join source_strings s on s.id = d.source_string_id
-         where d.run_id = 'run-20261114-141523-kg6v85' and d.method = 'queued'
+         where d.run_id = 'run-20261114-161045-vd2cg3' and d.method = 'queued'
            and (select count(*) from jsonb_array_elements(d.evidence->'groups'->0->'members') m where m->>'source' = 'store') >= 2
          order by s.raw;
 
@@ -103,12 +103,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
      pictures" on the desk; the tray from two entity pages and the merge page; Recent changes on the project home
      after a hand change; an identifier another entity holds, refused.
 
-2. No reconcile is pending. kg6v85 (2026-11-14 14:15) is the last full run: findings 120 and 121 measured, queued 3,735. The
+2. No reconcile is pending. vd2cg3 (2026-11-14 16:10) is the last full run: findings 120 to 122 measured, queued 3,734. The
    next reconcile comes with the next rule: the last full run taken back, `reconcile`, then command 4 against it. The next reconcile comes with the next rule, as always: the last
    full run taken back, `reconcile`, then command 4 against the run before, the assistant running it with the
    workbench stopped:
 
-       dotnet run --project tools/Align -- undo-run --run run-20261114-141523-kg6v85
+       dotnet run --project tools/Align -- undo-run --run run-20261114-161045-vd2cg3
        dotnet run --project tools/Align -- reconcile
 
 3. The records behind the strings, collected again after the next library export (the same catalogue, the same
@@ -118,12 +118,12 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
 
        dotnet run --project tools/Align -- collect-examples --file <the library export .xml> --source <a name for it> --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
-4. The standing method diff after the next run, against kg6v85, the last full run (each run's last decision per
+4. The standing method diff after the next run, against vd2cg3, the last full run (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence, though the undo removes
    the provisional entities it minted and nulls their decisions' entity, so `same_entity` reads null for those and
    true or false only where the entity survived). A method change on the same entity is a label, not a decision:
 
-       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261114-141523-kg6v85' order by source_string_id, id desc),
+       with a as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = 'run-20261114-161045-vd2cg3' order by source_string_id, id desc),
             b as (select distinct on (source_string_id) source_string_id, method, entity_id from decisions where run_id = '<new run id>' order by source_string_id, id desc)
        select a.method as before, b.method as after, (a.entity_id = b.entity_id) as same_entity, count(*), (array_agg(s.raw order by s.raw))[1:8] as examples
        from a join b on b.source_string_id = a.source_string_id
@@ -454,6 +454,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   desk's view of a part's parents and "not a compound" as the pass for one heading, below; and "Art, Baroque--Italy--ome"
   (the "R" of "Rome" missing in the catalogue) for the cataloguers' report (Exports and reports).
 - ~~Records of another class in a place's group~~ (built and measured 2026-11-13, finding 118, run q9zpqk; open only: "Northampton", the owner's to mend by hand) (2026-11-13, met writing the first scenario of doc 16: "Coventry (England)", string 82037). The first group, "6 records agree they are one thing", holds TGN's Coventry, LoC's "Coventry (England)", the project's two Coventrys, and two LoC groups, "Catholic Church. Diocese of Coventry and Lichfield (England)" (n88126694) and "Church of England. Diocese of Coventry" (nb2007002969), each "name 0.85; qualifier places it (England); placed through tgn Coventry, the inhabited place among 2". The holder pair's merge would add both dioceses' identifiers to the city (the confirm step lists them among "3 identifiers added"), and "Same as" on the group would do the same after a tray merge. Counted and built the same day as finding 118 (doc 10 7.6 "Built 2026-11-13, finding 118": 35 strings, 28 accepted by vote, the dioceses' identifiers written onto some twenty place entities by run v7aq7v; a record of another class joins only when its own name is the string's and its heading has no type word, so Balmoral Castle and the abbeys stay). Measured by run q9zpqk the same day (the method diff empty, the dioceses' identifiers gone from the place entities, the buildings' kept), doc 16's Coventry paragraph rewritten; "Northampton", confirmed by hand with a diocese and an archdeaconry among its identifiers, is the owner's to mend on its entity page.
+- The project's "Osterley Park" is a person (2026-11-14, read from run vd2cg3): the import's entity of that name is of class Person, the reconciler rules it out beside the house ("a string placed in a known place is not a person"), and "Osterley Park (Middlesex)" mints a second entity. The owner's to mend on the entity's page (class to place), then merge the two. Worth a count: project entities of class Person or Group whose only strings are in the place field or carry a place qualifier.
 - An entity's label when a string is accepted with its post town or county in it (2026-11-14, the owner at "Donnington", string 27535: the candidate "now held by the project's entity Donington, Spalding"). A string accepted onto a record with no project entity yet mints one labelled with the string as written, "Donington, Spalding", "Crowmarsh Gifford, Nr. Wallingford", "Padiham, Nr Burnley", "Paulton, near Bristol". The label to publish is the place's, with a placement a reader can use: the record's own label and its first parents ("Donington (Lincolnshire, England)"), the string kept as a variant. Count first: the entities a run mints whose label carries a comma or a bracket that the record's label does not.
 - ~~A record matched on a variant spelling listed ahead of the records that bear the name~~ (counted and built 2026-11-14 as finding 122, an order among equals only, doc 10 7.6; the count showed a rule that demoted variants would be wrong, "Rome" being TGN's Roma. Left for the desk and "Ask for help": which Donnington a saleroom's place of publication is) (2026-11-14, the same card: "Donnington" lists TGN's Donington, Lincolnshire, first at 1.00 through its variant "Donnington", ahead of TGN's two Donningtons, in Shropshire and in Berkshire; the place of publication is most likely Donnington Priory at Newbury, the saleroom). `ByVariant` exists for LoC (finding 74); TGN's variants score as the name. A record that bears the name as its heading should stand ahead of one that only lists it. Count first: queued strings whose first group matched only on a variant while a later group bears the name.
 - ~~Two headings of one source in one group~~ (counted and built 2026-11-14 as finding 121, doc 10 7.6: 57 first groups with a typed heading beside the untyped, 42 accepted by vote; one record of a source stays with a holder, the others set aside. Measured by run kg6v85 the same day. Left: the handful of typed headings a run still writes where the untyped one was not a candidate or tied, "Mainz (... : Landgerichtsbezirk)", "Iona (Scotland : Parish)", "Antrim (N.H. : Town)", "Cornwall (England : Duchy)". The scenario for doc 16 has its four pictures, `docs/img/scenarios/two-records-one-source-*.png`, taken before the rule, and is to be written) (2026-11-14, the owner at "Poughkeepsie, New York", string 66289: "why are there different LoC ids?"). The group holds LoC's "Poughkeepsie (N.Y.)" (n81090425, "City of Poughkeepsie") and LoC's "Poughkeepsie (N.Y. : Town)" (n89123175), both placed through TGN's one Poughkeepsie, and the project's two entities each hold one of them, so the desk offers a holder pair. But the Library of Congress keeps two records because they are two things, the city and the town around it, and a merge gives the survivor both. A source that holds two records of a name, neither naming the other, is saying they differ: the typed heading ("N.Y. : Town") should not join the placed record the untyped one joins, or the group should say "LoC holds these apart" and the merge not offer both identifiers. Finding 118 barred a type word only across classes; these are both places. Count first: the groups of the last full run with two or more records of one source that are not each other's sameAs, and of those the ones with a type word. A scenario for doc 16 ("the authorities hold two, the project means one").

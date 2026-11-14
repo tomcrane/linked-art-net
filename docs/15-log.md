@@ -35,7 +35,14 @@ is its pattern. At the desk: "Bottrop, Essen" led to finding 120 (a qualifier th
 and to doc 16's second scenario, "The authorities hold two, the project means one". Both counted first; the first
 run with them (j6ya7k) placed three strings on American namesakes, mended by measuring only against towns in the home
 country when TGN has the name there; run kg6v85 (14:15 to 14:52) measured both: 44 strings changed method, 41 placed
-by a nearby town and all right, the queue 3,735. The owner's note: the scenarios are gone through whole, pictures and
+by a nearby town and all right, the queue 3,735. Then the owner at "Donnington", a card that said its first candidate
+was held by a new entity "Donington, Spalding": the nearby town had placed TGN's record and left the project's own
+Donington ruled out, four such duplicates. Mended in two steps (the records of the same place are carried with the
+nearby candidate; then, after run b4qbn6 broke "St Ives, Huntingdon", only those whose placement names its county),
+with finding 122 beside it, a record that bears the name listed before one that only lists the spelling, an order
+among equals after the count showed a demotion would be wrong ("Rome" is TGN's Roma). Run vd2cg3 (16:10 to 16:46)
+measured them: four strings against kg6v85, Donington and Stratfield Saye on the project's own entities, the queue
+3,734; the last full run. Five reconciles in the day. The owner's note: the scenarios are gone through whole, pictures and
 text, at the fresh run of the PMC project.
 
 ## 2026-11-13

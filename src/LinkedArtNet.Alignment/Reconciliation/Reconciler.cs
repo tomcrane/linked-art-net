@@ -1004,6 +1004,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     private static readonly System.Text.RegularExpressions.Regex NearWord = new(@"^\s*(nr\.?|near)\s+", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
 
+    /// <summary>The towns in the home country when there are any, else all of them (finding 120).</summary>
+    public static List<(AuthorityRecord Record, (double Lat, double Long)? At)> AtHome(List<(AuthorityRecord Record, (double Lat, double Long)? At)> towns, string? homePlace)
+    {
+        if (homePlace is null || Qualified.Tokens(homePlace) is not { Count: > 0 } home) return towns;
+        var atHome = towns.Where(t => Qualified.Contains(Authorities.Coordinates.Parents(t.Record), home)).ToList();
+        return atHome.Count > 0 ? atHome : towns;
+    }
+
     private async Task<(string Uri, string Says)?> NearbyAsync(StringReading reading, IReadOnlyList<Candidate> candidates, CancellationToken ct)
     {
         if (reading.Qualifier is null || !reading.Classes.Contains(EntityClass.Place)) return null;
@@ -1013,6 +1021,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var towns = (await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(town), "tgn", nameof(EntityClass.Place), 50, ct))
             .Select(r => (Record: r, At: Authorities.Coordinates.Of(r))).Where(x => x.At is not null).ToList();
         if (towns.Count == 0) return null;
+        // a town of the name at home is the one meant (the home place's presumption, finding 71): the first run of the rule, j6ya7k,
+        // placed 44 strings, 41 rightly, and three onto American namesakes, "New Haven, London" on a New Haven in Ohio beside a London
+        // there, "Red House (Yorkshire)" in Virginia, "Fairfield (Somerset)" in Indiana. When TGN has the qualifier's name in the home
+        // country, only those are measured against
+        towns = AtHome(towns, _options.HomePlace);
         var near = new List<(string Uri, double Km, string? Town)>();
         foreach (var c in named)
         {

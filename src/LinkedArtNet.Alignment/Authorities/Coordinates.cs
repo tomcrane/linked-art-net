@@ -71,6 +71,9 @@ public static class Coordinates
         return null;
     }
 
+    /// <summary>TGN's chain of parents for a record ("Kent, England, United Kingdom, Europe, World"), when it carries one.</summary>
+    public static string? Parents(AuthorityRecord record) => ParentString(record);
+
     private static string? ParentString(AuthorityRecord record)
     {
         if (record.DataJson is null) return null;

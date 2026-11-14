@@ -563,6 +563,12 @@ public class GroupingTests
         Assert.NotEqual(true, near[1].QualifierAgrees);
         Assert.True(near[1].Veto); // the namesake the qualifier does not place, as with any placed candidate
         Assert.InRange(LinkedArtNet.Alignment.Authorities.Coordinates.Kilometres((51.5167, 6.9167), (51.45, 7.0167)), 9, 11); // Bottrop to Essen
+        // a town of the name at home is the one meant: "New Haven, London" is not the New Haven in Ohio beside the London there
+        AuthorityRecord Town(string uri, string parents) => new(uri, "tgn", "London", [], "Place", null, [], $$"""{"lat":1,"long":1,"parentString":"{{parents}}"}""", DateTimeOffset.UtcNow, null);
+        var londons = new List<(AuthorityRecord Record, (double Lat, double Long)? At)> { (Town("u1", "Madison, Ohio, United States, North and Central America, World"), (39.9, -83.4)), (Town("u2", "Greater London, England, United Kingdom, Europe, World"), (51.5, -0.1)) };
+        Assert.Equal(["u2"], Reconciler.AtHome(londons, "United Kingdom").Select(t => t.Record.Uri));
+        Assert.Equal(2, Reconciler.AtHome(londons, null).Count);
+        Assert.Equal(2, Reconciler.AtHome(londons, "Ireland").Count); // none at home: all of them, as for "Oysterhaven, Kinsale"
     }
 
     [Fact]

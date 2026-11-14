@@ -1278,6 +1278,16 @@ candidate on the card near it (regions the present rules should place, "Enfield,
 finding 119's nine; and strings whose right place is not among the candidates fetched, "Wilton, Salisbury", "Botley,
 Oxford"), and 12 whose qualifier is no TGN name.
 
+The first run with it (j6ya7k, 13:21 to 14:07, taken back): 44 strings placed by the nearby town, 41 rightly, and
+three onto American namesakes whose neighbours share the qualifier's name: "New Haven, London" (two places of
+publication, read as a New Haven in Ohio 13.6 km from a London there; a vote for New Haven, Connecticut, before),
+"Red House (Yorkshire)" (Haymarket, Virginia) and "Fairfield (Somerset)" (New Fairfield, Indiana). Mended the same
+hour: when TGN holds the qualifier's name in the project's home country (`HomePlace`, finding 71's presumption),
+only those towns are measured against (`Reconciler.AtHome`); "Oysterhaven, Kinsale", with no Kinsale at home, reads
+as before. The rule also reached beyond the comma strings it was counted on, rightly: bracketed counties that are
+TGN places with a point ("Osterley Park (Middlesex)", "Penrhyn Castle (Caernarvonshire)", "Walcot (Shropshire)",
+"Tredegar Park (Monmouthshire)"), seven of them minted before.
+
 Finding 121, two records of one source placed through one holder ("Poughkeepsie, New York": LoC's "Poughkeepsie
 (N.Y.)", the city, and "Poughkeepsie (N.Y. : Town)", the town around it, both placed through TGN's one Poughkeepsie,
 the project's two entities each holding one and offered as a holder pair). The count (`reports/q-twins-top.txt`):

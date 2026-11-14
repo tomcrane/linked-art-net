@@ -108,6 +108,10 @@ Actions:
 - **Always**: the same, and this exact spelling will mean this from now on in any field. Use it for a spelling that
   recurs.
 - **Same as this**: the string is an entity the project already has.
+- When a card has no candidates at all, the desk runs the search for you under the string's name and shows the
+  results under **Something else**. The rules look only among the kinds of thing the field allows (a person or a
+  body for a publisher); the search looks at everything, so a house that published its own guidebook is found as the
+  place the project already has.
 - **Something else**: search the project's entities and the indexes for anything not among the candidates. The string's own provisional entity, the one under "Currently", is left out of the results: it is not something else.
 - **Keep as local authority**: none of the candidates is right and the thing is real. Give it the label it should be
   published under and, if useful, a note, and a URL it is known at (an archive's agent page, a VIAF cluster), which is

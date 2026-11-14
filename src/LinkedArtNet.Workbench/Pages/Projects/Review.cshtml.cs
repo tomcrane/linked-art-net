@@ -17,6 +17,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     [BindProperty(SupportsGet = true)] public long After { get; set; }
     [BindProperty(SupportsGet = true)] public long? Id { get; set; }
     [BindProperty(SupportsGet = true)] public string? Q { get; set; }
+    /// <summary>The search was run by the desk, not asked for: the card had no candidates.</summary>
+    public bool Searched { get; private set; }
     /// <summary>Show the string's evidence as today's rules would give it, deciding nothing.</summary>
     [BindProperty(SupportsGet = true)] public bool Look { get; set; }
     /// <summary>Accepting the ticked together with two or more of the project's own entities among them comes here first: the plan is shown and the reviewer confirms (the owner, 2026-11-06, at "Chris Beetles Ltd").</summary>
@@ -48,6 +50,15 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         Queue = await Project.Desk.QueueCountsAsync(Dataset, Method);
         Item = Id is { } id ? (Look ? await Project.Desk.LookAgainAsync(Dataset, id) : await Project.Desk.GetAsync(id)) : await Project.Desk.NextAsync(Dataset, Method, Context, After);
         if (Item is not null && Item.String.Dataset != Dataset) Item = null;
+        // a card with no candidate at all is searched for the reviewer under the string's name (the owner, 2026-11-14, sent from the
+        // placeholder "Osterley Park" to its publisher string: "there's nothing to do at the desk"). The rules look only among the
+        // kinds the field allows, a person or a body for a publisher; the search looks at every entity of the project and every
+        // index, and finds the place "Osterley Park (Middlesex)" to say "Same as" to
+        if (Item is not null && string.IsNullOrWhiteSpace(Q) && Item.Evidence.Groups.Count == 0)
+        {
+            Q = Item.Evidence.Reading?.Text is { Length: > 0 } name ? name : Item.String.Raw;
+            Searched = true;
+        }
         if (Item is not null && !string.IsNullOrWhiteSpace(Q))
         {
             // the string's own placeholder is under "Currently" already, and "Same as" onto it would decide nothing: left out of the results

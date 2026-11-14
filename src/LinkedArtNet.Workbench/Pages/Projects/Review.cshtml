@@ -193,7 +193,11 @@ else
         <p class="flash small">The store has changed since this evidence was written: @string.Join("; ", overtaken.Select(o => $"\"{o.Was}\" has merged into {o.Now.Label ?? o.Now.Id}")). The rows below say which.
         <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, look = true })">Look again</a> shows the string as today's rules see it.</p>
     }
-    @if (ev.Groups.Count == 0) { <p class="muted">The reconciler found nothing in the local indexes for this string.</p> }
+    @if (ev.Groups.Count == 0)
+    {
+        <p class="muted">The rules found nothing for this string among the kinds of thing its field allows@(reading?.Classes is { Count: > 0 } kinds ? " (" + string.Join(" or ", kinds).ToLowerInvariant() + ")" : "").
+            @if (Model.Searched) { <text>A search for "@Model.Q" has been run for you under <a href="#something-else">Something else</a>: it looks at every entity of the project and every index, whatever the kind. If one of its results is the thing, say <strong>Same as this</strong>; if nothing is and the thing is real, keep it as a local authority.</text> }</p>
+    }
     @if (ev.Groups.Count > 1 && Model.Method != "human")
     {
         <form method="post" asp-page-handler="AcceptTogether" id="together" class="row" style="gap:.5rem; margin:.25rem 0 .75rem">
@@ -375,7 +379,7 @@ else
         first = false;
     }
 
-    <h2>Something else</h2>
+    <h2 id="something-else">Something else</h2>
     <div class="grid">
         <div class="card">
             @* the search is a form of its own and the results follow it inside the card: a result's own form nested in the search form
@@ -387,6 +391,7 @@ else
             </form>
             @if (Model.Q is not null)
             {
+                @if (Model.Searched && Model.EntityMatches.Count + Model.IndexMatches.Count > 0) { <p class="small"><strong>Found by searching for "@Model.Q"</strong>, since the rules offered nothing:</p> }
                 @if (Model.EntityMatches.Count == 0 && Model.IndexMatches.Count == 0) { <p class="muted small">Nothing found for "@Model.Q".</p> }
                 @foreach (var e in Model.EntityMatches)
                 {

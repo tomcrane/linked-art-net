@@ -1293,6 +1293,18 @@ group through the placed-through join, so the project's entity answers. Two thin
 recorded as items, not built: an entity minted from a string with its post town is labelled "Donington, Spalding";
 and "Donnington" lists TGN's Donington first on a variant spelling, ahead of the two Donningtons.
 
+The run with that mending (b4qbn6, 15:27 to 16:07, taken back) put "Donington, Spalding" and "Stratfield Saye,
+Reading" on the project's own entities, and broke "St Ives, Huntingdon": the test for "the same place" was that the
+heading's placement agree with the nearby candidate's chain, and LCSH's "Saint Ives (England : Park)" agrees with any
+chain in England; it became a placed record, LoC's Dorset "St. Leonards and St. Ives (England)" was placed through
+it, LoC's "St. Ives (Cambridgeshire, England)", whose placement is three alternatives, was not read at all, and the
+string was minted. The test now: one of the heading's placements names the chain's first segment, the county or
+district ("Lincolnshire", "Scottish Borders"), whatever else it names; "England" alone carries nothing. Left as it
+is and the desk's: the project's "Osterley Park" entity is of class Person in the import and is vetoed beside the
+house ("a string placed in a known place is not a person"), so "Osterley Park (Middlesex)" still mints its own.
+Unlooked-for in b4qbn6 and right: "Caravaggio" in keywords went from queued to a vote for the painter, the place
+and the painter level before finding 122's order.
+
 Built 2026-11-14 (afternoon), finding 122, a record that bears the name before one that lists it as a variant, among
 equals (the owner, at the same card: "they are spelled differently, and Donnington is more notable a place too").
 The count against kg6v85 (`reports/q-variant.txt`): 61 place strings whose first group's TGN record only lists the

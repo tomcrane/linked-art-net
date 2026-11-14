@@ -583,6 +583,14 @@ public class GroupingTests
         var known = Reading("Barnsley", EntityClass.Place) with { Qualifier = "Cirencester", QualifierAncestors = "Gloucestershire, England, United Kingdom, Europe, World" };
         var all = Reconciler.Score(reading, [cotswold, yorkshire, loc, ours, other], 120, near: ("t1", "near Cirencester: 6.9 km from TGN's Cirencester"));
         Assert.False(all[2].Veto); Assert.False(all[3].Veto); Assert.True(all[4].Veto);
+        Assert.True(all[2].QualifierAgrees); Assert.Contains("where the record near Cirencester", all[2].Reason);
+        // the county is what carries a record along: a heading that says only "England" is not placed by it, one of several placements is
+        // enough, and a village named in the heading is no bar (run b4qbn6: "Saint Ives (England : Park)", "Paxton House (Paxton,
+        // Scottish Borders, Scotland)")
+        var vague = new Candidate("l5", "lcsh", "Barnsley (England : Park)", EntityClass.Place, null, [], "local", 0.85, Placement: "England");
+        var several = new Candidate("l6", "loc", "Barnsley (Gloucestershire, England)", EntityClass.Place, null, [], "local", 0.85, Placement: "Bibury, Gloucestershire, England; Gloucestershire");
+        var more = Reconciler.Score(reading, [cotswold, vague, several], 120, near: ("t1", "near Cirencester: 6.9 km from TGN's Cirencester"));
+        Assert.NotEqual(true, more[1].QualifierAgrees); Assert.True(more[2].QualifierAgrees);
         Assert.Equal(["e1", "l1", "t1"], Reconciler.Groups(all)[0].Members.Select(m => m.Candidate.Uri).OrderBy(x => x, StringComparer.Ordinal));
         _ = known;
         Assert.InRange(LinkedArtNet.Alignment.Authorities.Coordinates.Kilometres((51.5167, 6.9167), (51.45, 7.0167)), 9, 11); // Bottrop to Essen

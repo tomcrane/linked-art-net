@@ -1082,7 +1082,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     {
         var list = new List<ScoredCandidate>();
         // the chain of the candidate a nearby town places, for the records of the same place it carries with it (finding 120)
+        // (its first segment, the county or district: a heading that says only "England" is not placed by it; run b4qbn6 read LCSH's
+        // "Saint Ives (England : Park)" as placed beside St Ives near Huntingdon, a heading in Dorset followed it, and the string was
+        // minted. A heading may carry several placements, "Cambridgeshire, England; Cambridgeshire; Huntingdonshire", and one is enough)
         var nearChain = near is { } placedNear ? candidates.FirstOrDefault(x => x.Uri == placedNear.Uri)?.Placement : null;
+        var nearCounty = nearChain is null ? [] : Qualified.Tokens(nearChain.Split(',')[0]);
         foreach (var candidate in candidates)
         {
             var c = candidate;
@@ -1145,7 +1149,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // project's "Donington (Lincolnshire, England)" beside TGN's Donington near Spalding. Without this the qualifier, a known
             // place that the heading does not name, ruled them out as elsewhere and the run minted a second Donington (the owner's desk,
             // 2026-11-14, run kg6v85: four such duplicates, Donington, Osterley Park, Paxton House, Stratfield Saye)
-            var withNearby = !nearby && nearChain is not null && qualifierAgrees == false && !veto && c.Placement is not null && Qualified.Agrees(c.Placement, nearChain) == true;
+            var withNearby = !nearby && nearCounty.Count > 0 && qualifierAgrees == false && !veto && c.Placement is not null
+                && c.Placement.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Any(part => Qualified.Contains(part, nearCounty));
             if (withNearby) qualifierAgrees = true;
             if (!nearby && !withNearby && qualifierAgrees == true && reading.QualifierAncestors is { } resolved && !veto && homePlace is { } home && c.Placement is { } chain
                 && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Tokens(home) is { Count: > 0 } homeWords

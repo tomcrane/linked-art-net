@@ -78,6 +78,12 @@ public class ReviewServiceTests(PostgresFixture pg)
         Assert.Equal(EntityStatus.Confirmed, local.Status);
         Assert.Equal("Nobody, Zedekiah", local.Label);
         Assert.Contains("Nobody, Zed", local.Labels);
+        // and of the kind the reviewer says, when it is not the field's (the owner, 2026-11-14: a publisher that is a house), noted
+        var wasClass = local.Class;
+        var asPlace = await desk.KeepLocalAsync(ds, nobody.Id, "tester", cls: EntityClass.Place);
+        Assert.Equal(EntityClass.Place, asPlace.Class); Assert.Equal(local.Id, asPlace.Id);
+        Assert.Contains(await pg.Store.NotesAsync(ds, asPlace.Id), n => n.Text.StartsWith($"Class changed from {wasClass.ToString().ToLowerInvariant()} to place"));
+        await desk.KeepLocalAsync(ds, nobody.Id, "tester", cls: wasClass); // back, for what follows
         Assert.Equal(DecisionMethod.Human, (await pg.Store.DecisionForAsync(nobody.Id))!.Method);
         // keep local with a URL the thing is known at: the identifier in one step; a URL in no recognised namespace is refused
         var dowell = await pg.Store.CollectAsync(ds, "corpauthor", "Dowell's Ltd");

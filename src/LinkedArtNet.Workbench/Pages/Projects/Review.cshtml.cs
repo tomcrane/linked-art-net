@@ -102,8 +102,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public Task<IActionResult> OnPostSameAsAsync(long id, string entity, string? note) =>
         Act(id, async () => ("Marked as the same entity.", await Project.Desk.SameAsAsync(Dataset, id, entity, Reviewer, note)));
 
-    public Task<IActionResult> OnPostLocalAsync(long id, string? label, string? note, string? url) =>
-        Act(id, async () => (string.IsNullOrWhiteSpace(url) ? "Kept as a local authority." : "Kept as a local authority, with the URL as its identifier.", await Project.Desk.KeepLocalAsync(Dataset, id, Reviewer, label, note, url)));
+    public Task<IActionResult> OnPostLocalAsync(long id, string? label, string? note, string? url, EntityClass? cls) =>
+        Act(id, async () => (string.IsNullOrWhiteSpace(url) ? "Kept as a local authority." : "Kept as a local authority, with the URL as its identifier.", await Project.Desk.KeepLocalAsync(Dataset, id, Reviewer, label, note, url, cls)));
 
     public Task<IActionResult> OnPostOverrideAsync(long id, string target, string? note) =>
         Act(id, async () => ("Override saved and applied.", await Project.Desk.OverrideAsync(Dataset, id, target, Reviewer, note)));

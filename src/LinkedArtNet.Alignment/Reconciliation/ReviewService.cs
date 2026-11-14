@@ -410,17 +410,21 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
 
     /// <summary>The reviewer says none of the candidates is right and the thing is real: the provisional entity becomes a confirmed local authority, renamed if asked.</summary>
     /// <param name="knownAt">A URL the thing is known at (an ArchivesSpace agent, a VIAF cluster), kept as its identifier in one step (the owner, 2026-10-26: Dowell's Ltd at the NLS archive).</param>
-    public async Task<Entity> KeepLocalAsync(string dataset, long stringId, string reviewer, string? label = null, string? note = null, string? knownAt = null, CancellationToken ct = default)
+    /// <param name="cls">What kind of thing it is, when the reviewer says (the owner, 2026-11-14, keeping the publisher "Osterley Park" and unable to say it is a place): the field's first kind when not given for a new entity, the placeholder's own otherwise. A change of class is noted on the entity.</param>
+    public async Task<Entity> KeepLocalAsync(string dataset, long stringId, string reviewer, string? label = null, string? note = null, string? knownAt = null, EntityClass? cls = null, CancellationToken ct = default)
     {
         var decided = await OwnAsync(dataset, stringId, ct);
         var reading = reconciler.Read(decided.String);
         var entity = decided.Decision.EntityId is null ? null : await store.ResolveEntityAsync(decided.Decision.EntityId, ct);
         if (entity is null || entity.Status is EntityStatus.Aligned or EntityStatus.Confirmed && entity.Equivalents.Count > 0)
-            entity = await store.AddEntityAsync(dataset, new NewEntity(reading.Classes[0], label ?? reading.Text, [decided.String.Raw], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed), scheme, ct);
+            entity = await store.AddEntityAsync(dataset, new NewEntity(cls ?? reading.Classes[0], label ?? reading.Text, [decided.String.Raw], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed), scheme, ct);
         else
         {
             var labels = entity.Labels.Append(decided.String.Raw).Append(entity.Label).OfType<string>().Distinct(StringComparer.Ordinal).ToList();
-            await store.UpdateEntityAsync(entity with { Label = string.IsNullOrWhiteSpace(label) ? entity.Label : label, Labels = labels, Status = EntityStatus.Confirmed }, ct);
+            var was = entity.Class;
+            await store.UpdateEntityAsync(entity with { Label = string.IsNullOrWhiteSpace(label) ? entity.Label : label, Labels = labels, Status = EntityStatus.Confirmed, Class = cls ?? entity.Class }, ct);
+            if (cls is { } chosen && chosen != was)
+                await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Class changed from {was.ToString().ToLowerInvariant()} to {chosen.ToString().ToLowerInvariant()}, kept as a local authority.", ct);
             entity = (await store.GetEntityAsync(entity.Id, ct))!;
         }
         if (!string.IsNullOrWhiteSpace(knownAt))

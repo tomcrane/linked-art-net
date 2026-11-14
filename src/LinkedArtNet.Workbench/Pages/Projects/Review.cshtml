@@ -411,6 +411,17 @@ else
             <p class="small muted">Keeps the entity as a confirmed local authority, in no external source. The pipeline stops asking.</p>
             <label for="label">Label (as it should be published)</label>
             <input type="text" id="label" name="label" value="@(item.Entity?.Label ?? reading?.Text)" />
+            @* what kind of thing it is: the field's kinds first, then the rest, since a publisher may be a house and a subject anything
+               (the owner, 2026-11-14, keeping the publisher "Osterley Park": "should I be able to choose the class?") *@
+            @{
+                var fieldKinds = Model.Project.Manifest.Contexts.TryGetValue(item.String.Context, out var rule) ? rule.Classes : new List<EntityClass>();
+                var isNow = item.Entity?.Class ?? (fieldKinds.Count > 0 ? fieldKinds[0] : EntityClass.Group);
+                var kindsOffered = fieldKinds.Concat(Enum.GetValues<EntityClass>()).Distinct().ToList();
+            }
+            <label for="lcls">It is a</label>
+            <select id="lcls" name="cls" title="The kinds this field usually holds come first; choose another when the thing is not one of them">
+                @foreach (var k in kindsOffered) { <option value="@k" selected="@(k == isNow)">@k.ToString().ToLowerInvariant()@(fieldKinds.Contains(k) ? "" : " (not usual in this field)")</option> }
+            </select>
             <label for="lnote">Note</label>
             <input type="text" id="lnote" name="note" placeholder="Edinburgh dealer, not the national gallery" />
             <label for="lurl">Known elsewhere (URL, optional)</label>

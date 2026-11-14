@@ -211,6 +211,15 @@ else
         var points = new List<object>();
         var unplaced = new List<string>();
         var bestGroup = ev.Groups.FirstOrDefault(g => g.Members.Any(m => m.Veto != true && m.SetAside != true));
+        // each group that reaches the map has a letter, on its markers and at the head of its card, so that a card and its place can be
+        // found from each other (the owner, 2026-11-14, at "Donnington": five namesakes, the labels over one another, and nothing to say
+        // which card is which pin); hovering either lights the other, and a marker pressed goes to its card
+        var pins = new Dictionary<LinkedArtNet.Alignment.Reconciliation.EvidenceGroup, string>(ReferenceEqualityComparer.Instance);
+        string PinOf(LinkedArtNet.Alignment.Reconciliation.EvidenceGroup g)
+        {
+            if (!pins.TryGetValue(g, out var pin)) pins[g] = pin = pins.Count < 26 ? ((char)('A' + pins.Count)).ToString() : (pins.Count + 1).ToString();
+            return pin;
+        }
         foreach (var g in ev.Groups)
             foreach (var m in g.Members)
             {
@@ -223,7 +232,7 @@ else
                 if (item.Placed is null || !item.Placed.TryGetValue(m.Uri, out var at)) { if (isPlace) unplaced.Add(label); continue; }
                 if (at.Near is not null) label += $", near {at.Near}";
                 if (at.Via is not null) label += $" (the coordinates of {at.Via})";
-                points.Add(new { lat = at.Lat, lng = at.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, approximate = at.Approximate, source = m.Source });
+                points.Add(new { lat = at.Lat, lng = at.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, approximate = at.Approximate, source = m.Source, pin = PinOf(g) });
             }
     if (points.Count > 0)
     {
@@ -243,8 +252,10 @@ else
         // flow of the text): the rows still to box, and the merge's own line under the last of them
         var pairLeft = -1;
         Func<IEnumerable<LinkedArtNet.Alignment.Reconciliation.EvidenceMember>, Microsoft.AspNetCore.Html.IHtmlContent> pairFoot = targets => PairFoot(item.String.Id, targets.Select(t => t.Uri));
-        <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")">
+        var pinOfGroup = pins.TryGetValue(group, out var letter) ? letter : null;
+        <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")" data-pin="@pinOfGroup" id="@(pinOfGroup is null ? null : "pin-" + pinOfGroup)">
             <div class="row">
+                @if (pinOfGroup is not null) { <span class="pin" title="This candidate's marker on the map above">@pinOfGroup</span> }
                 <span class="score">@group.Score.ToString("0.00")</span>
                 @foreach (var s in group.Sources) { if (group.Members.FirstOrDefault(m => m.Source == s)?.Uri is { } su) { <a class="tag src" href="@su" target="_blank" rel="noopener" title="@su">@s</a> } else { <span class="tag src">@s</span> } }
                 @if (group.Members.Count > 1) { <span class="muted small">@group.Members.Count records agree they are one thing</span> }
@@ -293,6 +304,9 @@ else
                         @if (m.IsStore || m.Uri.StartsWith(Model.Project.Project.IdentifierBase, StringComparison.Ordinal)) { <strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(m.Uri)" target="_blank" rel="noopener" title="The entity's page: its identifiers, the strings that resolve to it and the records they were seen in">@(m.Label ?? m.Uri)</a></strong> <button type="button" class="tray-add small" data-tray="@(facts?.Entity.Id ?? m.Uri)" data-tray-label="@(facts?.Entity.Label ?? m.Label ?? m.Uri)" data-tray-text="Tray">Tray</button> }
                         else { <strong>@(m.Label ?? record?.Label ?? m.Uri)</strong> }
                         @if (facts?.Placement is { } where) { <span class="muted">(@where)</span> }
+                        @* a place record says where it is on its own row, whether or not the string carried a qualifier to compare it with *@
+                        else if (facts is null && record?.Type == "Place" && LinkedArtNet.Alignment.Authorities.Coordinates.Parents(record) is { } chain)
+                        { <span class="muted">(@string.Join(", ", chain.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0 && x != "World").Take(3)))</span> }
                         @if (record?.Lifespan?.Display is { } life) { <span class="muted">@life</span> }
                         @if (record?.Type is { } type) { <span class="tag">@type.ToLowerInvariant()</span> }
                         @if (facts is not null) { <span class="tag">@facts.Entity.Class.ToString().ToLowerInvariant()</span> <span class="tag">@facts.Entity.Status.ToString().ToLowerInvariant()</span> }

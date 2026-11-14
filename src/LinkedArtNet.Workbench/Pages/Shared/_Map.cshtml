@@ -1,5 +1,5 @@
 @* The map (plan section 7, "A map", the owner, 2026-11-08). Any element with class "map" and a data-points attribute (a JSON list of
-   {lat, lng, label, chosen}) becomes a Leaflet map over OpenStreetMap tiles: one marker per point, the chosen ones emphasised, the view
+   {lat, lng, label, chosen, pin}) becomes a Leaflet map over OpenStreetMap tiles: one marker per point, the chosen ones emphasised, the view
    fitted to them all. Leaflet 1.9.4 (BSD-2) from unpkg; the tiles are OpenStreetMap's, whose attribution the map shows, as their policy
    requires. Nothing here runs when no element has the class. *@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -14,9 +14,29 @@
         var map = L.map(el, { scrollWheelZoom: false });
         L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
         var markers = points.map(function (p) {
-            var m = L.circleMarker([p.lat, p.lng], { radius: p.chosen ? 9 : 6, weight: p.chosen ? 3 : 1.5, color: p.chosen ? "#b5451b" : "#365a7a", fillColor: p.chosen ? "#e8a07a" : "#9fb8cf", fillOpacity: p.approximate ? 0.15 : 0.85, dashArray: p.approximate ? "3 3" : null });
-            m.bindTooltip(p.label, { permanent: points.length <= 8, direction: "top", offset: [0, -6] });
+            var m;
+            if (p.pin) {
+                // a lettered marker, the letter its card's: the label shows on hover, the card lights with it, a press goes to the card
+                m = L.marker([p.lat, p.lng], { icon: L.divIcon({ className: "pin-marker" + (p.chosen ? " chosen" : "") + (p.approximate ? " approximate" : ""), html: p.pin, iconSize: [24, 24], iconAnchor: [12, 12] }), zIndexOffset: p.chosen ? 500 : 0 });
+                m.bindTooltip(p.label, { direction: "top", offset: [0, -12] });
+                var card = function () { return document.getElementById("pin-" + p.pin); };
+                m.on("mouseover", function () { var c = card(); if (c) c.classList.add("pin-hot"); });
+                m.on("mouseout", function () { var c = card(); if (c) c.classList.remove("pin-hot"); });
+                m.on("click", function () { var c = card(); if (c) c.scrollIntoView({ behavior: "smooth", block: "center" }); });
+                m.pin = p.pin;
+            } else {
+                m = L.circleMarker([p.lat, p.lng], { radius: p.chosen ? 9 : 6, weight: p.chosen ? 3 : 1.5, color: p.chosen ? "#b5451b" : "#365a7a", fillColor: p.chosen ? "#e8a07a" : "#9fb8cf", fillOpacity: p.approximate ? 0.15 : 0.85, dashArray: p.approximate ? "3 3" : null });
+                m.bindTooltip(p.label, { permanent: points.length <= 8, direction: "top", offset: [0, -6] });
+            }
             return m.addTo(map);
+        });
+        // a card hovered lights its markers
+        document.querySelectorAll("[data-pin]").forEach(function (card) {
+            var pin = card.getAttribute("data-pin");
+            if (!pin) return;
+            var mine = markers.filter(function (m) { return m.pin === pin; });
+            card.addEventListener("mouseenter", function () { mine.forEach(function (m) { if (m._icon) m._icon.classList.add("hot"); m.setZIndexOffset(1000); m.openTooltip(); }); });
+            card.addEventListener("mouseleave", function () { mine.forEach(function (m) { if (m._icon) m._icon.classList.remove("hot"); m.setZIndexOffset(0); m.closeTooltip(); }); });
         });
         var group = L.featureGroup(markers);
         if (points.length === 1) map.setView([points[0].lat, points[0].lng], 8);

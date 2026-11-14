@@ -108,6 +108,10 @@ Actions:
 - **Always**: the same, and this exact spelling will mean this from now on in any field. Use it for a spelling that
   recurs.
 - **Same as this**: the string is an entity the project already has.
+- When the candidates are places, a map above them shows each one that has coordinates, lettered. The same letter is
+  at the head of that candidate's card. Point at a card and its marker lights up and names itself; point at a marker
+  and its card is outlined; press a marker to go to its card. Each place record also says where it is on its own
+  row ("Telford and Wrekin, England, United Kingdom").
 - When a card has no candidates at all, the desk runs the search for you under the string's name and shows the
   results under **Something else**. The rules look only among the kinds of thing the field allows (a person or a
   body for a publisher); the search looks at everything, so a house that published its own guidebook is found as the

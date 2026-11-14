@@ -194,3 +194,13 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 /* a run's placeholder says so at the head of its page (the owner, 2026-11-14) */
 .placeholder-note { margin: 0.75rem 0; }
 .placeholder-note p { margin: 0.25rem 0; }
+
+/* a candidate's letter, on its card and on its marker, and each lit from the other (the owner, 2026-11-14) */
+.pin, .pin-marker { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: 0.8rem; font-weight: 700;
+  background: #9fb8cf; color: #14283a; border: 1.5px solid #365a7a; box-sizing: border-box; }
+.pin { margin-right: 0.35rem; }
+.card.best .pin, .pin-marker.chosen { background: #e8a07a; color: #4a1c08; border: 2.5px solid #b5451b; }
+.pin-marker.approximate { background: #fff; border-style: dashed; }
+.pin-marker.hot { transform-origin: center; box-shadow: 0 0 0 4px rgba(181, 69, 27, 0.45); background: #b5451b; color: #fff; border-color: #7a2c0f; }
+.card.pin-hot { outline: 3px solid var(--accent); outline-offset: 2px; }
+.card[data-pin]:not([data-pin=""]):hover { outline: 2px solid var(--accent); outline-offset: 2px; }

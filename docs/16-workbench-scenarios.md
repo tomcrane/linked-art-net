@@ -15,7 +15,7 @@ The examples are from the PMC project. Pictures are in `img/scenarios/`, named b
 shows the store as it was on the date given; once the example is decided it leaves the queue, so the link then shows
 the decided string rather than the picture's state.
 
-Scenarios so far: [Holder pair](#holder-pair). The list to come is at the [end](#scenarios-to-write).
+Scenarios so far: [Holder pair](#holder-pair); [The authorities hold two, the project means one](#the-authorities-hold-two-the-project-means-one). The list to come is at the [end](#scenarios-to-write).
 
 **Keeping the pictures true.** A picture shows the workbench as it was built on the day it was taken. Each scenario
 says when its pictures were taken; when the desk or the entity page changes, the scenarios that show the changed
@@ -97,6 +97,69 @@ identifier a link that says what its record is: both hold the Library of Congres
 
 ---
 
+## The authorities hold two, the project means one
+
+**Scenario.** Two of the project's entities have the same name and stand for the same kind of string, but each is
+aligned to a different record of the *same* authority. An authority that keeps two records of one name is saying
+they are two things: a city and the township around it, a town and its district, a place and the constituency named
+after it. The project usually means only one of them. You recognise it by two identifiers of one source on the
+card that differ ("loc's n81090425" and "loc's n89123175"), and by a type word in one heading: "(N.Y. : Town)",
+"(England : District)", "(France : Canton)".
+
+**Example.** "Poughkeepsie, New York", a place of publication, string 66289, as queued by run rhf5rg; pictures
+taken 2026-11-14. http://localhost:5200/p/pmc/review?id=66289
+
+The string, in the record of a Vassar College Art Gallery catalogue:
+
+![The string Poughkeepsie, New York at the head of the desk](img/scenarios/two-records-one-source-1-string.png)
+
+The first group, as the desk offered it then: a holder pair. One entity is "Poughkeepsie (N.Y. : Town)", holding the
+Library of Congress's record of that heading; the other is "Poughkeepsie (N.Y.)", holding the Library's record of
+the city, and Wikidata's, described as "city in New York, United States". Both stand for a place of publication,
+on two catalogues of the same collection.
+
+![The group: two project entities boxed, each holding a different Library of Congress record](img/scenarios/two-records-one-source-2-group.png)
+
+The confirm step, had the merge been pressed: the survivor would hold both Library of Congress records, the city's
+and the town's.
+
+![The confirm step listing what each entity holds](img/scenarios/two-records-one-source-3-confirm.png)
+
+**Solution.**
+
+1. *Do not merge straight away.* Merging two entities gives the survivor every identifier of both. Here that would
+   say one place is both the city and the town.
+2. *Decide what the project means.* Both strings are where a catalogue was published. That is one place, and for a
+   publisher's "Poughkeepsie, N.Y." the city is the ordinary reading. The town's record is the one that does not
+   belong. (If you know the publisher sat in the township, it is the other way round: the judgement is yours.)
+3. *Open the entity that holds the record that does not belong* ("its page", or the entity's name). The page begins
+   with what the entity stands for, then its identifiers:
+
+   ![The Town entity's page: what it stands for, and its three identifiers](img/scenarios/two-records-one-source-4-entity.png)
+
+4. *Remove the identifiers that describe the other thing.* Here all three: the Library of Congress record of the
+   town, and the VIAF and LUX identifiers that came with it. When identifiers cite one another the page boxes them
+   as a set with "Remove all". Leave the label alone for now; the merge takes care of it.
+5. *Back at the desk, press "Look again"*, then merge the two entities with the city's as survivor, or put both in
+   the tray and merge there. The entity that held the town's record now brings only its string.
+6. *Check the survivor's page* afterwards: one set of identifiers, all describing the city.
+
+**Since these pictures.** The software now reads this case itself: when one authority has two records in a group
+and neither names the other, it keeps the one without a type word and sets the other aside, greyed, with the reason
+"loc holds this apart from its Poughkeepsie (N.Y.)". An entity that holds only the set-aside record no longer joins
+the group, so the desk no longer offers such a pair as duplicates. The cleaning above is still the way to mend an
+entity that was aligned to the wrong one of the two.
+
+**Watch for.**
+
+- *The project may mean both.* A heading about the district's council and a place of publication in the town are
+  two things, and two entities are right. Look at what each stands for before removing anything.
+- *Do not relabel an entity to match the identifier it should not have.* The entity is what its strings mean.
+- *A VIAF number tells you little on viaf.org.* The entity page says which record gives it; an identifier with "no
+  record of it in the store" can be asked with "Pull in from the sources".
+
+---
+
 ## Scenarios to write
 
 The list, begun 2026-11-13 with the owner. A scenario is written when a good example is met at the desk, with its
@@ -146,4 +209,5 @@ pictures taken then; the example column names one where one is known.
 
 | Scenario | Pictures taken | Shows | Stale since |
 |---|---|---|---|
+| The authorities hold two, the project means one | 2026-11-14, "Poughkeepsie, New York", before finding 121 | the desk's head, the first group as a holder pair, the confirm step, the Town entity's page | the group and confirm pictures show the pair as it was offered before the rule; kept as the scenario's "before" |
 | Holder pair | 2026-11-14, "University of Oxford" (Coventry, the first example, being decided) | the desk's head, the first group with the pair's box, the confirm step with the class choice | current |

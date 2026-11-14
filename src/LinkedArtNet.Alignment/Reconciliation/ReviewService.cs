@@ -429,7 +429,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         }
         if (!string.IsNullOrWhiteSpace(knownAt))
         {
-            var uri = knownAt.Trim();
+            var uri = AuthorityUris.Canonical(knownAt);
             if (!Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new InvalidOperationException("\"Known elsewhere\" is not a URL.");
             if (scheme.Owns(uri)) throw new InvalidOperationException("\"Known elsewhere\" is one of our own entities: use Same as.");
             foreach (var other in await store.FindEntitiesByEquivalentAsync(uri, ct))

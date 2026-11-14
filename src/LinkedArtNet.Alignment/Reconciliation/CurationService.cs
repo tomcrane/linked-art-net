@@ -208,7 +208,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     /// <summary>The checks and the write behind "Add identifier", without its note: the cluster writes one note for all of its identifiers.</summary>
     private async Task<string> AddIdentifierAsync(string dataset, Entity entity, string uri, CancellationToken ct)
     {
-        uri = uri.Trim();
+        uri = AuthorityUris.Canonical(uri);
         if (!Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new InvalidOperationException("The identifier is not a URI.");
         if (scheme.Owns(uri)) throw new InvalidOperationException("Use merge for one of our own entities.");
         if (await HolderOfAsync(dataset, uri, entity.Id, ct) is { } holder) throw new IdentifierInUseException(uri, holder);

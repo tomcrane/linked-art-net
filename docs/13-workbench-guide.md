@@ -119,7 +119,8 @@ Actions:
 - **Something else**: search the project's entities and the indexes for anything not among the candidates. The string's own provisional entity, the one under "Currently", is left out of the results: it is not something else.
 - **Keep as local authority**: none of the candidates is right and the thing is real. Give it the label it should be
   published under, what kind of thing it is (the field's usual kinds first; a publisher may be a house), and, if
-  useful, a note, and a URL it is known at (an archive's agent page, a VIAF cluster), which is
+  useful, a note, and a URL it is known at (paste the address of the source's page as your browser shows it:
+  Wikidata's "https://www.wikidata.org/wiki/Q2216536" is read as the identifier it stands for) (an archive's agent page, a VIAF cluster), which is
   kept as its identifier. The software stops asking about it.
 - **Accept the ticked together**: when two or more groups are the same thing (an auction house in ULAN and the same
   house as a person in the Library of Congress), tick "together" on each and accept them as one. One entity is made

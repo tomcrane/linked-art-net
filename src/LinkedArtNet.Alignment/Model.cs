@@ -299,6 +299,30 @@ public static class AuthorityUris
     public const string Lux = "https://lux.collections.yale.edu/data/";
     public const string PeriodO = "http://n2t.net/ark:/99152/";
 
+    private static readonly (System.Text.RegularExpressions.Regex Form, string To)[] PageForms =
+    [
+        (new(@"^https?://(?:www\.|m\.)?wikidata\.org/(?:wiki|entity)/(Q\d+)(?:[/?#].*)?$", System.Text.RegularExpressions.RegexOptions.IgnoreCase), Wikidata + "$1"),
+        (new(@"^https?://(?:www\.)?viaf\.org/(?:viaf/|en/viaf/)(\d+)(?:[/?#].*)?$", System.Text.RegularExpressions.RegexOptions.IgnoreCase), Viaf + "$1"),
+        (new(@"^https?://vocab\.getty\.edu/(?:page/)?(ulan|aat|tgn)/(\d+)(?:[/?#.].*)?$", System.Text.RegularExpressions.RegexOptions.IgnoreCase), "http://vocab.getty.edu/$1/$2"),
+        (new(@"^https?://id\.loc\.gov/authorities/(names|subjects)/([a-z]+\d+(?:-781)?)(?:\.html)?(?:[?#].*)?$", System.Text.RegularExpressions.RegexOptions.IgnoreCase), "http://id.loc.gov/authorities/$1/$2"),
+        (new(@"^https?://d-nb\.info/gnd/([0-9X-]+)(?:[/?#].*)?$", System.Text.RegularExpressions.RegexOptions.IgnoreCase), Gnd + "$1"),
+        (new(@"^https?://lux\.collections\.yale\.edu/(?:view|data)/([a-z]+/[0-9a-f-]{36})(?:[/?#].*)?$", System.Text.RegularExpressions.RegexOptions.IgnoreCase), Lux + "$1"),
+    ];
+
+    /// <summary>
+    /// The identifier a pasted address stands for: a person copies what the browser shows, a source's page for the thing
+    /// ("https://www.wikidata.org/wiki/Q2216536"), and the identifier is the URI the source gives it ("http://www.wikidata.org/entity/Q2216536").
+    /// The owner, 2026-11-14, keeping "Brockley (London, England)" with Wikidata's page as "known elsewhere" and refused: "not in a
+    /// recognised namespace". Wikidata, VIAF, Getty, LoC, GND and LUX pages are read so; anything else is returned as given, trimmed.
+    /// </summary>
+    public static string Canonical(string uri)
+    {
+        uri = uri.Trim();
+        foreach (var (form, to) in PageForms)
+            if (form.IsMatch(uri)) return form.Replace(uri, to);
+        return uri;
+    }
+
     /// <summary>A Library of Congress identifier's URI: subject headings begin "sh", everything else is a name.</summary>
     public static string Loc(string id) => (id.StartsWith("sh", StringComparison.OrdinalIgnoreCase) ? LocSubjects : LocNames) + id;
 

@@ -58,6 +58,25 @@ public class CoordinatesTests
         Assert.Null(RecordSummary.Says(null));
     }
 
+    /// <summary>A pasted page address is read as the identifier it stands for (the owner, 2026-11-14: Wikidata's page for Brockley refused as "not in a recognised namespace").</summary>
+    [Theory]
+    [InlineData("https://www.wikidata.org/wiki/Q2216536", "http://www.wikidata.org/entity/Q2216536")]
+    [InlineData(" https://www.wikidata.org/entity/Q2216536 ", "http://www.wikidata.org/entity/Q2216536")]
+    [InlineData("https://www.wikidata.org/wiki/Q2216536#sitelinks-wikipedia", "http://www.wikidata.org/entity/Q2216536")]
+    [InlineData("https://viaf.org/viaf/143073557/", "http://viaf.org/viaf/143073557")]
+    [InlineData("https://vocab.getty.edu/page/tgn/7011012", "http://vocab.getty.edu/tgn/7011012")]
+    [InlineData("https://id.loc.gov/authorities/names/n81071238.html", "http://id.loc.gov/authorities/names/n81071238")]
+    [InlineData("http://d-nb.info/gnd/1056799-9", "https://d-nb.info/gnd/1056799-9")]
+    [InlineData("https://lux.collections.yale.edu/view/place/a3469f90-69df-401a-922d-e0e4d919c18b", "https://lux.collections.yale.edu/data/place/a3469f90-69df-401a-922d-e0e4d919c18b")]
+    [InlineData("http://vocab.getty.edu/ulan/500301722", "http://vocab.getty.edu/ulan/500301722")]
+    [InlineData("https://manuscripts.nls.uk/agents/corporate_entities/1476", "https://manuscripts.nls.uk/agents/corporate_entities/1476")]
+    [InlineData("https://en.wikipedia.org/wiki/Brockley", "https://en.wikipedia.org/wiki/Brockley")]
+    public void A_pasted_page_address_is_the_identifier_it_stands_for(string pasted, string identifier)
+    {
+        Assert.Equal(identifier, AuthorityUris.Canonical(pasted));
+        Assert.NotEqual("other", AuthorityUris.SourceOf(AuthorityUris.Canonical("https://www.wikidata.org/wiki/Q2216536")));
+    }
+
     /// <summary>A field named to a reviewer in the manifest's plain words (the owner, 2026-11-13: "in the field place" on the entity page).</summary>
     [Fact]
     public void A_manifest_names_its_fields_in_plain_words_and_a_label_is_not_a_reading()

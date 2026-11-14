@@ -92,6 +92,13 @@ public class ReviewServiceTests(PostgresFixture pg)
         // a URL another entity of the project holds is refused with the holder named (doc 12 section 13, item 3)
         var holder = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Dowell's of Edinburgh", ["Dowell's of Edinburgh"], Status: EntityStatus.Confirmed), scheme);
         await pg.Store.AddEquivalentAsync(holder.Id, new Equivalent("http://viaf.org/viaf/999999999", "viaf", DecisionMethod.Human, 1, DateTimeOffset.UtcNow));
+        // a refused URL changes nothing: the entity is not confirmed or relabelled, and the string is as it was (the owner, 2026-11-14)
+        var before = (await pg.Store.DecisionForAsync(dowell.Id))!;
+        await Assert.ThrowsAsync<InvalidOperationException>(() => desk.KeepLocalAsync(ds, dowell.Id, "tester", label: "Not this", knownAt: "https://example.org/nothing"));
+        var after = (await pg.Store.DecisionForAsync(dowell.Id))!;
+        Assert.Equal(before.Id, after.Id);
+        Assert.NotEqual("Not this", (await pg.Store.GetEntityAsync(after.EntityId!))!.Label);
+        Assert.NotEqual(EntityStatus.Confirmed, (await pg.Store.GetEntityAsync(after.EntityId!))!.Status);
         var inUse = await Assert.ThrowsAsync<IdentifierInUseException>(() => desk.KeepLocalAsync(ds, dowell.Id, "tester", knownAt: "http://viaf.org/viaf/999999999"));
         Assert.Equal(holder.Id, inUse.Holder.Id);
         var known = await desk.KeepLocalAsync(ds, dowell.Id, "tester", note: "Edinburgh auctioneers", knownAt: "http://viaf.org/viaf/123456789");

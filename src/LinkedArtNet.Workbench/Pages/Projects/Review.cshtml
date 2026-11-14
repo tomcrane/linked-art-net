@@ -120,6 +120,17 @@ else
             @if (item.Entity is not null) { <dt>Currently</dt><dd><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener" title="The entity's page">@item.Entity.Label</a> <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span> <code class="small">@item.Entity.Id</code></dd> }
         </dl>
     }
+    @if (item.Decision.Method == DecisionMethod.Queued && item.Entity is { Status: EntityStatus.Confirmed or EntityStatus.Aligned } settled && Model.Plan is null)
+    {
+        @* a queued string whose entity is no placeholder any more: something settled the entity and not the string (a keep refused
+           half-way, before 2026-11-14; a hand change on the entity's page). The desk says so and offers the one step that is left *@
+        <form method="post" asp-page-handler="SameAs" class="notice small">
+            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@settled.Id" />
+            <strong>This string is still queued, but the entity it points at is already @settled.Status.ToString().ToLowerInvariant():</strong>
+            <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(settled.Id)" target="_blank" rel="noopener">@settled.Label</a>.
+            If that is what the string means, <button type="submit" class="secondary">Settle it onto @settled.Label</button> and it leaves the queue.
+        </form>
+    }
     @if (item.Siblings.Count > 0)
     {
         @* the other queued strings under this name; after an action the desk goes to these first (the owner, 2026-11-06) *@

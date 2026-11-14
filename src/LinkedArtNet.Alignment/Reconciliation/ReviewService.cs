@@ -416,6 +416,19 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var decided = await OwnAsync(dataset, stringId, ct);
         var reading = reconciler.Read(decided.String);
         var entity = decided.Decision.EntityId is null ? null : await store.ResolveEntityAsync(decided.Decision.EntityId, ct);
+        // "known elsewhere" is checked before anything is changed: a URL refused after the entity had been confirmed and relabelled left
+        // the string queued on its own confirmed entity, and the desk came round to it again with nothing new to show (the owner,
+        // 2026-11-14, at "Brockley" with Wikidata's page address)
+        string? known = null;
+        if (!string.IsNullOrWhiteSpace(knownAt))
+        {
+            known = AuthorityUris.Canonical(knownAt);
+            if (!Uri.TryCreate(known, UriKind.Absolute, out _)) throw new InvalidOperationException("\"Known elsewhere\" is not a URL.");
+            if (scheme.Owns(known)) throw new InvalidOperationException("\"Known elsewhere\" is one of our own entities: use Same as.");
+            foreach (var other in await store.FindEntitiesByEquivalentAsync(known, ct))
+                if (other.Dataset == dataset && other.MergedInto is null && other.Id != entity?.Id) throw new IdentifierInUseException(known, other);
+            if (await store.GetAuthorityAsync(known, ct) is null && AuthorityUris.SourceOf(known) == "other") throw new InvalidOperationException("\"Known elsewhere\" is not a known authority record and not in a recognised namespace (ULAN, AAT, TGN, VIAF, Wikidata, GND, LoC, LUX, PeriodO, or an ArchivesSpace agent's URL).");
+        }
         if (entity is null || entity.Status is EntityStatus.Aligned or EntityStatus.Confirmed && entity.Equivalents.Count > 0)
             entity = await store.AddEntityAsync(dataset, new NewEntity(cls ?? reading.Classes[0], label ?? reading.Text, [decided.String.Raw], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed), scheme, ct);
         else
@@ -427,15 +440,9 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
                 await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Class changed from {was.ToString().ToLowerInvariant()} to {chosen.ToString().ToLowerInvariant()}, kept as a local authority.", ct);
             entity = (await store.GetEntityAsync(entity.Id, ct))!;
         }
-        if (!string.IsNullOrWhiteSpace(knownAt))
+        if (known is not null)
         {
-            var uri = AuthorityUris.Canonical(knownAt);
-            if (!Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new InvalidOperationException("\"Known elsewhere\" is not a URL.");
-            if (scheme.Owns(uri)) throw new InvalidOperationException("\"Known elsewhere\" is one of our own entities: use Same as.");
-            foreach (var other in await store.FindEntitiesByEquivalentAsync(uri, ct))
-                if (other.Dataset == dataset && other.MergedInto is null && other.Id != entity.Id) throw new IdentifierInUseException(uri, other);
-            if (await store.GetAuthorityAsync(uri, ct) is null && AuthorityUris.SourceOf(uri) == "other") throw new InvalidOperationException("\"Known elsewhere\" is not a known authority record and not in a recognised namespace (ULAN, AAT, TGN, VIAF, Wikidata, GND, LoC, LUX, PeriodO, or an ArchivesSpace agent's URL).");
-            if (entity.Equivalents.All(q => q.Uri != uri)) await store.AddEquivalentAsync(entity.Id, new Equivalent(uri, AuthorityUris.SourceOf(uri), DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow), ct);
+            if (entity.Equivalents.All(q => q.Uri != known)) await store.AddEquivalentAsync(entity.Id, new Equivalent(known, AuthorityUris.SourceOf(known), DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow), ct);
             entity = (await store.GetEntityAsync(entity.Id, ct))!;
         }
         await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("local", reading, new { entity = entity.Id, label, note, knownAt }), reviewer, ct: ct);

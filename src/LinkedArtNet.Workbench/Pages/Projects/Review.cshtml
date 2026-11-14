@@ -311,6 +311,25 @@ else
                     <strong>@firm.Count of the project's entities hold records of this group: the @firm.Count boxed here.</strong>
                     The authorities say they are one thing, and the string was queued because the store disagrees with itself.
                     <a href="/help/scenarios#holder-pair" target="_blank" rel="noopener">How to decide this, with an example</a>.
+                    @* two entities that hold different records of one curated source are, by that source, two things: the box says so before
+                       the merge is pressed (the owner, 2026-11-14: Tours and Lille under one label, Dagenham the town and the constituency,
+                       Poughkeepsie the city and the town, each offered as a pair with "the authorities say they are one thing") *@
+                    @{
+                        string[] curated = ["loc", "lcsh", "wikidata", "ulan", "tgn", "aat"];
+                        var apart = firm.SelectMany(e => e.Equivalents.Where(q => curated.Contains(q.Source)).Select(q => (Entity: e, q.Source, q.Uri)))
+                            .GroupBy(x => x.Source).Where(g => g.Select(x => x.Uri).Distinct().Count() > 1 && g.Select(x => x.Entity.Id).Distinct().Count() > 1).ToList();
+                    }
+                    @if (apart.Count > 0)
+                    {
+                        <div class="pair-warn">
+                            <strong>Look before merging:</strong> they hold different records of @string.Join(" and ", apart.Select(g => g.Key)):
+                            @foreach (var g in apart)
+                            {
+                                foreach (var x in g.DistinctBy(x => x.Uri)) { <span class="pair-warn-item">@Named(x.Entity) holds @Held(x.Uri, x.Source)</span> }
+                            }
+                            A source that keeps two records is usually saying these are two things. If the project means one, remove the set that does not belong on that entity's page first; if it means two, do not merge. <a href="/help/scenarios#the-authorities-hold-two-the-project-means-one" target="_blank" rel="noopener">An example</a>.
+                        </div>
+                    }
                 </div>
                 pairLeft = firm.Count;
             }

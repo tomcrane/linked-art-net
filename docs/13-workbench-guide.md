@@ -139,7 +139,9 @@ Actions:
   judged without opening its page. When two of the project's entities hold records of one group, the authorities say
   they are one thing and the store has two: the group says so and offers to merge them and accept the string onto
   the survivor, through the same confirm step. The entities it means are boxed together under the sentence, and the
-  merge button is at the foot of the box.
+  merge button is at the foot of the box. When the two hold different records of the same source (two Wikidata
+  items, two Library of Congress headings), the box says "Look before merging" and names them: that source is
+  saying they are two things.
 - A placeholder's page says so first. A placeholder is an entity the software made to stand in for a string nobody
   has decided; it belongs to the run that made it, and a label, class or identifier changed on it by hand, or a
   merge, is lost when the rules are next run. Decide its string at the desk instead (the page links to it): "Same as"

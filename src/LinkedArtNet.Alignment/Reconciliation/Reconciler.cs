@@ -748,12 +748,18 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 // only ever resolved a qualifier. The count, run vd2cg3: 29 queued strings with one tied group at home, most of them a
                 // British library's places (Andover, Carlisle, Glasgow, Hastings, Manchester, Winchester, Woodstock), and "Washington",
                 // which would have gone to Tyne and Wear: so the guard, no group abroad with more than HomeGuard times the home group's
-                // sitelinks. Outside a field of places (a subject heading: "Charles" is not Charles in Devon) the home group must also be
+                // sitelinks (one and a half: "Reading" 63 against 91 passes, "Hamilton" in Lanarkshire 46 against Ontario's 95 does not). Outside a field of places (a subject heading: "Charles" is not Charles in Devon) the home group must also be
                 // prominent in its own right
                 if (_options.HomePlace is { } homePlace && Qualified.Tokens(homePlace) is { Count: > 0 } homeWords)
                 {
-                    var atHome = ranked.Where(x => x.Group.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWords))).ToList();
-                    if (atHome.Count == 1)
+                    bool AtHome(CandidateGroup g) => g.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWords));
+                    var atHome = ranked.Where(x => AtHome(x.Group)).ToList();
+                    // the first run of the rule (e2xm63) took "Warwick" to Warwickshire, the county that lists the name as a variant and
+                    // the only tied group at home, and "Yarmouth" to the Isle of Wight's while Great Yarmouth stood in a live group below
+                    // the tie: so the home group must bear the name as its heading, and no other live group may be at home
+                    var bears = atHome.Count == 1 && atHome[0].Group.Members.Any(m => !m.Veto && !m.SetAside && m.Candidate.NameScore >= 0.97 && !m.Candidate.ByVariant);
+                    var alone = !live.Any(g => !tied.Contains(g) && g.Score >= _options.AcceptScore && AtHome(g));
+                    if (atHome.Count == 1 && bears && alone)
                     {
                         var home = atHome[0];
                         var abroad = ranked.Where(x => x.Group != home.Group).Max(x => x.Sitelinks);
@@ -1011,8 +1017,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// <summary>Name score, then dates (agreement lifts, conflict vetoes, dates that cannot be compared change nothing), type (a mismatch vetoes), nationality (agreement lifts).</summary>
     public IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates) => Score(reading, candidates, _options.MaxPersonLifetimeYears, null, _options.HomePlace);
 
-    /// <summary>How much more written about a namesake abroad may be before the home place's presumption gives way (finding 123): Washington, D.C. against Washington in Tyne and Wear.</summary>
-    public const double HomeGuard = 3.0;
+    /// <summary>How much more written about a namesake abroad may be before the home place's presumption gives way (finding 123): Washington, D.C. against Washington in Tyne and Wear, Hamilton in Ontario against Hamilton in Lanarkshire.</summary>
+    public const double HomeGuard = 1.5;
 
     /// <summary>How near a candidate must lie to the town a qualifier names for the qualifier to place it (finding 120): "Chillingham, Alnwick" is 18 km, "Tisbury, Salisbury" 21.</summary>
     public const double NearKilometres = 20;

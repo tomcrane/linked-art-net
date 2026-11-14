@@ -43,6 +43,31 @@ public class ProminenceTests(PostgresFixture pg)
         Assert.Equal(Outcome.Queued, murray.Outcome);
         Assert.Contains(murray.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("prominence does not separate them (45, 44 sitelinks)"));
 
+        // finding 123: prominence not separating them, the one tied group at home is presumed when none abroad is far the more written
+        // about ("Reading": Berkshire's 63 against Pennsylvania's 91), and is not when one is ("Washington": Tyne and Wear's 40 against two
+        // American Washingtons level at 300 and 280)
+        await pg.Store.PutAuthorityAsync(Tgn("7011982", "Reading", "Reading, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n79063290", "Reading (England)"));
+        await pg.Store.PutAuthorityAsync(Tgn("7014266", "Reading", "Berks, Pennsylvania, United States, North and Central America, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n79074279", "Reading (Pa.)"));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q161491", "Reading", 63, "http://vocab.getty.edu/tgn/7011982"));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q237896", "Reading", 91, "http://vocab.getty.edu/tgn/7014266"));
+        var reading = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "place", "Reading"));
+        Assert.Equal(Outcome.Accepted, reading.Outcome);
+        Assert.Contains("http://vocab.getty.edu/tgn/7011982", reading.Accepted!.Uris);
+        Assert.Contains("the one at home (United Kingdom) among 2 level namesakes: 63 sitelinks, the most abroad 91", reading.Accepted.Best.Reason);
+        await pg.Store.PutAuthorityAsync(Tgn("7012049", "Washington", "Sunderland, Tyne and Wear, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n84142021", "Washington (England)"));
+        await pg.Store.PutAuthorityAsync(Tgn("7013962", "Washington", "District of Columbia, United States, North and Central America, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n79018774", "Washington (D.C.)"));
+        await pg.Store.PutAuthorityAsync(Tgn("7007718", "Washington", "United States, North and Central America, World"));
+        await pg.Store.PutAuthorityAsync(Loc("n79018725", "Washington (State)"));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q917890", "Washington", 40, "http://vocab.getty.edu/tgn/7012049"));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q61", "Washington", 300, "http://vocab.getty.edu/tgn/7013962"));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q1223", "Washington", 280, "http://vocab.getty.edu/tgn/7007718"));
+        var washington = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "place", "Washington"));
+        Assert.True(washington.Outcome == Outcome.Queued || !washington.Accepted!.Uris.Contains("http://vocab.getty.edu/tgn/7012049"), $"{washington.Outcome}");
+
         // a tie is among groups at the top score (finding 86): the German Münster, exact at 1.00 with LoC's heading, is not broken towards
         // the project's "Munster (Ireland)" at 0.97 through its folded umlaut, by the project's entity (finding 35) or by prominence
         await pg.Store.PutAuthorityAsync(Tgn("7004333", "Münster", "Nordrhein-Westfalen, Germany, Europe, World"));

@@ -742,6 +742,33 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                     if (everyTiedHolds) annotated = annotated with { Members = annotated.Members.Select(m => m with { Reason = m.Reason + "; every tied group holds a project entity, so the entities cancel and prominence decides (finding 116)" }).ToList() };
                     return new Evaluation(Outcome.Accepted, reading, groups, Accepted: annotated, AcceptedMethod: DecisionMethod.Vote);
                 }
+                // prominence not separating them, the project's home place does when exactly one of the tied groups is there and none
+                // abroad is far the more written about (finding 123, the owner's desk, 2026-11-14, at "Reading": eight Readings level at
+                // 1.00, Kansas first, the place of publication of three books from a town in Berkshire). The home place (finding 71) had
+                // only ever resolved a qualifier. The count, run vd2cg3: 29 queued strings with one tied group at home, most of them a
+                // British library's places (Andover, Carlisle, Glasgow, Hastings, Manchester, Winchester, Woodstock), and "Washington",
+                // which would have gone to Tyne and Wear: so the guard, no group abroad with more than HomeGuard times the home group's
+                // sitelinks. Outside a field of places (a subject heading: "Charles" is not Charles in Devon) the home group must also be
+                // prominent in its own right
+                if (_options.HomePlace is { } homePlace && Qualified.Tokens(homePlace) is { Count: > 0 } homeWords)
+                {
+                    var atHome = ranked.Where(x => x.Group.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWords))).ToList();
+                    if (atHome.Count == 1)
+                    {
+                        var home = atHome[0];
+                        var abroad = ranked.Where(x => x.Group != home.Group).Max(x => x.Sitelinks);
+                        var placeField = reading.Classes[0] == EntityClass.Place;
+                        if (abroad <= HomeGuard * Math.Max(home.Sitelinks, 1) && (placeField || home.Sitelinks >= _options.ProminenceMinSitelinks))
+                        {
+                            groups = groups.Select(g => g == home.Group
+                                ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; the one at home ({homePlace}) among {tied.Count} level namesakes: {home.Sitelinks} sitelinks, the most abroad {abroad} (finding 123)" }).ToList() }
+                                : tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; a namesake abroad, level with the one at home ({homePlace}), which is presumed (finding 123)" }).ToList() } : g).ToList();
+                            if (includeStore && await HoldersAsync(dataset, home.Group.Uris, ct) > 1) return new Evaluation(Outcome.Queued, reading, groups, Truncated: truncated);
+                            var presumed = groups.First(g => g.Uris.SequenceEqual(home.Group.Uris, StringComparer.Ordinal));
+                            return new Evaluation(Outcome.Accepted, reading, groups, Accepted: presumed, AcceptedMethod: DecisionMethod.Vote);
+                        }
+                    }
+                }
                 groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks)" }).ToList() } : g).ToList();
             }
         }
@@ -983,6 +1010,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     /// <summary>Name score, then dates (agreement lifts, conflict vetoes, dates that cannot be compared change nothing), type (a mismatch vetoes), nationality (agreement lifts).</summary>
     public IReadOnlyList<ScoredCandidate> Score(StringReading reading, IEnumerable<Candidate> candidates) => Score(reading, candidates, _options.MaxPersonLifetimeYears, null, _options.HomePlace);
+
+    /// <summary>How much more written about a namesake abroad may be before the home place's presumption gives way (finding 123): Washington, D.C. against Washington in Tyne and Wear.</summary>
+    public const double HomeGuard = 3.0;
 
     /// <summary>How near a candidate must lie to the town a qualifier names for the qualifier to place it (finding 120): "Chillingham, Alnwick" is 18 km, "Tisbury, Salisbury" 21.</summary>
     public const double NearKilometres = 20;
@@ -1685,6 +1715,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var lifespan = best.Lifespan is { IsDated: true } ? best.Lifespan : reading.Lifespan ?? best.Lifespan;
             // a placed qualified name keeps its qualifier as the label ("Heaton, Bradford"), which is also how the store stage tells it from namesakes later
             var label = reading.Qualifier is not null && group.Best.QualifierAgrees == true ? reading.Label : best.Label ?? reading.Text;
+            // but a name placed by a nearby town is labelled by where the record says it is, not by the post town: "Donington (Lincolnshire,
+            // England)", not "Donington, Spalding", which no later "Donington, Lincolnshire" would agree with (the owner's desk, 2026-11-14)
+            if (group.Members.FirstOrDefault(m => !m.Veto && m.Reason.Contains("qualifier places it (near ", StringComparison.Ordinal))?.Candidate is { Label: { } placedLabel, Placement: { } placedChain })
+                label = $"{placedLabel} ({string.Join(", ", placedChain.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).Take(2))})";
             entity = await store.AddEntityAsync(dataset, new NewEntity(cls, label, labels, lifespan, reading.Nationalities, reading.Roles, EntityStatus.Aligned, RunId: runId), scheme, ct);
         }
         var present = entity.Equivalents.Select(q => q.Uri).ToHashSet(StringComparer.Ordinal);

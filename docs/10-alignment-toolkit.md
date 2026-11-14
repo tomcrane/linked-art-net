@@ -1293,6 +1293,25 @@ group through the placed-through join, so the project's entity answers. Two thin
 recorded as items, not built: an entity minted from a string with its post town is labelled "Donington, Spalding";
 and "Donnington" lists TGN's Donington first on a variant spelling, ahead of the two Donningtons.
 
+Built 2026-11-14 (evening, the owner away and the laptop left running for it), finding 123, the one at home among
+level namesakes ("Reading": eight Readings at 1.00 with two sources each, Kansas first, "prominence does not separate
+them (91, 63, 39, 33, 33, 0, 0, 0 sitelinks)", the place of publication of three books from a town in Berkshire). The
+home place (finding 71) had only resolved a qualifier. The count against vd2cg3 (`reports/q-home.txt`): of the queued
+strings without a qualifier in the place and subject fields whose first groups tie, 29 have exactly one tied group
+in the home country, 39 several, 76 none; the 29 are a British library's places (Andover, Carlisle, Glasgow,
+Hastings, Manchester, Reading, Sheffield, Winchester, Woodstock, Strawberry Hill) with "Washington" among them, which
+is not Washington in Tyne and Wear, and "Charles", a subject and no place. The rule, where prominence declines in
+`Reconciler.EvaluateAsync`: when exactly one tied group has a member whose TGN chain is in the home place, and no
+tied group abroad has more than `HomeGuard` (3) times its sitelinks, it is accepted as a vote, "the one at home
+(United Kingdom) among 8 level namesakes: 63 sitelinks, the most abroad 91"; outside a field whose first kind is a
+place the home group must itself reach the prominence minimum (20). `ProminenceTests` (Reading taken, Washington
+left). With it, a name placed by a nearby town (finding 120) that mints an entity is labelled from the record and its
+first two parents, "Donington (Lincolnshire, England)", not "Donington, Spalding". Counted and not built: a heading of
+the same name and county standing apart from its TGN record ("Paxton House"): 60 strings match the shape
+(`reports/q-village.txt`), but most are a city beside its county or district of the same name (Aberdeen, Derby and
+Derbyshire, Leicester), where the heading belongs to one of two TGN records and a join by county would guess; left
+in the plan. Measured by the next reconcile.
+
 Measured 2026-11-14 (run vd2cg3, 16:10 to 16:46, the workbench stopped; b4qbn6 taken back): finding 120 in its third
 form and finding 122. Matched in store 6,053, accepted 9,481 (vote 4,105, single 2,111, exact-single 3,265), queued
 3,734, minted 10,776, overridden 84. The method diff against kg6v85 is four strings: "Donington, Spalding" from a

@@ -1301,8 +1301,9 @@ from minted to a vote on the project's "Stratfield Saye (Hampshire)"; "Paxton Ho
 single on a new entity to queued, the project's entity and LoC's heading now live beside TGN's record and the desk's
 to join; and "Caravaggio" in keywords from queued to a vote for the painter. "St Ives, Huntingdon" stands as in
 kg6v85, a vote on the project's St Ives. The nearby town places 42 strings, none outside the home country and
-Ireland. "Osterley Park (Middlesex)" still mints its own entity beside the project's "Osterley Park", which the
-import classed a person: the owner's to mend. Finding 122 changed no other method; the order on "Donnington" and its
+Ireland. "Osterley Park (Middlesex)" is aligned to TGN's record on an entity of its own beside "Osterley Park", which is
+not the import's, as first written here, but the run's placeholder for the publisher string of that name, vetoed
+beside the house as "not a person": the desk's, by deciding the publisher string. Finding 122 changed no other method; the order on "Donnington" and its
 kind is the desk's to see. vd2cg3 is the last full run.
 
 The run with that mending (b4qbn6, 15:27 to 16:07, taken back) put "Donington, Spalding" and "Stratfield Saye,

@@ -31,54 +31,43 @@ the two entities without guessing and never merges entities on its own, so the s
 recognise it by the line at the head of the first candidate group: "2 of the project's entities hold records of this
 group".
 
-**Example.** "Coventry (England)", a subject heading (`keywords:head`), string 82037, as queued by run v7aq7v;
-pictures taken 2026-11-13. http://localhost:5200/p/pmc/review?id=82037
+**Example.** "University of Oxford", the main heading of a subject (`keywords:head`), string 80550, as queued by run
+rhf5rg; pictures taken 2026-11-14. http://localhost:5200/p/pmc/review?id=80550
 
 The string and the catalogue records it was seen in:
 
-![The string Coventry (England) at the head of the desk, with three catalogue records](img/scenarios/holder-pair-1-string.png)
+![The string University of Oxford at the head of the desk, with three catalogue records](img/scenarios/holder-pair-1-string.png)
 
-The first candidate group. Six records "agree they are one thing", and two of them are the project's own: an entity
-labelled "Coventry" and another labelled "Coventry (England)". Both are places, both aligned, and both were seen in
-the same book (*St Michael's Coventry*):
+The first candidate group. Four records "agree they are one thing", and two of them are the project's own, boxed
+together under the sentence that says so. Both are called "University of Oxford". One is a group, standing for a
+corporate author; the other is a place, standing for a subject heading. Each row lists what the entity holds, every
+identifier a link that says what its record is: both hold the Library of Congress's `n79095521`.
 
-![The candidate group with the holder-pair notice and the merge button](img/scenarios/holder-pair-2-group.png)
+![The candidate group: the two project entities boxed under the notice, the merge button at the foot](img/scenarios/holder-pair-2-group.png)
 
 **Solution.**
 
-1. *Decide whether the two entities are the same thing.* Read the two rows: class, what each holds, which strings
-   each stands for, and the records each was seen in. Here both are the city of Coventry in the West Midlands: same
-   class, overlapping books, and the map puts the group in one spot. They are duplicates. If you need more, each
-   entity's name opens its page in another tab.
-2. *Press "Merge them and accept this string onto the survivor".* Nothing is merged yet. A confirm step opens:
+1. *Decide whether the two entities are the same thing.* Read the two boxed rows: class, what each holds, which
+   strings each stands for and in which fields, and the records each was seen in. Here both hold the same Library of
+   Congress record, which is the university as a body, and the books behind both are about the university and its
+   buildings. They are one thing, entered twice by an earlier import, once as a body and once as a place. If you need
+   more, each entity's name opens its page in another tab; the page begins with what the entity stands for.
+2. *Press "Merge them and accept this string onto the survivor"*, at the foot of the box. Nothing is merged yet. A
+   confirm step opens:
 
-   ![The confirm step: choose the survivor, the identifiers that will be added, Merge and accept](img/scenarios/holder-pair-3-confirm.png)
+   ![The confirm step: choose the survivor, the class, the identifiers that will be added, Merge and accept](img/scenarios/holder-pair-3-confirm.png)
 
 3. *Choose the survivor.* The other entity merges into it, and its strings, identifiers and labels follow, so
    nothing is lost either way; what you are choosing is the URI and label that remain. Prefer the one that holds
-   more and says more. Here that is "Coventry (England)": it holds the Library of Congress and Wikidata identifiers
-   and stands for two strings, where "Coventry" stands for one.
-4. *Read the line "Then N identifiers added" before confirming.* These are the group's records that neither entity
-   holds yet, and they will be attached to the survivor. Each should be the same thing as the survivor.
-5. *Press "Merge and accept"*, or "Back" to leave everything as it was. A merge is permanent: "Undo last decision"
+   more and is of the right class. Here that is the group: it holds ULAN's record as well.
+4. *When the two differ in class, choose the class.* The step says "They differ in class" and offers the choice; the
+   survivor's is the default. A university is a group.
+5. *Read the line "Then ... identifiers added" before confirming.* These are the group's records that neither entity
+   holds yet, each a link saying what it is, and they will be attached to the survivor. Each should be the same thing
+   as the survivor. Here none is added: between them the two entities already hold the group's records.
+6. *Press "Merge and accept"*, or "Back" to leave everything as it was. A merge is permanent: "Undo last decision"
    takes back the string's decision, not the merge. Afterwards the string, and the other queued strings of the same
    name, leave the queue.
-
-*For Coventry, step 4 stopped the reviewer.* When the pictures were taken, the three identifiers to be added were
-TGN's Coventry (right) and two Library of Congress records that are not the city: "Catholic Church. Diocese of
-Coventry and Lichfield" and "Church of England. Diocese of Coventry", both bodies, not places. The software had put
-them in the group because they are placed in Coventry. That was a fault, mended the same day (a body placed in a
-city no longer joins the city's group), so a card today lists only records of the place; the pictures are kept
-because they show why the line is worth reading. When a group does hold a record that is not the thing, leave the
-group's button alone and do it in two steps:
-
-1. Press "Back". On each of the two entity rows press **Tray**, then open the tray's merge page from the bar at the
-   foot of the screen, choose the survivor and merge. This merges the two entities and adds nothing else.
-2. Back at the desk, press **Look again** so the card shows the store as it now is, then **just this one** on the
-   surviving entity's row. The string is decided onto the entity without the group's other records.
-3. Add any identifier you do want on the entity's page (for Coventry, TGN's `http://vocab.getty.edu/tgn/7011012`).
-
-This is how Coventry was decided: the two entities merged through the tray, "Coventry (England)" the survivor.
 
 **Watch for.**
 
@@ -86,8 +75,13 @@ This is how Coventry was decided: the two entities merged through the tray, "Cov
   Gallery of 1877 to 1890 and the later dealer of the same name. If the two rows differ in dates, place or what they
   were seen in, do not merge; accept the string onto the right one with **just this one**. If the card shows nothing
   that tells the pair apart, that is a fault in the desk: report it.
-- *Records in the group that are not the thing*, as with Coventry's dioceses. The count "6 records agree" is the
-  software's claim, not a fact; the confirm step's list of identifiers is where you check it.
+- *Records in the group that are not the thing.* The count "4 records agree" is the software's claim, not a fact; the
+  confirm step's list of identifiers is where you check it. "Coventry (England)", the first example written here,
+  had two dioceses in its group ("Church of England. Diocese of Coventry"), and the merge would have given the city
+  their identifiers. That fault is mended (a body placed in a city no longer joins the city's group), but the habit
+  stands. When a group does hold a record that is not the thing, leave the box's button alone: put both entities in
+  the tray (**Tray** on each row), merge them on the tray's page, then back at the desk press **Look again** and
+  **just this one** on the survivor's row. That is how Coventry was decided.
 - *The same name, different identifiers.* Two entities of one name with different Wikidata or VIAF numbers may be
   duplicates the authorities also hold twice, or two different things. "Dagenham" and "Dagenham (London, England)"
   were the second kind: one held Wikidata's record for the town, the other its record for the former parliamentary
@@ -97,8 +91,9 @@ This is how Coventry was decided: the two entities merged through the tray, "Cov
   the constituency's set off in one press; then merge. Do not relabel the entity to match its wrong identifiers
   ("Dagenham (parliamentary constituency)"): an entity is what its strings mean, and this one stands for a place of
   publication, the town.
-- *Different classes.* The confirm step says so when the two entities differ in class (a person and a group, say).
-  That is usually a sign they are not duplicates.
+- *Different classes.* The confirm step says so when the two entities differ in class. A group and a place of one
+  name, holding the same record, are usually one institution entered twice, as here. A person and a group are more
+  often two things (a dealer and his firm): look before merging.
 
 ---
 
@@ -151,4 +146,4 @@ pictures taken then; the example column names one where one is known.
 
 | Scenario | Pictures taken | Shows | Stale since |
 |---|---|---|---|
-| Holder pair | 2026-11-13, before the changes of the same day | the desk's head, the first group, the confirm step | 2026-11-13: the pair's box, identifiers as links with what they are, fields in plain words. To retake |
+| Holder pair | 2026-11-14, "University of Oxford" (Coventry, the first example, being decided) | the desk's head, the first group with the pair's box, the confirm step with the class choice | current |

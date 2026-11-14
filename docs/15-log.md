@@ -46,7 +46,10 @@ measured them: four strings against kg6v85, Donington and Stratfield Saye on the
 the assistant had wrongly called an import entity and was a run's placeholder for a publisher string; a placeholder's
 page now says it is one, that hand changes to it do not last, and links to its string at the desk; and the desk, which
 showed that string with "found nothing" and nothing to press, now runs the search under the string's name when a
-card has no candidates. The owner's note: the scenarios are gone through whole, pictures and
+card has no candidates. That card showed no record either: the export writes a supplied publisher in square brackets
+("[Osterley Park]", record D2805), the strings have none; the collector now offers both, and the records collected
+again give every one of the 11,141 publisher strings its record (529 had none). The owner on the day: these
+experiences make the case for an AI-assisted teaching mode, noted under "Ask for help". The owner's note: the scenarios are gone through whole, pictures and
 text, at the fresh run of the PMC project.
 
 ## 2026-11-13

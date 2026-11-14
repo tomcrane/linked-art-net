@@ -140,7 +140,14 @@ public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDic
             yield return ("corpauthor", v, "corpauthor");
             if (Role(v) == "publisher") yield return ("publisher", v, "corpauthor");
         }
-        foreach (var v in Values(record, "publisher")) yield return ("publisher", v, "publisher");
+        // a publisher the cataloguer supplied stands in square brackets in the export ("[Osterley Park]", "[Agnew?]") and without them in
+        // the strings the 2024 process collected: both forms are offered, as for place (the owner's desk, 2026-11-14: the publisher
+        // string "Osterley Park", "seen 1 time" and no record shown; 487 of the 529 publisher strings without a record are of this kind)
+        foreach (var v in Values(record, "publisher"))
+        {
+            yield return ("publisher", v, "publisher");
+            if (TrimOuterBrackets(v) is var bare && bare != v) yield return ("publisher", bare, "publisher");
+        }
         foreach (var raw in Values(record, "keywords"))
         {
             var forms = cleanedKeywords is not null && cleanedKeywords.TryGetValue(raw, out var cleaned) && cleaned != raw ? new[] { raw, cleaned } : [raw];

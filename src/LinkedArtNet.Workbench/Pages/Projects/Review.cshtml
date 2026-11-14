@@ -441,7 +441,10 @@ else
                 }
                 @foreach (var r in Model.IndexMatches)
                 {
-                    <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Display is { } l) { <span class="muted">@l</span> } <span class="tag">@r.Type?.ToLowerInvariant()</span> <span class="tag">@r.Source</span><br /><a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
+                    <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Display is { } l) { <span class="muted">@l</span> } @if (!string.IsNullOrWhiteSpace(r.Type)) { <span class="tag">@r.Type.ToLowerInvariant()</span> } <span class="tag">@r.Source</span>
+                        @* what the record is, so that two results of one name can be told apart (the owner, 2026-11-14: two Wikidata "Brockley"s, a village in Suffolk and the district of London, and an empty tag where one had no kind) *@
+                        @if (LinkedArtNet.Alignment.Authorities.RecordSummary.Says(r) is { } says && says != r.Label) { <div class="small muted">@says</div> } else { <br /> }
+                        <a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
                         <form method="post" asp-page-handler="Accept" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit">Accept</button></form></div>
                 }
             }

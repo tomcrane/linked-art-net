@@ -911,6 +911,10 @@ and the log (doc 15) records that. The order within an area is rough value.
   diffed string by string (a second alignment of the same strings is the check on the first, and the places where they
   differ are the rules' or the desk's to read). It is also the first run of the collect stage from an export and so the
   rehearsal of the schedule above; the identifiers it mints are its own and never published.
+  That fresh run is also when doc 16's scenarios are gone through whole (the owner, 2026-11-14): every picture retaken
+  against the workbench as it then stands and the store as a new reviewer would meet it, and each scenario's text
+  edited or dropped as the rules by then have changed what the desk shows. Until then a scenario's pictures are
+  retaken only when a change makes them misleading, and the table at the end of doc 16 says which are stale.
 - A report back to the cataloguers (the owner's observation, 2026-11-07): alignment shows up errors and imprecisions in
   the catalogue that librarians and archivists will want to fix at source, the type case a firm whose name changed
   slightly, two authorities, one string in the data; the desk decides the string one way, the cataloguers then make

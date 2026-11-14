@@ -207,6 +207,10 @@ pictures taken then; the example column names one where one is known.
 
 ## Pictures last checked
 
+The whole set is gone through at the fresh run of the PMC project (plan section 7, "A second project from the same
+PMC sources"): every picture retaken, every scenario's text read against what the desk then shows. Between now and
+then a picture is retaken only when a change makes it misleading.
+
 | Scenario | Pictures taken | Shows | Stale since |
 |---|---|---|---|
 | The authorities hold two, the project means one | 2026-11-14, "Poughkeepsie, New York", before finding 121 | the desk's head, the first group as a holder pair, the confirm step, the Town entity's page | the group and confirm pictures show the pair as it was offered before the rule; kept as the scenario's "before" |

@@ -601,13 +601,29 @@ and the log (doc 15) records that. The order within an area is rough value.
   (about 200 exact-name matches in that run are on a label unlike the entity's own: "India" on "Bhārat", "Calcutta" on
   "Kolkata", inverted personal names), so nothing is changed without a ruling. Choices to put: a place's historical or
   former names (TGN marks them) are not gathered as labels; or a label that is another place's common name does not
-  carry an exact-name match on its own; or leave it and decide "Sutton" by hand. Count first.
+  carry an exact-name match on its own; or leave it and decide "Sutton" by hand. Count first. The owner, the same day:
+  "I guess 1) depends on the nature of the material being catalogued." So it is a setting of the project (its
+  manifest), not a rule of the library: whether a place's former names are names a string may be matched on. A
+  library of early printed books wants them; a list of modern imprints does not. To design with the manifest.
 - The project's "Glasgow" (`place/k5nzg3aj`) is aligned to Glasgow, Kentucky (Wikidata Q1762833 from the old import,
   LoC n82030840 through it), as its "Madison" is to Madison, New Jersey. The place of publication "Glasgow" (65770,
   imported) and the keywords "Glasgow" (76007, and 46908 in runs where nothing else contests it) stand on it. With
   the other "aligned elsewhere" places of finding 119 this wants one look over the old import's Wikidata alignments
-  of bare place names (count: places whose Wikidata item is in the United States while every string on them is a
-  bare British-looking place of publication).
+  of bare place names. Counted 2026-11-15 (`reports/q-import-us.txt`, the query `q-import-us.sql` beside it): of the
+  956 imported places with a Wikidata item, 166 have a bare name and an item described as in the United States,
+  Canada, Australia, New Zealand, South Africa or Jamaica. Most are right (Pittsburgh, Baltimore, New Haven, Ann
+  Arbor, the university-press towns); about forty read wrong on their face, a British name on an obscure namesake
+  (Brisbane a ghost town in North Dakota, Cardiff a hamlet in New York, Croydon in Utah, Farnham in Virginia, Perth
+  in Tasmania, Belfast in South Africa, Harrogate, Woolwich in Maine, Dunstable, Chelmsford and Truro in
+  Massachusetts, Buxton in North Dakota, Durham in New Hampshire, Atlanta in Texas, Raleigh a suburb of Memphis);
+  and some cannot be told without the record (Cambridge, Massachusetts; Durham, North Carolina; Athens, Ohio). The
+  owner asked whether importing the Wikidata dump again would mend it: no, the dump's items are right about what
+  they are (Q1762833 is Glasgow, Kentucky); what is wrong is the link from the project's entity to the item, which
+  came in with the old database's alignments (method `imported`, 2026-10-18; the assistant's inference from the
+  method and date, not checked against the old database). To mend: an audit list at the workbench of imported places
+  whose item is abroad and has a namesake at home with more sitelinks, each with its records' publishers beside it,
+  and one action to move the entity to the namesake; the entries are also findings for the cataloguers' list where
+  the old system's link is still live in a source.
 - Stored evidence keeps only so many vetoed candidates, so a rule that vetoes cannot be counted by searching the
   reasons for its words (finding 124's first run showed one string by that search and seven by comparison). The
   query that does count it, candidates that stood in the last run and do not stand in this, is

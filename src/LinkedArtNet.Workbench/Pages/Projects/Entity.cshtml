@@ -289,6 +289,12 @@
             <input type="text" name="label" value="@e.Label" />
             <div class="actions"><button type="submit" class="secondary">Save label</button></div>
         </form>
+        @* LoC's heading as the label, in one press (the owner, 2026-11-15, at "Andover", holding "Andover (Mass.)"): the form most of
+           the project's places have, and one that says which place it is. A form of its own for each heading that differs *@
+        @foreach (var heading in e.Equivalents.Where(q => q.Source == "loc").Select(q => v.Records.GetValueOrDefault(q.Uri)?.Label).Where(l => !string.IsNullOrWhiteSpace(l) && l != e.Label).Distinct())
+        {
+            <form method="post" asp-page-handler="Label" style="margin:-.6rem 0 1rem"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="label" value="@heading" /><button type="submit" class="quiet" title="Sets the label to the Library of Congress heading this entity holds; the present label is kept as another name">Use LoC's form: <strong>@heading</strong></button></form>
+        }
         @* what kind of thing it is, changeable by a person: an identifier added by hand can say what the field could not (the owner,
            2026-11-07, at "Ackermann and Son", a Person holding ULAN's corporate body) *@
         <form method="post" asp-page-handler="Class" class="card">

@@ -7,6 +7,7 @@
     { "names": ["MIT Press", "The MIT Press"], "place": "Cambridge, Massachusetts", "tgn": "7013527", "source": "general knowledge (the assistant)" },
     { "names": ["Princeton University Press"], "place": "Princeton, New Jersey", "tgn": "7016190", "source": "general knowledge (the assistant)" },
     { "names": ["University of Chicago Press", "The University of Chicago Press"], "place": "Chicago, Illinois", "tgn": "7013596", "source": "general knowledge (the assistant)" },
-    { "names": ["Edinburgh University Press"], "place": "Edinburgh, Scotland", "tgn": "7009546", "source": "general knowledge (the assistant)" }
+    { "names": ["Edinburgh University Press"], "place": "Edinburgh, Scotland", "tgn": "7009546", "source": "general knowledge (the assistant)" },
+    { "names": ["Stanford University Press"], "place": "Stanford, California", "tgn": "7031481", "source": "general knowledge (the assistant); added at the owner's word, 2026-11-15" }
   ]
 }

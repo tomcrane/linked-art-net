@@ -13,6 +13,7 @@ public class ExamplesTests(PostgresFixture pg)
         // the owner, 2026-11-15, at "Cambridge": 276 of the string's 525 records are Cambridge University Press, four are American
         Assert.Equal("Cambridge, England", PublisherPlaces.Find("Cambridge University Press")!.Place);
         Assert.Equal("http://vocab.getty.edu/tgn/7013527", PublisherPlaces.Find("the MIT press")!.Uri);
+        Assert.Equal("Stanford, California", PublisherPlaces.Find("Stanford University Press")!.Place);
         Assert.Null(PublisherPlaces.Find("Yale University Press")); // two offices: absent until an entry can carry several
         Assert.Contains("general knowledge", PublisherPlaces.Notes);
 

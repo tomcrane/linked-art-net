@@ -23,6 +23,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     public MendPlan? Plan { get; private set; }
     /// <summary>LoC's heading for the entity being decided, when it holds one that begins with its label and carries a qualifier: the label suggested for keeping it.</summary>
     public string? SuggestedLabel { get; private set; }
+    /// <summary>What happened when the screen pulled the entity's Wikidata item, the local index not having it: what the item says it is, or why the pull failed. Null when no pull was needed.</summary>
+    public string? Pulled { get; private set; }
     /// <summary>The strings that stand on the entity being mended, each with up to three of the records it is in (the owner, 2026-11-15: "it would help to re-list the record context on the Mend page").</summary>
     public List<(SourceString String, IReadOnlyList<StringExample> Records, int Count)> PlanStrings { get; } = [];
     public Dictionary<string, (string? Placement, int Strings)> Clues { get; } = new(StringComparer.Ordinal);
@@ -38,6 +40,28 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         {
             try { Plan = await Project.Curation.MendPlanAsync(Dataset, Mend, HomePlace, HttpContext.RequestAborted); }
             catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException) { Message = e.Message; }
+            // the item is pulled when the screen is opened and the index does not have it, one item for one decision (the owner,
+            // 2026-11-15: "a mend page that needs to pull from wikidata could do so on load ... better than a button to load all
+            // wikidata, which while OK here may not be appropriate if there are hundreds of items")
+            if (Plan is { Homes: [{ ItemDescription: null, Item: var item }, ..] })
+            {
+                try
+                {
+                    var result = await Project.Pull.PullAsync(item, HttpContext.RequestAborted);
+                    if (result.Error is not null) Pulled = "The Wikidata item is not in the local index and could not be pulled just now: " + result.Error;
+                    else
+                    {
+                        Plan = await Project.Curation.MendPlanAsync(Dataset, Mend, HomePlace, HttpContext.RequestAborted) ?? Plan;
+                        Pulled = Plan.Homes[0].ItemDescription is { } says
+                            ? $"The Wikidata item was not in the local index, so it was pulled from Wikidata just now. It says it is: {says}."
+                            : "The Wikidata item was not in the local index; it was pulled from Wikidata just now, and has no description.";
+                    }
+                }
+                catch (Exception e) when (e is HttpRequestException or TaskCanceledException or InvalidOperationException)
+                {
+                    Pulled = "The Wikidata item is not in the local index and could not be pulled just now: " + e.Message;
+                }
+            }
             if (Plan is not null)
             {
                 foreach (var s in (await Services.Store.StringsForEntityAsync(Plan.Entity.Id, 12, HttpContext.RequestAborted)).OrderBy(s => s.String.Raw, StringComparer.Ordinal))

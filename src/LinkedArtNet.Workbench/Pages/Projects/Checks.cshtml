@@ -23,6 +23,7 @@
     <div class="card">
         <h2 style="margin-top:0">Decide "@pe.Label"</h2>
         <p class="small muted">Nothing is changed until you press one of the buttons below: Confirm, Mend or Move. <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(pe.Id)" target="_blank" rel="noopener">Open the entity's page</a> to see its strings and records first. It stands for @plan.Homes[0].Strings string@(plan.Homes[0].Strings == 1 ? "" : "s").</p>
+        @if (Model.Pulled is not null) { <p class="notice small">@Model.Pulled</p> }
         <h3>What the records say</h3>
         @if (Model.PlanStrings.Count == 0) { <p class="small muted">No string stands on this entity.</p> }
         @foreach (var (ps, recs, count) in Model.PlanStrings)

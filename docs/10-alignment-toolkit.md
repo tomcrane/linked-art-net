@@ -1306,6 +1306,35 @@ under England, and "Swindon, Wilts" has no other). `GroupingTests`. Not counted 
 not say which way a placement agreed, and a count by the chain's words drowned in abbreviations ("Cambs.", "N.Y.");
 the next reconcile's diff is the count, read string by string.
 
+Measured 2026-11-15, twice. The first run (x9ptwy, `run-20261115-114010-x9ptwy`, taken back) showed the rule's fault:
+it set aside seven strings' candidates, six rightly or without effect, and at "Glasgow (Strathclyde)" (46906) LoC's
+"Glasgow (Scotland)", placed "Scotland; Strathclyde", counted as the candidate that names the qualifier and set aside
+TGN's Glasgow, the same city, whose chain "Scotland, United Kingdom, Europe, World" has no Strathclyde in it; the
+string fell from a vote to the queue, its entity was not made, and two more Glasgow strings moved after it (46908 from
+the queue onto the project's "Glasgow", which is aligned to Glasgow, Kentucky; 96476 from that entity to a vote). At
+"Derry (Northern Ireland)" the LoC heading set aside three TGN records in the same way, without changing the decision.
+Mended the same day: the candidate that names the qualifier must itself be a whole chain (it ends in "World"), like
+set against like. The second run (ykb9jd, `run-20261115-123145-ykb9jd`: accepted 9,481, vote 4,107, single 2,110,
+exact-single 3,264; matched in store 6,060; queued 3,716; minted 10,775; against wzkhhb's 9,482, 3,722, 10,775) has the
+rule on five strings, each read, each right, none changing its method:
+
+- "Madison, Wisconsin" (61369): TGN's Madison River, placed in the United States and no nearer, no longer ties with
+  Madison in Dane, Wisconsin. Still queued, by the project's own "Madison" aligned to Madison, New Jersey (finding 119).
+- "Irvine, Ayrshire" (52438): the Irvine placed "Scotland, United Kingdom" gives way to Irvine in North Ayrshire.
+- "Jura, France" (75006): a Jura placed "Europe, World" gives way to the Département du Jura and Mont Jura, in France.
+- "Andalusia (Spain)" (84086): a second Andalucía placed "Europe, World" gives way to the one under Spain.
+- "Jamestown (Va.)" (104938): the Jamestown in Jefferson, West Virginia gives way to the two in Virginia; the chain's
+  "West Virginia" does not name Virginia.
+
+The rest of the diff is not the rule's: five strings the owner decided by hand on 2026-11-15 ("Plymouth", "Dudley",
+"Otley", "Tain", "Peter Nahum at the Leicester Galleries"), two Leicester Galleries strings now matched to the entity
+the owner's merge left (`group/mpps74sg`), and "Sutton" (61352), a bare place of publication, matched by exact-name to
+the owner's Plymouth (`place/adjrx32x`), which took TGN's former names "Sutton" and "Sudtone" as labels: wrong, and a
+matter for the project's manifest (plan section 7, Reconciler; the owner: it "depends on the nature of the material
+being catalogued"). How it was read: the stored evidence keeps only so many vetoed candidates, so searching the
+reasons for the rule's words found one string of the seven; the count that works compares the candidates that stood
+in the last run with those that stand in this (`reports/q-diff124c.sql`).
+
 Built 2026-11-15, an order among tied place groups and a word on what a card leaves off (the owner's desk, at
 "Plymouth", string 61711: "there is no UK Plymouth at all"). TGN holds 41 Plymouths, 22 tie at 1.00 with two sources
 each, a card keeps twelve, and the tie's order was the index's: Montserrat first, and Plymouth in Devon, the most

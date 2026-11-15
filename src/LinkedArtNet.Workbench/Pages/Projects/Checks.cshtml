@@ -40,10 +40,11 @@
                 <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" @(q.Method.StartsWith("imported", StringComparison.Ordinal) || q.Method.StartsWith("through", StringComparison.Ordinal) ? "checked" : "") /> <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == plan.Homes[0].Item ? " · " + (plan.Homes[0].ItemDescription ?? "not in the local index") : "")</span></label></p>
             }
             <h3>2. The place meant</h3>
+            @if (plan.Homes.Count > 1 || plan.Others.Count > 0) { <p class="small muted">Choose one: with several to choose among, none is chosen for you. The records above say which.</p> }
             @foreach (var h in plan.Homes)
             {
                 var holder = plan.Holders.GetValueOrDefault(h.HomeUri);
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(ReferenceEquals(h, plan.Homes[0]) ? "checked" : "") /> <strong>@Chain(h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(plan.Homes.Count == 1 && plan.Others.Count == 0 ? "checked" : "") /> <strong>@Chain(h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
                 @if (holder is not null) { <span>The project already has an entity for this place, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: "@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span> }
                 else { <span>No entity of the project holds this place: the identifier is <strong>added to "@pe.Label"</strong>.</span> }</p>
             }

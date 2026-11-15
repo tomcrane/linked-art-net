@@ -1433,6 +1433,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     public async Task<IReadOnlyList<AwayRow>> ImportedPlacesWithHomeNamesakesAsync(string dataset, string homePlace, CancellationToken ct = default)
     {
         // the source literal lets the lookup use TGN's own label index (schema version 5)
+        // and each name is looked up on its own (lateral, offset 0): joined plainly, the planner scanned every authority record, eleven seconds
+        // where this takes a quarter of one (the owner, 2026-11-15: "the checks page takes a long time to load")
         await using var cmd = _db.CreateCommand(
             """
             with c as materialized (
@@ -1442,10 +1444,10 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                      left join authority_records w on w.uri = q.uri
                 where e.dataset = @dataset and e.class = 'Place' and e.merged_into is null and e.status <> 'confirmed' and e.label !~ '[,(\[]')
             select c.id, c.label, c.status, c.strings, c.item, c.descr, c.sitelinks, t.uri, t.data->>'parentString', coalesce(h.sitelinks, 0), h.uri
-            from c join authority_records t on t.source = 'tgn' and t.normalised_labels @> array[lower(c.label)] and t.label = c.label
+            from c cross join lateral (select t.uri, t.data from authority_records t where t.source = 'tgn' and t.normalised_labels @> array[lower(c.label)]
+                                         and t.label = c.label and t.data->>'parentString' like @home offset 0) t
                  left join lateral (select x.uri, coalesce((x.data->>'sitelinks')::int, 0) as sitelinks from authority_records x
                                     where x.source = 'wikidata' and x.same_as @> array[t.uri] order by 2 desc limit 1) h on true
-            where t.data->>'parentString' like @home
             order by c.label, c.id
             """);
         Add(cmd, "dataset", dataset); Add(cmd, "home", "%" + homePlace + "%");

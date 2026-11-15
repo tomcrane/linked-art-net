@@ -190,7 +190,18 @@ else
         @foreach (var g in recs.Groups)
         {
             var several = recs.Groups.Count > 1;
-            @if (several) { @:<details class="rec-group" @(ReferenceEquals(g, recs.Groups[0]) ? "open" : "")><summary class="small"><span class="muted">@recs.By:</span> <strong>@(g.Value ?? "(none given)")</strong> <span class="muted">· @g.Records.ToString("N0") record@(g.Records == 1 ? "" : "s")</span></summary>
+            @if (several) { @:<details class="rec-group" @(ReferenceEquals(g, recs.Groups[0]) ? "open" : "")><summary class="small"><span class="muted">@recs.By:</span> <strong>@(g.Value ?? "(none given)")</strong> <span class="muted">· @g.Records.ToString("N0") record@(g.Records == 1 ? "" : "s")</span>@if (g.Value is not null && recs.Hints.TryGetValue(g.Value, out var hs) && hs.FirstOrDefault(h => h.Place is not null) is { } lead) { <span class="hint" title="A hint, not a decision: where this publisher is, by @(lead.From == "table" ? "the shipped table of publishers" : "its other imprints in this project")"> · in @lead.Place</span> }</summary>
+            }
+            @if (g.Value is not null && recs.Hints.TryGetValue(g.Value, out var groupHints))
+            {
+                @* what a record's other field says about the string (the owner, 2026-11-15, at "Cambridge"): hints, nothing decided *@
+                <p class="small hint-line"><span class="muted">Where this publisher is:</span>
+                    @foreach (var h in groupHints)
+                    {
+                        <span class="hint-item">@if (h.Uri is not null) { <a href="@h.Uri" target="_blank" rel="noopener">@h.Text</a> } else if (h.EntityId is not null) { <a href="@Url.Page("/Projects/Entity", new { dataset = Model.Dataset, id = h.EntityId })">@h.Text</a> } else { @h.Text }</span>
+                    }
+                    <span class="muted">· a hint: nothing is decided by it</span>
+                </p>
             }
             @foreach (var x in g.First)
             {

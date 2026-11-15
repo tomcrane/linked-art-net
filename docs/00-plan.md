@@ -675,7 +675,28 @@ and the log (doc 15) records that. The order within an area is rough value.
   place), which must state its provenance. And where it acts: as evidence on the card ("276 of these records are
   Cambridge University Press, which is in Cambridge, England"), as the default of a decision for a group of records
   (doc 12 14.3: a decision for the records where the publisher is this one, between the string and the single
-  record), and only then as a rule (doc 12 14.8 step 6). Not built; to design with section 14 step 3.
+  record), and only then as a rule (doc 12 14.8 step 6).
+  *Built 2026-11-15 as a hint at the desk, nothing decided by it (the owner: "do 1 and 2 and 3 but just with a
+  skeleton model for 3 ... maybe adding to it via PRs in GitHub"):* a place grouped by its publisher shows, on each
+  publisher's group, where that publisher is (`ReviewService.PublisherHintsAsync`, `FieldHint`): (c) from
+  `Tables/publisher-places.json` (`PublisherPlaces`), a skeleton of seven publishers written by the assistant from
+  general knowledge, the TGN identifiers checked against the local index, the provenance and how to add by pull
+  request in the file's notes; (b) from the project's records, the same publisher's imprints that write the place
+  with a qualifier (`FieldValuesWhereAsync`); (a) the project's entity for the publisher, named and linked. Still to
+  do: (a) says nothing of place, because the Wikidata index keeps no headquarters (P159) or country for a body: the
+  loader is to keep them at the next load of the dump, or a pull is to bring them; an entry of the table carries one
+  place, so a publisher of two cities (Yale University Press) is absent; the hint is not yet the default of a
+  decision for a group of records (section 14 step 3) nor evidence to the reconciler; only the publisher of a place
+  is hinted, the general form (any field about any other) waits for a second case.
+- The audit of the old import's Wikidata links for bare place names (the owner, 2026-11-15: "YES", build the list;
+  unsure whether its own page or the first source of the cataloguers' list). The assistant's recommendation, put to
+  the owner: its own page. The cataloguers' list (doc 12 14.4) is of things the source records could say better,
+  for cataloguers to mend in their system; these links are faults in the project's own entities, mended at the
+  workbench by whoever aligns, and a problem in an external authority is a third list again. So: a page of checks
+  on the store's entities, each check a named query giving entities with the reason and the strings and records
+  behind them, the first check "a place aligned abroad of the home place by the old import, with a namesake at
+  home" (`reports/q-import-us.sql`), each row leading to the entity page where the identifier is removed and the
+  right one added. Not built: waits for the owner's word on the recommendation.
 - The project's "Glasgow" (`place/k5nzg3aj`) is aligned to Glasgow, Kentucky (Wikidata Q1762833 from the old import,
   LoC n82030840 through it), as its "Madison" is to Madison, New Jersey. The place of publication "Glasgow" (65770,
   imported) and the keywords "Glasgow" (76007, and 46908 in runs where nothing else contests it) stand on it. With

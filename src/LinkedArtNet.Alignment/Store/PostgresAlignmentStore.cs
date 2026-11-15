@@ -1430,6 +1430,18 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct), CultureInfo.InvariantCulture);
     }
 
+    public async Task<IReadOnlyList<(string Value, int Records)>> FieldValuesWhereAsync(string dataset, string whereField, string whereValue, string field, int limit = 40, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            "select v, count(*) from records r, jsonb_array_elements_text(case when jsonb_typeof(r.fields->@field) = 'array' then r.fields->@field else '[]'::jsonb end) v " +
+            "where r.dataset = @dataset and r.gone_at is null and jsonb_typeof(r.fields->@where) = 'array' and r.fields->@where ? @value group by v order by count(*) desc, v limit @limit");
+        Add(cmd, "dataset", dataset); Add(cmd, "where", whereField); Add(cmd, "value", whereValue); Add(cmd, "field", field); Add(cmd, "limit", limit);
+        var list = new List<(string, int)>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add((r.GetString(0), Convert.ToInt32(r.GetInt64(1))));
+        return list;
+    }
+
     public async Task<IReadOnlyList<RecordGroup>> RecordGroupsAsync(long stringId, string byField, int groups = 8, int perGroup = 3, CancellationToken ct = default)
     {
         // the field's values joined as the export orders them; a record without the field is in the group of none

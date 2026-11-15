@@ -38,7 +38,19 @@ public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Str
 public sealed record TogetherPlan(Entity Survivor, IReadOnlyList<Entity> Merging, IReadOnlyList<Entity> Ours, IReadOnlyList<string> Identifiers);
 
 /// <summary>A string's records for the desk: how many there are, the field they are grouped by, the largest groups, and the whole value whose records these are when the string has none of its own.</summary>
-public sealed record StringRecords(int Count, string By, IReadOnlyList<RecordGroup> Groups, SourceString? Via);
+public sealed record StringRecords(int Count, string By, IReadOnlyList<RecordGroup> Groups, SourceString? Via)
+{
+    /// <summary>What is known of where each group's publisher is, by the group's value; empty unless a place is grouped by its publisher.</summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<FieldHint>> Hints { get; init; } = new Dictionary<string, IReadOnlyList<FieldHint>>();
+}
+
+/// <summary>
+/// A hint from a record's other field about what a string means (the owner, 2026-11-15, at "Cambridge": the publisher being Cambridge
+/// University Press). <paramref name="From"/> is where the knowledge comes from: "table" (the shipped publisher-places.json), "records"
+/// (the same publisher's other imprints in this project, where the place is qualified) or "entity" (the project's entity for the
+/// publisher). <paramref name="Place"/> is null when the source has nothing to say and only <paramref name="Text"/> explains.
+/// </summary>
+public sealed record FieldHint(string From, string? Place, string Text, string? Uri = null, string? EntityId = null);
 
 /// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, the records behind the candidates, the project's own entities among the candidates with their facts, and the catalogue records the string was seen in.</summary>
 /// <param name="LookedAgain">Set when the evidence shown is a fresh evaluation under today's rules, not the decision's own: what the string would be decided as now ("queued", "accepted", ...). The stored decision is unchanged.</param>
@@ -242,7 +254,44 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
                 if (await store.RecordCountAsync(parent.Id, ct) is var n and > 0) { id = parent.Id; via = parent; count = n; break; }
         if (count == 0) return new StringRecords(0, "", [], null);
         by = string.IsNullOrWhiteSpace(by) ? manifest.GroupBy(s.Context) : by;
-        return new StringRecords(count, by, await store.RecordGroupsAsync(id, by, groups, perGroup, ct), via);
+        var found = await store.RecordGroupsAsync(id, by, groups, perGroup, ct);
+        var hints = new Dictionary<string, IReadOnlyList<FieldHint>>(StringComparer.Ordinal);
+        if (by == "publisher" && reconciler.Read(s).Classes is [EntityClass.Place, ..])
+            foreach (var g in found)
+                if (g.Value is { } publisher && !publisher.Contains(" · ", StringComparison.Ordinal) && await PublisherHintsAsync(s, publisher, ct) is { Count: > 0 } h) hints[publisher] = h;
+        return new StringRecords(count, by, found, via) { Hints = hints };
+    }
+
+    /// <summary>
+    /// Where a publisher is, as far as three kinds of knowledge say (plan section 7, Reconciler; the owner, 2026-11-15: "do 1 and 2 and
+    /// 3"): the shipped table; the project's own records, where the same publisher's imprint gives the place with a qualifier ("Cambridge
+    /// [England]"); and the project's entity for the publisher, whose sources do not yet say where a body is (the Wikidata index keeps no
+    /// headquarters), so that it is named and nothing more. Hints for the desk: nothing is decided by them.
+    /// </summary>
+    public async Task<IReadOnlyList<FieldHint>> PublisherHintsAsync(SourceString place, string publisher, CancellationToken ct = default)
+    {
+        var hints = new List<FieldHint>();
+        if (PublisherPlaces.Find(publisher) is { } known)
+            hints.Add(new FieldHint("table", known.Place, $"{known.Place}, by the shipped table of publishers ({known.Source ?? "no source given"})", known.Uri));
+        // the same publisher's imprints where this place is written with more: "Cambridge [England]", "Cambridge, Mass."
+        var bare = reconciler.Read(place).Text;
+        var qualified = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (value, n) in await store.FieldValuesWhereAsync(place.Dataset, "publisher", publisher, "place", 60, ct))
+            foreach (var part in value.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            {
+                var p = part.Length > 2 && part[0] == '[' && part[^1] == ']' && part.IndexOf(']') == part.Length - 1 ? part[1..^1].Trim() : part;
+                if (p.Length > bare.Length && p.StartsWith(bare, StringComparison.OrdinalIgnoreCase) && !char.IsLetterOrDigit(p[bare.Length]) && p[bare.Length..].Any(char.IsLetter))
+                    qualified[p] = qualified.GetValueOrDefault(p) + n;
+            }
+        if (qualified.Count > 0)
+        {
+            var ordered = qualified.OrderByDescending(q => q.Value).ThenBy(q => q.Key, StringComparer.Ordinal).ToList();
+            hints.Add(new FieldHint("records", ordered[0].Key, "this publisher's other imprints here say " + string.Join(", ", ordered.Take(3).Select(q => $"\"{q.Key}\" ({q.Value} record{(q.Value == 1 ? "" : "s")})"))));
+        }
+        if (await store.FindSourceStringAsync(place.Dataset, "publisher", publisher, ct) is { } ps && await store.DecisionForAsync(ps.Id, ct) is { EntityId: { } entityId }
+            && await store.ResolveEntityAsync(entityId, ct) is { } entity)
+            hints.Add(new FieldHint("entity", null, $"the project's entity {entity.Label ?? entity.Id}" + (entity.Equivalents.Count == 0 ? ", not aligned to any source" : $", aligned to {string.Join(", ", entity.Equivalents.Select(q => q.Source).Distinct())}") + ": its sources do not say where it is", EntityId: entity.Id));
+        return hints;
     }
 
     /// <summary>The catalogue records a string was seen in (design doc 12 section 5), up to three; a part string with none of its own (a keyword's head, a place in a list) shows its parents'.</summary>

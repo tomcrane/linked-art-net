@@ -254,3 +254,7 @@ details.others[open] > summary { margin-bottom: 0.5rem; }
 dd.names { display: flex; flex-wrap: wrap; gap: .15rem .9rem; align-items: baseline; }
 dd.names form.name button { padding: 0 .35rem; font-size: .75rem; opacity: .55; }
 dd.names form.name:hover button, dd.names form.name button:focus { opacity: 1; }
+
+/* a hint from a record's other field (where a publisher is), 2026-11-15 */
+.rec-group summary .hint { color: var(--accent, #b4541a); font-weight: 600; }
+.hint-line .hint-item + .hint-item::before { content: " · "; }

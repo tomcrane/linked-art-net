@@ -114,6 +114,9 @@ public interface IAlignmentStore
     /// The records a string occurs in, grouped by what one of their naming fields says (the field's values joined), the largest
     /// groups first, each with its count and its first few records (design doc 12 section 14.6).
     /// </summary>
+    /// <summary>What one field says in the records where another field has a value ("place" where "publisher" is "Cambridge University Press"), each value with its count of records, the commonest first.</summary>
+    Task<IReadOnlyList<(string Value, int Records)>> FieldValuesWhereAsync(string dataset, string whereField, string whereValue, string field, int limit = 40, CancellationToken ct = default);
+
     Task<IReadOnlyList<RecordGroup>> RecordGroupsAsync(long stringId, string byField, int groups = 8, int perGroup = 3, CancellationToken ct = default);
     /// <summary>The dataset's records by source system: how many, and how many of them are gone.</summary>
     Task<IReadOnlyList<(string System, int Records, int Gone, string? LastCollect)>> RecordSystemsAsync(string dataset, CancellationToken ct = default);

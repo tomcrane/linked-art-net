@@ -7,6 +7,37 @@ namespace LinkedArtNet.Alignment.Tests;
 [Collection("postgres")]
 public class ExamplesTests(PostgresFixture pg)
 {
+    [PostgresFact]
+    public async Task A_publishers_place_is_hinted_from_the_table_the_projects_records_and_its_entity()
+    {
+        // the owner, 2026-11-15, at "Cambridge": 276 of the string's 525 records are Cambridge University Press, four are American
+        Assert.Equal("Cambridge, England", PublisherPlaces.Find("Cambridge University Press")!.Place);
+        Assert.Equal("http://vocab.getty.edu/tgn/7013527", PublisherPlaces.Find("the MIT press")!.Uri);
+        Assert.Null(PublisherPlaces.Find("Yale University Press")); // two offices: absent until an entry can carry several
+        Assert.Contains("general knowledge", PublisherPlaces.Notes);
+
+        var ds = "ph" + Guid.NewGuid().ToString("N")[..6];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var cambridge = await pg.Store.CollectAsync(ds, "place", "Cambridge");
+        var cupString = await pg.Store.CollectAsync(ds, "publisher", "Cambridge University Press");
+        var cup = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Cambridge University Press"), scheme);
+        await pg.Store.DecideAsync(cupString.Id, cup.Id, DecisionMethod.Human, null, "tester");
+        static string Fields(string place, string publisher) => $"{{\"place\":[\"{place}\"],\"publisher\":[\"{publisher}\"]}}";
+        await pg.Store.PutRecordsAsync(ds, "c1", [new SourceRecord("library", "R3", "Elsewhere", "2001", Fields("Cambridge [England]; New York", "Cambridge University Press"), null)]);
+        await pg.Store.PutExamplesAsync([
+            new StringExample(cambridge.Id, "R1", "library", "Ten books", "1999", "place", Fields("Cambridge", "Cambridge University Press")),
+            new StringExample(cambridge.Id, "R2", "library", "Digital", "2012", "place", Fields("Cambridge", "Kettle's Yard"))]);
+        var desk = new ReviewService(pg.Store, scheme, new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions()));
+        var recs = await desk.RecordsForAsync(cambridge, null, ProjectManifest.PmcDefault);
+        Assert.Equal("publisher", recs.By);
+        var hints = recs.Hints["Cambridge University Press"];
+        Assert.Equal(["table", "records", "entity"], hints.Select(h => h.From));
+        Assert.Equal("Cambridge, England", hints[0].Place); Assert.Equal("http://vocab.getty.edu/tgn/7010874", hints[0].Uri);
+        Assert.Equal("Cambridge [England]", hints[1].Place); Assert.Contains("1 record", hints[1].Text);
+        Assert.Null(hints[2].Place); Assert.Equal(cup.Id, hints[2].EntityId);
+        Assert.False(recs.Hints.ContainsKey("Kettle's Yard")); // nothing known: no hint
+    }
+
     // four Heritage records in the export's shape: three name Langford's auction house (two kept at two per string), one is Hodgkin's
     // catalogue with a publisher, a place, keywords and a compound keyword; the notes' (HIE) place is the hierarchical one
     private const string Xml = """

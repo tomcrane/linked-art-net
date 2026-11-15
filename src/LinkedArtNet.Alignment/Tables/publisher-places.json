@@ -1,0 +1,12 @@
+{
+  "notes": "Where a publisher is, for reading a bare place of publication (\"Cambridge\" beside \"Cambridge University Press\"). A SKELETON (2026-11-15): a handful of entries to show how such background knowledge is used; it is shown at the review desk as a hint beside a publisher's records and decides nothing. Provenance: the pairing of publisher and place is written by the assistant (Claude) from general knowledge, not copied from any source; each TGN identifier was checked against the Getty Thesaurus of Geographic Names (Getty Vocabularies, Open Data Commons Attribution License 1.0) as loaded in the project's local index on 2026-11-15. Additions and corrections by pull request: one entry a publisher, every name it is printed under in \"names\", the place as a reader would say it, the TGN identifier, and in \"source\" where the fact comes from. One place an entry for now: a publisher with offices in two places that both appear bare on its imprints (Yale University Press: New Haven and London) is deliberately absent until an entry can carry several.",
+  "publishers": [
+    { "names": ["Cambridge University Press"], "place": "Cambridge, England", "tgn": "7010874", "source": "general knowledge (the assistant)" },
+    { "names": ["Oxford University Press", "Clarendon Press"], "place": "Oxford, England", "tgn": "7011931", "source": "general knowledge (the assistant)" },
+    { "names": ["Harvard University Press", "Belknap Press of Harvard University Press"], "place": "Cambridge, Massachusetts", "tgn": "7013527", "source": "general knowledge (the assistant)" },
+    { "names": ["MIT Press", "The MIT Press"], "place": "Cambridge, Massachusetts", "tgn": "7013527", "source": "general knowledge (the assistant)" },
+    { "names": ["Princeton University Press"], "place": "Princeton, New Jersey", "tgn": "7016190", "source": "general knowledge (the assistant)" },
+    { "names": ["University of Chicago Press", "The University of Chicago Press"], "place": "Chicago, Illinois", "tgn": "7013596", "source": "general knowledge (the assistant)" },
+    { "names": ["Edinburgh University Press"], "place": "Edinburgh, Scotland", "tgn": "7009546", "source": "general knowledge (the assistant)" }
+  ]
+}

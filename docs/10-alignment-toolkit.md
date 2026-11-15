@@ -1293,6 +1293,16 @@ group through the placed-through join, so the project's entity answers. Two thin
 recorded as items, not built: an entity minted from a string with its post town is labelled "Donington, Spalding";
 and "Donnington" lists TGN's Donington first on a variant spelling, ahead of the two Donningtons.
 
+Built 2026-11-15, an order among tied place groups and a word on what a card leaves off (the owner's desk, at
+"Plymouth", string 61711: "there is no UK Plymouth at all"). TGN holds 41 Plymouths, 22 tie at 1.00 with two sources
+each, a card keeps twelve, and the tie's order was the index's: Montserrat first, and Plymouth in Devon, the most
+written-about of them (109 sitelinks against 70), beyond the cut. Finding 123 had left it, TGN's "Plymouth, City of"
+being a second group at home. Prominence that does not decide now still orders the tied groups, most sitelinks first
+and the one at home ahead of an equal, each reason giving its own figure ("this one 109"); and the evidence carries
+`hidden`, the number of groups level with the first that are not on the card, which the desk says ("10 more
+candidates level with these are not shown"). No decision changes; stored cards show it after the next reconcile, or
+"Look again". `ProminenceTests`.
+
 Measured 2026-11-14 (run wzkhhb, 19:20 to 19:55; e2xm63, the first run with finding 123, taken back for its
 tightening): finding 123. Matched in store 6,057, accepted 9,482 (vote 4,108, single 2,110, exact-single 3,264),
 queued 3,722, minted 10,775, overridden 84. The first run had the rule take fifteen names, twelve rightly, and

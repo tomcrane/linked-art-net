@@ -5,7 +5,8 @@ using LinkedArtNet.Alignment.Store;
 namespace LinkedArtNet.Alignment.Reconciliation;
 
 /// <summary>The evidence a decision carried, read back for the desk.</summary>
-public sealed record EvidenceView(string? Stage, EvidenceReading? Reading, List<EvidenceGroup> Groups, JsonElement? Extra);
+/// <param name="Hidden">Groups level with the first that the card does not carry (it keeps twelve): the desk says so.</param>
+public sealed record EvidenceView(string? Stage, EvidenceReading? Reading, List<EvidenceGroup> Groups, JsonElement? Extra, int Hidden = 0);
 public sealed record EvidenceReading(string? Text, string? Key, List<string>? Classes, string? Lifespan, List<string>? Nationalities, List<string>? Roles, string? Qualifier = null, string? QualifierFrom = null);
 public sealed record EvidenceGroup(double Score, List<string> Sources, List<EvidenceMember> Members);
 public sealed record EvidenceMember(string Uri, string Source, string? Label, string? Stage, double Score, bool? Veto, string? Reason, bool? SetAside = null)
@@ -242,7 +243,8 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             var reading = root.TryGetProperty("reading", out var rd) ? rd.Deserialize<EvidenceReading>(Json) : null;
             var groups = root.TryGetProperty("groups", out var gs) ? gs.Deserialize<List<EvidenceGroup>>(Json) ?? [] : [];
             JsonElement? extra = root.TryGetProperty("extra", out var ex) && ex.ValueKind != JsonValueKind.Null ? ex.Clone() : null;
-            return new EvidenceView(stage, reading, groups, extra);
+            var hidden = root.TryGetProperty("hidden", out var hd) && hd.ValueKind == JsonValueKind.Number ? Math.Max(0, hd.GetInt32()) : 0;
+            return new EvidenceView(stage, reading, groups, extra, hidden);
         }
         catch (JsonException) { return new EvidenceView(null, null, [], null); }
     }

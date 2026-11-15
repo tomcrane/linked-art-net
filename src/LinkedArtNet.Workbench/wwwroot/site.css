@@ -224,3 +224,6 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 details.others { margin: 0.75rem 0; }
 details.others > summary { cursor: pointer; padding: 0.4rem 0; color: var(--muted); }
 details.others[open] > summary { margin-bottom: 0.5rem; }
+
+/* the chosen tag keeps its green on a tinted card, where a later rule gave every tag a white ground (2026-11-15) */
+.card .tag.chosen-tag, .card.best .tag.chosen-tag { background: #2f7d4f !important; color: #fff !important; border-color: #2f7d4f !important; }

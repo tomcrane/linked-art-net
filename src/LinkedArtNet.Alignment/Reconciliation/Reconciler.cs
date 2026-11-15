@@ -775,7 +775,15 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                         }
                     }
                 }
-                groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks)" }).ToList() } : g).ToList();
+                // prominence that does not decide still orders: the tied groups stand most written-about first, the one at home ahead of
+                // its equals, so that the twelve a card keeps are the likeliest twelve (the owner's desk, 2026-11-15, at "Plymouth": twenty-two
+                // Plymouths level at 1.00, Montserrat first, and the city in Devon, the most prominent of them at 109 sitelinks, beyond the
+                // card's cut and nowhere to be seen)
+                var homeWordsForOrder = _options.HomePlace is { } hp ? Qualified.Tokens(hp) : [];
+                bool Home(CandidateGroup g) => homeWordsForOrder.Count > 0 && g.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWordsForOrder));
+                var inOrder = ranked.OrderByDescending(x => x.Sitelinks).ThenByDescending(x => Home(x.Group) ? 1 : 0).Select(x => x.Group).ToList();
+                groups = inOrder.Concat(groups.Where(g => !tied.Contains(g))).ToList();
+                groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks; this one {ranked.First(x => x.Group == g).Sitelinks})" }).ToList() } : g).ToList();
             }
         }
         if (top is not null && wouldAccept)
@@ -1792,6 +1800,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             stage,
             reading = new { reading.Text, reading.Key, reading.Qualifier, qualifierFrom = reading.QualifierFrom, classes = reading.Classes.Select(c => c.ToString()), lifespan = reading.Lifespan?.Text, nationalities = reading.Nationalities.Count == 0 ? null : reading.Nationalities, roles = reading.Roles.Count == 0 ? null : reading.Roles },
+            // how many groups level with the first are not on the card, so the desk can say so and not seem to show them all
+            hidden = groups.Count(g => !g.Vetoed && groups.Count > 0 && g.Score >= groups[0].Score - 0.001) - Shown(groups).Count(g => !g.Vetoed && g.Score >= groups[0].Score - 0.001),
             groups = Shown(groups).Select(g => new
             {
                 g.Score, g.Sources, vetoed = g.Vetoed ? true : (bool?)null,

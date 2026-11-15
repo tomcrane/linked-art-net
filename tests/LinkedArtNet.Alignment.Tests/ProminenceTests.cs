@@ -41,7 +41,10 @@ public class ProminenceTests(PostgresFixture pg)
 
         var murray = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:sub", "Murray"));
         Assert.Equal(Outcome.Queued, murray.Outcome);
-        Assert.Contains(murray.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("prominence does not separate them (45, 44 sitelinks)"));
+        Assert.Contains(murray.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("prominence does not separate them (45, 44 sitelinks"));
+        // and still orders them: the more written-about first on the card (the owner, 2026-11-15: Plymouth in Devon beyond the card's cut)
+        Assert.Contains("http://vocab.getty.edu/tgn/2040431", murray.Groups[0].Uris);
+        Assert.Contains("this one 45", murray.Groups[0].Best.Reason);
 
         // finding 123: prominence not separating them, the one tied group at home is presumed when none abroad is far the more written
         // about ("Reading": Berkshire's 63 against Pennsylvania's 91), and is not when one is ("Washington": Tyne and Wear's 40 against two

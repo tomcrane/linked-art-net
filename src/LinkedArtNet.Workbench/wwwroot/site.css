@@ -236,3 +236,6 @@ details.others[open] > summary { margin-bottom: 0.5rem; }
 
 /* the map keeps its layers to itself: Leaflet numbers its panes up to 1000, which rose over the tray bar at the foot of the page (the owner, 2026-11-15) */
 .map { isolation: isolate; position: relative; z-index: 0; }
+
+/* an empty tray is hidden: the script marks it so, and the bar's own display rule had been overriding that (the owner, 2026-11-15) */
+.tray[hidden] { display: none; }

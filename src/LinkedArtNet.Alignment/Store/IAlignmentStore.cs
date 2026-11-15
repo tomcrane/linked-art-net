@@ -36,6 +36,12 @@ public interface IAlignmentStore
     /// <summary>Replaces the entity's current best values (label, labels, lifespan, nationalities, roles, status). Equivalents are managed separately.</summary>
     Task UpdateEntityAsync(Entity entity, CancellationToken ct = default);
 
+    /// <summary>
+    /// Sets a name of the entity aside (out of its labels and lookup keys, kept in <see cref="Entity.SetAsideLabels"/> so that nothing
+    /// puts it back), or restores it. The entity's own label cannot be set aside. False when there was nothing to change.
+    /// </summary>
+    Task<bool> SetLabelAsideAsync(string entityId, string name, bool aside, CancellationToken ct = default);
+
     /// <summary>Adds or replaces an equivalent; an entity with any equivalent that is still provisional becomes aligned.</summary>
     Task AddEquivalentAsync(string entityId, Equivalent equivalent, CancellationToken ct = default);
 

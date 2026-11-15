@@ -82,7 +82,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
 
     // ---- entities --------------------------------------------------------------------------------------------------
 
-    private const string EntityColumns = "e.id, e.dataset, e.class, e.label, e.labels, e.begin_earliest, e.begin_latest, e.end_earliest, e.end_latest, e.lifespan_text, e.nationalities, e.roles, e.status, e.merged_into, e.created_at, e.updated_at, e.run_id";
+    private const string EntityColumns = "e.id, e.dataset, e.class, e.label, e.labels, e.begin_earliest, e.begin_latest, e.end_earliest, e.end_latest, e.lifespan_text, e.nationalities, e.roles, e.status, e.merged_into, e.created_at, e.updated_at, e.run_id, e.set_aside_labels";
 
     public async Task<Entity> AddEntityAsync(string dataset, NewEntity entity, IdentifierScheme scheme, CancellationToken ct = default)
     {
@@ -165,9 +165,48 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return found;
     }
 
+    public async Task<bool> SetLabelAsideAsync(string entityId, string name, bool aside, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        string? label; string[] labels; string[] set;
+        await using (var cmd = new NpgsqlCommand("select label, labels, set_aside_labels from entities where id = @id for update", conn, tx))
+        {
+            Add(cmd, "id", entityId);
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            if (!await r.ReadAsync(ct)) throw new KeyNotFoundException($"No entity {entityId}.");
+            label = Str(r, 0); labels = r.GetFieldValue<string[]>(1); set = r.GetFieldValue<string[]>(2);
+        }
+        if (aside)
+        {
+            if (name == label) throw new InvalidOperationException("The entity's own label cannot be set aside: change the label first.");
+            if (!labels.Contains(name, StringComparer.Ordinal) || set.Contains(name, StringComparer.Ordinal)) return false;
+            labels = labels.Where(l => l != name).ToArray(); set = [.. set, name];
+        }
+        else
+        {
+            if (!set.Contains(name, StringComparer.Ordinal)) return false;
+            set = set.Where(l => l != name).ToArray(); if (name != label && !labels.Contains(name, StringComparer.Ordinal)) labels = [.. labels, name];
+        }
+        await using (var cmd = new NpgsqlCommand("update entities set labels = @labels, normalised_labels = @normalised, set_aside_labels = @set, updated_at = @now where id = @id", conn, tx))
+        {
+            Add(cmd, "id", entityId); Add(cmd, "labels", labels); Add(cmd, "normalised", NormalisedLabels(label, labels)); Add(cmd, "set", set); Add(cmd, "now", DateTimeOffset.UtcNow);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await tx.CommitAsync(ct);
+        return true;
+    }
+
     public async Task UpdateEntityAsync(Entity entity, CancellationToken ct = default)
     {
-        var labels = entity.Labels.Where(l => !string.IsNullOrWhiteSpace(l)).Distinct(StringComparer.Ordinal).ToArray();
+        // a name set aside stays out, whoever holds the entity and however old their copy of it (schema version 12)
+        string[] aside = [];
+        await using (var read = _db.CreateCommand("select set_aside_labels from entities where id = @id"))
+        {
+            Add(read, "id", entity.Id);
+            if (await read.ExecuteScalarAsync(ct) is string[] found) aside = found;
+        }
+        var labels = entity.Labels.Where(l => !string.IsNullOrWhiteSpace(l) && !aside.Contains(l, StringComparer.Ordinal)).Distinct(StringComparer.Ordinal).ToArray();
         await using var cmd = _db.CreateCommand(
             """
             update entities set class = @class, label = @label, labels = @labels, normalised_labels = @normalised, begin_earliest = @b1, begin_latest = @b2, end_earliest = @e1, end_latest = @e2,
@@ -260,8 +299,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             if (await cmd.ExecuteNonQueryAsync(ct) == 0) throw new InvalidOperationException($"Entity {survivorId} does not exist.");
         }
         // the loser's labels come across, so its spellings keep finding the survivor
-        string? loserLabel = null; string[] loserLabels = []; string? survivorLabel = null; string[] survivorLabels = [];
-        await using (var cmd = new NpgsqlCommand("select id, label, labels from entities where id in (@loser, @survivor)", conn, tx))
+        // and a name set aside on either stays aside on the survivor
+        string? loserLabel = null; string[] loserLabels = []; string? survivorLabel = null; string[] survivorLabels = []; var setAside = new List<string>();
+        await using (var cmd = new NpgsqlCommand("select id, label, labels, set_aside_labels from entities where id in (@loser, @survivor)", conn, tx))
         {
             Add(cmd, "loser", loserId); Add(cmd, "survivor", survivorId);
             await using var r = await cmd.ExecuteReaderAsync(ct);
@@ -269,12 +309,14 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             {
                 if (r.GetString(0) == loserId) { loserLabel = Str(r, 1); loserLabels = r.GetFieldValue<string[]>(2); }
                 else { survivorLabel = Str(r, 1); survivorLabels = r.GetFieldValue<string[]>(2); }
+                setAside.AddRange(r.GetFieldValue<string[]>(3));
             }
         }
-        var merged = survivorLabels.Concat(loserLabels).Append(loserLabel).OfType<string>().Where(l => l.Length > 0 && l != survivorLabel).Distinct(StringComparer.Ordinal).ToArray();
-        await using (var cmd = new NpgsqlCommand("update entities set labels = @labels, normalised_labels = @normalised where id = @survivor", conn, tx))
+        var asideNow = setAside.Where(l => l != survivorLabel).Distinct(StringComparer.Ordinal).ToArray();
+        var merged = survivorLabels.Concat(loserLabels).Append(loserLabel).OfType<string>().Where(l => l.Length > 0 && l != survivorLabel && !asideNow.Contains(l, StringComparer.Ordinal)).Distinct(StringComparer.Ordinal).ToArray();
+        await using (var cmd = new NpgsqlCommand("update entities set labels = @labels, normalised_labels = @normalised, set_aside_labels = @set where id = @survivor", conn, tx))
         {
-            Add(cmd, "survivor", survivorId); Add(cmd, "labels", merged); Add(cmd, "normalised", NormalisedLabels(survivorLabel, merged));
+            Add(cmd, "survivor", survivorId); Add(cmd, "labels", merged); Add(cmd, "normalised", NormalisedLabels(survivorLabel, merged)); Add(cmd, "set", asideNow);
             await cmd.ExecuteNonQueryAsync(ct);
         }
         await tx.CommitAsync(ct);
@@ -292,7 +334,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                 entities.Add(new Entity(
                     r.GetString(0), r.GetString(1), Enum.Parse<EntityClass>(r.GetString(2)), Str(r, 3), r.GetFieldValue<string[]>(4),
                     ReadLifespan(r, 5), r.GetFieldValue<string[]>(10), r.GetFieldValue<string[]>(11),
-                    Enum.Parse<EntityStatus>(r.GetString(12), ignoreCase: true), Str(r, 13), [], r.GetFieldValue<DateTimeOffset>(14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16)));
+                    Enum.Parse<EntityStatus>(r.GetString(12), ignoreCase: true), Str(r, 13), [], r.GetFieldValue<DateTimeOffset>(14), r.GetFieldValue<DateTimeOffset>(15), Str(r, 16)) { SetAsideLabels = r.GetFieldValue<string[]>(17) });
             }
         }
         if (entities.Count == 0) return entities;

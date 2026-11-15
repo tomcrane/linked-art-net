@@ -287,3 +287,10 @@ create index if not exists occurrences_string on occurrences (string_id);
 create index if not exists occurrences_parent on occurrences (parent_string_id) where parent_string_id is not null;
 
 insert into schema_version (version) values (11) on conflict do nothing;
+
+-- version 12 (2026-11-15): names set aside on an entity (the owner at "Plymouth", whose TGN record's former name "Sutton"
+-- drew the place of publication "Sutton" to it). A name here is one the entity's sources give that the project's strings
+-- are not to be matched on: it is out of labels and of normalised_labels, and no update, pull or merge puts it back.
+alter table entities add column if not exists set_aside_labels text[] not null default '{}';
+
+insert into schema_version (version) values (12) on conflict do nothing;

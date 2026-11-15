@@ -65,6 +65,11 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     }
 
     public Task<IActionResult> OnPostLabelAsync(string id, string label) => Act(id, async () => { await Project.Curation.SetLabelAsync(Dataset, id, label, Reviewer); return "Label saved."; });
+    public Task<IActionResult> OnPostNameAsideAsync(string id, string name, bool aside) => Act(id, async () =>
+    {
+        var n = await Project.Curation.SetNameAsideAsync(Dataset, id, name, aside, Reviewer, HttpContext.RequestAborted);
+        return aside ? $"\"{name}\" set aside." + (n == 0 ? "" : $" {n} string(s) that a rule had matched here by it are reopened for the next reconcile.") : $"\"{name}\" restored.";
+    });
     public Task<IActionResult> OnPostClassAsync(string id, EntityClass cls) => Act(id, async () => { var e = await Project.Curation.SetClassAsync(Dataset, id, cls, Reviewer); return $"Class: {e.Class.ToString().ToLowerInvariant()}."; });
     public async Task<IActionResult> OnPostAddEquivalentAsync(string id, string uri)
     {

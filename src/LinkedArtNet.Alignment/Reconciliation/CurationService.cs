@@ -196,6 +196,32 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
 
+    /// <summary>
+    /// A person sets a name of the entity aside, or restores it (the owner, 2026-11-15, at "Plymouth": TGN's record gives the former name
+    /// "Sutton", the entity gathered it, and the place of publication "Sutton", of two books from Sutton in London, was matched to
+    /// Plymouth by it). Set aside, the name is kept and shown as such, no string is matched on it, no pull or merge puts it back, and the
+    /// strings a rule (not a person) had resolved here by that name are reopened for the next reconcile. Returns how many were reopened.
+    /// </summary>
+    public async Task<int> SetNameAsideAsync(string dataset, string entityId, string name, bool aside, string? reviewer = null, CancellationToken ct = default)
+    {
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        if (!await store.SetLabelAsideAsync(entity.Id, name, aside, ct)) return 0;
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, aside
+            ? $"The name \"{name}\" set aside: no string is matched to this entity on it."
+            : $"The name \"{name}\" restored: strings may be matched to this entity on it again.", ct);
+        if (!aside) return 0;
+        var after = (await store.GetEntityAsync(entity.Id, ct))!;
+        var standing = after.Label is null ? after.Labels : after.Labels.Prepend(after.Label);
+        var byThatName = new List<long>();
+        foreach (var s in await store.StringsForEntityAsync(entity.Id, 1000, ct))
+        {
+            if (s.Decision.Method == DecisionMethod.Human || s.Decision.Reviewer is not null) continue;
+            var text = reconciler.Read(s.String).Text;
+            if (NameMatcher.Score(text, [name]) >= 0.97 && NameMatcher.Score(text, standing) < 0.97) byThatName.Add(s.String.Id);
+        }
+        return byThatName.Count == 0 ? 0 : await ReopenAsync(dataset, byThatName, reviewer, entity.Id, ct);
+    }
+
     /// <summary>Attaches an authority URI the store knows (a cached record) or that lives in a namespace the toolkit recognises, an ArchivesSpace agent's public URL among them.</summary>
     public async Task<Entity> AddEquivalentAsync(string dataset, string entityId, string uri, string reviewer, CancellationToken ct = default)
     {

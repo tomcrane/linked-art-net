@@ -659,7 +659,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   London" under Plymouth, "which would lead me to remove 'Sutton'". So there is a second, nearer remedy, for one
   entity: a name under ALSO can be set aside there ("not a name these strings may be matched on"), kept and shown as
   set aside so that a pull from the source does not bring it back, the store match ignoring it, and the strings that
-  resolved by that name reopened. Not built: the entity page has no control on a name. Today's way round: tick
+  resolved by that name reopened. *Built 2026-11-15 (the owner: "yes, build it"):* schema version 12 (`entities.set_aside_labels`), `CurationService.SetNameAsideAsync`, "set aside" beside each name under ALSO on the entity page and "restore" beside a name set aside; an update, a pull or a merge does not put the name back, and strings a rule had matched by it are reopened. Before that: the entity page had no control on a name. Today's way round: tick
   "Sutton" under "Strings that resolve here", reopen it, and decide it at the desk; a person's decision is not redone
   by a run. To agree with the owner before building.
 - What a record's other fields say about a string (the owner at "Cambridge", 65756, 2026-11-15: "another piece of

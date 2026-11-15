@@ -103,6 +103,45 @@ public class CurationServiceTests(PostgresFixture pg)
     /// allows it; a person can change the class on the entity page, noted; a merge whose two entities differ in class can take the chosen one.
     /// </summary>
     [PostgresFact]
+    public async Task A_name_set_aside_stops_matching_stays_aside_and_reopens_what_a_rule_matched_by_it()
+    {
+        // the owner, 2026-11-15: the project's Plymouth gathered TGN's former name "Sutton", and the place of publication "Sutton" (two
+        // books from Sutton in London) was matched to it by exact name
+        var ds = "cu-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var reconciler = new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions());
+        var curation = new CurationService(pg.Store, scheme, reconciler);
+        var plymouth = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Plymouth", ["Sudtone", "Sutton"], Status: EntityStatus.Aligned), scheme);
+        var byHand = await pg.Store.CollectAsync(ds, "place", "Plymouth");
+        await pg.Store.DecideAsync(byHand.Id, plymouth.Id, DecisionMethod.Human, null, "tester");
+        var sutton = await pg.Store.CollectAsync(ds, "place", "Sutton");
+        Assert.Equal(Outcome.MatchedStore, await reconciler.ReconcileOneAsync(ds, sutton));
+        Assert.Equal(plymouth.Id, (await pg.Store.DecisionForAsync(sutton.Id))!.EntityId);
+
+        Assert.Equal(1, await curation.SetNameAsideAsync(ds, plymouth.Id, "Sutton", true, "tester"));
+        var after = (await pg.Store.GetEntityAsync(plymouth.Id))!;
+        Assert.DoesNotContain("Sutton", after.Labels); Assert.Contains("Sudtone", after.Labels); Assert.Equal(["Sutton"], after.SetAsideLabels);
+        Assert.Null(await pg.Store.DecisionForAsync(sutton.Id));            // reopened: a rule's match by that name
+        Assert.NotNull(await pg.Store.DecisionForAsync(byHand.Id));         // a person's decision stands
+        Assert.NotEqual(Outcome.MatchedStore, await reconciler.ReconcileOneAsync(ds, sutton));
+        Assert.Contains(await pg.Store.NotesAsync(ds, plymouth.Id), n => n.Text.Contains("\"Sutton\" set aside"));
+
+        // nothing puts it back: an update from a copy that still has it, and a merge of an entity that has it
+        await pg.Store.UpdateEntityAsync(after with { Labels = [.. after.Labels, "Sutton"] });
+        Assert.DoesNotContain("Sutton", (await pg.Store.GetEntityAsync(plymouth.Id))!.Labels);
+        var twin = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Plymouth (England)", ["Sutton"]), scheme);
+        await pg.Store.MergeAsync(twin.Id, plymouth.Id, "tester");
+        var merged = (await pg.Store.GetEntityAsync(plymouth.Id))!;
+        Assert.DoesNotContain("Sutton", merged.Labels); Assert.Contains("Plymouth (England)", merged.Labels);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => curation.SetNameAsideAsync(ds, plymouth.Id, "Plymouth", true));
+
+        // restored, it is a name again
+        await curation.SetNameAsideAsync(ds, plymouth.Id, "Sutton", false, "tester");
+        var restored = (await pg.Store.GetEntityAsync(plymouth.Id))!;
+        Assert.Contains("Sutton", restored.Labels); Assert.Empty(restored.SetAsideLabels);
+    }
+
+    [PostgresFact]
     public async Task An_entity_takes_its_records_class_and_a_person_can_change_it()
     {
         var ds = "cu-" + IdMinter.Generate(6);

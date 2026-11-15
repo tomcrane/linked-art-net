@@ -203,7 +203,11 @@ public sealed record Entity(
     IReadOnlyList<Equivalent> Equivalents,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt,
-    string? RunId);
+    string? RunId)
+{
+    /// <summary>Names a source gives the entity that a person has set aside: no string is matched on them, and no update, pull or merge puts them back among <see cref="Labels"/>.</summary>
+    public IReadOnlyList<string> SetAsideLabels { get; init; } = [];
+}
 
 /// <summary>What is known about an entity before it has an identifier. <see cref="Id"/> keeps an identifier already published (an import); null mints one.</summary>
 public sealed record NewEntity(

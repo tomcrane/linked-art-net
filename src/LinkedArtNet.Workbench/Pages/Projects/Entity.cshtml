@@ -72,7 +72,28 @@
             @if (at.Approximate) { <p class="small muted" style="margin-top:-.6rem">The marker stands at @at.Near, the record's TGN parent: the record itself carries no coordinates.</p> }
         }
         <dl class="facts">
-            @if (e.Labels.Any(l => l != e.Label)) { <dt>Also</dt><dd>@string.Join(" · ", e.Labels.Where(l => l != e.Label))</dd> }
+            @* a name can be set aside (the owner, 2026-11-15, at Plymouth's "Sutton"): kept, shown, and no string matched on it *@
+            @if (e.Labels.Any(l => l != e.Label))
+            {
+                <dt>Also</dt>
+                <dd class="names">
+                    @foreach (var name in e.Labels.Where(l => l != e.Label))
+                    {
+                        <form method="post" asp-page-handler="NameAside" class="inline name"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="name" value="@name" /><input type="hidden" name="aside" value="true" /><span>@name</span> <button type="submit" class="quiet small" title="Not a name the project's strings should be matched to this entity on: it is kept and shown as set aside, a pull from the source does not bring it back, and strings a rule had matched here by it are reopened">set aside</button></form>
+                    }
+                </dd>
+            }
+            @if (e.SetAsideLabels.Count > 0)
+            {
+                <dt>Set aside</dt>
+                <dd class="names">
+                    @foreach (var name in e.SetAsideLabels)
+                    {
+                        <form method="post" asp-page-handler="NameAside" class="inline name"><input type="hidden" name="id" value="@e.Id" /><input type="hidden" name="name" value="@name" /><input type="hidden" name="aside" value="false" /><s>@name</s> <button type="submit" class="quiet small" title="A name again: strings may be matched to this entity on it">restore</button></form>
+                    }
+                    <span class="small muted">a source gives these names; no string is matched here on them</span>
+                </dd>
+            }
             @if (e.Lifespan?.Display is { } life) { <dt>Dates</dt><dd>@life</dd> }
             @if (e.Nationalities.Count > 0) { <dt>Nationality</dt><dd>@string.Join(", ", e.Nationalities)</dd> }
             @if (e.Roles.Count > 0) { <dt>Roles</dt><dd>@string.Join(", ", e.Roles)</dd> }

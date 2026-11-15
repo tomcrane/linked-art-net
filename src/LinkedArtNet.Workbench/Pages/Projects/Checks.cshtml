@@ -50,7 +50,7 @@
             @foreach (var h in plan.Homes)
             {
                 var holder = plan.Holders.GetValueOrDefault(h.HomeUri);
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(plan.Homes.Count == 1 && plan.Others.Count == 0 ? "checked" : "") /> <strong>@Chain(h.Label, h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(plan.Homes.Count == 1 && plan.Others.Count == 0 && Model.Found.Count == 0 ? "checked" : "") /> <strong>@Chain(h.Label, h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
                 @if (holder is not null) { <span>The project already has an entity for this place, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: "@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span> }
                 else { <span>No entity of the project holds this place: the identifier is <strong>added to "@pe.Label"</strong>.</span> }</p>
             }
@@ -61,10 +61,21 @@
                 <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="entity:@other.Id" /> <strong>@other.Label</strong>@if (clue.Placement is not null) { <span> (@clue.Placement)</span> } <span class="muted">· the project's entity · @string.Join(" ", other.Equivalents.Select(q => q.Source)) · stands for @clue.Strings string@(clue.Strings == 1 ? "" : "s")</span></label> <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(other.Id)" target="_blank" rel="noopener">open</a><br />
                 <span>"@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span></p>
             }
+            @* a place the project knows by another name ("Bâle" is its "Basel"): searched for, and its results offered like the others. The
+               search's fields belong to a form of their own below (the form attribute): a form inside a form is dropped by the browser *@
+            <p class="small"><strong>A place the project has under another name:</strong> <input type="search" name="find" form="mend-find" value="@Model.Find" placeholder="Basel" style="width:16rem; display:inline-block" /> <button type="submit" form="mend-find" class="secondary">Search the project's places</button> <span class="muted">(the ticks above return to how they were)</span></p>
+            @if (!string.IsNullOrWhiteSpace(Model.Find) && Model.Found.Count == 0) { <p class="small muted">No other place of the project matches "@Model.Find".</p> }
+            @foreach (var other in Model.Found)
+            {
+                var clue = Model.Clues.GetValueOrDefault(other.Id);
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="entity:@other.Id" /> <strong>@other.Label</strong>@if (clue.Placement is not null) { <span> (@clue.Placement)</span> } <span class="muted">· the project's entity · @other.Status.ToString().ToLowerInvariant() · @string.Join(" ", other.Equivalents.Select(q => q.Source)) · stands for @clue.Strings string@(clue.Strings == 1 ? "" : "s")</span></label> <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(other.Id)" target="_blank" rel="noopener">open</a><br />
+                <span>"@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span></p>
+            }
             <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="other" /> <strong>Another place</strong>, by its identifier:</label> <input type="text" name="otherUri" placeholder="http://vocab.getty.edu/tgn/..." style="width:24rem; display:inline-block" /><br />
             <span>If an entity of the project holds it, "@pe.Label" is merged into that; if none does, the identifier is added to "@pe.Label".</span></p>
             <div class="actions"><button type="submit">Mend</button> <a href="/p/@Model.Dataset/checks">Back to the list, nothing changed</a></div>
         </form>
+        <form id="mend-find" method="get"><input type="hidden" name="mend" value="@pe.Id" /></form>
     </div>
 }
 else

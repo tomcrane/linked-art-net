@@ -14,6 +14,9 @@ namespace LinkedArtNet.Workbench.Pages.Projects;
 public sealed class ChecksModel(ProjectServices services, ProjectAccess access) : ProjectPageModel(services, access)
 {
     [BindProperty(SupportsGet = true)] public string? Mend { get; set; }
+    /// <summary>A search of the project's entities on the Mend screen, for a place known by another name (the owner, 2026-11-15, at "Bâle", which is Basel).</summary>
+    [BindProperty(SupportsGet = true)] public string? Find { get; set; }
+    public IReadOnlyList<Entity> Found { get; private set; } = [];
 
     public IReadOnlyList<AwayFinding> Away { get; private set; } = [];
     public string? HomePlace { get; private set; }
@@ -37,7 +40,9 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             {
                 foreach (var s in (await Services.Store.StringsForEntityAsync(Plan.Entity.Id, 12, HttpContext.RequestAborted)).OrderBy(s => s.String.Raw, StringComparer.Ordinal))
                     PlanStrings.Add((s.String, await Project.Desk.ExamplesForAsync(s.String.Id, HttpContext.RequestAborted), await Services.Store.RecordCountAsync(s.String.Id, HttpContext.RequestAborted)));
-                foreach (var other in Plan.Others.Concat(Plan.Holders.Values)) Clues[other.Id] = await Project.Desk.ClueAsync(other, HttpContext.RequestAborted);
+                if (!string.IsNullOrWhiteSpace(Find))
+                    Found = (await Project.Desk.SearchEntitiesAsync(Dataset, Find.Trim())).Where(e => e.Class == EntityClass.Place && e.MergedInto is null && e.Id != Plan.Entity.Id && Plan.Others.All(o => o.Id != e.Id)).Take(12).ToList();
+                foreach (var other in Plan.Others.Concat(Plan.Holders.Values).Concat(Found)) Clues[other.Id] = await Project.Desk.ClueAsync(other, HttpContext.RequestAborted);
                 return;
             }
             Message ??= "That entity is not on the list any more.";

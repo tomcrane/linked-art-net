@@ -114,6 +114,12 @@ public interface IAlignmentStore
     /// The records a string occurs in, grouped by what one of their naming fields says (the field's values joined), the largest
     /// groups first, each with its count and its first few records (design doc 12 section 14.6).
     /// </summary>
+    /// <summary>
+    /// Place entities of the dataset, not confirmed by a person, with a label that has no qualifier and a Wikidata item given by an
+    /// import, beside each TGN place of exactly that name whose chain is in the home place: one row a pair, for the check that reads them.
+    /// </summary>
+    Task<IReadOnlyList<AwayRow>> ImportedPlacesWithHomeNamesakesAsync(string dataset, string homePlace, CancellationToken ct = default);
+
     /// <summary>What one field says in the records where another field has a value ("place" where "publisher" is "Cambridge University Press"), each value with its count of records, the commonest first.</summary>
     Task<IReadOnlyList<(string Value, int Records)>> FieldValuesWhereAsync(string dataset, string whereField, string whereValue, string field, int limit = 40, CancellationToken ct = default);
 

@@ -696,7 +696,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   on the store's entities, each check a named query giving entities with the reason and the strings and records
   behind them, the first check "a place aligned abroad of the home place by the old import, with a namesake at
   home" (`reports/q-import-us.sql`), each row leading to the entity page where the identifier is removed and the
-  right one added. Not built: waits for the owner's word on the recommendation.
+  right one added. *Built 2026-11-15 (the owner: "go ahead and build the next logical thing"):* the page Checks (`/p/<project>/checks`, in the navigation), `CurationService.PlacesAlignedAwayAsync`, `ImportedPlacesWithHomeNamesakesAsync`; counted first (`reports/q-check1.txt`: 509 such entities, 277 with a namesake at home, 77 listed before the test on words of the chain); "likely wrong" where the place at home is at least as written about, "to look at" otherwise; a confirmed entity leaves the list. Still to do: mending is by hand on the entity page (no "replace with the one at home" on the row); only imported Wikidata links of places are checked; the cataloguers' list (doc 12 section 14 step 2) is separate and not begun.
 - The project's "Glasgow" (`place/k5nzg3aj`) is aligned to Glasgow, Kentucky (Wikidata Q1762833 from the old import,
   LoC n82030840 through it), as its "Madison" is to Madison, New Jersey. The place of publication "Glasgow" (65770,
   imported) and the keywords "Glasgow" (76007, and 46908 in runs where nothing else contests it) stand on it. With

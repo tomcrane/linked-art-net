@@ -103,6 +103,45 @@ public class CurationServiceTests(PostgresFixture pg)
     /// allows it; a person can change the class on the entity page, noted; a merge whose two entities differ in class can take the chosen one.
     /// </summary>
     [PostgresFact]
+    public async Task The_check_lists_places_an_import_aligned_to_a_namesake_abroad()
+    {
+        // the owner, 2026-11-15: the project's "Glasgow" on Glasgow, Kentucky. Names unlike any real place keep the test to its own rows
+        var ds = "cu-" + IdMinter.Generate(6);
+        var tag = "Q" + IdMinter.Generate(8);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var curation = new CurationService(pg.Store, scheme, new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions()));
+        AuthorityRecord Tgn(string id, string label, string parent) => new($"http://vocab.getty.edu/tgn/{tag}{id}", "tgn", label, [label], "Place", null, [], $"{{\"parentString\":\"{parent}\"}}", DateTimeOffset.UtcNow, "test");
+        AuthorityRecord Item(string q, string label, string descr, int sitelinks, params string[] sameAs) =>
+            new($"http://www.wikidata.org/entity/{tag}{q}", "wikidata", label, [label], "Place", null, sameAs, $"{{\"ids\":{{}},\"sitelinks\":{sitelinks},\"description\":\"{descr}\"}}", DateTimeOffset.UtcNow, "test");
+        async Task<Entity> Imported(string label, string q)
+        {
+            var e = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, label, Status: EntityStatus.Aligned), scheme);
+            await pg.Store.AddEquivalentAsync(e.Id, new Equivalent($"http://www.wikidata.org/entity/{tag}{q}", "wikidata", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+            return e;
+        }
+        var (glas, york, hounslow) = ("Glasgo" + tag, "Newyor" + tag, "Hounslo" + tag);
+        await pg.Store.PutAuthorityAsync(Tgn("1", glas, $"{glas}, Scotland, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Item("1", glas, "city in Scotland", 180, $"http://vocab.getty.edu/tgn/{tag}1"));
+        await pg.Store.PutAuthorityAsync(Item("2", glas, "city in Barren County, Kentucky, United States of America", 41));
+        await pg.Store.PutAuthorityAsync(Tgn("3", york, "Lincolnshire, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Item("3", york, "most populous city in the United States", 325));
+        await pg.Store.PutAuthorityAsync(Tgn("4", hounslow, "Greater London, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Item("4", hounslow, "suburban district of West London", 21));
+        var kentucky = await Imported(glas, "2");
+        var newYork = await Imported(york, "3");
+        await Imported(hounslow, "4"); // its description names the home chain ("London"): not listed
+
+        var rows = await curation.PlacesAlignedAwayAsync(ds, "United Kingdom");
+        Assert.Equal(2, rows.Count);
+        Assert.Equal((kentucky.Id, true), (rows[0].Row.EntityId, rows[0].Likely));   // Scotland's 180 against Kentucky's 41
+        Assert.Equal($"http://vocab.getty.edu/tgn/{tag}1", rows[0].Row.HomeUri);
+        Assert.Equal((newYork.Id, false), (rows[1].Row.EntityId, rows[1].Likely));    // right as it is, most likely: to look at
+        await curation.ConfirmAsync(ds, newYork.Id, "tester", null);                  // confirmed, it leaves the list
+        Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
+        Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, null));
+    }
+
+    [PostgresFact]
     public async Task A_name_set_aside_stops_matching_stays_aside_and_reopens_what_a_rule_matched_by_it()
     {
         // the owner, 2026-11-15: the project's Plymouth gathered TGN's former name "Sutton", and the place of publication "Sutton" (two

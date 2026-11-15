@@ -1430,6 +1430,33 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct), CultureInfo.InvariantCulture);
     }
 
+    public async Task<IReadOnlyList<AwayRow>> ImportedPlacesWithHomeNamesakesAsync(string dataset, string homePlace, CancellationToken ct = default)
+    {
+        // the source literal lets the lookup use TGN's own label index (schema version 5)
+        await using var cmd = _db.CreateCommand(
+            """
+            with c as materialized (
+                select e.id, e.label, e.status, q.uri as item, w.data->>'description' as descr, coalesce((w.data->>'sitelinks')::int, 0) as sitelinks,
+                       (select count(*) from decisions d where d.valid and d.entity_id = e.id) as strings
+                from entities e join entity_equivalents q on q.entity_id = e.id and q.source = 'wikidata' and q.method = 'imported'
+                     left join authority_records w on w.uri = q.uri
+                where e.dataset = @dataset and e.class = 'Place' and e.merged_into is null and e.status <> 'confirmed' and e.label !~ '[,(\[]')
+            select c.id, c.label, c.status, c.strings, c.item, c.descr, c.sitelinks, t.uri, t.data->>'parentString', coalesce(h.sitelinks, 0), h.uri
+            from c join authority_records t on t.source = 'tgn' and t.normalised_labels @> array[lower(c.label)] and t.label = c.label
+                 left join lateral (select x.uri, coalesce((x.data->>'sitelinks')::int, 0) as sitelinks from authority_records x
+                                    where x.source = 'wikidata' and x.same_as @> array[t.uri] order by 2 desc limit 1) h on true
+            where t.data->>'parentString' like @home
+            order by c.label, c.id
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "home", "%" + homePlace + "%");
+        cmd.CommandTimeout = 120;
+        var list = new List<AwayRow>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+            list.Add(new AwayRow(r.GetString(0), Str(r, 1) ?? "", r.GetString(2), Convert.ToInt32(r.GetInt64(3)), r.GetString(4), Str(r, 5), r.GetInt32(6), r.GetString(7), Str(r, 8) ?? "", r.GetInt32(9), Str(r, 10)));
+        return list;
+    }
+
     public async Task<IReadOnlyList<(string Value, int Records)>> FieldValuesWhereAsync(string dataset, string whereField, string whereValue, string field, int limit = 40, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

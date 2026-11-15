@@ -364,4 +364,10 @@ public static class AuthorityUris
 public sealed record SourceRecord(string System, string RecordId, string? Title, string? Date, string? FieldsJson, string? Fingerprint);
 
 /// <summary>The records a string occurs in that share one value of a field, for the desk: the value (null when the records have none), how many records, and the first few.</summary>
+/// <summary>
+/// A place entity whose imported Wikidata item may be a namesake of the place meant (a check on the store's entities; the owner,
+/// 2026-11-15): the item and what it says of itself, and the most written-about place of the same name in the project's home place.
+/// </summary>
+public sealed record AwayRow(string EntityId, string Label, string Status, int Strings, string Item, string? ItemDescription, int ItemSitelinks, string HomeUri, string HomeChain, int HomeSitelinks, string? HomeItem);
+
 public sealed record RecordGroup(string? Value, int Records, IReadOnlyList<StringExample> First);

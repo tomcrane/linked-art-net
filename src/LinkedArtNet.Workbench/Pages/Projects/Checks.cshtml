@@ -1,0 +1,41 @@
+@page "/p/{dataset}/checks"
+@model ChecksModel
+@{
+    ViewData["Title"] = "Checks";
+    var likely = Model.Away.Where(a => a.Likely).ToList();
+    var look = Model.Away.Where(a => !a.Likely).ToList();
+    string Chain(string chain) => string.Join(", ", chain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World") && x.Length > 0));
+}
+<h1>Checks</h1>
+<p class="muted">Lists of the project's own entities that a test finds doubtful. Each row leads to the entity's page, where you mend it (remove the wrong identifier, add the right one) or, if it is right as it is, confirm it: a confirmed entity leaves the list. Nothing here is changed for you.</p>
+
+<h2>Places the import aligned to a namesake <span class="muted small">@Model.Away.Count</span></h2>
+@if (Model.HomePlace is null)
+{
+    <p class="notice">This project has no home place in its manifest, so there is no "at home" to compare with.</p>
+}
+else
+{
+    <p class="small muted">A place whose name has no qualifier ("Glasgow"), whose Wikidata identifier came from an import, where a place of exactly that name stands in @Model.HomePlace and the Wikidata item's own description names nothing of it. "Written about" is the number of Wikipedia editions with an article (sitelinks). The place at home shown is the most written-about of that name.</p>
+    @foreach (var (title, rows, about) in new[] { ("Likely wrong", likely, "the place at home is at least as written about as the one the entity is aligned to"), ("To look at", look, "the entity's place is the more written about, so it may well be right: confirm it on its page if so") })
+    {
+        <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
+        @if (rows.Count == 0) { <p class="small muted">None.</p> }
+        else
+        {
+            <table class="checks">
+                <thead><tr><th>Entity</th><th>Aligned to</th><th>At home</th></tr></thead>
+                <tbody>
+                @foreach (var (r, _) in rows)
+                {
+                    <tr>
+                        <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(r.EntityId)"><strong>@r.Label</strong></a><br /><span class="small muted">@r.Status · stands for @r.Strings string@(r.Strings == 1 ? "" : "s")</span></td>
+                        <td class="small">@(r.ItemDescription ?? "(the item is not in the index)")<br /><a href="@r.Item" target="_blank" rel="noopener">@r.Item.Split('/')[^1]</a> <span class="muted">· written about in @r.ItemSitelinks</span></td>
+                        <td class="small">@Chain(r.HomeChain)<br /><a href="@r.HomeUri" target="_blank" rel="noopener">TGN @r.HomeUri.Split('/')[^1]</a> <span class="muted">· written about in @r.HomeSitelinks</span><br /><code class="small">@r.HomeUri</code></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    }
+}

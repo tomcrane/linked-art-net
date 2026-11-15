@@ -340,6 +340,46 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
 
     public Task<Note> NoteAsync(string dataset, string entityId, string reviewer, string text, CancellationToken ct = default) => store.AddNoteAsync(dataset, entityId, reviewer, text, ct);
 
+    // ---- checks on the store's entities ------------------------------------------------------------------------------
+
+    private static readonly HashSet<string> ChainNoise = new(StringComparer.OrdinalIgnoreCase) { "Europe", "World", "Greater", "County", "City", "Borough", "United", "Kingdom", "States", "North", "South", "East", "West", "upon", "with" };
+
+    /// <summary>
+    /// The check "a place the old import aligned to a namesake" (the owner, 2026-11-15: the project's "Glasgow" on Glasgow, Kentucky,
+    /// its "Madison" on Madison, New Jersey; an audit list at the workbench, "YES"). A place entity with a bare label and a Wikidata
+    /// item from an import is listed when a place of exactly that name stands in the project's home place and what the item says of
+    /// itself names nothing of that place's chain. Likely wrong when the place at home is at least as written about as the item;
+    /// otherwise for a look ("New York" beside a hamlet in Lincolnshire is right as it is). An entity a person has confirmed is not
+    /// listed. Counted before it was built (reports/q-check1.txt): 509 such entities, 277 with a namesake at home, 77 listed.
+    /// </summary>
+    public async Task<IReadOnlyList<(AwayRow Row, bool Likely)>> PlacesAlignedAwayAsync(string dataset, string? homePlace, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(homePlace)) return [];
+        var found = new List<(AwayRow, bool)>();
+        foreach (var pairs in (await store.ImportedPlacesWithHomeNamesakesAsync(dataset, homePlace, ct)).GroupBy(r => (r.EntityId, r.Item)))
+        {
+            var rows = pairs.ToList();
+            var descr = rows[0].ItemDescription ?? "";
+            bool Names(AwayRow r)
+            {
+                if (r.HomeItem == r.Item || descr.Contains(homePlace, StringComparison.OrdinalIgnoreCase)) return true;
+                foreach (var segment in r.HomeChain.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (segment is "Europe" or "World" || string.Equals(segment, r.Label, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (descr.Contains(segment, StringComparison.OrdinalIgnoreCase)) return true;
+                    foreach (var word in segment.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                        if (word.Length >= 4 && !ChainNoise.Contains(word) && !string.Equals(word, r.Label, StringComparison.OrdinalIgnoreCase)
+                            && System.Text.RegularExpressions.Regex.IsMatch(descr, $@"\b{System.Text.RegularExpressions.Regex.Escape(word)}\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return true;
+                }
+                return false;
+            }
+            if (rows.Any(Names)) continue;
+            var home = rows.OrderByDescending(r => r.HomeSitelinks).First();
+            found.Add((home, home.HomeSitelinks >= home.ItemSitelinks));
+        }
+        return found.OrderByDescending(f => f.Item2).ThenByDescending(f => f.Item1.HomeSitelinks - f.Item1.ItemSitelinks).ThenBy(f => f.Item1.Label, StringComparer.Ordinal).ToList();
+    }
+
     // ---- export ----------------------------------------------------------------------------------------------------
 
     private static readonly JsonSerializerOptions ExportJson = new() { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };

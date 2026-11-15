@@ -258,3 +258,7 @@ dd.names form.name:hover button, dd.names form.name button:focus { opacity: 1; }
 /* a hint from a record's other field (where a publisher is), 2026-11-15 */
 .rec-group summary .hint { color: var(--accent, #b4541a); font-weight: 600; }
 .hint-line .hint-item + .hint-item::before { content: " · "; }
+
+/* the checks page, 2026-11-15 */
+table.checks td { vertical-align: top; padding: .5rem .8rem .5rem 0; }
+table.checks td:first-child { white-space: nowrap; }

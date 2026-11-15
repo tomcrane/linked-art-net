@@ -5,7 +5,13 @@
     var likely = Model.Away.Where(a => a.Likely).ToList();
     var look = Model.Away.Where(a => !a.Likely && a.Row.ItemDescription is not null).ToList();
     var unknown = Model.Away.Where(a => !a.Likely && a.Row.ItemDescription is null).ToList(); // one a string speaks for is among the likely, not here too
-    string Chain(string chain) => string.Join(", ", chain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World") && x.Length > 0));
+    // the place by its own name and then where it is (the owner, 2026-11-15, at "Glencoe": "why does this not say Glencoe?"; only the
+    // chain of its parents was shown). A place in a district of its own name ("Cardiff" in Cardiff, Wales) is not named twice
+    string Chain(string label, string chain)
+    {
+        var parts = chain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World") && x.Length > 0).ToList();
+        return string.Join(", ", parts.Count > 0 && string.Equals(parts[0], label, StringComparison.OrdinalIgnoreCase) ? parts : parts.Prepend(label));
+    }
 }
 <h1>Checks</h1>
 <p class="muted">Lists of the project's own entities that a test finds doubtful. Each row leads to the entity's page, where you can mend it by hand or, if it is right as it is, confirm it: a confirmed entity leaves the list. "Mend…" shows what it would do (remove the wrong identifiers, then merge into the project's entity for the right place or add the right identifier) and does it only when you confirm.</p>
@@ -44,7 +50,7 @@
             @foreach (var h in plan.Homes)
             {
                 var holder = plan.Holders.GetValueOrDefault(h.HomeUri);
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(plan.Homes.Count == 1 && plan.Others.Count == 0 ? "checked" : "") /> <strong>@Chain(h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(plan.Homes.Count == 1 && plan.Others.Count == 0 ? "checked" : "") /> <strong>@Chain(h.Label, h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
                 @if (holder is not null) { <span>The project already has an entity for this place, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: "@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span> }
                 else { <span>No entity of the project holds this place: the identifier is <strong>added to "@pe.Label"</strong>.</span> }</p>
             }
@@ -86,7 +92,7 @@ else
                     <tr>
                         <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(r.EntityId)"><strong>@r.Label</strong></a><br /><span class="small muted">@r.Status · stands for @r.Strings string@(r.Strings == 1 ? "" : "s")</span>@if (f.Strings.Count > 0) { <br /><span class="small" title="The strings that stand on this entity, as the records write them">@string.Join(" · ", f.Strings.Take(6).Select(x => $"\u201c{x}\u201d"))@(f.Strings.Count > 6 ? " …" : "")</span> }@if (f.Reason is not null) { <br /><strong class="small">@f.Reason</strong> }<br /><a class="small" href="/p/@Model.Dataset/checks?mend=@Uri.EscapeDataString(r.EntityId)" title="Shows what mending would do; nothing is changed until you confirm">Mend…</a></td>
                         <td class="small">@(r.ItemDescription ?? "(the item is not in the index)")<br /><a href="@r.Item" target="_blank" rel="noopener">@r.Item.Split('/')[^1]</a> <span class="muted">@(r.ItemDescription is null ? "" : $"· written about in {r.ItemSitelinks}")</span></td>
-                        <td class="small">@Chain(r.HomeChain)<br /><a href="@r.HomeUri" target="_blank" rel="noopener">TGN @r.HomeUri.Split('/')[^1]</a> <span class="muted">· @(r.HomeItem is null ? "no count known" : $"written about in {r.HomeSitelinks}")</span><br /><code class="small">@r.HomeUri</code></td>
+                        <td class="small">@Chain(r.Label, r.HomeChain)<br /><a href="@r.HomeUri" target="_blank" rel="noopener">TGN @r.HomeUri.Split('/')[^1]</a> <span class="muted">· @(r.HomeItem is null ? "no count known" : $"written about in {r.HomeSitelinks}")</span><br /><code class="small">@r.HomeUri</code></td>
                     </tr>
                 }
                 </tbody>

@@ -13,9 +13,10 @@ exports.
 - The model library: done, 183 of 183 site examples implemented, 182 validated.
 - The date parser, its corpus, trainer and service: done and live at linkedart.net and dates.linkedart.net (v0.1.2,
   2026-10-17).
-- The agent-name parser: the library and its tests; no service endpoint, playground or corpus yet. The owner,
-  2026-11-15: "At some stage we should go back and do the agent parser work, including a service for that as well"
-  (section 7, Parsers).
+- The agent-name parser: the library and its tests, and on the working branch, not deployed, a service endpoint
+  (`GET /v1/agent`), a playground page on the examples site and a corpus folder (`corpus/agents`); how far each goes
+  has not been checked since they were written. The owner, 2026-11-15: "At some stage we should go back and do the
+  agent parser work, including a service for that as well" (section 7, Parsers).
 - The alignment store on PostgreSQL; TGN, ULAN, AAT, LoC names, LCSH and a Wikidata extract loaded locally; the
   reconciler, tuned over 124 findings (doc 10 section 7.6), which decides PMC's 45,910 strings in about 45 minutes;
   the workbench (the review desk, entities, variants, the merge tray, maps, sign-in and projects). All of it runs on
@@ -962,10 +963,12 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Parsers** (doc 10 section 6; docs 03 and 06):
 
-- The agent parser's other three pieces, to come back to (the owner, 2026-11-15: "At some stage we should go back and
-  do the agent parser work, including a service for that as well"): the service endpoint, the playground on the
-  examples site, and a corpus with a trainer, as the date parser has (section 1, objective 2). Check what the service
-  already answers for an agent string before designing it (section 4 lists "timespan, agent, profiles, advise").
+- The agent parser, to come back to (the owner, 2026-11-15: "At some stage we should go back and do the agent parser
+  work, including a service for that as well"). Found the same day: the item below says "Not started", and the
+  working branch has `GET /v1/agent` in `LinkedArtNet.Dates.Service/Program.cs`, `Pages/Agents` on the examples site
+  and four files in `corpus/agents`, none of them on `main` (so not deployed). The first step is to read those against
+  (a), (b) and (c) below and say what each lacks (the class hint, the nested dates expectation, the trainer page), then
+  the gaps from the runs in the item after, then deployment with the next release.
 
 - The Agent parser as a first-class output (the owner's thought 2026-10-21, the go 2026-10-22; objectives 2 and 6),
   size S each: (a) a service endpoint beside the dates one, taking a string, a profile name and an optional class hint

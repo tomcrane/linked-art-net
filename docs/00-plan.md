@@ -594,6 +594,25 @@ and the log (doc 15) records that. The order within an area is rough value.
 
 **Reconciler** (doc 10 sections 7 and 7.6):
 
+- A store match on a historical name the entity gathered (seen 2026-11-15 in run x9ptwy, for the owner to rule on): the
+  owner decided "Plymouth" (61711) onto TGN 7011301 with LoC n80097355, the entity `place/adjrx32x` took TGN's other
+  names as labels ("Sutton", "Sudtone"), and the next reconcile matched the bare place of publication "Sutton" (61352) to
+  Plymouth by exact-name, where it had been queued. Matching on gathered labels is long standing and mostly right
+  (about 200 exact-name matches in that run are on a label unlike the entity's own: "India" on "Bhārat", "Calcutta" on
+  "Kolkata", inverted personal names), so nothing is changed without a ruling. Choices to put: a place's historical or
+  former names (TGN marks them) are not gathered as labels; or a label that is another place's common name does not
+  carry an exact-name match on its own; or leave it and decide "Sutton" by hand. Count first.
+- The project's "Glasgow" (`place/k5nzg3aj`) is aligned to Glasgow, Kentucky (Wikidata Q1762833 from the old import,
+  LoC n82030840 through it), as its "Madison" is to Madison, New Jersey. The place of publication "Glasgow" (65770,
+  imported) and the keywords "Glasgow" (76007, and 46908 in runs where nothing else contests it) stand on it. With
+  the other "aligned elsewhere" places of finding 119 this wants one look over the old import's Wikidata alignments
+  of bare place names (count: places whose Wikidata item is in the United States while every string on them is a
+  bare British-looking place of publication).
+- Stored evidence keeps only so many vetoed candidates, so a rule that vetoes cannot be counted by searching the
+  reasons for its words (finding 124's first run showed one string by that search and seven by comparison). The
+  query that does count it, candidates that stood in the last run and do not stand in this, is
+  `q-diff124c.sql` in the 2026-11-15 scratchpad; make it an Align command (`diff-runs --stood`) when next needed.
+
 - Place drift between runs (2026-10-20, seen again 2026-10-26): the same strings move between runs as the order makes
   entities firm or not ("Stratford" and "Stratford, Va.", the two Jamestowns in awn284); undo and redo are not
   idempotent on the store side. Look at it with the store-stage work.

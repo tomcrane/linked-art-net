@@ -361,8 +361,8 @@ owner), not a report run now and then.
               status, status_by, status_at, closed_collect, value_after, note)
 
 `value` is what the field said when the finding was raised; `kind` is from a short list a project can add to
-(ambiguous name, two values in one field, truncated, wrong field, wrong class, spelling, supplied in brackets, wrong
-link to an authority); `suggestion` and `why` are free text, filled in by the desk where it can (the entity the string
+(ambiguous name, two values in one field, truncated, wrong field, wrong class, spelling, supplied in brackets, a
+link to the wrong authority record held in the source's own data); `suggestion` and `why` are free text, filled in by the desk where it can (the entity the string
 was decided as, the other candidate). `status` is open, sent, mended as the person says, changed in the source,
 declined, or still a problem.
 
@@ -376,9 +376,15 @@ be nice and usable for them too"):
 - *Together.* The list is a page of the workbench, filtered by system, kind, status and field, ordered so that one
   record's findings stand together. Each row has the identifier with a copy button, the link into the source system,
   what is there and what is suggested, and "I've mended this", which the next collect confirms or contradicts.
+What is wrong in an external authority (a Wikidata item that gives another place's LoC number, two LoC headings for
+one body, a TGN record without coordinates) is not a finding of this list: it is not the cataloguers' to mend and
+does not close when the project's sources are collected again. It is a different list (the owner, 2026-11-15:
+"Problems with external authorities sound like a different list to me"), the reports outward of section 11 step 5,
+by authority and not by source record, with its own record of what was reported and to whom.
+
 - *Raising one* is one step where the thing is seen: on a record under "In the records" at the desk, on the entity
-  page, and from an audit's list in bulk (the mislabels, the comma-joined places, the old import's wrong Wikidata
-  links). Deciding a record differently from its string (14.3) offers to raise the finding in the same step, since an
+  page, and from an audit's list in bulk (the mislabels, the comma-joined places, and the old import's wrong Wikidata
+  links where the source's own data still holds them). Deciding a record differently from its string (14.3) offers to raise the finding in the same step, since an
   exception is usually also something the catalogue could say.
 
 ### 14.5 What a collect does
@@ -447,5 +453,4 @@ problem". Four, in the order to build; the first three are part of this design, 
 
 Open: whether a record decision may also be made for a part string (a place in a list, a keyword's head) or only for
 the whole field value; what "ready" needs for the archive and photographic archive records, which are not collected
-yet; whether findings about an authority (a wrong link in Wikidata, a duplicate in LoC) share this list or stay with
-the reports outward of section 11 step 5.
+yet.

@@ -964,12 +964,28 @@ and the log (doc 15) records that. The order within an area is rough value.
 **Parsers** (doc 10 section 6; docs 03 and 06):
 
 - The agent parser, to come back to (the owner, 2026-11-15: "At some stage we should go back and do the agent parser
-  work, including a service for that as well"). Found the same day: the item below says "Not started", and the
-  working branch has `GET /v1/agent` in `LinkedArtNet.Dates.Service/Program.cs`, `Pages/Agents` on the examples site
-  and four files in `corpus/agents`, none of them on `main` (so not deployed). The first step is to read those against
-  (a), (b) and (c) below and say what each lacks (the class hint, the nested dates expectation, the trainer page), then
-  the gaps from the runs in the item after, then deployment with the next release.
-
+  work, including a service for that as well"). Read against the item below the same day (a read of the code by a
+  subagent, checked by the assistant only in its outline; the item's "Not started" is wrong, the three were built as a
+  first version on 2026-10-17, log item 31, and none is on `main`, so none is deployed):
+  - *(a) the endpoint.* There: `GET /v1/agent?s=&profile=&agent=` and `GET /v1/agent/profiles` in
+    `LinkedArtNet.Dates.Service/Program.cs`, answering `AgentResultDto` (name and its parts, kind, the date text with
+    the dates parser's result nested, roles and nationalities with AAT, qualifiers, the unconsumed text, confidence,
+    notes, and the Linked Art Person or Group unless `agent=false`); five service tests; one row in doc 04. Lacking:
+    the class hint in its three strengths and the word when the parsed kind contradicts a hard hint; the reconciler's
+    shape (`StringReading`: keys, classes, a lifespan) beside the parser's own; POST and batch, a profile by name,
+    capture of what is asked, as the dates endpoints have; any mention on the site's API page.
+  - *(b) the playground.* There: `/agents` on the examples site, in the navigation, a profile chooser, ten samples
+    (invented, PMC-shaped), the parts, kind, confidence, the date part linked to the dates playground, JSON-LD and C#
+    tabs, the profiles table; three render tests. It parses in process, not through the service. Lacking against the
+    dates playground: the link to the raw API answer, a samples page, real PMC strings.
+  - *(c) the corpus.* There: `corpus/agents`, four files, 60 entries (57 verified), 22 with a nested dates
+    expectation, authored with invented names; the ground-truth test in `LinkedArtNet.Agents.Tests`; `tools/Corpus
+    agents`; the trainer's agent item kind, writing to `corpus/agents/proposed`. Lacking: strings from PMC and
+    Wellcome that the reconciler has read (the store has them now, with what each was decided as); a schema for an
+    agent entry and `promote` for one; a corpus browser page.
+  So the work to come back to is: the class hint and the reconciler's shape on the endpoint, POST and batch; the
+  corpus seeded from the store's decided strings (a person's decisions first, as ground truth for kind and name);
+  the gaps from the runs in the item after next; and release, since all of it waits on `main`.
 - The Agent parser as a first-class output (the owner's thought 2026-10-21, the go 2026-10-22; objectives 2 and 6),
   size S each: (a) a service endpoint beside the dates one, taking a string, a profile name and an optional class hint
   in the manifest's three strengths (none; an ordered list, expect the first and allow the rest; one class only),

@@ -375,9 +375,12 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             }
             if (rows.Any(Names)) continue;
             var home = rows.OrderByDescending(r => r.HomeSitelinks).First();
-            found.Add((home, home.HomeSitelinks >= home.ItemSitelinks));
+            // likely only where both counts are known: the first reading of the real list (2026-11-15) had items absent from the index
+            // (no description, no count) and places at home with no Wikidata item found through TGN's id standing as "0 against 0"
+            found.Add((home, home.ItemDescription is not null && home.HomeItem is not null && home.HomeSitelinks >= home.ItemSitelinks));
         }
-        return found.OrderByDescending(f => f.Item2).ThenByDescending(f => f.Item1.HomeSitelinks - f.Item1.ItemSitelinks).ThenBy(f => f.Item1.Label, StringComparer.Ordinal).ToList();
+        // the likely first, the widest margin leading; then the rest, the least written-about abroad first ("Perth" in Tasmania before "New York")
+        return found.OrderByDescending(f => f.Item2).ThenByDescending(f => f.Item2 ? f.Item1.HomeSitelinks - f.Item1.ItemSitelinks : -f.Item1.ItemSitelinks).ThenBy(f => f.Item1.Label, StringComparer.Ordinal).ToList();
     }
 
     // ---- export ----------------------------------------------------------------------------------------------------

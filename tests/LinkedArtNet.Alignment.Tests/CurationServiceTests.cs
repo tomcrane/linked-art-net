@@ -128,16 +128,22 @@ public class CurationServiceTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(Tgn("4", hounslow, "Greater London, England, United Kingdom, Europe, World"));
         await pg.Store.PutAuthorityAsync(Item("4", hounslow, "suburban district of West London", 21));
         var kentucky = await Imported(glas, "2");
+        var perth = "Pert" + tag;
+        await pg.Store.PutAuthorityAsync(Tgn("5", perth, "Perth and Kinross, Scotland, United Kingdom, Europe, World")); // no Wikidata item known for it
+        await pg.Store.PutAuthorityAsync(Item("5", perth, "town in Tasmania, Australia", 14));
+        var tasmania = await Imported(perth, "5");
         var newYork = await Imported(york, "3");
         await Imported(hounslow, "4"); // its description names the home chain ("London"): not listed
 
         var rows = await curation.PlacesAlignedAwayAsync(ds, "United Kingdom");
-        Assert.Equal(2, rows.Count);
+        Assert.Equal(3, rows.Count);
         Assert.Equal((kentucky.Id, true), (rows[0].Row.EntityId, rows[0].Likely));   // Scotland's 180 against Kentucky's 41
         Assert.Equal($"http://vocab.getty.edu/tgn/{tag}1", rows[0].Row.HomeUri);
-        Assert.Equal((newYork.Id, false), (rows[1].Row.EntityId, rows[1].Likely));    // right as it is, most likely: to look at
+        Assert.Equal((tasmania.Id, false), (rows[1].Row.EntityId, rows[1].Likely));   // no count at home: to look at, the obscure first
+        Assert.Null(rows[1].Row.HomeItem);
+        Assert.Equal((newYork.Id, false), (rows[2].Row.EntityId, rows[2].Likely));    // right as it is, most likely: to look at, last
         await curation.ConfirmAsync(ds, newYork.Id, "tester", null);                  // confirmed, it leaves the list
-        Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
+        Assert.Equal(2, (await curation.PlacesAlignedAwayAsync(ds, "United Kingdom")).Count);
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, null));
     }
 

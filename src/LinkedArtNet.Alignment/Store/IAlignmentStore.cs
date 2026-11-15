@@ -88,12 +88,29 @@ public interface IAlignmentStore
     // ---- the records behind the strings (design doc 12 section 5; 2026-10-26) ----
     /// <summary>Every string of the dataset by (context, normalised text), for a collector that reads an export once.</summary>
     Task<IReadOnlyDictionary<(string Context, string Normalised), long>> StringKeysAsync(string dataset, CancellationToken ct = default);
-    /// <summary>Writes examples, replacing any for the same string and record.</summary>
+    /// <summary>
+    /// Writes occurrences (a string in a field of a record; the example's source is the source system's key), replacing any for the
+    /// same string and record, and makes the record's row when a collect has not written it. Since schema version 11 these are
+    /// the <c>occurrences</c> and <c>records</c> tables (design doc 12 section 14.2), every occurrence and not a sample.
+    /// </summary>
     Task PutExamplesAsync(IReadOnlyList<StringExample> examples, CancellationToken ct = default);
-    /// <summary>Removes the examples a source export wrote for the dataset's strings, before it is collected again; how many.</summary>
+    /// <summary>Removes the occurrences of a source system for the dataset, before it is collected again; how many. The records stay.</summary>
     Task<int> ClearExamplesAsync(string dataset, string source, CancellationToken ct = default);
-    /// <summary>The records behind a string, at most the limit.</summary>
+    /// <summary>The records behind a string, at most the limit, by record identifier.</summary>
     Task<IReadOnlyList<StringExample>> ExamplesForAsync(long stringId, int limit = 3, CancellationToken ct = default);
+    /// <summary>Writes the records a collect read from a source system: new ones are first seen at this collect, known ones are seen again and no longer gone.</summary>
+    Task PutRecordsAsync(string dataset, string collect, IReadOnlyList<SourceRecord> records, CancellationToken ct = default);
+    /// <summary>Marks as gone the records of a source system that the named collect did not read; how many. The rows are kept.</summary>
+    Task<int> MarkRecordsGoneAsync(string dataset, string system, string collect, CancellationToken ct = default);
+    /// <summary>How many records a string occurs in.</summary>
+    Task<int> RecordCountAsync(long stringId, CancellationToken ct = default);
+    /// <summary>
+    /// The records a string occurs in, grouped by what one of their naming fields says (the field's values joined), the largest
+    /// groups first, each with its count and its first few records (design doc 12 section 14.6).
+    /// </summary>
+    Task<IReadOnlyList<RecordGroup>> RecordGroupsAsync(long stringId, string byField, int groups = 8, int perGroup = 3, CancellationToken ct = default);
+    /// <summary>The dataset's records by source system: how many, and how many of them are gone.</summary>
+    Task<IReadOnlyList<(string System, int Records, int Gone, string? LastCollect)>> RecordSystemsAsync(string dataset, CancellationToken ct = default);
 
     Task<SourceString?> FindSourceStringAsync(string dataset, string context, string raw, CancellationToken ct = default);
 

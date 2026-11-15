@@ -29,6 +29,22 @@ public sealed record ProjectManifest
     public List<string> Trades { get; init; } = [];
     /// <summary>The local indexes to consult, in order.</summary>
     public List<string> Sources { get; init; } = ["ulan", "aat", "tgn", "loc", "lcsh"];
+    /// <summary>
+    /// The source systems the project's records come from, by the key a collect is given (design doc 12 section 14.1): a library
+    /// catalogue, an archive catalogue, a museum's. A record is named by its system and its identifier there together.
+    /// </summary>
+    public Dictionary<string, SourceSystemJson> Systems { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>A source system named to a person: the manifest's name for it, or its key.</summary>
+    public string SystemName(string system) => Systems.TryGetValue(system, out var s) && !string.IsNullOrWhiteSpace(s.Name) ? s.Name : system;
+
+    /// <summary>The page of a record in its own system, when the manifest has a template for the system (<c>{id}</c> is the record's identifier); null otherwise.</summary>
+    public string? RecordUrl(string system, string recordId) =>
+        Systems.TryGetValue(system, out var s) && !string.IsNullOrWhiteSpace(s.RecordUrl) ? s.RecordUrl.Replace("{id}", Uri.EscapeDataString(recordId), StringComparison.Ordinal) : null;
+
+    /// <summary>The field a string's records are grouped by at the desk unless the reviewer chooses another: the context's own setting, else the publisher for a place and the place for anything else.</summary>
+    public string GroupBy(string context) =>
+        Contexts.TryGetValue(context, out var c) && !string.IsNullOrWhiteSpace(c.GroupBy) ? c.GroupBy : context.StartsWith("place", StringComparison.OrdinalIgnoreCase) ? "publisher" : "place";
 
     public static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) } };
 
@@ -59,6 +75,9 @@ public sealed record ProjectManifest
     public static ProjectManifest PmcDefault => new()
     {
         HomePlace = "United Kingdom", // a British art library's places (finding 71)
+        // the Heritage library catalogue; its record identifier is the standard number (an ISBN where the book has one, else a lettered
+        // number by kind of material: profiled 2026-11-15). No template: the assistant does not know of a page per record to link to
+        Systems = new Dictionary<string, SourceSystemJson>(StringComparer.OrdinalIgnoreCase) { ["library"] = new("Library catalogue", "standard number") },
         Trades = ["auction", "dealer", "bookseller", "book seller", "printseller", "print seller", "publisher", "stationer"], // the sale catalogues' own trades (finding 109)
         Contexts = new Dictionary<string, ContextRuleJson>(StringComparer.OrdinalIgnoreCase)
         {
@@ -107,10 +126,17 @@ public sealed record ProjectManifest
 /// <summary>A <see cref="ContextRule"/> as the manifest writes it.</summary>
 /// <param name="Label">The field's name in plain words, for a reviewer ("place of publication" for <c>place</c>); the context's own name stands when there is none (the owner, 2026-11-13).</param>
 /// <param name="About">A sentence on what the field holds in this catalogue, for the desk's and the entity page's help.</param>
-public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null, List<string>? Collections = null, string? Label = null, string? About = null)
+/// <param name="GroupBy">The record field a string's records are grouped by at the desk (design doc 12 section 14.6): the field that most often tells two things of one name apart.</param>
+public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null, List<string>? Collections = null, string? Label = null, string? About = null, string? GroupBy = null)
 {
     public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule(), Home, ParseDatedOnly ?? false, Collections);
 }
+
+/// <summary>A source system as the manifest describes it (design doc 12 section 14.1).</summary>
+/// <param name="Name">What people call it ("Library catalogue").</param>
+/// <param name="Identifier">What its record identifier is, in the cataloguer's words ("standard number", "reference code").</param>
+/// <param name="RecordUrl">A template for a record's own page in the system, <c>{id}</c> standing for the identifier; none when the system has no pages to link to.</param>
+public sealed record SourceSystemJson(string? Name = null, string? Identifier = null, string? RecordUrl = null);
 
 /// <summary>A <see cref="PartsRule"/> as the manifest writes it: <c>{ "shape": "list", "separator": ";" }</c> or <c>{ "shape": "compound", "separator": "--", "context": "keywords:sub", "headContext": "keywords:head" }</c>.</summary>
 public sealed record PartsRuleJson(PartsShape Shape, string Separator, string? Context = null, string? HeadContext = null)

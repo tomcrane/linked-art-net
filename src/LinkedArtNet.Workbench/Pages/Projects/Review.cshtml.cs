@@ -29,6 +29,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     [BindProperty(SupportsGet = true)] public bool Always { get; set; }
     /// <summary>Thumbnails on the cards whose records a pull has given a picture (plan section 7: the desk stays text by default, since pictures slow it and most cards have none).</summary>
     [BindProperty(SupportsGet = true)] public bool Pictures { get; set; }
+    /// <summary>The record field the string's records are grouped by under "In the records"; the manifest's choice when not given.</summary>
+    [BindProperty(SupportsGet = true)] public string? By { get; set; }
 
     public ReviewItem? Item { get; private set; }
     public IReadOnlyList<ContextMethodCount> Queue { get; private set; } = [];

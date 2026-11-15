@@ -167,14 +167,41 @@ else
         }
         <span class="muted">· after an action the desk goes to these first</span></p>
     }
-    @if (item.Examples.Count > 0)
+    @* every record the string occurs in, grouped by what another field says (doc 12 section 14.6): the largest groups, the first few
+       records of each, and the other fields to group by *@
+    var recs = await Model.Project.Desk.RecordsForAsync(item.String, Model.By, Model.Project.Manifest);
+    @if (recs.Count > 0)
     {
+        var shown = recs.Groups.Sum(g => g.Records);
+        var groupFields = recs.Groups.SelectMany(g => g.First).SelectMany(x => x.NamingFields().Select(f => f.Name)).Append("medium").Append("class").Distinct().Where(f => f != recs.By).ToList();
         <div class="card"><h3 style="margin-top:0">In the records</h3>
-        @foreach (var x in item.Examples)
+        <p class="small muted">In <strong>@recs.Count.ToString("N0")</strong> record@(recs.Count == 1 ? "" : "s")@if (recs.Via is { } via) { <text>, those of "@via.Raw", which it is part of</text> }@if (recs.Groups.Count > 1 || shown < recs.Count)
+            {
+                <text>, grouped by what <strong>@recs.By</strong> says@(shown < recs.Count ? $" (the {recs.Groups.Count} largest groups, {shown:N0} records)" : "")</text>
+            }
+            @if (recs.Count > 1)
+            {
+                <text> · group by: </text>
+                @foreach (var f in groupFields) { <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, by = f })">@f</a><text> </text> }
+            }
+        </p>
+        @* several groups: each folds, the largest open, so that the groups are read as a list and the candidates are not pushed off the
+           screen (seen in the browser, 2026-11-15: "Cambridge", eight groups of three records before the first candidate) *@
+        @foreach (var g in recs.Groups)
         {
-            <p class="small"><strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @x.RecordId · from &lt;@x.Field&gt;</span>
-            @foreach (var (name, values) in x.NamingFields()) { <br /><span class="muted">@name:</span> @string.Join(" · ", values) }
-            </p>
+            var several = recs.Groups.Count > 1;
+            @if (several) { @:<details class="rec-group" @(ReferenceEquals(g, recs.Groups[0]) ? "open" : "")><summary class="small"><span class="muted">@recs.By:</span> <strong>@(g.Value ?? "(none given)")</strong> <span class="muted">· @g.Records.ToString("N0") record@(g.Records == 1 ? "" : "s")</span></summary>
+            }
+            @foreach (var x in g.First)
+            {
+                var recordUrl = Model.Project.Manifest.RecordUrl(x.Source, x.RecordId);
+                <p class="small"><strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @if (recordUrl is not null) { <a href="@recordUrl" target="_blank" rel="noopener" title="This record in the @Model.Project.Manifest.SystemName(x.Source)">@x.RecordId</a> } else { <span title="@Model.Project.Manifest.SystemName(x.Source)">@x.RecordId</span> } · from &lt;@x.Field&gt;</span>
+                @foreach (var (name, values) in x.NamingFields()) { <br /><span class="muted">@name:</span> @string.Join(" · ", values) }
+                </p>
+            }
+            @if (g.Records > g.First.Count) { <p class="small muted">and @((g.Records - g.First.Count).ToString("N0")) more@(recs.Groups.Count > 1 ? " in this group" : "")</p> }
+            @if (several) { @:</details>
+            }
         }
         </div>
     }

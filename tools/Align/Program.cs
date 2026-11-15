@@ -234,20 +234,25 @@ switch (args[0])
         return 0;
     }
 
-    case "collect-examples":
+    case "collect-records":
+    case "collect-examples": // the name it had while it kept three records a string
     {
+        // one collect of one source system (design doc 12 section 14.1 and 14.2): every record and every occurrence of a string the
+        // store knows. The system's occurrences are replaced; its records are kept, and those this export no longer has are marked gone
         var file = Option("--file") ?? throw new ArgumentException("--file <library export .xml> is required");
-        var sourceName = Option("--source") ?? Path.GetFileNameWithoutExtension(file);
-        var perString = int.TryParse(Option("--per-string"), out var per) ? per : 3;
+        var system = Option("--system") ?? Option("--source") ?? "library";
+        var collect = Option("--collect") ?? Path.GetFileNameWithoutExtension(file);
+        var perString = int.TryParse(Option("--per-string"), out var per) ? per : int.MaxValue;
         await store.InitialiseAsync();
-        var cleared = await store.ClearExamplesAsync(dataset, sourceName);
+        var cleared = await store.ClearExamplesAsync(dataset, system);
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
         var cleaned = Option("--keywords") is { } keywordsPath ? LinkedArtNet.Alignment.Import.HeritageExampleCollector.ReadCleanedKeywords(keywordsPath) : null;
         if (cleaned is not null) Console.Error.WriteLine($"  {cleaned.Count:N0} cleaned keywords read");
-        var report = await new LinkedArtNet.Alignment.Import.HeritageExampleCollector(store, cleaned).CollectAsync(dataset, file, sourceName, perString, progress);
-        Console.WriteLine($"source {sourceName}: {report.Records:N0} records read, {report.Examples:N0} examples written for {report.StringsCovered:N0} strings" + (cleared > 0 ? $" ({cleared:N0} earlier examples of this source replaced)" : ""));
+        var collector = new LinkedArtNet.Alignment.Import.HeritageExampleCollector(store, cleaned);
+        var report = await collector.CollectAsync(dataset, file, system, perString, progress, collect: collect);
+        Console.WriteLine($"system {system}, collect {collect}: {report.Records:N0} records read, {report.Examples:N0} occurrences written for {report.StringsCovered:N0} strings" + (cleared > 0 ? $" ({cleared:N0} earlier occurrences of this system replaced)" : "") + (collector.Gone > 0 ? $"; {collector.Gone:N0} records of the system are no longer in the export and are marked gone" : ""));
         foreach (var (context, (coveredCount, total)) in report.ByContext.OrderByDescending(kv => kv.Value.Strings))
-            Console.WriteLine($"  {context,-16} {coveredCount,7:N0} of {total,7:N0} strings have examples");
+            Console.WriteLine($"  {context,-16} {coveredCount,7:N0} of {total,7:N0} strings have a record");
         return 0;
     }
 
@@ -443,7 +448,7 @@ static void Usage() => Console.WriteLine(
                                              of its own; an item naming two records of one source is listed and left alone
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
       vacuum                                 vacuum and analyse the store's tables (after pulls, undone runs, or when a page is slow); changes no row
-      collect-examples --file <export.xml> [--source name] [--per-string 3] [--keywords <pmc_subjects_csv.sql>] [--dataset]
+      collect-records --file <export.xml> [--system library] [--collect name] [--per-string n] [--keywords <pmc_subjects_csv.sql>] [--dataset]
                                              the records behind the strings, for the desk: reads a Heritage library export and keeps up
                                              to three example records per string the store knows; a source collected again is replaced;
                                              --keywords reads the 2024 process's cleaned keywords so the cleaned forms match too

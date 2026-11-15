@@ -15,9 +15,9 @@ public class StoreTests(PostgresFixture pg)
     {
         await pg.Store.InitialiseAsync();
         await pg.Store.InitialiseAsync();
-        Assert.Equal(10, LinkedArtNet.Alignment.Store.PostgresAlignmentStore.SchemaVersion); // 9: skipped_at; 10: the decision indexes a string delete needs (2026-11-07)
+        Assert.Equal(11, LinkedArtNet.Alignment.Store.PostgresAlignmentStore.SchemaVersion); // 9: skipped_at; 10: the decision indexes a string delete needs (2026-11-07); 11: records and occurrences (2026-11-15)
         await using var cmd = pg.DataSource.CreateCommand("select max(version) from schema_version");
-        Assert.Equal(10, (int)(await cmd.ExecuteScalarAsync())!);
+        Assert.Equal(11, (int)(await cmd.ExecuteScalarAsync())!);
         // the first day of year 1 is DateTime.MinValue, which Npgsql would otherwise write as -infinity
         await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n82239358", "loc", "Scribonius Largus, approximately 1-approximately 50", ["Scribonius Largus"], "Person",
             new Lifespan(new DateTimeOffset(1, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(1, 12, 31, 23, 59, 59, TimeSpan.Zero), new DateTimeOffset(50, 1, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(50, 12, 31, 23, 59, 59, TimeSpan.Zero), "approximately 1-approximately 50"), [], null, DateTimeOffset.UtcNow, "test"));

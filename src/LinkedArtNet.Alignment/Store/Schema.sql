@@ -253,3 +253,37 @@ create index if not exists decisions_string on decisions (source_string_id);
 create index if not exists decisions_supersedes on decisions (supersedes);
 
 insert into schema_version (version) values (10) on conflict do nothing;
+
+-- version 11 (2026-11-15): records and occurrences (design doc 12 section 14.1 and 14.2). A record is named by its source
+-- system and its identifier there, which is unique within one export and not promised to last; an occurrence is a string in
+-- a field of a record, every one of them, where string_examples kept three a string. The fingerprint is a hash of what the
+-- record says apart from its identifier, for finding a renumbered record at a later collect (14.5; not used yet). A part's
+-- occurrence names the whole value it is a part of. string_examples is no longer written or read; it is left in place.
+create table if not exists records (
+    dataset       text not null,
+    system        text not null,
+    record_id     text not null,
+    title         text,
+    date          text,
+    fields        jsonb,
+    fingerprint   text,
+    first_collect text,
+    last_collect  text,
+    gone_at       timestamptz,
+    primary key (dataset, system, record_id)
+);
+create table if not exists occurrences (
+    dataset          text not null,
+    system           text not null,
+    record_id        text not null,
+    string_id        bigint not null references source_strings(id) on delete cascade,
+    field            text not null,
+    position         integer not null default 0,
+    parent_string_id bigint references source_strings(id) on delete set null,
+    primary key (dataset, system, record_id, string_id),
+    foreign key (dataset, system, record_id) references records (dataset, system, record_id) on delete cascade
+);
+create index if not exists occurrences_string on occurrences (string_id);
+create index if not exists occurrences_parent on occurrences (parent_string_id) where parent_string_id is not null;
+
+insert into schema_version (version) values (11) on conflict do nothing;

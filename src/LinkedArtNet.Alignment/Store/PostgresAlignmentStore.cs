@@ -1307,34 +1307,115 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     public async Task PutExamplesAsync(IReadOnlyList<StringExample> examples, CancellationToken ct = default)
     {
         if (examples.Count == 0) return;
-        await using var cmd = _db.CreateCommand(
-            "insert into string_examples (string_id, record_id, source, title, date, field, record) " +
-            "select s, r, src, t, d, f, j::jsonb from unnest(@s, @r, @src, @t, @d, @f, @j) as x(s, r, src, t, d, f, j) " +
-            "on conflict (string_id, record_id) do update set source = excluded.source, title = excluded.title, date = excluded.date, field = excluded.field, record = excluded.record");
-        Add(cmd, "s", examples.Select(e => e.StringId).ToArray());
-        Add(cmd, "r", examples.Select(e => e.RecordId).ToArray());
-        Add(cmd, "src", examples.Select(e => e.Source).ToArray());
-        Add(cmd, "t", examples.Select(e => e.Title).ToArray());
-        Add(cmd, "d", examples.Select(e => e.Date).ToArray());
-        Add(cmd, "f", examples.Select(e => e.Field).ToArray());
-        Add(cmd, "j", examples.Select(e => e.RecordJson).ToArray());
-        await cmd.ExecuteNonQueryAsync(ct);
+        // the record's row first, when no collect has written it (a test, or a caller with examples alone); a collect's own row is left as it is
+        const string rows = "from unnest(@s, @r, @src, @t, @d, @f, @j, @p, @ps) as x(s, r, src, t, d, f, j, p, ps) join source_strings ss on ss.id = x.s ";
+        await using var batch = _db.CreateBatch();
+        var records = new NpgsqlBatchCommand(
+            "insert into records (dataset, system, record_id, title, date, fields) " +
+            "select distinct on (ss.dataset, x.src, x.r) ss.dataset, x.src, x.r, x.t, x.d, x.j::jsonb " + rows +
+            "on conflict (dataset, system, record_id) do nothing");
+        var occurrences = new NpgsqlBatchCommand(
+            "insert into occurrences (dataset, system, record_id, string_id, field, position, parent_string_id) " +
+            "select distinct on (ss.dataset, x.src, x.r, x.s) ss.dataset, x.src, x.r, x.s, x.f, x.p, x.ps " + rows +
+            "on conflict (dataset, system, record_id, string_id) do update set field = excluded.field, position = excluded.position, parent_string_id = excluded.parent_string_id");
+        foreach (var cmd in new[] { records, occurrences })
+        {
+            cmd.Parameters.AddWithValue("s", examples.Select(e => e.StringId).ToArray());
+            cmd.Parameters.AddWithValue("r", examples.Select(e => e.RecordId).ToArray());
+            cmd.Parameters.AddWithValue("src", examples.Select(e => e.Source).ToArray());
+            cmd.Parameters.AddWithValue("t", examples.Select(e => e.Title).ToArray());
+            cmd.Parameters.AddWithValue("d", examples.Select(e => e.Date).ToArray());
+            cmd.Parameters.AddWithValue("f", examples.Select(e => e.Field).ToArray());
+            cmd.Parameters.AddWithValue("j", examples.Select(e => e.RecordJson).ToArray());
+            cmd.Parameters.AddWithValue("p", examples.Select(e => e.Position).ToArray());
+            cmd.Parameters.AddWithValue("ps", examples.Select(e => e.ParentStringId).ToArray());
+            batch.BatchCommands.Add(cmd);
+        }
+        await batch.ExecuteNonQueryAsync(ct);
     }
 
     public async Task<int> ClearExamplesAsync(string dataset, string source, CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("delete from string_examples e using source_strings s where e.string_id = s.id and s.dataset = @dataset and e.source = @source");
+        await using var cmd = _db.CreateCommand("delete from occurrences where dataset = @dataset and system = @source");
+        cmd.CommandTimeout = 0;
         Add(cmd, "dataset", dataset); Add(cmd, "source", source);
         return await cmd.ExecuteNonQueryAsync(ct);
     }
 
+    private const string ExampleColumns = "o.string_id, o.record_id, o.system, r.title, r.date, o.field, r.fields::text, o.parent_string_id, o.position";
+    private static StringExample ReadExample(NpgsqlDataReader r) =>
+        new(r.GetInt64(0), r.GetString(1), r.GetString(2), Str(r, 3), Str(r, 4), r.GetString(5), Str(r, 6), r.IsDBNull(7) ? null : r.GetInt64(7), r.GetInt32(8));
+
     public async Task<IReadOnlyList<StringExample>> ExamplesForAsync(long stringId, int limit = 3, CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("select string_id, record_id, source, title, date, field, record::text from string_examples where string_id = @id order by record_id limit @limit");
+        await using var cmd = _db.CreateCommand($"select {ExampleColumns} from occurrences o join records r using (dataset, system, record_id) where o.string_id = @id order by o.record_id limit @limit");
         Add(cmd, "id", stringId); Add(cmd, "limit", limit);
         var list = new List<StringExample>();
         await using var r = await cmd.ExecuteReaderAsync(ct);
-        while (await r.ReadAsync(ct)) list.Add(new StringExample(r.GetInt64(0), r.GetString(1), r.GetString(2), Str(r, 3), Str(r, 4), r.GetString(5), Str(r, 6)));
+        while (await r.ReadAsync(ct)) list.Add(ReadExample(r));
+        return list;
+    }
+
+    public async Task PutRecordsAsync(string dataset, string collect, IReadOnlyList<SourceRecord> records, CancellationToken ct = default)
+    {
+        if (records.Count == 0) return;
+        await using var cmd = _db.CreateCommand(
+            "insert into records (dataset, system, record_id, title, date, fields, fingerprint, first_collect, last_collect) " +
+            "select @dataset, sys, r, t, d, j::jsonb, fp, @collect, @collect from unnest(@sys, @r, @t, @d, @j, @fp) as x(sys, r, t, d, j, fp) " +
+            "on conflict (dataset, system, record_id) do update set title = excluded.title, date = excluded.date, fields = excluded.fields, fingerprint = excluded.fingerprint, " +
+            "first_collect = coalesce(records.first_collect, excluded.first_collect), last_collect = excluded.last_collect, gone_at = null");
+        Add(cmd, "dataset", dataset); Add(cmd, "collect", collect);
+        Add(cmd, "sys", records.Select(x => x.System).ToArray());
+        Add(cmd, "r", records.Select(x => x.RecordId).ToArray());
+        Add(cmd, "t", records.Select(x => x.Title).ToArray());
+        Add(cmd, "d", records.Select(x => x.Date).ToArray());
+        Add(cmd, "j", records.Select(x => x.FieldsJson).ToArray());
+        Add(cmd, "fp", records.Select(x => x.Fingerprint).ToArray());
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<int> MarkRecordsGoneAsync(string dataset, string system, string collect, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("update records set gone_at = now() where dataset = @dataset and system = @system and last_collect is distinct from @collect and gone_at is null");
+        Add(cmd, "dataset", dataset); Add(cmd, "system", system); Add(cmd, "collect", collect);
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<int> RecordCountAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select count(*) from occurrences where string_id = @id");
+        Add(cmd, "id", stringId);
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct), CultureInfo.InvariantCulture);
+    }
+
+    public async Task<IReadOnlyList<RecordGroup>> RecordGroupsAsync(long stringId, string byField, int groups = 8, int perGroup = 3, CancellationToken ct = default)
+    {
+        // the field's values joined as the export orders them; a record without the field is in the group of none
+        await using var cmd = _db.CreateCommand(
+            "with o as (select " + ExampleColumns + ", (select string_agg(v, ' · ') from jsonb_array_elements_text(case when jsonb_typeof(r.fields->@by) = 'array' then r.fields->@by else '[]'::jsonb end) v) as val " +
+            "           from occurrences o join records r using (dataset, system, record_id) where o.string_id = @id), " +
+            "g as (select val, count(*) as n from o group by val order by count(*) desc, val nulls last limit @groups), " +
+            "ranked as (select o.*, g.n, row_number() over (partition by o.val order by o.record_id) as rn from o join g on g.val is not distinct from o.val) " +
+            "select string_id, record_id, system, title, date, field, fields, parent_string_id, position, val, n from ranked where rn <= @per order by n desc, val nulls last, record_id");
+        Add(cmd, "id", stringId); Add(cmd, "by", byField); Add(cmd, "groups", groups); Add(cmd, "per", perGroup);
+        var list = new List<(string? Value, int N, List<StringExample> First)>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+        {
+            var value = Str(r, 9);
+            if (list.Count == 0 || list[^1].Value != value) list.Add((value, Convert.ToInt32(r.GetInt64(10)), []));
+            list[^1].First.Add(ReadExample(r));
+        }
+        return list.Select(g => new RecordGroup(g.Value, g.N, g.First)).ToList();
+    }
+
+    public async Task<IReadOnlyList<(string System, int Records, int Gone, string? LastCollect)>> RecordSystemsAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select system, count(*), count(*) filter (where gone_at is not null), max(last_collect) from records where dataset = @dataset group by system order by system");
+        Add(cmd, "dataset", dataset);
+        var list = new List<(string, int, int, string?)>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add((r.GetString(0), Convert.ToInt32(r.GetInt64(1)), Convert.ToInt32(r.GetInt64(2)), Str(r, 3)));
         return list;
     }
 

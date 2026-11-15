@@ -239,3 +239,13 @@ details.others[open] > summary { margin-bottom: 0.5rem; }
 
 /* an empty tray is hidden: the script marks it so, and the bar's own display rule had been overriding that (the owner, 2026-11-15) */
 .tray[hidden] { display: none; }
+
+/* Leaflet tiles show hairline gaps where the map sits on a fractional device pixel (a scaled display, a centred column of odd width):
+   each tile is drawn half a pixel over its neighbour, and without the additive blend Leaflet 1.9 sets, which would brighten the overlap
+   (the owner, 2026-11-15) */
+.map .leaflet-tile-container img.leaflet-tile { width: 256.5px !important; height: 256.5px !important; mix-blend-mode: normal; }
+
+/* a group of a string's records under "In the records" (doc 12 section 14.6) */
+.rec-group { border-top: 1px solid var(--rule); padding-top: 0.5rem; margin-top: 0.5rem; }
+.rec-group > summary { cursor: pointer; }
+.rec-group[open] > summary { margin-bottom: 0.5rem; }

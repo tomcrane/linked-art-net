@@ -129,6 +129,34 @@ public class ExamplesTests(PostgresFixture pg)
             var again = await new HeritageExampleCollector(pg.Store, map).CollectAsync(ds, path, "test-export", perString: 3);
             Assert.Equal(3, (await pg.Store.ExamplesForAsync(langford.Id, 3)).Count);
             Assert.Equal(14, again.Examples);
+
+            // records and occurrences (doc 12 section 14.1 and 14.2): every record has its row, whether or not a string of the store's
+            // is in it; a string's records are counted and grouped by a field; a part knows the whole value it is a part of
+            var systems = Assert.Single(await pg.Store.RecordSystemsAsync(ds));
+            Assert.Equal(("test-export", 4, 0), (systems.System, systems.Records, systems.Gone));
+            Assert.Equal(3, await pg.Store.RecordCountAsync(langford.Id));
+            var groups = await pg.Store.RecordGroupsAsync(langford.Id, "year", groups: 5, perGroup: 2);
+            Assert.Equal(3, groups.Sum(g => g.Records));
+            Assert.All(groups, g => Assert.InRange(g.First.Count, 1, 2));
+            Assert.Equal(modern.Id, Assert.Single(await pg.Store.ExamplesForAsync(modernHead.Id, 3)).ParentStringId);
+            Assert.Null(Assert.Single(await pg.Store.ExamplesForAsync(modern.Id, 3)).ParentStringId);
+            // a later export without a record: the record is marked gone and kept
+            var fewer = path + ".fewer.xml";
+            var xml = await File.ReadAllTextAsync(path, System.Text.Encoding.Latin1);
+            var cut = xml.IndexOf("<record ID=\"L1\"", StringComparison.Ordinal);
+            var end = xml.IndexOf("</record>", cut, StringComparison.Ordinal) + "</record>".Length;
+            await File.WriteAllTextAsync(fewer, xml[..cut] + xml[end..], System.Text.Encoding.Latin1);
+            try
+            {
+                await pg.Store.ClearExamplesAsync(ds, "test-export");
+                var collector = new HeritageExampleCollector(pg.Store, map);
+                var later = await collector.CollectAsync(ds, fewer, "test-export", collect: "later");
+                Assert.Equal(3, later.Records); Assert.Equal(1, collector.Gone);
+                var after = Assert.Single(await pg.Store.RecordSystemsAsync(ds));
+                Assert.Equal((4, 1, "later"), (after.Records, after.Gone, after.LastCollect));
+                Assert.Equal(2, await pg.Store.RecordCountAsync(langford.Id));
+            }
+            finally { File.Delete(fewer); }
         }
         finally { File.Delete(path); File.Delete(dump); }
     }

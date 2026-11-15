@@ -221,7 +221,7 @@ public sealed record NewEntity(
 public sealed record SourceString(long Id, string Dataset, string Context, string Raw, string Normalised, string? ParsedJson, DateTimeOffset FirstSeen, DateTimeOffset LastSeen, int Occurrences);
 
 /// <summary>A record behind a string, for the desk: where the string was seen, with the record's title and date, the element it came from, and the record's naming fields as JSON (field to values).</summary>
-public sealed record StringExample(long StringId, string RecordId, string Source, string? Title, string? Date, string Field, string? RecordJson)
+public sealed record StringExample(long StringId, string RecordId, string Source, string? Title, string? Date, string Field, string? RecordJson, long? ParentStringId = null, int Position = 0)
 {
     /// <summary>The record's naming fields in the order the export gives them, the string's own field first.</summary>
     public IEnumerable<(string Name, IReadOnlyList<string> Values)> NamingFields()
@@ -352,3 +352,12 @@ public static class AuthorityUris
         return "other";
     }
 }
+
+/// <summary>
+/// A record of a source system as one collect read it (design doc 12 section 14.1): the system's key, the record's identifier there,
+/// its title and date, its naming fields as JSON (field to values), and a fingerprint of what it says apart from its identifier.
+/// </summary>
+public sealed record SourceRecord(string System, string RecordId, string? Title, string? Date, string? FieldsJson, string? Fingerprint);
+
+/// <summary>The records a string occurs in that share one value of a field, for the desk: the value (null when the records have none), how many records, and the first few.</summary>
+public sealed record RecordGroup(string? Value, int Records, IReadOnlyList<StringExample> First);

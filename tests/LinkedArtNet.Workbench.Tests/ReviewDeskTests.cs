@@ -178,6 +178,11 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var entityPage = await owner.GetStringAsync($"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}");
         Assert.Contains("Smith, John (author)", entityPage);
         Assert.Contains("In the records", entityPage); Assert.Contains("A review of reviews", entityPage); Assert.Contains("Smith &amp; Co", entityPage); // the records behind the entity's strings
+        // the desk shows all of a string's records, counted and grouped by a field (doc 12 section 14.6)
+        await store.PutExamplesAsync([new StringExample(smith.Id, "b1000002", "test-library", "A second review", "2001", "persauthorfull", """{"persauthorfull":["Smith, John (author)"],"publisher":["Other House"]}""")]);
+        var smithCard = await owner.GetStringAsync($"/p/{ds}/review?id={smith.Id}&by=publisher");
+        Assert.Contains("In <strong>2</strong> records", smithCard); Assert.Contains("grouped by what <strong>publisher</strong> says", smithCard);
+        Assert.Contains("Other House", smithCard); Assert.Contains("A second review", smithCard); Assert.Contains("b1000001", smithCard);
         Assert.Contains("Confirm", entityPage.Contains("confirmed") ? "Confirm" : entityPage); // confirmed already, so no confirm form is fine
         var relabel = await WorkbenchFixture.PostFormAsync(owner, $"/p/{ds}/entity?handler=Label", $"/p/{ds}/entity?id={Uri.EscapeDataString(kept.Id)}", new() { ["id"] = kept.Id, ["label"] = "Smith, John (author of the review)" });
         Assert.Equal(HttpStatusCode.Redirect, relabel.StatusCode);

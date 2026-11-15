@@ -449,6 +449,25 @@ problem". Four, in the order to build; the first three are part of this design, 
 
 1. Source systems in the manifest; `records` and `occurrences` filled by collect, `string_examples` read from them;
    the record link; all records on the desk, grouped. Nothing decided differently yet.
+   *Built 2026-11-15 (the owner's go the same afternoon).* Schema version 11: `records` (dataset, system, record_id,
+   title, date, fields, fingerprint, first and last collect, gone_at) and `occurrences` (dataset, system, record_id,
+   string_id, field, position, parent_string_id; one row a string a record, as the examples were, so a string named
+   twice in a record is there once). `tools/Align collect-records --file <export> --system library --collect
+   2024-03-11` (the old name `collect-examples` still answers) writes every record and every occurrence of a string
+   the store knows, a part's with the whole value it is part of, replaces the system's occurrences and marks the
+   system's records this export lacks as gone. `string_examples` is no longer written or read and is left in place;
+   `IAlignmentStore.PutExamplesAsync` and `ExamplesForAsync` keep their names and now go to the new tables. The
+   manifest has `systems` (key to name, what the identifier is, `recordUrl` with `{id}`) and a context's `groupBy`;
+   `ProjectManifest.RecordUrl`, `SystemName`, `GroupBy`. PMC's collect: 63,392 records, 330,450 occurrences for 81,943
+   of the 82,075 strings, 75,462 of them parts. "Plymouth" (61711), "seen 1 time" with three records shown until now,
+   is in 21 records; "Cambridge" (65756) in 525, Cambridge University Press 276 of them. The desk's "In the records"
+   (`ReviewService.RecordsForAsync`, `RecordGroupsAsync`) says how many, groups them by a field (the publisher for a
+   place, the place otherwise, or `?by=`), shows the eight largest groups with three records each, the largest open
+   and the rest folded, and links to group by another field. Not yet: PMC's stored manifest has no `systems` (the
+   default has `library` without a template, the assistant not knowing of a page per record), so no record links
+   show; the string's "seen n times" still reads the old counter and not the occurrences; a record's row does not yet
+   name its export beyond the collect's name; the entity page lists three records as before; a group cannot be opened
+   to all its records.
 2. Findings: the table, raising one at the desk, the list page, the export. The audits' lists feed it.
 3. Collect's matching and closing (14.5), tested as a round trip on a copy of the export with records edited by hand:
    an ISBN corrected, a place qualified, a record removed.

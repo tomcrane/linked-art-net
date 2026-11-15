@@ -37,6 +37,9 @@ public sealed record EntityFacts(Entity Entity, IReadOnlyList<DecidedString> Str
 /// </summary>
 public sealed record TogetherPlan(Entity Survivor, IReadOnlyList<Entity> Merging, IReadOnlyList<Entity> Ours, IReadOnlyList<string> Identifiers);
 
+/// <summary>A string's records for the desk: how many there are, the field they are grouped by, the largest groups, and the whole value whose records these are when the string has none of its own.</summary>
+public sealed record StringRecords(int Count, string By, IReadOnlyList<RecordGroup> Groups, SourceString? Via);
+
 /// <summary>One item on the review desk: the string, its current decision and evidence, the entity it points at, notes, the records behind the candidates, the project's own entities among the candidates with their facts, and the catalogue records the string was seen in.</summary>
 /// <param name="LookedAgain">Set when the evidence shown is a fresh evaluation under today's rules, not the decision's own: what the string would be decided as now ("queued", "accepted", ...). The stored decision is unchanged.</param>
 /// <param name="Siblings">The other queued strings under this string's name (its own key, its reading's keys, its entity's labels), in list order: the desk finishes a name before it leaves it (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd").</param>
@@ -221,6 +224,25 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
                 return string.Join(", ", ps.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).Take(2));
         }
         return null;
+    }
+
+    /// <summary>
+    /// All the records a string occurs in, for the desk (design doc 12 section 14.6): how many, and grouped by what one of their fields
+    /// says, the largest groups first with the first few records of each, so that a string that is two things in two kinds of record is
+    /// seen and not chanced upon. A string with no record of its own (a form the 2024 process cleaned) shows those of the whole value
+    /// it is part of. <paramref name="by"/> is the field to group by; the manifest's choice for the string's field when null.
+    /// </summary>
+    public async Task<StringRecords> RecordsForAsync(SourceString s, string? by, ProjectManifest manifest, int groups = 8, int perGroup = 3, CancellationToken ct = default)
+    {
+        var id = s.Id;
+        SourceString? via = null;
+        var count = await store.RecordCountAsync(id, ct);
+        if (count == 0)
+            foreach (var parent in await store.ParentsAsync(id, ct))
+                if (await store.RecordCountAsync(parent.Id, ct) is var n and > 0) { id = parent.Id; via = parent; count = n; break; }
+        if (count == 0) return new StringRecords(0, "", [], null);
+        by = string.IsNullOrWhiteSpace(by) ? manifest.GroupBy(s.Context) : by;
+        return new StringRecords(count, by, await store.RecordGroupsAsync(id, by, groups, perGroup, ct), via);
     }
 
     /// <summary>The catalogue records a string was seen in (design doc 12 section 5), up to three; a part string with none of its own (a keyword's head, a place in a list) shows its parents'.</summary>

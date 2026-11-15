@@ -26,7 +26,8 @@ exports.
 **Designed or planned, not built.**
 
 - Records in the store: decisions for one record, the cataloguers' list, collecting a corrected source again (doc 12
-  section 14, agreed 2026-11-15).
+  section 14, agreed 2026-11-15). Its first step is built (every record and occurrence collected, the desk showing
+  all of a string's records in groups); the findings list, the collect's matching and record decisions are not.
 - The pipeline runner: collecting strings from a fresh export as a routine step, PMC first.
 - The write stage: aligned records turned into Linked Art, and the export to LUX; before it, publication as a recorded
   act and the rule that nothing published is ever deleted (section 5, the last risk).

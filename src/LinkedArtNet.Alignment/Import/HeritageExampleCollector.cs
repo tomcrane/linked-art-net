@@ -32,8 +32,23 @@ public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDic
     /// <summary>What a collection did: records read, examples written, strings covered, and per context the strings covered of those the store has.</summary>
     public sealed record Report(string Source, int Records, int Examples, int StringsCovered, IReadOnlyDictionary<string, (int Covered, int Strings)> ByContext);
 
-    public async Task<Report> CollectAsync(string dataset, string path, string source, int perString = 3, IProgress<string>? progress = null, CancellationToken ct = default)
+    /// <summary>The records of the system that the last collect did not read, and marked gone.</summary>
+    public int Gone { get; private set; }
+
+    /// <summary>A record's fingerprint: a hash of its naming fields as collected, which is what it says apart from its identifier (design doc 12 section 14.5).</summary>
+    public static string Fingerprint(string fieldsJson) => Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(fieldsJson)))[..32].ToLowerInvariant();
+
+    /// <summary>
+    /// Reads the export as one collect of one source system (design doc 12 section 14.1 and 14.2): every record's row, and every
+    /// occurrence of a string the store knows, a part's with the whole value it is a part of. <paramref name="source"/> is the
+    /// system's key ("library"); <paramref name="collect"/> names this reading of it (the export's date), and a record of the system
+    /// that this collect did not read is marked gone. <paramref name="perString"/> caps the occurrences kept per string, for a test
+    /// or a quick look; the default keeps them all.
+    /// </summary>
+    public async Task<Report> CollectAsync(string dataset, string path, string source, int perString = int.MaxValue, IProgress<string>? progress = null, CancellationToken ct = default, string? collect = null)
     {
+        collect ??= Path.GetFileNameWithoutExtension(path);
+        var rows = new List<SourceRecord>();
         var keys = await store.StringKeysAsync(dataset, ct);
         var contextOf = keys.ToDictionary(kv => kv.Value, kv => kv.Key.Context);
         var totals = keys.Keys.GroupBy(k => k.Context, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
@@ -53,23 +68,33 @@ public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDic
             if (id is null) continue;
             var title = Values(record, "title").FirstOrDefault();
             var year = Values(record, "year").FirstOrDefault();
-            string? json = null;
+            var json = NamingFieldsJson(record);
+            rows.Add(new SourceRecord(source, id, title, year, json, Fingerprint(json)));
             var seen = new HashSet<long>();
-            foreach (var (context, value, field) in Candidates(record, cleanedKeywords))
+            var position = 0;
+            foreach (var (context, value, field, whole) in Candidates(record, cleanedKeywords))
             {
+                position++;
                 if (!keys.TryGetValue((context, StringKey.Normalise(value)), out var stringId) || !seen.Add(stringId)) continue;
                 taken.TryGetValue(stringId, out var n);
                 if (n >= perString) continue;
                 taken[stringId] = n + 1;
                 covered.Add(stringId);
-                json ??= NamingFieldsJson(record);
-                batch.Add(new StringExample(stringId, id, source, title, year, field, json));
+                long? parent = whole is { } w && keys.TryGetValue((w.Context, StringKey.Normalise(w.Value)), out var parentId) && parentId != stringId ? parentId : null;
+                batch.Add(new StringExample(stringId, id, source, title, year, field, json, parent, position));
                 examples++;
             }
-            if (batch.Count >= 500) { await store.PutExamplesAsync(batch, ct); batch.Clear(); }
-            if (records % 5000 == 0) progress?.Report($"{records:N0} records read, {examples:N0} examples for {covered.Count:N0} strings");
+            if (rows.Count >= 500)
+            {
+                // the records before their occurrences, which refer to them
+                await store.PutRecordsAsync(dataset, collect, rows, ct); rows.Clear();
+                await store.PutExamplesAsync(batch, ct); batch.Clear();
+            }
+            if (records % 5000 == 0) progress?.Report($"{records:N0} records read, {examples:N0} occurrences of {covered.Count:N0} strings");
         }
+        await store.PutRecordsAsync(dataset, collect, rows, ct);
         if (batch.Count > 0) await store.PutExamplesAsync(batch, ct);
+        Gone = await store.MarkRecordsGoneAsync(dataset, source, collect, ct);
         var byContext = totals.ToDictionary(kv => kv.Key, kv => (covered.Count(s => contextOf[s] == kv.Key), kv.Value), StringComparer.Ordinal);
         return new Report(source, records, examples, covered.Count, byContext);
     }
@@ -124,48 +149,49 @@ public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDic
     }
 
     /// <summary>The strings a record would have yielded, each with the context it belongs to and the element it came from.</summary>
-    public static IEnumerable<(string Context, string Value, string Field)> Candidates(XElement record, IReadOnlyDictionary<string, string>? cleanedKeywords = null)
+    /// <remarks>A part (a keyword's head or subdivision, one place of a list) carries the whole value it is a part of, and its context.</remarks>
+    public static IEnumerable<(string Context, string Value, string Field, (string Context, string Value)? Whole)> Candidates(XElement record, IReadOnlyDictionary<string, string>? cleanedKeywords = null)
     {
         foreach (var v in Values(record, "persauthorfull"))
         {
-            yield return ("persauthorfull", v, "persauthorfull");
+            yield return ("persauthorfull", v, "persauthorfull", null);
             switch (Role(v))
             {
-                case "publisher": yield return ("publisher", v, "persauthorfull"); break;
-                case "addressee": yield return ("keywords", TrimOuterBrackets(v), "persauthorfull"); break;
+                case "publisher": yield return ("publisher", v, "persauthorfull", null); break;
+                case "addressee": yield return ("keywords", TrimOuterBrackets(v), "persauthorfull", null); break;
             }
         }
         foreach (var v in Values(record, "corpauthor"))
         {
-            yield return ("corpauthor", v, "corpauthor");
-            if (Role(v) == "publisher") yield return ("publisher", v, "corpauthor");
+            yield return ("corpauthor", v, "corpauthor", null);
+            if (Role(v) == "publisher") yield return ("publisher", v, "corpauthor", null);
         }
         // a publisher the cataloguer supplied stands in square brackets in the export ("[Osterley Park]", "[Agnew?]") and without them in
         // the strings the 2024 process collected: both forms are offered, as for place (the owner's desk, 2026-11-14: the publisher
         // string "Osterley Park", "seen 1 time" and no record shown; 487 of the 529 publisher strings without a record are of this kind)
         foreach (var v in Values(record, "publisher"))
         {
-            yield return ("publisher", v, "publisher");
-            if (TrimOuterBrackets(v) is var bare && bare != v) yield return ("publisher", bare, "publisher");
+            yield return ("publisher", v, "publisher", null);
+            if (TrimOuterBrackets(v) is var bare && bare != v) yield return ("publisher", bare, "publisher", null);
         }
         foreach (var raw in Values(record, "keywords"))
         {
             var forms = cleanedKeywords is not null && cleanedKeywords.TryGetValue(raw, out var cleaned) && cleaned != raw ? new[] { raw, cleaned } : [raw];
             foreach (var v in forms)
             {
-                yield return ("keywords", v, "keywords");
+                yield return ("keywords", v, "keywords", null);
                 var parts = v.Split("--", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 if (parts.Length < 2) continue;
-                yield return ("keywords:head", parts[0], "keywords");
-                foreach (var sub in parts.Skip(1)) yield return ("keywords:sub", sub, "keywords");
+                yield return ("keywords:head", parts[0], "keywords", ("keywords", v));
+                foreach (var sub in parts.Skip(1)) yield return ("keywords:sub", sub, "keywords", ("keywords", v));
             }
         }
         foreach (var v in Values(record, "place").Select(TrimOuterBrackets).Concat(HierarchicalPlaces(record)))
         {
-            yield return ("place", v, "place");
+            yield return ("place", v, "place", null);
             var parts = v.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             if (parts.Length < 2) continue;
-            foreach (var part in parts) yield return ("place", part, "place");
+            foreach (var part in parts) yield return ("place", part, "place", ("place", v));
         }
     }
 

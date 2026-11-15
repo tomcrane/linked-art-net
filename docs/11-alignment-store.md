@@ -392,6 +392,12 @@ load had left 519 thousand untyped and the SQL retyping had taken the forty most
 reach is the 5,683 classes no root claims); 100,625,067 sitelink rows read, 2,408,319 records given a count. The run
 after it (k22erz, doc 10 7.6) showed nothing attributable to the retyping in its method diff.
 
+## 8.12 Records and occurrences (schema version 11, 2026-11-15)
+
+`records` and `occurrences`: every record of a source system as a collect read it, and every string in every field
+of it, where `string_examples` kept three records a string. The design and what is built are in doc 12 section 14
+(14.1, 14.2 and 14.8 step 1); `tools/Align collect-records` fills them.
+
 ## 9. Not yet
 
 Step 3b: the remote sources (VIAF, LoC suggest, LUX with the self-echo rule, Wikidata by known id) behind a cache

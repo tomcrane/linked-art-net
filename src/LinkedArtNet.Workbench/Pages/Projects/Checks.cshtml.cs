@@ -20,6 +20,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     public MendPlan? Plan { get; private set; }
     /// <summary>The strings that stand on the entity being mended, each with up to three of the records it is in (the owner, 2026-11-15: "it would help to re-list the record context on the Mend page").</summary>
     public List<(SourceString String, IReadOnlyList<StringExample> Records, int Count)> PlanStrings { get; } = [];
+    public Dictionary<string, (string? Placement, int Strings)> Clues { get; } = new(StringComparer.Ordinal);
     public string? Message { get; private set; }
     public (string Id, string Label)? MessageEntity { get; private set; }
 
@@ -36,6 +37,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             {
                 foreach (var s in (await Services.Store.StringsForEntityAsync(Plan.Entity.Id, 12, HttpContext.RequestAborted)).OrderBy(s => s.String.Raw, StringComparer.Ordinal))
                     PlanStrings.Add((s.String, await Project.Desk.ExamplesForAsync(s.String.Id, HttpContext.RequestAborted), await Services.Store.RecordCountAsync(s.String.Id, HttpContext.RequestAborted)));
+                foreach (var other in Plan.Others.Concat(Plan.Holders.Values)) Clues[other.Id] = await Project.Desk.ClueAsync(other, HttpContext.RequestAborted);
                 return;
             }
             Message ??= "That entity is not on the list any more.";
@@ -43,20 +45,24 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
     }
 
-    public async Task<IActionResult> OnPostMendAsync(string id, string[]? remove, string home)
+    public async Task<IActionResult> OnPostMendAsync(string id, string[]? remove, string? home, string? otherUri)
     {
         try
         {
             var before = await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted);
-            var result = await Project.Curation.MendAwayAsync(Dataset, id, remove ?? [], home, Reviewer, HttpContext.RequestAborted);
+            if (string.IsNullOrWhiteSpace(home)) throw new InvalidOperationException("Choose the place meant.");
+            var result = home.StartsWith("entity:", StringComparison.Ordinal)
+                ? await Project.Curation.MendIntoAsync(Dataset, id, remove ?? [], home["entity:".Length..], Reviewer, HttpContext.RequestAborted)
+                : await Project.Curation.MendAwayAsync(Dataset, id, remove ?? [], home == "other" ? otherUri ?? "" : home, Reviewer, HttpContext.RequestAborted);
             var n = (remove ?? []).Length;
             return Flash(result.Id == id
-                ? $"\"{before?.Label}\" mended: {n} identifier{(n == 1 ? "" : "s")} removed, the place at home added."
-                : $"\"{before?.Label}\" mended: {n} identifier{(n == 1 ? "" : "s")} removed, and merged into the project's entity for the place at home.", new { dataset = Dataset }, result);
+                ? $"\"{before?.Label}\" mended: {n} identifier{(n == 1 ? "" : "s")} removed, the identifier of the place meant added."
+                : $"\"{before?.Label}\" mended: {n} identifier{(n == 1 ? "" : "s")} removed, and merged into the project's entity for the place meant.", new { dataset = Dataset }, result);
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
-            return Flash(e.Message, new { dataset = Dataset });
+            // back to the confirm screen with what went wrong, the list not reloaded in its place
+            return Flash(e.Message, new { dataset = Dataset, mend = id });
         }
     }
 }

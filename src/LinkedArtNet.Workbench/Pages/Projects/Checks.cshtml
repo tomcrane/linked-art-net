@@ -47,6 +47,15 @@
                 @if (holder is not null) { <span>The project already has an entity for this place, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: "@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span> }
                 else { <span>No entity of the project holds this place: the identifier is <strong>added to "@pe.Label"</strong>.</span> }</p>
             }
+            @* the place meant may not be at home (the owner, 2026-11-15, at "Raleigh", meant for North Carolina): the project's other entities of the name, and any other place *@
+            @foreach (var other in plan.Others)
+            {
+                var clue = Model.Clues.GetValueOrDefault(other.Id);
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="entity:@other.Id" /> <strong>@other.Label</strong>@if (clue.Placement is not null) { <span> (@clue.Placement)</span> } <span class="muted">· the project's entity · @string.Join(" ", other.Equivalents.Select(q => q.Source)) · stands for @clue.Strings string@(clue.Strings == 1 ? "" : "s")</span></label> <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(other.Id)" target="_blank" rel="noopener">open</a><br />
+                <span>"@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span></p>
+            }
+            <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="other" /> <strong>Another place</strong>, by its identifier:</label> <input type="text" name="otherUri" placeholder="http://vocab.getty.edu/tgn/..." style="width:24rem; display:inline-block" /><br />
+            <span>If an entity of the project holds it, "@pe.Label" is merged into that; if none does, the identifier is added to "@pe.Label".</span></p>
             <div class="actions"><button type="submit">Mend</button> <a href="/p/@Model.Dataset/checks">Back to the list, nothing changed</a></div>
         </form>
     </div>

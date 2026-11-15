@@ -187,6 +187,17 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Equal(scot.Id, (await pg.Store.ResolveEntityAsync((await pg.Store.DecisionForAsync(perthString.Id))!.EntityId!))!.Id);
         Assert.Null(await curation.MendPlanAsync(ds, kentucky.Id, "United Kingdom")); // mended, it is not on the list
         Assert.Equal(newYork.Id, Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom")).Row.EntityId);
+        // the place meant may be abroad and not the import's: the project's other entity of the name is offered and merged into
+        var raleigh = "Raleig" + tag;
+        await pg.Store.PutAuthorityAsync(Tgn("9", raleigh, "Devon, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Item("9", raleigh, "neighborhood in and suburb of Memphis, Tennessee, United States", 2));
+        var memphis = await Imported(raleigh, "9");
+        var carolina = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, raleigh, Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(carolina.Id, new Equivalent($"http://vocab.getty.edu/tgn/{tag}99", "tgn", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var raleighPlan = (await curation.MendPlanAsync(ds, memphis.Id, "United Kingdom"))!;
+        Assert.Equal(carolina.Id, Assert.Single(raleighPlan.Others).Id);
+        var nc = await curation.MendIntoAsync(ds, memphis.Id, raleighPlan.Entity.Equivalents.Select(q => q.Uri).ToList(), carolina.Id, "tester");
+        Assert.Equal(carolina.Id, nc.Id); Assert.DoesNotContain(nc.Equivalents, q => q.Source == "wikidata");
         await curation.ConfirmAsync(ds, newYork.Id, "tester", null);                  // confirmed, it leaves the list
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, null));

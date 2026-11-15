@@ -421,7 +421,26 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         var holders = new Dictionary<string, Entity>(StringComparer.Ordinal);
         foreach (var h in homes)
             if ((await store.FindEntitiesByEquivalentAsync(h.HomeUri, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id) is { } holder) holders[h.HomeUri] = holder;
-        return new MendPlan(entity, homes, holders);
+        // and the project's other entities of the name, wherever they are: the place meant may be abroad and not the one the import
+        // chose (the owner, 2026-11-15, at "Raleigh": a neighbourhood of Memphis, meant for Raleigh, North Carolina, which the
+        // project has, and Mend offered only the Raleigh in Devon)
+        var others = new List<Entity>();
+        foreach (var key in StringKey.Variants(entity.Label ?? "").Take(1))
+            foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, EntityClass.Place, ct))
+                if (e.Id != entity.Id && e.MergedInto is null && holders.Values.All(h => h.Id != e.Id) && others.All(o => o.Id != e.Id)) others.Add(e);
+        return new MendPlan(entity, homes, holders) { Others = others };
+    }
+
+    /// <summary>Mends by merging into another entity of the project that a person chose: the identifiers named are removed first, so that the wrong ones do not travel with the merge.</summary>
+    public async Task<Entity> MendIntoAsync(string dataset, string entityId, IReadOnlyList<string> removeUris, string survivorId, string reviewer, CancellationToken ct = default)
+    {
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        var survivor = await OwnEntityAsync(dataset, survivorId, ct);
+        if (survivor.Id == entity.Id) throw new InvalidOperationException("An entity cannot be merged into itself.");
+        foreach (var uri in removeUris.Distinct(StringComparer.Ordinal))
+            if (entity.Equivalents.Any(q => q.Uri == uri)) await RemoveEquivalentAsync(dataset, entity.Id, uri, reviewer, ct);
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Mended from the checks: aligned by the import to a namesake; merged into {survivor.Label ?? survivor.Id}.", ct);
+        return await MergeAsync(dataset, entity.Id, survivor.Id, reviewer, null, ct);
     }
 
     /// <summary>
@@ -432,11 +451,14 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     public async Task<Entity> MendAwayAsync(string dataset, string entityId, IReadOnlyList<string> removeUris, string homeUri, string reviewer, CancellationToken ct = default)
     {
         var entity = await OwnEntityAsync(dataset, entityId, ct);
-        if (await store.GetAuthorityAsync(homeUri, ct) is not { Source: "tgn" } home) throw new InvalidOperationException("The place at home is not a TGN record of the local index.");
+        homeUri = AuthorityUris.Canonical(homeUri.Trim());
+        if (homeUri.Length == 0) throw new InvalidOperationException("Give the identifier of the place meant.");
+        // any place's identifier, not only one at home: a record of the local index, or a namespace the toolkit recognises (as "Add identifier" has it)
+        var home = await store.GetAuthorityAsync(homeUri, ct);
         foreach (var uri in removeUris.Distinct(StringComparer.Ordinal))
             if (uri != homeUri && entity.Equivalents.Any(q => q.Uri == uri)) await RemoveEquivalentAsync(dataset, entity.Id, uri, reviewer, ct);
         var holder = (await store.FindEntitiesByEquivalentAsync(homeUri, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id);
-        var where = home.DataJson is null ? home.Label : $"{home.Label} ({homeUri})";
+        var where = home?.Label is null ? homeUri : $"{home.Label} ({homeUri})";
         if (holder is not null)
         {
             await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Mended from the checks: aligned by the import to a namesake; merged into {holder.Label ?? holder.Id}, which holds {where}.", ct);
@@ -498,4 +520,8 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
 /// <summary>An entity the check lists: the row, whether it is likely wrong, the strings that stand on it as written, and the reason when a string itself gives one.</summary>
 public sealed record AwayFinding(AwayRow Row, bool Likely, IReadOnlyList<string> Strings, string? Reason);
 
-public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IReadOnlyDictionary<string, Entity> Holders);
+public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IReadOnlyDictionary<string, Entity> Holders)
+{
+    /// <summary>The project's other place entities of the same name, wherever they are: the place meant may be one of them.</summary>
+    public IReadOnlyList<Entity> Others { get; init; } = [];
+}

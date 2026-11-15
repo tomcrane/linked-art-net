@@ -17,6 +17,20 @@
     <div class="card">
         <h2 style="margin-top:0">Mend "@pe.Label"</h2>
         <p class="small muted">Nothing is changed until you press Mend. <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(pe.Id)" target="_blank" rel="noopener">Open the entity's page</a> to see its strings and records first. It stands for @plan.Homes[0].Strings string@(plan.Homes[0].Strings == 1 ? "" : "s").</p>
+        <h3>What the records say</h3>
+        @if (Model.PlanStrings.Count == 0) { <p class="small muted">No string stands on this entity.</p> }
+        @foreach (var (ps, recs, count) in Model.PlanStrings)
+        {
+            <details class="rec-group" open><summary class="small"><strong>"@ps.Raw"</strong> <span class="muted">as @Model.Project.Manifest.FieldName(ps.Context) · in @count.ToString("N0") record@(count == 1 ? "" : "s")</span> <a href="/p/@Model.Dataset/review?id=@ps.Id" target="_blank" rel="noopener">at the desk</a></summary>
+                @foreach (var x in recs)
+                {
+                    <p class="small"><strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @x.RecordId</span>
+                    @foreach (var (name, values) in x.NamingFields()) { <br /><span class="muted">@name:</span> @string.Join(" · ", values) }
+                    </p>
+                }
+                @if (count > recs.Count) { <p class="small muted">and @((count - recs.Count).ToString("N0")) more</p> }
+            </details>
+        }
         <form method="post" asp-page-handler="Mend">
             <input type="hidden" name="id" value="@pe.Id" />
             <h3>1. Remove these identifiers</h3>

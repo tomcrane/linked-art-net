@@ -18,6 +18,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<AwayFinding> Away { get; private set; } = [];
     public string? HomePlace { get; private set; }
     public MendPlan? Plan { get; private set; }
+    /// <summary>The strings that stand on the entity being mended, each with up to three of the records it is in (the owner, 2026-11-15: "it would help to re-list the record context on the Mend page").</summary>
+    public List<(SourceString String, IReadOnlyList<StringExample> Records, int Count)> PlanStrings { get; } = [];
     public string? Message { get; private set; }
     public (string Id, string Label)? MessageEntity { get; private set; }
 
@@ -30,7 +32,12 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         {
             try { Plan = await Project.Curation.MendPlanAsync(Dataset, Mend, HomePlace, HttpContext.RequestAborted); }
             catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException) { Message = e.Message; }
-            if (Plan is not null) return;
+            if (Plan is not null)
+            {
+                foreach (var s in (await Services.Store.StringsForEntityAsync(Plan.Entity.Id, 12, HttpContext.RequestAborted)).OrderBy(s => s.String.Raw, StringComparer.Ordinal))
+                    PlanStrings.Add((s.String, await Project.Desk.ExamplesForAsync(s.String.Id, HttpContext.RequestAborted), await Services.Store.RecordCountAsync(s.String.Id, HttpContext.RequestAborted)));
+                return;
+            }
             Message ??= "That entity is not on the list any more.";
         }
         Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);

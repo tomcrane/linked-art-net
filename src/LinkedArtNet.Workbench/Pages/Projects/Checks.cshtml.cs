@@ -21,6 +21,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<AwayFinding> Away { get; private set; } = [];
     public string? HomePlace { get; private set; }
     public MendPlan? Plan { get; private set; }
+    /// <summary>LoC's heading for the entity being decided, when it holds one that begins with its label and carries a qualifier: the label suggested for keeping it.</summary>
+    public string? SuggestedLabel { get; private set; }
     /// <summary>The strings that stand on the entity being mended, each with up to three of the records it is in (the owner, 2026-11-15: "it would help to re-list the record context on the Mend page").</summary>
     public List<(SourceString String, IReadOnlyList<StringExample> Records, int Count)> PlanStrings { get; } = [];
     public Dictionary<string, (string? Placement, int Strings)> Clues { get; } = new(StringComparer.Ordinal);
@@ -40,6 +42,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             {
                 foreach (var s in (await Services.Store.StringsForEntityAsync(Plan.Entity.Id, 12, HttpContext.RequestAborted)).OrderBy(s => s.String.Raw, StringComparer.Ordinal))
                     PlanStrings.Add((s.String, await Project.Desk.ExamplesForAsync(s.String.Id, HttpContext.RequestAborted), await Services.Store.RecordCountAsync(s.String.Id, HttpContext.RequestAborted)));
+                foreach (var q in Plan.Entity.Equivalents.Where(q => q.Source == "loc"))
+                    if (await Services.Store.GetAuthorityAsync(q.Uri, HttpContext.RequestAborted) is { Label: { } heading } && heading.StartsWith(Plan.Entity.Label + " (", StringComparison.Ordinal) && heading.EndsWith(')')) { SuggestedLabel = heading; break; }
                 if (!string.IsNullOrWhiteSpace(Find))
                     Found = (await Project.Desk.SearchEntitiesAsync(Dataset, Find.Trim())).Where(e => e.Class == EntityClass.Place && e.MergedInto is null && e.Id != Plan.Entity.Id && Plan.Others.All(o => o.Id != e.Id)).Take(12).ToList();
                 foreach (var other in Plan.Others.Concat(Plan.Holders.Values).Concat(Found)) Clues[other.Id] = await Project.Desk.ClueAsync(other, HttpContext.RequestAborted);
@@ -59,7 +63,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
-            return Flash(e.Message, new { dataset = Dataset });
+            return Flash(e.Message, new { dataset = Dataset, mend = id });
         }
     }
 

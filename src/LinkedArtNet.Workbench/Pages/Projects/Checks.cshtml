@@ -14,15 +14,15 @@
     }
 }
 <h1>Checks</h1>
-<p class="muted">Lists of the project's own entities that a test finds doubtful. For each row, decide one of two things under <strong>Decide</strong>. If the entity is aligned to the <strong>wrong place</strong>, "Mend…" shows what it would do (remove the wrong identifiers, then merge into or add the right place, or move only some of the strings) and does it only when you confirm there. If it is the <strong>right place</strong>, "Confirm" keeps it, with a clearer label if you give one; a confirmed entity leaves the list. The entity's name opens its page, for anything else.</p>
+<p class="muted">Lists of the project's own entities that a test finds doubtful. "Decide…" on a row shows the records its strings are in and what can be done: keep it as the <strong>right place</strong> (with a clearer label if you give one; a confirmed entity leaves the list), mend it as the <strong>wrong place</strong>, or move only <strong>some of its strings</strong>. Nothing is changed until you choose there. The entity's name opens its page, for anything else.</p>
 
 @if (Model.Message is not null) { <p class="notice">@Model.Message @if (Model.MessageEntity is { } done) { <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(done.Id)">Open @done.Label</a> }</p> }
 @if (Model.Plan is { } plan)
 {
     var pe = plan.Entity;
     <div class="card">
-        <h2 style="margin-top:0">Mend "@pe.Label"</h2>
-        <p class="small muted">Nothing is changed until you press Mend. <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(pe.Id)" target="_blank" rel="noopener">Open the entity's page</a> to see its strings and records first. It stands for @plan.Homes[0].Strings string@(plan.Homes[0].Strings == 1 ? "" : "s").</p>
+        <h2 style="margin-top:0">Decide "@pe.Label"</h2>
+        <p class="small muted">Nothing is changed until you press one of the buttons below: Confirm, Mend or Move. <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(pe.Id)" target="_blank" rel="noopener">Open the entity's page</a> to see its strings and records first. It stands for @plan.Homes[0].Strings string@(plan.Homes[0].Strings == 1 ? "" : "s").</p>
         <h3>What the records say</h3>
         @if (Model.PlanStrings.Count == 0) { <p class="small muted">No string stands on this entity.</p> }
         @foreach (var (ps, recs, count) in Model.PlanStrings)
@@ -39,6 +39,15 @@
                 @if (count > recs.Count) { <p class="small muted">and @((count - recs.Count).ToString("N0")) more</p> }
             </details>
         }
+        <h2>It is the right place: keep it</h2>
+        <form method="post" asp-page-handler="Relabel" class="row" style="gap:.5rem; align-items:center">
+            <input type="hidden" name="id" value="@pe.Id" />
+            <label for="keep-label" class="small" style="margin:0">Its label:</label>
+            <input type="text" id="keep-label" name="label" value="@(Model.SuggestedLabel ?? pe.Label)" style="width:20rem" />
+            <button type="submit">Confirm</button>
+        </form>
+        <p class="small muted">@(Model.SuggestedLabel is null ? "Add a qualifier if the name alone does not say which place (\"Berkeley (Calif.)\"), or leave it." : "The label suggested is LoC's heading for this entity; change it if you prefer another form, or put the old one back.") The entity is confirmed with this label and leaves the list. Its identifiers and strings are as they were.</p>
+        <h2>It is the wrong place, or wrong for some of its strings: mend it</h2>
         <form method="post" asp-page-handler="Mend" id="mend-form">
             <input type="hidden" name="id" value="@pe.Id" />
             <h3>1. Remove these identifiers</h3>
@@ -109,11 +118,8 @@ else
                         <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(r.EntityId)"><strong>@r.Label</strong></a><br /><span class="small muted">@r.Status · stands for @r.Strings string@(r.Strings == 1 ? "" : "s")</span>@if (f.Strings.Count > 0) { <br /><span class="small" title="The strings that stand on this entity, as the records write them">@string.Join(" · ", f.Strings.Take(6).Select(x => $"\u201c{x}\u201d"))@(f.Strings.Count > 6 ? " …" : "")</span> }@if (f.Reason is not null) { <br /><strong class="small">@f.Reason</strong> }</td>
                         <td class="small">@(r.ItemDescription ?? "(the item is not in the index)")<br /><a href="@r.Item" target="_blank" rel="noopener">@r.Item.Split('/')[^1]</a> <span class="muted">@(r.ItemDescription is null ? "" : $"· written about in {r.ItemSitelinks}")</span></td>
                         <td class="small">@Chain(r.Label, r.HomeChain)<br /><a href="@r.HomeUri" target="_blank" rel="noopener">TGN @r.HomeUri.Split('/')[^1]</a> <span class="muted">· @(r.HomeItem is null ? "no count known" : $"written about in {r.HomeSitelinks}")</span><br /><code class="small">@r.HomeUri</code></td>
-                        @* the two decisions, each under the question it answers (the owner, 2026-11-15: "the three calls-to-action here are now a little confusing": the entity's link, Mend and the relabel box stood in one cell) *@
-                        <td class="small decide">
-                            <div><span class="muted">Wrong place?</span><br /><a class="button secondary small" href="/p/@Model.Dataset/checks?mend=@Uri.EscapeDataString(r.EntityId)" title="Shows what mending would do: remove the wrong identifiers, and merge into or add the right place, or move some of the strings. Nothing is changed until you confirm there">Mend…</a></div>
-                            <form method="post" asp-page-handler="Relabel"><span class="muted">Right place?</span> <label class="muted" for="label-@r.EntityId.Split('/')[^1]" style="display:inline; font-size:inherit">Its label:</label><br /><input type="hidden" name="id" value="@r.EntityId" /><input type="text" id="label-@r.EntityId.Split('/')[^1]" name="label" value="@(f.SuggestedLabel ?? r.Label)" title="@(f.SuggestedLabel is null ? "No heading to suggest: add a qualifier if the name alone does not say which place" : "LoC's heading for this entity, suggested; change it if you prefer another form")" /> <button type="submit" class="secondary small" title="The entity is right as aligned: it is confirmed with this label and leaves the list. Leave the label as it is to confirm without renaming">Confirm</button></form>
-                        </td>
+                        @* one call to action a row (the owner, 2026-11-15: three were confusing, and "you need to see the records, which means going to the mend page. The Relabel option could be there too, or in fact only there") *@
+                        <td class="small decide"><a class="button secondary small" href="/p/@Model.Dataset/checks?mend=@Uri.EscapeDataString(r.EntityId)" title="Shows the records the entity's strings are in, and what can be done: keep it as the right place (with a clearer label), mend it, or move some of its strings. Nothing is changed until you choose there">Decide…</a></td>
                     </tr>
                 }
                 </tbody>

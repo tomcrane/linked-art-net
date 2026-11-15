@@ -118,10 +118,18 @@ else
             <p><strong>This string is decided and is not in the queue.</strong>
                 @if (byPerson) { <text>@(item.Decision.Reviewer ?? "A reviewer") decided it on @item.Decision.DecidedAt.ToString("yyyy-MM-dd")</text> }
                 else { <text>The rules decided it on @item.Decision.DecidedAt.ToString("yyyy-MM-dd") (@item.Decision.Method)</text> }
-                @if (item.Entity is not null) { <text>: it is </text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener">@item.Entity.Label</a> <span class="tag">@item.Entity.Class.ToString().ToLowerInvariant()</span> <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span>@(item.Entity.Equivalents.Count == 0 ? ", a local authority with no identifier elsewhere" : $", with {item.Entity.Equivalents.Count} identifier{(item.Entity.Equivalents.Count == 1 ? "" : "s")}")<text>.</text> }
+                @{
+                    // the group the decision took: the one that holds the entity itself or a record the entity holds. It says where the
+                    // thing is and why it was chosen, which the entity's bare label does not ("it is Sandy": the owner, 2026-11-15)
+                    var took = item.Entity is null ? null : item.Evidence.Groups.FirstOrDefault(g => g.Members.Any(m => m.Uri == item.Entity.Id || item.Entity.Equivalents.Any(q => q.Uri == m.Uri)));
+                    var tookWhere = took?.Members.Select(m => item.Records.TryGetValue(m.Uri, out var tr) ? LinkedArtNet.Alignment.Authorities.Coordinates.Parents(tr) : null).FirstOrDefault(x => x is not null);
+                    var tookWhy = took?.Members.Where(m => m.Veto != true).Select(m => m.Reason).FirstOrDefault(r => !string.IsNullOrWhiteSpace(r));
+                }
+                @if (item.Entity is not null) { <text>: it is </text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener">@item.Entity.Label</a>@if (tookWhere is not null) { <text> (@string.Join(", ", tookWhere.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0 && x != "World").Take(3)))</text> } <span class="tag">@item.Entity.Class.ToString().ToLowerInvariant()</span> <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span>@(item.Entity.Equivalents.Count == 0 ? ", a local authority with no identifier elsewhere" : $", with {item.Entity.Equivalents.Count} identifier{(item.Entity.Equivalents.Count == 1 ? "" : "s")}")<text>.</text> }
                 else { <text>: left unresolved.</text> }
             </p>
-            <p class="small">What you see below is the card as it was decided. You can decide it differently with any action here, take the decision back with <strong>Undo last decision</strong> at the foot, or go on:
+            @if (tookWhy is not null) { <p class="small"><strong>Why:</strong> @tookWhy.</p> }
+            <p class="small">Nothing more is needed. Below is the card as it was decided: the candidate that was chosen first, and the others it was chosen from folded away. You can decide it differently with any action here, take the decision back with <strong>Undo last decision</strong> at the foot, or go on:
                 <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = DecisionMethod.Queued, context = Model.Context, after = item.String.Id })">the next string in the queue →</a></p>
         </div>
     }
@@ -175,7 +183,13 @@ else
         <div class="card"><h3 style="margin-top:0">Notes</h3>@foreach (var n in item.Notes) { <p class="small"><strong>@n.Author</strong> <span class="muted">@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span><br />@n.Text</p> }</div>
     }
 
-    <h2>Candidates</h2>
+    // a decided card shows what was chosen, not a list of things still to choose from (the owner, 2026-11-15, at "Sandy": the green
+    // notice said decided, and the map and the candidates below "suggest there is still work to do")
+    var decidedCard = item.LookedAgain is null && item.Decision.Method is not (DecisionMethod.Queued or "minted") && Model.Plan is null;
+    var chosenGroup = decidedCard && item.Entity is not null ? ev.Groups.FirstOrDefault(g => g.Members.Any(m => m.Uri == item.Entity.Id || item.Entity.Equivalents.Any(q => q.Uri == m.Uri))) : null;
+    var shownGroups = chosenGroup is null ? ev.Groups : ev.Groups.Where(g => ReferenceEquals(g, chosenGroup)).Concat(ev.Groups.Where(g => !ReferenceEquals(g, chosenGroup))).ToList();
+    var foldOpen = false;
+    <h2>@(chosenGroup is not null ? "What it was decided as" : "Candidates")</h2>
     @if (Model.Plan is { } plan)
     {
         @* two or more of the project's own entities among the ticked: what accepting them together will do, shown before it is done, since a
@@ -237,7 +251,7 @@ else
         // the right one; a marker per placed candidate, labelled with the record's label and its placement, the best group's markers emphasised
         var points = new List<object>();
         var unplaced = new List<string>();
-        var bestGroup = ev.Groups.FirstOrDefault(g => g.Members.Any(m => m.Veto != true && m.SetAside != true));
+        var bestGroup = chosenGroup ?? ev.Groups.FirstOrDefault(g => g.Members.Any(m => m.Veto != true && m.SetAside != true));
         // each group that reaches the map has a letter, on its markers and at the head of its card, so that a card and its place can be
         // found from each other (the owner, 2026-11-14, at "Donnington": five namesakes, the labels over one another, and nothing to say
         // which card is which pin); hovering either lights the other, and a marker pressed goes to its card
@@ -247,7 +261,7 @@ else
             if (!pins.TryGetValue(g, out var pin)) pins[g] = pin = pins.Count < 26 ? ((char)('A' + pins.Count)).ToString() : (pins.Count + 1).ToString();
             return pin;
         }
-        foreach (var g in ev.Groups)
+        foreach (var g in shownGroups)
             foreach (var m in g.Members)
             {
                 item.Records.TryGetValue(m.Uri, out var rec);
@@ -269,8 +283,13 @@ else
         @if (points.Any(p => (bool)p.GetType().GetProperty("approximate")!.GetValue(p)!)) { <p class="small muted" style="margin-top:-.4rem">A hollow marker stands where the record itself carries no coordinates: at its TGN parent, or where TGN puts the same name in the same place.</p> }
     }
     var first = true;
-    foreach (var group in ev.Groups)
+    foreach (var group in shownGroups)
     {
+        if (chosenGroup is not null && !first && !foldOpen)
+        {
+            foldOpen = true;
+            @Html.Raw($"<details class=\"others\"><summary>The {shownGroups.Count - 1} other candidate{(shownGroups.Count == 2 ? "" : "s")} it was chosen from</summary>")
+        }
         var live = group.Members.Where(m => m.Veto != true && m.SetAside != true).ToList();
         var allVeto = live.Count == 0;
         // the project's own firm entities in the group, each followed through a merge and counted once
@@ -283,6 +302,7 @@ else
         <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")" data-pin="@pinOfGroup" id="@(pinOfGroup is null ? null : "pin-" + pinOfGroup)">
             <div class="row">
                 @if (pinOfGroup is not null) { <span class="pin" title="This candidate's marker on the map above">@pinOfGroup</span> }
+                @if (chosenGroup is not null && ReferenceEquals(group, chosenGroup)) { <span class="tag chosen-tag">decided as this</span> }
                 <span class="score">@group.Score.ToString("0.00")</span>
                 @foreach (var s in group.Sources) { if (group.Members.FirstOrDefault(m => m.Source == s)?.Uri is { } su) { <a class="tag src" href="@su" target="_blank" rel="noopener" title="@su">@s</a> } else { <span class="tag src">@s</span> } }
                 @if (group.Members.Count > 1) { <span class="muted small">@group.Members.Count records agree they are one thing</span> }
@@ -438,8 +458,9 @@ else
         </div>
         first = false;
     }
+    @if (foldOpen) { @Html.Raw("</details>") }
 
-    <h2 id="something-else">Something else</h2>
+    <h2 id="something-else">@(chosenGroup is not null ? "Decide it differently" : "Something else")</h2>
     <div class="grid">
         <div class="card">
             @* the search is a form of its own and the results follow it inside the card: a result's own form nested in the search form

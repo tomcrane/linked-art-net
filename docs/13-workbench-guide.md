@@ -109,8 +109,9 @@ Actions:
   recurs.
 - **Same as this**: the string is an entity the project already has.
 - A card opened by its link after it has been decided says so in a green notice at its head: who or what decided
-  it, when, and onto which entity, with a link on to the queue. The card below is as it was decided, and any action
-  on it decides it afresh.
+  it, when, and onto which entity, with a link on to the queue. It names the place or person in full and gives the reason. Below it the
+  candidate that was chosen comes first, marked "decided as this", and the others are folded away; any action on the
+  card decides it afresh.
 - When the candidates are places, a map above them shows each one that has coordinates, lettered. The same letter is
   at the head of that candidate's card. Point at a card and its marker lights up and names itself; point at a marker
   and its card is outlined; press a marker to go to its card. Each place record also says where it is on its own

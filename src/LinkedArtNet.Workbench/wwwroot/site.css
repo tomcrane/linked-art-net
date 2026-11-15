@@ -218,3 +218,9 @@ tbody th { font-size: inherit; letter-spacing: 0; text-transform: none; color: v
 /* a holder pair whose entities hold different records of one source: the caution in its box (the owner, 2026-11-14) */
 .pair-warn { margin-top: 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid #b5451b; background: #fff4ee; }
 .pair-warn-item { display: block; margin: 0.15rem 0 0.15rem 1rem; }
+
+/* a decided card: the chosen candidate marked, the others folded (the owner, 2026-11-15) */
+.chosen-tag { background: #2f7d4f; color: #fff; border-color: #2f7d4f; }
+details.others { margin: 0.75rem 0; }
+details.others > summary { cursor: pointer; padding: 0.4rem 0; color: var(--muted); }
+details.others[open] > summary { margin-bottom: 0.5rem; }

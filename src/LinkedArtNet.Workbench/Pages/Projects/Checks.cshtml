@@ -4,7 +4,7 @@
     ViewData["Title"] = "Checks";
     var likely = Model.Away.Where(a => a.Likely).ToList();
     var look = Model.Away.Where(a => !a.Likely && a.Row.ItemDescription is not null).ToList();
-    var unknown = Model.Away.Where(a => a.Row.ItemDescription is null).ToList();
+    var unknown = Model.Away.Where(a => !a.Likely && a.Row.ItemDescription is null).ToList(); // one a string speaks for is among the likely, not here too
     string Chain(string chain) => string.Join(", ", chain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World") && x.Length > 0));
 }
 <h1>Checks</h1>

@@ -135,6 +135,23 @@ public class CurationServiceTests(PostgresFixture pg)
         var newYork = await Imported(york, "3");
         await Imported(hounslow, "4"); // its description names the home chain ("London"): not listed
 
+        // the strings are read: "..., Ala." on the Alabama item is right and not listed; "... (England)" on a Vermont item leads the likely
+        var (brum, stowe) = ("Birmingha" + tag, "Stow" + tag);
+        await pg.Store.PutAuthorityAsync(Tgn("6", brum, "West Midlands, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Item("6", brum, "city in and county seat of Jefferson County, Alabama, United States", 117));
+        var alabama = await Imported(brum, "6");
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", brum + ", Ala.")).Id, alabama.Id, DecisionMethod.Imported, null);
+        await pg.Store.PutAuthorityAsync(Tgn("7", stowe, "Buckinghamshire, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Item("7", stowe, "town in Lamoille County, Vermont, United States", 28));
+        var vermont = await Imported(stowe, "7");
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", stowe)).Id, vermont.Id, DecisionMethod.Imported, null);
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", stowe + " (England)")).Id, vermont.Id, DecisionMethod.Imported, null);
+
+        var all = await curation.PlacesAlignedAwayAsync(ds, "United Kingdom");
+        Assert.DoesNotContain(all, f => f.Row.EntityId == alabama.Id);
+        Assert.Equal(vermont.Id, all[0].Row.EntityId); Assert.True(all[0].Likely);
+        Assert.Contains("(England)\" says so", all[0].Reason); Assert.Equal(2, all[0].Strings.Count);
+        await curation.ConfirmAsync(ds, vermont.Id, "tester", null);
         var rows = await curation.PlacesAlignedAwayAsync(ds, "United Kingdom");
         Assert.Equal(3, rows.Count);
         Assert.Equal((kentucky.Id, true), (rows[0].Row.EntityId, rows[0].Likely));   // Scotland's 180 against Kentucky's 41

@@ -352,10 +352,18 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     /// otherwise for a look ("New York" beside a hamlet in Lincolnshire is right as it is). An entity a person has confirmed is not
     /// listed. Counted before it was built (reports/q-check1.txt): 509 such entities, 277 with a namesake at home, 77 listed.
     /// </summary>
-    public async Task<IReadOnlyList<(AwayRow Row, bool Likely)>> PlacesAlignedAwayAsync(string dataset, string? homePlace, CancellationToken ct = default)
+    /// <remarks>
+    /// The check reads the strings that stand on the entity as well as its label (the owner, 2026-11-15, at "Birmingham", one string,
+    /// "Birmingham, Ala.", of a book from the Birmingham Museum of Art: "Birmingham Alabama is actually correct"). Counted first
+    /// (reports/q-check2.txt): of the imported places with a bare label and strings, 122 have every string qualified, 177 some, 252
+    /// none. An entity whose every string carries a qualifier the item's description bears is not listed ("Cambridge, Mass." on
+    /// Cambridge, Massachusetts); one with a string whose qualifier is in a home namesake's chain and not in the item's description
+    /// is likely wrong, and the string is the reason ("Stowe (England)" on Stowe, Vermont); the strings are shown on every row.
+    /// </remarks>
+    public async Task<IReadOnlyList<AwayFinding>> PlacesAlignedAwayAsync(string dataset, string? homePlace, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(homePlace)) return [];
-        var found = new List<(AwayRow, bool)>();
+        var found = new List<AwayFinding>();
         foreach (var pairs in (await store.ImportedPlacesWithHomeNamesakesAsync(dataset, homePlace, ct)).GroupBy(r => (r.EntityId, r.Item)))
         {
             var rows = pairs.ToList();
@@ -375,12 +383,22 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             }
             if (rows.Any(Names)) continue;
             var home = rows.OrderByDescending(r => r.HomeSitelinks).First();
+            // what the strings themselves say
+            var strings = (await store.StringsForEntityAsync(rows[0].EntityId, 200, ct)).Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList();
+            var qualifiers = strings.Select(raw => (Raw: raw, Words: Qualified.Tokens(Qualified.Split(raw).Qualifier))).ToList();
+            if (strings.Count > 0 && rows[0].ItemDescription is not null && qualifiers.All(q => q.Words.Count > 0 && Qualified.Contains(descr, q.Words))) continue;
+            var saysHome = qualifiers.FirstOrDefault(q => q.Words.Count > 0 && !Qualified.Contains(descr, q.Words) && rows.Any(r => Qualified.Contains(r.HomeChain, q.Words)));
+            if (saysHome.Raw is not null)
+            {
+                found.Add(new AwayFinding(rows.OrderByDescending(r => Qualified.Contains(r.HomeChain, saysHome.Words) ? 1 : 0).ThenByDescending(r => r.HomeSitelinks).First(), true, strings, $"the string \"{saysHome.Raw}\" says so"));
+                continue;
+            }
             // likely only where both counts are known: the first reading of the real list (2026-11-15) had items absent from the index
             // (no description, no count) and places at home with no Wikidata item found through TGN's id standing as "0 against 0"
-            found.Add((home, home.ItemDescription is not null && home.HomeItem is not null && home.HomeSitelinks >= home.ItemSitelinks));
+            found.Add(new AwayFinding(home, home.ItemDescription is not null && home.HomeItem is not null && home.HomeSitelinks >= home.ItemSitelinks, strings, null));
         }
         // the likely first, the widest margin leading; then the rest, the least written-about abroad first ("Perth" in Tasmania before "New York")
-        return found.OrderByDescending(f => f.Item2).ThenByDescending(f => f.Item2 ? f.Item1.HomeSitelinks - f.Item1.ItemSitelinks : -f.Item1.ItemSitelinks).ThenBy(f => f.Item1.Label, StringComparer.Ordinal).ToList();
+        return found.OrderByDescending(f => f.Likely).ThenByDescending(f => f.Reason is not null).ThenByDescending(f => f.Likely ? f.Row.HomeSitelinks - f.Row.ItemSitelinks : -f.Row.ItemSitelinks).ThenBy(f => f.Row.Label, StringComparer.Ordinal).ToList();
     }
 
     /// <summary>
@@ -473,4 +491,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
 }
 
 /// <summary>What mending a place aligned to a namesake would do: the entity, the places of its name at home (the most written-about first) and, by the home place's URI, the project's entity that already holds it.</summary>
+/// <summary>An entity the check lists: the row, whether it is likely wrong, the strings that stand on it as written, and the reason when a string itself gives one.</summary>
+public sealed record AwayFinding(AwayRow Row, bool Likely, IReadOnlyList<string> Strings, string? Reason);
+
 public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IReadOnlyDictionary<string, Entity> Holders);

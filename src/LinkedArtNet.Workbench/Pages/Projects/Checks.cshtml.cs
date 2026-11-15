@@ -15,7 +15,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
 {
     [BindProperty(SupportsGet = true)] public string? Mend { get; set; }
 
-    public IReadOnlyList<(AwayRow Row, bool Likely)> Away { get; private set; } = [];
+    public IReadOnlyList<AwayFinding> Away { get; private set; } = [];
     public string? HomePlace { get; private set; }
     public MendPlan? Plan { get; private set; }
     public string? Message { get; private set; }

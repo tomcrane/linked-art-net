@@ -708,6 +708,17 @@ and the log (doc 15) records that. The order within an area is rough value.
   or change; and what was not checked (here VIAF and LUX, and LoC's unqualified heading). The assistant reads the
   store and the pulled records only, writes nothing, and its answer is kept as a note when accepted. To design with
   "Ask for help" at the desk, the same kind of help.
+- What an evening on the checks list showed (the owner, 2026-11-15: "the early checks usually ended up in picking a
+  new one, but the recent ones were all relabels"). The list's order is a rank of wrongness: the likely first, then
+  the least written-about item first, so the obscure namesakes abroad (wrong, mended) came early and the famous
+  cities abroad (right, wanting only a label that says which) came late. To do with it: the Decide screen leading
+  with the likelier outcome (keep and relabel where the item is widely written about and the strings' qualifiers
+  agree, Mend where it is obscure), the person still choosing; and the evening's decisions as a labelled set for the
+  assistant (which rows were mended, moved, relabelled or confirmed, against what the check knew of each: the notes
+  on the entities have them), to be counted before any default is set and to test the assistant's suggestions
+  against. Not counted yet. Built the same evening, in order: Mend, the strings read, the records on the screen,
+  places not at home, a search of the project's places, moving some strings, relabel and confirm, and one "Decide..."
+  a row with every outcome on the screen that shows the records.
 - A second check for the page: a place entity aligned to an item that is not a place (Wimborne Minster's "church":
   the same name, another kind of thing, not a namesake abroad, so the first check lists it only by chance). From
   Wikidata's instance-of where the index has it (the `instanceOf` of the item against the classes of places), else

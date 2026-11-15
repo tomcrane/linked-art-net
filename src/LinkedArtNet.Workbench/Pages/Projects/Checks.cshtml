@@ -8,8 +8,37 @@
     string Chain(string chain) => string.Join(", ", chain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World") && x.Length > 0));
 }
 <h1>Checks</h1>
-<p class="muted">Lists of the project's own entities that a test finds doubtful. Each row leads to the entity's page, where you mend it (remove the wrong identifier, add the right one) or, if it is right as it is, confirm it: a confirmed entity leaves the list. Nothing here is changed for you.</p>
+<p class="muted">Lists of the project's own entities that a test finds doubtful. Each row leads to the entity's page, where you can mend it by hand or, if it is right as it is, confirm it: a confirmed entity leaves the list. "Mend…" shows what it would do (remove the wrong identifiers, then merge into the project's entity for the right place or add the right identifier) and does it only when you confirm.</p>
 
+@if (Model.Message is not null) { <p class="notice">@Model.Message @if (Model.MessageEntity is { } done) { <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(done.Id)">Open @done.Label</a> }</p> }
+@if (Model.Plan is { } plan)
+{
+    var pe = plan.Entity;
+    <div class="card">
+        <h2 style="margin-top:0">Mend "@pe.Label"</h2>
+        <p class="small muted">Nothing is changed until you press Mend. <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(pe.Id)" target="_blank" rel="noopener">Open the entity's page</a> to see its strings and records first. It stands for @plan.Homes[0].Strings string@(plan.Homes[0].Strings == 1 ? "" : "s").</p>
+        <form method="post" asp-page-handler="Mend">
+            <input type="hidden" name="id" value="@pe.Id" />
+            <h3>1. Remove these identifiers</h3>
+            <p class="small muted">All are ticked: an import's identifiers usually describe the same wrong place. Untick any that is right for the place meant.</p>
+            @foreach (var q in pe.Equivalents)
+            {
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" checked /> <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == plan.Homes[0].Item ? " · " + (plan.Homes[0].ItemDescription ?? "not in the local index") : "")</span></label></p>
+            }
+            <h3>2. The place meant</h3>
+            @foreach (var h in plan.Homes)
+            {
+                var holder = plan.Holders.GetValueOrDefault(h.HomeUri);
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(ReferenceEquals(h, plan.Homes[0]) ? "checked" : "") /> <strong>@Chain(h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
+                @if (holder is not null) { <span>The project already has an entity for this place, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: "@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span> }
+                else { <span>No entity of the project holds this place: the identifier is <strong>added to "@pe.Label"</strong>.</span> }</p>
+            }
+            <div class="actions"><button type="submit">Mend</button> <a href="/p/@Model.Dataset/checks">Back to the list, nothing changed</a></div>
+        </form>
+    </div>
+}
+else
+{
 <h2>Places the import aligned to a namesake <span class="muted small">@Model.Away.Count</span></h2>
 @if (Model.HomePlace is null)
 {
@@ -30,7 +59,7 @@ else
                 @foreach (var (r, _) in rows)
                 {
                     <tr>
-                        <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(r.EntityId)"><strong>@r.Label</strong></a><br /><span class="small muted">@r.Status · stands for @r.Strings string@(r.Strings == 1 ? "" : "s")</span></td>
+                        <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(r.EntityId)"><strong>@r.Label</strong></a><br /><span class="small muted">@r.Status · stands for @r.Strings string@(r.Strings == 1 ? "" : "s")</span><br /><a class="small" href="/p/@Model.Dataset/checks?mend=@Uri.EscapeDataString(r.EntityId)" title="Shows what mending would do; nothing is changed until you confirm">Mend…</a></td>
                         <td class="small">@(r.ItemDescription ?? "(the item is not in the index)")<br /><a href="@r.Item" target="_blank" rel="noopener">@r.Item.Split('/')[^1]</a> <span class="muted">@(r.ItemDescription is null ? "" : $"· written about in {r.ItemSitelinks}")</span></td>
                         <td class="small">@Chain(r.HomeChain)<br /><a href="@r.HomeUri" target="_blank" rel="noopener">TGN @r.HomeUri.Split('/')[^1]</a> <span class="muted">· @(r.HomeItem is null ? "no count known" : $"written about in {r.HomeSitelinks}")</span><br /><code class="small">@r.HomeUri</code></td>
                     </tr>
@@ -39,4 +68,5 @@ else
             </table>
         }
     }
+}
 }

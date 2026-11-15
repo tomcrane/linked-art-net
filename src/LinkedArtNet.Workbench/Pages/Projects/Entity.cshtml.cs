@@ -17,6 +17,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
 
     public EntityView View { get; private set; } = null!;
     public IReadOnlyList<Entity> MergeCandidates { get; private set; } = [];
+    public Dictionary<string, (string? Placement, int Strings)> MergeClues { get; } = new(StringComparer.Ordinal);
     public IReadOnlyList<AuthorityRecord> Found { get; private set; } = [];
     /// <summary>The catalogue records the entity's strings were seen in, by string (the owner, 2026-11-05: on a placeholder's page, nothing said what the records it stood in were about).</summary>
     public IReadOnlyList<(SourceString String, IReadOnlyList<StringExample> Examples)> Examples { get; private set; } = [];
@@ -46,7 +47,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         if (!string.IsNullOrWhiteSpace(Held) && await Services.Store.ResolveEntityAsync(Held) is { } holder && holder.Id != view.Entity.Id)
             MergeCandidates = [holder];
         else if (!string.IsNullOrWhiteSpace(Merge))
-            MergeCandidates = (await Project.Desk.SearchEntitiesAsync(Dataset, Merge)).Where(e => e.Id != view.Entity.Id).ToList();
+            MergeCandidates = (await Project.Desk.SearchEntitiesAsync(Dataset, Merge)).Where(e => e.Id != view.Entity.Id).OrderByDescending(e => e.Class == view.Entity.Class ? 1 : 0).ToList(); // its own kind first
+        foreach (var other in MergeCandidates.Take(12)) MergeClues[other.Id] = await Project.Desk.ClueAsync(other, HttpContext.RequestAborted);
         if (!string.IsNullOrWhiteSpace(Find))
             Found = (await Project.Desk.SearchIndexesAsync(Find, null, 12)).Where(r => view.Entity.Equivalents.All(q => q.Uri != r.Uri)).ToList();
         // the records behind the strings, the most frequent strings first, a record shown once, eight at most

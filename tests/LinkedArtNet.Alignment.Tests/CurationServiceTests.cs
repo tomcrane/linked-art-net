@@ -142,8 +142,27 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Equal((tasmania.Id, false), (rows[1].Row.EntityId, rows[1].Likely));   // no count at home: to look at, the obscure first
         Assert.Null(rows[1].Row.HomeItem);
         Assert.Equal((newYork.Id, false), (rows[2].Row.EntityId, rows[2].Likely));    // right as it is, most likely: to look at, last
+        // mended in one step: with no entity of the project at the home place, the identifiers go and the home place's is added
+        var plan = (await curation.MendPlanAsync(ds, kentucky.Id, "United Kingdom"))!;
+        Assert.Equal($"http://vocab.getty.edu/tgn/{tag}1", Assert.Single(plan.Homes).HomeUri); Assert.Empty(plan.Holders);
+        var mended = await curation.MendAwayAsync(ds, kentucky.Id, plan.Entity.Equivalents.Select(q => q.Uri).ToList(), plan.Homes[0].HomeUri, "tester");
+        Assert.Equal(kentucky.Id, mended.Id);
+        Assert.Equal($"http://vocab.getty.edu/tgn/{tag}1", Assert.Single(mended.Equivalents).Uri);
+        // with one, the entity is merged into it and its strings follow
+        var scot = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, perth + " (Scotland)", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(scot.Id, new Equivalent($"http://vocab.getty.edu/tgn/{tag}5", "tgn", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var perthString = await pg.Store.CollectAsync(ds, "place", perth);
+        await pg.Store.DecideAsync(perthString.Id, tasmania.Id, DecisionMethod.Imported, null);
+        var perthPlan = (await curation.MendPlanAsync(ds, tasmania.Id, "United Kingdom"))!;
+        Assert.Equal(scot.Id, perthPlan.Holders[perthPlan.Homes[0].HomeUri].Id);
+        var into = await curation.MendAwayAsync(ds, tasmania.Id, perthPlan.Entity.Equivalents.Select(q => q.Uri).ToList(), perthPlan.Homes[0].HomeUri, "tester");
+        Assert.Equal(scot.Id, into.Id);
+        Assert.DoesNotContain(into.Equivalents, q => q.Source == "wikidata");
+        Assert.Equal(scot.Id, (await pg.Store.ResolveEntityAsync((await pg.Store.DecisionForAsync(perthString.Id))!.EntityId!))!.Id);
+        Assert.Null(await curation.MendPlanAsync(ds, kentucky.Id, "United Kingdom")); // mended, it is not on the list
+        Assert.Equal(newYork.Id, Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom")).Row.EntityId);
         await curation.ConfirmAsync(ds, newYork.Id, "tester", null);                  // confirmed, it leaves the list
-        Assert.Equal(2, (await curation.PlacesAlignedAwayAsync(ds, "United Kingdom")).Count);
+        Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, null));
     }
 

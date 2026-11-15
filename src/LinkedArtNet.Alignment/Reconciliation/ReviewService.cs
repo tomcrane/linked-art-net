@@ -225,6 +225,10 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     }
 
     /// <summary>Where an entity is, for telling namesakes apart: LoC's parenthetical first ("Ala."), else the first two of its TGN record's parents ("Jefferson, Alabama"); null when the entity's own label carries a qualifier or nothing says.</summary>
+    /// <summary>What tells one entity from another of its name in a list to choose from (the owner, 2026-11-15, at the merge search: "Cardiff", and nothing to say which): where it is, if a source places it, and how many strings stand on it.</summary>
+    public async Task<(string? Placement, int Strings)> ClueAsync(Entity entity, CancellationToken ct = default) =>
+        (await PlacementAsync(entity, ct), (await store.StringsForEntityAsync(entity.Id, 200, ct)).Count);
+
     private async Task<string?> PlacementAsync(Entity entity, CancellationToken ct)
     {
         if (entity.Class != EntityClass.Place || (entity.Label?.Contains('(') ?? false)) return null;

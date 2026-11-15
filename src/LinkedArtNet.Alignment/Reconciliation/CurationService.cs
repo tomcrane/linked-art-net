@@ -383,6 +383,48 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return found.OrderByDescending(f => f.Item2).ThenByDescending(f => f.Item2 ? f.Item1.HomeSitelinks - f.Item1.ItemSitelinks : -f.Item1.ItemSitelinks).ThenBy(f => f.Item1.Label, StringComparer.Ordinal).ToList();
     }
 
+    /// <summary>
+    /// What mending a listed place would do, for the person to read before anything is written (the owner, 2026-11-15, after mending
+    /// "Cardiff" and "Belfast" by hand: the row and its TGN address left the list with the identifiers, and the project's other
+    /// "Cardiff", already the Welsh city, was not pointed at): the entity, the places of its name at home, the most written-about
+    /// first, and for each the project's entity that already holds it, if one does. Null when the entity is not on the list.
+    /// </summary>
+    public async Task<MendPlan?> MendPlanAsync(string dataset, string entityId, string? homePlace, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(homePlace)) return null;
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        var homes = (await store.ImportedPlacesWithHomeNamesakesAsync(dataset, homePlace, ct)).Where(r => r.EntityId == entity.Id)
+            .GroupBy(r => r.HomeUri).Select(g => g.First()).OrderByDescending(r => r.HomeSitelinks).ThenBy(r => r.HomeChain, StringComparer.Ordinal).ToList();
+        if (homes.Count == 0) return null;
+        var holders = new Dictionary<string, Entity>(StringComparer.Ordinal);
+        foreach (var h in homes)
+            if ((await store.FindEntitiesByEquivalentAsync(h.HomeUri, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id) is { } holder) holders[h.HomeUri] = holder;
+        return new MendPlan(entity, homes, holders);
+    }
+
+    /// <summary>
+    /// Mends a place aligned to a namesake, in one step and by a person's word: the identifiers named are removed, and then the entity
+    /// is merged into the project's entity that already holds the place at home, or, when none does, takes that place's identifier.
+    /// Every part is noted as it is when done by hand. Returns the entity the strings now stand on.
+    /// </summary>
+    public async Task<Entity> MendAwayAsync(string dataset, string entityId, IReadOnlyList<string> removeUris, string homeUri, string reviewer, CancellationToken ct = default)
+    {
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        if (await store.GetAuthorityAsync(homeUri, ct) is not { Source: "tgn" } home) throw new InvalidOperationException("The place at home is not a TGN record of the local index.");
+        foreach (var uri in removeUris.Distinct(StringComparer.Ordinal))
+            if (uri != homeUri && entity.Equivalents.Any(q => q.Uri == uri)) await RemoveEquivalentAsync(dataset, entity.Id, uri, reviewer, ct);
+        var holder = (await store.FindEntitiesByEquivalentAsync(homeUri, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id);
+        var where = home.DataJson is null ? home.Label : $"{home.Label} ({homeUri})";
+        if (holder is not null)
+        {
+            await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Mended from the checks: aligned by the import to a namesake; merged into {holder.Label ?? holder.Id}, which holds {where}.", ct);
+            return await MergeAsync(dataset, entity.Id, holder.Id, reviewer, null, ct);
+        }
+        if (!entity.Equivalents.Any(q => q.Uri == homeUri)) await AddEquivalentAsync(dataset, entity.Id, homeUri, reviewer, ct);
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Mended from the checks: aligned by the import to a namesake; now {where}.", ct);
+        return (await store.GetEntityAsync(entity.Id, ct))!;
+    }
+
     // ---- export ----------------------------------------------------------------------------------------------------
 
     private static readonly JsonSerializerOptions ExportJson = new() { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
@@ -429,3 +471,6 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return e;
     }
 }
+
+/// <summary>What mending a place aligned to a namesake would do: the entity, the places of its name at home (the most written-about first) and, by the home place's URI, the project's entity that already holds it.</summary>
+public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IReadOnlyDictionary<string, Entity> Holders);

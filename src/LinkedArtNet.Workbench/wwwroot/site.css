@@ -233,3 +233,6 @@ details.others[open] > summary { margin-bottom: 0.5rem; }
 .pair-compare th, .pair-compare td { text-align: left; vertical-align: top; padding: 0.35rem 0.6rem; border: 1px solid var(--rule); }
 .pair-compare thead th { font-weight: 700; }
 .pair-compare tbody th { width: 5rem; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--muted); }
+
+/* the map keeps its layers to itself: Leaflet numbers its panes up to 1000, which rose over the tray bar at the foot of the page (the owner, 2026-11-15) */
+.map { isolation: isolate; position: relative; z-index: 0; }

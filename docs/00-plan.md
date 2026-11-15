@@ -62,47 +62,54 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-15 afternoon; the one place to read first)
+## 0. Resume point (written 2026-11-15 evening; the one place to read first)
 
-**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`: accepted 9,481, queued 3,716, minted 10,775),
-read string by string; finding 124 is measured in it (doc 10 7.6). No reconcile is pending. Schema version 11 is on
-the real store and the library export is collected into `records` and `occurrences` (63,392 records, 330,450
-occurrences; doc 12 section 14.8 step 1, built). Doc 12 section 14 is the agreed design for records, record
-decisions, the cataloguers' list and seeing the work; its steps 2 to 6 are not built. The short version at the head
-of this plan says what the whole is for. The day's commits are local on `de-pmc`: `git push` is the owner's word.
+**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`: accepted 9,481, queued 3,716, minted 10,775);
+no reconcile is pending, and none has run since the evening's work, so the stored cards are that run's (Look again
+shows a string under today's rules). Schema version 12 is on the real store (`entities.set_aside_labels`); the
+library export is collected into `records` and `occurrences` (doc 12 section 14.8 step 1). Built on 2026-11-15
+after step 1, each at the owner's word at the desk: the card's twelve ordered by prominence for every level group;
+a name set aside on an entity; where a publisher is, as a hint on a publisher's group of records (the shipped
+skeleton table `Tables/publisher-places.json`, the project's own records, the publisher's entity); and the page
+**Checks** (`/p/<project>/checks`), whose first check lists places the old import aligned to a namesake, with
+"Decide..." on each row: the records, then keep it (a label, LoC's heading suggested, and Confirm), mend the whole
+entity, or move only some strings. The owner worked the list from 100 rows to the 23 that cannot be told (33
+mended, 2 moves, 21 confirmed, 21 relabelled, by the notes). The day's commits are local on `de-pmc` (53 unpushed):
+`git push` is the owner's word.
 
 **For the owner on return, with links** (the workbench at http://localhost:5200, started by the assistant in its
-session from 2026-11-15, the owner's leave; if the session has ended, `dotnet run --project src/LinkedArtNet.Workbench`):
+session; if the session has ended, `dotnet run --project src/LinkedArtNet.Workbench`):
 
-- All of a string's records, grouped: "Cambridge" http://localhost:5200/p/pmc/review?id=65756 (525 records, by
-  publisher, the largest group open); "Plymouth" by the other places on the imprint
-  http://localhost:5200/p/pmc/review?id=61711&by=place (21 records, where three were shown; "Lewisburg [Pa.] ;
-  Plymouth" is a group of its own). To say: whether the default field to group by is right (the publisher for a
-  place, the place for anything else), and what a group should open to.
-- "Madison, Wisconsin" http://localhost:5200/p/pmc/review?id=61369: the river is gone; group A is right; the
-  project's "Madison" below it is aligned to Madison, New Jersey.
-- The map's tiles: a rule against the hairline gaps is in; the assistant's display never showed the gap, so it is
-  the owner's to confirm on any card with a map.
-- Two rulings the first run of finding 124 raised (section 7, Reconciler, the first two items): "Sutton" (61352)
-  matched to the owner's Plymouth by a former name TGN gives, which is to be a setting of the project; and the old
-  import's Wikidata links for bare place names, about forty of 166 wrong on their face (`reports/q-import-us.txt`),
-  "Glasgow" on Glasgow, Kentucky among them, wanting an audit list at the workbench.
-- The count for rules deciding for a record (doc 12 14.8 step 6; `reports/q-split-count.txt`): of 1,597 bare place
-  strings with a record, 822 are in two or more records and 736 of those under two or more publishers; 175 stand
-  both alone and as one place of a list. Publishers' countries are not known to the store, so what a rule on the
-  publisher would get right is not counted yet.
+- Two things built last and not yet seen by anyone in the browser: on an entity page, "Use LoC's form" under Save
+  label (http://localhost:5200/p/pmc/entity?id=https%3A%2F%2Fdata.paul-mellon-centre.ac.uk%2Fplace%2Fgytt4u2f,
+  "Andover (Mass.)"); and the Decide screen pulling the entity's Wikidata item when it is opened and the index does
+  not have it, with a notice of what the item says (any row under "Cannot tell" at
+  http://localhost:5200/p/pmc/checks).
+- The 23 rows that cannot be told, to work through: a mix so far (Bromley and Edinburgh wrong, Biggleswade right,
+  Berwick right by TGN and LoC with the import's three identifiers a hamlet in Kent).
+- Left by hand: "Cardiff" (`place/t7mbc5a4`, emptied, to merge into the project's Cardiff (Wales)), "Belfast"
+  (`place/scrhnxf9`, emptied, wants `http://vocab.getty.edu/tgn/7012112`), "Raleigh" (`place/mcgyqvqf`, emptied,
+  to merge into the Raleigh of North Carolina), if not done since; the Ontario "Peterborough" (`place/bk5w54aq`)
+  still bears the bare label and one English string (the subject subdivision, 80140) unless moved.
+- Rulings and choices open (section 7, Reconciler, has each): an entity whose identifiers were all removed still
+  says "aligned"; former names as a setting of the project; whether published place labels are LoC's form
+  ("Birmingham (Ala.)") or spelled out; the default field to group records by; the tile gaps on the owner's display.
 
-**Next, in order.** (1) The desk, continued: "Madison, Wisconsin" (accept group A) and the other places aligned
-elsewhere ("Newark, Delaware", 54364; "Stamford, Lincolnshire", 66064; "Huntingdon, Cambs.", 48911; "Middleburg,
-Virginia", 49522; "Stowe, Buckingham", 49864; "Lewiston", 74197, 74252, 74538), "Sutton" (61352, wrongly on
-Plymouth), "Waterman Fine Art Ltd" (8474), "Fenner, Rest" (9056), the bare "Dagenham" placeholder
-(`place/hvj4jgry`), "Osterley Park" wanting TGN 1102996, the audit's mislabels; each thing the desk fails to show,
-do or get right becomes an item in section 7 and is built the same session. (2) Doc 12 section 14 step 2, the
-findings list (the table, raising one at the desk, the list page, the export), when the owner says; the audit of
-the old import's place links is its first bulk source. (3) Pruning section 7 of its built items into the log,
-offered on 2026-11-15 and not done. (4) Doc 12 section 5 read against the desk as built. (5) Doc 16's scenarios
-(two written, the list to write; pictures retaken at the fresh PMC run). (6) The agent parser when the owner comes
-back to it (section 7, Parsers: what its endpoint, playground and corpus lack).
+**Next, in order.** (1) The checks list finished, and what it showed turned to use: the Decide screen leading with
+the likelier outcome, counted first from the evening's notes; the second check (a place aligned to an item that is
+not a place, as Wimborne Minster's "church"). (2) The assistant on the checks page and "Ask for help" at the desk,
+designed together (section 7 has the worked example and the shape of an answer). (3) The publisher hint carried
+on: the Wikidata loader keeping a body's headquarters, an entry of the table carrying several places, the hint as
+the default of a decision for a group of records. (4) Doc 12 section 14 step 2, the cataloguers' list, when the
+owner says ("Berwick (West Sussex)" for a church in East Sussex, and the William Shipley Group's "[London]" and
+"[Northwood?]", are entries waiting for it). (5) The desk's standing items: "Newark, Delaware" (54364), "Stamford,
+Lincolnshire" (66064), "Huntingdon, Cambs." (48911), "Middleburg, Virginia" (49522), "Stowe, Buckingham" (49864),
+"Lewiston" (74197, 74252, 74538), "Sutton" (61352, reopened, the name set aside on Plymouth), "Waterman Fine Art
+Ltd" (8474), "Fenner, Rest" (9056), the bare "Dagenham" placeholder (`place/hvj4jgry`), "Osterley Park" wanting TGN
+1102996, the audit's mislabels; several of the places may have been settled through the checks. (6) Pruning section
+7 of its built items into the log; doc 12 section 5 read against the desk as built; doc 12 to gain a section for
+the Checks page, which is described only in section 7 and the code so far. (7) Doc 16's scenarios; the agent parser
+when the owner comes back to it.
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI, whether records absent from a full dump are retired, and how LUX takes

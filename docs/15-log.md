@@ -56,6 +56,22 @@ string's records, grouped and folded. PMC collected: 63,392 records, 330,450 occ
 records and "Cambridge" in 525. A rule against hairline gaps between map tiles. The count for rules deciding for a
 record, as far as the store can make it (doc 12 14.8 step 6).
 
+The evening, the owner back at the desk. "Cambridge" (65756): TGN's city in Cambridgeshire was among 36 groups
+not shown, because the ordering by prominence had reached only the tie prominence ranked; every level group is
+ordered now. The owner's thought there, that the publisher (Cambridge University Press, 276 of 525 records) should
+tell, became a hint on each publisher's group of records from three sources, the third a shipped skeleton table to
+grow by pull request. "Sutton" on Plymouth became a name that can be set aside on an entity (schema version 12).
+Then the audit of the old import's place links, as a page of its own, Checks, and an evening of the owner using it
+and the assistant mending it as it was used: the query made quick; Mend with a confirm screen; the strings read
+("Birmingham, Ala." is right); a description that is not there no longer counted as disagreement ("Biggleswade");
+the records on the screen; places not at home ("Raleigh") and under another name ("Bâle", Basel); moving some of an
+entity's strings ("Peterborough": Ontario for two strings, England for two); relabel and confirm ("Berkeley
+(Calif.)"); one "Decide..." a row, every outcome on the screen with the records; LoC's heading as a label on the
+entity page; the Wikidata item pulled when the screen opens. The assistant answered two rows by hand as an
+assistant would ("Wimborne Minster", a church for a town; "Northwood", the William Shipley Group's pamphlets, sent
+to Hillingdon by the owner), and the owner's remark that the early rows were mended and the late ones relabelled
+showed the list's order to be a rank of wrongness. 100 rows to 23.
+
 ## 2026-11-14
 
 The project's home page timed out on a cold start (a count of the authority records by scanning them): mended by

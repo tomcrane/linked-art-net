@@ -50,6 +50,19 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
     }
 
+    public async Task<IActionResult> OnPostRelabelAsync(string id, string label)
+    {
+        try
+        {
+            var result = await Project.Curation.RelabelAndConfirmAsync(Dataset, id, label, Reviewer, HttpContext.RequestAborted);
+            return Flash($"Relabelled \"{result.Label}\" and confirmed.", new { dataset = Dataset }, result);
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
+        {
+            return Flash(e.Message, new { dataset = Dataset });
+        }
+    }
+
     public async Task<IActionResult> OnPostMendAsync(string id, string[]? remove, string? home, string? otherUri, long[]? strings, string? act)
     {
         try

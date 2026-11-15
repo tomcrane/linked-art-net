@@ -133,6 +133,9 @@ public class CurationServiceTests(PostgresFixture pg)
         await pg.Store.PutAuthorityAsync(Item("5", perth, "town in Tasmania, Australia", 14));
         var tasmania = await Imported(perth, "5");
         var newYork = await Imported(york, "3");
+        // it holds LoC's heading, which says which place it is: the label the checks suggest for an entity right as aligned
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord($"http://id.loc.gov/authorities/names/{tag}ny", "loc", $"{york} (N.Y.)", [$"{york} (N.Y.)"], "Place", null, [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.AddEquivalentAsync(newYork.Id, new Equivalent($"http://id.loc.gov/authorities/names/{tag}ny", "loc", "through-wikidata", 1, DateTimeOffset.UtcNow));
         await Imported(hounslow, "4"); // its description names the home chain ("London"): not listed
 
         // the strings are read: "..., Ala." on the Alabama item is right and not listed; "... (England)" on a Vermont item leads the likely
@@ -217,7 +220,11 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Single((await pg.Store.GetEntityAsync(ontario.Id))!.Equivalents); // as it was
         Assert.DoesNotContain(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == ontario.Id); // its one string left agrees with the item
         await Assert.ThrowsAsync<InvalidOperationException>(() => curation.MoveStringsAsync(ds, ontario.Id, [bare.Id], "entity:" + england.Id, "tester")); // it stands there no more
-        await curation.ConfirmAsync(ds, newYork.Id, "tester", null);                  // confirmed, it leaves the list
+        var suggested = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == newYork.Id).SuggestedLabel;
+        Assert.Equal($"{york} (N.Y.)", suggested);
+        var relabelled = await curation.RelabelAndConfirmAsync(ds, newYork.Id, suggested!, "tester");   // relabelled and confirmed, it leaves the list
+        Assert.Equal((suggested, EntityStatus.Confirmed), (relabelled.Label, relabelled.Status));
+        Assert.Contains(york, relabelled.Labels); // the bare name is still a name of it
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, null));
     }

@@ -402,7 +402,26 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             found.Add(new AwayFinding(home, home.ItemDescription is not null && home.HomeItem is not null && home.HomeSitelinks >= home.ItemSitelinks, strings, null));
         }
         // the likely first, the widest margin leading; then the rest, the least written-about abroad first ("Perth" in Tasmania before "New York")
+        // a label that says which place it is, for the rows that are right as aligned and only want telling from their namesakes (the
+        // owner, 2026-11-15: "nothing to mend, and the fix is to clarify the place name, e.g. Berkeley => Berkeley (Calif.)"): LoC's
+        // heading where the entity holds one that begins with its label and carries a qualifier, the form most of the project's
+        // places already have
+        for (var i = 0; i < found.Count; i++)
+        {
+            if (await store.GetEntityAsync(found[i].Row.EntityId, ct) is not { } e) continue;
+            foreach (var q in e.Equivalents.Where(q => q.Source == "loc"))
+                if (await store.GetAuthorityAsync(q.Uri, ct) is { Label: { } heading } && heading.StartsWith(found[i].Row.Label + " (", StringComparison.Ordinal) && heading.EndsWith(')'))
+                { found[i] = found[i] with { SuggestedLabel = heading }; break; }
+        }
         return found.OrderByDescending(f => f.Likely).ThenByDescending(f => f.Reason is not null).ThenByDescending(f => f.Likely ? f.Row.HomeSitelinks - f.Row.ItemSitelinks : -f.Row.ItemSitelinks).ThenBy(f => f.Row.Label, StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>The entity is right as aligned and wants only a label that says which place it is: the label is changed and the entity confirmed, each noted, so that it leaves the checks.</summary>
+    public async Task<Entity> RelabelAndConfirmAsync(string dataset, string entityId, string label, string reviewer, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(label)) throw new InvalidOperationException("A label is needed.");
+        await SetLabelAsync(dataset, entityId, label, reviewer, ct);
+        return await ConfirmAsync(dataset, entityId, reviewer, "right as aligned; the label made to say which place it is, at the checks", ct);
     }
 
     /// <summary>
@@ -566,7 +585,11 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
 
 /// <summary>What mending a place aligned to a namesake would do: the entity, the places of its name at home (the most written-about first) and, by the home place's URI, the project's entity that already holds it.</summary>
 /// <summary>An entity the check lists: the row, whether it is likely wrong, the strings that stand on it as written, and the reason when a string itself gives one.</summary>
-public sealed record AwayFinding(AwayRow Row, bool Likely, IReadOnlyList<string> Strings, string? Reason);
+public sealed record AwayFinding(AwayRow Row, bool Likely, IReadOnlyList<string> Strings, string? Reason)
+{
+    /// <summary>A label that tells the entity from its namesakes, should it be right as aligned: LoC's heading when the entity holds one ("Berkeley (Calif.)"); null when there is none to suggest.</summary>
+    public string? SuggestedLabel { get; init; }
+}
 
 public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IReadOnlyDictionary<string, Entity> Holders)
 {

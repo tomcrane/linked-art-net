@@ -62,49 +62,47 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-14 evening; the one place to read first)
+## 0. Resume point (written 2026-11-15 afternoon; the one place to read first)
 
-**First thing on return (the owner, 2026-11-14 evening, shutting down after dinner: "lots of useful things to look at above, show them to me tomorrow"):** give the owner the evening's list again, with links, before anything else: the five strings finding 123 decided (Hastings, Woodstock, Sandy, Halifax, Rutland) and the names its guard left (Tain, Dudley, Monmouth, Plymouth, Otley); the "Look before merging" caution, built and not yet seen (a holder pair still queued: 112402, 8474; Poughkeepsie 66289); the mislabel audit's list (`reports/q-mislabel.txt`); "Osterley Park" wanting TGN's `http://vocab.getty.edu/tgn/1102996`; the push (17 commits); and the desk list of (3) below.
+**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`: accepted 9,481, queued 3,716, minted 10,775),
+read string by string; finding 124 is measured in it (doc 10 7.6). No reconcile is pending. Schema version 11 is on
+the real store and the library export is collected into `records` and `occurrences` (63,392 records, 330,450
+occurrences; doc 12 section 14.8 step 1, built). Doc 12 section 14 is the agreed design for records, record
+decisions, the cataloguers' list and seeing the work; its steps 2 to 6 are not built. The short version at the head
+of this plan says what the whole is for. The day's commits are local on `de-pmc`: `git push` is the owner's word.
 
-**On return, in order:** (1) nothing is pending from the runs: wzkhhb (`run-20261114-192034-wzkhhb`, 19:20 to 19:55)
-is the last full run and is read (doc 10 7.6 "Measured 2026-11-14 (run wzkhhb)", finding 123). (2) `git push` (the
-day's later commits are not up). (3) The desk, continued (command 1): the nine places finding 119 queued ("Madison,
-Wisconsin", 61369; "Newark, Delaware", 54364; "Stamford, Lincolnshire", 66064), the holder pairs still queued
-(command 1's query; "Peter Nahum at the Leicester Galleries", 112402; "Waterman Fine Art Ltd", 8474), "Hamilton,
-Thomas [(Bookseller)]" (9055), the bare "Dagenham" placeholder, and free play in the personal author and publisher
-fields, the least looked at; each thing the desk fails to show, do or get right becomes an item in section 7 and is
-built the same session. (4) The owner's to mend, from the audit of the import's mislabels (section 7, "An imported
-entity whose label and identifiers are of different things"; `reports/q-mislabel.txt`): "Alice Austen", "Mark
-Bradford", "Sybil Andrews", "Rodrigo Moynihan", "Farington", "Newport", and the entities with one stray record; and
-"Osterley Park", the local authority that now answers "Osterley Park (Middlesex)" too and holds no identifier (TGN's
-`http://vocab.getty.edu/tgn/1102996` to add). (5) Doc 16: a scenario is written when a good example is met, pictures
-taken then; the whole set is gone through at the fresh run of the PMC project. (6) Section 7 as the owner orders it:
-"Ask for help" with its teaching mode after more scenarios; the audit as a page; a body that is part of another;
-what the Wikidata extract leaves out; the lifecycle design before any write stage.
+**For the owner on return, with links** (the workbench at http://localhost:5200, started by the assistant in its
+session from 2026-11-15, the owner's leave; if the session has ended, `dotnet run --project src/LinkedArtNet.Workbench`):
 
-**Where things stand.** Branch `de-pmc`, all work committed, every test project green. Six authority sources loaded
-(ULAN, AAT, TGN, LoC names, LCSH; the Wikidata extract). The store is at schema version 10 and was vacuumed on the
-14th (the Align `vacuum` command, new that day). Runs are occasional and a run is measured by its diff against the
-run before (command 4) and by reading every decision the new rule made, not the diff alone: the 14th's rules each
-needed mending after a first run whose method diff looked clean. The last full run is wzkhhb (2026-11-14 19:20:
-accepted 9,482, queued 3,722, minted 10,775). Findings 1 to 123 are in doc 10 7.6, newest first. The owner's word for
-the work: the aim is to clean and align the data accurately, and the tools are to make that smooth and satisfying.
+- All of a string's records, grouped: "Cambridge" http://localhost:5200/p/pmc/review?id=65756 (525 records, by
+  publisher, the largest group open); "Plymouth" by the other places on the imprint
+  http://localhost:5200/p/pmc/review?id=61711&by=place (21 records, where three were shown; "Lewisburg [Pa.] ;
+  Plymouth" is a group of its own). To say: whether the default field to group by is right (the publisher for a
+  place, the place for anything else), and what a group should open to.
+- "Madison, Wisconsin" http://localhost:5200/p/pmc/review?id=61369: the river is gone; group A is right; the
+  project's "Madison" below it is aligned to Madison, New Jersey.
+- The map's tiles: a rule against the hairline gaps is in; the assistant's display never showed the gap, so it is
+  the owner's to confirm on any card with a map.
+- Two rulings the first run of finding 124 raised (section 7, Reconciler, the first two items): "Sutton" (61352)
+  matched to the owner's Plymouth by a former name TGN gives, which is to be a setting of the project; and the old
+  import's Wikidata links for bare place names, about forty of 166 wrong on their face (`reports/q-import-us.txt`),
+  "Glasgow" on Glasgow, Kentucky among them, wanting an audit list at the workbench.
+- The count for rules deciding for a record (doc 12 14.8 step 6; `reports/q-split-count.txt`): of 1,597 bare place
+  strings with a record, 822 are in two or more records and 736 of those under two or more publishers; 175 stand
+  both alone and as one place of a list. Publishers' countries are not known to the store, so what a rule on the
+  publisher would get right is not counted yet.
 
-Built on the 14th, all from the owner at the desk. Rules: 120, a qualifier that is a nearby town ("Bottrop, Essen",
-"Barnsley, Cirencester"; towns at home only, and the records of the same county carried with the candidate); 121, two
-records of one source placed through one holder are two things ("Poughkeepsie (N.Y.)" and "(N.Y. : Town)"); 122, a
-record that bears the name listed before one that lists it as a variant ("Donnington"); 123, the one at home among
-level namesakes ("Reading"; it must bear the name, be the only live group at home, and no namesake abroad be more
-than one and a half times as written about). The desk: a card with no candidates is searched for the reviewer; a
-decided card says so at its head; a queued string on a settled entity offers to settle; the map's markers and the
-cards are lettered and light each other; a place record says where it is on its row; search results say what they
-are; the holder pair's box warns when its entities hold different records of one source; a string with no decision
-is reconciled as it is opened. Keeping local: the kind of thing is chosen; "known elsewhere" is checked before
-anything is changed; a pasted page address (Wikidata's /wiki/, VIAF, Getty, LoC, LUX) is read as its identifier. The
-entity page: a placeholder says it is one and sends the reviewer to its string. The collector reads a publisher with
-and without its square brackets, and every publisher string has its record. The project's home no longer scans the
-authority records. Doc 16 has two scenarios (the holder pair, retaken against "University of Oxford"; the authorities
-hold two, the project means one) and the list to write.
+**Next, in order.** (1) The desk, continued: "Madison, Wisconsin" (accept group A) and the other places aligned
+elsewhere ("Newark, Delaware", 54364; "Stamford, Lincolnshire", 66064; "Huntingdon, Cambs.", 48911; "Middleburg,
+Virginia", 49522; "Stowe, Buckingham", 49864; "Lewiston", 74197, 74252, 74538), "Sutton" (61352, wrongly on
+Plymouth), "Waterman Fine Art Ltd" (8474), "Fenner, Rest" (9056), the bare "Dagenham" placeholder
+(`place/hvj4jgry`), "Osterley Park" wanting TGN 1102996, the audit's mislabels; each thing the desk fails to show,
+do or get right becomes an item in section 7 and is built the same session. (2) Doc 12 section 14 step 2, the
+findings list (the table, raising one at the desk, the list page, the export), when the owner says; the audit of
+the old import's place links is its first bulk source. (3) Pruning section 7 of its built items into the log,
+offered on 2026-11-15 and not done. (4) Doc 12 section 5 read against the desk as built. (5) Doc 16's scenarios
+(two written, the list to write; pictures retaken at the fresh PMC run). (6) The agent parser when the owner comes
+back to it (section 7, Parsers: what its endpoint, playground and corpus lack).
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI, whether records absent from a full dump are retired, and how LUX takes
@@ -119,9 +117,11 @@ Open question 7 (section 6). Every decision taken is in doc 10 section 13 and th
 
 **Commands on return** (the assistant runs them too, from 2026-11-08: read-only SQL through `tools/pg.sh` and the
 Align tool's commands, saying what it does before it does it; writes to the store only through the Align commands,
-never SQL; the workbench is the owner's to start and stop, and the assistant builds neither the workbench nor
-`tools/Align` while it runs; a commit that touches the workbench waits for a stop, and the assistant compiles to a
-scratch folder with `-o` meanwhile. The answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11
+never SQL; from 2026-11-15 the assistant starts and stops the workbench itself, in its own session, saying so each
+time, and looks at its pages in the browser (the owner's leave, so that work goes on while the owner is away;
+deciding strings, merging and the store's content stay the owner's); it stops the workbench before workbench tests,
+a commit that touches code, a reconcile or an undo, builds neither the workbench nor `tools/Align` while either
+runs, and does not stop a workbench the owner started without saying. The answered queries and one-off SQL of earlier days are in doc 10 7.6 and doc 11
 section 8.11; after a schema change run `init` first; `reports/` is git-ignored).
 
 1. The desk: start the workbench against the real store (`LINKEDART_PG` set; Development allows the typed sign-in,
@@ -172,7 +172,7 @@ section 8.11; after a schema change run `init` first; `reports/` is git-ignored)
    cataloguers' report ("Art, Baroque--Italy--ome", the collector and jurisdiction headings cut at a full stop), wait
    on it:
 
-       dotnet run --project tools/Align -- collect-examples --file "C:\pmc\2024-03-18\2024-03-11_library\2024-03-11_library.xml" --source library-2024-03 --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
+       dotnet run --project tools/Align -- collect-records --file "C:\pmc\2024-03-18\2024-03-11_library\2024-03-11_library.xml" --system library --collect 2024-03-11 --keywords "C:\Users\TomCrane\Dropbox\digirati\PMC\linked.art\pmc_subjects_csv.sql"
 
 4. The standing method diff after the next run, against wzkhhb, the last full run (each run's last decision per
    string, since a string the second pass settled has two; an undone run keeps its evidence, though the undo removes

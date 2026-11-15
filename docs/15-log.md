@@ -23,6 +23,39 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-15
+
+The desk in the morning, with the owner: "Plymouth" (61711), one string in three records, and the owner's ruling
+that a decision for one record is required and that the toolkit has two ends, alignment for the transformation and
+finding what a source could say better, with a standing list for cataloguers; the two Leicester Galleries merged
+and parted, and the holder pair's caution set side by side; "Madison, Wisconsin" and finding 124. The owner's leave
+to look at the workbench in the browser, and later the same day to start and stop it, "so that things can be
+followed up when I am away from the machine". Seen in the browser and mended: a decided card offering to accept its
+own decision, a raw "matchedstore", "Sutton" waiting under Plymouth, a holder pair's box split in two, the tray bar
+shown empty, the map's layers over the tray.
+
+Finding 124 (a chain broader than the qualifier gives way to one that names it) was built, run (x9ptwy), read, found
+wrong at "Glasgow (Strathclyde)", where LoC's heading set aside TGN's record of the same city, mended (the candidate
+that names the qualifier must itself be a whole chain), and run again (ykb9jd: accepted 9,481, queued 3,716, minted
+10,775): five strings, each right (doc 10 7.6). The reading showed two things that are not the rule's: a store match
+on a former name an entity had gathered ("Sutton" on Plymouth), which the owner made a setting of the project; and
+the old import's Wikidata links for bare place names, counted (166 abroad of 956, about forty wrong on their face).
+It also showed that a veto rule cannot be counted from the stored reasons, only by comparing what stood.
+
+While the runs went, with the owner: what a PMC record's identifier is (the Heritage standard number, an ISBN where
+the book has one, else a lettered number by kind of material; unique in an export, not permanent), and the design
+of doc 12 section 14: source systems and records, occurrences, a decision at two levels and for a part, the
+cataloguers' list (problems in an external authority are a different list), what a collect does, and four ways of
+seeing the work. A short version of the whole project was written at the head of the plan at the owner's request;
+the agent parser's endpoint, playground and corpus were found built and undeployed and read against their
+specification.
+
+Built in the afternoon, the owner away: section 14 step 1. Schema version 11 (`records`, `occurrences`),
+`collect-records`, the manifest's source systems and `groupBy`, and the desk's "In the records" over all of a
+string's records, grouped and folded. PMC collected: 63,392 records, 330,450 occurrences; "Plymouth" is in 21
+records and "Cambridge" in 525. A rule against hairline gaps between map tiles. The count for rules deciding for a
+record, as far as the store can make it (doc 12 14.8 step 6).
+
 ## 2026-11-14
 
 The project's home page timed out on a cold start (a count of the authority records by scanning them): mended by

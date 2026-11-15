@@ -475,6 +475,12 @@ problem". Four, in the order to build; the first three are part of this design, 
 5. Records ready on the home page; the run page.
 6. Record decisions by a rule, after the count: bare place names borne by more than one record whose publishers or
    other places point to different countries, and what share a rule on the publisher's country would get right.
+   *Counted 2026-11-15 as far as the store can (`reports/q-split-count.txt`):* of 1,597 place strings without a
+   qualifier that have a record, 775 are in one record, 822 in two or more, 736 of those under two or more publishers;
+   175 stand both alone and as one place of a list ("New Haven" 732 of its 987 records in a list, "New York" 165 of
+   1,194, "Plymouth" 5 of 21), 33 only ever in a list. The store does not know a publisher's country, so the share a
+   rule would get right is not counted: that wants the publishers aligned first (their entities' places), or the
+   imprint's other places read as the evidence, which the list shape already gives.
 
 Open: what "ready" needs for the archive and photographic archive records, which are not collected
 yet.

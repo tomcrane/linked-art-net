@@ -1,14 +1,59 @@
 # Plan: linked-art-net
 
-Status (2026-10-26): Phases 0 to 3 delivered: linkedart.net and dates.linkedart.net run v0.1.2 (2026-10-17; the model
-library, the dates parser, service, site and trainer). Phase 4 (hardening) is open. Phase 5, the alignment toolkit, is
-the current work since 2026-10-17 and is not deployed: the agent-string parser (`LinkedArtNet.Agents`), the alignment
-store on PostgreSQL, six authority sources loaded locally, the reconciler and the `tools/Align` pipeline, and the review
-workbench, all running on the owner's machine against a local store. The reconciler was tuned run by run from 2026-10-19
-to 2026-10-26 (findings 1 to 104, doc 10 section 7.6; the day-by-day record in [15-log.md](15-log.md)); the cycles
-ended on 2026-10-26 and the desk is the next work. Branch `de-pmc` is the working branch and `main` is what is deployed
-(README, "Branches and releases"), so `main` is behind by all of Phase 5. The brief is in `exclude/design.md`
-(gitignored); this plan and the design docs in this folder are the committed record.
+## The short version (written 2026-11-15 at the owner's request; kept current with section 0)
+
+**What it is for.** A .NET toolkit for producing Linked Art from catalogue data, in six objectives (section 1): the
+model library; parsers that read a string with no data behind them (dates, agent names); a ground-truth corpus of
+date strings with a trainer; a web service for the parsers; an examples site with every linked.art example in C#; and
+an alignment toolkit that matches the names in a catalogue to authorities, with a store, a review workbench and
+exports.
+
+**What is built.**
+
+- The model library: done, 183 of 183 site examples implemented, 182 validated.
+- The date parser, its corpus, trainer and service: done and live at linkedart.net and dates.linkedart.net (v0.1.2,
+  2026-10-17).
+- The agent-name parser: the library and its tests; no service endpoint, playground or corpus yet. The owner,
+  2026-11-15: "At some stage we should go back and do the agent parser work, including a service for that as well"
+  (section 7, Parsers).
+- The alignment store on PostgreSQL; TGN, ULAN, AAT, LoC names, LCSH and a Wikidata extract loaded locally; the
+  reconciler, tuned over 124 findings (doc 10 section 7.6), which decides PMC's 45,910 strings in about 45 minutes;
+  the workbench (the review desk, entities, variants, the merge tray, maps, sign-in and projects). All of it runs on
+  the owner's machine only: `main` is what is deployed and is behind by the whole alignment toolkit; `de-pmc` is the
+  working branch.
+
+**Designed or planned, not built.**
+
+- Records in the store: decisions for one record, the cataloguers' list, collecting a corrected source again (doc 12
+  section 14, agreed 2026-11-15).
+- The pipeline runner: collecting strings from a fresh export as a routine step, PMC first.
+- The write stage: aligned records turned into Linked Art, and the export to LUX; before it, publication as a recorded
+  act and the rule that nothing published is ever deleted (section 5, the last risk).
+- The workbench's jobs, runs and indexes pages; the trainer moving into the workbench; "Ask for help" at the desk.
+- Aligning through the vocabularies' own APIs, for a user with no local indexes.
+- Wellcome as the second project, the test that nothing is PMC-shaped; a QLever loader.
+- Phase 4 hardening; NuGet publishing deferred by the owner.
+
+**Where it is going, as the owner has said it.**
+
+- PMC's library, archive and photographic archive records published as Linked Art and exported to LUX, on a schedule
+  that repeats (export, reconcile, write, import, again next quarter).
+- The project's entity store as the local authority that librarians and archivists correct their MARC and CALM
+  records against (doc 12 section 13).
+- A tool for other institutions: projects, members, a manifest per project; not a PMC tool.
+- Two uses of equal weight: alignment for transformation, and showing cataloguers what their sources could say better
+  (2026-11-15).
+- Seeing and understanding the work done well enough that the software "could prove popular" (2026-11-15).
+- Beyond this repository (the owner, 2026-11-15): "I have other goals but I suspect they fit outside of this project;
+  they start from the linked art outputs of this work, so they'll be in another repo eventually." So this project's
+  end is good Linked Art out, and what is built on it is elsewhere.
+
+**Not stated anywhere yet** (the assistant's list, for the owner when it matters): who hosts the workbench for another
+institution, or whether each runs its own; whether it is to be a product, a service or open source only, and when;
+whether PMC serves its own Linked Art publicly after LUX.
+
+The brief is in `exclude/design.md` (gitignored); this plan and the design docs in this folder are the committed
+record. The day-by-day record is [15-log.md](15-log.md).
 
 How this document is kept: section 0 is rewritten at the end of every working day and never appended to; what happened
 in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Section 7 lists what is open, by area, and
@@ -916,6 +961,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   labels with Laura Knight's dates (Orovida Pissarro is 500008117): a candidate for the same report (2026-10-26).
 
 **Parsers** (doc 10 section 6; docs 03 and 06):
+
+- The agent parser's other three pieces, to come back to (the owner, 2026-11-15: "At some stage we should go back and
+  do the agent parser work, including a service for that as well"): the service endpoint, the playground on the
+  examples site, and a corpus with a trainer, as the date parser has (section 1, objective 2). Check what the service
+  already answers for an agent string before designing it (section 4 lists "timespan, agent, profiles, advise").
 
 - The Agent parser as a first-class output (the owner's thought 2026-10-21, the go 2026-10-22; objectives 2 and 6),
   size S each: (a) a service endpoint beside the dates one, taking a string, a profile name and an optional class hint

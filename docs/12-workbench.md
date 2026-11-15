@@ -3,6 +3,8 @@
 Status: design, 2026-10-18. The human side of the toolkit in doc 10: where a collection specialist gives judgement on
 authorities, dates and agent strings, contributes what only they know, and runs the pipeline without a command line.
 Section 11 is the order to build it in; section 12 records the owner's decisions and the questions still open.
+Section 14 (2026-11-15, a design not yet built) is the record as a thing in the store: decisions for one record, the
+cataloguers' list, and the pictures of the work.
 
 ## 1. What this is for
 
@@ -231,8 +233,8 @@ Open:
 - The app's name. `LinkedArtNet.Workbench` is the project name here; the name people see is the owner's.
 - Whether items are assigned to reviewers or any member may take any item. The design allows both; the first build
   does without assignments.
-- How much of a dump's records the desk shows as examples, and from where: the collected strings only know their
-  contexts and counts today; example records need the pipeline runner to keep a sample per string (step 4).
+- ~~How much of a dump's records the desk shows as examples, and from where~~: three a string since 2026-10-26
+  (section 5, "The records behind the string"); all of them, as occurrences, in section 14.
 - Whether the model's proposals are asked for automatically for every queued item within the project's budget, or
   only on request, as in the trainer now.
 
@@ -289,3 +291,161 @@ still to come.
 What not to take: the attach-by-exact-label rule at ingest (arbitrary when several match, no review); history without
 values; ids that could be re-minted after a merge; no export, no bulk operations, no split, no roles. The identifier
 scheme (8 characters, no 0/o/i/l/1, a letter first) is close to ours.
+
+## 14. Records: decisions for one record, the cataloguers' list, and seeing the work (design, 2026-11-15)
+
+Status: a design talked through with the owner on 2026-11-15, not built. It follows the owner's ruling of that morning
+at "Plymouth" (plan section 7, "One spelling, more than one record"): the toolkit serves two ends, alignment so that
+records can be turned into Linked Art, and finding what a source could say better; a decision for one record is
+required and not an edge; and "the whole process has to survive corrections and improvements in source data, including
+those that were made as a result of people using the tool". PMC's library export is the worked case and must not
+dictate the shape; where a choice below is PMC's and not the design's, it says so.
+
+### 14.1 Source systems and records
+
+A project draws on one or more **source systems**: for PMC the library catalogue, the archive catalogue and the
+photographic archive; for another project a museum catalogue beside them. The manifest describes each: a short key
+(`library`), a name people see, what its record identifier is in the cataloguer's words ("standard number"), and a
+URL template the identifier fits into where the system has pages to link to (`https://.../record/{id}`; optional,
+"this would be a project-specific setting and may not always be possible", the owner). A **record** is named by
+source system and identifier together, never by the identifier alone. A **collect** is one reading of one export of
+one system, dated; today's `source` on an example ("library-2024-03") runs the system and the export together, and
+they part.
+
+The identifier is taken as unique within one export of one system and **not as permanent**. In PMC's library export
+(profiled 2026-11-15, 63,392 records) the record ID is the standard number: a valid ISBN for some 18,600 books, a
+lettered number by kind of material for the rest (D for texts and exhibition catalogues without an ISBN, E for the
+photographic archive's folders, S, T, ZA, ZB and others for auction catalogues), and 117 that look like ISBNs and fail
+the checksum. An ISBN that a cataloguer corrects is a record whose identifier changes. The owner: "I think we have to
+assume this is the norm."
+
+### 14.2 Occurrences
+
+The store keeps every **occurrence**: this string, in this field, of this record of this source system. It is what
+the transformation to Linked Art reads (this record's publisher is that entity) and what a decision or a finding may
+be about. `string_examples` (three records a string at most, 124,065 rows over 38,858 of the 63,392 records) is a
+sample of it and is replaced by it.
+
+    records      (dataset, system, record_id, title, date, fields jsonb, fingerprint, first_collect, last_collect, gone_at)
+    occurrences  (dataset, system, record_id, field, string_id, position)
+
+`fields` is the record's naming fields as the desk shows them now; `fingerprint` is a hash of what a record says
+apart from its identifier (title, date, the naming fields), used in 14.5. A collect replaces a system's occurrences and
+marks records it no longer finds as gone, keeping the row.
+
+### 14.3 A decision at two levels
+
+The string's decision stays as it is and is the default for every occurrence. An occurrence may carry its own, which
+wins for that record: "Cambridge" is Cambridge in England, and in this Harvard University Press book it is Cambridge,
+Massachusetts.
+
+    record_decisions (id, dataset, system, record_id, field, normalised, entity_id, method, evidence, reviewer,
+                      decided_at, run_id, valid, supersedes, closed_at, closed_why)
+
+It is keyed on the record and the field and the string's normalised text, not on row numbers, so that it survives a
+collect. It has the same lifecycle as a decision (invalidated, never deleted; undone by undoing its run or by hand).
+**Who may make one:** a person at the desk, and the rules where they can be trusted to ("the rules should, if we are
+confident that they will work. As long as someone can check what's happened", the owner). A rule's record decision
+carries its method and its evidence as any decision does (which other field decided it: the publisher, the other
+places on the imprint, the class mark), and every string that has been split by a rule is listed for checking (14.7).
+The first rule to try is the one the count of 14.8 supports, and it is measured as findings are: count, build, run,
+read every decision it made.
+
+### 14.4 Findings: the cataloguers' list
+
+A **finding** is something the source could say better, seen by a person at the desk or the entity page, or by an
+audit in bulk. The project's findings are a standing list, "persistent and acts as a task list for cataloguers" (the
+owner), not a report run now and then.
+
+    findings (id, dataset, system, record_id, field, value, kind, suggestion, why, string_id, raised_by, raised_at,
+              status, status_by, status_at, closed_collect, value_after, note)
+
+`value` is what the field said when the finding was raised; `kind` is from a short list a project can add to
+(ambiguous name, two values in one field, truncated, wrong field, wrong class, spelling, supplied in brackets, wrong
+link to an authority); `suggestion` and `why` are free text, filled in by the desk where it can (the entity the string
+was decided as, the other candidate). `status` is open, sent, mended as the person says, changed in the source,
+declined, or still a problem.
+
+Two activities, apart and together (the owner: not known who works the list, it will vary; "in a small institution it
+may be the same person who has the workbench open AND the catalogue management tool open at the same time, so should
+be nice and usable for them too"):
+
+- *Apart.* The list exports as a spreadsheet (CSV), a row a finding, by source system and record identifier, with the
+  link where there is a template; exporting marks the rows sent, with the date. Nothing comes back but the next export
+  of the source.
+- *Together.* The list is a page of the workbench, filtered by system, kind, status and field, ordered so that one
+  record's findings stand together. Each row has the identifier with a copy button, the link into the source system,
+  what is there and what is suggested, and "I've mended this", which the next collect confirms or contradicts.
+- *Raising one* is one step where the thing is seen: on a record under "In the records" at the desk, on the entity
+  page, and from an audit's list in bulk (the mislabels, the comma-joined places, the old import's wrong Wikidata
+  links). Deciding a record differently from its string (14.3) offers to raise the finding in the same step, since an
+  exception is usually also something the catalogue could say.
+
+### 14.5 What a collect does
+
+A collect is where the source's own corrections arrive, and where the round trip is kept honest:
+
+1. Records are matched to the last collect's by identifier. A record whose identifier is gone is looked for among the
+   new identifiers by fingerprint; one match of the same fingerprint is the same record renumbered, and its record
+   decisions and findings move to the new identifier, with a note. No match, or several, goes to a short list for a
+   person ("these records are gone; these are new and look like them"). Nothing is dropped silently.
+2. A string no record bears any longer retires: its decision is kept, marked as having no occurrences, and stops
+   being counted or asked about. If the string comes back, the decision stands again.
+3. A new string is reconciled as now. A string the desk has already decided that appears in a new record inherits
+   the decision; that is what a string-level decision means.
+4. A record decision whose record no longer bears the string in that field is closed, "the source changed", with what
+   the field says now. It is not carried to the new string: if the cataloguer wrote "Cambridge, Mass.", the new string
+   is decided on its own evidence.
+5. A finding whose field changed is closed as "changed in the source" with the value after, and is reopened as "still
+   a problem" if the new value is itself queued or has a record decision against it. (The owner had no view on
+   whether a change should close a finding; this is the assistant's default, to be watched in use.) A finding marked
+   "mended" by a person whose field has not changed is shown as contradicted.
+6. Entities keep their identifiers through all of it.
+
+The measure is the round trip of the owner's ruling: decide, list, correct the export, collect again, and nothing a
+person decided is asked twice.
+
+### 14.6 The desk and the entity page
+
+"In the records" shows all of a string's records, not three: grouped where their other fields point different ways
+(by the field a rule or a person would split on: publisher, the other places, class), the largest group first, each
+group folded past its first few. A group, or one record, can be decided as something else ("in these records it is"),
+and a finding raised on it. The record's identifier is a link into its source system where the manifest has a
+template, here and wherever a record is named. The entity page lists the records that reach the entity by a record
+decision apart from those that reach it by their string.
+
+### 14.7 Seeing the work
+
+The owner: "any UI ideas you have about visualising/understanding the work are important, I feel this is an unsolved
+problem". Four, in the order to build; the first three are part of this design, the fourth follows from 14.4.
+
+1. **The record is the unit of progress.** A record is ready when every occurrence in it is decided (by its string or
+   for itself) onto a firm entity. The project's home says how many records are ready, by source system and by kind of
+   material, and the queue can be ordered by how many records a string holds back, so that the next decision is the
+   one that frees most. "Ready" is defined per project by which fields the transformation needs.
+2. **What a run changed.** A page for each run: strings moving between states since the run before (accepted, queued,
+   minted, matched in the store), each flow a list to open; the candidates that stood before and do not stand now,
+   by the rule that set them aside; the record decisions the rules made. This is the reading the assistant does by
+   hand with SQL after each rule's first run, and it is what caught finding 124's fault at "Glasgow (Strathclyde)".
+3. **A split seen as a split.** On a string's card and its entity's page, the records in their groups with the entity
+   each group goes to and what decided it, a rule's splits marked for checking with "right" and "wrong" on each. A
+   list of every split string in the project.
+4. **The loop over time.** Findings raised, sent, changed in the source, and the queued strings and record decisions
+   each change removed: the catalogue getting better because the tool was used.
+
+### 14.8 Order of work, and what is counted first
+
+1. Source systems in the manifest; `records` and `occurrences` filled by collect, `string_examples` read from them;
+   the record link; all records on the desk, grouped. Nothing decided differently yet.
+2. Findings: the table, raising one at the desk, the list page, the export. The audits' lists feed it.
+3. Collect's matching and closing (14.5), tested as a round trip on a copy of the export with records edited by hand:
+   an ISBN corrected, a place qualified, a record removed.
+4. Record decisions by a person; the transformation reads occurrences.
+5. Records ready on the home page; the run page.
+6. Record decisions by a rule, after the count: bare place names borne by more than one record whose publishers or
+   other places point to different countries, and what share a rule on the publisher's country would get right.
+
+Open: whether a record decision may also be made for a part string (a place in a list, a keyword's head) or only for
+the whole field value; what "ready" needs for the archive and photographic archive records, which are not collected
+yet; whether findings about an authority (a wrong link in Wikidata, a duplicate in LoC) share this list or stay with
+the reports outward of section 11 step 5.

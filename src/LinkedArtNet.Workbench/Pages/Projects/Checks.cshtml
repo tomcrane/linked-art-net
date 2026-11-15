@@ -20,10 +20,10 @@
         <form method="post" asp-page-handler="Mend">
             <input type="hidden" name="id" value="@pe.Id" />
             <h3>1. Remove these identifiers</h3>
-            <p class="small muted">All are ticked: an import's identifiers usually describe the same wrong place. Untick any that is right for the place meant.</p>
+            <p class="small muted">The import's identifiers are ticked: they usually describe the same wrong place. One a rule or a person added since is left unticked, as it may be right for the place meant. Change either as you judge.</p>
             @foreach (var q in pe.Equivalents)
             {
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" checked /> <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == plan.Homes[0].Item ? " · " + (plan.Homes[0].ItemDescription ?? "not in the local index") : "")</span></label></p>
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" @(q.Method.StartsWith("imported", StringComparison.Ordinal) || q.Method.StartsWith("through", StringComparison.Ordinal) ? "checked" : "") /> <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == plan.Homes[0].Item ? " · " + (plan.Homes[0].ItemDescription ?? "not in the local index") : "")</span></label></p>
             }
             <h3>2. The place meant</h3>
             @foreach (var h in plan.Homes)

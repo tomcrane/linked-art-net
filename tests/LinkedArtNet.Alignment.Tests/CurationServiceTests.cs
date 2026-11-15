@@ -147,6 +147,15 @@ public class CurationServiceTests(PostgresFixture pg)
         await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", stowe)).Id, vermont.Id, DecisionMethod.Imported, null);
         await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", stowe + " (England)")).Id, vermont.Id, DecisionMethod.Imported, null);
 
+        // an item the index does not have says nothing: its entity is listed, but a string is not a reason against a description that is not there
+        var biggles = "Biggleswad" + tag;
+        await pg.Store.PutAuthorityAsync(Tgn("8", biggles, "Bedfordshire, England, United Kingdom, Europe, World"));
+        var unknownItem = await Imported(biggles, "8"); // no Wikidata record put for it
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", biggles + ", Bedfordshire")).Id, unknownItem.Id, DecisionMethod.Imported, null);
+        var quiet = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == unknownItem.Id);
+        Assert.False(quiet.Likely); Assert.Null(quiet.Reason); Assert.Null(quiet.Row.ItemDescription);
+        await curation.ConfirmAsync(ds, unknownItem.Id, "tester", null);
+
         var all = await curation.PlacesAlignedAwayAsync(ds, "United Kingdom");
         Assert.DoesNotContain(all, f => f.Row.EntityId == alabama.Id);
         Assert.Equal(vermont.Id, all[0].Row.EntityId); Assert.True(all[0].Likely);

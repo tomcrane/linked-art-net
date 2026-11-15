@@ -387,7 +387,11 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             var strings = (await store.StringsForEntityAsync(rows[0].EntityId, 200, ct)).Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList();
             var qualifiers = strings.Select(raw => (Raw: raw, Words: Qualified.Tokens(Qualified.Split(raw).Qualifier))).ToList();
             if (strings.Count > 0 && rows[0].ItemDescription is not null && qualifiers.All(q => q.Words.Count > 0 && Qualified.Contains(descr, q.Words))) continue;
-            var saysHome = qualifiers.FirstOrDefault(q => q.Words.Count > 0 && !Qualified.Contains(descr, q.Words) && rows.Any(r => Qualified.Contains(r.HomeChain, q.Words)));
+            // only against a description that is there: an item absent from the index says nothing, and that is not disagreement
+            // (the owner, 2026-11-15, at "Biggleswade": right, and listed as likely wrong because "Biggleswade, Bedfordshire" was
+            // not found in a description the index does not have)
+            var saysHome = rows[0].ItemDescription is null ? default
+                : qualifiers.FirstOrDefault(q => q.Words.Count > 0 && !Qualified.Contains(descr, q.Words) && rows.Any(r => Qualified.Contains(r.HomeChain, q.Words)));
             if (saysHome.Raw is not null)
             {
                 found.Add(new AwayFinding(rows.OrderByDescending(r => Qualified.Contains(r.HomeChain, saysHome.Words) ? 1 : 0).ThenByDescending(r => r.HomeSitelinks).First(), true, strings, $"the string \"{saysHome.Raw}\" says so"));

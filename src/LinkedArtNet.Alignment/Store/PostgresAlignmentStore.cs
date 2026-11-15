@@ -1438,7 +1438,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await using var cmd = _db.CreateCommand(
             """
             with c as materialized (
-                select e.id, e.label, e.status, q.uri as item, w.data->>'description' as descr, coalesce((w.data->>'sitelinks')::int, 0) as sitelinks,
+                -- what a pull brought says what the item is when the index has no row of its own for it ("Berwick": a hamlet in Kent)
+                select e.id, e.label, e.status, q.uri as item, coalesce(w.data->>'description', w.data->'pulled'->>'description') as descr, coalesce((w.data->>'sitelinks')::int, 0) as sitelinks,
                        (select count(*) from decisions d where d.valid and d.entity_id = e.id) as strings
                 from entities e join entity_equivalents q on q.entity_id = e.id and q.source = 'wikidata' and q.method = 'imported'
                      left join authority_records w on w.uri = q.uri

@@ -198,6 +198,25 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Equal(carolina.Id, Assert.Single(raleighPlan.Others).Id);
         var nc = await curation.MendIntoAsync(ds, memphis.Id, raleighPlan.Entity.Equivalents.Select(q => q.Uri).ToList(), carolina.Id, "tester");
         Assert.Equal(carolina.Id, nc.Id); Assert.DoesNotContain(nc.Equivalents, q => q.Source == "wikidata");
+        // an entity right for some strings and wrong for others: the wrong ones are moved, and it is left as it was
+        var peter = "Peterboroug" + tag;
+        await pg.Store.PutAuthorityAsync(Tgn("10", peter, "Cambridgeshire, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Item("10", peter, "city in Ontario, Canada", 44));
+        var ontario = await Imported(peter, "10");
+        var bare = await pg.Store.CollectAsync(ds, "place", peter);
+        var qualified = await pg.Store.CollectAsync(ds, "place", peter + ", Ontario");
+        await pg.Store.DecideAsync(bare.Id, ontario.Id, DecisionMethod.Imported, null);
+        await pg.Store.DecideAsync(qualified.Id, ontario.Id, DecisionMethod.Imported, null);
+        var england = await curation.MoveStringsAsync(ds, ontario.Id, [bare.Id], $"http://vocab.getty.edu/tgn/{tag}10", "tester"); // no entity holds it: one is made
+        Assert.NotEqual(ontario.Id, england.Id);
+        Assert.Equal($"{peter} (Cambridgeshire, England)", england.Label);
+        Assert.Equal($"http://vocab.getty.edu/tgn/{tag}10", Assert.Single(england.Equivalents).Uri);
+        Assert.Equal(england.Id, (await pg.Store.DecisionForAsync(bare.Id))!.EntityId);
+        Assert.Equal(DecisionMethod.Human, (await pg.Store.DecisionForAsync(bare.Id))!.Method);
+        Assert.Equal(ontario.Id, (await pg.Store.DecisionForAsync(qualified.Id))!.EntityId);
+        Assert.Single((await pg.Store.GetEntityAsync(ontario.Id))!.Equivalents); // as it was
+        Assert.DoesNotContain(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == ontario.Id); // its one string left agrees with the item
+        await Assert.ThrowsAsync<InvalidOperationException>(() => curation.MoveStringsAsync(ds, ontario.Id, [bare.Id], "entity:" + england.Id, "tester")); // it stands there no more
         await curation.ConfirmAsync(ds, newYork.Id, "tester", null);                  // confirmed, it leaves the list
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, null));

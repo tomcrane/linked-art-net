@@ -50,12 +50,18 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
     }
 
-    public async Task<IActionResult> OnPostMendAsync(string id, string[]? remove, string? home, string? otherUri)
+    public async Task<IActionResult> OnPostMendAsync(string id, string[]? remove, string? home, string? otherUri, long[]? strings, string? act)
     {
         try
         {
             var before = await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted);
             if (string.IsNullOrWhiteSpace(home)) throw new InvalidOperationException("Choose the place meant.");
+            if (act == "move")
+            {
+                var moved = await Project.Curation.MoveStringsAsync(Dataset, id, strings ?? [], home == "other" ? otherUri ?? "" : home, Reviewer, HttpContext.RequestAborted);
+                var m = (strings ?? []).Length;
+                return Flash($"{m} string{(m == 1 ? "" : "s")} moved from \"{before?.Label}\" to \"{moved.Label}\"; \"{before?.Label}\" and its identifiers are as they were.", new { dataset = Dataset }, moved);
+            }
             var result = home.StartsWith("entity:", StringComparison.Ordinal)
                 ? await Project.Curation.MendIntoAsync(Dataset, id, remove ?? [], home["entity:".Length..], Reviewer, HttpContext.RequestAborted)
                 : await Project.Curation.MendAwayAsync(Dataset, id, remove ?? [], home == "other" ? otherUri ?? "" : home, Reviewer, HttpContext.RequestAborted);

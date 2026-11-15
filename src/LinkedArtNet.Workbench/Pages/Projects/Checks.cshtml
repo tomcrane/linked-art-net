@@ -27,6 +27,8 @@
         @if (Model.PlanStrings.Count == 0) { <p class="small muted">No string stands on this entity.</p> }
         @foreach (var (ps, recs, count) in Model.PlanStrings)
         {
+            @if (Model.PlanStrings.Count > 1) { <p class="small" style="margin-bottom:0"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="strings" value="@ps.Id" form="mend-form" /> move this string (for "Move only the ticked strings" at the foot)</label></p> }
+            else { <input type="hidden" name="strings" value="@ps.Id" form="mend-form" /> }
             <details class="rec-group" open><summary class="small"><strong>"@ps.Raw"</strong> <span class="muted">as @Model.Project.Manifest.FieldName(ps.Context) · in @count.ToString("N0") record@(count == 1 ? "" : "s")</span> <a href="/p/@Model.Dataset/review?id=@ps.Id" target="_blank" rel="noopener">at the desk</a></summary>
                 @foreach (var x in recs)
                 {
@@ -37,7 +39,7 @@
                 @if (count > recs.Count) { <p class="small muted">and @((count - recs.Count).ToString("N0")) more</p> }
             </details>
         }
-        <form method="post" asp-page-handler="Mend">
+        <form method="post" asp-page-handler="Mend" id="mend-form">
             <input type="hidden" name="id" value="@pe.Id" />
             <h3>1. Remove these identifiers</h3>
             <p class="small muted">The import's identifiers are ticked: they usually describe the same wrong place. One a rule or a person added since is left unticked, as it may be right for the place meant. Change either as you judge.</p>
@@ -73,7 +75,10 @@
             }
             <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="other" /> <strong>Another place</strong>, by its identifier:</label> <input type="text" name="otherUri" placeholder="http://vocab.getty.edu/tgn/..." style="width:24rem; display:inline-block" /><br />
             <span>If an entity of the project holds it, "@pe.Label" is merged into that; if none does, the identifier is added to "@pe.Label".</span></p>
-            <div class="actions"><button type="submit">Mend</button> <a href="/p/@Model.Dataset/checks">Back to the list, nothing changed</a></div>
+            <div class="actions"><button type="submit" name="act" value="mend">Mend the whole entity</button>
+                @if (Model.PlanStrings.Count > 1) { <button type="submit" name="act" value="move" class="secondary" title="The entity is right for some of its strings: the ticked strings are decided onto the place meant, and this entity and its identifiers are left as they are">Move only the ticked strings</button> }
+                <a href="/p/@Model.Dataset/checks">Back to the list, nothing changed</a></div>
+            @if (Model.PlanStrings.Count > 1) { <p class="small muted"><strong>Mend the whole entity</strong> when it is wrong for all its strings: the ticked identifiers go, and it is merged into or given the place meant. <strong>Move only the ticked strings</strong> when it is right for some ("Peterborough, Ontario") and wrong for others (a bare "Peterborough" of English imprints): tick those strings under "What the records say"; nothing is removed from this entity.</p> }
         </form>
         <form id="mend-find" method="get"><input type="hidden" name="mend" value="@pe.Id" /></form>
     </div>

@@ -431,6 +431,54 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return new MendPlan(entity, homes, holders) { Others = others };
     }
 
+    /// <summary>
+    /// Moves some of an entity's strings to another place and leaves the entity as it is (the owner, 2026-11-15, at "Peterborough":
+    /// the import's entity is Peterborough, Ontario, right for "Peterborough, Ontario" and "Peterborough, Canada" and wrong for the
+    /// bare "Peterborough" of nine English imprints and six subject headings about the cathedral: "build the move strings to another
+    /// entity as well"). The target is an entity of the project ("entity:" and its id), or a place's identifier: the project's entity
+    /// that holds it, or a new one made for it and named from its record. The strings are decided there by the person, each with an
+    /// override for its spelling in its field, so that a later run does not match them back by name. Returns the entity they stand on.
+    /// </summary>
+    public async Task<Entity> MoveStringsAsync(string dataset, string fromEntityId, IReadOnlyList<long> stringIds, string target, string reviewer, CancellationToken ct = default)
+    {
+        var from = await OwnEntityAsync(dataset, fromEntityId, ct);
+        if (stringIds.Count == 0) throw new InvalidOperationException("Tick the strings to move.");
+        var standing = (await store.StringsForEntityAsync(from.Id, 1000, ct)).Select(s => s.String.Id).ToHashSet();
+        if (stringIds.Any(id => !standing.Contains(id))) throw new InvalidOperationException("One of the strings does not stand on this entity any more.");
+        var note = $"moved from {from.Label ?? from.Id} at the checks";
+        Entity to;
+        if (target.StartsWith("entity:", StringComparison.Ordinal))
+        {
+            var chosen = await OwnEntityAsync(dataset, target["entity:".Length..], ct);
+            if (chosen.Id == from.Id) throw new InvalidOperationException("The strings stand on that entity already.");
+            to = await ClusterAsync(dataset, stringIds, chosen.Id, null, [], reviewer, note, false, ct);
+        }
+        else
+        {
+            var uri = AuthorityUris.Canonical(target.Trim());
+            if (uri.Length == 0) throw new InvalidOperationException("Give the identifier of the place meant.");
+            if (from.Equivalents.Any(q => q.Uri == uri)) throw new InvalidOperationException("This entity holds that identifier itself: the strings stand on it already.");
+            var holder = (await store.FindEntitiesByEquivalentAsync(uri, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null);
+            if (holder is not null) to = await ClusterAsync(dataset, stringIds, holder.Id, null, [], reviewer, note, false, ct);
+            else
+            {
+                var record = await store.GetAuthorityAsync(uri, ct) ?? throw new InvalidOperationException("That identifier is not a record of the local index: add the place as an entity first, or give one that is.");
+                // named so that it is told from its namesakes: the record's name and the first two places of its chain
+                string? chain = null;
+                if (record.DataJson is not null)
+                {
+                    using var doc = JsonDocument.Parse(record.DataJson);
+                    if (doc.RootElement.ValueKind == JsonValueKind.Object && doc.RootElement.TryGetProperty("parentString", out var ps)) chain = ps.GetString();
+                }
+                var within = chain?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Where(x => x is not ("Europe" or "World") && !string.Equals(x, record.Label, StringComparison.OrdinalIgnoreCase)).Take(2).ToList() ?? [];
+                var label = within.Count == 0 || (record.Label ?? "").Contains('(') ? record.Label ?? uri : $"{record.Label} ({string.Join(", ", within)})";
+                to = await ClusterAsync(dataset, stringIds, null, label, [uri], reviewer, note, false, ct);
+            }
+        }
+        await store.AddNoteAsync(dataset, from.Id, reviewer, $"{stringIds.Count} string{(stringIds.Count == 1 ? "" : "s")} moved from here to {to.Label ?? to.Id} at the checks; this entity and its identifiers are as they were.", ct);
+        return to;
+    }
+
     /// <summary>Mends by merging into another entity of the project that a person chose: the identifiers named are removed first, so that the wrong ones do not travel with the merge.</summary>
     public async Task<Entity> MendIntoAsync(string dataset, string entityId, IReadOnlyList<string> removeUris, string survivorId, string reviewer, CancellationToken ct = default)
     {

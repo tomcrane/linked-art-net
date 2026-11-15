@@ -714,6 +714,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // sameAs links, say which the world writes about: 122 sitelinks against 45. Only among two-source groups at acceptance score,
         // only when none holds a project entity (finding 35 has that), only when the best is clear of the next by the ratio; "Murray"
         // (45, 44, 39) is declined and stays the desk's
+        var stoodAside = false;
         if (top is not null && reading.Qualifier is null && _options.ProminenceMinSitelinks > 0 && (top.Best.Candidate.Class ?? reading.Classes[0]) == EntityClass.Place)
         {
             var tied = live.Where(AtTop).ToList();
@@ -724,8 +725,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // holds one (finding 116, 2026-11-08: "Boston" and "Birmingham" bare, each between two legacy entities placed by the pass, 41
             // such strings; a project entity outside the tie, or a tied group without one, still leaves the string to the desk)
             var everyTiedHolds = tied.Count >= 2 && tied.All(g => g.Members.Any(Firm)) && live.Where(g => g.Score >= _options.AcceptScore && g.Members.Any(Firm)).All(tied.Contains);
-            if (tied.Count >= 2 && standing is not null && !everyTiedHolds)
-                groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence stands aside: the project's own entity {standing.Members.First(Firm).Candidate.Label} is among the live groups, the desk's" }).ToList() } : g).ToList();
+            if (tied.Count >= 2 && standing is not null && !everyTiedHolds) stoodAside = true;
+            if (stoodAside)
+                groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence stands aside: the project's own entity {standing!.Members.First(Firm).Candidate.Label} is among the live groups, the desk's" }).ToList() } : g).ToList();
             else if (tied.Count >= 2)
             {
                 var ranked = new List<(CandidateGroup Group, int Sitelinks, string? Item)>();
@@ -784,6 +786,27 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 var inOrder = ranked.OrderByDescending(x => x.Sitelinks).ThenByDescending(x => Home(x.Group) ? 1 : 0).Select(x => x.Group).ToList();
                 groups = inOrder.Concat(groups.Where(g => !tied.Contains(g))).ToList();
                 groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks; this one {ranked.First(x => x.Group == g).Sitelinks})" }).ToList() } : g).ToList();
+            }
+        }
+        // every group level with the first stands most written-about first, the one at home ahead of its equals, when prominence stood
+        // aside or there are more of them than a card keeps: the ordering of 2026-11-15 reached only the tie of two-source groups that
+        // prominence had ranked, so "Cambridge" (the owner's desk, the same day: 525 records, 276 of them Cambridge University Press)
+        // showed Illinois, Iowa, Kansas, Kentucky, Maine, Maryland, Minnesota and Nebraska in the index's order, and TGN's Cambridge in
+        // Cambridgeshire, a group of one source because the project's own entity holds LoC's heading, was among 36 not shown. Order
+        // only: nothing is decided by it
+        if (groups.Count > 1 && reading.Qualifier is null && _options.ProminenceMinSitelinks > 0 && (groups[0].Best.Candidate.Class ?? reading.Classes[0]) == EntityClass.Place)
+        {
+            var level = groups.Where(g => !g.Vetoed && g.Score >= groups[0].Score - 0.001).ToList();
+            if (level.Count >= 2 && (stoodAside || level.Count > 12))
+            {
+                var homeWords = _options.HomePlace is { } hp ? Qualified.Tokens(hp) : [];
+                bool Home(CandidateGroup g) => homeWords.Count > 0 && g.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWords));
+                var counted = new List<(CandidateGroup Group, int Sitelinks)>();
+                foreach (var g in level) counted.Add((g, (await ProminenceAsync(g.Uris, ct)).Sitelinks));
+                var ordered = counted.OrderByDescending(x => x.Sitelinks).ThenByDescending(x => Home(x.Group) ? 1 : 0)
+                    .Select(x => x.Group.Members.Any(m => m.Reason.Contains("sitelinks", StringComparison.Ordinal)) || x.Sitelinks == 0 ? x.Group
+                        : x.Group with { Members = x.Group.Members.Select(m => m with { Reason = m.Reason + $"; {x.Sitelinks} sitelinks" }).ToList() }).ToList();
+                groups = ordered.Concat(groups.Where(g => !level.Contains(g))).ToList();
             }
         }
         if (top is not null && wouldAccept)

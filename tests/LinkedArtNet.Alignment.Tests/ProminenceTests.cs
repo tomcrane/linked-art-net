@@ -106,8 +106,14 @@ public class ProminenceTests(PostgresFixture pg)
         await pg.Store.AddEquivalentAsync(ohio.Id, new Equivalent("http://vocab.getty.edu/tgn/2081865", "tgn", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
         var penn = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Sheffield", ["Sheffield"], null, [], [], EntityStatus.Aligned), scheme);
         await pg.Store.AddEquivalentAsync(penn.Id, new Equivalent("http://vocab.getty.edu/tgn/2092990", "tgn", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        await pg.Store.PutAuthorityAsync(Wikidata("Q983698", "Sheffield", 200, "http://vocab.getty.edu/tgn/2092990"));
         var aside = await reconciler.EvaluateAsync(ds, await pg.Store.CollectAsync(ds, "keywords:sub", "Sheffield"));
         Assert.Equal(Outcome.Queued, aside.Outcome);
+        // and every group level with the first is ordered most written-about first, a group of one source among them (the owner's desk,
+        // 2026-11-15, at "Cambridge": the city in Cambridgeshire among 36 not shown, behind eight American namesakes in the index's order)
+        Assert.Contains("http://vocab.getty.edu/tgn/2092990", aside.Groups[0].Uris);
+        Assert.Contains("http://vocab.getty.edu/tgn/7010692", aside.Groups[1].Uris);
+        Assert.Contains("200 sitelinks", aside.Groups[0].Best.Reason);
         Assert.Contains(aside.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("prominence stands aside: the project's own entity Sheffield is among the live groups"));
         // and the evidence shows every group at the top score and every group with a project entity, not the first five
         var evidence = Reconciler.Evidence("queued", aside.Reading, aside.Groups, null);

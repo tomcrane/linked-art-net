@@ -655,6 +655,27 @@ and the log (doc 15) records that. The order within an area is rough value.
   "I guess 1) depends on the nature of the material being catalogued." So it is a setting of the project (its
   manifest), not a rule of the library: whether a place's former names are names a string may be matched on. A
   library of early printed books wants them; a list of modern imprints does not. To design with the manifest.
+  The owner at the entity page, the same evening: the page lists "Five centuries of artists in Sutton ... Sutton,
+  London" under Plymouth, "which would lead me to remove 'Sutton'". So there is a second, nearer remedy, for one
+  entity: a name under ALSO can be set aside there ("not a name these strings may be matched on"), kept and shown as
+  set aside so that a pull from the source does not bring it back, the store match ignoring it, and the strings that
+  resolved by that name reopened. Not built: the entity page has no control on a name. Today's way round: tick
+  "Sutton" under "Strings that resolve here", reopen it, and decide it at the desk; a person's decision is not redone
+  by a run. To agree with the owner before building.
+- What a record's other fields say about a string (the owner at "Cambridge", 65756, 2026-11-15: "another piece of
+  configurable knowledge that would take the hint offered by the publisher being Cambridge University Press ... The
+  app having a set of common background data would help here"). Counted the same day: of the 525 records with the
+  bare place "Cambridge", four are American (Harvard University Press 2, Harvard Art Museums 1, The MIT Press 1) and
+  276 are Cambridge University Press, so one decision for the string is wrong for four records and a decision by
+  publisher is right for all of them. Three places the knowledge can come from, to choose among with the owner: (a)
+  the store itself, once publishers are aligned: the publisher's entity, and where its source says it is (Wikidata's
+  headquarters, LoC's heading), so nothing is kept by hand; (b) the project's own records: the same publisher under a
+  place that is qualified elsewhere ("Cambridge [England]", "Cambridge, Mass.") says where that publisher is,
+  counted, with no outside knowledge; (c) a table in the manifest or shipped with the application (publisher to
+  place), which must state its provenance. And where it acts: as evidence on the card ("276 of these records are
+  Cambridge University Press, which is in Cambridge, England"), as the default of a decision for a group of records
+  (doc 12 14.3: a decision for the records where the publisher is this one, between the string and the single
+  record), and only then as a rule (doc 12 14.8 step 6). Not built; to design with section 14 step 3.
 - The project's "Glasgow" (`place/k5nzg3aj`) is aligned to Glasgow, Kentucky (Wikidata Q1762833 from the old import,
   LoC n82030840 through it), as its "Madison" is to Madison, New Jersey. The place of publication "Glasgow" (65770,
   imported) and the keywords "Glasgow" (76007, and 46908 in runs where nothing else contests it) stand on it. With

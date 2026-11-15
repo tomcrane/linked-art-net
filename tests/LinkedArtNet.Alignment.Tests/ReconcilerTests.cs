@@ -576,6 +576,12 @@ public class GroupingTests
         var swindon = Reading("Swindon", EntityClass.Place) with { Qualifier = "Wiltshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
         var unitary = new Candidate("t3", "tgn", "Swindon", EntityClass.Place, null, [], "local", 1.0, Placement: "England, United Kingdom, Europe, World");
         Assert.False(Reconciler.Score(swindon, [unitary], 120)[0].Veto);
+        // a heading's parenthetical that names the qualifier is not a chain to set a broader chain against: "Glasgow (Strathclyde)"
+        var glasgow = Reading("Glasgow", EntityClass.Place) with { Qualifier = "Strathclyde", QualifierAncestors = "Scotland, United Kingdom, Europe, World" };
+        var town = new Candidate("t4", "tgn", "Glasgow", EntityClass.Place, null, [], "local", 1.0, Placement: "Scotland, United Kingdom, Europe, World");
+        var heading = new Candidate("l1", "loc", "Glasgow (Scotland)", EntityClass.Place, null, [], "local", 1.0, Placement: "Scotland; Strathclyde");
+        var both = Reconciler.Score(glasgow, [town, heading], 120);
+        Assert.DoesNotContain(both, m => m.Reason.Contains("broader than the qualifier"));
     }
 
     [Fact]

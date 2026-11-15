@@ -1231,11 +1231,15 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // World", for "Madison, Wisconsin") agrees with it only because its every word is among the qualifier's ancestors: it is somewhere
         // in the country, not known to be in the state. When another candidate's chain names the qualifier itself, that one is placed
         // and the broader one is not (finding 124, the owner's desk, 2026-11-15: the city and the river level at 1.00, the string queued).
-        // Alone, the broader record stands as before: TGN puts Swindon straight under England, and "Swindon, Wilts" has no other
+        // Alone, the broader record stands as before: TGN puts Swindon straight under England, and "Swindon, Wilts" has no other.
+        // The one that names the qualifier is a whole chain too, like set against like: a heading's parenthetical is not one, and
+        // LoC's "Glasgow (Scotland)", placed "Scotland; Strathclyde", is the same city as TGN's Glasgow under "Scotland, United
+        // Kingdom", whose chain has no Strathclyde in it to name (the rule's first run, x9ptwy: "Glasgow (Strathclyde)" lost its
+        // TGN record to its own LoC heading and fell from a vote to the queue, and two more Glasgow strings moved after it)
         if (reading.Qualifier is not null)
         {
             var named = Qualified.Tokens((reading.QualifierForPlacement ?? reading.Qualifier).Split(',')[0]);
-            bool Precise(ScoredCandidate m) => m.Candidate.Placement is { } chain && Qualified.Contains(chain, named);
+            bool Precise(ScoredCandidate m) => m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, named);
             if (named.Count > 0 && list.Any(m => !m.Veto && m.QualifierAgrees == true && Precise(m)))
                 for (var i = 0; i < list.Count; i++)
                 {

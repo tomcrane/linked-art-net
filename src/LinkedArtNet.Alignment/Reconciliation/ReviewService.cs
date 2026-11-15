@@ -161,18 +161,24 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
 
     /// <summary>The queued strings under an entity's name, for its page: what is still waiting at the desk for it.</summary>
     public async Task<IReadOnlyList<DecidedString>> WaitingForAsync(string dataset, Entity entity, CancellationToken ct = default) =>
-        (await store.QueuedByKeysAsync(dataset, LabelKeys(entity).ToList(), 20, ct)).Where(x => x.Decision.EntityId != entity.Id).ToList();
+        (await store.QueuedByKeysAsync(dataset, LabelKeys(entity, entity.Label).ToList(), 20, ct)).Where(x => x.Decision.EntityId != entity.Id).ToList();
 
     private async Task<IReadOnlyList<DecidedString>> SiblingsAsync(SourceString s, Entity? entity, CancellationToken ct)
     {
         var keys = new HashSet<string>(StringComparer.Ordinal) { s.Normalised };
         foreach (var k in reconciler.Read(s).Keys) keys.Add(k);
-        if (entity is not null) foreach (var k in LabelKeys(entity)) keys.Add(k);
+        if (entity is not null) foreach (var k in LabelKeys(entity, reconciler.Read(s).Text)) keys.Add(k);
         return (await store.QueuedByKeysAsync(s.Dataset, keys.ToList(), 20, ct)).Where(x => x.String.Id != s.Id).ToList();
     }
 
-    private static IEnumerable<string> LabelKeys(Entity entity) =>
-        entity.Labels.Append(entity.Label).OfType<string>().Distinct(StringComparer.Ordinal).SelectMany(l => NameMatcher.Keys(l).Append(StringKey.Normalise(l))).Distinct(StringComparer.Ordinal);
+    /// <summary>
+    /// The keys an entity is waited under: its label and those of its other labels that are the same name written another way. An
+    /// entity gathers the alternative names of the records it holds, and a historical name is not this name: Plymouth's card listed
+    /// "Sutton" as waiting under it, TGN giving Sutton as the town's old name (seen in the browser, 2026-11-15).
+    /// </summary>
+    private static IEnumerable<string> LabelKeys(Entity entity, string? name) =>
+        entity.Labels.Where(l => name is null || NameMatcher.Score(name, [l]) >= 0.85 || (entity.Label is not null && NameMatcher.Score(entity.Label, [l]) >= 0.85))
+            .Append(entity.Label).OfType<string>().Distinct(StringComparer.Ordinal).SelectMany(l => NameMatcher.Keys(l).Append(StringKey.Normalise(l))).Distinct(StringComparer.Ordinal);
 
     /// <summary>The facts of one of the project's own entities for its card: the entity (followed through a merge), its strings, and the records behind the most frequent of them, three at most.</summary>
     public async Task<EntityFacts?> FactsAsync(string entityId, CancellationToken ct = default)

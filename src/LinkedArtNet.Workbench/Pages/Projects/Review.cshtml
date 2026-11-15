@@ -107,7 +107,7 @@ else
     @if (item.LookedAgain is null) { <text>· </text><a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, look = true })" title="Show what today's rules would offer for this string, without deciding anything">Look again</a> }</p>
     @if (item.LookedAgain is { } outcome)
     {
-        <p class="flash">Looked at again under today's rules: it would be <strong>@outcome</strong>. The stored decision is unchanged; the actions below act on what you see. <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id })">Back to the stored evidence</a></p>
+        <p class="flash">Looked at again under today's rules: it would be <strong>@(outcome switch { "matchedstore" => "matched to an entity the project already has", "accepted" => "accepted", "queued" => "queued for review", "minted" => "minted, nothing found", "overridden" => "decided by a standing override", _ => outcome })</strong>. The stored decision is unchanged; the actions below act on what you see. <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id })">Back to the stored evidence</a></p>
     }
     @if (item.LookedAgain is null && item.Decision.Method is not (DecisionMethod.Queued or "minted") && Model.Plan is null)
     {
@@ -239,7 +239,7 @@ else
         <p class="muted">The rules found nothing for this string among the kinds of thing its field allows@(reading?.Classes is { Count: > 0 } kinds ? " (" + string.Join(" or ", kinds).ToLowerInvariant() + ")" : "").
             @if (Model.Searched) { <text>A search for "@Model.Q" has been run for you under <a href="#something-else">Something else</a>: it looks at every entity of the project and every index, whatever the kind. If one of its results is the thing, say <strong>Same as this</strong>; if nothing is and the thing is real, keep it as a local authority.</text> }</p>
     }
-    @if (ev.Groups.Count > 1 && Model.Method != "human")
+    @if (ev.Groups.Count > 1 && Model.Method != "human" && chosenGroup is null)
     {
         <form method="post" asp-page-handler="AcceptTogether" id="together" class="row" style="gap:.5rem; margin:.25rem 0 .75rem">
             <input type="hidden" name="id" value="@item.String.Id" />
@@ -311,7 +311,10 @@ else
                 @if (group.Members.Count > 1) { <span class="muted small">@group.Members.Count records agree they are one thing</span> }
                 @* the group is the card: its tick and its action are in its header, and the rows of a group of several go quiet (the owner,
                    2026-11-06: ten actions on the rows of a box that is one thing, and "card" read as the row) *@
-                @if (!allVeto && Model.Method != "human")
+                @* the chosen group of a decided card offers nothing to accept: it is what the string already is (seen in the browser,
+                   2026-11-15: "decided as this" beside a black "Accept these as one") *@
+                @if (chosenGroup is not null && ReferenceEquals(group, chosenGroup)) { <span class="small muted" style="margin-left:auto">the string is decided onto this</span> }
+                else if (!allVeto && Model.Method != "human")
                 {
                     <span style="margin-left:auto"></span>
                     @if (ev.Groups.Count > 1) { <label class="small inline" style="white-space:nowrap" title="This group is one of the things to accept together"><input type="checkbox" name="targets" value="@string.Join(" ", live.Select(m => m.Uri))" form="together" /> together</label> }
@@ -379,7 +382,7 @@ else
                 </div>
                 pairLeft = firm.Count;
             }
-            @foreach (var m in group.Members)
+            @foreach (var m in (firm.Count >= 2 ? group.Members.OrderBy(x => item.Entities.TryGetValue(x.Uri, out var held) && !held.IsPlaceholder ? 0 : 1).ToList() : group.Members))
             {
                 item.Records.TryGetValue(m.Uri, out var record);
                 item.Entities.TryGetValue(m.Uri, out var facts);
@@ -451,7 +454,7 @@ else
                     else if (m.Veto != true && Model.Method != "human" && live.Count == 1)
                     {
                         @* a group of one record: the row's actions are the group's *@
-                        @if (!m.IsStore)
+                        @if (!m.IsStore && !(chosenGroup is not null && ReferenceEquals(group, chosenGroup)))
                         {
                             <form method="post" asp-page-handler="Accept" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />

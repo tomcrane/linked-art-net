@@ -299,7 +299,7 @@ at "Plymouth" (plan section 7, "One spelling, more than one record"): the toolki
 records can be turned into Linked Art, and finding what a source could say better; a decision for one record is
 required and not an edge; and "the whole process has to survive corrections and improvements in source data, including
 those that were made as a result of people using the tool". PMC's library export is the worked case and must not
-dictate the shape; where a choice below is PMC's and not the design's, it says so.
+dictate the shape; where a choice below is PMC's and not the design's, it says so. The owner agreed the same day to four choices the assistant made in writing it: a renumbered record is known by its fingerprint (14.5, 1); a record decision is closed and not carried when its field changes (14.5, 4); deciding a record differently offers a finding in the same step (14.4); and "ready" is defined by the project (14.7, 1).
 
 ### 14.1 Source systems and records
 

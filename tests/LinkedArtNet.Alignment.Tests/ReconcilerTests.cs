@@ -563,6 +563,22 @@ public class GroupingTests
     }
 
     [Fact]
+    public void A_chain_broader_than_the_qualifier_gives_way_to_one_that_names_it()
+    {
+        // finding 124: "Madison, Wisconsin" and TGN's Madison River, placed in the United States and no nearer
+        var reading = Reading("Madison", EntityClass.Place) with { Qualifier = "Wisconsin", QualifierAncestors = "United States, North and Central America, World" };
+        var city = new Candidate("t1", "tgn", "Madison", EntityClass.Place, null, [], "local", 1.0, Placement: "Dane, Wisconsin, United States, North and Central America, World");
+        var river = new Candidate("t2", "tgn", "Madison River", EntityClass.Place, null, [], "local", 1.0, Placement: "United States, North and Central America, World", ByVariant: true);
+        var scored = Reconciler.Score(reading, [city, river], 120);
+        Assert.True(scored[0].QualifierAgrees); Assert.False(scored[0].Veto);
+        Assert.True(scored[1].Veto); Assert.Contains("broader than the qualifier", scored[1].Reason);
+        // alone, the broader record stands: TGN puts Swindon straight under England
+        var swindon = Reading("Swindon", EntityClass.Place) with { Qualifier = "Wiltshire", QualifierAncestors = "England, United Kingdom, Europe, World" };
+        var unitary = new Candidate("t3", "tgn", "Swindon", EntityClass.Place, null, [], "local", 1.0, Placement: "England, United Kingdom, Europe, World");
+        Assert.False(Reconciler.Score(swindon, [unitary], 120)[0].Veto);
+    }
+
+    [Fact]
     public void A_qualifier_that_is_a_nearby_town_places_the_one_candidate_beside_it()
     {
         // finding 120: "Barnsley, Cirencester" among six Barnsleys; the scorer is told which candidate lies near the town

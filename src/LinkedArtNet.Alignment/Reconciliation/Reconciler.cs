@@ -1227,6 +1227,24 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             }
             list.Add(new ScoredCandidate(c, Math.Round(score, 3), veto, string.Join("; ", reasons), datesAgree, qualifierAgrees, DatesConflict: datesConflict, DatesNear: datesNear));
         }
+        // a record whose whole chain is broader than the qualifier (TGN's Madison River, "United States, North and Central America,
+        // World", for "Madison, Wisconsin") agrees with it only because its every word is among the qualifier's ancestors: it is somewhere
+        // in the country, not known to be in the state. When another candidate's chain names the qualifier itself, that one is placed
+        // and the broader one is not (finding 124, the owner's desk, 2026-11-15: the city and the river level at 1.00, the string queued).
+        // Alone, the broader record stands as before: TGN puts Swindon straight under England, and "Swindon, Wilts" has no other
+        if (reading.Qualifier is not null)
+        {
+            var named = Qualified.Tokens((reading.QualifierForPlacement ?? reading.Qualifier).Split(',')[0]);
+            bool Precise(ScoredCandidate m) => m.Candidate.Placement is { } chain && Qualified.Contains(chain, named);
+            if (named.Count > 0 && list.Any(m => !m.Veto && m.QualifierAgrees == true && Precise(m)))
+                for (var i = 0; i < list.Count; i++)
+                {
+                    var m = list[i];
+                    if (m.Veto || m.QualifierAgrees != true || m.Candidate.Placement is not { } chain || !chain.EndsWith("World", StringComparison.Ordinal) || Precise(m)) continue;
+                    if (near is { } placedByTown && (placedByTown.Uri == m.Candidate.Uri || m.Reason.Contains("where the record near ", StringComparison.Ordinal))) continue;
+                    list[i] = m with { QualifierAgrees = false, Reason = m.Reason + $"; its chain is broader than the qualifier and does not name {reading.Qualifier}, and another candidate is placed in it" };
+                }
+        }
         // a linked cluster that disagrees with itself about the dates stands when one of its records agrees with the string's dates (the
         // whole heading as written agrees by its own): LoC's "Agar, Eileen, 1899-1991" is the string verbatim and ULAN's linked record says 1904-1991; ULAN's
         // "Kelly, Felix" agrees with "Kelly, Felix, 1917-1994" and LoC's linked record carries finding 88's bare 1916. The link is the

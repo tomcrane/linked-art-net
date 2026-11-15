@@ -227,3 +227,9 @@ details.others[open] > summary { margin-bottom: 0.5rem; }
 
 /* the chosen tag keeps its green on a tinted card, where a later rule gave every tag a white ground (2026-11-15) */
 .card .tag.chosen-tag, .card.best .tag.chosen-tag { background: #2f7d4f !important; color: #fff !important; border-color: #2f7d4f !important; }
+
+/* the differing records of a holder pair, side by side in its caution (the owner, 2026-11-15) */
+.pair-compare { width: 100%; border-collapse: collapse; margin: 0.5rem 0; background: var(--paper); }
+.pair-compare th, .pair-compare td { text-align: left; vertical-align: top; padding: 0.35rem 0.6rem; border: 1px solid var(--rule); }
+.pair-compare thead th { font-weight: 700; }
+.pair-compare tbody th { width: 5rem; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--muted); }

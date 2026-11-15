@@ -1293,6 +1293,19 @@ group through the placed-through join, so the project's entity answers. Two thin
 recorded as items, not built: an entity minted from a string with its post town is labelled "Donington, Spalding";
 and "Donnington" lists TGN's Donington first on a variant spelling, ahead of the two Donningtons.
 
+Built 2026-11-15, finding 124, a chain broader than the qualifier gives way to one that names it (the owner's desk, at
+"Madison, Wisconsin", one of finding 119's nine: TGN's Madison in Dane, Wisconsin with LoC's "Madison (Wis.)" first,
+and TGN's Madison River, "United States, North and Central America, World", second at 1.00, "qualifier places it",
+the string queued between them). `Qualified.Agrees` reads either way, the qualifier's words in the placement or the
+placement's in the qualifier with its ancestors, and the second is for a heading that says less ("(England)" under
+"Northamptonshire, England"); a whole TGN chain that says less is a thing somewhere in the country. The rule, after
+the scoring loop of `Reconciler.Score`: when a candidate's chain names the qualifier itself, a candidate that agreed
+only by a broader whole chain does not agree, "its chain is broader than the qualifier and does not name Wisconsin,
+and another candidate is placed in it", and the namesake's veto follows. Alone it stands (TGN puts Swindon straight
+under England, and "Swindon, Wilts" has no other). `GroupingTests`. Not counted cleanly first: the store's reasons do
+not say which way a placement agreed, and a count by the chain's words drowned in abbreviations ("Cambs.", "N.Y.");
+the next reconcile's diff is the count, read string by string.
+
 Built 2026-11-15, an order among tied place groups and a word on what a card leaves off (the owner's desk, at
 "Plymouth", string 61711: "there is no UK Plymouth at all"). TGN holds 41 Plymouths, 22 tie at 1.00 with two sources
 each, a card keeps twelve, and the tie's order was the index's: Montserrat first, and Plymouth in Devon, the most

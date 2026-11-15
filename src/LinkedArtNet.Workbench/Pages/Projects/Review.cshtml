@@ -273,6 +273,9 @@ else
                 if (item.Placed is null || !item.Placed.TryGetValue(m.Uri, out var at)) { if (isPlace) unplaced.Add(label); continue; }
                 if (at.Near is not null) label += $", near {at.Near}";
                 if (at.Via is not null) label += $" (the coordinates of {at.Via})";
+                // a borrowed marker is drawn only when the group has none of its own: LoC's "Madison (Wis.)" at the coordinates of TGN's
+                // Madison lay over that record's own marker and made it look approximate (the owner's card, 2026-11-15)
+                if (at.Approximate && g.Members.Any(o => !ReferenceEquals(o, m) && item.Placed is not null && item.Placed.TryGetValue(o.Uri, out var own) && !own.Approximate)) continue;
                 points.Add(new { lat = at.Lat, lng = at.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, approximate = at.Approximate, source = m.Source, pin = PinOf(g) });
             }
     if (points.Count > 0)
@@ -343,10 +346,33 @@ else
                     {
                         <div class="pair-warn">
                             <strong>Look before merging:</strong> they hold different records of @string.Join(" and ", apart.Select(g => g.Key)):
-                            @foreach (var g in apart)
-                            {
-                                foreach (var x in g.DistinctBy(x => x.Uri)) { <span class="pair-warn-item">@Named(x.Entity) holds @Held(x.Uri, x.Source)</span> }
-                            }
+                            @* side by side, with the dates and the other names a record carries, since that is where two bodies of one name
+                               show ("Leicester Galleries (1902-1977)" beside "Leicester Galleries (1984- )": the owner, 2026-11-15, having
+                               merged them) *@
+                            <table class="pair-compare">
+                                <thead><tr><th></th>@foreach (var e in firm) { <th>@Named(e)</th> }</tr></thead>
+                                <tbody>
+                                @foreach (var g in apart)
+                                {
+                                    <tr>
+                                        <th>@g.Key</th>
+                                        @foreach (var e in firm)
+                                        {
+                                            <td>
+                                                @foreach (var x in g.Where(x => x.Entity.Id == e.Id).DistinctBy(x => x.Uri))
+                                                {
+                                                    item.Records.TryGetValue(x.Uri, out var rec);
+                                                    <div><a href="@x.Uri" target="_blank" rel="noopener"><strong>@(rec?.Label ?? x.Uri.TrimEnd('/').Split('/').Last())</strong></a>@if (rec?.Lifespan?.Display is { } dates) { <text> · @dates</text> }</div>
+                                                    @if (rec is not null && LinkedArtNet.Alignment.Authorities.RecordSummary.Says(rec) is { } says && says != rec.Label) { <div class="small muted">@says</div> }
+                                                    @if (rec is not null && rec.Labels.Where(l => l != rec.Label).Take(4).ToList() is { Count: > 0 } also) { <div class="small muted">also: @string.Join(" · ", also)</div> }
+                                                }
+                                                @if (!g.Any(x => x.Entity.Id == e.Id)) { <span class="muted small">no record of this source</span> }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
                             A source that keeps two records is usually saying these are two things. If the project means one, remove the set that does not belong on that entity's page first; if it means two, do not merge. <a href="/help/scenarios#the-authorities-hold-two-the-project-means-one" target="_blank" rel="noopener">An example</a>.
                         </div>
                     }

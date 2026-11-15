@@ -327,7 +327,7 @@ be about. `string_examples` (three records a string at most, 124,065 rows over 3
 sample of it and is replaced by it.
 
     records      (dataset, system, record_id, title, date, fields jsonb, fingerprint, first_collect, last_collect, gone_at)
-    occurrences  (dataset, system, record_id, field, string_id, position)
+    occurrences  (dataset, system, record_id, field, string_id, position, parent_string_id)
 
 `fields` is the record's naming fields as the desk shows them now; `fingerprint` is a hash of what a record says
 apart from its identifier (title, date, the naming fields), used in 14.5. A collect replaces a system's occurrences and
@@ -343,7 +343,13 @@ Massachusetts.
                       decided_at, run_id, valid, supersedes, closed_at, closed_why)
 
 It is keyed on the record and the field and the string's normalised text, not on row numbers, so that it survives a
-collect. It has the same lifecycle as a decision (invalidated, never deleted; undone by undoing its run or by hand).
+collect. **It may be for a part** (the owner, 2026-11-15: "A record decision should be able to apply to one part, I
+think"): the string is whichever string the store decides, the whole field value or a part of it (one place of
+"Lewisburg [Pa.] ; Plymouth", the head or a subdivision of a subject heading), so `normalised` is the part's and the
+occurrence of a part is stored beside its parent's (`occurrences` gains `parent_string_id` for a part, null for a
+whole value). A part decided for a record leaves the field's other parts on their strings' decisions. It closes at a
+collect when the record's field no longer yields that part, however the rest of the field changed. It has the same
+lifecycle as a decision (invalidated, never deleted; undone by undoing its run or by hand).
 **Who may make one:** a person at the desk, and the rules where they can be trusted to ("the rules should, if we are
 confident that they will work. As long as someone can check what's happened", the owner). A rule's record decision
 carries its method and its evidence as any decision does (which other field decided it: the publisher, the other
@@ -451,6 +457,5 @@ problem". Four, in the order to build; the first three are part of this design, 
 6. Record decisions by a rule, after the count: bare place names borne by more than one record whose publishers or
    other places point to different countries, and what share a rule on the publisher's country would get right.
 
-Open: whether a record decision may also be made for a part string (a place in a list, a keyword's head) or only for
-the whole field value; what "ready" needs for the archive and photographic archive records, which are not collected
+Open: what "ready" needs for the archive and photographic archive records, which are not collected
 yet.

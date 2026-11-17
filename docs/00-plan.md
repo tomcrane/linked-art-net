@@ -62,54 +62,55 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-15 evening; the one place to read first)
+## 0. Resume point (written 2026-11-17 evening; the one place to read first)
 
-**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`: accepted 9,481, queued 3,716, minted 10,775);
-no reconcile is pending, and none has run since the evening's work, so the stored cards are that run's (Look again
-shows a string under today's rules). Schema version 12 is on the real store (`entities.set_aside_labels`); the
-library export is collected into `records` and `occurrences` (doc 12 section 14.8 step 1). Built on 2026-11-15
-after step 1, each at the owner's word at the desk: the card's twelve ordered by prominence for every level group;
-a name set aside on an entity; where a publisher is, as a hint on a publisher's group of records (the shipped
-skeleton table `Tables/publisher-places.json`, the project's own records, the publisher's entity); and the page
-**Checks** (`/p/<project>/checks`), whose first check lists places the old import aligned to a namesake, with
-"Decide..." on each row: the records, then keep it (a label, LoC's heading suggested, and Confirm), mend the whole
-entity, or move only some strings. The owner worked the list from 100 rows to the 23 that cannot be told (33
-mended, 2 moves, 21 confirmed, 21 relabelled, by the notes). The day's commits are local on `de-pmc` (53 unpushed):
-`git push` is the owner's word.
+**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile has run since, so the stored
+cards are that run's (Look again shows a string under today's rules). Schema version 12 on the real store. The
+checks list (`/p/pmc/checks`) is down to the two rows left with notes, "Charterhouse" and "Wallington", which the
+owner ruled want work elsewhere (section 7: a house or a building under a town's entity). On 2026-11-17 the
+assistant drove the workbench as a user, signed in as `claude` (a reviewer the owner added), deciding and
+reporting after; that is the way of working for now, and the owner likes it ("we can resume at this point
+tomorrow"). The eight commits of 2026-11-17 are local on `de-pmc`, the full test loop green at day end; `git push`
+is the owner's word.
 
-**For the owner on return, with links** (the workbench at http://localhost:5200, started by the assistant in its
-session; if the session has ended, `dotnet run --project src/LinkedArtNet.Workbench`):
+**Resume here: the desk, as a user.** http://localhost:5200/p/pmc/review?context=place, the place queue (147), its
+first card "Heaton, Bradford" (string 28561), opened and not decided. What the assistant saw on it before stopping,
+each a thing to mend or put to the owner: the publisher hint cites the string's own record as evidence ("this
+publisher's other imprints here say 'Heaton, Bradford' (1 record)": the one record on the card); every candidate
+is an American Heaton, the first LoC's Heaton (N.D.) at 0.85 with an Accept button, and the Heaton in Bradford,
+West Yorkshire, is not offered though the qualifier names it; the map shows North America only. Then on through
+the place queue, and the other fields after.
 
-- Two things built last and not yet seen by anyone in the browser: on an entity page, "Use LoC's form" under Save
-  label (http://localhost:5200/p/pmc/entity?id=https%3A%2F%2Fdata.paul-mellon-centre.ac.uk%2Fplace%2Fgytt4u2f,
-  "Andover (Mass.)"); and the Decide screen pulling the entity's Wikidata item when it is opened and the index does
-  not have it, with a notice of what the item says (any row under "Cannot tell" at
-  http://localhost:5200/p/pmc/checks).
-- The 23 rows that cannot be told, to work through: a mix so far (Bromley and Edinburgh wrong, Biggleswade right,
-  Berwick right by TGN and LoC with the import's three identifiers a hamlet in Kent).
-- Left by hand: "Cardiff" (`place/t7mbc5a4`, emptied, to merge into the project's Cardiff (Wales)), "Belfast"
-  (`place/scrhnxf9`, emptied, wants `http://vocab.getty.edu/tgn/7012112`), "Raleigh" (`place/mcgyqvqf`, emptied,
-  to merge into the Raleigh of North Carolina), if not done since; the Ontario "Peterborough" (`place/bk5w54aq`)
-  still bears the bare label and one English string (the subject subdivision, 80140) unless moved.
-- Rulings and choices open (section 7, Reconciler, has each): an entity whose identifiers were all removed still
-  says "aligned"; former names as a setting of the project; whether published place labels are LoC's form
-  ("Birmingham (Ala.)") or spelled out; the default field to group records by; the tile gaps on the owner's display.
+**How the driving goes** (section 7 has it in full): the workbench started by the assistant
+(`dotnet run --project src/LinkedArtNet.Workbench`); sign in as `claude` at http://localhost:5200/signin (the owner
+uses another browser or a private window to be `local`, the two sharing one sign-in in Chrome); the assistant
+presses and the owner reviews after (the project page's Recent changes, and the entities' notes); each kind of
+card reported at first and less as kinds repeat; small things mended as they are met, rules and design put to the
+owner, and anything counted before it is made a rule (the one rule added uncounted that day listed fifteen right
+places as wrong and came out within the hour). Tests while iterating: the alignment and workbench projects per
+commit, the full loop before a push and at day end.
 
-**Next, in order.** (1) The checks list finished, and what it showed turned to use: the Decide screen leading with
-the likelier outcome, counted first from the evening's notes; the second check (a place aligned to an item that is
-not a place, as Wimborne Minster's "church"). (2) The assistant on the checks page and "Ask for help" at the desk,
-designed together (section 7 has the worked example and the shape of an answer). (3) The publisher hint carried
-on: the Wikidata loader keeping a body's headquarters, an entry of the table carrying several places, the hint as
-the default of a decision for a group of records. (4) Doc 12 section 14 step 2, the cataloguers' list, when the
-owner says ("Berwick (West Sussex)" for a church in East Sussex, and the William Shipley Group's "[London]" and
-"[Northwood?]", are entries waiting for it). (5) The desk's standing items: "Newark, Delaware" (54364), "Stamford,
-Lincolnshire" (66064), "Huntingdon, Cambs." (48911), "Middleburg, Virginia" (49522), "Stowe, Buckingham" (49864),
-"Lewiston" (74197, 74252, 74538), "Sutton" (61352, reopened, the name set aside on Plymouth), "Waterman Fine Art
-Ltd" (8474), "Fenner, Rest" (9056), the bare "Dagenham" placeholder (`place/hvj4jgry`), "Osterley Park" wanting TGN
-1102996, the audit's mislabels; several of the places may have been settled through the checks. (6) Pruning section
-7 of its built items into the log; doc 12 section 5 read against the desk as built; doc 12 to gain a section for
-the Checks page, which is described only in section 7 and the code so far. (7) Doc 16's scenarios; the agent parser
-when the owner comes back to it.
+**For the owner to look at** (built 2026-11-17, seen by the assistant in the browser except where said):
+
+- The Decide screen string by string, with the chains of places broadest first and the distance in words: either
+  row at http://localhost:5200/p/pmc/checks. Not seen: the folded map opened; the index search finding something
+  ("Kingston Jamaica" is the case it was made for); "Use LoC's form" on an entity page (built 2026-11-15).
+- The assistant's 21 decisions as `claude`, three of them on its own knowledge and so the owner's to check:
+  "Royston" to Hertfordshire (the Royston and District Museum), "Plaistow" kept as the one in Newham (the Curwen
+  Press), "Kingston" to TGN 1016870 (Kingston, Jamaica, looked up by SQL before the screen could search).
+- Left by hand from 2026-11-15, if not done since: "Cardiff" (`place/t7mbc5a4`), "Belfast" (`place/scrhnxf9`),
+  "Raleigh" (`place/mcgyqvqf`), the Ontario "Peterborough" (`place/bk5w54aq`).
+
+**Next, in order.** (1) The desk as above. (2) What the driving raised and is not built: two project entities for
+one place found by no check ("Harmondsworth" and "Harmondsworth (London, England)"); a table of former and
+abbreviated county names ("Avon", "Middlesex", "Oxon", "IoW"), without which a string's qualifier cannot be told
+from another place; the chains drawn at the desk and for compound subject headings; a second "other place" in one
+pass of the Decide screen. (3) The assistant on the checks and at the desk (section 7: the worked example, and the
+day's decisions as a labelled set). (4) The publisher hint carried on (it must not cite the card's own record; the
+Wikidata loader keeping a body's headquarters; several places an entry). (5) Doc 12 section 14 step 2, the
+cataloguers' list, when the owner says. (6) A project from the catalogue alone, the owner's "much later". (7)
+Housekeeping: section 7 pruned of built items; doc 12 given a section for the Checks page and the Decide screen,
+described so far only in section 7, the log and the code; doc 16's scenarios.
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI, whether records absent from a full dump are retired, and how LUX takes

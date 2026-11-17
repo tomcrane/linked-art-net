@@ -55,6 +55,13 @@ which is in the records. So: the aligned chains first; a distance in words where
 is 620 km from the place this entity holds"); the desk's map, folded, only where they are far apart. Put to the
 owner, not built.
 
+Later the same day, each at the owner's word: the Decide screen made string by string (each string stays or goes
+to the other place, one button, the person returned to the entity while anything is left); the chains broadest
+first with the part that differs bold, the distance in words, the map folded and shown only for places far apart;
+the tests while iterating cut to the two projects that reference the code changed, the full loop kept for a push
+and for day end. The owner on "Wallington": the records are of the house in Northumberland, and it wants work
+elsewhere. The desk begun as a user at its first place card, "Heaton, Bradford", and stopped there for the day.
+
 ## 2026-11-15
 
 The desk in the morning, with the owner: "Plymouth" (61711), one string in three records, and the owner's ruling

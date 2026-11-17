@@ -726,6 +726,22 @@ and the log (doc 15) records that. The order within an area is rough value.
   against. Not counted yet. Built the same evening, in order: Mend, the strings read, the records on the screen,
   places not at home, a search of the project's places, moving some strings, relabel and confirm, and one "Decide..."
   a row with every outcome on the screen that shows the records.
+- The assistant driving the workbench as a user (the owner, 2026-11-17: "you drive the browser ... wear the hat of
+  a user", "press and I'll review after"), signed in as `claude`, a reviewer the owner added on the Members page, so
+  that the history tells its decisions from the owner's. What it is for: usability, and issues the owner has grown
+  used to. It reports each kind of item at first and less as kinds repeat, keeps a list of what confused it, mends
+  the small things as it goes and brings rules and design to the owner. To know: the owner's Chrome and the
+  assistant's share one sign-in cookie, so signing in as one name in either makes both that name; the owner uses
+  another browser or a private window to be `local` meanwhile. The assistant does not sign in as the owner.
+- The label of a place, the owner's ruling (2026-11-17): "On the whole, UK places don't need qualifiers. But
+  sometimes they do! For example, Boston would usually be taken as Boston, Mass rather than Boston in Lincolnshire.
+  And even more, 'California' would usually not be taken to mean the area of Ipswich." So the bare name is for the
+  place the name is taken for, at home or abroad, and a qualifier for any other of the name. As built the same day
+  on the Decide screen: the name as it is suggested unless the local index knows a more written-about Wikidata
+  place of exactly that name that is another place (`BestKnownNamesakeAsync`, `MendPlan.Rival`), in which case
+  LoC's heading is suggested where the entity holds one; the person picks among the name as it is, LoC's heading
+  and another. Still a suggestion on one screen: not yet a check of its own ("a bare label that would be taken for
+  somewhere else"), which would find the Bostons and Californias across the whole store.
 - A second check for the page: a place entity aligned to an item that is not a place (Wimborne Minster's "church":
   the same name, another kind of thing, not a namesake abroad, so the first check lists it only by chance). From
   Wikidata's instance-of where the index has it (the `instanceOf` of the item against the classes of places), else

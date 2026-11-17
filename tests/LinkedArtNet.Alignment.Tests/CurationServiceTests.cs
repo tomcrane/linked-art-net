@@ -159,6 +159,30 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.False(quiet.Likely); Assert.Null(quiet.Reason); Assert.Null(quiet.Row.ItemDescription);
         await curation.ConfirmAsync(ds, unknownItem.Id, "tester", null);
 
+        // of two places of the name at home, the one the string's qualifier names is shown, whatever order the store gives them in;
+        // and a string that places the entity in neither says so
+        var compton = "Compto" + tag;
+        await pg.Store.PutAuthorityAsync(Tgn("11", compton, "Leeds, West Yorkshire, England, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("12", compton, "Surrey, England, United Kingdom, Europe, World"));
+        var surrey = await Imported(compton, "11x"); // its item is not in the index
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", compton + ", Surrey")).Id, surrey.Id, DecisionMethod.Imported, null);
+        var shown = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == surrey.Id);
+        Assert.Contains("Surrey", shown.Row.HomeChain); Assert.Null(shown.HomeDoubt);
+        Assert.Contains("Surrey", (await curation.MendPlanAsync(ds, surrey.Id, "United Kingdom"))!.Homes[0].HomeChain);
+        await curation.ConfirmAsync(ds, surrey.Id, "tester", null);
+        var jamaica = await Imported(compton, "11y");
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", compton + ", Jamaica")).Id, jamaica.Id, DecisionMethod.Imported, null);
+        Assert.Contains("Jamaica", Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == jamaica.Id).HomeDoubt);
+        await curation.ConfirmAsync(ds, jamaica.Id, "tester", null);
+        // an item whose description names the place at home: the plan says the entity is probably right, and it can be kept with that place's identifier added
+        var hounslowEntity = (await pg.Store.FindEntitiesByLabelAsync(StringKey.Normalise(hounslow), ds, EntityClass.Place)).Single();
+        var agreeing = (await curation.MendPlanAsync(ds, hounslowEntity.Id, "United Kingdom"))!;
+        Assert.Equal($"http://vocab.getty.edu/tgn/{tag}4", agreeing.Agreeing); Assert.Null(agreeing.Rival);
+        var kept = await curation.RelabelAndConfirmAsync(ds, hounslowEntity.Id, hounslow, "tester", agreeing.Agreeing);
+        Assert.Equal(EntityStatus.Confirmed, kept.Status); Assert.Contains(kept.Equivalents, q => q.Uri == agreeing.Agreeing);
+        // a better-known place of the name elsewhere: the bare label would be taken for it
+        Assert.Equal(180, (await curation.MendPlanAsync(ds, kentucky.Id, "United Kingdom"))!.Rival!.Value.Sitelinks); // Kentucky's, beside the city in Scotland
+
         var all = await curation.PlacesAlignedAwayAsync(ds, "United Kingdom");
         Assert.DoesNotContain(all, f => f.Row.EntityId == alabama.Id);
         Assert.Equal(vermont.Id, all[0].Row.EntityId); Assert.True(all[0].Likely);

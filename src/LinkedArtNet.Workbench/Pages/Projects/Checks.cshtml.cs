@@ -78,12 +78,15 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
     }
 
-    public async Task<IActionResult> OnPostRelabelAsync(string id, string label)
+    public async Task<IActionResult> OnPostRelabelAsync(string id, string? label, string? other, string? addUri)
     {
         try
         {
-            var result = await Project.Curation.RelabelAndConfirmAsync(Dataset, id, label, Reviewer, HttpContext.RequestAborted);
-            return Flash($"Relabelled \"{result.Label}\" and confirmed.", new { dataset = Dataset }, result);
+            var before = await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted);
+            var chosen = string.IsNullOrWhiteSpace(label) ? (other ?? "").Trim() : label.Trim();
+            var result = await Project.Curation.RelabelAndConfirmAsync(Dataset, id, chosen, Reviewer, string.IsNullOrWhiteSpace(addUri) ? null : addUri, HttpContext.RequestAborted);
+            return Flash((before?.Label == result.Label ? $"\"{result.Label}\" confirmed as it is." : $"\"{before?.Label}\" relabelled \"{result.Label}\" and confirmed.")
+                + (string.IsNullOrWhiteSpace(addUri) ? "" : " The identifier of the place at home was added."), new { dataset = Dataset }, result);
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
@@ -108,8 +111,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
                 : await Project.Curation.MendAwayAsync(Dataset, id, remove ?? [], home == "other" ? otherUri ?? "" : home, Reviewer, HttpContext.RequestAborted);
             var n = (remove ?? []).Length;
             return Flash(result.Id == id
-                ? $"\"{before?.Label}\" mended: {n} identifier{(n == 1 ? "" : "s")} removed, the identifier of the place meant added."
-                : $"\"{before?.Label}\" mended: {n} identifier{(n == 1 ? "" : "s")} removed, and merged into the project's entity for the place meant.", new { dataset = Dataset }, result);
+                ? $"\"{before?.Label}\" mended: {(n == 0 ? "no identifier" : n == 1 ? "1 identifier" : $"{n} identifiers")} removed, the identifier of the place meant added."
+                : $"\"{before?.Label}\" mended: {(n == 0 ? "no identifier" : n == 1 ? "1 identifier" : $"{n} identifiers")} removed, and merged into the project's entity for the place meant.", new { dataset = Dataset }, result);
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {

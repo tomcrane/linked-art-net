@@ -120,6 +120,9 @@ public interface IAlignmentStore
     /// </summary>
     Task<IReadOnlyList<AwayRow>> ImportedPlacesWithHomeNamesakesAsync(string dataset, string homePlace, CancellationToken ct = default);
 
+    /// <summary>The most written-about Wikidata place of exactly this name in the local index, other than the item given: its URI, what it says it is, and its sitelinks; null when the index has no other place of the name.</summary>
+    Task<(string Uri, string? Description, int Sitelinks)?> BestKnownNamesakeAsync(string label, string? exceptUri, CancellationToken ct = default);
+
     /// <summary>What one field says in the records where another field has a value ("place" where "publisher" is "Cambridge University Press"), each value with its count of records, the commonest first.</summary>
     Task<IReadOnlyList<(string Value, int Records)>> FieldValuesWhereAsync(string dataset, string whereField, string whereValue, string field, int limit = 40, CancellationToken ct = default);
 

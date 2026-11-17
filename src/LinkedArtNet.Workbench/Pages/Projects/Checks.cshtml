@@ -24,6 +24,15 @@
         <h2 style="margin-top:0">Decide "@pe.Label"</h2>
         <p class="small muted">Nothing is changed until you press one of the buttons below: Confirm, Mend or Move. <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(pe.Id)" target="_blank" rel="noopener">Open the entity's page</a> to see its strings and records first. It stands for @plan.Homes[0].Strings string@(plan.Homes[0].Strings == 1 ? "" : "s").</p>
         @if (Model.Pulled is not null) { <p class="notice small">@Model.Pulled</p> }
+        @* what the item says, set beside the place at home for the person (seen as a user, 2026-11-17: "town in Bedfordshire" and "Biggleswade, Bedfordshire, England" had to be compared by eye) *@
+        @if (plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Agreeing) is { } same)
+        {
+            <p class="notice small"><strong>Probably right.</strong> What the Wikidata item says of itself (@(same.ItemDescription ?? "it is the same item as the place at home's")) agrees with <strong>@Chain(same.Label, same.HomeChain)</strong>, the place of this name at home. If the records below agree too, keep it.</p>
+        }
+        else if (plan.Homes[0].ItemDescription is { } says)
+        {
+            <p class="notice small">The Wikidata item says it is: <strong>@says</strong>. That names none of the places called "@pe.Label" at home; the records below say which is meant.</p>
+        }
         <h3>What the records say</h3>
         @if (Model.PlanStrings.Count == 0) { <p class="small muted">No string stands on this entity.</p> }
         @foreach (var (ps, recs, count) in Model.PlanStrings)
@@ -41,13 +50,37 @@
             </details>
         }
         <h2>It is the right place: keep it</h2>
-        <form method="post" asp-page-handler="Relabel" class="row" style="gap:.5rem; align-items:center">
+        @{
+            var holdsTgn = pe.Equivalents.Any(q => q.Source == "tgn");
+            var agreed = plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Agreeing);
+            var qualify = plan.Rival is not null;
+            var loc = Model.SuggestedLabel;
+        }
+        <form method="post" asp-page-handler="Relabel">
             <input type="hidden" name="id" value="@pe.Id" />
-            <label for="keep-label" class="small" style="margin:0">Its label:</label>
-            <input type="text" id="keep-label" name="label" value="@(Model.SuggestedLabel ?? pe.Label)" style="width:20rem" />
-            <button type="submit">Confirm</button>
+            @* which label (the owner, 2026-11-17): a place at home usually needs no qualifier, and does when a better-known place
+               elsewhere has the name ("Boston" is taken for Massachusetts, not Lincolnshire). The choices are there to pick, not to type *@
+            <p class="small" style="margin-bottom:.3rem"><strong>Its label</strong> <span class="muted">· @(qualify
+                ? $"a qualifier is suggested: the name alone would be taken for a better-known \u201c{pe.Label}\u201d ({plan.Rival!.Value.Description ?? "no description"}; written about in {plan.Rival.Value.Sitelinks})"
+                : "the name as it is is suggested: the index knows no better-known place called this, so it needs no qualifier")</span></p>
+            <p class="small" style="margin:.2rem 0"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="label" value="@pe.Label" @(!qualify || loc is null ? "checked" : "") /> <strong>@pe.Label</strong> <span class="muted">· as it is</span></label></p>
+            @if (loc is not null)
+            {
+                <p class="small" style="margin:.2rem 0"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="label" value="@loc" @(qualify ? "checked" : "") /> <strong>@loc</strong> <span class="muted">· the Library of Congress heading this entity holds</span></label></p>
+            }
+            <p class="small" style="margin:.2rem 0"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="label" value="" /> another:</label> <input type="text" name="other" placeholder="@pe.Label (…)" style="width:18rem; display:inline-block" /></p>
+            @if (!holdsTgn)
+            {
+                @* right, and without the identifier of the place it is (seen as a user at "Blickling") *@
+                var offer = agreed ?? (plan.Homes.Count == 1 ? plan.Homes[0] : null);
+                if (offer is not null)
+                {
+                    <p class="small" style="margin:.6rem 0 .2rem"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="addUri" value="@offer.HomeUri" @(agreed is not null ? "checked" : "") /> also add the identifier of <strong>@Chain(offer.Label, offer.HomeChain)</strong> (<a href="@offer.HomeUri" target="_blank" rel="noopener">TGN @offer.HomeUri.Split('/')[^1]</a>): this entity has no TGN identifier@(agreed is null ? "; tick it if the records say this is the place" : "")</label></p>
+                }
+            }
+            <div class="actions"><button type="submit">Confirm</button></div>
         </form>
-        <p class="small muted">@(Model.SuggestedLabel is null ? "Add a qualifier if the name alone does not say which place (\"Berkeley (Calif.)\"), or leave it." : "The label suggested is LoC's heading for this entity; change it if you prefer another form, or put the old one back.") The entity is confirmed with this label and leaves the list. Its identifiers and strings are as they were.</p>
+        <p class="small muted">The entity is confirmed with the label chosen and leaves the list. Nothing is removed from it; its strings are as they were.</p>
         <h2>It is the wrong place, or wrong for some of its strings: mend it</h2>
         <form method="post" asp-page-handler="Mend" id="mend-form">
             <input type="hidden" name="id" value="@pe.Id" />
@@ -63,7 +96,8 @@
             {
                 var holder = plan.Holders.GetValueOrDefault(h.HomeUri);
                 <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(plan.Homes.Count == 1 && plan.Others.Count == 0 && Model.Found.Count == 0 ? "checked" : "") /> <strong>@Chain(h.Label, h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
-                @if (holder is not null) { <span>The project already has an entity for this place, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: "@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span> }
+                @if (pe.Equivalents.Any(q => q.Uri == h.HomeUri)) { <span>This entity holds this identifier already: nothing is added for it.</span> }
+                else if (holder is not null) { <span>The project already has an entity for this place, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: "@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span> }
                 else { <span>No entity of the project holds this place: the identifier is <strong>added to "@pe.Label"</strong>.</span> }</p>
             }
             @* the place meant may not be at home (the owner, 2026-11-15, at "Raleigh", meant for North Carolina): the project's other entities of the name, and any other place *@
@@ -103,7 +137,7 @@ else
 else
 {
     <p class="small muted">A place whose name has no qualifier ("Glasgow"), whose Wikidata identifier came from an import, where a place of exactly that name stands in @Model.HomePlace and the Wikidata item's own description names nothing of it. The strings are read too: an entity whose every string carries a qualifier the item bears ("Birmingham, Ala." on Birmingham, Alabama) is not listed, and one with a string that names the place at home ("Stowe (England)" on Stowe, Vermont) leads the likely. "Written about" is the number of Wikipedia editions with an article (sitelinks). The place at home shown is the most written-about of that name.</p>
-    @foreach (var (title, rows, about) in new[] { ("Likely wrong", likely, "a string of the entity names the place at home, or the place at home is at least as written about as the one the entity is aligned to"), ("To look at", look, "the entity's place is the more written about, or the place at home has no count to compare; the least written-about first. Right as it is? Confirm it on its page"), ("Cannot tell", unknown, "the Wikidata item is not in the local index, so there is no description to read: open the item to see what it is") })
+    @foreach (var (title, rows, about) in new[] { ("Likely wrong", likely, "a string of the entity names the place at home, or the place at home is at least as written about as the one the entity is aligned to"), ("To look at", look, "the entity's place is the more written about, or the place at home has no count to compare; the least written-about first"), ("Cannot tell", unknown, "the Wikidata item is not in the local index, so there is no description to read yet: \u201cDecide\u2026\u201d fetches it from Wikidata and says what it is") })
     {
         <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
         @if (rows.Count == 0) { <p class="small muted">None.</p> }
@@ -118,7 +152,7 @@ else
                     <tr>
                         <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(r.EntityId)"><strong>@r.Label</strong></a><br /><span class="small muted">@r.Status · stands for @r.Strings string@(r.Strings == 1 ? "" : "s")</span>@if (f.Strings.Count > 0) { <br /><span class="small" title="The strings that stand on this entity, as the records write them">@string.Join(" · ", f.Strings.Take(6).Select(x => $"\u201c{x}\u201d"))@(f.Strings.Count > 6 ? " …" : "")</span> }@if (f.Reason is not null) { <br /><strong class="small">@f.Reason</strong> }</td>
                         <td class="small">@(r.ItemDescription ?? "(the item is not in the index)")<br /><a href="@r.Item" target="_blank" rel="noopener">@r.Item.Split('/')[^1]</a> <span class="muted">@(r.ItemDescription is null ? "" : $"· written about in {r.ItemSitelinks}")</span></td>
-                        <td class="small">@Chain(r.Label, r.HomeChain)<br /><a href="@r.HomeUri" target="_blank" rel="noopener">TGN @r.HomeUri.Split('/')[^1]</a> <span class="muted">· @(r.HomeItem is null ? "no count known" : $"written about in {r.HomeSitelinks}")</span><br /><code class="small">@r.HomeUri</code></td>
+                        <td class="small">@if (f.HomeDoubt is not null) { <span class="muted">@f.HomeDoubt. The nearest by name:</span><br /> }@Chain(r.Label, r.HomeChain)<br /><a href="@r.HomeUri" target="_blank" rel="noopener">TGN @r.HomeUri.Split('/')[^1]</a> <span class="muted">· @(r.HomeItem is null ? "no count known" : $"written about in {r.HomeSitelinks}")</span><br /><code class="small">@r.HomeUri</code></td>
                         @* one call to action a row (the owner, 2026-11-15: three were confusing, and "you need to see the records, which means going to the mend page. The Relabel option could be there too, or in fact only there") *@
                         <td class="small decide"><a class="button secondary small" href="/p/@Model.Dataset/checks?mend=@Uri.EscapeDataString(r.EntityId)" title="Shows the records the entity's strings are in, and what can be done: keep it as the right place (with a clearer label), mend it, or move some of its strings. Nothing is changed until you choose there">Decide…</a></td>
                     </tr>

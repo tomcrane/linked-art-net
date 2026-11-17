@@ -1460,6 +1460,16 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    public async Task<(string Uri, string? Description, int Sitelinks)?> BestKnownNamesakeAsync(string label, string? exceptUri, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            "select a.uri, a.data->>'description', coalesce((a.data->>'sitelinks')::int, 0) from authority_records a " +
+            "where a.source = 'wikidata' and a.normalised_labels @> array[lower(@label)] and a.label = @label and a.type = 'Place' and a.uri <> @except order by 3 desc, a.uri limit 1");
+        Add(cmd, "label", label); Add(cmd, "except", exceptUri ?? "");
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? (r.GetString(0), Str(r, 1), r.GetInt32(2)) : null;
+    }
+
     public async Task<IReadOnlyList<(string Value, int Records)>> FieldValuesWhereAsync(string dataset, string whereField, string whereValue, string field, int limit = 40, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

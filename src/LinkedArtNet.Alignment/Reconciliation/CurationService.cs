@@ -368,25 +368,21 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         {
             var rows = pairs.ToList();
             var descr = rows[0].ItemDescription ?? "";
-            bool Names(AwayRow r)
-            {
-                if (r.HomeItem == r.Item || descr.Contains(homePlace, StringComparison.OrdinalIgnoreCase)) return true;
-                foreach (var segment in r.HomeChain.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (segment is "Europe" or "World" || string.Equals(segment, r.Label, StringComparison.OrdinalIgnoreCase)) continue;
-                    if (descr.Contains(segment, StringComparison.OrdinalIgnoreCase)) return true;
-                    foreach (var word in segment.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-                        if (word.Length >= 4 && !ChainNoise.Contains(word) && !string.Equals(word, r.Label, StringComparison.OrdinalIgnoreCase)
-                            && System.Text.RegularExpressions.Regex.IsMatch(descr, $@"\b{System.Text.RegularExpressions.Regex.Escape(word)}\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return true;
-                }
-                return false;
-            }
-            if (rows.Any(Names)) continue;
-            var home = rows.OrderByDescending(r => r.HomeSitelinks).First();
-            // what the strings themselves say
-            var strings = (await store.StringsForEntityAsync(rows[0].EntityId, 200, ct)).Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList();
-            var qualifiers = strings.Select(raw => (Raw: raw, Words: Qualified.Tokens(Qualified.Split(raw).Qualifier))).ToList();
-            if (strings.Count > 0 && rows[0].ItemDescription is not null && qualifiers.All(q => q.Words.Count > 0 && Qualified.Contains(descr, q.Words))) continue;
+            if (rows.Any(r => DescriptionNames(descr, r, homePlace))) continue;
+            // what the strings themselves say; a spelling that stands in two fields is shown once and says so (seen as a user,
+            // 2026-11-17: "stands for 3 strings" beside two spellings)
+            var standing = await store.StringsForEntityAsync(rows[0].EntityId, 200, ct);
+            var raws = standing.Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList();
+            var strings = raws.Select(raw => standing.Count(s => s.String.Raw == raw) is var n and > 1 ? $"{raw} (in {n} fields)" : raw).ToList();
+            var qualifiers = raws.Select(raw => (Raw: raw, Words: Qualified.Tokens(Qualified.Split(raw).Qualifier))).ToList();
+            // the place at home shown is the one the strings' own qualifiers name, then the most written-about, then by its identifier
+            // so that it is the same at every load (seen as a user: "Compton, Surrey" beside Compton in Leeds, and in West Berkshire at
+            // the next load; "Ely, Cambridgeshire" beside Ely in Cardiff)
+            var home = BestHome(rows, qualifiers.Select(q => q.Words));
+            // every string places it, and none in a namesake at home ("Kingston, Jamaica" beside Kingston in West Sussex): said on the row
+            var doubt = raws.Count > 0 && qualifiers.All(q => q.Words.Count > 0) && !qualifiers.Any(q => rows.Any(r => Qualified.Contains(r.HomeChain, q.Words)))
+                ? $"none of the places of this name at home is what its string{(raws.Count == 1 ? " says" : "s say")}: \"{raws[0]}\"" : null;
+            if (raws.Count > 0 && rows[0].ItemDescription is not null && qualifiers.All(q => q.Words.Count > 0 && Qualified.Contains(descr, q.Words))) continue;
             // only against a description that is there: an item absent from the index says nothing, and that is not disagreement
             // (the owner, 2026-11-15, at "Biggleswade": right, and listed as likely wrong because "Biggleswade, Bedfordshire" was
             // not found in a description the index does not have)
@@ -399,7 +395,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             }
             // likely only where both counts are known: the first reading of the real list (2026-11-15) had items absent from the index
             // (no description, no count) and places at home with no Wikidata item found through TGN's id standing as "0 against 0"
-            found.Add(new AwayFinding(home, home.ItemDescription is not null && home.HomeItem is not null && home.HomeSitelinks >= home.ItemSitelinks, strings, null));
+            found.Add(new AwayFinding(home, home.ItemDescription is not null && home.HomeItem is not null && home.HomeSitelinks >= home.ItemSitelinks, strings, null) { HomeDoubt = doubt });
         }
         // the likely first, the widest margin leading; then the rest, the least written-about abroad first ("Perth" in Tasmania before "New York")
         // a label that says which place it is, for the rows that are right as aligned and only want telling from their namesakes (the
@@ -416,10 +412,38 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return found.OrderByDescending(f => f.Likely).ThenByDescending(f => f.Reason is not null).ThenByDescending(f => f.Likely ? f.Row.HomeSitelinks - f.Row.ItemSitelinks : -f.Row.ItemSitelinks).ThenBy(f => f.Row.Label, StringComparer.Ordinal).ToList();
     }
 
-    /// <summary>The entity is right as aligned and wants only a label that says which place it is: the label is changed and the entity confirmed, each noted, so that it leaves the checks.</summary>
-    public async Task<Entity> RelabelAndConfirmAsync(string dataset, string entityId, string label, string reviewer, CancellationToken ct = default)
+    /// <summary>Whether what an item says of itself names the place at home: the item is the home place's own, or its description bears the home place, a place of the chain, or a telling word of one.</summary>
+    private static bool DescriptionNames(string descr, AwayRow r, string homePlace)
+    {
+        if (r.HomeItem == r.Item || (descr.Length > 0 && descr.Contains(homePlace, StringComparison.OrdinalIgnoreCase))) return true;
+        if (descr.Length == 0) return false;
+        foreach (var segment in r.HomeChain.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (segment is "Europe" or "World" || string.Equals(segment, r.Label, StringComparison.OrdinalIgnoreCase)) continue;
+            if (descr.Contains(segment, StringComparison.OrdinalIgnoreCase)) return true;
+            foreach (var word in segment.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                if (word.Length >= 4 && !ChainNoise.Contains(word) && !string.Equals(word, r.Label, StringComparison.OrdinalIgnoreCase)
+                    && System.Text.RegularExpressions.Regex.IsMatch(descr, $@"\b{System.Text.RegularExpressions.Regex.Escape(word)}\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>The place at home to show for an entity: one a string's qualifier names, then the most written-about, then by identifier, so that the choice is the same at every load.</summary>
+    private static AwayRow BestHome(IEnumerable<AwayRow> rows, IEnumerable<IReadOnlyList<string>> qualifierWords)
+    {
+        var words = qualifierWords.Where(w => w.Count > 0).ToList();
+        return rows.OrderByDescending(r => words.Any(w => Qualified.Contains(r.HomeChain, w)) ? 1 : 0).ThenByDescending(r => r.HomeSitelinks).ThenBy(r => r.HomeUri, StringComparer.Ordinal).First();
+    }
+
+    /// <summary>
+    /// The entity is right as aligned: it is confirmed with the label given, each noted, so that it leaves the checks; and, when asked,
+    /// it is given the identifier of the place at home first (seen as a user, 2026-11-17, at "Blickling": right, and without a TGN
+    /// identifier, which only the form for a wrong place could add).
+    /// </summary>
+    public async Task<Entity> RelabelAndConfirmAsync(string dataset, string entityId, string label, string reviewer, string? addUri = null, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(label)) throw new InvalidOperationException("A label is needed.");
+        if (!string.IsNullOrWhiteSpace(addUri) && (await OwnEntityAsync(dataset, entityId, ct)).Equivalents.All(q => q.Uri != addUri)) await AddEquivalentAsync(dataset, entityId, addUri, reviewer, ct);
         await SetLabelAsync(dataset, entityId, label, reviewer, ct);
         return await ConfirmAsync(dataset, entityId, reviewer, "right as aligned; the label made to say which place it is, at the checks", ct);
     }
@@ -435,8 +459,23 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         if (string.IsNullOrWhiteSpace(homePlace)) return null;
         var entity = await OwnEntityAsync(dataset, entityId, ct);
         var homes = (await store.ImportedPlacesWithHomeNamesakesAsync(dataset, homePlace, ct)).Where(r => r.EntityId == entity.Id)
-            .GroupBy(r => r.HomeUri).Select(g => g.First()).OrderByDescending(r => r.HomeSitelinks).ThenBy(r => r.HomeChain, StringComparer.Ordinal).ToList();
+            .GroupBy(r => r.HomeUri).Select(g => g.First()).ToList();
         if (homes.Count == 0) return null;
+        // the place at home that the item's own description names, if one: the entity is then probably right; the homes stand with
+        // that one first, then those a string's qualifier names, then the most written-about
+        var descr = homes[0].ItemDescription ?? "";
+        var agreeing = homes.Where(h => DescriptionNames(descr, h, homePlace)).Select(h => h.HomeUri).ToHashSet(StringComparer.Ordinal);
+        var words = (await store.StringsForEntityAsync(entity.Id, 200, ct)).Select(s => Qualified.Tokens(Qualified.Split(s.String.Raw).Qualifier)).Where(w => w.Count > 0).ToList();
+        homes = homes.OrderByDescending(h => agreeing.Contains(h.HomeUri) ? 1 : 0).ThenByDescending(h => words.Any(w => Qualified.Contains(h.HomeChain, w)) ? 1 : 0)
+            .ThenByDescending(h => h.HomeSitelinks).ThenBy(h => h.HomeUri, StringComparer.Ordinal).ToList();
+        // a better-known place of the same name elsewhere, which a bare label would be taken for (the owner, 2026-11-17: "on the whole,
+        // UK places don't need qualifiers. But sometimes they do! Boston would usually be taken as Boston, Mass rather than Boston in
+        // Lincolnshire"): the most written-about Wikidata place of the name, when it is another place than this entity's and more
+        // written about than the entity's own item
+        (string Uri, string? Description, int Sitelinks)? rival = null;
+        if (entity.Label is { } name && await store.BestKnownNamesakeAsync(name, homes[0].Item, ct) is { } best && best.Sitelinks > Math.Max(homes[0].ItemSitelinks, 0)
+            && !homes.Any(h => (agreeing.Contains(h.HomeUri) || entity.Equivalents.Any(q => q.Uri == h.HomeUri)) && (h.HomeItem == best.Uri || DescriptionNames(best.Description ?? "", h with { Item = best.Uri }, homePlace))))
+            rival = best;
         var holders = new Dictionary<string, Entity>(StringComparer.Ordinal);
         foreach (var h in homes)
             if ((await store.FindEntitiesByEquivalentAsync(h.HomeUri, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id) is { } holder) holders[h.HomeUri] = holder;
@@ -447,7 +486,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         foreach (var key in StringKey.Variants(entity.Label ?? "").Take(1))
             foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, EntityClass.Place, ct))
                 if (e.Id != entity.Id && e.MergedInto is null && holders.Values.All(h => h.Id != e.Id) && others.All(o => o.Id != e.Id)) others.Add(e);
-        return new MendPlan(entity, homes, holders) { Others = others };
+        return new MendPlan(entity, homes, holders) { Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival };
     }
 
     /// <summary>
@@ -589,10 +628,16 @@ public sealed record AwayFinding(AwayRow Row, bool Likely, IReadOnlyList<string>
 {
     /// <summary>A label that tells the entity from its namesakes, should it be right as aligned: LoC's heading when the entity holds one ("Berkeley (Calif.)"); null when there is none to suggest.</summary>
     public string? SuggestedLabel { get; init; }
+    /// <summary>Said on the row when every string of the entity places it, and none in a place of the name at home: the place at home shown is then beside the point.</summary>
+    public string? HomeDoubt { get; init; }
 }
 
 public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IReadOnlyDictionary<string, Entity> Holders)
 {
     /// <summary>The project's other place entities of the same name, wherever they are: the place meant may be one of them.</summary>
     public IReadOnlyList<Entity> Others { get; init; } = [];
+    /// <summary>The place at home (its URI) that the entity's Wikidata item names in its own description: the entity is then probably right. Null when the item names none, or says nothing.</summary>
+    public string? Agreeing { get; init; }
+    /// <summary>A better-known place of the same name elsewhere, which the bare label would be taken for: a reason to give this entity a label with a qualifier. Null when there is none.</summary>
+    public (string Uri, string? Description, int Sitelinks)? Rival { get; init; }
 }

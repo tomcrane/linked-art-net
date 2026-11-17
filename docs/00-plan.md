@@ -755,8 +755,14 @@ and the log (doc 15) records that. The order within an area is rough value.
   of the place, 2 left with a note (a town's entity standing also for a building or a house of the name: the
   London Charterhouse, Wallington in Northumberland). Still to do from it: an entity that wants two different
   things done (the owner's concern the same day: "when there are several things that need to be done ... making
-  sure the user doesn't lose track of the simple task") has only whole-entity forms and a note; the screen could
-  list each string with what is to become of it, and say after each action what is left. Two project entities for
+  sure the user doesn't lose track of the simple task") had only whole-entity forms and a note. *Built the same day at the owner's word:* the Decide screen lists each
+  string with its records and a choice, it stays or it goes to the other place, and one button applies it all
+  (`CurationService.ApplyAsync`), returning the person to the same entity while the check still lists it; what the
+  entity is aligned to is drawn as chains of places broadest first, one above the other, the part that differs
+  bold; a distance in words from the import's item; a map folded away, shown only where the two are 50 km or more
+  apart. Still one "other place" a pass: an entity whose strings are three things (Charterhouse: a village, a
+  building, perhaps a school) takes two passes. The same drawing of chains is wanted at the desk and for compound
+  subject headings, not built. Two project entities for
   one place ("Harmondsworth" and "Harmondsworth (London, England)", "Ely" twice) are not found by any check. The
   owner's question on pictures (a map, or containment drawn): the assistant's view is in the day's log.
 - A second check for the page: a place entity aligned to an item that is not a place (Wimborne Minster's "church":

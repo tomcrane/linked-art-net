@@ -39,8 +39,14 @@
             card.addEventListener("mouseleave", function () { mine.forEach(function (m) { if (m._icon) m._icon.classList.remove("hot"); m.setZIndexOffset(0); m.closeTooltip(); }); });
         });
         var group = L.featureGroup(markers);
-        if (points.length === 1) map.setView([points[0].lat, points[0].lng], 8);
-        else map.fitBounds(group.getBounds().pad(0.3), { maxZoom: 10 });
+        function fit() {
+            if (points.length === 1) map.setView([points[0].lat, points[0].lng], 8);
+            else map.fitBounds(group.getBounds().pad(0.3), { maxZoom: 10 });
+        }
+        fit();
+        // folded away (the checks' Decide screen, 2026-11-17): a map has no size until its <details> is opened, so it is measured and fitted then
+        var fold = el.closest("details");
+        if (fold) fold.addEventListener("toggle", function () { if (fold.open) { map.invalidateSize(); fit(); } });
     });
 })();
 </script>

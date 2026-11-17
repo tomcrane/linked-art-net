@@ -373,6 +373,19 @@ public sealed record AwayRow(string EntityId, string Label, string Status, int S
     /// <summary>The nearest place the home place is in: the first of its chain that is not its own name ("Aberdeenshire" of "Bridgend, Aberdeenshire, Scotland, United Kingdom"); null when the chain has none.</summary>
     public string? Within => HomeChain.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
         .FirstOrDefault(x => x is not ("Europe" or "World") && !string.Equals(x, Label, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Where the import's item is, when its record or a pull says: for a distance in words, and a map when the two are far apart.</summary>
+    public (double Lat, double Long)? ItemAt { get; init; }
+    /// <summary>Where the place at home is, by TGN's record.</summary>
+    public (double Lat, double Long)? HomeAt { get; init; }
+
+    /// <summary>The distance between two points on the earth, in kilometres (the haversine formula; a sphere of 6,371 km).</summary>
+    public static double Km((double Lat, double Long) a, (double Lat, double Long) b)
+    {
+        static double Rad(double d) => d * Math.PI / 180;
+        var h = Math.Pow(Math.Sin(Rad(b.Lat - a.Lat) / 2), 2) + Math.Cos(Rad(a.Lat)) * Math.Cos(Rad(b.Lat)) * Math.Pow(Math.Sin(Rad(b.Long - a.Long) / 2), 2);
+        return 2 * 6371 * Math.Asin(Math.Min(1, Math.Sqrt(h)));
+    }
 }
 
 public sealed record RecordGroup(string? Value, int Records, IReadOnlyList<StringExample> First);

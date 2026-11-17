@@ -263,3 +263,14 @@ dd.names form.name:hover button, dd.names form.name button:focus { opacity: 1; }
 table.checks td { vertical-align: top; padding: .5rem .8rem .5rem 0; }
 table.checks td:first-child { max-width: 22rem; }
 table.checks td.decide .small { padding: .25rem .7rem; font-size: .85rem; white-space: nowrap; }
+
+/* the checks' Decide screen, string by string (2026-11-17) */
+table.paths { margin: .4rem 0 .8rem; border-collapse: collapse; }
+table.paths td { padding: .15rem .9rem .15rem 0; vertical-align: baseline; font-size: .9rem; }
+table.paths td:first-child { color: var(--muted, #666); white-space: nowrap; }
+.path strong { font-weight: 700; }
+.string-line { border-top: 1px solid var(--rule, #ddd); padding: .6rem 0 .3rem; }
+.string-line .outcome { display: flex; flex-wrap: wrap; gap: .2rem 1.4rem; margin: .3rem 0; }
+.string-line .outcome label { margin: 0; color: inherit; font-size: .9rem; }
+.decide-part { border-top: 2px solid var(--ink, #111); margin-top: 1.2rem; padding-top: .2rem; }
+.decide-part[hidden] { display: none; }

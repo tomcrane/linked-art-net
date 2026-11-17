@@ -605,6 +605,45 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return to;
     }
 
+    /// <summary>
+    /// One decision for an entity of the checks, said string by string (the owner, 2026-11-17: "when there are several things that need
+    /// to be done ... making sure the user doesn't lose track of the simple task"; the assistant as a user had met an entity right for
+    /// one string and wrong for another three times in twenty-one, with only whole-entity forms to say it in). Each string either
+    /// stays, being the place the entity is aligned to, or goes to the other place. None goes: the entity is kept and confirmed, with
+    /// the label and, when asked, the identifier of its place. All go: the entity is mended whole, the identifiers named removed, and
+    /// it is merged into or given the other place. Some go: those are moved, and the entity is confirmed for the rest. Returns the
+    /// entity the staying strings stand on (or the one all went to) and what was done, in words.
+    /// </summary>
+    public async Task<(Entity Result, string Summary)> ApplyAsync(string dataset, string entityId, IReadOnlyCollection<long> goes, string? target, IReadOnlyList<string> removeUris,
+        string? label, string? addUri, string reviewer, CancellationToken ct = default)
+    {
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        var name = entity.Label ?? entity.Id;
+        var standing = (await store.StringsForEntityAsync(entity.Id, 1000, ct)).Select(s => s.String.Id).ToList();
+        var going = standing.Where(goes.Contains).ToList();
+        var keepAs = string.IsNullOrWhiteSpace(label) ? name : label.Trim();
+        static string N(int n, string what) => n == 1 ? $"1 {what}" : $"{n} {what}s";
+        if (going.Count == 0)
+        {
+            var kept = await RelabelAndConfirmAsync(dataset, entity.Id, keepAs, reviewer, addUri, ct);
+            return (kept, (kept.Label == name ? $"\"{name}\" confirmed as it is" : $"\"{name}\" relabelled \"{kept.Label}\" and confirmed") + (string.IsNullOrWhiteSpace(addUri) ? "." : ", and given the identifier of its place."));
+        }
+        if (string.IsNullOrWhiteSpace(target)) throw new InvalidOperationException("Choose the other place: where the strings that are not this place should stand.");
+        if (going.Count == standing.Count)
+        {
+            var held = entity.Equivalents.Any(q => q.Uri == target);
+            var removed = removeUris.Distinct(StringComparer.Ordinal).Count(u => u != target && entity.Equivalents.Any(q => q.Uri == u));
+            var mended = target.StartsWith("entity:", StringComparison.Ordinal)
+                ? await MendIntoAsync(dataset, entity.Id, removeUris, target["entity:".Length..], reviewer, ct)
+                : await MendAwayAsync(dataset, entity.Id, removeUris, target, reviewer, ct);
+            return (mended, $"\"{name}\" mended: {(removed == 0 ? "no identifier" : N(removed, "identifier"))} removed, " + (mended.Id != entity.Id ? $"and merged into \"{mended.Label}\"."
+                : held ? "the identifier of the place meant was there already and is kept." : "and the identifier of the place meant added."));
+        }
+        var to = await MoveStringsAsync(dataset, entity.Id, going, target, reviewer, ct);
+        var rest = await RelabelAndConfirmAsync(dataset, entity.Id, keepAs, reviewer, addUri, ct);
+        return (rest, $"{N(going.Count, "string")} moved from \"{name}\" to \"{to.Label}\"; \"{rest.Label}\" confirmed for the {N(standing.Count - going.Count, "string")} that stay{(standing.Count - going.Count == 1 ? "s" : "")}.");
+    }
+
     /// <summary>Mends by merging into another entity of the project that a person chose: the identifiers named are removed first, so that the wrong ones do not travel with the merge.</summary>
     public async Task<Entity> MendIntoAsync(string dataset, string entityId, IReadOnlyList<string> removeUris, string survivorId, string reviewer, CancellationToken ct = default)
     {

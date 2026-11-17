@@ -80,7 +80,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             }
             if (Plan is not null)
             {
-                foreach (var s in (await Services.Store.StringsForEntityAsync(Plan.Entity.Id, 12, HttpContext.RequestAborted)).OrderBy(s => s.String.Raw, StringComparer.Ordinal))
+                foreach (var s in (await Services.Store.StringsForEntityAsync(Plan.Entity.Id, 60, HttpContext.RequestAborted)).OrderBy(s => s.String.Raw, StringComparer.Ordinal))
                     PlanStrings.Add((s.String, await Project.Desk.ExamplesForAsync(s.String.Id, HttpContext.RequestAborted), await Services.Store.RecordCountAsync(s.String.Id, HttpContext.RequestAborted)));
                 foreach (var q in Plan.Entity.Equivalents.Where(q => q.Source == "loc"))
                     if (await Services.Store.GetAuthorityAsync(q.Uri, HttpContext.RequestAborted) is { Label: { } heading } && heading.StartsWith(Plan.Entity.Label + " (", StringComparison.Ordinal) && heading.EndsWith(')')) { SuggestedLabel = heading; break; }
@@ -96,15 +96,24 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
     }
 
-    public async Task<IActionResult> OnPostRelabelAsync(string id, string? label, string? other, string? addUri)
+    /// <summary>
+    /// The one button of the Decide screen: each string stays or goes (<c>outcome</c>, by string id, "stay" or "go"), and the rest of the
+    /// form says where the going ones go, what the entity is called for those that stay, and which identifiers leave it when all go.
+    /// Afterwards the person is returned to the same entity if the check still lists it, with what was done and what is left, and to
+    /// the list when it does not.
+    /// </summary>
+    public async Task<IActionResult> OnPostApplyAsync(string id, Dictionary<long, string>? outcome, string? home, string? otherUri, string[]? remove, string? label, string? other, string? addUri)
     {
         try
         {
-            var before = await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted);
-            var chosen = string.IsNullOrWhiteSpace(label) ? (other ?? "").Trim() : label.Trim();
-            var result = await Project.Curation.RelabelAndConfirmAsync(Dataset, id, chosen, Reviewer, string.IsNullOrWhiteSpace(addUri) ? null : addUri, HttpContext.RequestAborted);
-            return Flash((before?.Label == result.Label ? $"\"{result.Label}\" confirmed as it is." : $"\"{before?.Label}\" relabelled \"{result.Label}\" and confirmed.")
-                + (string.IsNullOrWhiteSpace(addUri) ? "" : " The identifier of the place at home was added."), new { dataset = Dataset }, result);
+            var goes = (outcome ?? []).Where(o => o.Value == "go").Select(o => o.Key).ToHashSet();
+            var target = home == "other" ? (otherUri ?? "").Trim() : home;
+            var keepAs = string.IsNullOrWhiteSpace(label) ? (other ?? "").Trim() : label.Trim();
+            var (result, summary) = await Project.Curation.ApplyAsync(Dataset, id, goes, target, remove ?? [], keepAs, string.IsNullOrWhiteSpace(addUri) ? null : addUri, Reviewer, HttpContext.RequestAborted);
+            var still = result.Id == id && (await Project.Curation.PlacesAlignedAwayAsync(Dataset, Project.Manifest.HomePlace, HttpContext.RequestAborted)).Any(f => f.Row.EntityId == id);
+            return still
+                ? Flash(summary + " It is still on the list: see below what is left to decide.", new { dataset = Dataset, mend = id }, result)
+                : Flash(summary + " Nothing is left to decide for it.", new { dataset = Dataset }, result);
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
@@ -120,35 +129,5 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         if (entity is null || entity.Dataset != Dataset) return NotFound();
         await Project.Curation.NoteAsync(Dataset, id, Reviewer, "Left undecided at the checks: " + text.Trim());
         return Flash($"\"{entity.Label}\" left on the list, with your note on it.", new { dataset = Dataset }, entity);
-    }
-
-    public async Task<IActionResult> OnPostMendAsync(string id, string[]? remove, string? home, string? otherUri, long[]? strings, string? act)
-    {
-        try
-        {
-            var before = await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted);
-            if (string.IsNullOrWhiteSpace(home)) throw new InvalidOperationException("Choose the place meant.");
-            if (act == "move")
-            {
-                var moved = await Project.Curation.MoveStringsAsync(Dataset, id, strings ?? [], home == "other" ? otherUri ?? "" : home, Reviewer, HttpContext.RequestAborted);
-                var m = (strings ?? []).Length;
-                return Flash($"{m} string{(m == 1 ? "" : "s")} moved from \"{before?.Label}\" to \"{moved.Label}\"; \"{before?.Label}\" and its identifiers are as they were.", new { dataset = Dataset }, moved);
-            }
-            var result = home.StartsWith("entity:", StringComparison.Ordinal)
-                ? await Project.Curation.MendIntoAsync(Dataset, id, remove ?? [], home["entity:".Length..], Reviewer, HttpContext.RequestAborted)
-                : await Project.Curation.MendAwayAsync(Dataset, id, remove ?? [], home == "other" ? otherUri ?? "" : home, Reviewer, HttpContext.RequestAborted);
-            var n = (remove ?? []).Length;
-            var chosen = home == "other" ? (otherUri ?? "").Trim() : home;
-            if (result.Id == id && before is not null && before.Equivalents.Any(q => q.Uri == chosen))
-                return Flash($"\"{before.Label}\" mended: {(n == 0 ? "no identifier" : n == 1 ? "1 identifier" : $"{n} identifiers")} removed; the identifier of the place meant was there already and is kept.", new { dataset = Dataset }, result);
-            return Flash(result.Id == id
-                ? $"\"{before?.Label}\" mended: {(n == 0 ? "no identifier" : n == 1 ? "1 identifier" : $"{n} identifiers")} removed, the identifier of the place meant added."
-                : $"\"{before?.Label}\" mended: {(n == 0 ? "no identifier" : n == 1 ? "1 identifier" : $"{n} identifiers")} removed, and merged into the project's entity for the place meant.", new { dataset = Dataset }, result);
-        }
-        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
-        {
-            // back to the confirm screen with what went wrong, the list not reloaded in its place
-            return Flash(e.Message, new { dataset = Dataset, mend = id });
-        }
     }
 }

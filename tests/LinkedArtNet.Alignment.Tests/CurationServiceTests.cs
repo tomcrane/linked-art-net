@@ -274,6 +274,23 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Single((await pg.Store.GetEntityAsync(ontario.Id))!.Equivalents); // as it was
         Assert.DoesNotContain(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == ontario.Id); // its one string left agrees with the item
         await Assert.ThrowsAsync<InvalidOperationException>(() => curation.MoveStringsAsync(ds, ontario.Id, [bare.Id], "entity:" + england.Id, "tester")); // it stands there no more
+        // one decision said string by string: this one stays, that one goes; the entity is confirmed for what stays
+        var split = await Imported("Spli" + tag, "20");
+        var stays = await pg.Store.CollectAsync(ds, "place", "Spli" + tag + ", Ontario");
+        var leaves = await pg.Store.CollectAsync(ds, "place", "Spli" + tag);
+        await pg.Store.DecideAsync(stays.Id, split.Id, DecisionMethod.Imported, null);
+        await pg.Store.DecideAsync(leaves.Id, split.Id, DecisionMethod.Imported, null);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => curation.ApplyAsync(ds, split.Id, [leaves.Id], null, [], null, null, "tester")); // going, and nowhere to go
+        var (after, said) = await curation.ApplyAsync(ds, split.Id, [leaves.Id], "entity:" + england.Id, [], "Spli" + tag + " (Ont.)", null, "tester");
+        Assert.Equal((split.Id, EntityStatus.Confirmed, "Spli" + tag + " (Ont.)"), (after.Id, after.Status, after.Label));
+        Assert.Equal(england.Id, (await pg.Store.DecisionForAsync(leaves.Id))!.EntityId);
+        Assert.Equal(split.Id, (await pg.Store.DecisionForAsync(stays.Id))!.EntityId);
+        Assert.Contains("1 string moved", said); Assert.Contains("confirmed for the 1 string that stays", said);
+        // none goes: kept; all go: mended whole
+        var (keptWhole, keptSaid) = await curation.ApplyAsync(ds, split.Id, [], null, [], null, null, "tester");
+        Assert.Contains("confirmed as it is", keptSaid); Assert.Equal(split.Id, keptWhole.Id);
+        var (gone, goneSaid) = await curation.ApplyAsync(ds, split.Id, [stays.Id], "entity:" + england.Id, split.Equivalents.Select(q => q.Uri).ToList(), null, null, "tester");
+        Assert.Equal(england.Id, gone.Id); Assert.Contains("merged into", goneSaid);
         var suggested = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == newYork.Id).SuggestedLabel;
         Assert.Equal($"{york} (N.Y.)", suggested);
         var relabelled = await curation.RelabelAndConfirmAsync(ds, newYork.Id, suggested!, "tester");   // relabelled and confirmed, it leaves the list

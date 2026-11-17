@@ -25,7 +25,12 @@
         <p class="small muted">Nothing is changed until you press one of the buttons below: Confirm, Mend or Move. <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(pe.Id)" target="_blank" rel="noopener">Open the entity's page</a> to see its strings and records first. It stands for @plan.Homes[0].Strings string@(plan.Homes[0].Strings == 1 ? "" : "s").</p>
         @if (Model.Pulled is not null) { <p class="notice small">@Model.Pulled</p> }
         @* what the item says, set beside the place at home for the person (seen as a user, 2026-11-17: "town in Bedfordshire" and "Biggleswade, Bedfordshire, England" had to be compared by eye) *@
-        @if (plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Agreeing) is { } same)
+        @if (plan.Meant is not null && plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Meant) is { } meant && plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Agreeing) is { } itemIs)
+        {
+            @* two places of the name (seen as a user at "Bridgend": the import's item a hamlet in Aberdeenshire, the entity's TGN identifier and its records Welsh) *@
+            <p class="notice small"><strong>Two different places.</strong> The import's Wikidata item says it is: <strong>@itemIs.ItemDescription</strong>, which is @Chain(itemIs.Label, itemIs.HomeChain). But @(meant.Holds ? "this entity also holds the TGN identifier of" : "its strings say") <strong>@Chain(meant.Label, meant.HomeChain)</strong>. One of them is wrong, and the records below say which. If they are of @Chain(meant.Label, meant.HomeChain), mend it: the import's identifiers are ticked for removal@(meant.Holds ? ", and nothing need be added" : "").</p>
+        }
+        else if (plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Agreeing) is { } same)
         {
             <p class="notice small"><strong>Probably right.</strong> What the Wikidata item says of itself (@(same.ItemDescription ?? "it is the same item as the place at home's")) agrees with <strong>@Chain(same.Label, same.HomeChain)</strong>, the place of this name at home. If the records below agree too, keep it.</p>
         }
@@ -52,7 +57,7 @@
         <h2>It is the right place: keep it</h2>
         @{
             var holdsTgn = pe.Equivalents.Any(q => q.Source == "tgn");
-            var agreed = plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Agreeing);
+            var agreed = plan.Meant is null ? plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Agreeing) : null;
             var qualify = plan.Rival is not null;
             var loc = Model.SuggestedLabel;
         }
@@ -95,7 +100,7 @@
             @foreach (var h in plan.Homes)
             {
                 var holder = plan.Holders.GetValueOrDefault(h.HomeUri);
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @(plan.Homes.Count == 1 && plan.Others.Count == 0 && Model.Found.Count == 0 ? "checked" : "") /> <strong>@Chain(h.Label, h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @((plan.Homes.Count == 1 && plan.Others.Count == 0 && Model.Found.Count == 0) || h.HomeUri == plan.Meant ? "checked" : "") /> <strong>@Chain(h.Label, h.HomeChain)</strong> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">· @(h.HomeItem is null ? "no count known" : $"written about in {h.HomeSitelinks}")</span></label><br />
                 @if (pe.Equivalents.Any(q => q.Uri == h.HomeUri)) { <span>This entity holds this identifier already: nothing is added for it.</span> }
                 else if (holder is not null) { <span>The project already has an entity for this place, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: "@pe.Label" is <strong>merged into it</strong>, and its strings follow.</span> }
                 else { <span>No entity of the project holds this place: the identifier is <strong>added to "@pe.Label"</strong>.</span> }</p>

@@ -180,6 +180,20 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Equal($"http://vocab.getty.edu/tgn/{tag}4", agreeing.Agreeing); Assert.Null(agreeing.Rival);
         var kept = await curation.RelabelAndConfirmAsync(ds, hounslowEntity.Id, hounslow, "tester", agreeing.Agreeing);
         Assert.Equal(EntityStatus.Confirmed, kept.Status); Assert.Contains(kept.Equivalents, q => q.Uri == agreeing.Agreeing);
+        // two places of the name at home: the import's item is one (a hamlet in Aberdeenshire), the entity holds TGN's other (in Wales).
+        // It is listed as likely wrong though the item is "at home", and the plan says which the entity is
+        var bridgend = "Bridgen" + tag;
+        await pg.Store.PutAuthorityAsync(Tgn("13", bridgend, "Aberdeenshire, Scotland, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Tgn("14", bridgend, "Wales, United Kingdom, Europe, World"));
+        await pg.Store.PutAuthorityAsync(Item("13", bridgend, "hamlet in Gartly, Aberdeenshire, Scotland, UK", 0));
+        var wales = await Imported(bridgend, "13");
+        await pg.Store.AddEquivalentAsync(wales.Id, new Equivalent($"http://vocab.getty.edu/tgn/{tag}14", "tgn", DecisionMethod.Vote, 1, DateTimeOffset.UtcNow));
+        var two = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == wales.Id);
+        Assert.True(two.Likely); Assert.Contains("another place of the name", two.Reason); Assert.Contains("Wales", two.Row.HomeChain);
+        var twoPlan = (await curation.MendPlanAsync(ds, wales.Id, "United Kingdom"))!;
+        Assert.Equal(($"http://vocab.getty.edu/tgn/{tag}13", $"http://vocab.getty.edu/tgn/{tag}14"), (twoPlan.Agreeing, twoPlan.Meant));
+        var welsh = await curation.MendAwayAsync(ds, wales.Id, twoPlan.Entity.Equivalents.Where(q => q.Method == DecisionMethod.Imported).Select(q => q.Uri).ToList(), twoPlan.Meant!, "tester");
+        Assert.Equal($"http://vocab.getty.edu/tgn/{tag}14", Assert.Single(welsh.Equivalents).Uri);
         // a better-known place of the name elsewhere: the bare label would be taken for it
         Assert.Equal(180, (await curation.MendPlanAsync(ds, kentucky.Id, "United Kingdom"))!.Rival!.Value.Sitelinks); // Kentucky's, beside the city in Scotland
 

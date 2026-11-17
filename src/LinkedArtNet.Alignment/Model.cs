@@ -368,6 +368,11 @@ public sealed record SourceRecord(string System, string RecordId, string? Title,
 /// A place entity whose imported Wikidata item may be a namesake of the place meant (a check on the store's entities; the owner,
 /// 2026-11-15): the item and what it says of itself, and the most written-about place of the same name in the project's home place.
 /// </summary>
-public sealed record AwayRow(string EntityId, string Label, string Status, int Strings, string Item, string? ItemDescription, int ItemSitelinks, string HomeUri, string HomeChain, int HomeSitelinks, string? HomeItem);
+public sealed record AwayRow(string EntityId, string Label, string Status, int Strings, string Item, string? ItemDescription, int ItemSitelinks, string HomeUri, string HomeChain, int HomeSitelinks, string? HomeItem, bool Holds = false)
+{
+    /// <summary>The nearest place the home place is in: the first of its chain that is not its own name ("Aberdeenshire" of "Bridgend, Aberdeenshire, Scotland, United Kingdom"); null when the chain has none.</summary>
+    public string? Within => HomeChain.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        .FirstOrDefault(x => x is not ("Europe" or "World") && !string.Equals(x, Label, StringComparison.OrdinalIgnoreCase));
+}
 
 public sealed record RecordGroup(string? Value, int Records, IReadOnlyList<StringExample> First);

@@ -368,7 +368,23 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         {
             var rows = pairs.ToList();
             var descr = rows[0].ItemDescription ?? "";
-            if (rows.Any(r => DescriptionNames(descr, r, homePlace))) continue;
+            if (rows.Any(r => DescriptionNames(descr, r, homePlace)))
+            {
+                // at home, then: not this check's business unless the item is one place of the name and the entity is plainly another
+                // (seen as a user, 2026-11-17, at "Bridgend": the import's item a hamlet in Aberdeenshire, the entity holding TGN's
+                // Bridgend in Wales by a later rule, its three records Welsh; once the item's description was pulled the row would have
+                // left the list as "at home", wrong as it was. Counted, reports/q-check3.txt: of 35 described entities holding a TGN
+                // place of their name at home, 25 items name that place's county, 1 names another's, 9 name no county)
+                var fine = rows.Where(r => NamesWithin(descr, r)).ToList();
+                if (fine.Count == 0) continue;
+                var theirs = await store.StringsForEntityAsync(rows[0].EntityId, 200, ct);
+                var theirWords = theirs.Select(s => Qualified.Tokens(Qualified.Split(s.String.Raw).Qualifier)).Where(w => w.Count > 0).ToList();
+                var meant = rows.Where(r => r.Holds).Concat(rows.Where(r => theirWords.Any(w => Qualified.Contains(r.HomeChain, w)))).ToList();
+                if (meant.Count == 0 || meant.Any(m => fine.Any(f => f.HomeUri == m.HomeUri))) continue;
+                found.Add(new AwayFinding(meant[0], true, theirs.Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList(),
+                    $"its Wikidata item is another place of the name ({descr}) than the one {(meant[0].Holds ? "whose TGN identifier it holds" : "its strings say")}"));
+                continue;
+            }
             // what the strings themselves say; a spelling that stands in two fields is shown once and says so (seen as a user,
             // 2026-11-17: "stands for 3 strings" beside two spellings)
             var standing = await store.StringsForEntityAsync(rows[0].EntityId, 200, ct);
@@ -428,6 +444,20 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         return false;
     }
 
+    /// <summary>
+    /// Whether what an item says of itself names the place the home place is in: its county or district, the first of its chain. Finer
+    /// than <see cref="DescriptionNames"/>, which is content with the nation: "hamlet in Gartly, Aberdeenshire, Scotland" is at home
+    /// by "Scotland", and is the Bridgend of Aberdeenshire only, not the one on Islay.
+    /// </summary>
+    private static bool NamesWithin(string descr, AwayRow r)
+    {
+        if (r.HomeItem == r.Item) return true;
+        if (descr.Length == 0 || r.Within is not { } within) return false;
+        if (descr.Contains(within, StringComparison.OrdinalIgnoreCase)) return true;
+        return within.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any(word => word.Length >= 4 && !ChainNoise.Contains(word) && !string.Equals(word, r.Label, StringComparison.OrdinalIgnoreCase)
+            && System.Text.RegularExpressions.Regex.IsMatch(descr, $@"\b{System.Text.RegularExpressions.Regex.Escape(word)}\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase));
+    }
+
     /// <summary>The place at home to show for an entity: one a string's qualifier names, then the most written-about, then by identifier, so that the choice is the same at every load.</summary>
     private static AwayRow BestHome(IEnumerable<AwayRow> rows, IEnumerable<IReadOnlyList<string>> qualifierWords)
     {
@@ -464,10 +494,16 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         // the place at home that the item's own description names, if one: the entity is then probably right; the homes stand with
         // that one first, then those a string's qualifier names, then the most written-about
         var descr = homes[0].ItemDescription ?? "";
-        var agreeing = homes.Where(h => DescriptionNames(descr, h, homePlace)).Select(h => h.HomeUri).ToHashSet(StringComparer.Ordinal);
+        // agreement is on the county, not the nation: the first notice of this kind told the assistant, as a user, that a hamlet in
+        // Aberdeenshire "agrees with" the Bridgend on Islay, both being in Scotland, of an entity whose records are Welsh (2026-11-17)
+        var agreeing = homes.Where(h => NamesWithin(descr, h)).Select(h => h.HomeUri).ToHashSet(StringComparer.Ordinal);
         var words = (await store.StringsForEntityAsync(entity.Id, 200, ct)).Select(s => Qualified.Tokens(Qualified.Split(s.String.Raw).Qualifier)).Where(w => w.Count > 0).ToList();
-        homes = homes.OrderByDescending(h => agreeing.Contains(h.HomeUri) ? 1 : 0).ThenByDescending(h => words.Any(w => Qualified.Contains(h.HomeChain, w)) ? 1 : 0)
+        bool Said(AwayRow h) => words.Any(w => Qualified.Contains(h.HomeChain, w));
+        homes = homes.OrderByDescending(h => h.Holds ? 1 : 0).ThenByDescending(h => agreeing.Contains(h.HomeUri) ? 1 : 0).ThenByDescending(h => Said(h) ? 1 : 0)
             .ThenByDescending(h => h.HomeSitelinks).ThenBy(h => h.HomeUri, StringComparer.Ordinal).ToList();
+        // the item is one place of the name and the entity, by the identifier it holds or by its strings, another
+        var meant = homes.Where(h => h.Holds || Said(h)).ToList();
+        var conflict = agreeing.Count > 0 && meant.Count > 0 && !meant.Any(m => agreeing.Contains(m.HomeUri));
         // a better-known place of the same name elsewhere, which a bare label would be taken for (the owner, 2026-11-17: "on the whole,
         // UK places don't need qualifiers. But sometimes they do! Boston would usually be taken as Boston, Mass rather than Boston in
         // Lincolnshire"): the most written-about Wikidata place of the name, when it is another place than this entity's and more
@@ -486,7 +522,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         foreach (var key in StringKey.Variants(entity.Label ?? "").Take(1))
             foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, EntityClass.Place, ct))
                 if (e.Id != entity.Id && e.MergedInto is null && holders.Values.All(h => h.Id != e.Id) && others.All(o => o.Id != e.Id)) others.Add(e);
-        return new MendPlan(entity, homes, holders) { Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival };
+        return new MendPlan(entity, homes, holders) { Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival, Meant = conflict ? meant[0].HomeUri : null };
     }
 
     /// <summary>
@@ -638,6 +674,12 @@ public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IRead
     public IReadOnlyList<Entity> Others { get; init; } = [];
     /// <summary>The place at home (its URI) that the entity's Wikidata item names in its own description: the entity is then probably right. Null when the item names none, or says nothing.</summary>
     public string? Agreeing { get; init; }
+    /// <summary>
+    /// Set when the item and the entity are two places of the name at home: the place at home (its URI) that the entity is by the TGN
+    /// identifier it holds, or by what its strings say, while <see cref="Agreeing"/> is the one the import's Wikidata item is. The
+    /// import's identifiers are then probably the wrong ones. Null when there is no such difference.
+    /// </summary>
+    public string? Meant { get; init; }
     /// <summary>A better-known place of the same name elsewhere, which the bare label would be taken for: a reason to give this entity a label with a qualifier. Null when there is none.</summary>
     public (string Uri, string? Description, int Sitelinks)? Rival { get; init; }
 }

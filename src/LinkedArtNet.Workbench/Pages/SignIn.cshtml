@@ -2,6 +2,12 @@
 @model SignInModel
 @{ ViewData["Title"] = "Sign in"; }
 <h1>Sign in</h1>
+@* refused, not signed out (seen by the assistant as a user, 2026-11-17: signed in as a name that was no member of the project, it
+   was shown this page again with an empty box and no word of why) *@
+@if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(Model.ReturnUrl))
+{
+    <p class="notice">You are signed in as <strong>@User.Identity.Name</strong>, who may not open that page: it belongs to a project you are not a member of, or needs a role you do not have there. Ask one of the project's owners to add you on its Members page, or sign in below under another name. <a href="/">Your projects</a></p>
+}
 @if (Model.Options.GitHubLoginConfigured)
 {
     <form method="post" asp-page-handler="GitHub" class="card">
@@ -14,7 +20,7 @@
 {
     <form method="post" asp-page-handler="Local" class="card">
         <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
-        <p class="muted small">Development sign-in: type a name. Available only in Development, from this machine, when the configuration allows it.</p>
+        <p class="muted small">Development sign-in: type a name. Available only in Development, from this machine, when the configuration allows it. The name is who you are here: it decides which projects you may open (a project's owners add names on its Members page), and it is written beside every decision and note you make.</p>
         <label for="name">Name</label>
         <input type="text" id="name" name="name" required autofocus />
         <div class="actions"><button type="submit">Sign in</button></div>

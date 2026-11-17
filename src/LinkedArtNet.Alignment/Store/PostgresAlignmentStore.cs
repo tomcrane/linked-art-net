@@ -1445,7 +1445,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                      left join authority_records w on w.uri = q.uri
                 where e.dataset = @dataset and e.class = 'Place' and e.merged_into is null and e.status <> 'confirmed' and e.label !~ '[,(\[]')
             select c.id, c.label, c.status, c.strings, c.item, c.descr, c.sitelinks, t.uri, t.data->>'parentString', coalesce(h.sitelinks, 0), h.uri,
-                   exists (select 1 from entity_equivalents x where x.entity_id = c.id and x.uri = t.uri)
+                   exists (select 1 from entity_equivalents x where x.entity_id = c.id and x.uri = t.uri),
+                   (select k.label from authority_records k where k.uri = t.data->>'placeType')
             from c cross join lateral (select t.uri, t.data from authority_records t where t.source = 'tgn' and t.normalised_labels @> array[lower(c.label)]
                                          and t.label = c.label and t.data->>'parentString' like @home offset 0) t
                  left join lateral (select x.uri, coalesce((x.data->>'sitelinks')::int, 0) as sitelinks from authority_records x
@@ -1457,7 +1458,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         var list = new List<AwayRow>();
         await using var r = await cmd.ExecuteReaderAsync(ct);
         while (await r.ReadAsync(ct))
-            list.Add(new AwayRow(r.GetString(0), Str(r, 1) ?? "", r.GetString(2), Convert.ToInt32(r.GetInt64(3)), r.GetString(4), Str(r, 5), r.GetInt32(6), r.GetString(7), Str(r, 8) ?? "", r.GetInt32(9), Str(r, 10), r.GetBoolean(11)));
+            list.Add(new AwayRow(r.GetString(0), Str(r, 1) ?? "", r.GetString(2), Convert.ToInt32(r.GetInt64(3)), r.GetString(4), Str(r, 5), r.GetInt32(6), r.GetString(7), Str(r, 8) ?? "", r.GetInt32(9), Str(r, 10), r.GetBoolean(11), Str(r, 12)));
         return list;
     }
 

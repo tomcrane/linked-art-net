@@ -23,6 +23,38 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-17
+
+The owner's proposal: the assistant drives the workbench in the browser as a user, to find what the owner has grown
+used to; "press and I'll review after". Signed in as `claude`, a reviewer the owner added (the assistant does not
+sign in as the owner; the two share one browser sign-in, which the owner works round with another window). Found at
+once, and mended: a refusal that looked like being signed out, a sign-in that did not say what the name is for, a
+Members link the owner had taken for absent.
+
+Then the last 21 rows of the checks, each opened, read against its records and decided: 9 kept, 9 mended, 1 merged,
+2 left with a note. What the driving found that the owner's had not, each mended the same day: no way to keep an
+entity and give it its place's identifier; the place "at home" shown being any namesake, and a different one at the
+next load; a notice the assistant had built that morning ("probably right") being wrong at its third use
+("Bridgend": a hamlet in Aberdeenshire said to agree with the Bridgend on Islay, of an entity whose records are
+Welsh), and wrong four times of nine by the end, because an item agreeing with one place of a name says which
+place the item is and not which the records mean; rows leaving the list undecided once their items were pulled;
+two choices that read alike (a town and the council area of its name); no search of the indexes where a place was
+wanted that the project did not have. The owner's ruling on labels the same day: a place at home needs no
+qualifier unless the name would be taken for somewhere else ("Boston").
+
+The owner asked whether a picture would help with places (a map, or containment drawn), with compound subjects in
+mind. The assistant's view after the 21 rows: what it read, every time, was the chain of places a name is in, and
+what it wanted was to see where two chains part. Written narrowest first, as now ("Bridgend, Aberdeenshire,
+Scotland, United Kingdom" over "Bridgend, Wales, United Kingdom"), the parting is in the middle of the line;
+written broadest first and set one above the other, with the first place that differs marked, it is seen at a
+glance, and the same drawing serves a compound heading ("Architecture, England, Peterborough") and two places of
+one name one inside the other (Stirling the town in Stirling the council area). A map tells the same thing only
+when the two are far apart (Wales and Aberdeenshire, Jamaica and Sussex) and tells nothing of the cases that were
+hardest (Compton in Hampshire and in Surrey; a crater on Mars; a house and a town); it never shows the answer,
+which is in the records. So: the aligned chains first; a distance in words where both have coordinates ("the item
+is 620 km from the place this entity holds"); the desk's map, folded, only where they are far apart. Put to the
+owner, not built.
+
 ## 2026-11-15
 
 The desk in the morning, with the owner: "Plymouth" (61711), one string in three records, and the owner's ruling

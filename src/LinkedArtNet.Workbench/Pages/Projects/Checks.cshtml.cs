@@ -17,6 +17,22 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     /// <summary>A search of the project's entities on the Mend screen, for a place known by another name (the owner, 2026-11-15, at "Bâle", which is Basel).</summary>
     [BindProperty(SupportsGet = true)] public string? Find { get; set; }
     public IReadOnlyList<Entity> Found { get; private set; } = [];
+    /// <summary>A search of the authority indexes on the Decide screen, for a place the project does not have and none of the name at home is (seen as a user, 2026-11-17: "Kingston, Jamaica" wanted TGN's Kingston in Jamaica, and the screen took only an identifier typed in).</summary>
+    [BindProperty(SupportsGet = true)] public string? IFind { get; set; }
+    public IReadOnlyList<AuthorityRecord> IFound { get; private set; } = [];
+
+    /// <summary>Where an authority record says its place is, the nearest first, for telling the search's results apart.</summary>
+    public static string? ChainOf(AuthorityRecord record)
+    {
+        if (record.DataJson is null) return null;
+        try
+        {
+            using var doc = System.Text.Json.JsonDocument.Parse(record.DataJson);
+            return doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object && doc.RootElement.TryGetProperty("parentString", out var p) && p.GetString() is { } chain
+                ? string.Join(", ", chain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or "") )) : null;
+        }
+        catch (System.Text.Json.JsonException) { return null; }
+    }
 
     public IReadOnlyList<AwayFinding> Away { get; private set; } = [];
     public string? HomePlace { get; private set; }
@@ -70,6 +86,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
                     if (await Services.Store.GetAuthorityAsync(q.Uri, HttpContext.RequestAborted) is { Label: { } heading } && heading.StartsWith(Plan.Entity.Label + " (", StringComparison.Ordinal) && heading.EndsWith(')')) { SuggestedLabel = heading; break; }
                 if (!string.IsNullOrWhiteSpace(Find))
                     Found = (await Project.Desk.SearchEntitiesAsync(Dataset, Find.Trim())).Where(e => e.Class == EntityClass.Place && e.MergedInto is null && e.Id != Plan.Entity.Id && Plan.Others.All(o => o.Id != e.Id)).Take(12).ToList();
+                if (!string.IsNullOrWhiteSpace(IFind))
+                    IFound = (await Project.Desk.SearchIndexesAsync(IFind.Trim(), null, 30, HttpContext.RequestAborted)).Where(r => r.Type == "Place" && r.Source is "tgn" or "loc" && Plan.Entity.Equivalents.All(q => q.Uri != r.Uri)).Take(12).ToList();
                 foreach (var other in Plan.Others.Concat(Plan.Holders.Values).Concat(Found)) Clues[other.Id] = await Project.Desk.ClueAsync(other, HttpContext.RequestAborted);
                 return;
             }
@@ -94,6 +112,16 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         }
     }
 
+    /// <summary>Not decided: the row stays on the list, with a note on the entity for whoever takes it up (seen as a user: two rows that wanted more than the screen could do had nowhere to say so but the entity's own page).</summary>
+    public async Task<IActionResult> OnPostNoteAsync(string id, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return Flash("Write the note first: what is wrong, and what you could not do.", new { dataset = Dataset, mend = id });
+        var entity = await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted);
+        if (entity is null || entity.Dataset != Dataset) return NotFound();
+        await Project.Curation.NoteAsync(Dataset, id, Reviewer, "Left undecided at the checks: " + text.Trim());
+        return Flash($"\"{entity.Label}\" left on the list, with your note on it.", new { dataset = Dataset }, entity);
+    }
+
     public async Task<IActionResult> OnPostMendAsync(string id, string[]? remove, string? home, string? otherUri, long[]? strings, string? act)
     {
         try
@@ -110,6 +138,9 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
                 ? await Project.Curation.MendIntoAsync(Dataset, id, remove ?? [], home["entity:".Length..], Reviewer, HttpContext.RequestAborted)
                 : await Project.Curation.MendAwayAsync(Dataset, id, remove ?? [], home == "other" ? otherUri ?? "" : home, Reviewer, HttpContext.RequestAborted);
             var n = (remove ?? []).Length;
+            var chosen = home == "other" ? (otherUri ?? "").Trim() : home;
+            if (result.Id == id && before is not null && before.Equivalents.Any(q => q.Uri == chosen))
+                return Flash($"\"{before.Label}\" mended: {(n == 0 ? "no identifier" : n == 1 ? "1 identifier" : $"{n} identifiers")} removed; the identifier of the place meant was there already and is kept.", new { dataset = Dataset }, result);
             return Flash(result.Id == id
                 ? $"\"{before?.Label}\" mended: {(n == 0 ? "no identifier" : n == 1 ? "1 identifier" : $"{n} identifiers")} removed, the identifier of the place meant added."
                 : $"\"{before?.Label}\" mended: {(n == 0 ? "no identifier" : n == 1 ? "1 identifier" : $"{n} identifiers")} removed, and merged into the project's entity for the place meant.", new { dataset = Dataset }, result);

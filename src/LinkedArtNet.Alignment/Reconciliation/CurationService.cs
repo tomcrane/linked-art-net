@@ -375,14 +375,19 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
                 // Bridgend in Wales by a later rule, its three records Welsh; once the item's description was pulled the row would have
                 // left the list as "at home", wrong as it was. Counted, reports/q-check3.txt: of 35 described entities holding a TGN
                 // place of their name at home, 25 items name that place's county, 1 names another's, 9 name no county)
-                var fine = rows.Where(r => NamesWithin(descr, r)).ToList();
+                var fine = rows.Where(r => NamesWithin(descr, r, homePlace)).ToList();
                 if (fine.Count == 0) continue;
                 var theirs = await store.StringsForEntityAsync(rows[0].EntityId, 200, ct);
-                var theirWords = theirs.Select(s => Qualified.Tokens(Qualified.Split(s.String.Raw).Qualifier)).Where(w => w.Count > 0).ToList();
-                var meant = rows.Where(r => r.Holds).Concat(rows.Where(r => theirWords.Any(w => Qualified.Contains(r.HomeChain, w)))).ToList();
-                if (meant.Count == 0 || meant.Any(m => fine.Any(f => f.HomeUri == m.HomeUri))) continue;
-                found.Add(new AwayFinding(meant[0], true, theirs.Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList(),
-                    $"its Wikidata item is another place of the name ({descr}) than the one {(meant[0].Holds ? "whose TGN identifier it holds" : "its strings say")}"));
+                var theirRaws = theirs.Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList();
+                var theirWords = theirRaws.Select(raw => (Raw: raw, Words: Qualified.Tokens(Qualified.Split(raw).Qualifier))).Where(q => q.Words.Count > 0).ToList();
+                var meant = rows.Where(r => r.Holds).Concat(rows.Where(r => theirWords.Any(q => Qualified.Contains(r.HomeChain, q.Words)))).ToList();
+                if (meant.Count > 0 && !meant.Any(m => fine.Any(f => f.HomeUri == m.HomeUri)))
+                    found.Add(new AwayFinding(meant[0], true, theirRaws, $"its Wikidata item is another place of the name ({descr}) than the one {(meant[0].Holds ? "whose TGN identifier it holds" : "its strings say")}"));
+                // a string that places the entity somewhere the item is not, and in no namesake at home either: still to decide (the
+                // assistant as a user left "Charterhouse", whose subject heading is the building in Smithfield, and "Wallington", whose is
+                // the house in Northumberland, with a note each, and both left the list when their items were pulled and found at home)
+                else if (theirWords.FirstOrDefault(q => !Qualified.Contains(descr, q.Words) && !fine.Any(f => Qualified.Contains(f.HomeChain, q.Words))) is { Raw: { } odd })
+                    found.Add(new AwayFinding(fine[0], true, theirRaws, $"its string \"{odd}\" is somewhere other than its Wikidata item ({descr})"));
                 continue;
             }
             // what the strings themselves say; a spelling that stands in two fields is shown once and says so (seen as a user,
@@ -449,13 +454,24 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     /// than <see cref="DescriptionNames"/>, which is content with the nation: "hamlet in Gartly, Aberdeenshire, Scotland" is at home
     /// by "Scotland", and is the Bridgend of Aberdeenshire only, not the one on Islay.
     /// </summary>
-    private static bool NamesWithin(string descr, AwayRow r)
+    private static bool NamesWithin(string descr, AwayRow r, string homePlace)
     {
         if (r.HomeItem == r.Item) return true;
-        if (descr.Length == 0 || r.Within is not { } within) return false;
-        if (descr.Contains(within, StringComparison.OrdinalIgnoreCase)) return true;
-        return within.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any(word => word.Length >= 4 && !ChainNoise.Contains(word) && !string.Equals(word, r.Label, StringComparison.OrdinalIgnoreCase)
-            && System.Text.RegularExpressions.Regex.IsMatch(descr, $@"\b{System.Text.RegularExpressions.Regex.Escape(word)}\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase));
+        if (descr.Length == 0) return false;
+        // any place of the chain below the nation, not the nearest alone (seen as a user, 2026-11-17: "village in west London" beside
+        // "Harmondsworth, Hillingdon, Greater London", and "in West Yorkshire" beside "West Bretton, Wakefield, West Yorkshire", were
+        // each told they named none of the places of the name). The nation is the place of the chain just inside the home place
+        var parts = r.HomeChain.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+        var at = parts.FindIndex(x => string.Equals(x, homePlace, StringComparison.OrdinalIgnoreCase));
+        var nation = at > 0 ? parts[at - 1] : null;
+        foreach (var segment in parts)
+        {
+            if (segment is "Europe" or "World" || segment == nation || string.Equals(segment, homePlace, StringComparison.OrdinalIgnoreCase) || string.Equals(segment, r.Label, StringComparison.OrdinalIgnoreCase)) continue;
+            if (descr.Contains(segment, StringComparison.OrdinalIgnoreCase)) return true;
+            if (segment.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any(word => word.Length >= 4 && !ChainNoise.Contains(word) && !string.Equals(word, r.Label, StringComparison.OrdinalIgnoreCase)
+                && System.Text.RegularExpressions.Regex.IsMatch(descr, $@"\b{System.Text.RegularExpressions.Regex.Escape(word)}\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase))) return true;
+        }
+        return false;
     }
 
     /// <summary>The place at home to show for an entity: one a string's qualifier names, then the most written-about, then by identifier, so that the choice is the same at every load.</summary>
@@ -496,9 +512,13 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         var descr = homes[0].ItemDescription ?? "";
         // agreement is on the county, not the nation: the first notice of this kind told the assistant, as a user, that a hamlet in
         // Aberdeenshire "agrees with" the Bridgend on Islay, both being in Scotland, of an entity whose records are Welsh (2026-11-17)
-        var agreeing = homes.Where(h => NamesWithin(descr, h)).Select(h => h.HomeUri).ToHashSet(StringComparer.Ordinal);
-        var words = (await store.StringsForEntityAsync(entity.Id, 200, ct)).Select(s => Qualified.Tokens(Qualified.Split(s.String.Raw).Qualifier)).Where(w => w.Count > 0).ToList();
+        var agreeing = homes.Where(h => NamesWithin(descr, h, homePlace)).Select(h => h.HomeUri).ToHashSet(StringComparer.Ordinal);
+        var qualified = (await store.StringsForEntityAsync(entity.Id, 200, ct)).Select(s => s.String.Raw).Distinct(StringComparer.Ordinal)
+            .Select(raw => (Raw: raw, Words: Qualified.Tokens(Qualified.Split(raw).Qualifier))).Where(q => q.Words.Count > 0).ToList();
+        var words = qualified.Select(q => q.Words).ToList();
         bool Said(AwayRow h) => words.Any(w => Qualified.Contains(h.HomeChain, w));
+        // a string that is neither where the item is nor in the place at home the item names: the entity is wrong for that string at least
+        var odd = qualified.FirstOrDefault(q => !Qualified.Contains(descr, q.Words) && !homes.Any(h => agreeing.Contains(h.HomeUri) && Qualified.Contains(h.HomeChain, q.Words))).Raw;
         homes = homes.OrderByDescending(h => h.Holds ? 1 : 0).ThenByDescending(h => agreeing.Contains(h.HomeUri) ? 1 : 0).ThenByDescending(h => Said(h) ? 1 : 0)
             .ThenByDescending(h => h.HomeSitelinks).ThenBy(h => h.HomeUri, StringComparer.Ordinal).ToList();
         // the item is one place of the name and the entity, by the identifier it holds or by its strings, another
@@ -509,7 +529,9 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         // Lincolnshire"): the most written-about Wikidata place of the name, when it is another place than this entity's and more
         // written about than the entity's own item
         (string Uri, string? Description, int Sitelinks)? rival = null;
-        if (entity.Label is { } name && await store.BestKnownNamesakeAsync(name, homes[0].Item, ct) is { } best && best.Sitelinks > Math.Max(homes[0].ItemSitelinks, 0)
+        // only where the entity's own item has a count to compare: a pulled item has none, and the "better-known" place was then the
+        // entity's own under another item ("Maidstone", "Stafford", "Ely": seen as a user, 2026-11-17)
+        if (entity.Label is { } name && homes[0].ItemSitelinks > 0 && await store.BestKnownNamesakeAsync(name, homes[0].Item, ct) is { } best && best.Sitelinks > homes[0].ItemSitelinks
             && !homes.Any(h => (agreeing.Contains(h.HomeUri) || entity.Equivalents.Any(q => q.Uri == h.HomeUri)) && (h.HomeItem == best.Uri || DescriptionNames(best.Description ?? "", h with { Item = best.Uri }, homePlace))))
             rival = best;
         var holders = new Dictionary<string, Entity>(StringComparer.Ordinal);
@@ -522,7 +544,8 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         foreach (var key in StringKey.Variants(entity.Label ?? "").Take(1))
             foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, EntityClass.Place, ct))
                 if (e.Id != entity.Id && e.MergedInto is null && holders.Values.All(h => h.Id != e.Id) && others.All(o => o.Id != e.Id)) others.Add(e);
-        return new MendPlan(entity, homes, holders) { Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival, Meant = conflict ? meant[0].HomeUri : null };
+        return new MendPlan(entity, homes, holders) { Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival, Meant = conflict ? meant[0].HomeUri : null, Odd = odd,
+            Preselect = conflict ? meant[0].HomeUri : meant.Select(m => m.HomeUri).Distinct(StringComparer.Ordinal).ToList() is [var only] ? only : null };
     }
 
     /// <summary>
@@ -680,6 +703,10 @@ public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IRead
     /// import's identifiers are then probably the wrong ones. Null when there is no such difference.
     /// </summary>
     public string? Meant { get; init; }
+    /// <summary>A string of the entity that is neither where its item is nor in the place at home the item names ("Wallington (Northumberland)" on Wallington in Sutton): the entity is wrong for that string at least. Null when none.</summary>
+    public string? Odd { get; init; }
+    /// <summary>The place at home to have chosen for the person under "the place meant": the one the entity holds or its strings name, when there is exactly one such, or the one of a conflict. Null when the person must choose.</summary>
+    public string? Preselect { get; init; }
     /// <summary>A better-known place of the same name elsewhere, which the bare label would be taken for: a reason to give this entity a label with a qualifier. Null when there is none.</summary>
     public (string Uri, string? Description, int Sitelinks)? Rival { get; init; }
 }

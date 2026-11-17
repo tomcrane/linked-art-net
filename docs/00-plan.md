@@ -742,6 +742,23 @@ and the log (doc 15) records that. The order within an area is rough value.
   LoC's heading is suggested where the entity holds one; the person picks among the name as it is, LoC's heading
   and another. Still a suggestion on one screen: not yet a check of its own ("a bare label that would be taken for
   somewhere else"), which would find the Bostons and Californias across the whole store.
+- A project begun from the catalogue alone (the owner, 2026-11-17, "much later": "a project where there is no
+  prior PMC data, starting from scratch with the catalogue data. Where my previous entity minting hasn't muddied the
+  waters and made the task harder"). The same export collected into a second dataset with no import, reconciled from
+  nothing, and worked at the desk: to see what the toolkit does on its own, how much of the present work is the old
+  import's (the whole checks list of 2026-11-15 to 17 is: craters on Mars for Ely and Maidstone, a railway station
+  for Kingston, Stafford in Ohio), and what a new project's first days are like. Not begun; needs nothing built
+  that is not there, only a new project and a run.
+- What the assistant's pass down the last 21 rows of the checks showed (2026-11-17, as a user; the fixes of the day
+  are in the commits): of 21, 9 kept (6 of them given their TGN identifier), 9 mended to another place (the import's
+  item was a namesake at home in 4, abroad in 3, one of those a railway station, a crater on Mars in 2), 1 merged into the project's other entity
+  of the place, 2 left with a note (a town's entity standing also for a building or a house of the name: the
+  London Charterhouse, Wallington in Northumberland). Still to do from it: an entity that wants two different
+  things done (the owner's concern the same day: "when there are several things that need to be done ... making
+  sure the user doesn't lose track of the simple task") has only whole-entity forms and a note; the screen could
+  list each string with what is to become of it, and say after each action what is left. Two project entities for
+  one place ("Harmondsworth" and "Harmondsworth (London, England)", "Ely" twice) are not found by any check. The
+  owner's question on pictures (a map, or containment drawn): the assistant's view is in the day's log.
 - A second check for the page: a place entity aligned to an item that is not a place (Wimborne Minster's "church":
   the same name, another kind of thing, not a namesake abroad, so the first check lists it only by chance). From
   Wikidata's instance-of where the index has it (the `instanceOf` of the item against the classes of places), else

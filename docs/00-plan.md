@@ -765,6 +765,15 @@ and the log (doc 15) records that. The order within an area is rough value.
   subject headings, not built. Two project entities for
   one place ("Harmondsworth" and "Harmondsworth (London, England)", "Ely" twice) are not found by any check. The
   owner's question on pictures (a map, or containment drawn): the assistant's view is in the day's log.
+- A house or a building under a town's entity (the owner, 2026-11-17, at "Wallington": "I would leave this one as I
+  think the records are all about the house in Northumberland, so it needs more work elsewhere"). The subject
+  heading "Wallington (Northumberland)", eleven records, is the National Trust's house, and stands on the place
+  entity "Wallington", aligned by the import to the town in the London Borough of Sutton; "Charterhouse (Smithfield,
+  London, England : Building)" stands the same way on a village in Somerset. Both are left on the checks list with
+  notes. The work elsewhere: what such a heading is (a built work, not a place; LoC's own qualifier says
+  "Building"), which class the keywords field should give it, whether the project has or wants entities for houses,
+  and where its identifier comes from (TGN has neither). To take up with the reading of subject headings, not at
+  the checks.
 - A second check for the page: a place entity aligned to an item that is not a place (Wimborne Minster's "church":
   the same name, another kind of thing, not a namesake abroad, so the first check lists it only by chance). From
   Wikidata's instance-of where the index has it (the `instanceOf` of the item against the classes of places), else

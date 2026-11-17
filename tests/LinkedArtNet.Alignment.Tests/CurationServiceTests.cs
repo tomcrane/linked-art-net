@@ -178,8 +178,8 @@ public class CurationServiceTests(PostgresFixture pg)
         var hounslowEntity = (await pg.Store.FindEntitiesByLabelAsync(StringKey.Normalise(hounslow), ds, EntityClass.Place)).Single();
         var agreeing = (await curation.MendPlanAsync(ds, hounslowEntity.Id, "United Kingdom"))!;
         Assert.Equal($"http://vocab.getty.edu/tgn/{tag}4", agreeing.Agreeing); Assert.Null(agreeing.Rival);
-        var kept = await curation.RelabelAndConfirmAsync(ds, hounslowEntity.Id, hounslow, "tester", agreeing.Agreeing);
-        Assert.Equal(EntityStatus.Confirmed, kept.Status); Assert.Contains(kept.Equivalents, q => q.Uri == agreeing.Agreeing);
+        var keptHounslow = await curation.RelabelAndConfirmAsync(ds, hounslowEntity.Id, hounslow, "tester", agreeing.Agreeing);
+        Assert.Equal(EntityStatus.Confirmed, keptHounslow.Status); Assert.Contains(keptHounslow.Equivalents, q => q.Uri == agreeing.Agreeing);
         // two places of the name at home: the import's item is one (a hamlet in Aberdeenshire), the entity holds TGN's other (in Wales).
         // It is listed as likely wrong though the item is "at home", and the plan says which the entity is
         var bridgend = "Bridgen" + tag;
@@ -203,8 +203,12 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.DoesNotContain(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sutton.Id); // the bare string alone: at home, and right
         Assert.Null((await curation.MendPlanAsync(ds, sutton.Id, "United Kingdom"))!.Odd);
         await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "keywords", wallington + " (Northumberland)")).Id, sutton.Id, DecisionMethod.Imported, null);
-        Assert.Contains("(Northumberland)", Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sutton.Id).Reason);
+        // the plan says which string, but the entity is not listed for that alone ("Bath (Avon)" is Bath): it is once someone leaves it with a note
         Assert.Equal(wallington + " (Northumberland)", (await curation.MendPlanAsync(ds, sutton.Id, "United Kingdom"))!.Odd);
+        Assert.DoesNotContain(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sutton.Id);
+        await curation.NoteAsync(ds, sutton.Id, "tester", CurationService.LeftUndecided[0] + " the heading is the house in Northumberland");
+        var kept = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sutton.Id);
+        Assert.False(kept.Likely); Assert.Contains("left undecided with a note", kept.Reason);
         await curation.ConfirmAsync(ds, sutton.Id, "tester", null);
         // a better-known place of the name elsewhere: the bare label would be taken for it
         Assert.Equal(180, (await curation.MendPlanAsync(ds, kentucky.Id, "United Kingdom"))!.Rival!.Value.Sitelinks); // Kentucky's, beside the city in Scotland

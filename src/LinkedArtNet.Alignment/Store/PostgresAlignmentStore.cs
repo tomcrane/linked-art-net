@@ -1462,6 +1462,16 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    public async Task<IReadOnlyDictionary<string, string>> NotedAsync(string dataset, IReadOnlyList<string> prefixes, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select distinct on (target) target, text from notes where dataset = @dataset and text like any(@patterns) order by target, created_at desc");
+        Add(cmd, "dataset", dataset); Add(cmd, "patterns", prefixes.Select(p => p.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_") + "%").ToArray());
+        var found = new Dictionary<string, string>(StringComparer.Ordinal);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) found[r.GetString(0)] = r.GetString(1);
+        return found;
+    }
+
     public async Task<(string Uri, string? Description, int Sitelinks)?> BestKnownNamesakeAsync(string label, string? exceptUri, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

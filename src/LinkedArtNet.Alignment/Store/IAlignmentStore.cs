@@ -247,6 +247,9 @@ public interface IAlignmentStore
     Task<IReadOnlyList<Membership>> MembershipsForAsync(string login, CancellationToken ct = default);
     Task<Note> AddNoteAsync(string dataset, string target, string? author, string text, CancellationToken ct = default);
     Task<IReadOnlyList<Note>> NotesAsync(string dataset, string target, CancellationToken ct = default);
+
+    /// <summary>The targets of the dataset's notes whose text begins with one of the prefixes, each with the latest such note: how something left undecided with a note is found again.</summary>
+    Task<IReadOnlyDictionary<string, string>> NotedAsync(string dataset, IReadOnlyList<string> prefixes, CancellationToken ct = default);
     /// <summary>The project's latest notes across every target, newest first: the audit log's recent changes (doc 12 section 13, item 1).</summary>
     Task<IReadOnlyList<Note>> RecentNotesAsync(string dataset, int limit = 50, CancellationToken ct = default);
     /// <summary>The project's latest decisions made by a person (a reviewer named), newest first, each with its string.</summary>

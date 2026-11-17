@@ -342,6 +342,9 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
 
     // ---- checks on the store's entities ------------------------------------------------------------------------------
 
+    /// <summary>How the notes that leave a row of the checks undecided begin: the Decide screen's own, and the two the assistant wrote on the entities' pages before the screen could.</summary>
+    public static readonly IReadOnlyList<string> LeftUndecided = ["Left undecided at the checks:", "From the checks, left for the owner:"];
+
     private static readonly HashSet<string> ChainNoise = new(StringComparer.OrdinalIgnoreCase) { "Europe", "World", "Greater", "County", "City", "Borough", "United", "Kingdom", "States", "North", "South", "East", "West", "upon", "with" };
 
     /// <summary>
@@ -364,6 +367,10 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     {
         if (string.IsNullOrWhiteSpace(homePlace)) return [];
         var found = new List<AwayFinding>();
+        // left undecided with a note: such an entity stays on the list until it is confirmed or mended, whatever else is learnt of
+        // it meanwhile (the assistant as a user, 2026-11-17, left "Charterhouse" and "Wallington" with notes, and both left the list
+        // when their items were pulled and found to be at home)
+        var left = await store.NotedAsync(dataset, LeftUndecided, ct);
         foreach (var pairs in (await store.ImportedPlacesWithHomeNamesakesAsync(dataset, homePlace, ct)).GroupBy(r => (r.EntityId, r.Item)))
         {
             var rows = pairs.ToList();
@@ -383,11 +390,13 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
                 var meant = rows.Where(r => r.Holds).Concat(rows.Where(r => theirWords.Any(q => Qualified.Contains(r.HomeChain, q.Words)))).ToList();
                 if (meant.Count > 0 && !meant.Any(m => fine.Any(f => f.HomeUri == m.HomeUri)))
                     found.Add(new AwayFinding(meant[0], true, theirRaws, $"its Wikidata item is another place of the name ({descr}) than the one {(meant[0].Holds ? "whose TGN identifier it holds" : "its strings say")}"));
-                // a string that places the entity somewhere the item is not, and in no namesake at home either: still to decide (the
-                // assistant as a user left "Charterhouse", whose subject heading is the building in Smithfield, and "Wallington", whose is
-                // the house in Northumberland, with a note each, and both left the list when their items were pulled and found at home)
-                else if (theirWords.FirstOrDefault(q => !Qualified.Contains(descr, q.Words) && !fine.Any(f => Qualified.Contains(f.HomeChain, q.Words))) is { Raw: { } odd })
-                    found.Add(new AwayFinding(fine[0], true, theirRaws, $"its string \"{odd}\" is somewhere other than its Wikidata item ({descr})"));
+                // A string whose qualifier is in neither the item's description nor a namesake's chain is NOT listed for that alone. It was,
+                // for an hour, uncounted, and listed seventeen as likely wrong of which two were (the building and the house above): the
+                // other fifteen were right places written with an old county or an abbreviation ("Bath (Avon)", "Twickenham (Middlesex)",
+                // "Henley on Thames, Oxon", "Newport, IoW", "Kelso, Roxburghshire"). Telling those from "Wallington (Northumberland)"
+                // wants a table of former and abbreviated county names, which the library does not have
+                else if (left.TryGetValue(rows[0].EntityId, out var note))
+                    found.Add(new AwayFinding(fine[0], false, theirRaws, "left undecided with a note: " + (note.Length > 160 ? note[..160] + "…" : note)));
                 continue;
             }
             // what the strings themselves say; a spelling that stands in two fields is shown once and says so (seen as a user,

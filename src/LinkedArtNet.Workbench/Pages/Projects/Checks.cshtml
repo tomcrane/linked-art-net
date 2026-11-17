@@ -36,14 +36,14 @@
                Royston, Salford, Watford): the item agreeing with one place of the name at home says which place the item is, not which the
                records mean. It is said now only when there is no other place of the name at home and no string says otherwise *@
             var others = plan.Homes.Where(h => h.HomeUri != same.HomeUri).ToList();
-            if (others.Count == 0 && plan.Odd is null)
+            if (others.Count == 0)
             {
                 <p class="notice small"><strong>Probably right.</strong> What the Wikidata item says of itself (@(same.ItemDescription ?? "it is the same item as the place at home's")) agrees with <strong>@Chain(same.Label, same.HomeChain)</strong>, the only place of this name at home. If the records below agree too, keep it.</p>
             }
             else
             {
                 <p class="notice small">The Wikidata item says it is: <strong>@(same.ItemDescription ?? "the same item as the place at home's")</strong>, which is <strong>@Chain(same.Label, same.HomeChain)</strong>.
-                    @if (plan.Odd is not null) { <text><strong>But the string "@plan.Odd" is somewhere else</strong>, so the entity is wrong for that string at least: move it, or mend the whole entity.</text> }
+                    @if (plan.Odd is not null) { <text><strong>The string "@plan.Odd" may be somewhere else:</strong> its qualifier is not in what the item says. That is often an older county or an abbreviation for the same place ("Bath (Avon)", "Henley on Thames, Oxon"), and sometimes another thing of the name ("Wallington (Northumberland)", a house). Its records below say which.</text> }
                     @if (others.Count > 0) { <text>There @(others.Count == 1 ? "is another place" : $"are {others.Count} other places") called "@pe.Label" at home (@string.Join("; ", others.Take(4).Select(o => string.Join(", ", o.HomeChain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or "United Kingdom") && x.Length > 0).Take(2))))@(others.Count > 4 ? "; …" : "")): the records below say which is meant.</text> }
                 </p>
             }

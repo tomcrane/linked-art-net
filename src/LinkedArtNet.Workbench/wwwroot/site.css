@@ -271,6 +271,6 @@ table.paths td:first-child { color: var(--muted, #666); white-space: nowrap; }
 .path strong { font-weight: 700; }
 .string-line { border-top: 1px solid var(--rule, #ddd); padding: .6rem 0 .3rem; }
 .string-line .outcome { display: flex; flex-wrap: wrap; gap: .2rem 1.4rem; margin: .3rem 0; }
-.string-line .outcome label { margin: 0; color: inherit; font-size: .9rem; }
+.string-line .outcome label { margin: 0; color: inherit; font-size: .9rem; text-transform: none; letter-spacing: 0; font-weight: 400; }
 .decide-part { border-top: 2px solid var(--ink, #111); margin-top: 1.2rem; padding-top: .2rem; }
 .decide-part[hidden] { display: none; }

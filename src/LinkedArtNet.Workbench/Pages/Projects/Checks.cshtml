@@ -113,8 +113,9 @@
                 <div class="string-line">
                     <div class="small"><strong>"@ps.Raw"</strong> <span class="muted">as @Model.Project.Manifest.FieldName(ps.Context) · in @count.ToString("N0") record@(count == 1 ? "" : "s")</span> <a href="/p/@Model.Dataset/review?id=@ps.Id" target="_blank" rel="noopener">at the desk</a></div>
                     <div class="outcome">
-                        <label><input type="radio" name="outcome[@ps.Id]" value="stay" data-outcome @(defaultGo ? "" : "checked") /> it is the place this entity is aligned to: <strong>it stays</strong></label>
-                        <label><input type="radio" name="outcome[@ps.Id]" value="go" data-outcome @(defaultGo ? "checked" : "") /> it is another place: <strong>it goes</strong> to the place chosen below</label>
+                        @{ var goes = Model.Go is { Length: > 0 } remembered ? remembered.Contains(ps.Id) : defaultGo; }
+                        <label><input type="radio" name="outcome[@ps.Id]" value="stay" data-outcome @(goes ? "" : "checked") /> it is the place this entity is aligned to: <strong>it stays</strong></label>
+                        <label><input type="radio" name="outcome[@ps.Id]" value="go" data-outcome data-string="@ps.Id" @(goes ? "checked" : "") /> it is another place: <strong>it goes</strong> to the place chosen below</label>
                     </div>
                     <details class="rec-group" @(total <= 3 ? "open" : "")><summary class="small muted">@(count == 1 ? "its record" : recs.Count < count ? $"{recs.Count} of its {count:N0} records" : $"its {count} records")</summary>
                         @foreach (var x in recs)
@@ -148,8 +149,8 @@
             @* the searches' fields belong to a form of their own below (the form attribute): a form inside a form is dropped by the browser *@
             <p class="small"><strong>A place the project has under another name:</strong> <input type="search" name="find" form="mend-find" value="@Model.Find" placeholder="Basel" style="width:14rem; display:inline-block" /> <button type="submit" form="mend-find" class="secondary">Search the project's places</button></p>
             @if (!string.IsNullOrWhiteSpace(Model.Find) && Model.Found.Count == 0) { <p class="small muted">No other place of the project matches "@Model.Find".</p> }
-            <p class="small"><strong>A place the project does not have yet:</strong> <input type="search" name="ifind" form="mend-find" value="@Model.IFind" placeholder="Kingston Jamaica" style="width:14rem; display:inline-block" /> <button type="submit" form="mend-find" class="secondary">Search TGN and the Library of Congress</button> <span class="muted">(a search sets the choices on this screen back to how they began)</span></p>
-            @if (!string.IsNullOrWhiteSpace(Model.IFind) && Model.IFound.Count == 0) { <p class="small muted">The indexes have no place matching "@Model.IFind". Try the name with a word that tells it apart.</p> }
+            <p class="small"><strong>A place the project does not have yet:</strong> <input type="search" name="ifind" form="mend-find" value="@Model.IFind" placeholder="Kingston Jamaica" title="The place's name, then a word of where it is to tell it from its namesakes" style="width:14rem; display:inline-block" /> <button type="submit" form="mend-find" class="secondary">Search TGN and the Library of Congress</button> </p>
+            @if (!string.IsNullOrWhiteSpace(Model.IFind) && Model.IFound.Count == 0) { <p class="small muted">The indexes have no place matching "@Model.IFind". Give the place's name as an authority would have it, then a word of where it is ("Kingston Jamaica").</p> }
             @foreach (var rec in Model.IFound)
             {
                 <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@rec.Uri" /> <strong>@rec.Label</strong>@if (ChecksModel.ChainOf(rec) is { } where) { <span> (@where)</span> } <span class="tag">@rec.Source</span></label> <a href="@rec.Uri" target="_blank" rel="noopener">@rec.Uri.Split('/')[^1]</a></p>
@@ -214,11 +215,18 @@
         var form = document.getElementById("decide-form");
         if (!form) return;
         function show(id, on) { var el = document.getElementById(id); if (el) el.hidden = !on; }
+        // a search has been made: its results are shown whatever is chosen; and a search carries which strings were set to go
+        var searched = @((!string.IsNullOrWhiteSpace(Model.Find) || !string.IsNullOrWhiteSpace(Model.IFind)) ? "true" : "false");
+        var finder = document.getElementById("mend-find");
+        if (finder) finder.addEventListener("submit", function () {
+            finder.querySelectorAll("input[name=go]").forEach(function (x) { x.remove(); });
+            form.querySelectorAll("input[data-string]:checked").forEach(function (r) { var h = document.createElement("input"); h.type = "hidden"; h.name = "go"; h.value = r.getAttribute("data-string"); finder.appendChild(h); });
+        });
         function update() {
             var chosen = form.querySelectorAll("input[data-outcome]:checked");
             var total = chosen.length, go = 0;
             chosen.forEach(function (r) { if (r.value === "go") go++; });
-            show("other-place", go > 0); show("stays", go < total || total === 0); show("removes", total > 0 && go === total);
+            show("other-place", go > 0 || searched); show("stays", go < total || total === 0); show("removes", total > 0 && go === total);
             var b = document.getElementById("apply"), says = document.getElementById("apply-says");
             if (go === 0) { b.textContent = total <= 1 ? "Confirm: it is this place" : "Confirm: all " + total + " strings are this place"; says.textContent = "The entity is kept and confirmed, with the label chosen. Nothing is removed from it."; }
             else if (go === total) { b.textContent = total === 1 ? "Mend: it is the other place" : "Mend: all " + total + " strings are the other place"; says.textContent = "The identifiers ticked are removed, and the entity is merged into the project's entity for the other place or given that place's identifier."; }

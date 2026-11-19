@@ -62,7 +62,7 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-17 evening; the one place to read first)
+## 0. Resume point (written 2026-11-17 evening, the desk's place brought up to 2026-11-19; the one place to read first)
 
 **State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile has run since, so the stored
 cards are that run's (Look again shows a string under today's rules). Schema version 12 on the real store. The
@@ -73,13 +73,14 @@ reporting after; that is the way of working for now, and the owner likes it ("we
 tomorrow"). The eight commits of 2026-11-17 are local on `de-pmc`, the full test loop green at day end; `git push`
 is the owner's word.
 
-**Resume here: the desk, as a user.** http://localhost:5200/p/pmc/review?context=place, the place queue (147), its
-first card "Heaton, Bradford" (string 28561), opened and not decided. What the assistant saw on it before stopping,
-each a thing to mend or put to the owner: the publisher hint cites the string's own record as evidence ("this
-publisher's other imprints here say 'Heaton, Bradford' (1 record)": the one record on the card); every candidate
-is an American Heaton, the first LoC's Heaton (N.D.) at 0.85 with an Accept button, and the Heaton in Bradford,
-West Yorkshire, is not offered though the qualifier names it; the map shows North America only. Then on through
-the place queue, and the other fields after.
+**Resume here: the desk, as a user.** http://localhost:5200/p/pmc/review?context=place, the place queue (145 on
+2026-11-19), at "Winchester" (string 42105, 25 records, opened and not decided). Decided on 2026-11-19 as `claude`:
+"Heaton, Bradford" kept as a local authority (TGN has no Heaton in Bradford), "Desnoyers, Rosika (author)" accepted
+as LoC's, "Pisa" accepted as the city with its two LoC headings; skipped, "Athens" (wants a decision for a
+publisher's records) and "Robbins, David (editor)" (ten of the name, nothing to tell them apart). What those cards
+showed is in section 7 ("The desk as a user, first cards"), with what was mended and what is the owner's to
+choose, the desk's title among it. A thing to count before anything is made of it: at "Pisa" the choice was the
+city against the province of its name, and a place of publication is a town.
 
 **How the driving goes** (section 7 has it in full): the workbench started by the assistant
 (`dotnet run --project src/LinkedArtNet.Workbench`); sign in as `claude` at http://localhost:5200/signin (the owner

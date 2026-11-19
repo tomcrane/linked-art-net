@@ -796,10 +796,33 @@ and the log (doc 15) records that. The order within an area is rough value.
     searched and have none, as against the search failing.
   - The card for "Athens" is some six thousand words: twelve groups, each member repeating one sentence of reason
     ("prominence stands aside: ...") thirty times. Said once for the card, it would be a third the length.
-  - The owner's question, the same day: should "Review desk" say what is reviewed ("Source String Review Desk")?
-    The assistant's view: yes to saying it, in plainer words than "source string", and the more now that Checks
-    reviews entities; "String review" for the title and the navigation, with a line under it saying what a string
-    is. The owner's to choose.
+  - Built the same day at the owner's word: the title "String review" with a line saying what a string is; why a
+    card waits for a person; a shared reason said once; what each heading was made from, fetched on the card; a
+    contradicted candidate not leading; a search that matches nothing showing all there is of the name.
+- A survey of the queue before more is built card by card (the owner, 2026-11-19: "perhaps it's only by seeing a lot
+  of review strings, which you can do a lot faster than I can, that you can begin to see large-scale patterns and
+  features the platform should have, rather than behaviour that is an ad hoc reaction to each new card seen"). The
+  assistant's proposal, the next thing to do: every queued string (3,764 that day) sorted into kinds by what its
+  evidence is like, counted, by field: level namesakes with nothing to tell them apart; one candidate from one
+  source; a best candidate under the threshold; a qualifier the candidates do not bear; a string whose records are
+  of several places; nothing found; and whatever else turns up. Done first from the store (read-only queries over
+  the stored evidence and the records), then a sample of each kind opened at the desk as a user, a dozen or so,
+  to say what a person needs there. The outcome a table: kind, count, what decides it, what the platform lacks. It
+  is the count that comes before a rule, made for the whole queue, and it says which of the things below is the
+  larger lever.
+- Evidence the desk now shows that no rule reads yet, each to count in that survey before anything is made of it:
+  LoC's citations (a heading "made from" a work whose title is the record's: at "Robbins, David (editor)", ten of
+  the name at 1.00 and one made from "The Independent Group, 1990", fetched on the card and accepted by the
+  assistant on 2026-11-19); the publisher's place for a place of publication (Athens); the inhabited place against
+  the province of its name in a field of imprints (Pisa).
+- Decisions for a publisher's records at the desk, doc 12 section 14 step 3 (the owner, 2026-11-19: "do you think
+  we should do section 14 step 3 now?"). The assistant's answer: it is the right next large thing, ahead of step 2,
+  and after the survey above, which will say how many strings want it and by which field they split; a session of
+  its own. Its first slice: on a group of the desk's "In the records" (the records where the publisher is this
+  one), "decide for these records", stored as record decisions, the string's own decision left for the rest.
+- At the desk, not built: candidates that were ruled out still take a card each (four American Heatons under
+  "Heaton, Bradford"); they want folding into one line, "4 ruled out", opened on asking. The candidate a LoC
+  citation speaks for should stand first on the card.
 - A second check for the page: a place entity aligned to an item that is not a place (Wimborne Minster's "church":
   the same name, another kind of thing, not a namesake abroad, so the first check lists it only by chance). From
   Wikidata's instance-of where the index has it (the `instanceOf` of the item against the classes of places), else

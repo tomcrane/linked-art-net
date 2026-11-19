@@ -991,6 +991,21 @@ and the log (doc 15) records that. The order within an area is rough value.
   ("Musée des Beaux-Arts" at Rouen, Nantes and Calais); a record that looks out of place among its string's
   others ("Ikon" at Bristol, "Allen & Unwin" in 1892). So a verdict wants a third outcome beside same and not
   the same: "the record wants fixing", which goes to that list with the record's number and what was seen.
+  The owner's marks on the second trial, the first 49 (2026-11-19, half way): every verdict agreed with, 47
+  outright, "Buckingham Palace" unsure with the assistant ("a shifting named entity"), "Humphrey Milford" a
+  question (two publishers on one book? no: Milford was Publisher to the University, the head of OUP in London,
+  1913-45, the assistant's own knowledge). From the notes, not built:
+  - a candidate or hint to say how many OTHER records of the project stand on it ("Cape": "One hint might be how
+    many _other_ records the candidate is in");
+  - "Penguin": the owner would take Wikidata's Penguin Books from the fuller names, not the project's entity on
+    the New Zealand heading: the hint that is "Same as" a misaligned entity leads astray, so that entity first;
+  - "Viking": "if we decided here would we have to go and re-edit records to split them out?" A decision on a
+    string is for all its records; one house in London and another in New York wants decisions by record
+    (doc 12 section 14 step 3);
+  - "Allen & Unwin", 1892: record D1925, "The letters of Philip Dormer Stanhope Earl of Chesterfield", London:
+    the date the likelier mistake (the owner: "a typo for 1982?"): one for the cataloguers' list;
+  - the fuller names are noisy with "& Co": "Murray" is offered F.J. Murray Co., C.W. Murray and Co., B.C.
+    Murray & Co.; to drop that word, or keep only names that begin with the string.
   How the owner checks a verdict (2026-11-19, "a common pattern", while marking the file): takes the string from the
   document, searches the entities for it, follows the link to the desk, looks at the records the string is in, and
   then searches the web. Four steps a line. So a list of verdicts, when it is built, wants on each row: a link

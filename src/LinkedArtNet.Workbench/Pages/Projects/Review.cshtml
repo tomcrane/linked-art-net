@@ -240,6 +240,28 @@ else
         }
         </div>
     }
+    @if (Model.FullerNames.Count > 0)
+    {
+        @* a publisher's fuller name in the indexes (the owner, 2026-11-19: yes, "though with enough caveats that the user doesn't lean on it too heavily -
+           they still have to be sure"). Shown apart from the candidates, unscored, never chosen by a rule; the record's place is the one test offered *@
+        var recordPlaces = recs.Groups.SelectMany(g => g.First).SelectMany(x => x.NamingFields()).Where(f => f.Name == "place").SelectMany(f => f.Values)
+            .SelectMany(v => v.Split(';', ',')).Select(v => v.Trim(' ', '[', ']', '.', '?')).Where(v => v.Length >= 4).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        <div class="card">
+            <h3 style="margin-top:0">Fuller names in the indexes <span class="muted small">· found by adding a publisher's word (Press, Books, Publishing, Gallery …) to "@item.String.Raw"</span></h3>
+            <p class="small"><strong>A guess by name only, to be checked.</strong> These were found because their names begin with this string; nothing was scored, and no rule chose them. A body of the fuller name can be another body altogether, in another country or another century. Before accepting one, open its record and set what it says (what kind of body, where, when) against the records above@(recordPlaces.Count > 0 ? ", published at " + string.Join(", ", recordPlaces.Take(4)) : ""). If none is plainly the publisher, none is the answer.</p>
+            @foreach (var r in Model.FullerNames)
+            {
+                var says = LinkedArtNet.Alignment.Authorities.RecordSummary.Says(r);
+                var at = recordPlaces.FirstOrDefault(p => (r.Label + " " + says).Contains(p, StringComparison.OrdinalIgnoreCase));
+                <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (!string.IsNullOrWhiteSpace(r.Type)) { <span class="tag">@r.Type.ToLowerInvariant()</span> } <span class="tag">@r.Source</span>
+                    @if (at is not null) { <span class="small" title="The record's place of publication is named in this body's record. It agrees; it does not prove.">· names @at, where a record was published</span> }
+                    else if (recordPlaces.Count > 0) { <span class="small muted" title="Its record, as held here, does not name a place the records were published at. Many records name no place at all.">· does not name the records' place</span> }
+                    @if (says is not null && says != r.Label) { <div class="small muted">@says</div> } else { <br /> }
+                    <a class="small" href="@r.Uri" target="_blank" rel="noopener" title="Open the record and read it before accepting">@r.Uri</a></div>
+                    <form method="post" asp-page-handler="Accept" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit" class="secondary" title="Decides this string onto this record. Read the record first.">Accept, having checked</button></form></div>
+            }
+        </div>
+    }
     @if (item.Notes.Count > 0)
     {
         <div class="card"><h3 style="margin-top:0">Notes</h3>@foreach (var n in item.Notes) { <p class="small"><strong>@n.Author</strong> <span class="muted">@n.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span><br />@n.Text</p> }</div>

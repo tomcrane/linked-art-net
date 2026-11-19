@@ -367,6 +367,28 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         return [];
     }
 
+    /// <summary>The words a publisher's short name is often written without: "Arno" for Arno Press, "Weiss" for the Weiss Gallery.</summary>
+    public static readonly IReadOnlyList<string> PublisherWords = ["Press", "Books", "Publishing", "Publications", "Publishers", "Gallery", "Editions", "& Co"];
+
+    /// <summary>
+    /// Bodies in the indexes under a publisher's fuller name: the string with one of <see cref="PublisherWords"/> after it (the owner's
+    /// marks on the trial of 2026-11-19: of fourteen right bodies ten were in the index under the fuller name and never offered, Yale
+    /// University Press among them). For the card to show as a hint: nothing is scored or decided by it, and a body of the fuller name
+    /// may be another body ("Freedom Press" of London and of Topanga).
+    /// </summary>
+    public async Task<IReadOnlyList<AuthorityRecord>> FullerNamesAsync(string text, int limit = 12, CancellationToken ct = default)
+    {
+        text = (text ?? "").Trim();
+        if (text.Length < 3) return [];
+        var names = PublisherWords.Select(w => text + " " + w).Append(text + " University Press").ToList();
+        var keys = names.SelectMany(NameMatcher.Keys).Distinct(StringComparer.Ordinal).ToList();
+        var found = new List<AuthorityRecord>();
+        foreach (var source in new[] { "loc", "wikidata" }) // a source each time: the label indexes are by source
+            found.AddRange(await store.FindAuthoritiesByLabelsAsync(keys, source, null, limit, ct));
+        return found.Where(r => !string.Equals(r.Type, "Person", StringComparison.OrdinalIgnoreCase) && !string.Equals(r.Type, "Place", StringComparison.OrdinalIgnoreCase))
+            .GroupBy(r => r.Uri).Select(g => g.First()).Take(limit).ToList();
+    }
+
     /// <summary>Where an authority record says its place is, the nearest first (TGN's parent string without the continent and the world); null when it says nothing.</summary>
     public static string? ChainOf(AuthorityRecord record)
     {

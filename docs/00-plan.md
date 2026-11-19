@@ -971,6 +971,18 @@ and the log (doc 15) records that. The order within an area is rough value.
   records and the body's own record (the trial's lesson), look the title up outside, and give a verdict with what
   it cites; the person goes down the set, most records first, and presses or corrects. Not built; the design to
   put to the owner with the "suggested" method.
+  A second trial on that set, 2026-11-19 (the owner: "yes OK"; `reports/trial2-longer-forms-2026-11-19.md`, for
+  the owner to mark; `reports/q-trial2.sql`; nothing written to the store). The 100 queued publisher strings with
+  a longer form decided onto one entity; the question, is the string that entity. The assistant's verdicts: same
+  62 (527 records), probably same 13 (69), not the same 19 (67), split by record 1, unsure 5; of 671 records. The
+  basis is said on each: the place and years of the string's records against those of the longer form's, which
+  the store holds, and the assistant's own knowledge where used; no web search, LoC's records not opened. Found
+  on the way, six entities whose own alignment looks wrong or doubtful, the string being right for the project's
+  body: Penguin Books on LoC's New Zealand firm (202 + 16 records), Jonathan Cape on "Jonathan Cape & Harrison
+  Smith" of New York, John Donald on the "John Donald Robb Archive of Southwestern Music", Pilgrim Press of
+  Derby on LoC's Auckland one, Olympia Press on a Frankfurt heading. So a check for the Checks page: a body
+  whose records' places disagree with its heading's place. And a kind for a ruling: predecessor and successor
+  firms ("Alfa" and Nuova Alfa, "Trubner" and Kegan Paul, Trench, Trubner, "Vista" and Studio Vista).
   How the owner checks a verdict (2026-11-19, "a common pattern", while marking the file): takes the string from the
   document, searches the entities for it, follows the link to the desk, looks at the records the string is in, and
   then searches the web. Four steps a line. So a list of verdicts, when it is built, wants on each row: a link

@@ -106,10 +106,11 @@ full test loop green at day end; `git push` is the owner's word.
 - Left by hand from 2026-11-15, if not done since: "Cardiff" (`place/t7mbc5a4`), "Belfast" (`place/scrhnxf9`),
   "Raleigh" (`place/mcgyqvqf`), the Ontario "Peterborough" (`place/bk5w54aq`).
 
-**Next, in order.** (1) The owner's word on three things put to him: the check "a body aligned to a namesake
+**Next, in order.** (1) The owner's word on two things put to him: the check "a body aligned to a namesake
 elsewhere" (the 93; the entities to mend before "Same as" is pressed onto them: Penguin Books, Jonathan Cape,
-John Donald, Pilgrim Press, Country Life); the ruling on predecessor and successor firms ("Alfa" and Nuova Alfa);
-whether the publishers' table should name the body as well as the place. (2) The rest of trial 2's marks, if the
+John Donald, Pilgrim Press, Country Life); whether the publishers' table should name the body as well as the
+place. (Ruled the same evening: predecessor and successor firms are aligned each to its own record, the
+succession kept as data; section 7 has the ruling and what follows from it.) (2) The rest of trial 2's marks, if the
 owner wants them counted. (3) The design of help on a set, to put to the owner: the set drawn from evidence the
 card shows (longer forms, fuller names), the heading's own record read, the title asked of a library catalogue by
 ISBN, a verdict with what it cites, a third outcome "the record wants fixing" that feeds the cataloguers' list,
@@ -999,6 +1000,27 @@ and the log (doc 15) records that. The order within an area is rough value.
   Derby on LoC's Auckland one, Olympia Press on a Frankfurt heading. So a check for the Checks page: a body
   whose records' places disagree with its heading's place. And a kind for a ruling: predecessor and successor
   firms ("Alfa" and Nuova Alfa, "Trubner" and Kegan Paul, Trench, Trubner, "Vista" and Studio Vista).
+  RULED by the owner, 2026-11-19: "Predecessor and successor firms should try to align with how they are recorded
+  in LoC or Wikidata. It's more precise if they can be aligned to their contemporary publisher. And older catalogue
+  records are going to name that publisher not the modern successor." The cost, that faceting, discovery and
+  search do better with them grouped under the successor, is met in the data and not in the alignment: "if the
+  fact that Publisher P2 is a successor of P1 is also part of the linked art data set we eventually produce (the
+  serialised group), then downstream discovery/search layers can use that information." What follows, not built:
+  - a string is aligned to the body of its records' own time; where LoC or Wikidata keeps the earlier and the
+    later body as two records, the project keeps two entities. So in the second trial "Alfa" (1962), "Trubner"
+    (1883) and "Vista" (1962) are NOT the entity offered, and each wants the earlier body's own record;
+  - entities already holding both ("Rupert Hart-Davis" with "Hart-Davis MacGibbon" on one entity) are to be looked
+    at: a count of entities whose strings' records span a known change of name;
+  - the relation itself is data the project must hold and write out: one entity the successor of another, taken
+    from the sources where they say it (LoC's earlier and later established forms; Wikidata's "replaces" and
+    "replaced by": whether the loaders keep them is to be checked) and settable by hand. How Linked Art says it in
+    a Group's record is to be found in the model and the upstream issues before anything is designed
+    (feedback: check upstream first);
+  - to settle with the owner when it is designed: LoC also makes a new heading for a body that only changed its
+    name (Graphische Sammlung Albertina and Albertina; Mostyn Art Gallery and MOSTYN). Read strictly the ruling
+    splits those too; they were marked "probably same" in the trial;
+  - at the desk: a candidate's dates and its earlier and later forms shown, and the record's date against them,
+    so that the contemporary body is the one a person is led to.
   The owner (2026-11-19): "This is also gathering evidence for what would go on our page of source fixes -
   cataloguer makes a note a record needs fixing" (doc 12 section 14, the cataloguers' list, step 2). What the two
   trials turned up for it, seen in the exports and not yet listed anywhere: places misspelt in a record

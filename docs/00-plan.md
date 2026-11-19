@@ -851,7 +851,53 @@ and the log (doc 15) records that. The order within an area is rough value.
     building as a subject, met at the checks; the second a parsing matter.
   - Every candidate ruled out (150) is all subject headings, people with dates ("Pugin, Augustus Charles,
     1769-1832"): ruled out, it seems, by dates that differ from the authority's. To read in step 2.
-  Step 2, not begun: a dozen of each kind opened at the desk as a user.
+  Step 2, 2026-11-19: the evidence of sixty sample strings read, about ten of each kind (`reports/q-survey2.sql`,
+  `.txt`), by query and not card by card, with the cards met at the desk before it. It overturned two of step 1's
+  readings and found the patterns below. None is counted across the queue yet; each wants its count before a rule.
+  - "One candidate from one source" is not safe to confirm in bulk. Of the publishers sampled about half are
+    wrong, and in one way: a firm known by a surname matched to a person of that surname ("Sansom" to Francis
+    Sansom, active 1784-1799, for a book of 1995; "Blackwell" to Lewis Blackwell, died 1810; "Rizzoli" to Angelo
+    Rizzoli; among the namesakes "Murray" and "Faber" to three artists each, "Penguin" led by a John Bingham,
+    "UMI" by a person called Umi). Two general tests would catch them: the kind of thing a field holds (a
+    publisher is a body; a person matched on a bare surname is not a candidate there), and the record's date
+    against a life (nobody active to 1799 published in 1995; "Smith, W N", author of a catalogue of 1990, offered
+    a W. N. Smith born 1868). The records' dates have been in the store since 2026-11-15 and no rule reads them.
+  - "Every candidate ruled out" (150) is one cause: the string's dates and the authority's differ by a few years
+    ("Pugin, Augustus Charles, 1769-1832" against 1762-1832; "Shepherd, George Sidney, 1784-1858" against
+    1784-1861; "Barret, George I, 1732-1784" against 1728-1784), each the source's one record of the name. The
+    same person, dated differently by scholars. A tolerance, where one end agrees and the name is unique, would
+    settle most; "op 1785" (flourished) read as a birth is a parsing fault among them.
+  - Under the threshold (345): the right record, marked down for a qualifier written another way ("Arundel Castle
+    (Sussex)" for LCSH's "Arundel Castle (Arundel, England)"; "Royal Collection (London)" for "(Great Britain)";
+    "London-Intellectual life" for "London (England)--Intellectual life"; "Belfast Museum and Art Gallery" for
+    its later name, the Ulster Museum); a form subdivision left on a dated name ("...1833-1898-Exhibitions", the
+    hyphen of the dates defeating the split); and wrong ones of the surname kind ("Garland" to a destroyer,
+    "Down, Canon" to a rap musician).
+  - Namesakes: for firms, as above; for people, the works behind each heading, and the string's own dates when
+    they are in brackets ("Munro, George [1805 or 1806-1883]", offered Munros born 1934 and 1944: the brackets
+    are not read). "United Kingdom" waits between TGN's United Kingdom and LoC's Great Britain, one thing under
+    two names in two groups. "Ophelia", a subject, is offered three places called Ophelia.
+  - How much is the 2024 import's doing (the owner's question): of 3,764 queued strings, 197 (5.2%) have an entity
+    the import brought among their candidates, and 32 wait expressly because the project's own entity stood in
+    the way of prominence. By field it is places that it touches: 50 of 145 queued places (34%), against 11 of
+    1,281 personal authors. So the queue would be much the same from scratch: namesakes, surname matches and
+    dates are the catalogue's and the authorities'. What the import cost is elsewhere, and unseen at the desk:
+    strings matched by name onto an entity it had aligned wrongly (the checks page found a hundred such places,
+    and only places with a namesake at home have been checked). 738 queued strings have one of this toolkit's own
+    placeholders (`unrec_`, the 2024 process's identifiers for what it did not reconcile, kept so that LUX's
+    links hold) among the candidates: those carry nothing and mislead nobody.
+  - Where AI help belongs (the owner's question: "this might not always be on a per-string basis, sometimes on
+    sets of strings"). The assistant's reading of the sixty was itself the trial: with the string, its field, a
+    record's title, date and publisher, and the candidates' labels and dates, it could say right, wrong or unsure
+    for nearly all in a line each. So: (1) on a set, the single-candidate strings (1,092) and those under the
+    threshold (345): a verdict and a reason for each, the person reading down a list sorted by verdict and
+    confirming in bulk, not a card each; (2) on a set, namesake people (886): the citations fetched and the
+    heading chosen whose works are the record's, with the reason; (3) over the whole queue, what this survey is:
+    kinds, counts and proposed rules, run again after each reconcile; (4) on the source, drafting the
+    cataloguers' list ("s.n.", a church placed in West Sussex in one record and East in another); (5) per item
+    only where judgement is singular, as at the checks ("Wimborne Minster"). In every case a proposal with its
+    reason, kept, which a person accepts; a decision method of its own ("suggested") would let proposals wait
+    and be measured against what people then decide.
 - Evidence the desk now shows that no rule reads yet, each to count in that survey before anything is made of it:
   LoC's citations (a heading "made from" a work whose title is the record's: at "Robbins, David (editor)", ten of
   the name at 1.00 and one made from "The Independent Group, 1990", fetched on the card and accepted by the

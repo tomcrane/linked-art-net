@@ -36,6 +36,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<ContextMethodCount> Queue { get; private set; } = [];
     public IReadOnlyList<Entity> EntityMatches { get; private set; } = [];
     public IReadOnlyList<AuthorityRecord> IndexMatches { get; private set; } = [];
+    /// <summary>For the entities a search found: where a place is, and how many strings stand on each, so that two of one name can be told apart.</summary>
+    public Dictionary<string, (string? Placement, int Strings)> MatchClues { get; } = new(StringComparer.Ordinal);
     /// <summary>Set when a search of several words matched nothing and the results shown are those of the name alone ("Heaton" for "Heaton Bradford"): absence is then seen, not guessed at (the assistant as a user, 2026-11-19: nothing said whether the indexes had been searched and have none, or the search had failed).</summary>
     public string? NearName { get; private set; }
     public string? Message { get; private set; }
@@ -71,6 +73,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             var kind = Project.Reconciler.Read(Item.String).Classes is [var first, ..] ? first : (EntityClass?)null;
             EntityMatches = (await Project.Desk.SearchEntitiesAsync(Dataset, Q)).Where(e => e.Id != Item.Entity?.Id).OrderByDescending(e => e.Class == kind ? 1 : 0).ToList();
             IndexMatches = (await Project.Desk.SearchIndexesAsync(Q)).OrderByDescending(r => kind is not null && string.Equals(r.Type, kind.ToString(), StringComparison.OrdinalIgnoreCase) ? 1 : 0).ToList();
+            foreach (var e in EntityMatches.Take(15)) MatchClues[e.Id] = await Project.Desk.ClueAsync(e, HttpContext.RequestAborted);
             var words = Q.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             for (var k = words.Length - 1; k >= 1 && EntityMatches.Count == 0 && IndexMatches.Count == 0; k--)
             {

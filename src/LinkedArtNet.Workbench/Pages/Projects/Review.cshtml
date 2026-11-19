@@ -594,7 +594,11 @@ else
                 @if (Model.NearName is not null) { <p class="small"><strong>Nothing matches all of "@Model.Q".</strong> The indexes were searched, and what follows is everything they have named "@Model.NearName": if the one you want is not among them, the indexes do not have it.</p> }
                 @foreach (var e in Model.EntityMatches)
                 {
-                    <div class="row result"><div style="flex:1"><strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener" title="The entity's page">@e.Label</a></strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span><br /><a class="small" href="@e.Id" target="_blank" rel="noopener">@e.Id</a></div>
+                    <div class="row result"><div style="flex:1"><strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener" title="The entity's page">@e.Label</a></strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>
+                        @* which one it is (the owner, 2026-11-19: three places called "Winchester" and nothing to tell them apart; the merge search and the project's search say where a place is and what stands on it, and this had the entity's address in their stead) *@
+                        @{ var mc = Model.MatchClues.GetValueOrDefault(e.Id); }
+                        @if (mc.Placement is not null) { <span class="muted">(@mc.Placement)</span> }
+                        <br /><span class="small muted">@(e.Equivalents.Count == 0 ? "no identifiers" : string.Join(" ", e.Equivalents.Select(q => q.Source).Distinct()))@if (Model.MatchClues.ContainsKey(e.Id)) { <text> · stands for @mc.Strings string@(mc.Strings == 1 ? "" : "s")</text> }</span></div>
                         <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@e.Id" /><button type="submit">Same as</button></form></div>
                 }
                 @foreach (var r in Model.IndexMatches)

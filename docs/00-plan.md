@@ -922,6 +922,17 @@ and the log (doc 15) records that. The order within an area is rough value.
     of the kind the assistant made over the sixty samples, which is the case for help on sets (above). The two
     tests are worth having as evidence on the card and for that help to use (bodies first in a body's field; a
     candidate the record's date speaks against marked and folded), not as acceptances. Not built.
+- A trial of help on a set, 2026-11-19 (the owner's yes; `reports/trial-publishers-2026-11-19.md`, for the owner
+  to mark; nothing written to the store). The 49 queued publisher strings with only people at the top and one body
+  just below, each given a verdict and a line of reason by the assistant from the string, three records' place and
+  date, and the body's label, on its own knowledge of publishers. Right 15, probably right 6, unsure 8, wrong 20:
+  the body is the publisher in about 43% and plainly something else in 41%. So "take the body" as a rule would be
+  wrong four times in ten, and the verdicts do tell them apart, by the record's place and date against what the
+  body is ("Matador" at Kibworth Beauchamp against an American television company; "Mr Guibert", 1766, against a
+  modern Paris firm). Three kinds among the wrong: an auctioneer written "Mr ..."; an imprint known by one word
+  whose firm has a fuller name ("Pindar", "Arno", "Oryx", "Harper", "Yale"), which LoC very likely has under that
+  name ("Arno Press"): a search with "Press", "Books" or "Publishing" added is a thing to count; and a heading
+  matched on a word or on initials ("HENI", "Weiss"). Waiting on the owner's marks, which measure the verdicts.
 - Evidence the desk now shows that no rule reads yet, each to count in that survey before anything is made of it:
   LoC's citations (a heading "made from" a work whose title is the record's: at "Robbins, David (editor)", ten of
   the name at 1.00 and one made from "The Independent Group, 1990", fetched on the card and accepted by the

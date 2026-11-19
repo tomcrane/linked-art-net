@@ -37,6 +37,17 @@ public class ExamplesTests(PostgresFixture pg)
         Assert.Equal("Cambridge [England]", hints[1].Place); Assert.Contains("1 record", hints[1].Text);
         Assert.Null(hints[2].Place); Assert.Equal(cup.Id, hints[2].EntityId);
         Assert.False(recs.Hints.ContainsKey("Kettle's Yard")); // nothing known: no hint
+
+        // the project's search: strings whatever their field, one written exactly so first; records by title, with their strings
+        var found = await pg.Store.SearchStringsAsync(ds, "cambridge");
+        Assert.Equal(["Cambridge", "Cambridge University Press"], found.Select(h => h.String.Raw));
+        Assert.Equal((2, (string?)null), (found[0].Records, found[0].Method));
+        Assert.Equal((DecisionMethod.Human, cup.Id), (found[1].Method, found[1].EntityId));
+        Assert.Empty(await pg.Store.SearchStringsAsync(ds, "100%"));
+        var record = Assert.Single(await pg.Store.SearchRecordsAsync(ds, "ten bo"));
+        Assert.Equal("R1", record.RecordId);
+        Assert.Contains(record.Strings, x => x.Raw == "Cambridge" && x.Id == cambridge.Id);
+        Assert.Equal("R2", Assert.Single(await pg.Store.SearchRecordsAsync(ds, "R2")).RecordId);
     }
 
     // four Heritage records in the export's shape: three name Langford's auction house (two kept at two per string), one is Hodgkin's

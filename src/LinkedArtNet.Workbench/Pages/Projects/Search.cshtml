@@ -1,0 +1,62 @@
+@page "/p/{dataset}/search"
+@model SearchModel
+@{
+    ViewData["Title"] = "Search";
+    string Stands(string? method) => method switch
+    {
+        null => "not decided",
+        DecisionMethod.Queued => "waiting at the desk",
+        "minted" => "nothing found for it, a placeholder",
+        DecisionMethod.Human => "decided by a person",
+        "imported" => "decided by the import",
+        _ => "decided by a rule"
+    };
+}
+<h1>Search</h1>
+<form method="get" class="row" style="gap:.5rem; max-width:40rem">
+    <input type="search" name="q" value="@Model.Q" placeholder="A string, an entity or a record's title" style="flex:1" autofocus />
+    <button type="submit">Search</button>
+</form>
+<p class="small muted">Searches this project: the strings as the records write them, its entities, and its records by title or number. The authority indexes (TGN, ULAN, the Library of Congress) are searched from a string's card, where one is being decided.</p>
+@if (!string.IsNullOrEmpty(Model.Q) && Model.Q.Length < 2) { <p class="notice">Two letters or more, please.</p> }
+else if (!string.IsNullOrEmpty(Model.Q))
+{
+    @if (Model.Strings.Count + Model.Entities.Count + Model.Records.Count == 0) { <p class="notice">Nothing in this project matches "@Model.Q": no string, no entity, no record's title.</p> }
+    @if (Model.Strings.Count > 0)
+    {
+        <h2>Strings <span class="muted small">@Model.Strings.Count@(Model.Strings.Count >= SearchModel.StringLimit ? " or more: the first shown, the shortest first" : "") · as the records write them · each opens its card</span></h2>
+        <table>
+            <thead><tr><th>String</th><th>Field</th><th>Records</th><th>How it stands</th></tr></thead>
+            <tbody>
+            @foreach (var h in Model.Strings)
+            {
+                <tr>
+                    <td><a href="/p/@Model.Dataset/review?id=@h.String.Id"><strong>@h.String.Raw</strong></a></td>
+                    <td class="small"><span title="the field @h.String.Context">@Model.Project.Manifest.FieldName(h.String.Context)</span></td>
+                    <td class="small">@h.Records.ToString("N0")</td>
+                    <td class="small">@Stands(h.Method)@if (h.EntityId is not null && h.Method is not ("minted" or DecisionMethod.Queued)) { <text> · <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(h.EntityId)">its entity</a></text> }</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    @if (Model.Entities.Count > 0)
+    {
+        <h2>Entities <span class="muted small">@Model.Entities.Count · what the strings are decided to be</span></h2>
+        @foreach (var e in Model.Entities)
+        {
+            var clue = Model.Clues.GetValueOrDefault(e.Id);
+            <p style="margin:.35rem 0"><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)"><strong>@e.Label</strong></a>@if (clue.Placement is not null) { <span class="muted"> (@clue.Placement)</span> } <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span> <span class="small muted">@string.Join(" ", e.Equivalents.Select(q => q.Source).Distinct())@if (Model.Clues.ContainsKey(e.Id)) { <text> · stands for @clue.Strings string@(clue.Strings == 1 ? "" : "s")</text> }</span></p>
+        }
+    }
+    @if (Model.Records.Count > 0)
+    {
+        <h2>Records <span class="muted small">@Model.Records.Count · by title or number · with the strings in each</span></h2>
+        @foreach (var r in Model.Records)
+        {
+            var link = Model.Project.Manifest.RecordUrl(r.System, r.RecordId);
+            <p style="margin:.5rem 0"><strong>@(r.Title ?? "(no title)")</strong>@(r.Date is null ? "" : $" ({r.Date})") <span class="small muted">· @if (link is not null) { <a href="@link" target="_blank" rel="noopener">@r.RecordId</a> } else { @r.RecordId }</span><br />
+            <span class="small">@foreach (var (id, context, raw) in r.Strings) { <a href="/p/@Model.Dataset/review?id=@id" title="@Model.Project.Manifest.FieldName(context)">@raw</a><text> · </text> }</span></p>
+        }
+    }
+}

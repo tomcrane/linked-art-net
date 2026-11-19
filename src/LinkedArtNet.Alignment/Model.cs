@@ -388,4 +388,10 @@ public sealed record AwayRow(string EntityId, string Label, string Status, int S
     }
 }
 
+/// <summary>A string found by the project's search: the string, how it stands (its valid decision's method and entity, null when undecided) and how many records it is in.</summary>
+public sealed record StringHit(SourceString String, string? Method, string? EntityId, int Records);
+
+/// <summary>A record found by the project's search, with up to twelve of the strings in it (id, field, as written), each of which has a card.</summary>
+public sealed record RecordHit(string System, string RecordId, string? Title, string? Date, IReadOnlyList<(long Id, string Context, string Raw)> Strings);
+
 public sealed record RecordGroup(string? Value, int Records, IReadOnlyList<StringExample> First);

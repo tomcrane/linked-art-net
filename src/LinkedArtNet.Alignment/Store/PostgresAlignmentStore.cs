@@ -1478,6 +1478,48 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return found;
     }
 
+    private static string Like(string text) => "%" + text.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_") + "%";
+
+    public async Task<IReadOnlyList<StringHit>> SearchStringsAsync(string dataset, string text, int limit = 30, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select s.id, s.dataset, s.context, s.raw, s.normalised, s.parsed::text, s.first_seen, s.last_seen, s.occurrences, d.method, d.entity_id,
+                   (select count(*) from occurrences o where o.string_id = s.id)
+            from source_strings s left join decisions d on d.source_string_id = s.id and d.valid
+            where s.dataset = @dataset and s.raw ilike @pattern
+            order by (lower(s.raw) = lower(@text)) desc, length(s.raw), s.raw, s.context limit @limit
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "pattern", Like(text)); Add(cmd, "text", text); Add(cmd, "limit", limit);
+        var list = new List<StringHit>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new StringHit(ReadString(r), Str(r, 9), Str(r, 10), Convert.ToInt32(r.GetInt64(11))));
+        return list;
+    }
+
+    public async Task<IReadOnlyList<RecordHit>> SearchRecordsAsync(string dataset, string text, int limit = 15, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select r.system, r.record_id, r.title, r.date,
+                   (select string_agg(x, chr(31)) from (select o.string_id || chr(30) || s.context || chr(30) || s.raw as x
+                        from occurrences o join source_strings s on s.id = o.string_id
+                        where o.dataset = r.dataset and o.system = r.system and o.record_id = r.record_id order by o.field, o.position limit 12) z)
+            from records r where r.dataset = @dataset and r.gone_at is null and (r.title ilike @pattern or r.record_id = @text)
+            order by (r.record_id = @text) desc, length(r.title), r.title limit @limit
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "pattern", Like(text)); Add(cmd, "text", text); Add(cmd, "limit", limit);
+        var list = new List<RecordHit>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+        {
+            var strings = (Str(r, 4) ?? "").Split((char)31, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Split((char)30)).Where(x => x.Length == 3)
+                .Select(x => (long.Parse(x[0], CultureInfo.InvariantCulture), x[1], x[2])).ToList();
+            list.Add(new RecordHit(r.GetString(0), r.GetString(1), Str(r, 2), Str(r, 3), strings));
+        }
+        return list;
+    }
+
     public async Task<(string Uri, string? Description, int Sitelinks)?> BestKnownNamesakeAsync(string label, string? exceptUri, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

@@ -22,6 +22,8 @@
                 <a href="/p/@ds/entities">Entities</a>
                 <a href="/p/@ds/variants">Variants</a>
                 <a href="/p/@ds/checks">Checks</a>
+                @* the project's search, where the hand goes for it (the owner, 2026-11-19); "/" reaches it from anywhere on the page *@
+                <form method="get" action="/p/@ds/search" class="nav-search" role="search"><input type="search" name="q" id="project-search" placeholder="Search @(ViewData["ProjectName"] ?? ds)" aria-label="Search this project: strings, entities and records" title="Search this project's strings, entities and records. Press / to come here" /></form>
             </span>
         }
         <a href="/help">Help</a>
@@ -51,5 +53,14 @@
     <p>Part of <a href="https://github.com/tomcrane/linked-art-net">linked-art-net</a>. Authority data: Getty ULAN, AAT and TGN under ODC-By; Library of Congress Name Authority File.</p>
 </footer>
 @await RenderSectionAsync("Scripts", required: false)
+<script>
+document.addEventListener("keydown", function (e) {
+    if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target, tag = t && t.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (t && t.isContentEditable)) return;
+    var box = document.getElementById("project-search");
+    if (box) { e.preventDefault(); box.focus(); box.select(); }
+});
+</script>
 </body>
 </html>

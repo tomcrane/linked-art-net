@@ -932,7 +932,26 @@ and the log (doc 15) records that. The order within an area is rough value.
   modern Paris firm). Three kinds among the wrong: an auctioneer written "Mr ..."; an imprint known by one word
   whose firm has a fuller name ("Pindar", "Arno", "Oryx", "Harper", "Yale"), which LoC very likely has under that
   name ("Arno Press"): a search with "Press", "Books" or "Publishing" added is a thing to count; and a heading
-  matched on a word or on initials ("HENI", "Weiss"). Waiting on the owner's marks, which measure the verdicts.
+  matched on a word or on initials ("HENI", "Weiss"). The owner's marks (2026-11-19, in the file; 48 of 49 marked, "Bayford" left blank):
+  - The firm verdicts held: "right" 15 of 15, "wrong" 20 of 20. "Probably right" held 3 of 6: "White Rabbit" is
+    wrong (the heading is a motion picture studio), "Granada" (a television company's heading) and "Berenice" (LoC's
+    record suggests the Spanish publisher, the record is Milan) are doubted. Each of the three was caught by
+    opening the heading's LoC record, which the assistant had not read: it judged by the label. Of the 8
+    "unsure", the owner settled 6 as not the body offered ("Rizzoli", "Blackwell", "Canale", "Anaya", "Cunningham",
+    "Lenz"); "Legenda" is the MHRA imprint, the heading not settled. So the body is the publisher in 18 of 49.
+  - What a verdict must read, then: the heading's own record (what kind of body, where, when), not its label.
+  - What the owner did to check: the web for the place with the string ("Kibworth Beauchamp Matador", "glasgow
+    drew publisher", "rizzoli new york"); a scan of the book itself, its title page naming the publisher ("Grund").
+  - The project's own neighbours are not offered: "Blackwell" is the project's Basil Blackwell (group/zxx9fbtr);
+    "Jupiter Books" is a queued string and not offered under "Jupiter".
+  - The right body is not among the candidates at all: "Pindar", "Artemis" (Artemis Fine Arts), "Drew" (a search
+    for "richard drew" under "Something else" does not find the publisher: to look into, the index or the search).
+  - "Yale" given W. & M. Yale: "a bad mistake for this bench! Especially in a PMC context". Yale is not in the
+    publishers' table (left out on purpose when its place was the question); for the owner's word, the table to
+    name the body as well as the place.
+  - "Benedikt Taschen" and "Taschen (Firm)": one thing, taken together, the firm the survivor?
+  - The trial's set and the desk disagree on order: "ARTEMIS (Organization)" is fifth at the desk, not just below
+    the people; "Mendez" and "Granada" have the body second at 0.97. The query's "just below" is not the desk's.
   How the owner checks a verdict (2026-11-19, "a common pattern", while marking the file): takes the string from the
   document, searches the entities for it, follows the link to the desk, looks at the records the string is in, and
   then searches the web. Four steps a line. So a list of verdicts, when it is built, wants on each row: a link

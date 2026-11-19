@@ -27,7 +27,10 @@ public sealed class SearchModel(ProjectServices services, ProjectAccess access) 
         if (string.IsNullOrEmpty(Q) || Q.Length < 2) return Page();
         var ct = HttpContext.RequestAborted;
         Strings = await Services.Store.SearchStringsAsync(Dataset, Q, StringLimit, ct);
-        Entities = (await Project.Desk.SearchEntitiesAsync(Dataset, Q, 20, ct)).Where(e => e.MergedInto is null).ToList();
+        // a string's own empty placeholder is not a second thing found: the string is listed, and says it waits (seen in the browser,
+        // 2026-11-19: "Matador" found its one string and, as an entity, the placeholder that stands for nothing but that string)
+        Entities = (await Project.Desk.SearchEntitiesAsync(Dataset, Q, 20, ct))
+            .Where(e => e.MergedInto is null && !(e.Status == EntityStatus.Provisional && e.Equivalents.Count == 0 && Strings.Any(h => h.EntityId == e.Id))).ToList();
         Records = await Services.Store.SearchRecordsAsync(Dataset, Q, 15, ct);
         // one string and nothing else: its card is what was wanted
         if (Strings.Count == 1 && Entities.Count == 0 && Records.Count == 0) return Redirect($"/p/{Dataset}/review?id={Strings[0].String.Id}");

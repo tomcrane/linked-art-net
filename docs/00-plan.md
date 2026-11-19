@@ -121,6 +121,21 @@ cataloguers' list (doc 12 section 14 step 2), for which the trials gathered exam
 pruned of built items and long since due; doc 12 a section for the Checks page, the Decide screen and the day's
 additions to the card; doc 16's scenarios and pictures, stale after the day's changes to the card.
 
+**What the alignment is for, and what comes after it** (the owner, 2026-11-19; he asked that its importance be
+noted). The alignment is not the end. "Soon we switch to what the old PMC C# code was doing (though hopefully,
+better than that) - building linked art suitable for loading into a triple store by a harvester such as LUX, or
+something we may build ourselves." Alignment and reconciliation carry on meanwhile, the assistant driving the
+browser; the switch is to be taken up "when we are fresh and feeling creative", and is not to be begun as a
+digression. Until then every decision about alignment is judged by what the output can say with it: a string
+aligned to the town and not its county, to the firm of its record's time and not its successor, and the relations
+between entities (a place in its broader place, a body and what it succeeded) kept as data to be written out,
+because "both are hugely useful for downstream _discovery_ and search". The conversation owed about the shape of
+the export (decision 15, below) is therefore the most important open decision, and wider than LUX: it is the
+design of the Linked Art the project produces. The older project's output, to read before designing and to do
+better than: `C:\pmc\full_output` (on 2026-11-19: `person` 22,779 files, `group` 14,126, `concept` 25,178, `place`
+2,866, `archive` 9,105, `archive-authority` 2,121, `library` with `object` and `work`, `set`, an `index.html`). The
+code that made it is the `pmc-2` branch, reference only.
+
 **How the driving goes** (section 7 has it in full): the workbench started by the assistant
 (`dotnet run --project src/LinkedArtNet.Workbench`); sign in as `claude` at http://localhost:5200/signin (the owner
 uses another browser or a private window to be `local`, the two sharing one sign-in in Chrome); the assistant
@@ -130,7 +145,9 @@ owner, and anything counted before it is made a rule (the one rule added uncount
 places as wrong and came out within the hour). Tests while iterating: the alignment and workbench projects per
 commit, the full loop before a push and at day end.
 
-**Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
+**Decisions owed by the owner:** 15, *the LUX export's shape* (THE IMPORTANT ONE, the owner 2026-11-19: see "What
+the alignment is for" above; it is to carry the place hierarchy and the succession of bodies, and it opens the
+next phase, the building of the Linked Art) (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI, whether records absent from a full dump are retired, and how LUX takes
 an equivalent we withdraw; the merged-away identifiers (`merged_into` on 381 entities and the hand merges) are written
 as equivalents of the survivor so LUX merges its copies; the dead LUX identifiers (above) belong to the same

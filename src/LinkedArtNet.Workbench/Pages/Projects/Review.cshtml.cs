@@ -65,8 +65,10 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         {
             // the string's own placeholder is under "Currently" already, and "Same as" onto it would decide nothing: left out of the results
             // (the owner, 2026-11-05, "Lawrence" beside its own provisional entity; the desk's form of finding 104)
-            EntityMatches = (await Project.Desk.SearchEntitiesAsync(Dataset, Q)).Where(e => e.Id != Item.Entity?.Id).ToList();
-            IndexMatches = await Project.Desk.SearchIndexesAsync(Q);
+            // the string's own kind first: a search for a place named "Heaton" opened with five people of that name (seen as a user, 2026-11-19)
+            var kind = Project.Reconciler.Read(Item.String).Classes is [var first, ..] ? first : (EntityClass?)null;
+            EntityMatches = (await Project.Desk.SearchEntitiesAsync(Dataset, Q)).Where(e => e.Id != Item.Entity?.Id).OrderByDescending(e => e.Class == kind ? 1 : 0).ToList();
+            IndexMatches = (await Project.Desk.SearchIndexesAsync(Q)).OrderByDescending(r => kind is not null && string.Equals(r.Type, kind.ToString(), StringComparison.OrdinalIgnoreCase) ? 1 : 0).ToList();
         }
         if (Item is not null && Confirm && Targets is { Length: > 0 })
         {

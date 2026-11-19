@@ -279,11 +279,14 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             hints.Add(new FieldHint("table", known.Place, $"{known.Place}, by the shipped table of publishers ({known.Source ?? "no source given"})", known.Uri));
         // the same publisher's imprints where this place is written with more: "Cambridge [England]", "Cambridge, Mass."
         var bare = reconciler.Read(place).Text;
+        var own = place.Raw.Trim().TrimStart('[').TrimEnd(']').Trim();
         var qualified = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         foreach (var (value, n) in await store.FieldValuesWhereAsync(place.Dataset, "publisher", publisher, "place", 60, ct))
             foreach (var part in value.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
             {
                 var p = part.Length > 2 && part[0] == '[' && part[^1] == ']' && part.IndexOf(']') == part.Length - 1 ? part[1..^1].Trim() : part;
+                // not the card's own value: "Heaton, Bradford" is no evidence of where the publisher of "Heaton, Bradford" is (seen as a user, 2026-11-19)
+                if (string.Equals(p, own, StringComparison.OrdinalIgnoreCase)) continue;
                 if (p.Length > bare.Length && p.StartsWith(bare, StringComparison.OrdinalIgnoreCase) && !char.IsLetterOrDigit(p[bare.Length]) && p[bare.Length..].Any(char.IsLetter))
                     qualified[p] = qualified.GetValueOrDefault(p) + n;
             }
@@ -345,8 +348,37 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         return found.Values.ToList();
     }
 
-    public Task<IReadOnlyList<AuthorityRecord>> SearchIndexesAsync(string text, string? source = null, int limit = 20, CancellationToken ct = default) =>
-        store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(text), source, null, limit, ct);
+    /// <summary>
+    /// The local indexes searched by name. They are keyed by whole names, so "Heaton Bradford" is the name "Heaton" told apart by
+    /// "Bradford": the whole text is tried as a name first, then ever shorter names with the words left over required of the record's
+    /// heading or of the chain of places it is in (the desk's own notice had long advised "Plymouth Devon", which found nothing: seen
+    /// by the assistant as a user, 2026-11-19, at "Heaton, Bradford").
+    /// </summary>
+    public async Task<IReadOnlyList<AuthorityRecord>> SearchIndexesAsync(string text, string? source = null, int limit = 20, CancellationToken ct = default)
+    {
+        var words = (text ?? "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        for (var k = words.Length; k >= 1; k--)
+        {
+            var telling = words[k..];
+            var found = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(string.Join(' ', words[..k])), source, null, telling.Length == 0 ? limit : 300, ct);
+            if (telling.Length > 0) found = found.Where(r => telling.All(w => ((ChainOf(r) ?? "") + " " + r.Label + " " + string.Join(' ', r.Labels)).Contains(w.Trim(',', '(', ')'), StringComparison.OrdinalIgnoreCase))).Take(limit).ToList();
+            if (found.Count > 0) return found;
+        }
+        return [];
+    }
+
+    /// <summary>Where an authority record says its place is, the nearest first (TGN's parent string without the continent and the world); null when it says nothing.</summary>
+    public static string? ChainOf(AuthorityRecord record)
+    {
+        if (record.DataJson is null) return null;
+        try
+        {
+            using var doc = JsonDocument.Parse(record.DataJson);
+            return doc.RootElement.ValueKind == JsonValueKind.Object && doc.RootElement.TryGetProperty("parentString", out var p) && p.GetString() is { } chain
+                ? string.Join(", ", chain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or ""))) : null;
+        }
+        catch (JsonException) { return null; }
+    }
 
     // ---- actions -------------------------------------------------------------------------------------------------
 

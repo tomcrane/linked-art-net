@@ -148,7 +148,7 @@ else
     {
         @* a queued string whose entity is no placeholder any more: something settled the entity and not the string (a keep refused
            half-way, before 2026-11-14; a hand change on the entity's page). The desk says so and offers the one step that is left *@
-        <form method="post" asp-page-handler="SameAs" class="notice small">
+        <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="notice small">
             <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@settled.Id" />
             <strong>This string is still queued, but the entity it points at is already @settled.Status.ToString().ToLowerInvariant():</strong>
             <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(settled.Id)" target="_blank" rel="noopener">@settled.Label</a>.
@@ -233,7 +233,7 @@ else
         @* two or more of the project's own entities among the ticked: what accepting them together will do, shown before it is done, since a
            merge is not undone by Undo (the owner, 2026-11-06, at "Chris Beetles Ltd": the firm's two aligned entities and two placeholders in
            one group, and a warning after the fact that sent them to the entity page) *@
-        <form method="post" asp-page-handler="AcceptTogether" class="notice" id="confirm-together">
+        <form method="post" asp-page-handler="AcceptTogether" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="notice" id="confirm-together">
             <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="confirmed" value="true" />
             @if (Model.Always) { <input type="hidden" name="always" value="true" /> }
             @foreach (var t in Model.Targets ?? []) { <input type="hidden" name="targets" value="@t" /> }
@@ -279,7 +279,7 @@ else
     }
     @if (ev.Groups.Count > 1 && Model.Method != "human" && chosenGroup is null)
     {
-        <form method="post" asp-page-handler="AcceptTogether" id="together" class="row" style="gap:.5rem; margin:.25rem 0 .75rem">
+        <form method="post" asp-page-handler="AcceptTogether" asp-route-method="@Model.Method" asp-route-context="@Model.Context" id="together" class="row" style="gap:.5rem; margin:.25rem 0 .75rem">
             <input type="hidden" name="id" value="@item.String.Id" />
             <button type="submit" class="secondary" title="The ticked groups are one thing: one entity with all their identifiers">Accept the ticked together</button>
             <span class="small muted">tick "together" on two or more groups that are the same thing</span>
@@ -358,7 +358,7 @@ else
                     @if (ev.Groups.Count > 1) { <label class="small inline" style="white-space:nowrap" title="This group is one of the things to accept together"><input type="checkbox" name="targets" value="@string.Join(" ", live.Select(m => m.Uri))" form="together" /> together</label> }
                     @if (live.Count > 1 && firm.Count <= 1)
                     {
-                        <form method="post" asp-page-handler="AcceptTogether" class="inline">
+                        <form method="post" asp-page-handler="AcceptTogether" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                             <input type="hidden" name="id" value="@item.String.Id" />
                             @foreach (var m in live) { <input type="hidden" name="targets" value="@m.Uri" /> }
                             <button type="submit" title="@(firm.Count == 1 ? "The string is this entity, which gets any record of the group it does not hold yet" : "The string is this group: one entity with all its identifiers")">@(firm.Count == 1 ? $"Same as {Named(firm[0])}" : "Accept these as one")</button>
@@ -476,7 +476,7 @@ else
                         {
                             @* the project entity that holds this record now, since the evidence was written: an identifier added by hand, or a later run *@
                             <div class="small muted">now held by the project's entity <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Entity.Id)" target="_blank" rel="noopener">@Named(holder.Entity)</a> <span class="tag">@holder.Entity.Status.ToString().ToLowerInvariant()</span>, which was not among the candidates when this card was written
-                                @if (Model.Method != "human") { <form method="post" asp-page-handler="SameAs" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@holder.Entity.Id" /><button type="submit" class="link small">Same as @Named(holder.Entity)</button></form> }
+                                @if (Model.Method != "human") { <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@holder.Entity.Id" /><button type="submit" class="link small">Same as @Named(holder.Entity)</button></form> }
                             </div>
                         }
                     </div>
@@ -494,18 +494,18 @@ else
                         @* a group of one record: the row's actions are the group's *@
                         @if (!m.IsStore && !(chosenGroup is not null && ReferenceEquals(group, chosenGroup)))
                         {
-                            <form method="post" asp-page-handler="Accept" class="inline">
+                            <form method="post" asp-page-handler="Accept" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
                                 <button type="submit">Accept</button>
                             </form>
-                            <form method="post" asp-page-handler="Override" class="inline">
+                            <form method="post" asp-page-handler="Override" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
                                 <button type="submit" class="secondary" title="Always read this exact spelling as this record when it occurs in this field; the variants page can widen a rule to every field">Always, in this field</button>
                             </form>
                         }
                         else
                         {
-                            <form method="post" asp-page-handler="SameAs" class="inline">
+                            <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@m.Uri" />
                                 <button type="submit">Same as this</button>
                             </form>
@@ -548,7 +548,7 @@ else
                 @foreach (var e in Model.EntityMatches)
                 {
                     <div class="row result"><div style="flex:1"><strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener" title="The entity's page">@e.Label</a></strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span><br /><a class="small" href="@e.Id" target="_blank" rel="noopener">@e.Id</a></div>
-                        <form method="post" asp-page-handler="SameAs" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@e.Id" /><button type="submit">Same as</button></form></div>
+                        <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@e.Id" /><button type="submit">Same as</button></form></div>
                 }
                 @foreach (var r in Model.IndexMatches)
                 {
@@ -556,11 +556,11 @@ else
                         @* what the record is, so that two results of one name can be told apart (the owner, 2026-11-14: two Wikidata "Brockley"s, a village in Suffolk and the district of London, and an empty tag where one had no kind) *@
                         @if (LinkedArtNet.Alignment.Authorities.RecordSummary.Says(r) is { } says && says != r.Label) { <div class="small muted">@says</div> } else { <br /> }
                         <a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
-                        <form method="post" asp-page-handler="Accept" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit">Accept</button></form></div>
+                        <form method="post" asp-page-handler="Accept" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit">Accept</button></form></div>
                 }
             }
         </div>
-        <form method="post" asp-page-handler="Local" class="card">
+        <form method="post" asp-page-handler="Local" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="card">
             <input type="hidden" name="id" value="@item.String.Id" />
             <h3 style="margin-top:0">None of these: it is real and local</h3>
             <p class="small muted">Keeps the entity as a confirmed local authority, in no external source. The pipeline stops asking.</p>
@@ -588,14 +588,14 @@ else
     <div class="actions" style="margin-top:1.5rem">
         @if (item.SkippedAt is { } skipped)
         {
-            <form method="post" asp-page-handler="Unskip" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="Skipped @skipped.ToString("yyyy-MM-dd HH:mm"): back to its place in the desk's order">Unskip</button></form>
+            <form method="post" asp-page-handler="Unskip" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="Skipped @skipped.ToString("yyyy-MM-dd HH:mm"): back to its place in the desk's order">Unskip</button></form>
         }
         else
         {
-            <form method="post" asp-page-handler="Skip" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="To the back of the desk: it comes round again after everything else, in this session or the next">Skip for now</button></form>
+            <form method="post" asp-page-handler="Skip" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="To the back of the desk: it comes round again after everything else, in this session or the next">Skip for now</button></form>
         }
-        <form method="post" asp-page-handler="Undo" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="Take back the latest decision on this string">Undo last decision</button></form>
-        <form method="post" asp-page-handler="Flag" class="row inline" style="gap:.4rem"><input type="hidden" name="id" value="@item.String.Id" /><input type="text" name="text" placeholder="Note for another reviewer" style="width:18rem" /><button type="submit" class="quiet">Add note</button></form>
+        <form method="post" asp-page-handler="Undo" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><button type="submit" class="quiet" title="Take back the latest decision on this string">Undo last decision</button></form>
+        <form method="post" asp-page-handler="Flag" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="row inline" style="gap:.4rem"><input type="hidden" name="id" value="@item.String.Id" /><input type="text" name="text" placeholder="Note for another reviewer" style="width:18rem" /><button type="submit" class="quiet">Add note</button></form>
         <a class="button secondary" href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, after = item.String.Id })">Next →</a>
     </div>
 }

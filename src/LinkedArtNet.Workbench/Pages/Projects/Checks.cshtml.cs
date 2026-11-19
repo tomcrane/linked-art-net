@@ -23,18 +23,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     [BindProperty(SupportsGet = true)] public long[]? Go { get; set; }
     public IReadOnlyList<AuthorityRecord> IFound { get; private set; } = [];
 
-    /// <summary>Where an authority record says its place is, the nearest first, for telling the search's results apart.</summary>
-    public static string? ChainOf(AuthorityRecord record)
-    {
-        if (record.DataJson is null) return null;
-        try
-        {
-            using var doc = System.Text.Json.JsonDocument.Parse(record.DataJson);
-            return doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object && doc.RootElement.TryGetProperty("parentString", out var p) && p.GetString() is { } chain
-                ? string.Join(", ", chain.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or "") )) : null;
-        }
-        catch (System.Text.Json.JsonException) { return null; }
-    }
+    public static string? ChainOf(AuthorityRecord record) => ReviewService.ChainOf(record);
 
     public IReadOnlyList<AwayFinding> Away { get; private set; } = [];
     public string? HomePlace { get; private set; }
@@ -90,18 +79,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
                     Found = (await Project.Desk.SearchEntitiesAsync(Dataset, Find.Trim())).Where(e => e.Class == EntityClass.Place && e.MergedInto is null && e.Id != Plan.Entity.Id && Plan.Others.All(o => o.Id != e.Id)).Take(12).ToList();
                 if (!string.IsNullOrWhiteSpace(IFind))
                 {
-                    // the indexes are found by name, so "Kingston Jamaica" is the name "Kingston" told apart by "Jamaica": the whole text is
-                    // tried as a name first, then ever shorter names with the words left over required of the place's chain or heading
-                    // (seen as a user, 2026-11-17: "Wallington Northumberland" found nothing, being no place's name)
-                    var words = IFind.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    for (var k = words.Length; k >= 1 && IFound.Count == 0; k--)
-                    {
-                        var telling = words[k..];
-                        IFound = (await Project.Desk.SearchIndexesAsync(string.Join(' ', words[..k]), null, 300, HttpContext.RequestAborted))
-                            .Where(r => r.Type == "Place" && r.Source is "tgn" or "loc" && Plan.Entity.Equivalents.All(q => q.Uri != r.Uri)
-                                && telling.All(w => ((ChainOf(r) ?? "") + " " + r.Label).Contains(w, StringComparison.OrdinalIgnoreCase)))
-                            .Take(12).ToList();
-                    }
+                    IFound = (await Project.Desk.SearchIndexesAsync(IFind.Trim(), null, 60, HttpContext.RequestAborted))
+                        .Where(r => r.Type == "Place" && r.Source is "tgn" or "loc" && Plan.Entity.Equivalents.All(q => q.Uri != r.Uri)).Take(12).ToList();
                 }
                 foreach (var other in Plan.Others.Concat(Plan.Holders.Values).Concat(Found)) Clues[other.Id] = await Project.Desk.ClueAsync(other, HttpContext.RequestAborted);
                 return;

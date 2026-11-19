@@ -775,6 +775,30 @@ and the log (doc 15) records that. The order within an area is rough value.
   "Building"), which class the keywords field should give it, whether the project has or wants entities for houses,
   and where its identifier comes from (TGN has neither). To take up with the reading of subject headings, not at
   the checks.
+- The desk as a user, first cards (the assistant driving, 2026-11-19; mended that day: an action in a field's queue
+  dropped the field and went on in all fields; the search found by whole names only, so the "Plymouth Devon" the
+  desk's own notice advises found nothing; a search for a place opened with people of the name; the publisher hint
+  cited the card's own record). Seen and not mended, for the owner:
+  - "Athens" (32959), 13 records: three of the University of Georgia Press, two of Ohio University Press, the rest
+    Greek publishers. The card shows it plainly, the publishers grouped and hinted ("in Athens, Ga.", "in Athens
+    [Ohio]"), and offers only one decision for the string. The plainest case yet for doc 12 section 14 step 3: a
+    decision for a publisher's records, pressed on the group. Skipped.
+  - "Robbins, David (editor)" (28574): ten people of the name at 1.00, each a name and a year of birth, nothing
+    to say which edited a catalogue of the Independent Group. LoC's own record cites the works a heading was
+    made from; the card should show them, or the one that names this record's title. Skipped.
+  - "Desnoyers, Rosika (author)" (28565): one candidate, LoC's, exact, at 1.00, and nothing on the card says why
+    it waited for a person. Accepted. A queued card should say why it is queued.
+  - "Heaton, Bradford" (28561): the first candidate, lit and with the Accept button, was LoC's Heaton in North
+    Dakota at 0.85, its own reason saying the qualifier is not placed; four more American Heatons at 0.00 took a
+    screen. A candidate the string's qualifier speaks against should not lead, and those ruled out should fold.
+    TGN has no Heaton in Bradford; kept as a local authority. Nothing told the assistant that the indexes had been
+    searched and have none, as against the search failing.
+  - The card for "Athens" is some six thousand words: twelve groups, each member repeating one sentence of reason
+    ("prominence stands aside: ...") thirty times. Said once for the card, it would be a third the length.
+  - The owner's question, the same day: should "Review desk" say what is reviewed ("Source String Review Desk")?
+    The assistant's view: yes to saying it, in plainer words than "source string", and the more now that Checks
+    reviews entities; "String review" for the title and the navigation, with a line under it saying what a string
+    is. The owner's to choose.
 - A second check for the page: a place entity aligned to an item that is not a place (Wimborne Minster's "church":
   the same name, another kind of thing, not a namesake abroad, so the first check lists it only by chance). From
   Wikidata's instance-of where the index has it (the `instanceOf` of the item against the classes of places), else

@@ -1021,6 +1021,11 @@ and the log (doc 15) records that. The order within an area is rough value.
     splits those too; they were marked "probably same" in the trial;
   - at the desk: a candidate's dates and its earlier and later forms shown, and the record's date against them,
     so that the contemporary body is the one a person is led to.
+  - the owner, a moment later, of the layers that can use the succession: "...and so could the workbench, in
+    fact". So the workbench reads it as well as writing it out: an entity's page naming what it succeeded and
+    what succeeded it, with their strings and records a step away; the entities list, the project's search and the
+    card's hints able to gather a line of firms as one ("Trubner" finding Kegan Paul, Trench, Trubner and saying
+    which is which by date); the check for a string aligned to the wrong one of a line.
   The owner (2026-11-19): "This is also gathering evidence for what would go on our page of source fixes -
   cataloguer makes a note a record needs fixing" (doc 12 section 14, the cataloguers' list, step 2). What the two
   trials turned up for it, seen in the exports and not yet listed anywhere: places misspelt in a record

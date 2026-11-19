@@ -48,6 +48,12 @@ public class ExamplesTests(PostgresFixture pg)
         Assert.Equal("R1", record.RecordId);
         Assert.Contains(record.Strings, x => x.Raw == "Cambridge" && x.Id == cambridge.Id);
         Assert.Equal("R2", Assert.Single(await pg.Store.SearchRecordsAsync(ds, "R2")).RecordId);
+
+        // a longer form of a name, in the same field and decided: "Cambridge University Press" for "University Press"; not across fields
+        var shortForm = await pg.Store.CollectAsync(ds, cupString.Context, "University Press");
+        var longer = Assert.Single(await pg.Store.LongerFormsAsync(shortForm.Id));
+        Assert.Equal((cupString.Id, cup.Id, "Cambridge University Press"), (longer.StringId, longer.EntityId, longer.EntityLabel));
+        Assert.Empty(await pg.Store.LongerFormsAsync(cambridge.Id));
     }
 
     // four Heritage records in the export's shape: three name Langford's auction house (two kept at two per string), one is Hodgkin's

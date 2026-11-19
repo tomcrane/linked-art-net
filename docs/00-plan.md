@@ -952,6 +952,18 @@ and the log (doc 15) records that. The order within an area is rough value.
   - "Benedikt Taschen" and "Taschen (Firm)": one thing, taken together, the firm the survivor?
   - The trial's set and the desk disagree on order: "ARTEMIS (Organization)" is fifth at the desk, not just below
     the people; "Mendez" and "Granada" have the body second at 0.97. The query's "just below" is not the desk's.
+  Two counts after the marks (2026-11-19, read-only; `reports/q-neighbours1.sql`):
+  - Is the right body in the index? Of fourteen right bodies looked for by their fuller names, ten are there and
+    were not offered (Arno Press, Artemis Fine Arts (Firm), Freedom Press (London, England), Harper & Row, Mead
+    Gallery, Oryx Press, Rizzoli International Publications, Troubador Publishing, Weiss Gallery (London, England),
+    Yale University Press); four are not (Richard Drew Publishing, Pindar Press, Kala Press, HENI: so "richard
+    drew" finding nothing is the index, not the search). The one-word string scores low against the fuller name.
+    Not built, for the owner's word: in a publisher's field, candidates sought also under the string with "Press",
+    "Books", "Publishing", "Publications", "Gallery", "& Co" after it, the record's place to tell among them.
+  - Longer forms already decided in the project, same field: 173 of the 749 queued publisher strings have one,
+    100 of them onto a single entity ("Arno" beside "Arno Press", "Cape" beside "Jonathan Cape"); other fields few
+    (keywords 40, corporate author 34, place 12). Not a rule: "Mead" beside "Mead Art Museum" is another thing.
+    BUILT as a hint on the card, with "Same as" for a person to press (LongerFormsAsync, the desk).
   How the owner checks a verdict (2026-11-19, "a common pattern", while marking the file): takes the string from the
   document, searches the entities for it, follows the link to the desk, looks at the records the string is in, and
   then searches the web. Four steps a line. So a list of verdicts, when it is built, wants on each row: a link

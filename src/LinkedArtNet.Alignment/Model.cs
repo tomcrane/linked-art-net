@@ -394,4 +394,7 @@ public sealed record StringHit(SourceString String, string? Method, string? Enti
 /// <summary>A record found by the project's search, with up to twelve of the strings in it (id, field, as written), each of which has a card.</summary>
 public sealed record RecordHit(string System, string RecordId, string? Title, string? Date, IReadOnlyList<(long Id, string Context, string Raw)> Strings);
 
+/// <summary>A longer form of a string's name, in the same field, that is already decided onto an entity ("Arno Press" for "Arno"): evidence for the reviewer, not a decision.</summary>
+public sealed record LongerForm(long StringId, string Raw, int Records, string EntityId, string? EntityLabel);
+
 public sealed record RecordGroup(string? Value, int Records, IReadOnlyList<StringExample> First);

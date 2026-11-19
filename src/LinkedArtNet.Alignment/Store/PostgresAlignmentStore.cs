@@ -1497,6 +1497,27 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    public async Task<IReadOnlyList<LongerForm>> LongerFormsAsync(long stringId, int limit = 8, CancellationToken ct = default)
+    {
+        // whole words at the head or the tail, compared without "like" so that a "%" in a string is only a "%"
+        await using var cmd = _db.CreateCommand(
+            """
+            select t.id, t.raw, (select count(*) from occurrences o where o.string_id = t.id) as records, d.entity_id, e.label
+            from source_strings s
+            join source_strings t on t.dataset = s.dataset and t.context = s.context and t.id <> s.id and length(t.raw) > length(s.raw) + 1
+                 and (left(lower(t.raw), length(s.raw) + 1) = lower(s.raw) || ' ' or right(lower(t.raw), length(s.raw) + 1) = ' ' || lower(s.raw))
+            join decisions d on d.source_string_id = t.id and d.valid and d.method not in ('queued', 'minted') and d.entity_id is not null
+            join entities e on e.id = d.entity_id
+            where s.id = @id and length(s.raw) >= 4
+            order by records desc, t.raw limit @limit
+            """);
+        Add(cmd, "id", stringId); Add(cmd, "limit", limit);
+        var list = new List<LongerForm>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new LongerForm(r.GetInt64(0), r.GetString(1), Convert.ToInt32(r.GetInt64(2)), r.GetString(3), Str(r, 4)));
+        return list;
+    }
+
     public async Task<IReadOnlyList<RecordHit>> SearchRecordsAsync(string dataset, string text, int limit = 15, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

@@ -38,6 +38,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<AuthorityRecord> IndexMatches { get; private set; } = [];
     /// <summary>For the entities a search found: where a place is, and how many strings stand on each, so that two of one name can be told apart.</summary>
     public Dictionary<string, (string? Placement, int Strings)> MatchClues { get; } = new(StringComparer.Ordinal);
+    /// <summary>Longer forms of the card's string, in its field, that the project has already decided: "Arno Press" for "Arno".</summary>
+    public IReadOnlyList<LongerForm> LongerForms { get; private set; } = [];
     /// <summary>Set when a search of several words matched nothing and the results shown are those of the name alone ("Heaton" for "Heaton Bradford"): absence is then seen, not guessed at (the assistant as a user, 2026-11-19: nothing said whether the indexes had been searched and have none, or the search had failed).</summary>
     public string? NearName { get; private set; }
     public string? Message { get; private set; }
@@ -60,6 +62,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         // placeholder "Osterley Park" to its publisher string: "there's nothing to do at the desk"). The rules look only among the
         // kinds the field allows, a person or a body for a publisher; the search looks at every entity of the project and every
         // index, and finds the place "Osterley Park (Middlesex)" to say "Same as" to
+        if (Item is not null && Item.Decision.Method == DecisionMethod.Queued) LongerForms = await Services.Store.LongerFormsAsync(Item.String.Id, 8, HttpContext.RequestAborted);
         if (Item is not null && string.IsNullOrWhiteSpace(Q) && Item.Evidence.Groups.Count == 0)
         {
             Q = Item.Evidence.Reading?.Text is { Length: > 0 } name ? name : Item.String.Raw;

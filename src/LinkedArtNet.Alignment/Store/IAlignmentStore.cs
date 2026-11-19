@@ -126,6 +126,9 @@ public interface IAlignmentStore
     /// <summary>The dataset's strings whose text contains the text given, whatever their field: one written exactly so first, then the shorter. For the project's search box.</summary>
     Task<IReadOnlyList<StringHit>> SearchStringsAsync(string dataset, string text, int limit = 30, CancellationToken ct = default);
 
+    /// <summary>The strings of the same field that begin or end with this string as whole words and are decided onto an entity (not queued, not a placeholder), the most used first.</summary>
+    Task<IReadOnlyList<LongerForm>> LongerFormsAsync(long stringId, int limit = 8, CancellationToken ct = default);
+
     /// <summary>The dataset's records whose title contains the text given, or whose identifier is it, with the strings in each.</summary>
     Task<IReadOnlyList<RecordHit>> SearchRecordsAsync(string dataset, string text, int limit = 15, CancellationToken ct = default);
 

@@ -58,7 +58,10 @@
     var item = Model.Item;
 }
 <div class="row" style="justify-content:space-between">
-    <h1 style="margin:0">Review desk</h1>
+    @* what is reviewed, in the title and in a line under it (the owner, 2026-11-19, now that Checks reviews entities: "Source String Review
+       Desk"?; the assistant as a user: "source string" is the toolkit's word, and what it wanted on arriving was one plain sentence) *@
+    <div><h1 style="margin:0">String review</h1>
+    <p class="small muted" style="margin:.2rem 0 0; max-width:34rem">Each card is one piece of text from the catalogue records, such as a place, a name or a subject. Decide what it names.</p></div>
     <form method="get" class="row" style="gap:.5rem">
         <input type="hidden" name="method" value="@Model.Method" />
         <select name="context" onchange="this.form.submit()" aria-label="Context">
@@ -227,7 +230,45 @@ else
     var chosenGroup = decidedCard && item.Entity is not null ? ev.Groups.FirstOrDefault(g => g.Members.Any(m => m.Uri == item.Entity.Id || item.Entity.Equivalents.Any(q => q.Uri == m.Uri))) : null;
     var shownGroups = chosenGroup is null ? ev.Groups : ev.Groups.Where(g => ReferenceEquals(g, chosenGroup)).Concat(ev.Groups.Where(g => !ReferenceEquals(g, chosenGroup))).ToList();
     var foldOpen = false;
+    // a reason every candidate shares is said once for the card and not on each (the assistant as a user, 2026-11-19: "Athens" said one
+    // sentence thirty times; the owner: "show what they need to see and not more")
+    var liveReasons = ev.Groups.SelectMany(g => g.Members).Where(m => m.Veto != true && m.SetAside != true && !string.IsNullOrWhiteSpace(m.Reason)).Select(m => m.Reason!.Split("; ")).ToList();
+    var saidOnce = liveReasons.Count >= 3 ? liveReasons[0].Where(c => !c.StartsWith("name ", StringComparison.Ordinal) && liveReasons.All(r => r.Contains(c))).ToList() : new List<string>();
+    Func<string?, string> lessReason = reason => reason is null ? "" : string.Join("; ", reason.Split("; ").Where(c => !saidOnce.Contains(c)));
+    // the titles of the string's records, for seeing which heading was made from one of them
+    var recordTitles = recs.Groups.SelectMany(g => g.First).Select(x => x.Title).OfType<string>().Select(t => t.Split(':')[0].Trim()).Where(t => t.Length >= 12).Distinct().ToList();
+    // LoC's and ULAN's records among the candidates that have not been pulled: a pull brings what each heading was made from
+    var unpulled = ev.Groups.Where(g => g.Members.Any(m => m.Veto != true)).SelectMany(g => g.Members).Where(m => !m.IsStore && m.Source is "loc" or "ulan" && item.Records.TryGetValue(m.Uri, out var ur) && LinkedArtNet.Alignment.Authorities.SourcePull.Read(ur) is null).Select(m => m.Uri).Distinct().Take(12).ToList();
     <h2>@(chosenGroup is not null ? "What it was decided as" : "Candidates")</h2>
+    @if (chosenGroup is null && item.Decision.Method == DecisionMethod.Queued && item.LookedAgain is null)
+    {
+        // why the card waits for a person, read from its evidence (the owner, 2026-11-19: "say why card is queued"; the assistant had met
+        // one exact candidate at 1.00 and nothing to say why it had not been accepted)
+        var liveGroups = ev.Groups.Where(g => g.Members.Any(m => m.Veto != true && m.SetAside != true)).ToList();
+        var topScore = liveGroups.Count == 0 ? 0 : liveGroups.Max(g => g.Score);
+        var level = liveGroups.Count(g => g.Score >= topScore - 0.001);
+        var acceptAt = Model.Project.Manifest.AcceptScore;
+        var why = ev.Groups.Count == 0 ? "the indexes and the project's entities offered nothing for it."
+            : liveGroups.Count == 0 ? "every candidate found was ruled out, each for the reason it gives."
+            : level >= 2 ? $"{level} candidates are level at {topScore:0.00}, and nothing in the string tells them apart" + (saidOnce.Count > 0 ? ": " + string.Join("; ", saidOnce) + "." : ". The records above may.")
+            : topScore < acceptAt ? $"its best candidate scores {topScore:0.00}, under the {acceptAt:0.00} at which a rule may accept."
+            : liveGroups.First(g => g.Score >= topScore - 0.001).Sources.Count < 2 ? $"its one candidate at {topScore:0.00} comes from a single source ({string.Join(", ", liveGroups.First(g => g.Score >= topScore - 0.001).Sources)}). A rule accepts on one source only where the string carries something to check it by, a date or a place; this one does not, so a person confirms it."
+            : "the rules did not accept its best candidate" + (saidOnce.Count > 0 ? ": " + string.Join("; ", saidOnce) + "." : ".");
+        <p class="small"><strong>Why it waits for a person:</strong> @why</p>
+    }
+    else if (saidOnce.Count > 0)
+    {
+        <p class="small muted">Of every candidate below: @string.Join("; ", saidOnce).</p>
+    }
+    @if (chosenGroup is null && unpulled.Count > 0 && ev.Groups.Count(g => g.Members.Any(m => m.Veto != true)) >= 2)
+    {
+        @* namesakes told apart by what each heading was made from (the owner, 2026-11-19; the assistant at "Robbins, David (editor)": ten of
+           the name, each a name and a year of birth). LoC's record cites the works; a pull brings them, for this card's candidates only *@
+        <form method="post" asp-page-handler="Works" asp-route-method="@Model.Method" asp-route-context="@Model.Context" asp-route-id="@item.String.Id" class="inline" style="margin-bottom:.6rem">
+            @foreach (var u in unpulled) { <input type="hidden" name="uris" value="@u" /> }
+            <button type="submit" class="secondary small" title="Asks the Library of Congress and ULAN for these records: the works each heading was made from, and what else each says of its person or body. Nothing is decided">Fetch what each heading was made from (@unpulled.Count record@(unpulled.Count == 1 ? "" : "s"))</button>
+        </form>
+    }
     @if (Model.Plan is { } plan)
     {
         @* two or more of the project's own entities among the ticked: what accepting them together will do, shown before it is done, since a
@@ -340,7 +381,7 @@ else
         var pairLeft = -1;
         Func<IEnumerable<LinkedArtNet.Alignment.Reconciliation.EvidenceMember>, Microsoft.AspNetCore.Html.IHtmlContent> pairFoot = targets => PairFoot(item.String.Id, targets.Select(t => t.Uri));
         var pinOfGroup = pins.TryGetValue(group, out var letter) ? letter : null;
-        <div class="card @(first && !allVeto ? "best" : "") @(allVeto ? "veto" : "")" data-pin="@pinOfGroup" id="@(pinOfGroup is null ? null : "pin-" + pinOfGroup)">
+        <div class="card @(first && !allVeto && !live.All(m => (m.Reason ?? "").Contains("qualifier not placed", StringComparison.Ordinal)) ? "best" : "") @(allVeto ? "veto" : "")" data-pin="@pinOfGroup" id="@(pinOfGroup is null ? null : "pin-" + pinOfGroup)">
             <div class="row">
                 @if (pinOfGroup is not null) { <span class="pin" title="This candidate's marker on the map above">@pinOfGroup</span> }
                 @if (chosenGroup is not null && ReferenceEquals(group, chosenGroup)) { <span class="tag chosen-tag">decided as this</span> }
@@ -471,7 +512,12 @@ else
                                 @if (facts.Examples.Count > 0) { <text>· seen in: @string.Join(" · ", facts.Examples.Select(x => (x.Title ?? x.RecordId) + (x.Date is null ? "" : $" ({x.Date})")))</text> }
                             </div>
                         }
-                        <div class="reason">@m.Reason</div>
+                        <div class="reason">@lessReason(m.Reason)</div>
+                        @if (!m.IsStore && item.Records.TryGetValue(m.Uri, out var madeFromRec) && LinkedArtNet.Alignment.Authorities.SourcePull.Read(madeFromRec) is { } madeFrom && madeFrom.Facts.Where(f => f.Key is "Found in" or "Occupation").Select(f => f.Value).ToList() is { Count: > 0 } works)
+                        {
+                            var namesIt = recordTitles.Any(t => works.Any(w => w.Contains(t, StringComparison.OrdinalIgnoreCase)));
+                            <div class="small works"><span class="muted">made from:</span> @string.Join(" · ", works.Take(5))@(works.Count > 5 ? $" · and {works.Count - 5} more" : "")@if (namesIt) { <strong> · names a record of this string</strong> }</div>
+                        }
                         @if (!m.IsStore && item.Holders is { } holders && holders.TryGetValue(m.Uri, out var holder))
                         {
                             @* the project entity that holds this record now, since the evidence was written: an identifier added by hand, or a later run *@
@@ -544,7 +590,8 @@ else
             @if (Model.Q is not null)
             {
                 @if (Model.Searched && Model.EntityMatches.Count + Model.IndexMatches.Count > 0) { <p class="small"><strong>Found by searching for "@Model.Q"</strong>, since the rules offered nothing:</p> }
-                @if (Model.EntityMatches.Count == 0 && Model.IndexMatches.Count == 0) { <p class="muted small">Nothing found for "@Model.Q".</p> }
+                @if (Model.EntityMatches.Count == 0 && Model.IndexMatches.Count == 0) { <p class="muted small">Nothing found for "@Model.Q". The project's entities and the local indexes (TGN, ULAN, AAT, the Library of Congress, Wikidata) were searched and have nothing of that name: it is not there, or is there under another name.</p> }
+                @if (Model.NearName is not null) { <p class="small"><strong>Nothing matches all of "@Model.Q".</strong> The indexes were searched, and what follows is everything they have named "@Model.NearName": if the one you want is not among them, the indexes do not have it.</p> }
                 @foreach (var e in Model.EntityMatches)
                 {
                     <div class="row result"><div style="flex:1"><strong><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener" title="The entity's page">@e.Label</a></strong> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span><br /><a class="small" href="@e.Id" target="_blank" rel="noopener">@e.Id</a></div>

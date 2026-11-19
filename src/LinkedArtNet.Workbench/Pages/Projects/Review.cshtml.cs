@@ -36,6 +36,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<ContextMethodCount> Queue { get; private set; } = [];
     public IReadOnlyList<Entity> EntityMatches { get; private set; } = [];
     public IReadOnlyList<AuthorityRecord> IndexMatches { get; private set; } = [];
+    /// <summary>Set when a search of several words matched nothing and the results shown are those of the name alone ("Heaton" for "Heaton Bradford"): absence is then seen, not guessed at (the assistant as a user, 2026-11-19: nothing said whether the indexes had been searched and have none, or the search had failed).</summary>
+    public string? NearName { get; private set; }
     public string? Message { get; private set; }
     /// <summary>What accepting the ticked together will do, when the desk is asking the reviewer to confirm it.</summary>
     public TogetherPlan? Plan { get; private set; }
@@ -69,6 +71,13 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             var kind = Project.Reconciler.Read(Item.String).Classes is [var first, ..] ? first : (EntityClass?)null;
             EntityMatches = (await Project.Desk.SearchEntitiesAsync(Dataset, Q)).Where(e => e.Id != Item.Entity?.Id).OrderByDescending(e => e.Class == kind ? 1 : 0).ToList();
             IndexMatches = (await Project.Desk.SearchIndexesAsync(Q)).OrderByDescending(r => kind is not null && string.Equals(r.Type, kind.ToString(), StringComparison.OrdinalIgnoreCase) ? 1 : 0).ToList();
+            var words = Q.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            for (var k = words.Length - 1; k >= 1 && EntityMatches.Count == 0 && IndexMatches.Count == 0; k--)
+            {
+                var name = string.Join(' ', words[..k]);
+                IndexMatches = (await Project.Desk.SearchIndexesAsync(name, null, 12)).OrderByDescending(r => kind is not null && string.Equals(r.Type, kind.ToString(), StringComparison.OrdinalIgnoreCase) ? 1 : 0).ToList();
+                if (IndexMatches.Count > 0) NearName = name;
+            }
         }
         if (Item is not null && Confirm && Targets is { Length: > 0 })
         {
@@ -105,6 +114,19 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
 
     public Task<IActionResult> OnPostSameAsAsync(long id, string entity, string? note) =>
         Act(id, async () => ("Marked as the same entity.", await Project.Desk.SameAsAsync(Dataset, id, entity, Reviewer, note)));
+
+    /// <summary>Pulls the records named (LoC's and ULAN's among a card's candidates, twelve at most) so that the card can show what each heading was made from; decides nothing.</summary>
+    public async Task<IActionResult> OnPostWorksAsync(long id, string[]? uris)
+    {
+        var failed = 0;
+        foreach (var uri in (uris ?? []).Where(LinkedArtNet.Alignment.Authorities.SourcePull.CanPull).Distinct().Take(12))
+        {
+            try { if ((await Project.Pull.PullAsync(uri, HttpContext.RequestAborted)).Error is not null) failed++; }
+            catch (Exception e) when (e is HttpRequestException or TaskCanceledException or InvalidOperationException) { failed++; }
+        }
+        TempData["Flash"] = failed == 0 ? "Fetched: each candidate now says what its heading was made from, where its source says." : $"Fetched, but {failed} could not be reached just now.";
+        return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id });
+    }
 
     public Task<IActionResult> OnPostLocalAsync(long id, string? label, string? note, string? url, EntityClass? cls) =>
         Act(id, async () => (string.IsNullOrWhiteSpace(url) ? "Kept as a local authority." : "Kept as a local authority, with the URL as its identifier.", await Project.Desk.KeepLocalAsync(Dataset, id, Reviewer, label, note, url, cls)));

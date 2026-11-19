@@ -1026,6 +1026,18 @@ and the log (doc 15) records that. The order within an area is rough value.
     what succeeded it, with their strings and records a step away; the entities list, the project's search and the
     card's hints able to gather a line of firms as one ("Trubner" finding Kegan Paul, Trench, Trubner and saying
     which is which by date); the check for a string aligned to the wrong one of a line.
+  - RULED the same evening, on a body that only changed its name (Albertina, MOSTYN): the same rule. The owner:
+    "I think that last question is the same no? Try to follow external alignment." Two headings outside, two
+    entities here, the one the successor of the other. So "Albertina" (2022) and "Mostyn" (2018) in the second
+    trial are for the later heading, not the entity offered.
+  - the owner: "the successor chain mirrors the geographical hierarchy of places, ... kinda". A place has a
+    chain of what it lies in, a body a line of what it came from; both are relations between entities that tell
+    namesakes and near-names apart, and the workbench already draws the first (the paths on the Decide screen,
+    broadest first). The second to be drawn the same way, earliest first, the record's date marked on it.
+  - a wrinkle to settle when designed (the assistant's): the sources do not always split alike. LoC makes a
+    heading for each name; Wikidata often keeps one item through a change of name. Then one Wikidata item belongs
+    to two of the project's entities, which the store refuses today (an identifier in use). To count before
+    choosing: how many bodies have several LoC headings and one Wikidata item.
   The owner (2026-11-19): "This is also gathering evidence for what would go on our page of source fixes -
   cataloguer makes a note a record needs fixing" (doc 12 section 14, the cataloguers' list, step 2). What the two
   trials turned up for it, seen in the exports and not yet listed anywhere: places misspelt in a record

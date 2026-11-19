@@ -12,7 +12,14 @@
     @if (v.IsCompound) { <a class="tag" href="#parts" title="A compound heading's own concept, coordinated from its parts, listed below">compound</a> }
     @if (e.Status != EntityStatus.Merged) { <button type="button" class="tray-add small" data-tray="@e.Id" data-tray-label="@e.Label">Add to tray</button> }
     @* desk work under this name is signalled at the top, where the eye lands, with the list further down (the owner, 2026-11-06) *@
-    @if (Model.Waiting.Count + Model.OwnQueued.Count > 0) { <a class="tag src" href="@(Model.Waiting.Count > 0 ? "#waiting" : "#strings")" title="Queued strings under this name, and this entity's own strings still at the desk">@(Model.Waiting.Count + Model.OwnQueued.Count) waiting at the desk</a> }</h1>
+    @* and it goes to the desk, at the first of them (the owner, 2026-11-19, by way of another session: he kept pressing it to get to the
+       desk and was taken down this page, a second step for nothing; the desk lists the rest under "Also waiting under this name") *@
+    @if (Model.Waiting.Count + Model.OwnQueued.Count > 0)
+    {
+        var atDesk = Model.Waiting.Count + Model.OwnQueued.Count;
+        var firstAtDesk = (Model.Waiting.Count > 0 ? Model.Waiting[0] : Model.OwnQueued[0]).String;
+        <a class="tag src" href="/p/@Model.Dataset/review?id=@firstAtDesk.Id" title="Opens the desk at &quot;@firstAtDesk.Raw&quot;@(atDesk == 1 ? "" : $", the first of {atDesk} strings waiting under this name; the desk goes on to the others, and they are listed further down this page")">@atDesk waiting at the desk</a>
+    }</h1>
 @if (e.Status == EntityStatus.Provisional && e.Equivalents.Count == 0)
 {
     @* a placeholder is a run's, and what is changed on it by hand goes when the run is taken back (the owner, 2026-11-14, having

@@ -23,6 +23,42 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-19
+
+The day the work turned from card by card to the whole queue. No reconcile; schema unchanged; the full test loop
+green at day end.
+
+- Morning, at the desk as `claude`: "Heaton, Bradford" kept local, "Desnoyers, Rosika" and "Pisa" accepted,
+  "Robbins, David (editor)" accepted after the headings' citations were fetched, "Athens" skipped. Mended as met:
+  the desk kept the field filter after an action; its search finds a name with telling words; the publisher hint
+  no longer cites the card's own record. The desk renamed "String review" (the owner agreed the wording); a card
+  says why it waits for a person; a reason shared by every candidate is said once; "Fetch what each heading was
+  made from"; a contradicted candidate no longer leads.
+- The owner: "perhaps it's only by seeing a lot of review strings, which you can do a lot faster than I can, that
+  you can begin to see large-scale patterns". A survey of the 3,764 queued strings in three steps, by read-only
+  SQL: by kind (level namesakes none the project's 37%, one candidate one source 29%, namesakes with a project
+  entity 19%, under the threshold 9%, all ruled out 4%); the 2024 import behind about 5%; two tests of rules
+  (bodies first in a publisher's field; the record's date against a life) that thin cards and decide few.
+  Conclusion: the queue waits on judgement with the record in view, so help belongs on sets.
+- Trial 1 of help on a set: 49 publisher strings with one body below a person, verdicts by the assistant in a
+  file, marked by the owner. Firm verdicts 35 of 35, "probably" 3 of 6, each miss a heading judged by its label.
+- From the owner's remarks while marking, built the same day: the entity page's "waiting at the desk" opens the
+  desk; a search box for the project; pages keep the reader's place across a search; the desk's search results say
+  where a place is and what stands on it; the title of each record looked up at Library Hub and on the web.
+- After the marks: ten of fourteen right bodies are in the index under fuller names and were not offered; 173 of
+  749 queued publisher strings have a longer form already decided. Built as hints on the card, with the owner's
+  caveat that the user must still be sure: "Longer forms of this name", "Fuller names in the indexes", and how
+  much of the project already stands on a candidate.
+- Trial 2: the 100 publisher strings with a longer form decided onto one entity. Same 62, probably 13, not 19.
+  The owner marked 49 and agreed with all. Found on the way: project entities aligned to namesakes (Penguin Books
+  on the New Zealand firm, Jonathan Cape on the New York house). A count after it: 93 bodies whose heading's place
+  agrees with none of their records' places, 434 records.
+- A trial of sleuthing by web search, eight hard strings: four answered with a citation (two by the record's own
+  ISBN), four not. A library catalogue asked by ISBN would do better than the web.
+- A relay from another session (the owner had typed in the wrong window) was acted on and then retracted; the
+  owner asked for the same thing here a moment later, so it stood. Noted: a relayed request for a code change
+  wants the owner's word here first.
+
 ## 2026-11-17
 
 The owner's proposal: the assistant drives the workbench in the browser as a user, to find what the owner has grown

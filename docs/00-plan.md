@@ -62,25 +62,63 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-17 evening, the desk's place brought up to 2026-11-19; the one place to read first)
+## 0. Resume point (written 2026-11-19 evening; the one place to read first)
 
-**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile has run since, so the stored
-cards are that run's (Look again shows a string under today's rules). Schema version 12 on the real store. The
-checks list (`/p/pmc/checks`) is down to the two rows left with notes, "Charterhouse" and "Wallington", which the
-owner ruled want work elsewhere (section 7: a house or a building under a town's entity). On 2026-11-17 the
-assistant drove the workbench as a user, signed in as `claude` (a reviewer the owner added), deciding and
-reporting after; that is the way of working for now, and the owner likes it ("we can resume at this point
-tomorrow"). The eight commits of 2026-11-17 are local on `de-pmc`, the full test loop green at day end; `git push`
-is the owner's word.
+**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile has run since, and nothing
+built on 2026-11-19 wants one: the day's additions to the card are looked up when the card opens. Schema version
+12 on the real store. 3,764 strings queued. The way of working is the assistant driving the workbench as a user,
+signed in as `claude`, the owner reviewing after; on 2026-11-19 it widened, at the owner's word, from card by
+card to a survey of the whole queue and two trials of help on a set. The day's commits are local on `de-pmc`, the
+full test loop green at day end; `git push` is the owner's word.
 
-**Resume here: the desk, as a user.** http://localhost:5200/p/pmc/review?context=place, the place queue (145 on
-2026-11-19), at "Winchester" (string 42105, 25 records, opened and not decided). Decided on 2026-11-19 as `claude`:
-"Heaton, Bradford" kept as a local authority (TGN has no Heaton in Bradford), "Desnoyers, Rosika (author)" accepted
-as LoC's, "Pisa" accepted as the city with its two LoC headings; skipped, "Athens" (wants a decision for a
-publisher's records) and "Robbins, David (editor)" (ten of the name, nothing to tell them apart). What those cards
-showed is in section 7 ("The desk as a user, first cards"), with what was mended and what is the owner's to
-choose, the desk's title among it. A thing to count before anything is made of it: at "Pisa" the choice was the
-city against the province of its name, and a place of publication is a town.
+**What 2026-11-19 found** (section 7 has each in full, under "The survey of the queue" and the trials):
+
+- The queue waits on judgement with the record in view, not on a missing rule: 37% are level namesakes none of
+  them the project's, 29% one candidate from one source, 19% namesakes with a project entity among them. The 2024
+  import accounts for about 5% of it.
+- Trial 1, 49 publisher strings (is the body below the people the publisher?): the assistant's firm verdicts held
+  35 of 35 against the owner's marks, its "probably" 3 of 6; each miss was a heading judged by its label and not
+  by its record. The body offered was the publisher in 18 of 49.
+- Trial 2, 100 publisher strings with a longer form already decided (is the string that entity?): same 62,
+  probably 13, not 19; the owner agreed with all of the first 49 marked and stopped there
+  (`reports/trial2-longer-forms-2026-11-19.md`, blocks 50 to 100 unmarked).
+- The right body is usually in the index and not offered (ten of fourteen looked for), because a one-word string
+  scores low against the fuller name. And project entities are themselves misaligned to namesakes: a count finds
+  93 bodies whose heading's place agrees with none of their records' places, Country Life (88 records) on an
+  academy in North Carolina among them.
+- How the owner checks a verdict: the string searched for, its card, the records, then the web for the title, or
+  the title with the publisher. "Very often a bit of sleuthing will reveal a confident answer."
+
+**Built on 2026-11-19, for the owner to look at** (seen by the assistant in the browser except where said):
+
+- The desk is "String review"; a card says why it waits for a person; "Fetch what each heading was made from".
+- A search box for the project in the header ("/" reaches it, not tried): http://localhost:5200/p/pmc/search?q=Blackwell
+- A search or small action that reloads its own page keeps the reader's place (seen at the desk's search only).
+- On a card: beside each record, the title looked up at Library Hub and on the web, alone or with the string
+  (the links not followed: Library Hub's address is a guess to be tried); "Longer forms of this name, already
+  decided in this project", with "Same as"; for a publisher, "Fuller names in the indexes", with its caveat; on a
+  candidate, "Already in this project: N records ... stand on this". Cards to see them on: "Blackwell"
+  http://localhost:5200/p/pmc/review?id=5814, "Yale" http://localhost:5200/p/pmc/review?id=8770.
+- The entity page's "N waiting at the desk" opens the desk (not tried in the browser).
+- The assistant's decisions as `claude` on 2026-11-19: "Heaton, Bradford" kept local, "Desnoyers, Rosika"
+  accepted, "Pisa" as the city, "Robbins, David (editor)" as LoC's "Robbins, David, 1937-"; and from 2026-11-17,
+  three on its own knowledge: "Royston" to Hertfordshire, "Plaistow" kept as Newham's, "Kingston" to TGN 1016870.
+- Left by hand from 2026-11-15, if not done since: "Cardiff" (`place/t7mbc5a4`), "Belfast" (`place/scrhnxf9`),
+  "Raleigh" (`place/mcgyqvqf`), the Ontario "Peterborough" (`place/bk5w54aq`).
+
+**Next, in order.** (1) The owner's word on three things put to him: the check "a body aligned to a namesake
+elsewhere" (the 93; the entities to mend before "Same as" is pressed onto them: Penguin Books, Jonathan Cape,
+John Donald, Pilgrim Press, Country Life); the ruling on predecessor and successor firms ("Alfa" and Nuova Alfa);
+whether the publishers' table should name the body as well as the place. (2) The rest of trial 2's marks, if the
+owner wants them counted. (3) The design of help on a set, to put to the owner: the set drawn from evidence the
+card shows (longer forms, fuller names), the heading's own record read, the title asked of a library catalogue by
+ISBN, a verdict with what it cites, a third outcome "the record wants fixing" that feeds the cataloguers' list,
+and a "suggested" method confirmed by a person. (4) Decisions by record for a string that is two bodies ("Viking"
+in London and New York, "Musée des Beaux-Arts" in three towns): doc 12 section 14 step 3. (5) The desk's place
+queue where it was left: http://localhost:5200/p/pmc/review?context=place, at "Winchester" (string 42105). (6) The
+cataloguers' list (doc 12 section 14 step 2), for which the trials gathered examples. (7) Housekeeping: section 7
+pruned of built items and long since due; doc 12 a section for the Checks page, the Decide screen and the day's
+additions to the card; doc 16's scenarios and pictures, stale after the day's changes to the card.
 
 **How the driving goes** (section 7 has it in full): the workbench started by the assistant
 (`dotnet run --project src/LinkedArtNet.Workbench`); sign in as `claude` at http://localhost:5200/signin (the owner
@@ -90,28 +128,6 @@ card reported at first and less as kinds repeat; small things mended as they are
 owner, and anything counted before it is made a rule (the one rule added uncounted that day listed fifteen right
 places as wrong and came out within the hour). Tests while iterating: the alignment and workbench projects per
 commit, the full loop before a push and at day end.
-
-**For the owner to look at** (built 2026-11-17, seen by the assistant in the browser except where said):
-
-- The Decide screen string by string, with the chains of places broadest first and the distance in words: either
-  row at http://localhost:5200/p/pmc/checks. Not seen: the folded map opened; the index search finding something
-  ("Kingston Jamaica" is the case it was made for); "Use LoC's form" on an entity page (built 2026-11-15).
-- The assistant's 21 decisions as `claude`, three of them on its own knowledge and so the owner's to check:
-  "Royston" to Hertfordshire (the Royston and District Museum), "Plaistow" kept as the one in Newham (the Curwen
-  Press), "Kingston" to TGN 1016870 (Kingston, Jamaica, looked up by SQL before the screen could search).
-- Left by hand from 2026-11-15, if not done since: "Cardiff" (`place/t7mbc5a4`), "Belfast" (`place/scrhnxf9`),
-  "Raleigh" (`place/mcgyqvqf`), the Ontario "Peterborough" (`place/bk5w54aq`).
-
-**Next, in order.** (1) The desk as above. (2) What the driving raised and is not built: two project entities for
-one place found by no check ("Harmondsworth" and "Harmondsworth (London, England)"); a table of former and
-abbreviated county names ("Avon", "Middlesex", "Oxon", "IoW"), without which a string's qualifier cannot be told
-from another place; the chains drawn at the desk and for compound subject headings; a second "other place" in one
-pass of the Decide screen. (3) The assistant on the checks and at the desk (section 7: the worked example, and the
-day's decisions as a labelled set). (4) The publisher hint carried on (it must not cite the card's own record; the
-Wikidata loader keeping a body's headquarters; several places an entry). (5) Doc 12 section 14 step 2, the
-cataloguers' list, when the owner says. (6) A project from the catalogue alone, the owner's "much later". (7)
-Housekeeping: section 7 pruned of built items; doc 12 given a section for the Checks page and the Decide screen,
-described so far only in section 7, the log and the code; doc 16's scenarios.
 
 **Decisions owed by the owner:** 15, *the LUX export's shape* (doc 10 7.5 item 2, before it is designed): ask the LUX
 team whether a source reload replaces by URI, whether records absent from a full dump are retired, and how LUX takes
@@ -1005,7 +1021,38 @@ and the log (doc 15) records that. The order within an area is rough value.
   - "Allen & Unwin", 1892: record D1925, "The letters of Philip Dormer Stanhope Earl of Chesterfield", London:
     the date the likelier mistake (the owner: "a typo for 1982?"): one for the cataloguers' list;
   - the fuller names are noisy with "& Co": "Murray" is offered F.J. Murray Co., C.W. Murray and Co., B.C.
-    Murray & Co.; to drop that word, or keep only names that begin with the string.
+    Murray & Co.; DROPPED 2026-11-19.
+  - the owner, the same day: "Very often a bit of sleuthing will reveal a confident answer. Sometimes a simple
+    search, sometimes more detailed, cross checking, gathering evidence."
+  A trial of the sleuthing, 2026-11-19 (the assistant, one plain web search each for eight hard strings, by title,
+  author, place and the string). Four came back with something to cite, four with nothing:
+  - "Butler" (Morpeth, "Holy Island"): Butler Publishing, the listing's ISBN 0946928134 the record's own
+    (https://biblio.co.nz/book/holy-island-graham-frank/d/746440756);
+  - "Bayford" (Dorking): Bayford Books, ISBN 0907287034 the record's own
+    (https://biblio.co.uk/book/small-books-history-embroidery-gertrude-jekyll/d/1257518572);
+  - "Canale" (William Roberts, London, 1957-64): an imprint of the artist's own pamphlets, "A Canale Production",
+    as the owner guessed (https://libcat.library.tamu.edu/Record/in00004690867);
+  - "Olympia" (Keith Vaughan, 2002): the Fine Art and Antiques Fair at Olympia, 26 February to 3 March 2002
+    (https://www.theartnewspaper.com/2002/02/01/the-status-of-british-neo-romantic-artist-keith-vaughan-is-rising-and-so-are-the-prices-of-his-art);
+  - nothing found for "Columbus" (1987 reissue), "Lenz", "Cunningham" (Alva, 1951), "Echo" (Worcester, 1929).
+  What it shows: the record's ISBN is the best key there is, a listing that carries it is the same book; a web
+  search does not find small presses and old printers, where a library catalogue searched by ISBN or title would;
+  so the help wants a catalogue it can ask (Library Hub, the British Library, WorldCat: which may be asked by a
+  program, and on what terms, to be found out and credited) before it wants a web search.
+- A count for a new check, 2026-11-19 (read-only; `reports/q-check-bodyplace.sql` and `.txt`): bodies whose LoC
+  heading carries a place in brackets, set against where the project's records of that body were published. Of 334
+  such bodies with placed records, 93 have no record place that agrees with the heading's place, 434 records on
+  them. Many are plainly a namesake taken: Country Life on "Country Life Academy (Star, N.C.)" (88 records, London),
+  Unicorn Press on "(Bryan, Tex.)" (36), David & Charles on "(North Pomfret, Vt.)" (29, Newton Abbot), Pilgrim
+  Press on "(Auckland, N.Z.)" (23, Derby), Duckworth on "Duckworth & Co. (Manchester, England)" (21, London),
+  History Press on "(Charleston, S.C.)" (9, Stroud), Black Dog on "(Clinton, Wash.)", Tate Gallery on "(Sandpoint,
+  Idaho)". Some are right and only spelt otherwise ("Mauritshuis (Hague, Netherlands)" at Den Haag, "Alte
+  Pinakothek (Munich, Germany)" at München), and Skira of New York against Milan is a firm in two cities. So: a
+  check for the Checks page, "a body aligned to a namesake elsewhere", listing likely wrong where the heading's
+  place is abroad and every record at home; the names of cities in two languages wanted first. Not built; for the
+  owner's word. It does not catch a wrong heading with no place in it (Penguin on "(Firm : N.Z.)" was caught only
+  because N.Z. is there; Jonathan Cape on "Jonathan Cape & Harrison Smith" is not: the right one, LoC nr2002017924,
+  is a candidate on the "Cape" card, one digit from the wrong one the entity carries).
   How the owner checks a verdict (2026-11-19, "a common pattern", while marking the file): takes the string from the
   document, searches the entities for it, follows the link to the desk, looks at the records the string is in, and
   then searches the web. Four steps a line. So a list of verdicts, when it is built, wants on each row: a link

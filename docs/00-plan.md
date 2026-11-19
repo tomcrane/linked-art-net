@@ -810,6 +810,48 @@ and the log (doc 15) records that. The order within an area is rough value.
   to say what a person needs there. The outcome a table: kind, count, what decides it, what the platform lacks. It
   is the count that comes before a rule, made for the whole queue, and it says which of the things below is the
   larger lever.
+- The survey, step 1, counted 2026-11-19 from the stored evidence of run ykb9jd (`reports/q-survey1.sql`, one row a
+  queued string; `reports/q-survey1.txt`; no reconcile was needed, the owner having asked). 3,764 queued strings:
+
+  | kind | strings | share |
+  |---|---|---|
+  | C2 level namesakes, none of them the project's | 1,399 | 37.2% |
+  | D one candidate at the threshold, from one source | 1,092 | 29.0% |
+  | C1 level namesakes, a project entity among them | 729 | 19.4% |
+  | F best candidate under the threshold | 345 | 9.2% |
+  | B every candidate ruled out | 150 | 4.0% |
+  | E one candidate at the threshold, two or more sources | 36 | 1.0% |
+  | A nothing found | 13 | 0.3% |
+
+  By field: personal authors 1,281 (886 of them level namesakes, 302 with thirteen or more of the name; 355 one
+  candidate), subject headings 937 and their heads 368, publishers 752, corporate authors 211, places 145, subject
+  subdivisions 70. By weight: 2,606 strings are in one record, 957 in two to five, 156 in six to twenty, 40 in more
+  than twenty ("Manchester" 447 records, "s.n." 375, "Phaidon" 224, "Penguin" 202, "Pre" 193, "UMI" 179). What
+  the count says, each to be looked at in step 2 before anything is built:
+  - More than half the queue (56.6%) is namesakes, and most of those are people. What tells people of one name
+    apart is the lever, far ahead of anything else: the works a heading was made from (built 2026-11-19, on asking,
+    a card at a time) wants counting as evidence for a rule.
+  - Nearly a third (29%) is one candidate at the threshold waiting only for a second opinion ("Phaidon", "Rizzoli",
+    "Viking", "Blackwell"). A card each is the wrong tool: a list to read down and confirm in bulk, or a second
+    witness found for them, would clear a thousand.
+  - Decisions for a publisher's records (doc 12 section 14 step 3) touch few strings: of 145 queued places, 50 are
+    in two or more records and 37 of those under two or more publishers. They are heavy ones ("Manchester" 447
+    records, "Washington" 55, "Gloucester" 55, "Durham" 35), so step 3 matters by records and not by cards; it is
+    not the first lever.
+  - The queue is in no order of weight. The 40 strings in more than twenty records are worth more than the 2,606
+    in one; the desk should offer the heaviest first.
+  - Things that are not names at all sit among the heaviest: "s.n." (no publisher named, 375 records, 22 namesakes
+    offered), "l", "s", "B", "C?". A decision "this is not a name" is wanted, and a list of cataloguing
+    conventions that are never entities.
+  - "Pre" as the head of a subject heading, 193 records: a compound split at the hyphen of "Pre-Raphaelites". A
+    fault in the splitting, to find and count.
+  - Under the threshold (345) is mostly subject headings: a house with its county ("Arundel Castle (Sussex)",
+    "Powis Castle (Montgomeryshire)", 94 of 97 qualified ones saying "qualifier not placed") and a heading with a
+    form subdivision left on ("Munnings, Alfred James, Sir, 1878-1959-Exhibitions"). The first is the house or
+    building as a subject, met at the checks; the second a parsing matter.
+  - Every candidate ruled out (150) is all subject headings, people with dates ("Pugin, Augustus Charles,
+    1769-1832"): ruled out, it seems, by dates that differ from the authority's. To read in step 2.
+  Step 2, not begun: a dozen of each kind opened at the desk as a user.
 - Evidence the desk now shows that no rule reads yet, each to count in that survey before anything is made of it:
   LoC's citations (a heading "made from" a work whose title is the record's: at "Robbins, David (editor)", ten of
   the name at 1.00 and one made from "The Independent Group, 1990", fetched on the card and accepted by the

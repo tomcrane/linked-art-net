@@ -933,6 +933,12 @@ and the log (doc 15) records that. The order within an area is rough value.
   whose firm has a fuller name ("Pindar", "Arno", "Oryx", "Harper", "Yale"), which LoC very likely has under that
   name ("Arno Press"): a search with "Press", "Books" or "Publishing" added is a thing to count; and a heading
   matched on a word or on initials ("HENI", "Weiss"). Waiting on the owner's marks, which measure the verdicts.
+  How the owner checks a verdict (2026-11-19, "a common pattern", while marking the file): takes the string from the
+  document, searches the entities for it, follows the link to the desk, looks at the records the string is in, and
+  then searches the web. Four steps a line. So a list of verdicts, when it is built, wants on each row: a link
+  straight to the string at the desk (the file gave no number or link); the string's records there on the row, all
+  of them reachable, not three; and what was looked up outside with where it was found, so that the person checks
+  a citation and does not repeat the search. The assistant's verdicts in the trial had no lookup behind them.
 - Evidence the desk now shows that no rule reads yet, each to count in that survey before anything is made of it:
   LoC's citations (a heading "made from" a work whose title is the record's: at "Robbins, David (editor)", ten of
   the name at 1.00 and one made from "The Independent Group, 1990", fetched on the card and accepted by the

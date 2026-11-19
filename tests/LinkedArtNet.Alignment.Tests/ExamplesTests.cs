@@ -54,6 +54,7 @@ public class ExamplesTests(PostgresFixture pg)
         var longer = Assert.Single(await pg.Store.LongerFormsAsync(shortForm.Id));
         Assert.Equal((cupString.Id, cup.Id, "Cambridge University Press"), (longer.StringId, longer.EntityId, longer.EntityLabel));
         Assert.Empty(await pg.Store.LongerFormsAsync(cambridge.Id));
+        Assert.Empty(await pg.Store.StandingOnAsync(ds, ["http://example.org/nothing-stands-on-this"]));
     }
 
     // four Heritage records in the export's shape: three name Langford's auction house (two kept at two per string), one is Hodgkin's

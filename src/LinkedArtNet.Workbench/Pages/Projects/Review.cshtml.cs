@@ -42,6 +42,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<LongerForm> LongerForms { get; private set; } = [];
     /// <summary>For a queued publisher's string: bodies the indexes hold under its fuller name ("Arno Press" for "Arno"), not already on the card.</summary>
     public IReadOnlyList<AuthorityRecord> FullerNames { get; private set; } = [];
+    /// <summary>By the URI of a candidate or a fuller name: what of the project already stands on it (the owner at "Cape", 2026-11-19: "One hint might be how many _other_ records the candidate is in").</summary>
+    public IReadOnlyDictionary<string, Standing> StandingOn { get; private set; } = new Dictionary<string, Standing>();
     /// <summary>Set when a search of several words matched nothing and the results shown are those of the name alone ("Heaton" for "Heaton Bradford"): absence is then seen, not guessed at (the assistant as a user, 2026-11-19: nothing said whether the indexes had been searched and have none, or the search had failed).</summary>
     public string? NearName { get; private set; }
     public string? Message { get; private set; }
@@ -70,6 +72,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             var onCard = Item.Evidence.Groups.SelectMany(g => g.Members).Select(m => m.Uri).ToHashSet(StringComparer.Ordinal);
             FullerNames = (await Project.Desk.FullerNamesAsync(Item.Evidence.Reading?.Text is { Length: > 0 } read ? read : Item.String.Raw, 12, HttpContext.RequestAborted)).Where(r => !onCard.Contains(r.Uri)).ToList();
         }
+        if (Item is not null && Item.Decision.Method == DecisionMethod.Queued)
+            StandingOn = await Services.Store.StandingOnAsync(Dataset, Item.Evidence.Groups.SelectMany(g => g.Members).Where(m => !m.IsStore).Select(m => m.Uri).Concat(FullerNames.Select(r => r.Uri)).Distinct().ToList(), HttpContext.RequestAborted);
         if (Item is not null && string.IsNullOrWhiteSpace(Q) && Item.Evidence.Groups.Count == 0)
         {
             Q = Item.Evidence.Reading?.Text is { Length: > 0 } name ? name : Item.String.Raw;

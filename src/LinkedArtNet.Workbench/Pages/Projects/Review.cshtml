@@ -254,10 +254,14 @@ else
                 var says = LinkedArtNet.Alignment.Authorities.RecordSummary.Says(r);
                 var at = recordPlaces.FirstOrDefault(p => (r.Label + " " + says).Contains(p, StringComparison.OrdinalIgnoreCase));
                 <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (!string.IsNullOrWhiteSpace(r.Type)) { <span class="tag">@r.Type.ToLowerInvariant()</span> } <span class="tag">@r.Source</span>
+                    @* said only when it agrees: most records held here name no place, and "does not name the records' place" read as a mark against the right one ("Yale University Press", 2026-11-19) *@
                     @if (at is not null) { <span class="small" title="The record's place of publication is named in this body's record. It agrees; it does not prove.">· names @at, where a record was published</span> }
-                    else if (recordPlaces.Count > 0) { <span class="small muted" title="Its record, as held here, does not name a place the records were published at. Many records name no place at all.">· does not name the records' place</span> }
                     @if (says is not null && says != r.Label) { <div class="small muted">@says</div> } else { <br /> }
-                    <a class="small" href="@r.Uri" target="_blank" rel="noopener" title="Open the record and read it before accepting">@r.Uri</a></div>
+                    <a class="small" href="@r.Uri" target="_blank" rel="noopener" title="Open the record and read it before accepting">@r.Uri</a>
+                        @if (Model.StandingOn.TryGetValue(r.Uri, out var fst) && fst.Records > 0)
+                        {
+                            <div class="small"><strong>Already in this project:</strong> @fst.Records.ToString("N0") record@(fst.Records == 1 ? "" : "s") in @fst.Strings.ToString("N0") other string@(fst.Strings == 1 ? "" : "s") stand on this, through <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(fst.EntityId)" target="_blank" rel="noopener">@(fst.EntityLabel ?? fst.EntityId)</a> <span class="muted" title="It says the project uses this record already, and how much. It does not say the earlier decisions were right.">· how much it is used, not whether rightly</span></div>
+                        }</div>
                     <form method="post" asp-page-handler="Accept" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit" class="secondary" title="Decides this string onto this record. Read the record first.">Accept, having checked</button></form></div>
             }
         </div>
@@ -560,6 +564,11 @@ else
                         {
                             var namesIt = recordTitles.Any(t => works.Any(w => w.Contains(t, StringComparison.OrdinalIgnoreCase)));
                             <div class="small works"><span class="muted">made from:</span> @string.Join(" · ", works.Take(5))@(works.Count > 5 ? $" · and {works.Count - 5} more" : "")@if (namesIt) { <strong> · names a record of this string</strong> }</div>
+                        }
+                        @* how much of the project already stands on this candidate (the owner at "Cape", 2026-11-19) *@
+                        @if (Model.StandingOn.TryGetValue(m.Uri, out var st) && st.Records > 0)
+                        {
+                            <div class="small"><strong>Already in this project:</strong> @st.Records.ToString("N0") record@(st.Records == 1 ? "" : "s") in @st.Strings.ToString("N0") other string@(st.Strings == 1 ? "" : "s") stand on this, through <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(st.EntityId)" target="_blank" rel="noopener">@(st.EntityLabel ?? st.EntityId)</a> <span class="muted" title="It says the project uses this record already, and how much. It does not say the earlier decisions were right.">· how much it is used, not whether rightly</span></div>
                         }
                         @if (!m.IsStore && item.Holders is { } holders && holders.TryGetValue(m.Uri, out var holder))
                         {

@@ -129,6 +129,9 @@ public interface IAlignmentStore
     /// <summary>The strings of the same field that begin or end with this string as whole words and are decided onto an entity (not queued, not a placeholder), the most used first.</summary>
     Task<IReadOnlyList<LongerForm>> LongerFormsAsync(long stringId, int limit = 8, CancellationToken ct = default);
 
+    /// <summary>By authority URI, the project entity that holds it and how many decided strings and records already stand on that entity (queued strings and placeholders not counted). URIs nothing stands on are absent.</summary>
+    Task<IReadOnlyDictionary<string, Standing>> StandingOnAsync(string dataset, IReadOnlyCollection<string> uris, CancellationToken ct = default);
+
     /// <summary>The dataset's records whose title contains the text given, or whose identifier is it, with the strings in each.</summary>
     Task<IReadOnlyList<RecordHit>> SearchRecordsAsync(string dataset, string text, int limit = 15, CancellationToken ct = default);
 

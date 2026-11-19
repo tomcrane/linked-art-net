@@ -368,7 +368,8 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     }
 
     /// <summary>The words a publisher's short name is often written without: "Arno" for Arno Press, "Weiss" for the Weiss Gallery.</summary>
-    public static readonly IReadOnlyList<string> PublisherWords = ["Press", "Books", "Publishing", "Publications", "Publishers", "Gallery", "Editions", "& Co"];
+    // "& Co" was among them and is not: "Murray" was offered F.J. Murray Co., C.W. Murray and Co. and B.C. Murray & Co. (seen at the card, 2026-11-19)
+    public static readonly IReadOnlyList<string> PublisherWords = ["Press", "Books", "Publishing", "Publications", "Publishers", "Gallery", "Editions"];
 
     /// <summary>
     /// Bodies in the indexes under a publisher's fuller name: the string with one of <see cref="PublisherWords"/> after it (the owner's

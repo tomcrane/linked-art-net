@@ -397,4 +397,7 @@ public sealed record RecordHit(string System, string RecordId, string? Title, st
 /// <summary>A longer form of a string's name, in the same field, that is already decided onto an entity ("Arno Press" for "Arno"): evidence for the reviewer, not a decision.</summary>
 public sealed record LongerForm(long StringId, string Raw, int Records, string EntityId, string? EntityLabel);
 
+/// <summary>What of the project already stands on an authority record: the entity that holds it, and how many decided strings and records that entity carries.</summary>
+public sealed record Standing(string EntityId, string? EntityLabel, int Strings, int Records);
+
 public sealed record RecordGroup(string? Value, int Records, IReadOnlyList<StringExample> First);

@@ -1518,6 +1518,24 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    public async Task<IReadOnlyDictionary<string, Standing>> StandingOnAsync(string dataset, IReadOnlyCollection<string> uris, CancellationToken ct = default)
+    {
+        var found = new Dictionary<string, Standing>(StringComparer.Ordinal);
+        if (uris.Count == 0) return found;
+        await using var cmd = _db.CreateCommand(
+            """
+            select q.uri, e.id, e.label, count(distinct d.source_string_id), count(distinct (o.system, o.record_id))
+            from entity_equivalents q join entities e on e.id = q.entity_id and e.dataset = @dataset
+            join decisions d on d.entity_id = e.id and d.valid and d.method not in ('queued', 'minted')
+            left join occurrences o on o.string_id = d.source_string_id
+            where q.uri = any(@uris) group by q.uri, e.id, e.label order by 5
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "uris", uris.ToArray());
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) found[r.GetString(0)] = new Standing(r.GetString(1), Str(r, 2), Convert.ToInt32(r.GetInt64(3)), Convert.ToInt32(r.GetInt64(4))); // the most used last, and kept
+        return found;
+    }
+
     public async Task<IReadOnlyList<RecordHit>> SearchRecordsAsync(string dataset, string text, int limit = 15, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

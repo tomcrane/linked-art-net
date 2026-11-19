@@ -4,6 +4,8 @@
     var v = Model.View;
     var e = v.Entity;
     ViewData["Title"] = e.Label ?? "Entity";
+    // every search and action of this page comes back to this page: the reader's place is kept (the layout's script)
+    ViewData["KeepPlace"] = true;
     var back = Url.Page("/Projects/Entity", new { dataset = Model.Dataset, id = e.Id });
 }
 @if (Model.Message is not null) { <p class="notice">@Model.Message</p> }

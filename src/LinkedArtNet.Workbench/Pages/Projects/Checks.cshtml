@@ -196,7 +196,7 @@
             <div class="actions" style="margin-top:1.2rem"><button type="submit" id="apply">Apply what is chosen above</button> <a href="/p/@Model.Dataset/checks">Back to the list, nothing changed</a></div>
             <p class="small muted" id="apply-says">Every string that stays: the entity is kept and confirmed. Every string that goes: the entity is mended whole, to the other place. Some of each: those that go are moved, and the entity is confirmed for the rest.</p>
         </form>
-        <form id="mend-find" method="get"><input type="hidden" name="mend" value="@pe.Id" /></form>
+        <form id="mend-find" method="get" data-keep-place><input type="hidden" name="mend" value="@pe.Id" /></form>
 
         <div class="decide-part">
         <h3>Not sure, or it wants more than this screen can do: leave it</h3>

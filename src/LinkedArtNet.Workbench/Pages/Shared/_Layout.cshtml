@@ -40,7 +40,7 @@
         }
     </div>
 </header>
-<main>
+<main data-keep-place="@(ViewData["KeepPlace"] is true ? "page" : null)">
     @RenderBody()
 </main>
 @if (ViewData["Dataset"] is string trayDs)
@@ -54,6 +54,24 @@
 </footer>
 @await RenderSectionAsync("Scripts", required: false)
 <script>
+// A search or a small action that reloads the page it is on keeps the reader's place (the owner, 2026-11-19: searching under "Something
+// else" at the desk "submits the page and the reload loses your position as you are back at the page head and have to scroll down").
+// A form or a link marked data-keep-place, or inside something so marked, notes how far down the page was; the next page, if it is the
+// same page about the same thing, opens there. An action that moves on to another card or entity is not marked and opens at the top.
+(function () {
+    var KEY = "keep-place";
+    function about(url) { var q = new URL(url, location.href).searchParams; return q.get("id") || q.get("mend") || ""; }
+    function note() { try { sessionStorage.setItem(KEY, JSON.stringify({ path: location.pathname, about: about(location.href), y: window.scrollY })); } catch (e) { } }
+    document.addEventListener("submit", function (e) { if (e.target.closest && e.target.closest("[data-keep-place]")) note(); }, true);
+    document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest("a[href]"); if (a && a.closest("[data-keep-place]") && a.target !== "_blank") note(); }, true);
+    var kept = null;
+    try { kept = JSON.parse(sessionStorage.getItem(KEY) || "null"); sessionStorage.removeItem(KEY); } catch (e) { }
+    if (!kept || kept.path !== location.pathname) return;
+    var here = about(location.href);
+    if (kept.about && here && kept.about !== here) return;
+    function go() { window.scrollTo(0, kept.y); }
+    document.addEventListener("DOMContentLoaded", function () { go(); setTimeout(go, 150); });
+})();
 document.addEventListener("keydown", function (e) {
     if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
     var t = e.target, tag = t && t.tagName;

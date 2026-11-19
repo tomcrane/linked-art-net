@@ -185,7 +185,7 @@ else
             @if (recs.Count > 1)
             {
                 <text> · group by: </text>
-                @foreach (var f in groupFields) { <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, by = f })">@f</a><text> </text> }
+                @foreach (var f in groupFields) { <a data-keep-place href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = Model.Method, context = Model.Context, id = item.String.Id, by = f })">@f</a><text> </text> }
             }
         </p>
         @* several groups: each folds, the largest open, so that the groups are read as a list and the candidates are not pushed off the
@@ -264,7 +264,7 @@ else
     {
         @* namesakes told apart by what each heading was made from (the owner, 2026-11-19; the assistant at "Robbins, David (editor)": ten of
            the name, each a name and a year of birth). LoC's record cites the works; a pull brings them, for this card's candidates only *@
-        <form method="post" asp-page-handler="Works" asp-route-method="@Model.Method" asp-route-context="@Model.Context" asp-route-id="@item.String.Id" class="inline" style="margin-bottom:.6rem">
+        <form method="post" asp-page-handler="Works" data-keep-place asp-route-method="@Model.Method" asp-route-context="@Model.Context" asp-route-id="@item.String.Id" class="inline" style="margin-bottom:.6rem">
             @foreach (var u in unpulled) { <input type="hidden" name="uris" value="@u" /> }
             <button type="submit" class="secondary small" title="Asks the Library of Congress and ULAN for these records: the works each heading was made from, and what else each says of its person or body. Nothing is decided">Fetch what each heading was made from (@unpulled.Count record@(unpulled.Count == 1 ? "" : "s"))</button>
         </form>
@@ -582,7 +582,7 @@ else
         <div class="card">
             @* the search is a form of its own and the results follow it inside the card: a result's own form nested in the search form
                would end it, and the rest of the results would fall out of the card into the grid (the desk, 2026-10-26) *@
-            <form method="get">
+            <form method="get" data-keep-place>
                 <input type="hidden" name="method" value="@Model.Method" /><input type="hidden" name="context" value="@Model.Context" /><input type="hidden" name="id" value="@item.String.Id" />
                 <label for="q">Search the store's entities and the local indexes</label>
                 <div class="row"><input type="search" id="q" name="q" value="@(Model.Q ?? reading?.Text ?? item.String.Raw)" style="flex:1" /><button type="submit" class="secondary">Search</button></div>

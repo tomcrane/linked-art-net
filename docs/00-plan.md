@@ -939,6 +939,11 @@ and the log (doc 15) records that. The order within an area is rough value.
   straight to the string at the desk (the file gave no number or link); the string's records there on the row, all
   of them reachable, not three; and what was looked up outside with where it was found, so that the person checks
   a citation and does not repeat the search. The assistant's verdicts in the trial had no lookup behind them.
+  And what the owner searches the web for is often the book's title, to find who published it (2026-11-19, "just
+  FYI"): the record, not the string, is the way in to a publisher. So, not built and for the owner's word: beside
+  each record on a publisher's card a link that searches for its title outside (a library union catalogue or the
+  web: which, to be chosen with the owner, and credited); and for help on a set, the lookup to make is the title
+  in a catalogue that gives the publisher's full name and place, which is evidence a verdict can cite.
 - Evidence the desk now shows that no rule reads yet, each to count in that survey before anything is made of it:
   LoC's citations (a heading "made from" a work whose title is the record's: at "Robbins, David (editor)", ten of
   the name at 1.00 and one made from "The Independent Group, 1990", fetched on the card and accepted by the

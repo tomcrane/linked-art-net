@@ -964,6 +964,13 @@ and the log (doc 15) records that. The order within an area is rough value.
     100 of them onto a single entity ("Arno" beside "Arno Press", "Cape" beside "Jonathan Cape"); other fields few
     (keywords 40, corporate author 34, place 12). Not a rule: "Mead" beside "Mead Art Museum" is another thing.
     BUILT as a hint on the card, with "Same as" for a person to press (LongerFormsAsync, the desk).
+  The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
+  into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
+  a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100
+  publishers), and those with a fuller name in the indexes. For each the assistant would read the string's
+  records and the body's own record (the trial's lesson), look the title up outside, and give a verdict with what
+  it cites; the person goes down the set, most records first, and presses or corrects. Not built; the design to
+  put to the owner with the "suggested" method.
   How the owner checks a verdict (2026-11-19, "a common pattern", while marking the file): takes the string from the
   document, searches the entities for it, follows the link to the desk, looks at the records the string is in, and
   then searches the web. Four steps a line. So a list of verdicts, when it is built, wants on each row: a link

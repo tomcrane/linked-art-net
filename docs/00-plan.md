@@ -983,6 +983,14 @@ and the log (doc 15) records that. The order within an area is rough value.
   Derby on LoC's Auckland one, Olympia Press on a Frankfurt heading. So a check for the Checks page: a body
   whose records' places disagree with its heading's place. And a kind for a ruling: predecessor and successor
   firms ("Alfa" and Nuova Alfa, "Trubner" and Kegan Paul, Trench, Trubner, "Vista" and Studio Vista).
+  The owner (2026-11-19): "This is also gathering evidence for what would go on our page of source fixes -
+  cataloguer makes a note a record needs fixing" (doc 12 section 14, the cataloguers' list, step 2). What the two
+  trials turned up for it, seen in the exports and not yet listed anywhere: places misspelt in a record
+  ("Harmonsworth", "Conwyn" for Conwy, "[London}"); a publisher written short where the record's own book
+  gives the full name ("Yale", "Arno", "Cape"); a bare name that is a different body in each record
+  ("Musée des Beaux-Arts" at Rouen, Nantes and Calais); a record that looks out of place among its string's
+  others ("Ikon" at Bristol, "Allen & Unwin" in 1892). So a verdict wants a third outcome beside same and not
+  the same: "the record wants fixing", which goes to that list with the record's number and what was seen.
   How the owner checks a verdict (2026-11-19, "a common pattern", while marking the file): takes the string from the
   document, searches the entities for it, follows the link to the desk, looks at the records the string is in, and
   then searches the web. Four steps a line. So a list of verdicts, when it is built, wants on each row: a link

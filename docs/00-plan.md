@@ -898,6 +898,30 @@ and the log (doc 15) records that. The order within an area is rough value.
     only where judgement is singular, as at the checks ("Wimborne Minster"). In every case a proposal with its
     reason, kept, which a person accepts; a decision method of its own ("suggested") would let proposals wait
     and be measured against what people then decide.
+- The survey, step 3: the two tests counted, 2026-11-19 (`reports/q-survey3.sql`, `q-survey3b.sql`, and their
+  `.txt`). Neither settles much on its own; both thin the cards. The assistant had expected more of each.
+  - *The kind of thing a field holds.* Of 749 queued publisher strings with a live candidate, 320 have only people
+    level at the top, 71 people and bodies level, 313 only bodies; of 208 corporate authors, 43, 20 and 101. In
+    139 of the 320 the string is one word. Of the 320, 49 have exactly one body waiting just below the people
+    ("Rizzoli" and Rizzoli editore, "Blackwell" and B.H. Blackwell Ltd., "Deutsch" and André Deutsch (Firm), "De
+    Gruyter"; but also "Yale" and W. & M. Yale (Firm), "Mr Sharpe" and M.E. Sharpe, Inc.), 22 several, and 249 no
+    body at all: a person who published, or a firm the indexes lack. So putting bodies first in a body's field
+    would right the order of some 120 cards and decide none safely. Among strings already decided, those standing
+    on an entity of class Person in these fields are mostly the project's own entities by name (publisher 345,
+    corporate author 154), many of them firms and houses classed as people ("Hurcombs", 43 records; "Bearne's";
+    "Sedelmeyer"): an entity's class to mend, not an alignment. One caught outright: the publisher "Boethius",
+    accepted by vote as the philosopher (469-525).
+  - *The record's date against a life.* Queued, with dated records: of 1,245 personal authors, 383 have a
+    candidate at the top born after every record or dead a century before the first; striking those leaves
+    exactly one in 20, none in 14, several in 349. Publishers (dead thirty years before): 170 of 723, one left in
+    37, none in 40. Corporate authors 31 of 204, one left in 3. So it shortens some 580 cards and decides about
+    60. Among strings already decided it finds one born after its records and 27 authors dead thirty years before
+    theirs (which reprints make ordinary); but only some 300 decided strings stand on an entity that carries
+    dates at all, the authority's dates not being the entity's, so that count is of a small part.
+  - What follows: the queue is not waiting on a missing rule. It is waiting on judgement with the record in view,
+    of the kind the assistant made over the sixty samples, which is the case for help on sets (above). The two
+    tests are worth having as evidence on the card and for that help to use (bodies first in a body's field; a
+    candidate the record's date speaks against marked and folded), not as acceptances. Not built.
 - Evidence the desk now shows that no rule reads yet, each to count in that survey before anything is made of it:
   LoC's citations (a heading "made from" a work whose title is the record's: at "Robbins, David (editor)", ten of
   the name at 1.00 and one made from "The Independent Group, 1990", fetched on the card and accepted by the

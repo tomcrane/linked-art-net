@@ -952,6 +952,15 @@ and the log (doc 15) records that. The order within an area is rough value.
 - At the desk, not built: candidates that were ruled out still take a card each (four American Heatons under
   "Heaton, Bradford"); they want folding into one line, "4 ruled out", opened on asking. The candidate a LoC
   citation speaks for should stand first on the card.
+- A search box for the project, in the header (the owner, 2026-11-19, while checking the trial's verdicts: "I'm
+  frequently reaching for a top-level search box, rather than a click first into entities. But a top-level (or
+  project) search box might be expected to give other results in other contexts"). The owner's way round at
+  present: the string, searched for among the entities, then the link to the desk. The assistant's proposal, put to
+  the owner: one box inside the project's part of the navigation, saying what it searches, and one page of results
+  in sections with their counts, so that it need not guess the kind meant: strings as the records write them (the
+  field, how many records, how it stands, a link to its card: the step now missing), entities, records by title or
+  number. Not the authority indexes, which are searched where a string is being decided; no box outside a
+  project. "/" to reach it; a query that is exactly one string and nothing else goes to its card. Not built.
 - A second check for the page: a place entity aligned to an item that is not a place (Wimborne Minster's "church":
   the same name, another kind of thing, not a namesake abroad, so the first check lists it only by chance). From
   Wikidata's instance-of where the index has it (the `instanceOf` of the item against the classes of places), else

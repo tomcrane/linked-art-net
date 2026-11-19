@@ -1038,6 +1038,11 @@ and the log (doc 15) records that. The order within an area is rough value.
     heading for each name; Wikidata often keeps one item through a change of name. Then one Wikidata item belongs
     to two of the project's entities, which the store refuses today (an identifier in use). To count before
     choosing: how many bodies have several LoC headings and one Wikidata item.
+  - the owner, of the place's chain and the body's line: "Both are hugely useful for downstream _discovery_ and
+    search." So both are part of what the project publishes, not only aids to alignment: the export (decision 15,
+    the LUX export's shape) is to write a place within its broader place and a body with what it succeeded, and
+    the alignment is to keep each precise enough to be worth writing (the town and not its county; the firm of the
+    record's time and not its successor).
   The owner (2026-11-19): "This is also gathering evidence for what would go on our page of source fixes -
   cataloguer makes a note a record needs fixing" (doc 12 section 14, the cataloguers' list, step 2). What the two
   trials turned up for it, seen in the exports and not yet listed anywhere: places misspelt in a record

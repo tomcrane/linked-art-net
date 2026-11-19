@@ -958,7 +958,7 @@ and the log (doc 15) records that. The order within an area is rough value.
     Gallery, Oryx Press, Rizzoli International Publications, Troubador Publishing, Weiss Gallery (London, England),
     Yale University Press); four are not (Richard Drew Publishing, Pindar Press, Kala Press, HENI: so "richard
     drew" finding nothing is the index, not the search). The one-word string scores low against the fuller name.
-    Not built, for the owner's word: in a publisher's field, candidates sought also under the string with "Press",
+    BUILT 2026-11-19 as a hint on the card and not in the rules (the owner: yes, "though with enough caveats that the user doesn't lean on it too heavily - they still have to be sure"; FullerNamesAsync; unscored, apart from the candidates, the caveat said; seen on "Yale"; to put into the rules' own candidates is a later question): in a publisher's field, candidates sought also under the string with "Press",
     "Books", "Publishing", "Publications", "Gallery", "& Co" after it, the record's place to tell among them.
   - Longer forms already decided in the project, same field: 173 of the 749 queued publisher strings have one,
     100 of them onto a single entity ("Arno" beside "Arno Press", "Cape" beside "Jonathan Cape"); other fields few

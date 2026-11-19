@@ -210,6 +210,13 @@ else
             {
                 var recordUrl = Model.Project.Manifest.RecordUrl(x.Source, x.RecordId);
                 <p class="small"><strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @if (recordUrl is not null) { <a href="@recordUrl" target="_blank" rel="noopener" title="This record in the @Model.Project.Manifest.SystemName(x.Source)">@x.RecordId</a> } else { <span title="@Model.Project.Manifest.SystemName(x.Source)">@x.RecordId</span> } · from &lt;@x.Field&gt;</span>
+                @* the title looked up outside (the owner, 2026-11-19: "I'm often googling the book title to try to find publisher info"): a trial of two
+                   places to look, a union catalogue of UK libraries and the web; the title up to its statement of responsibility, in quotes for the web *@
+                @if (!string.IsNullOrWhiteSpace(x.Title))
+                {
+                    var lookFor = x.Title.Split(" / ")[0].Trim();
+                    <span class="muted">· look up the title: <a href="https://discover.libraryhub.jisc.ac.uk/search?q=@Uri.EscapeDataString(lookFor)" target="_blank" rel="noopener" title="Searches Jisc Library Hub Discover, the union catalogue of UK research libraries, for this title: its records give the publisher's full name and place">Library Hub</a> · <a href="https://www.google.com/search?q=@Uri.EscapeDataString("\"" + lookFor + "\"")" target="_blank" rel="noopener" title="Searches the web for this title, in quotes">web</a></span>
+                }
                 @foreach (var (name, values) in x.NamingFields()) { <br /><span class="muted">@name:</span> @string.Join(" · ", values) }
                 </p>
             }

@@ -1083,6 +1083,16 @@ and the log (doc 15) records that. The order within an area is rough value.
   thing" (the label, the merge) and for a pair "They are two things" (the reason, the note on each). Seen on the
   two "Bonhams". Left: the "keep this one" choice is set in the small capitals every label has, and wants plain
   type; a way back to the check's list from the page; neither button pressed in the browser.
+  The owner again (2026-11-20): "fix those rough edges"; of the two checks as links in a line of text, the page
+  opening on the one with two rows, "it doesn't seem right"; and "some of the 'entities that may be one thing'
+  obviously are, and some obviously aren't. It's not a case of expecting them to be mostly the same." BUILT:
+  /p/pmc/checks is the list of checks, each with what it lists and how much waits (seen: 147 pairs; 2 places,
+  each left with a note), a check's page has "All checks" at its head; the duplicates in four parts by what the
+  row shows, counted as built: probably one thing 29 (linked and the names agree, or one subject label twice),
+  to look at 85, of different kinds 10, places of one name in different places 23 (the parts not seen in the
+  browser: the page had not loaded when it was read); the merge page's choice in plain type and its way back.
+  The 85 are the work: what would move a pair out of "to look at" is the succession of bodies (an earlier and a
+  later name), fuller identifiers on the import's thin entities, and a body's own dates and place.
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

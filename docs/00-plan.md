@@ -1093,6 +1093,34 @@ and the log (doc 15) records that. The order within an area is rough value.
   browser: the page had not loaded when it was read); the merge page's choice in plain type and its way back.
   The 85 are the work: what would move a pair out of "to look at" is the succession of bodies (an earlier and a
   later name), fuller identifiers on the import's thin entities, and a body's own dates and place.
+  The desk as a user again, 2026-11-20 afternoon (the owner: "You could have a look at some more cards now"). Six
+  decided as `claude`: "Allen and Unwin [etc.]" and "Walther Konig" (the near spellings left from the morning),
+  "Winchester" (25 records: St Paul's Bibliographies, the Cathedral's Friends, the County Council; the English
+  one, `place/qbxnpqy9`, checked in the store after the press) and "Winchester?" (Wolvesey, the bishop's palace
+  there), "Huntingdon, Cambs.", "Middleburg, Virginia" (the Getty and LoC records, a new entity). Passed over:
+  "S" in place of publication (below). Stopped at "Kingston" (string 49530), three Kingstons among its longer
+  forms. Seen working: after "Winchester" the desk went on to "Winchester?", a candidate on that card (the going-on
+  built that morning). What the cards showed, none of it mended yet:
+  - two groups on one card whose buttons read alike: "Same as Winchester" for the Virginian entity and for the
+    English, the two entities bearing one label; the button to say which ("Same as Winchester (England)"), as the
+    row does. The flash after it says "Winchester" too;
+  - a longer form that is not one: "Huntingdon, Cambs." was offered "St Ives, Huntingdon, Cambs.", on St Ives,
+    with "Same as St Ives". Where the string follows a comma in the longer form it is the longer form's
+    qualifier, not its name: not to be offered;
+  - an entity offered three times after a morning's decisions: placeholders since merged into George Allen &
+    Unwin Ltd each keep a row with "Same as this" beside the record's "Same as George Allen & Unwin Ltd"; and "why
+    it waits" still says the top candidate is another string's placeholder when that placeholder has merged;
+  - "S" (record ZB270, a Sotheby's sale of 1937; "s" waits in corporate author and publisher too): not a name,
+    probably what is left of "S.l." and "s.n.". Wanted and not built: the decision "this is not a name", and the
+    record to the cataloguers' list. The search run for the reviewer on a single letter returned forty things
+    of no use: no search to be run for a string of one or two letters;
+  - the project's "Middleburg" (`place/mustp7pf`) is on Wikidata's Middleburg in Pennsylvania and its two records
+    are Munnings exhibitions, the National Sporting Library's, which is at Middleburg, Virginia: the import's
+    namesake again, abroad, where the first check does not look (it compares with the home place only). And
+    "Middleburg (Fla.)" holds a sporting-paintings exhibition of 1964, to be looked at with it. A count wanted:
+    American places the import aligned with no state in the string;
+  - "prominence stands aside: the project's own entity Winchester is among the live groups, the desk's" on
+    every row of twelve groups: a reason all share, to be said once.
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

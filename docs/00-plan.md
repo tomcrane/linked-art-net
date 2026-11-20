@@ -1046,6 +1046,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   - after "Allen and Unwin" the desk did not go on to "Allen and Unwin [etc.]", a placeholder on the same card;
   - what worked: "Christ Church" among 145 namesakes and "Nationalmuseum" among four national museums were one
     press each with the reason on the card; the label fault at "New Gallery" stopped the press, as it should.
+  MENDED the same day (the owner: "Yes do all the mends"): the group's one button names the entity and its rows
+  carry none (seen on "Colnaghi and Co"); the settle notice's button the only one for its entity (not seen: no
+  such card to hand); the head's agreement stands aside where a lower candidate bears the string as written,
+  counted first, five of the ten cards left (seen on "Winstanley & Co"); "why it waits" for a placeholder at
+  the top (not seen); "its own". Still open from the list: the body entered twice by kind (the Louvre, and at
+  "Winstanley & Co" two entities, Thomas Winstanley & Co. and Winstanley, that LoC and ULAN call one), for the
+  duplicate-entities check; the desk not going on to a sibling placeholder ("Allen and Unwin [etc.]").
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

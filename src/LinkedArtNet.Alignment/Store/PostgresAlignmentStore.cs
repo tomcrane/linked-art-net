@@ -1563,7 +1563,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                                   (select coalesce(r.data->>'description', r.data->'pulled'->>'description') from entity_equivalents q join authority_records r on r.uri = q.uri
                                     where q.entity_id = e.id and q.source = 'wikidata' and coalesce(r.data->>'description', r.data->'pulled'->>'description') is not null limit 1),
                                   (select r.source || ': ' || r.label from entity_equivalents q join authority_records r on r.uri = q.uri
-                                    where q.entity_id = e.id and q.source in ('loc', 'lcsh', 'ulan', 'aat') and r.label is not null order by q.source limit 1)) as about
+                                    where q.entity_id = e.id and q.source in ('loc', 'lcsh', 'ulan', 'aat') and r.label is not null order by q.source limit 1),
+                                  -- nothing in the index says what it is (an item not pulled): its identifiers, to be opened
+                                  (select 'identifiers: ' || string_agg(q.source || ' ' || regexp_replace(q.uri, '^.*/', ''), ', ' order by q.source) from entity_equivalents q where q.entity_id = e.id)) as about
                   from (select x as id from p union select y from p) e)
             select p.x, l1.label, l1.class, n1.records, p.y, l2.label, l2.class, n2.records, p.linked, p.same_label, n1.about, n2.about
             from p join live l1 on l1.id = p.x join live l2 on l2.id = p.y join n n1 on n1.id = p.x join n n2 on n2.id = p.y

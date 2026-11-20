@@ -1011,6 +1011,12 @@ and the log (doc 15) records that. The order within an area is rough value.
   decided onto it, and the top candidate's record held by it), one line at the head of the card saying so, with
   the one button. Said as agreement, not as proof: both can rest on the same earlier mistake ("Penguin"). To count
   first: how many queued cards have that agreement, and on how many of the two trials' marked strings it was right.
+  COUNTED and BUILT 2026-11-20 (`reports/q-agree1.sql`): of 274 queued strings with a longer form decided, the
+  longer form's entity holds the record of the top candidate on 20 cards (10 of them publishers) and of a lower
+  candidate on 25. Against the second trial's verdicts: at the top, nine strings, all nine the same body; at a
+  lower candidate, nine, one of them not ("Musée d'art moderne"). So the head of the card speaks only for the
+  top candidate. Seen on "Schwabe". Left: the candidate's row now says the one thing in three lines ("Already in
+  this project", "the same entity as the longer form", "now held by"): to be brought to one.
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

@@ -1536,6 +1536,10 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return found;
     }
 
+    /// <summary>TGN's chain of parents without the continent and the world; any other description as it is.</summary>
+    private static string? About(string? text) =>
+        text is null ? null : string.Join(", ", text.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or "North and Central America" or "Asia" or "Africa" or "South America" or "Oceania" or "")));
+
     public async Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, string twoThingsPrefix, CancellationToken ct = default)
     {
         // counted before it was built (2026-11-20, reports/q-dup1.sql): 74 pairs linked by their records, 76 of one label and class,
@@ -1553,9 +1557,15 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             p as (select x, y, bool_or(linked) as linked, bool_or(not linked) as same_label
                   from (select x, y, true as linked from a union all select x, y, false from b) u group by x, y),
             n as (select e.id, (select count(distinct (o.system, o.record_id)) from decisions d join occurrences o on o.string_id = d.source_string_id
-                                where d.entity_id = e.id and d.valid and d.method not in ('queued', 'minted')) as records
+                                where d.entity_id = e.id and d.valid and d.method not in ('queued', 'minted')) as records,
+                         -- what tells it from its pair: where TGN puts a place, or else what a source says the thing is, or its heading
+                         coalesce((select r.data->>'parentString' from entity_equivalents q join authority_records r on r.uri = q.uri where q.entity_id = e.id and q.source = 'tgn' and r.data ? 'parentString' limit 1),
+                                  (select coalesce(r.data->>'description', r.data->'pulled'->>'description') from entity_equivalents q join authority_records r on r.uri = q.uri
+                                    where q.entity_id = e.id and q.source = 'wikidata' and coalesce(r.data->>'description', r.data->'pulled'->>'description') is not null limit 1),
+                                  (select r.source || ': ' || r.label from entity_equivalents q join authority_records r on r.uri = q.uri
+                                    where q.entity_id = e.id and q.source in ('loc', 'lcsh', 'ulan', 'aat') and r.label is not null order by q.source limit 1)) as about
                   from (select x as id from p union select y from p) e)
-            select p.x, l1.label, l1.class, n1.records, p.y, l2.label, l2.class, n2.records, p.linked, p.same_label
+            select p.x, l1.label, l1.class, n1.records, p.y, l2.label, l2.class, n2.records, p.linked, p.same_label, n1.about, n2.about
             from p join live l1 on l1.id = p.x join live l2 on l2.id = p.y join n n1 on n1.id = p.x join n n2 on n2.id = p.y
             where not exists (select 1 from notes t where t.dataset = @dataset
                               and ((t.target = p.x and t.text like @prefix || '%' and position(p.y in t.text) > 0)
@@ -1566,7 +1576,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         var list = new List<PossibleDuplicate>();
         await using var r = await cmd.ExecuteReaderAsync(ct);
         while (await r.ReadAsync(ct))
-            list.Add(new PossibleDuplicate(r.GetString(0), Str(r, 1), r.GetString(2), Convert.ToInt32(r.GetInt64(3)), r.GetString(4), Str(r, 5), r.GetString(6), Convert.ToInt32(r.GetInt64(7)), r.GetBoolean(8), r.GetBoolean(9)));
+            list.Add(new PossibleDuplicate(r.GetString(0), Str(r, 1), r.GetString(2), Convert.ToInt32(r.GetInt64(3)), r.GetString(4), Str(r, 5), r.GetString(6), Convert.ToInt32(r.GetInt64(7)), r.GetBoolean(8), r.GetBoolean(9), About(Str(r, 10)), About(Str(r, 11))));
         return list;
     }
 

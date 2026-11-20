@@ -196,6 +196,13 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
 
     private async Task<IActionResult> Act(long id, Func<Task<(string Message, Entity Entity)>> action)
     {
+        // the queued strings whose placeholders stand among this card's candidates, read before the card is decided: a spelling near
+        // enough to be offered is the next thing to settle (seen as a user, 2026-11-20: after "Allen and Unwin" the desk left "Allen and
+        // Unwin [etc.]", a candidate on that card, and went on down the list)
+        List<DecidedString> cardmates = [];
+        if (await Project.Desk.GetAsync(id) is { } card && card.String.Dataset == Dataset)
+            cardmates = card.Evidence.Groups.SelectMany(g => g.Members).Where(m => m.IsStore && card.Entities.TryGetValue(m.Uri, out var f) && f.IsPlaceholder)
+                .SelectMany(m => card.Entities[m.Uri].Strings).Where(x => x.String.Id != id && x.Decision.Method == DecisionMethod.Queued).DistinctBy(x => x.String.Id).ToList();
         (string Message, Entity Entity) done;
         try { done = await action(); }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
@@ -205,7 +212,16 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         // the desk finishes a name before it leaves it: the other queued strings under this one's name come next, in list order, and only
         // then the list goes on (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd")
         var siblings = await Project.Desk.SiblingsAsync(Dataset, id, done.Entity);
-        if (siblings.Count == 0) return Flash(done.Message, new { dataset = Dataset, method = Method, context = Context, after = id }, done.Entity);
+        if (siblings.Count == 0)
+        {
+            foreach (var mate in cardmates)
+            {
+                // still waiting, the decision just made not having settled it too
+                if (await Project.Desk.GetAsync(mate.String.Id) is not { Decision.Method: DecisionMethod.Queued }) continue;
+                return Flash($"{done.Message} Next: \"{mate.String.Raw}\" in {mate.String.Context}, a spelling that was among that card's candidates.", new { dataset = Dataset, method = Method, context = Context, id = mate.String.Id }, done.Entity);
+            }
+            return Flash(done.Message, new { dataset = Dataset, method = Method, context = Context, after = id }, done.Entity);
+        }
         var next = siblings[0];
         var more = siblings.Count - 1;
         return Flash($"{done.Message} Next: \"{next.String.Raw}\" in {next.String.Context}, also under this name{(more == 0 ? "" : $" ({more} more)")}.", new { dataset = Dataset, method = Method, context = Context, id = next.String.Id }, done.Entity);

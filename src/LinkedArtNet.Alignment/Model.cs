@@ -404,6 +404,6 @@ public sealed record Standing(string EntityId, string? EntityLabel, int Strings,
 /// Two of a project's entities that may be one thing: their authority records say so (<see cref="Linked"/>: a record one holds
 /// names a record the other holds as the same), or they bear one label (<see cref="SameLabel"/>). With how many records stand on each.
 /// </summary>
-public sealed record PossibleDuplicate(string AId, string? ALabel, string AClass, int ARecords, string BId, string? BLabel, string BClass, int BRecords, bool Linked, bool SameLabel);
+public sealed record PossibleDuplicate(string AId, string? ALabel, string AClass, int ARecords, string BId, string? BLabel, string BClass, int BRecords, bool Linked, bool SameLabel, string? AAbout = null, string? BAbout = null);
 
 public sealed record RecordGroup(string? Value, int Records, IReadOnlyList<StringExample> First);

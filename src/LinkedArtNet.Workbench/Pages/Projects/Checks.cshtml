@@ -257,8 +257,8 @@ else
             @foreach (var d in Model.Duplicates)
             {
                 <tr>
-                    <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.AId)" target="_blank" rel="noopener"><strong>@(d.ALabel ?? d.AId)</strong></a> <span class="tag">@d.AClass.ToLowerInvariant()</span><br /><span class="small muted">@d.ARecords.ToString("N0") record@(d.ARecords == 1 ? "" : "s")</span></td>
-                    <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.BId)" target="_blank" rel="noopener"><strong>@(d.BLabel ?? d.BId)</strong></a> <span class="tag">@d.BClass.ToLowerInvariant()</span><br /><span class="small muted">@d.BRecords.ToString("N0") record@(d.BRecords == 1 ? "" : "s")</span></td>
+                    <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.AId)" target="_blank" rel="noopener"><strong>@(d.ALabel ?? d.AId)</strong></a> <span class="tag">@d.AClass.ToLowerInvariant()</span><br /><span class="small">@d.AAbout</span>@if (d.AAbout is not null) { <br /> }<span class="small muted">@d.ARecords.ToString("N0") record@(d.ARecords == 1 ? "" : "s")</span></td>
+                    <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.BId)" target="_blank" rel="noopener"><strong>@(d.BLabel ?? d.BId)</strong></a> <span class="tag">@d.BClass.ToLowerInvariant()</span><br /><span class="small">@d.BAbout</span>@if (d.BAbout is not null) { <br /> }<span class="small muted">@d.BRecords.ToString("N0") record@(d.BRecords == 1 ? "" : "s")</span></td>
                     <td class="small">@(d.Linked ? "their authority records say they are one thing" : "")@(d.Linked && d.SameLabel ? "; " : "")@(d.SameLabel ? "the same label" : "")@(d.AClass != d.BClass ? "; of different kinds" : "")</td>
                     <td class="small">
                         <a class="button" href="/p/@Model.Dataset/merge?ids=@Uri.EscapeDataString(d.AId + "," + d.BId)">Compare and merge…</a>

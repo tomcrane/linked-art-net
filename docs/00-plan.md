@@ -1016,7 +1016,7 @@ and the log (doc 15) records that. The order within an area is rough value.
   candidate on 25. Against the second trial's verdicts: at the top, nine strings, all nine the same body; at a
   lower candidate, nine, one of them not ("Musée d'art moderne"). So the head of the card speaks only for the
   top candidate. Seen on "Schwabe". Left: the candidate's row now says the one thing in three lines ("Already in
-  this project", "the same entity as the longer form", "now held by"): to be brought to one.
+  this project", "the same entity as the longer form", "now held by"): BROUGHT TO ONE the same day, and the act left with one button, the candidate's; the head of the card and the hint point to it (the owner: "avoid having multiple buttons that do the same thing (the confusing calls-to-action we are trying to eliminate)": a rule for every card from here on).
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

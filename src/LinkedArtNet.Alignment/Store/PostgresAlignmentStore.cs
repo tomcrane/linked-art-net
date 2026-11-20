@@ -1505,7 +1505,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             select t.id, t.raw, (select count(*) from occurrences o where o.string_id = t.id) as records, d.entity_id, e.label
             from source_strings s
             join source_strings t on t.dataset = s.dataset and t.context = s.context and t.id <> s.id and length(t.raw) > length(s.raw) + 1
-                 and (left(lower(t.raw), length(s.raw) + 1) = lower(s.raw) || ' ' or right(lower(t.raw), length(s.raw) + 1) = ' ' || lower(s.raw))
+                 and (left(lower(t.raw), length(s.raw) + 1) = lower(s.raw) || ' '
+                      -- at the tail, not after a comma: "St Ives, Huntingdon, Cambs." is St Ives, and "Huntingdon, Cambs." is its qualifier
+                      or (right(lower(t.raw), length(s.raw) + 1) = ' ' || lower(s.raw) and substr(t.raw, length(t.raw) - length(s.raw) - 1, 1) <> ','))
             join decisions d on d.source_string_id = t.id and d.valid and d.method not in ('queued', 'minted') and d.entity_id is not null
             join entities e on e.id = d.entity_id
             where s.id = @id and length(s.raw) >= 4

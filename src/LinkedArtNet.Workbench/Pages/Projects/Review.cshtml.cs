@@ -91,6 +91,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         {
             Q = Item.Evidence.Reading?.Text is { Length: > 0 } name ? name : Item.String.Raw;
             Searched = true;
+            // not for a letter or two: "S" in a place of publication brought forty things of no use (seen as a user, 2026-11-20)
+            if (Q.Trim().Length < 3) { Q = null; Searched = false; }
         }
         if (Item is not null && !string.IsNullOrWhiteSpace(Q))
         {

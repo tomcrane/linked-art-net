@@ -54,6 +54,10 @@ public class ExamplesTests(PostgresFixture pg)
         var longer = Assert.Single(await pg.Store.LongerFormsAsync(shortForm.Id));
         Assert.Equal((cupString.Id, cup.Id, "Cambridge University Press"), (longer.StringId, longer.EntityId, longer.EntityLabel));
         Assert.Empty(await pg.Store.LongerFormsAsync(cambridge.Id));
+        // the string as another name's qualifier, after a comma, is not a longer form of it
+        var qualifierOf = await pg.Store.CollectAsync(ds, cupString.Context, "Syndics, University Press");
+        await pg.Store.DecideAsync(qualifierOf.Id, cup.Id, DecisionMethod.Human, null, "tester");
+        Assert.Single(await pg.Store.LongerFormsAsync(shortForm.Id));
         Assert.Empty(await pg.Store.StandingOnAsync(ds, ["http://example.org/nothing-stands-on-this"]));
 
         // two aligned entities of one label are paired as possibly one, until a note on either says they are two things and names the other

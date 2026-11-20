@@ -8,6 +8,7 @@
 @* the page compares before it merges (the owner, 2026-11-20: "this looks a bit clunky", of a table headed "Merge from the tray" reached
    from the duplicates check; and "the 'why' could be provided here"): each entity in its own panel with what tells it apart, and the
    two answers below, one thing or two *@
+@if (Model.From == "duplicates") { <p class="small" style="margin:0"><a href="/p/@Model.Dataset/checks?check=duplicates">← Entities that may be one thing</a></p> }
 <h1 style="margin-top:0">Compare and merge</h1>
 @if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
 @if (Model.Rows.Count < 2)
@@ -43,7 +44,7 @@ else
                     </ul>
                     @if (e.Equivalents.Count > r.Identifiers.Count) { <p class="small muted" style="margin:.1rem 0">and @(e.Equivalents.Count - r.Identifiers.Count) more</p> }
                 }
-                <p style="margin:.75rem 0 0"><label><input type="radio" name="survivor" value="@e.Id" checked="@(e.Id == Model.Suggested)" /> If they are one thing, <strong>keep this one</strong></label></p>
+                <p style="margin:.75rem 0 0"><label style="text-transform:none; letter-spacing:normal; font-size:1rem; font-weight:400; color:inherit"><input type="radio" name="survivor" value="@e.Id" checked="@(e.Id == Model.Suggested)" /> If they are one thing, <strong>keep this one</strong></label></p>
             </div>
         }
         </div>

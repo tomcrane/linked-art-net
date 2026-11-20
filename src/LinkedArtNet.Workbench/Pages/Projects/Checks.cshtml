@@ -29,9 +29,27 @@
         new(string.Join(" › ", path.Select((part, i) => i >= common ? $"<strong>{Html.Encode(part)}</strong>" : $"<span class=\"muted\">{Html.Encode(part)}</span>")));
     // a distance in words, where both the item and the place have coordinates
     string Away(AwayRow item, AwayRow place) => item.ItemAt is { } a && place.HomeAt is { } b ? $"· {AwayRow.Km(a, b):N0} km from the import's item" : "";
+    // the pairs of the second check are not of one sort (the owner, 2026-11-20: "some of the 'entities that may be one thing' obviously
+    // are, and some obviously aren't. It's not a case of expecting them to be mostly the same"): sorted by what the row itself shows.
+    // 0 probably one thing; 1 to look at; 2 of different kinds; 3 places of one name in different places
+    string Letters(string? x) => new string((x ?? "").Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+    bool Thin(string? about) => about is null || about.StartsWith("identifiers:", StringComparison.Ordinal);
+    int Sort(PossibleDuplicate d)
+    {
+        if (d.AClass != d.BClass) return 2;
+        var (la, lb) = (Letters(d.ALabel), Letters(d.BLabel));
+        var oneInOther = la.Length >= 6 && lb.Length >= 6 && (la.Contains(lb, StringComparison.Ordinal) || lb.Contains(la, StringComparison.Ordinal));
+        if (d.Linked && (d.SameLabel || oneInOther)) return 0;
+        if (d.SameLabel && d.AClass == "Type") return 0;
+        if (!d.Linked && d.SameLabel && d.AClass == "Place" && !Thin(d.AAbout) && !Thin(d.BAbout) && d.AAbout != d.BAbout) return 3;
+        return 1;
+    }
+    var parts = Model.Duplicates.GroupBy(Sort).ToDictionary(g => g.Key, g => g.ToList());
+    List<PossibleDuplicate> Part(int k) => parts.TryGetValue(k, out var list) ? list : [];
 }
 <h1>Checks</h1>
-<p class="muted">Lists of the project's own entities that a test finds doubtful. "Decide…" on a row shows what the entity is aligned to and the records each of its strings is in. There you say of each string whether it is that place or another, and one button does the rest: the entity is kept, mended, or split between the two. Nothing is changed until you press it. The entity's name opens its page, for anything else.</p>
+@if (Model.Plan is null && Model.Check is null) { <p class="muted">Tests run over the project's own entities, each listing what it finds doubtful for a person to decide. Nothing on a list is changed until you say so.</p> }
+else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">Lists of the project's own entities that a test finds doubtful. "Decide…" on a row shows what the entity is aligned to and the records each of its strings is in. There you say of each string whether it is that place or another, and one button does the rest: the entity is kept, mended, or split between the two. Nothing is changed until you press it. The entity's name opens its page, for anything else.</p> }
 
 @if (Model.Message is not null) { <p class="notice">@Model.Message @if (Model.MessageEntity is { } done) { <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(done.Id)">Open @done.Label</a> }</p> }
 @if (Model.Plan is { } plan)
@@ -240,21 +258,28 @@
 }
 else
 {
-<p class="small"><strong>The checks:</strong> <a href="/p/@Model.Dataset/checks">places the import aligned to a namesake</a> · <a href="/p/@Model.Dataset/checks?check=duplicates">entities that may be one thing</a></p>
+@if (Model.Check is not null) { <p class="small"><a href="/p/@Model.Dataset/checks">← All checks</a></p> }
 @if (Model.Check == "duplicates")
 {
     @* the second check (2026-11-20, from the desk: the Louvre as a body and as a person; "Thomas Winstanley & Co." and "Winstanley"; two
        "Harmondsworth"). Nothing is merged here: a row leads to the merge page, which shows both and does it on a person's word, or the
        pair is noted as two things and leaves the list *@
     <h2>Entities that may be one thing <span class="muted small">@Model.Duplicates.Count pairs</span></h2>
-    <p class="small muted">Two of the project's entities, each with identifiers, that look like one: either their authority records say so (a record one holds names a record the other holds as the same thing), or they bear the same label. Many are one thing entered twice; some are rightly two (a gallery in two cities, two towns of one name, a museum as a body and as a building). "Compare" shows the two side by side with what stands on each; there you merge them, or say they are two things and why. Nothing changes on this page.</p>
+    <p class="small muted">Two of the project's entities, each with identifiers, that might be one: either their authority records say so (a record one holds names a record the other holds as the same thing), or they bear the same label. Some plainly are one thing entered twice and some plainly are not, so the list is in parts, the likeliest first. "Compare" shows the two side by side with what stands on each; there you merge them, or say they are two things and why. Nothing changes on this page.</p>
     @if (Model.Duplicates.Count == 0) { <p class="notice">Nothing is listed.</p> }
-    else
+    @foreach (var (key, title, about) in new[] {
+        (0, "Probably one thing", "their records say they are one and their names agree (a name with and without its dates), or one subject heading entered from two vocabularies"),
+        (1, "To look at", "nothing on the row says which: one thing entered twice, an earlier and a later name, or two things a source has linked wrongly"),
+        (2, "Of different kinds", "a body and its building, a place and a person of its name: usually two things, sometimes one entered under the wrong kind"),
+        (3, "Places of one name in different places", "usually two places; listed because the name is the same") })
     {
+        var rows = Part(key);
+        if (rows.Count == 0) { continue; }
+        <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
         <table class="checks">
             <thead><tr><th>One</th><th>The other</th><th>Why they are paired</th><th>Decide</th></tr></thead>
             <tbody>
-            @foreach (var d in Model.Duplicates)
+            @foreach (var d in rows)
             {
                 <tr>
                     <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.AId)" target="_blank" rel="noopener"><strong>@(d.ALabel ?? d.AId)</strong></a> <span class="tag">@d.AClass.ToLowerInvariant()</span><br /><span class="small">@d.AAbout</span>@if (d.AAbout is not null) { <br /> }<span class="small muted">@d.ARecords.ToString("N0") record@(d.ARecords == 1 ? "" : "s")</span></td>
@@ -270,7 +295,7 @@ else
         </table>
     }
 }
-else
+else if (Model.Check == "places")
 {
 <h2>Places the import aligned to a namesake <span class="muted small">@Model.Away.Count</span></h2>
 @if (Model.Away.Count == 0 && Model.HomePlace is not null) { <p class="notice">Nothing is listed: every entity this check finds has been decided. What was done to each is on the <a href="/p/@Model.Dataset">project page</a> under Recent changes, and on the entities' own pages.</p> }
@@ -306,5 +331,24 @@ else
         }
     }
 }
+}
+else
+{
+    @* the list of checks (the owner, 2026-11-20, of two links in a line of text, the page opening on a check with two rows while the other had 147: "it doesn't seem right") *@
+    <table class="checks">
+        <thead><tr><th>Check</th><th>What it lists</th><th>Waiting</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><a href="/p/@Model.Dataset/checks?check=duplicates"><strong>Entities that may be one thing</strong></a></td>
+                <td class="small">Pairs of the project's entities whose records say they are one, or that bear one label. Each is compared side by side, then merged or noted as two things.</td>
+                <td><strong>@Model.Duplicates.Count.ToString("N0")</strong> pair@(Model.Duplicates.Count == 1 ? "" : "s")<br /><span class="small muted">@Part(0).Count probably one · @Part(1).Count to look at · @Part(2).Count of different kinds · @Part(3).Count places apart</span></td>
+            </tr>
+            <tr>
+                <td><a href="/p/@Model.Dataset/checks?check=places"><strong>Places the import aligned to a namesake</strong></a></td>
+                <td class="small">A place with no qualifier that the 2024 import put on a namesake abroad, where a place of the name stands in @(Model.HomePlace ?? "the project's home place"). Each is decided string by string.</td>
+                <td><strong>@Model.Away.Count.ToString("N0")</strong> place@(Model.Away.Count == 1 ? "" : "s")@if (Model.Away.Count > 0 && Model.Away.All(f => f.Reason is not null)) { <br /><span class="small muted">each left with a note</span> }</td>
+            </tr>
+        </tbody>
+    </table>
 }
 }

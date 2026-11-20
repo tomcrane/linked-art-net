@@ -90,8 +90,9 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             }
             Message ??= "That entity is not on the list any more.";
         }
-        if (Check == "duplicates") Duplicates = await Project.Curation.PossibleDuplicatesAsync(Dataset, HttpContext.RequestAborted);
-        else Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
+        // with no check named the page is the list of checks, each with how much it holds, so both are counted
+        if (Check != "places") Duplicates = await Project.Curation.PossibleDuplicatesAsync(Dataset, HttpContext.RequestAborted);
+        if (Check != "duplicates") Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
     }
 
     /// <summary>The pair is two things: a note on each naming the other, and the pair leaves the list.</summary>
@@ -124,7 +125,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             var still = result.Id == id && (await Project.Curation.PlacesAlignedAwayAsync(Dataset, Project.Manifest.HomePlace, HttpContext.RequestAborted)).Any(f => f.Row.EntityId == id);
             return still
                 ? Flash(summary + " It is still on the list: see below what is left to decide.", new { dataset = Dataset, mend = id }, result)
-                : Flash(summary + " Nothing is left to decide for it.", new { dataset = Dataset }, result);
+                : Flash(summary + " Nothing is left to decide for it.", new { dataset = Dataset, check = "places" }, result);
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
         {
@@ -139,6 +140,6 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         var entity = await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted);
         if (entity is null || entity.Dataset != Dataset) return NotFound();
         await Project.Curation.NoteAsync(Dataset, id, Reviewer, "Left undecided at the checks: " + text.Trim());
-        return Flash($"\"{entity.Label}\" left on the list, with your note on it.", new { dataset = Dataset }, entity);
+        return Flash($"\"{entity.Label}\" left on the list, with your note on it.", new { dataset = Dataset, check = "places" }, entity);
     }
 }

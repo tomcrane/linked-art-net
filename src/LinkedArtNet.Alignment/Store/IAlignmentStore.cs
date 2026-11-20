@@ -132,6 +132,13 @@ public interface IAlignmentStore
     /// <summary>By authority URI, the project entity that holds it and how many decided strings and records already stand on that entity (queued strings and placeholders not counted). URIs nothing stands on are absent.</summary>
     Task<IReadOnlyDictionary<string, Standing>> StandingOnAsync(string dataset, IReadOnlyCollection<string> uris, CancellationToken ct = default);
 
+    /// <summary>
+    /// Pairs of the dataset's live entities that carry identifiers and may be one thing (see <see cref="PossibleDuplicate"/>), the
+    /// most used first. A pair a person has noted as two things (a note on either beginning with <paramref name="twoThingsPrefix"/>
+    /// and naming the other's id) is left out.
+    /// </summary>
+    Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, string twoThingsPrefix, CancellationToken ct = default);
+
     /// <summary>The dataset's records whose title contains the text given, or whose identifier is it, with the strings in each.</summary>
     Task<IReadOnlyList<RecordHit>> SearchRecordsAsync(string dataset, string text, int limit = 15, CancellationToken ct = default);
 

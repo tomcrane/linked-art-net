@@ -343,6 +343,12 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     // ---- checks on the store's entities ------------------------------------------------------------------------------
 
     /// <summary>How the notes that leave a row of the checks undecided begin: the Decide screen's own, and the two the assistant wrote on the entities' pages before the screen could.</summary>
+    /// <summary>How a note begins that says two entities the duplicates check paired are two things; the other's id follows, so the pair leaves the list.</summary>
+    public const string TwoThings = "At the checks, two things and not one: not the same as ";
+
+    /// <summary>The check "entities that may be one thing": pairs of the project's own entities, for a person to merge or to say are two.</summary>
+    public Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, CancellationToken ct = default) => store.PossibleDuplicatesAsync(dataset, TwoThings, ct);
+
     public static readonly IReadOnlyList<string> LeftUndecided = ["Left undecided at the checks:", "From the checks, left for the owner:"];
 
     private static readonly HashSet<string> ChainNoise = new(StringComparer.OrdinalIgnoreCase) { "Europe", "World", "Greater", "County", "City", "Borough", "United", "Kingdom", "States", "North", "South", "East", "West", "upon", "with" };

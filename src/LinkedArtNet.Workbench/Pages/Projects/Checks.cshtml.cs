@@ -14,6 +14,9 @@ namespace LinkedArtNet.Workbench.Pages.Projects;
 public sealed class ChecksModel(ProjectServices services, ProjectAccess access) : ProjectPageModel(services, access)
 {
     [BindProperty(SupportsGet = true)] public string? Mend { get; set; }
+    /// <summary>Which check's list to show: null for the first, the places; "duplicates" for the entities that may be one thing (the second check, 2026-11-20).</summary>
+    [BindProperty(SupportsGet = true)] public string? Check { get; set; }
+    public IReadOnlyList<PossibleDuplicate> Duplicates { get; private set; } = [];
     /// <summary>A search of the project's entities on the Mend screen, for a place known by another name (the owner, 2026-11-15, at "Bâle", which is Basel).</summary>
     [BindProperty(SupportsGet = true)] public string? Find { get; set; }
     public IReadOnlyList<Entity> Found { get; private set; } = [];
@@ -87,7 +90,21 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             }
             Message ??= "That entity is not on the list any more.";
         }
-        Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
+        if (Check == "duplicates") Duplicates = await Project.Curation.PossibleDuplicatesAsync(Dataset, HttpContext.RequestAborted);
+        else Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
+    }
+
+    /// <summary>The pair is two things: a note on each naming the other, and the pair leaves the list.</summary>
+    public async Task<IActionResult> OnPostTwoThingsAsync(string a, string b, string? why)
+    {
+        var ct = HttpContext.RequestAborted;
+        var first = await Services.Store.GetEntityAsync(a, ct);
+        var second = await Services.Store.GetEntityAsync(b, ct);
+        if (first is null || second is null || first.Dataset != Dataset || second.Dataset != Dataset) return NotFound();
+        var because = string.IsNullOrWhiteSpace(why) ? "" : " (" + why.Trim() + ")";
+        await Project.Curation.NoteAsync(Dataset, a, Reviewer, $"{CurationService.TwoThings}{b} \"{second.Label}\"{because}");
+        await Project.Curation.NoteAsync(Dataset, b, Reviewer, $"{CurationService.TwoThings}{a} \"{first.Label}\"{because}");
+        return Flash($"\"{first.Label}\" and \"{second.Label}\" noted as two things; the pair is off the list.", new { dataset = Dataset, check = "duplicates" });
     }
 
     /// <summary>

@@ -55,6 +55,17 @@ public class ExamplesTests(PostgresFixture pg)
         Assert.Equal((cupString.Id, cup.Id, "Cambridge University Press"), (longer.StringId, longer.EntityId, longer.EntityLabel));
         Assert.Empty(await pg.Store.LongerFormsAsync(cambridge.Id));
         Assert.Empty(await pg.Store.StandingOnAsync(ds, ["http://example.org/nothing-stands-on-this"]));
+
+        // two aligned entities of one label are paired as possibly one, until a note on either says they are two things and names the other
+        var now = DateTimeOffset.UtcNow;
+        var twinA = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Holburne Museum", Status: EntityStatus.Aligned), scheme);
+        var twinB = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Holburne Museum", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(twinA.Id, new Equivalent("http://example.org/holburne-a", "loc", DecisionMethod.Human, 1.0, now));
+        await pg.Store.AddEquivalentAsync(twinB.Id, new Equivalent("http://example.org/holburne-b", "ulan", DecisionMethod.Human, 1.0, now));
+        var pair = Assert.Single(await pg.Store.PossibleDuplicatesAsync(ds, "Two things: "), d => d.ALabel == "Holburne Museum");
+        Assert.True(pair.SameLabel); Assert.False(pair.Linked);
+        await pg.Store.AddNoteAsync(ds, twinA.Id, "tester", "Two things: " + twinB.Id);
+        Assert.DoesNotContain(await pg.Store.PossibleDuplicatesAsync(ds, "Two things: "), d => d.ALabel == "Holburne Museum");
     }
 
     // four Heritage records in the export's shape: three name Langford's auction house (two kept at two per string), one is Hodgkin's

@@ -1536,6 +1536,40 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return found;
     }
 
+    public async Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, string twoThingsPrefix, CancellationToken ct = default)
+    {
+        // counted before it was built (2026-11-20, reports/q-dup1.sql): 74 pairs linked by their records, 76 of one label and class,
+        // 4 of one label across classes. The records on each are counted for the pairs only: counted for every entity it took 26 s
+        await using var cmd = _db.CreateCommand(
+            """
+            with live as materialized (
+                select e.id, e.class, e.label, lower(regexp_replace(coalesce(e.label, ''), '[^[:alnum:]]', '', 'g')) as k
+                from entities e where e.dataset = @dataset and e.merged_into is null and e.status in ('aligned', 'confirmed')
+                  and exists (select 1 from entity_equivalents q where q.entity_id = e.id)),
+            a as (select distinct least(q1.entity_id, q2.entity_id) as x, greatest(q1.entity_id, q2.entity_id) as y
+                  from live l1 join entity_equivalents q1 on q1.entity_id = l1.id join authority_records r on r.uri = q1.uri
+                  join entity_equivalents q2 on q2.uri = any(r.same_as) join live l2 on l2.id = q2.entity_id where q1.entity_id <> q2.entity_id),
+            b as (select l1.id as x, l2.id as y from live l1 join live l2 on l2.k = l1.k and l1.id < l2.id where length(l1.k) >= 4),
+            p as (select x, y, bool_or(linked) as linked, bool_or(not linked) as same_label
+                  from (select x, y, true as linked from a union all select x, y, false from b) u group by x, y),
+            n as (select e.id, (select count(distinct (o.system, o.record_id)) from decisions d join occurrences o on o.string_id = d.source_string_id
+                                where d.entity_id = e.id and d.valid and d.method not in ('queued', 'minted')) as records
+                  from (select x as id from p union select y from p) e)
+            select p.x, l1.label, l1.class, n1.records, p.y, l2.label, l2.class, n2.records, p.linked, p.same_label
+            from p join live l1 on l1.id = p.x join live l2 on l2.id = p.y join n n1 on n1.id = p.x join n n2 on n2.id = p.y
+            where not exists (select 1 from notes t where t.dataset = @dataset
+                              and ((t.target = p.x and t.text like @prefix || '%' and position(p.y in t.text) > 0)
+                                or (t.target = p.y and t.text like @prefix || '%' and position(p.x in t.text) > 0)))
+            order by n1.records + n2.records desc, l1.label
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "prefix", twoThingsPrefix.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_"));
+        var list = new List<PossibleDuplicate>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+            list.Add(new PossibleDuplicate(r.GetString(0), Str(r, 1), r.GetString(2), Convert.ToInt32(r.GetInt64(3)), r.GetString(4), Str(r, 5), r.GetString(6), Convert.ToInt32(r.GetInt64(7)), r.GetBoolean(8), r.GetBoolean(9)));
+        return list;
+    }
+
     public async Task<IReadOnlyList<RecordHit>> SearchRecordsAsync(string dataset, string text, int limit = 15, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

@@ -240,6 +240,42 @@
 }
 else
 {
+<p class="small"><strong>The checks:</strong> <a href="/p/@Model.Dataset/checks">places the import aligned to a namesake</a> · <a href="/p/@Model.Dataset/checks?check=duplicates">entities that may be one thing</a></p>
+@if (Model.Check == "duplicates")
+{
+    @* the second check (2026-11-20, from the desk: the Louvre as a body and as a person; "Thomas Winstanley & Co." and "Winstanley"; two
+       "Harmondsworth"). Nothing is merged here: a row leads to the merge page, which shows both and does it on a person's word, or the
+       pair is noted as two things and leaves the list *@
+    <h2>Entities that may be one thing <span class="muted small">@Model.Duplicates.Count pairs</span></h2>
+    <p class="small muted">Two of the project's entities, each with identifiers, that look like one: either their authority records say so (a record one holds names a record the other holds as the same thing), or they bear the same label. Many are one thing entered twice; some are rightly two (a gallery in two cities, two towns of one name, a museum as a body and as a building). Open both before deciding. "Compare and merge" shows the two side by side and merges only when you say so there.</p>
+    @if (Model.Duplicates.Count == 0) { <p class="notice">Nothing is listed.</p> }
+    else
+    {
+        <table class="checks">
+            <thead><tr><th>One</th><th>The other</th><th>Why they are paired</th><th>Decide</th></tr></thead>
+            <tbody>
+            @foreach (var d in Model.Duplicates)
+            {
+                <tr>
+                    <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.AId)" target="_blank" rel="noopener"><strong>@(d.ALabel ?? d.AId)</strong></a> <span class="tag">@d.AClass.ToLowerInvariant()</span><br /><span class="small muted">@d.ARecords.ToString("N0") record@(d.ARecords == 1 ? "" : "s")</span></td>
+                    <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.BId)" target="_blank" rel="noopener"><strong>@(d.BLabel ?? d.BId)</strong></a> <span class="tag">@d.BClass.ToLowerInvariant()</span><br /><span class="small muted">@d.BRecords.ToString("N0") record@(d.BRecords == 1 ? "" : "s")</span></td>
+                    <td class="small">@(d.Linked ? "their authority records say they are one thing" : "")@(d.Linked && d.SameLabel ? "; " : "")@(d.SameLabel ? "the same label" : "")@(d.AClass != d.BClass ? "; of different kinds" : "")</td>
+                    <td class="small">
+                        <a class="button" href="/p/@Model.Dataset/merge?ids=@Uri.EscapeDataString(d.AId + "," + d.BId)">Compare and merge…</a>
+                        <form method="post" asp-page-handler="TwoThings" asp-route-check="duplicates" class="inline" data-keep-place>
+                            <input type="hidden" name="a" value="@d.AId" /><input type="hidden" name="b" value="@d.BId" />
+                            <input type="text" name="why" placeholder="why, if you like" style="width:9rem" />
+                            <button type="submit" class="secondary" title="Notes on each entity that it is not the other, and takes the pair off this list">Two things</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+}
+else
+{
 <h2>Places the import aligned to a namesake <span class="muted small">@Model.Away.Count</span></h2>
 @if (Model.Away.Count == 0 && Model.HomePlace is not null) { <p class="notice">Nothing is listed: every entity this check finds has been decided. What was done to each is on the <a href="/p/@Model.Dataset">project page</a> under Recent changes, and on the entities' own pages.</p> }
 @if (Model.HomePlace is null)
@@ -273,5 +309,6 @@ else
             </table>
         }
     }
+}
 }
 }

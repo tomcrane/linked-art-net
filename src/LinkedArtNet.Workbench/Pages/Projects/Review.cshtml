@@ -147,6 +147,10 @@ else
             @if (item.Entity is not null) { <dt>Currently</dt><dd><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener" title="The entity's page">@item.Entity.Label</a> <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span> <code class="small">@item.Entity.Id</code></dd> }
         </dl>
     }
+    @* the entity this notice settles the string onto, if it shows: the card's other offers of that entity say so and carry no button
+       (one button for one act; seen as a user on 2026-11-20 at "New Gallery", where "Settle it onto", the hint's "Same as" and the
+       candidate's each offered it) *@
+    var settledId = item.Decision.Method == DecisionMethod.Queued && item.Entity is { Status: EntityStatus.Confirmed or EntityStatus.Aligned } && Model.Plan is null ? item.Entity.Id : null;
     @if (item.Decision.Method == DecisionMethod.Queued && item.Entity is { Status: EntityStatus.Confirmed or EntityStatus.Aligned } settled && Model.Plan is null)
     {
         @* a queued string whose entity is no placeholder any more: something settled the entity and not the string (a keep refused
@@ -172,7 +176,13 @@ else
             return null;
         };
         var agreeing = Model.LongerForms.GroupBy(f => f.EntityId).Where(g => onCard(g.Key) is { At: 0 }).ToList();
-        @if (agreeing.Count == 1 && Model.Method != "human")
+        // it stands aside where a candidate below the top bears the string as written, its bracketed qualifier apart (seen as a user,
+        // 2026-11-20: a catalogue of 1762 by the "Society for the Encouragement of Arts...", the head naming the Royal Society of Arts
+        // through a longer form, and the Society's own heading the second candidate; counted: five of the ten such cards then left)
+        Func<string?, string> lettersOf = x => new string(System.Text.RegularExpressions.Regex.Replace(x ?? "", @"\s*\([^()]*\)\s*$", "").Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+        var asWritten = lettersOf(item.String.Raw);
+        var borneBelow = liveGroups.Skip(1).Any(g => g.Members.Any(m => m.Veto != true && m.SetAside != true && lettersOf(m.Label) == asWritten));
+        @if (agreeing.Count == 1 && Model.Method != "human" && settledId is null && !borneBelow)
         {
             @* two lines of evidence that meet (the owner at "Schwabe", 2026-11-20: "there should be some encouragement?"). Counted first: 20 queued
                cards have it at the top candidate; of the nine among the strings marked in the second trial all nine were the same body, and of
@@ -181,7 +191,7 @@ else
             var agLabel = ag.First().EntityLabel ?? ag.Key;
             <div class="notice" style="margin:.5rem 0">
                 <strong>Two things on this card point to @agLabel.</strong> A longer form of the name, "@ag.First().Raw", is already decided onto it, and it holds the record of the top candidate below (@onCard(ag.Key)!.Value.Score.ToString("0.00")).
-                <span class="small">They agree, which is not proof: both may rest on one earlier decision. If the records below are its books, the <a href="#top-candidate">top candidate</a>'s button, "Same as @agLabel", decides it.</span>
+                <span class="small">They agree, which is not proof: both may rest on one earlier decision. If the records below are its own, the <a href="#top-candidate">top candidate</a>'s button, "Same as @agLabel", decides it.</span>
             </div>
         }
         <div class="small" style="margin:.5rem 0"><strong>Longer forms of this name, already decided in this project:</strong> <span class="muted">a hint; they may be another thing of the name</span>
@@ -191,7 +201,8 @@ else
             <div class="row" style="gap:.5rem; align-items:baseline; margin:.2rem 0"><span style="flex:1">@foreach (var f in byEntity) { <a href="/p/@Model.Dataset/review?id=@f.StringId" target="_blank" rel="noopener" title="This string's card">@f.Raw</a><span class="muted"> (@f.Records.ToString("N0") record@(f.Records == 1 ? "" : "s"))</span><text> · </text> }
                 on <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(byEntity.Key)" target="_blank" rel="noopener">@(byEntity.First().EntityLabel ?? byEntity.Key)</a>@if (also is { } a) { <span class="muted" title="The same entity is offered among the candidates below: its button there and this one do the same thing"> · also @(a.At == 0 ? "the top candidate" : "a candidate") below, at @a.Score.ToString("0.00"), and decided there</span> }</span>
                 @* one button for one act (the owner, 2026-11-20): an entity that is also a candidate below is decided there, where its record is *@
-                @if (also is null) { <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@byEntity.Key" /><button type="submit" class="secondary" title="Decides this string onto that entity">Same as @(byEntity.First().EntityLabel ?? "this")</button></form> }</div>
+                @if (byEntity.Key == settledId) { <span class="small muted">settled by the button above</span> }
+                else if (also is null) { <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@byEntity.Key" /><button type="submit" class="secondary" title="Decides this string onto that entity">Same as @(byEntity.First().EntityLabel ?? "this")</button></form> }</div>
         }
         </div>
     }
@@ -322,6 +333,7 @@ else
             : liveGroups.Count == 0 ? "every candidate found was ruled out, each for the reason it gives."
             : level >= 2 ? $"{level} candidates are level at {topScore:0.00}, and nothing in the string tells them apart" + (saidOnce.Count > 0 ? ": " + string.Join("; ", saidOnce) + "." : ". The records above may.")
             : topScore < acceptAt ? $"its best candidate scores {topScore:0.00}, under the {acceptAt:0.00} at which a rule may accept."
+            : liveGroups.First(g => g.Score >= topScore - 0.001).Sources.Count == 0 ? $"its top candidate at {topScore:0.00} is another string's placeholder in this project, which carries no identifier: a person says whether the two strings are one thing, or which of the records below both are."
             : liveGroups.First(g => g.Score >= topScore - 0.001).Sources.Count < 2 ? $"its one candidate at {topScore:0.00} comes from a single source ({string.Join(", ", liveGroups.First(g => g.Score >= topScore - 0.001).Sources)}). A rule accepts on one source only where the string carries something to check it by, a date or a place; this one does not, so a person confirms it."
             : "the rules did not accept its best candidate" + (saidOnce.Count > 0 ? ": " + string.Join("; ", saidOnce) + "." : ".");
         <p class="small"><strong>Why it waits for a person:</strong> @why</p>
@@ -446,6 +458,12 @@ else
         var allVeto = live.Count == 0;
         // the project's own firm entities in the group, each followed through a merge and counted once
         var firm = live.Where(m => item.Entities.TryGetValue(m.Uri, out var f) && !f.IsPlaceholder).Select(m => item.Entities[m.Uri].Entity).DistinctBy(e => e.Id).ToList();
+        // the one project entity the group's records belong to, whether it was among the candidates or has come to hold them since
+        // (seen as a user, 2026-11-20, at "Louvre": the group said "Accept these as one" and each row "Same as Musée du Louvre")
+        var heldBy = live.Where(m => Model.CandidateEntity.ContainsKey(m.Uri)).Select(m => Model.CandidateEntity[m.Uri]).DistinctBy(x => x.Id).ToList();
+        (string Id, string? Label)? groupEntity = null;
+        if (firm.Count == 1) { groupEntity = (firm[0].Id, firm[0].Label); } else if (firm.Count == 0 && heldBy.Count == 1) { groupEntity = heldBy[0]; }
+        var isSettled = settledId is not null && heldBy.Any(x => x.Id == settledId);
         // a holder pair's box (the owner, 2026-11-13, at Dagenham: the notice did not say which rows it meant, and its button sat in the
         // flow of the text): the rows still to box, and the merge's own line under the last of them
         var pairLeft = -1;
@@ -473,7 +491,8 @@ else
                         <form method="post" asp-page-handler="AcceptTogether" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                             <input type="hidden" name="id" value="@item.String.Id" />
                             @foreach (var m in live) { <input type="hidden" name="targets" value="@m.Uri" /> }
-                            <button type="submit" title="@(firm.Count == 1 ? "The string is this entity, which gets any record of the group it does not hold yet" : "The string is this group: one entity with all its identifiers")">@(firm.Count == 1 ? $"Same as {Named(firm[0])}" : "Accept these as one")</button>
+                            @if (isSettled) { <span class="small muted">settled by the button at the head of this card</span> }
+                            else { <button type="submit" title="@(groupEntity is not null ? "The string is this entity, which gets any record of the group it does not hold yet" : "The string is this group: one entity with all its identifiers")">@(groupEntity is { } ge ? $"Same as {ge.Label ?? "the project's entity"}" : "Accept these as one")</button> }
                             <button type="submit" name="always" value="true" class="secondary" title="The same, and this exact spelling means it from now on in this field; the variants page can widen a rule to every field">Always, in this field</button>
                         </form>
                     }
@@ -599,7 +618,7 @@ else
                         {
                             Model.StandingOn.TryGetValue(m.Uri, out var st);
                             var longerRaw = Model.LongerForms.FirstOrDefault(f => f.EntityId == hnow.Id)?.Raw;
-                            var groupNames = firm.Any(e => e.Id == hnow.Id);
+                            var groupNames = groupEntity is { } gn && gn.Id == hnow.Id;
                             <div class="small"><strong>In this project already:</strong> the entity <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(hnow.Id)" target="_blank" rel="noopener">@(hnow.Label ?? hnow.Id)</a> holds this @("record" + (st is { Records: > 0 } ? $", with {st.Records:N0} record{(st.Records == 1 ? "" : "s")} in {st.Strings:N0} other string{(st.Strings == 1 ? "" : "s")} on it" : "") + (longerRaw is not null ? $", the longer form \"{longerRaw}\" among them" : "")).
                                 <span class="muted" title="It says the project uses this record already, and how much. It does not say the earlier decisions were right.">Used, which is not to say rightly.</span>
                                 @if (Model.Method != "human" && m.Veto != true && live.Count > 1 && !groupNames) { <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@hnow.Id" /><button type="submit" class="link small">Same as @(hnow.Label ?? "this entity")</button></form> }
@@ -620,11 +639,11 @@ else
                         @* a group of one record: the row's actions are the group's *@
                         @if (!m.IsStore && !(chosenGroup is not null && ReferenceEquals(group, chosenGroup)))
                         {
-                            <form method="post" asp-page-handler="Accept" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
+                            @if (isSettled) { <span class="small muted">settled by the button at the head of this card</span> } else { <form method="post" asp-page-handler="Accept" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
                                 @* a record the project already holds: accepting it is saying the string is that entity, and the button says so *@
                                 <button type="submit" title="@(heldNow is null ? "The string is this record: an entity is made for it, or found if the project has one" : "This record belongs to the project's entity already: the string is decided onto that entity")">@(heldNow is { } hb ? $"Same as {hb.Label ?? "the project's entity"}" : "Accept")</button>
-                            </form>
+                            </form> }
                             <form method="post" asp-page-handler="Override" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
                                 <button type="submit" class="secondary" title="Always read this exact spelling as this record when it occurs in this field; the variants page can widen a rule to every field">Always, in this field</button>
@@ -632,10 +651,10 @@ else
                         }
                         else
                         {
-                            <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
+                            @if (!isSettled) { <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@m.Uri" />
                                 <button type="submit">Same as this</button>
-                            </form>
+                            </form> } else { <span class="small muted">settled by the button at the head of this card</span> }
                         }
                     }
                     else if (m.Veto != true && Model.Method != "human")

@@ -1121,6 +1121,13 @@ and the log (doc 15) records that. The order within an area is rough value.
     American places the import aligned with no state in the string;
   - "prominence stands aside: the project's own entity Winchester is among the live groups, the desk's" on
     every row of twelve groups: a reason all share, to be said once.
+  MENDED the same afternoon (the owner: "yes, do the small mends"), five of the seven: the button names its
+  entity with where it is (seen on "Kingston": "Same as Kingston (Ont.)", "Same as Kingston (Kingston,
+  Surrey)"); the string as another name's qualifier is no longer a longer form; a merged placeholder's row
+  loses its button where the entity is offered elsewhere, and "why it waits" says the placeholder has since been
+  decided (not seen); no search for a letter or two (seen on "S"); the shared reason said once (not seen). Left,
+  each for a proposal to the owner first: the decision "this is not a name" (with the record to the cataloguers'
+  list); the import's namesakes abroad ("Middleburg"), a count first.
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

@@ -1076,6 +1076,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   entities beside a later, properly aligned one, and want the fuller identifiers before anyone can judge them.
   And the desk, after a decision, goes on to the queued strings whose placeholders were candidates on that card,
   once the name's own siblings are done (built; not seen in the browser, no decision made to try it).
+  The owner on the check's row and the merge page it led to (2026-11-20, two screenshots): "this looks a bit
+  clunky", and of the reason for two things, "the 'why' could be provided here". REBUILT the same day: the row has
+  one way in, "Compare..."; the merge page is "Compare and merge", each entity a panel with where it is, what
+  stands on it (strings, with their fields and records) and what its identifiers call it, then "They are one
+  thing" (the label, the merge) and for a pair "They are two things" (the reason, the note on each). Seen on the
+  two "Bonhams". Left: the "keep this one" choice is set in the small capitals every label has, and wants plain
+  type; a way back to the check's list from the page; neither button pressed in the browser.
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

@@ -23,6 +23,36 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-20
+
+A day of the owner's screenshots and the assistant at the desk. No reconcile; schema unchanged; the full test loop
+green at day end.
+
+- The owner at "Schwabe": the hint's "Same as" and the candidate's "Accept" did one thing, on one entity. Counted
+  (of 274 queued strings with a longer form decided, the longer form's entity holds the top candidate's record on
+  20 cards, a lower one's on 25; nine of nine right at the top among the strings marked, eight of nine below), then
+  built: the head of the card says the two agree, as agreement and not proof; a record the project holds is
+  accepted as "Same as <entity>". Then, at his word, "fold those three lines into one, and avoid having multiple
+  buttons that do the same thing": one line on the candidate, one button for the act. It became a rule for cards.
+- The desk as a user, morning: thirteen strings on the agreement cards ("Phaidon" 224 records, "Christ Church"
+  among 145 of the name, "Nationalmuseum"). The New Gallery's entity found with a label from another body and
+  mended; a catalogue of 1762 decided onto the Society of its own time against the card's head, by the ruling on
+  successors. Five faults mended after it.
+- The second check, "entities that may be one thing": counted (74 pairs by their records, 80 by label), built as
+  a list that merges nothing. The owner: the row "looks a bit clunky", the merge page too, "the 'why' could be
+  provided here"; then the two checks as links in a line "doesn't seem right", and the pairs are not mostly one
+  kind. Rebuilt in turn: the row with one way in; the merge page as "Compare and merge", two panels and two
+  answers; the Checks page a list of checks with what waits in each; the pairs in four parts.
+- The desk goes on, after a decision, to the near spellings that were candidates on that card.
+- The desk as a user, afternoon: six more ("Winchester", 25 records, and "Winchester?"; "Huntingdon, Cambs.";
+  "Middleburg, Virginia"). Seven faults seen, five mended the same hour; two held as proposals at the owner's
+  word, he having to stop: a decision "this is not a name" ("S"), and the import's namesakes abroad
+  ("Middleburg" on the Pennsylvanian town).
+- Learnt: a change of mine to a button's wording dropped the placement the page already showed, and two
+  entities of one label read alike for a morning; a look at the card after each change to it, on a card with two
+  entities of one name, would have caught it. Tests that assert a page's wording fail on a rewording: run the
+  workbench tests before saying a page is done.
+
 ## 2026-11-19
 
 The day the work turned from card by card to the whole queue. No reconcile; schema unchanged; the full test loop

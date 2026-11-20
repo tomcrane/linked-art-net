@@ -62,64 +62,86 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-19 evening; the one place to read first)
+## 0. Resume point (written 2026-11-20 evening; the one place to read first)
 
-**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile has run since, and nothing
-built on 2026-11-19 wants one: the day's additions to the card are looked up when the card opens. Schema version
-12 on the real store. 3,764 strings queued. The way of working is the assistant driving the workbench as a user,
-signed in as `claude`, the owner reviewing after; on 2026-11-19 it widened, at the owner's word, from card by
-card to a survey of the whole queue and two trials of help on a set. The day's commits are local on `de-pmc`, the
-full test loop green at day end; `git push` is the owner's word.
+**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile since, and none wanted: what
+was built on 2026-11-19 and 2026-11-20 is looked up when a card or a check opens. Schema version 12. 3,745
+strings queued (3,764 two days ago; 19 decided by the assistant as `claude` on 2026-11-20). The way of working is
+the assistant driving the workbench as a user, signed in as `claude`, the owner reviewing after and sending
+screenshots of what reads badly. The commits of 2026-11-20 are local on `de-pmc`, the full test loop green at day
+end; `git push` is the owner's word.
 
-**What 2026-11-19 found** (section 7 has each in full, under "The survey of the queue" and the trials):
+**Held for the owner, to open with when we resume** (he asked on 2026-11-20 that they wait): two proposals the
+assistant is to put before building anything.
 
-- The queue waits on judgement with the record in view, not on a missing rule: 37% are level namesakes none of
-  them the project's, 29% one candidate from one source, 19% namesakes with a project entity among them. The 2024
-  import accounts for about 5% of it.
-- Trial 1, 49 publisher strings (is the body below the people the publisher?): the assistant's firm verdicts held
-  35 of 35 against the owner's marks, its "probably" 3 of 6; each miss was a heading judged by its label and not
-  by its record. The body offered was the publisher in 18 of 49.
-- Trial 2, 100 publisher strings with a longer form already decided (is the string that entity?): same 62,
-  probably 13, not 19; the owner agreed with all of the first 49 marked and stopped there
-  (`reports/trial2-longer-forms-2026-11-19.md`, blocks 50 to 100 unmarked).
-- The right body is usually in the index and not offered (ten of fourteen looked for), because a one-word string
-  scores low against the fuller name. And project entities are themselves misaligned to namesakes: a count finds
-  93 bodies whose heading's place agrees with none of their records' places, Country Life (88 records) on an
-  academy in North Carolina among them.
-- How the owner checks a verdict: the string searched for, its card, the records, then the web for the title, or
-  the title with the publisher. "Very often a bit of sleuthing will reveal a confident answer."
+1. *A decision "this is not a name".* "S" in a place of publication (record ZB270, a Sotheby's sale of 1937), "s"
+   in publisher and corporate author: what is left of "S.l." and "s.n.". The string leaves the queue without an
+   entity, and the record goes to the cataloguers' list (doc 12 section 14 step 2, not built). To propose: what
+   the decision is called and where it sits on the card, what the string's state is in the store (a method of
+   its own, no entity), what the export does with it, and the list it feeds.
+2. *The import's namesakes abroad.* The project's "Middleburg" (`place/mustp7pf`) is on Wikidata's Middleburg in
+   Pennsylvania, its two records the National Sporting Library's exhibitions, which is at Middleburg, Virginia;
+   the first check does not see it, comparing only with the home place. To count first: places the 2024 import
+   aligned where the string names no state or country and other records of the same publisher name one. Then to
+   propose whether it is a third check or a widening of the first.
 
-**Built on 2026-11-19, for the owner to look at** (seen by the assistant in the browser except where said):
+Also waiting on his word from 2026-11-19: the check "a body aligned to a namesake elsewhere" (93 bodies whose
+heading's place agrees with none of their records' places; Country Life, Penguin Books, Pilgrim Press); whether
+the publishers' table should name the body as well as the place.
 
-- The desk is "String review"; a card says why it waits for a person; "Fetch what each heading was made from".
-- A search box for the project in the header ("/" reaches it, not tried): http://localhost:5200/p/pmc/search?q=Blackwell
-- A search or small action that reloads its own page keeps the reader's place (seen at the desk's search only).
-- On a card: beside each record, the title looked up at Library Hub and on the web, alone or with the string
-  (the links not followed: Library Hub's address is a guess to be tried); "Longer forms of this name, already
-  decided in this project", with "Same as"; for a publisher, "Fuller names in the indexes", with its caveat; on a
-  candidate, "Already in this project: N records ... stand on this". Cards to see them on: "Blackwell"
-  http://localhost:5200/p/pmc/review?id=5814, "Yale" http://localhost:5200/p/pmc/review?id=8770.
-- The entity page's "N waiting at the desk" opens the desk (not tried in the browser).
-- The assistant's decisions as `claude` on 2026-11-19: "Heaton, Bradford" kept local, "Desnoyers, Rosika"
-  accepted, "Pisa" as the city, "Robbins, David (editor)" as LoC's "Robbins, David, 1937-"; and from 2026-11-17,
-  three on its own knowledge: "Royston" to Hertfordshire, "Plaistow" kept as Newham's, "Kingston" to TGN 1016870.
-- Left by hand from 2026-11-15, if not done since: "Cardiff" (`place/t7mbc5a4`), "Belfast" (`place/scrhnxf9`),
-  "Raleigh" (`place/mcgyqvqf`), the Ontario "Peterborough" (`place/bk5w54aq`).
+**What the two days found** (section 7 has each in full: "The survey of the queue", the trials, "The desk as a
+user"):
 
-**Next, in order.** (1) The owner's word on two things put to him: the check "a body aligned to a namesake
-elsewhere" (the 93; the entities to mend before "Same as" is pressed onto them: Penguin Books, Jonathan Cape,
-John Donald, Pilgrim Press, Country Life); whether the publishers' table should name the body as well as the
-place. (Ruled the same evening: predecessor and successor firms are aligned each to its own record, the
-succession kept as data; section 7 has the ruling and what follows from it.) (2) The rest of trial 2's marks, if the
-owner wants them counted. (3) The design of help on a set, to put to the owner: the set drawn from evidence the
-card shows (longer forms, fuller names), the heading's own record read, the title asked of a library catalogue by
-ISBN, a verdict with what it cites, a third outcome "the record wants fixing" that feeds the cataloguers' list,
-and a "suggested" method confirmed by a person. (4) Decisions by record for a string that is two bodies ("Viking"
-in London and New York, "Musée des Beaux-Arts" in three towns): doc 12 section 14 step 3. (5) The desk's place
-queue where it was left: http://localhost:5200/p/pmc/review?context=place, at "Winchester" (string 42105). (6) The
-cataloguers' list (doc 12 section 14 step 2), for which the trials gathered examples. (7) Housekeeping: section 7
-pruned of built items and long since due; doc 12 a section for the Checks page, the Decide screen and the day's
-additions to the card; doc 16's scenarios and pictures, stale after the day's changes to the card.
+- The queue waits on judgement with the record in view, not on a missing rule. The assistant's firm verdicts on
+  sets held against the owner's marks (35 of 35, then 49 of 49); its hedged ones half the time, each miss a heading
+  judged by its label and not its record.
+- The right body is usually in the index under a fuller name and not offered; the project's own neighbours (a
+  longer form already decided) are evidence no rule used. Both are now hints on the card.
+- Project entities are themselves wrong in three ways: aligned to a namesake (the two checks), entered twice
+  (147 pairs), and thin, with only the 2024 import's VIAF and LUX identifiers.
+- RULED by the owner: a predecessor, a successor and a renamed body are each aligned to its own record as LoC or
+  Wikidata has it, the succession kept as data for the output and for the workbench; a place's chain and a
+  body's line are both to be published.
+- RULE for every card (the owner): one button for one act; no two calls to action that do the same thing.
+
+**Built on 2026-11-20, for the owner to look at** (seen by the assistant in the browser except where said):
+
+- On a card: where a longer form's entity holds the top candidate's record, the head says the two agree (as
+  agreement, not proof) and points to the one button; it stands aside where a lower candidate bears the string as
+  written. A record the project already holds is accepted as "Same as <entity> (where it is)". One line, "In
+  this project already", for what stands on a candidate. Cards: "Kingston" http://localhost:5200/p/pmc/review?id=49530
+- The Checks page is a list of checks: http://localhost:5200/p/pmc/checks. The second check, "entities that may be
+  one thing", 147 pairs in four parts (probably one 29, to look at 85, of different kinds 10, places apart 23):
+  http://localhost:5200/p/pmc/checks?check=duplicates (the four parts not seen in the browser). "Compare..." opens
+  the merge page, rebuilt as "Compare and merge": two panels, then "They are one thing" or "They are two things"
+  with a reason. Neither button pressed there in the browser.
+- After a decision the desk goes on to the near spellings that were candidates on that card (seen: "Winchester?"
+  after "Winchester").
+- Not seen in the browser: the settle notice as the only button for its entity; a merged placeholder's row
+  without its button; the shared reason said once; "its own" for "its books".
+- The assistant's 19 decisions as `claude` on 2026-11-20 (section 7 lists them with the reasons). Two to check:
+  the label of the New Gallery's entity (`group/ad9uf8jj`) changed to LoC's form, the import having left "New
+  gallery della Lambda Ars. Catane, Italie" on it; and "Society for the Encouragement of Arts, Manufactures and
+  Commerce" (1762) decided onto the body of that name and not the Royal Society of Arts, by the ruling on
+  successors, against the card's own head. Also "Middleburg, Virginia", which made a new entity.
+- From earlier and still for him: trial 2's blocks 50 to 100 unmarked (the assistant has enough from the 49);
+  the three decisions of 2026-11-17 on the assistant's own knowledge ("Royston", "Plaistow", "Kingston"); the
+  hand-finishes of 2026-11-15 ("Cardiff" `place/t7mbc5a4`, "Belfast" `place/scrhnxf9`, "Raleigh"
+  `place/mcgyqvqf`, the Ontario "Peterborough" `place/bk5w54aq`).
+
+**Next, in order.** (1) The two proposals held above. (2) The desk where it was left: the place queue,
+http://localhost:5200/p/pmc/review?context=place, at "Kingston" (string 49530: three Kingstons among its longer
+forms). The agreement cards not opened: "Winstanley & Co" in two fields (two project entities, Thomas Winstanley &
+Co. and Winstanley, which LoC and ULAN call one: a merge for the owner), "Consumption", "Windsor Castle",
+"Walterstone", "Washington". (3) The duplicates check carried on: the two cases that prompted it and it does not
+find (the Louvre as a body and, under another label, as a person; two entities a rule joined), a count first;
+"one succeeded the other" as a third answer when the succession can be held. (4) The succession of bodies: how
+Linked Art says it (the model and upstream issues first), whether the loaders keep LoC's earlier and later forms
+and Wikidata's "replaces", a count of bodies with several LoC headings and one Wikidata item. (5) The design of
+help on a set, to put to the owner (a "suggested" method; a third outcome "the record wants fixing"; a library
+catalogue asked by ISBN before the web). (6) Decisions by record (doc 12 section 14 step 3) and the cataloguers'
+list (step 2). (7) Housekeeping, long due: section 7 pruned of built items; doc 12 sections for the Checks page,
+the Decide screen, the merge page and the card's additions; doc 16's scenarios and pictures, stale.
 
 **What the alignment is for, and what comes after it** (the owner, 2026-11-19; he asked that its importance be
 noted). The alignment is not the end. "Soon we switch to what the old PMC C# code was doing (though hopefully,

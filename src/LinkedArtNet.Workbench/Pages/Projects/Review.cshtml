@@ -163,12 +163,35 @@ else
         @* the project's own neighbours (the owner's marks on the trial, 2026-11-19: "Blackwell" is the project's Basil Blackwell, and was not offered;
            counted first: 173 of the 749 queued publisher strings have a longer form already decided, 100 of them onto one entity; some are another
            thing, "Mead" beside "Mead Art Museum", so it is shown and a person says "Same as") *@
+        // where a longer form's entity is also a candidate on this card: the group's place among those not ruled out, and its score
+        var liveGroups = item.Evidence.Groups.Where(g => g.Members.Any(m => m.Veto != true && m.SetAside != true)).ToList();
+        Func<string, (int At, double Score)?> onCard = key =>
+        {
+            for (var gi = 0; gi < liveGroups.Count; gi++)
+                if (liveGroups[gi].Members.Any(m => m.Veto != true && m.SetAside != true && Model.CandidateEntity.TryGetValue(m.Uri, out var ce) && ce.Id == key)) return (gi, liveGroups[gi].Score);
+            return null;
+        };
+        var agreeing = Model.LongerForms.GroupBy(f => f.EntityId).Where(g => onCard(g.Key) is { At: 0 }).ToList();
+        @if (agreeing.Count == 1 && Model.Method != "human")
+        {
+            @* two lines of evidence that meet (the owner at "Schwabe", 2026-11-20: "there should be some encouragement?"). Counted first: 20 queued
+               cards have it at the top candidate; of the nine among the strings marked in the second trial all nine were the same body, and of
+               nine where it met a lower candidate one was not. Said as agreement, not proof: both can rest on one earlier decision ("Penguin") *@
+            var ag = agreeing[0];
+            var agLabel = ag.First().EntityLabel ?? ag.Key;
+            <div class="notice" style="margin:.5rem 0">
+                <strong>Two things on this card point to @agLabel.</strong> A longer form of the name, "@ag.First().Raw", is already decided onto it, and it holds the record of the top candidate below (@onCard(ag.Key)!.Value.Score.ToString("0.00")).
+                <span class="small">They agree, which is not proof: both may rest on one earlier decision. If the records below are its books,</span>
+                <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@ag.Key" /><button type="submit">Same as @agLabel</button></form>
+            </div>
+        }
         <div class="small" style="margin:.5rem 0"><strong>Longer forms of this name, already decided in this project:</strong> <span class="muted">a hint; they may be another thing of the name</span>
         @foreach (var byEntity in Model.LongerForms.GroupBy(f => f.EntityId))
         {
+            var also = onCard(byEntity.Key);
             <div class="row" style="gap:.5rem; align-items:baseline; margin:.2rem 0"><span style="flex:1">@foreach (var f in byEntity) { <a href="/p/@Model.Dataset/review?id=@f.StringId" target="_blank" rel="noopener" title="This string's card">@f.Raw</a><span class="muted"> (@f.Records.ToString("N0") record@(f.Records == 1 ? "" : "s"))</span><text> · </text> }
-                on <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(byEntity.Key)" target="_blank" rel="noopener">@(byEntity.First().EntityLabel ?? byEntity.Key)</a></span>
-                <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@byEntity.Key" /><button type="submit" class="secondary" title="Decides this string onto that entity">Same as</button></form></div>
+                on <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(byEntity.Key)" target="_blank" rel="noopener">@(byEntity.First().EntityLabel ?? byEntity.Key)</a>@if (also is { } a) { <span class="muted" title="The same entity is offered among the candidates below: its button there and this one do the same thing"> · also @(a.At == 0 ? "the top candidate" : "a candidate") below, at @a.Score.ToString("0.00")</span> }</span>
+                <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@byEntity.Key" /><button type="submit" class="secondary" title="Decides this string onto that entity">Same as @(byEntity.First().EntityLabel ?? "this")</button></form></div>
         }
         </div>
     }
@@ -512,6 +535,9 @@ else
             {
                 item.Records.TryGetValue(m.Uri, out var record);
                 item.Entities.TryGetValue(m.Uri, out var facts);
+                // the project entity this record belongs to now, when the row is a record and not the entity itself
+                (string Id, string? Label)? heldNow = !m.IsStore && Model.CandidateEntity.TryGetValue(m.Uri, out var hn) ? hn : null;
+                var isLongerForm = heldNow is { } hl && Model.LongerForms.Any(f => f.EntityId == hl.Id);
                 var sameAsAbove = facts is not null && !seenEntities.Add(facts.Entity.Id);
                 // the box of a holder pair: the project's entities the notice speaks of, each a boxed row, and the merge under the last
                 var boxed = pairLeft > 0 && facts is not null && !sameAsAbove && firm.Any(e => e.Id == facts.Entity.Id);
@@ -570,11 +596,13 @@ else
                         {
                             <div class="small"><strong>Already in this project:</strong> @st.Records.ToString("N0") record@(st.Records == 1 ? "" : "s") in @st.Strings.ToString("N0") other string@(st.Strings == 1 ? "" : "s") stand on this, through <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(st.EntityId)" target="_blank" rel="noopener">@(st.EntityLabel ?? st.EntityId)</a> <span class="muted" title="It says the project uses this record already, and how much. It does not say the earlier decisions were right.">· how much it is used, not whether rightly</span></div>
                         }
+                        @if (isLongerForm) { <div class="small muted">the same entity as the longer form at the head of this card: one thing, offered twice</div> }
                         @if (!m.IsStore && item.Holders is { } holders && holders.TryGetValue(m.Uri, out var holder))
                         {
                             @* the project entity that holds this record now, since the evidence was written: an identifier added by hand, or a later run *@
                             <div class="small muted">now held by the project's entity <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Entity.Id)" target="_blank" rel="noopener">@Named(holder.Entity)</a> <span class="tag">@holder.Entity.Status.ToString().ToLowerInvariant()</span>, which was not among the candidates when this card was written
-                                @if (Model.Method != "human") { <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@holder.Entity.Id" /><button type="submit" class="link small">Same as @Named(holder.Entity)</button></form> }
+                                @* the row's own button says "Same as" when the row is a group of one: no second link for the one act (the owner at "Schwabe", 2026-11-20) *@
+                                @if (Model.Method != "human" && !(live.Count == 1 && m.Veto != true)) { <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@holder.Entity.Id" /><button type="submit" class="link small">Same as @Named(holder.Entity)</button></form> }
                             </div>
                         }
                     </div>
@@ -594,7 +622,8 @@ else
                         {
                             <form method="post" asp-page-handler="Accept" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />
-                                <button type="submit">Accept</button>
+                                @* a record the project already holds: accepting it is saying the string is that entity, and the button says so *@
+                                <button type="submit" title="@(heldNow is null ? "The string is this record: an entity is made for it, or found if the project has one" : "This record belongs to the project's entity already: the string is decided onto that entity")">@(heldNow is { } hb ? $"Same as {hb.Label ?? "the project's entity"}" : "Accept")</button>
                             </form>
                             <form method="post" asp-page-handler="Override" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                                 <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@m.Uri" />

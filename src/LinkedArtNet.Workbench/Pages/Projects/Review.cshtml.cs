@@ -44,6 +44,12 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<AuthorityRecord> FullerNames { get; private set; } = [];
     /// <summary>By the URI of a candidate or a fuller name: what of the project already stands on it (the owner at "Cape", 2026-11-19: "One hint might be how many _other_ records the candidate is in").</summary>
     public IReadOnlyDictionary<string, Standing> StandingOn { get; private set; } = new Dictionary<string, Standing>();
+    /// <summary>
+    /// By a candidate's URI on the card, the project entity that candidate is or that holds its record now (not the string's own
+    /// placeholder). So that one act has one name wherever the card offers it, "Same as X", and a longer form's entity can be told to
+    /// be a candidate too (the owner at "Schwabe", 2026-11-20: the hint's "Same as" and the candidate's "Accept" did one thing).
+    /// </summary>
+    public Dictionary<string, (string Id, string? Label)> CandidateEntity { get; } = new(StringComparer.Ordinal);
     /// <summary>Set when a search of several words matched nothing and the results shown are those of the name alone ("Heaton" for "Heaton Bradford"): absence is then seen, not guessed at (the assistant as a user, 2026-11-19: nothing said whether the indexes had been searched and have none, or the search had failed).</summary>
     public string? NearName { get; private set; }
     public string? Message { get; private set; }
@@ -74,6 +80,13 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         }
         if (Item is not null && Item.Decision.Method == DecisionMethod.Queued)
             StandingOn = await Services.Store.StandingOnAsync(Dataset, Item.Evidence.Groups.SelectMany(g => g.Members).Where(m => !m.IsStore).Select(m => m.Uri).Concat(FullerNames.Select(r => r.Uri)).Distinct().ToList(), HttpContext.RequestAborted);
+        if (Item is not null)
+            foreach (var m in Item.Evidence.Groups.SelectMany(g => g.Members))
+            {
+                if (Item.Entities.TryGetValue(m.Uri, out var known)) { if (!known.IsPlaceholder) CandidateEntity[m.Uri] = (known.Entity.Id, known.Entity.Label); }
+                else if (Item.Holders is { } hs && hs.TryGetValue(m.Uri, out var holder)) CandidateEntity[m.Uri] = (holder.Entity.Id, holder.Entity.Label);
+                else if (StandingOn.TryGetValue(m.Uri, out var st)) CandidateEntity[m.Uri] = (st.EntityId, st.EntityLabel);
+            }
         if (Item is not null && string.IsNullOrWhiteSpace(Q) && Item.Evidence.Groups.Count == 0)
         {
             Q = Item.Evidence.Reading?.Text is { Length: > 0 } name ? name : Item.String.Raw;

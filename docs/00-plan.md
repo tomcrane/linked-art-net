@@ -998,6 +998,19 @@ and the log (doc 15) records that. The order within an area is rough value.
     100 of them onto a single entity ("Arno" beside "Arno Press", "Cape" beside "Jonathan Cape"); other fields few
     (keywords 40, corporate author 34, place 12). Not a rule: "Mead" beside "Mead Art Museum" is another thing.
     BUILT as a hint on the card, with "Same as" for a person to press (LongerFormsAsync, the desk).
+  The owner at "Schwabe" (string 9656, 2026-11-20, a screenshot): the longer form's entity "Schwabe Verlag" and
+  the top candidate "Schwabe Verlag" (LoC no2018067726) are one thing, and "Same as" on the hint and "Accept" on
+  the candidate do the same; "I wonder if the UI could convey that somehow ... When they do and especially if it's
+  the top one... there should be some encouragement? Not sure." Checked: they are one entity (group/p4rmyjbw holds
+  that LoC record; "Schwabe & Co" is decided onto it), and Accept on a record a project entity holds returns that
+  entity (EntityForTargetAsync), so the outcome is the same; the card has a third control doing it too, the link
+  "Same as Schwabe Verlag" under the candidate. The assistant's proposal, not built (the owner's workbench was
+  running): where a candidate's record is held by a project entity, one wording for the act wherever it appears,
+  "Same as <entity>"; the candidate says it is the project's entity and the hint says it is also candidate n
+  below; and where two lines of evidence that do not depend on each other meet on one entity (a longer form
+  decided onto it, and the top candidate's record held by it), one line at the head of the card saying so, with
+  the one button. Said as agreement, not as proof: both can rest on the same earlier mistake ("Penguin"). To count
+  first: how many queued cards have that agreement, and on how many of the two trials' marked strings it was right.
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

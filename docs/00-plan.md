@@ -1053,6 +1053,22 @@ and the log (doc 15) records that. The order within an area is rough value.
   the top (not seen); "its own". Still open from the list: the body entered twice by kind (the Louvre, and at
   "Winstanley & Co" two entities, Thomas Winstanley & Co. and Winstanley, that LoC and ULAN call one), for the
   duplicate-entities check; the desk not going on to a sibling placeholder ("Allen and Unwin [etc.]").
+  BUILT 2026-11-20, the second check, "entities that may be one thing" (/p/pmc/checks?check=duplicates; the
+  owner left the choice to the assistant; counted first, `reports/q-dup1.sql`): 147 pairs of live entities with
+  identifiers, paired because a record one holds names a record the other holds as the same (74) or because they
+  bear one label (80, four of them across kinds); the most used first; a row opens the merge page with the two,
+  or "Two things" notes each as not the other and the pair leaves the list. Nothing is merged by the check. Read
+  down once: plainly one thing entered twice ("Bonhams" with 396 and 379 records, "Exhibitions" 9 and 10,012,
+  "Nicholson, Ben" and "Nicholson, Ben, 1894-1982", "Holburne Museum" twice); earlier and later names, which
+  the owner's ruling keeps apart with the succession recorded ("Marlborough Gallery" and "Marlborough-Gerson
+  Gallery", "San Francisco Museum of Art" and "... of Modern Art", "Cooper Union Museum" and "Cooper-Hewitt":
+  the list is also where a line of bodies is found); a body and its building ("Sir John Soane's Museum" as a
+  group and a place); rightly two ("Lisson Gallery" in New York and in London); and wrong links in the sources
+  ("Treviso" and "Frankfurt am Main", "Wong, Martin" and "Wiley, Kehinde", the two Trinity Halls). Wanted
+  next on it, not built: where each of two places of one label is ("Leeds" 4 and "Leeds" 240 say nothing to
+  tell them apart on the row); a third thing to say of a pair, "one succeeded the other", when the succession
+  can be held; and the pairs it does not find: the Louvre as a body and, under another label, as a person; two
+  entities a rule joined without a link in the sources ("Thomas Winstanley & Co." and "Winstanley").
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

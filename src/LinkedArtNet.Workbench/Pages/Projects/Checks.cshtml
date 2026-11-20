@@ -247,7 +247,7 @@ else
        "Harmondsworth"). Nothing is merged here: a row leads to the merge page, which shows both and does it on a person's word, or the
        pair is noted as two things and leaves the list *@
     <h2>Entities that may be one thing <span class="muted small">@Model.Duplicates.Count pairs</span></h2>
-    <p class="small muted">Two of the project's entities, each with identifiers, that look like one: either their authority records say so (a record one holds names a record the other holds as the same thing), or they bear the same label. Many are one thing entered twice; some are rightly two (a gallery in two cities, two towns of one name, a museum as a body and as a building). Open both before deciding. "Compare and merge" shows the two side by side and merges only when you say so there.</p>
+    <p class="small muted">Two of the project's entities, each with identifiers, that look like one: either their authority records say so (a record one holds names a record the other holds as the same thing), or they bear the same label. Many are one thing entered twice; some are rightly two (a gallery in two cities, two towns of one name, a museum as a body and as a building). "Compare" shows the two side by side with what stands on each; there you merge them, or say they are two things and why. Nothing changes on this page.</p>
     @if (Model.Duplicates.Count == 0) { <p class="notice">Nothing is listed.</p> }
     else
     {
@@ -262,13 +262,7 @@ else
                     <td class="small">@(d.Linked ? "their authority records say they are one thing" : "")@(d.Linked && d.SameLabel ? "; " : "")@(d.SameLabel ? "the same label" : "")@(d.AClass != d.BClass ? "; of different kinds" : "")</td>
                     <td class="small">
                         @* the two answers side by side and nothing else (the owner, 2026-11-20: "this looks a bit clunky", a box for a reason wedged under one button and beside the other); a reason, when there is one, is a note on the entity's page *@
-                        <div class="row" style="gap:.5rem; flex-wrap:nowrap; align-items:center">
-                            <a class="button" style="white-space:nowrap" href="/p/@Model.Dataset/merge?ids=@Uri.EscapeDataString(d.AId + "," + d.BId)">Compare and merge…</a>
-                            <form method="post" asp-page-handler="TwoThings" asp-route-check="duplicates" class="inline" data-keep-place>
-                                <input type="hidden" name="a" value="@d.AId" /><input type="hidden" name="b" value="@d.BId" />
-                                <button type="submit" class="secondary" style="white-space:nowrap" title="Notes on each entity that it is not the other, and takes the pair off this list">Two things</button>
-                            </form>
-                        </div>
+                        <a class="button" style="white-space:nowrap" href="/p/@Model.Dataset/merge?from=duplicates&ids=@Uri.EscapeDataString(d.AId + "," + d.BId)" title="Shows the two side by side, with what stands on each; there you merge them or say they are two things, with a reason">Compare…</a>
                     </td>
                 </tr>
             }

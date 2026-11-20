@@ -247,8 +247,8 @@ public class ReviewDeskTests(WorkbenchFixture wb)
         var mergeUrl = $"/p/{ds}/merge?ids={Uri.EscapeDataString(string.Join(",", a1.Id, a2.Id, a3.Id))}";
         var mergePage = await owner.GetStringAsync(mergeUrl);
         Assert.Contains("Arthur Ackermann &amp; Son", mergePage);
-        Assert.Contains("Merge 3 into the survivor", mergePage);
-        Assert.Contains($"value=\"{a2.Id}\" id=", mergePage); // the confirmed one with the identifier is suggested
+        Assert.Contains("Merge into the one kept", mergePage);
+        Assert.Contains($"value=\"{a2.Id}\" checked", mergePage); // the confirmed one with the identifier is suggested
         Assert.Contains("name=\"cls\"", mergePage); // the classes differ, so the class is chosen
         var trayMerge = await WorkbenchFixture.PostFormAsync(owner, mergeUrl, mergeUrl, new() { ["ids"] = string.Join(",", a1.Id, a2.Id, a3.Id), ["survivor"] = a2.Id, ["label"] = "Arthur Ackermann & Son Ltd", ["cls"] = "Group" });
         Assert.Equal(HttpStatusCode.Redirect, trayMerge.StatusCode);

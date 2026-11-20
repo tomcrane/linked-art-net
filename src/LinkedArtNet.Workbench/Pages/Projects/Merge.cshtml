@@ -1,51 +1,81 @@
 @page "/p/{dataset}/merge"
 @model MergeModel
 @{
-    ViewData["Title"] = "Merge";
+    ViewData["Title"] = "Compare and merge";
+    var pair = Model.Rows.Count == 2;
+    var suggested = Model.Rows.FirstOrDefault(r => r.Entity.Id == Model.Suggested)?.Entity;
 }
-<h1 style="margin-top:0">Merge from the tray</h1>
+@* the page compares before it merges (the owner, 2026-11-20: "this looks a bit clunky", of a table headed "Merge from the tray" reached
+   from the duplicates check; and "the 'why' could be provided here"): each entity in its own panel with what tells it apart, and the
+   two answers below, one thing or two *@
+<h1 style="margin-top:0">Compare and merge</h1>
 @if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
-<p class="small muted">The entities collected in the tray, side by side. Choose the one that survives: the others merge into it, their
-    strings, labels and identifiers follow, and their old ids keep resolving to it. The merge is written on every entity's history.</p>
 @if (Model.Rows.Count < 2)
 {
-    <p class="empty">@(Model.Rows.Count == 0 ? "The tray is empty, or its entities are not this project's." : "Only one entity here: collect at least two with \"Add to tray\" on an entity's page, in the entities list or on the desk's cards.") <a href="/p/@Model.Dataset/entities">Entities</a></p>
+    <p class="empty">@(Model.Rows.Count == 0 ? "The tray is empty, or its entities are not this project's: nothing to compare." : "Only one entity here: collect at least two with \"Add to tray\" on an entity's page, in the entities list or on the desk's cards.") <a href="/p/@Model.Dataset/entities">Entities</a></p>
 }
 else
 {
-    <form method="post">
+    <p class="small muted">@(pair ? "Are these one thing or two?" : $"Are these {Model.Rows.Count} one thing?") Read what stands on each, open what you need, then answer below. Nothing changes until you press a button.</p>
+    <form method="post" id="merge">
         <input type="hidden" name="ids" value="@Model.Ids" />
-        <table>
-            <thead><tr><th>Survivor</th><th>Entity</th><th>Class</th><th>Status</th><th>Strings</th><th>Identifiers</th></tr></thead>
-            <tbody>
-            @foreach (var r in Model.Rows)
-            {
-                var e = r.Entity;
-                <tr>
-                    <td><input type="radio" name="survivor" value="@e.Id" id="s-@e.Id.GetHashCode()" checked="@(e.Id == Model.Suggested)" aria-label="Survivor: @e.Label" /></td>
-                    <td><label for="s-@e.Id.GetHashCode()"><strong>@e.Label</strong></label> <a class="small" href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener">page</a>
-                        @if (e.Labels.Any(l => l != e.Label)) { <div class="small muted">@string.Join(" · ", e.Labels.Where(l => l != e.Label).Take(4))</div> }
-                        @if (e.Lifespan?.Display is { } life) { <div class="small muted">@life</div> }</td>
-                    <td>@e.Class.ToString().ToLowerInvariant()</td>
-                    <td><span class="tag">@e.Status.ToString().ToLowerInvariant()</span></td>
-                    <td class="small">@r.Strings@(r.Queued > 0 ? $" ({r.Queued} queued)" : "")</td>
-                    <td class="small">@foreach (var q in e.Equivalents.Take(6)) { <a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> }</td>
-                </tr>
-            }
-            </tbody>
-        </table>
-        <div class="row" style="gap:.6rem; align-items:center; margin-top:.75rem; flex-wrap:wrap">
-            <label class="small" for="label">Label after the merge</label>
-            <input type="text" id="label" name="label" value="@Model.Rows.FirstOrDefault(r => r.Entity.Id == Model.Suggested)?.Entity.Label" style="flex:1; min-width:16rem" title="The survivor's label unless you write another; every other label is kept as a variant" />
-            @if (Model.ClassesDiffer)
-            {
-                <label class="small" for="cls">as a</label>
-                <select name="cls" id="cls" title="The entities differ in class: the merged entity's class">
-                    @foreach (var c in Model.Rows.Select(r => r.Entity.Class).Distinct()) { <option value="@c" selected="@(c == Model.Rows.FirstOrDefault(r => r.Entity.Id == Model.Suggested)?.Entity.Class)">@c.ToString().ToLowerInvariant()</option> }
-                </select>
-            }
-            <button type="submit">Merge @Model.Rows.Count into the survivor</button>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(19rem, 1fr)); gap:1rem; align-items:start">
+        @foreach (var r in Model.Rows)
+        {
+            var e = r.Entity;
+            <div class="card" style="margin:0">
+                <h2 style="margin:0 0 .25rem"><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)" target="_blank" rel="noopener" title="The entity's page, in a new tab">@(e.Label ?? e.Id)</a></h2>
+                <p style="margin:.1rem 0"><span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span>@if (r.Placement is not null) { <span class="muted"> @r.Placement</span> }@if (e.Lifespan?.Display is { } life) { <span class="muted"> @life</span> }</p>
+                @if (e.Labels.Any(l => l != e.Label)) { <p class="small muted" style="margin:.1rem 0">also: @string.Join(" · ", e.Labels.Where(l => l != e.Label).Take(5))</p> }
+                <p class="small" style="margin:.6rem 0 .2rem"><strong>What stands on it:</strong> @r.Strings.ToString("N0") string@(r.Strings == 1 ? "" : "s"), @r.Records.ToString("N0") record@(r.Records == 1 ? "" : "s")@(r.Queued > 0 ? $"; {r.Queued} of the strings still queued" : "")</p>
+                @if (r.Sample is { Count: > 0 })
+                {
+                    <ul class="small" style="margin:.1rem 0 .1rem 1.1rem; padding:0">
+                    @foreach (var (str, n) in r.Sample) { <li><a href="/p/@Model.Dataset/review?id=@str.Id" target="_blank" rel="noopener" title="This string's card, with its records">@str.Raw</a> <span class="muted">· @Model.Project.Manifest.FieldName(str.Context) · @n.ToString("N0") record@(n == 1 ? "" : "s")</span></li> }
+                    </ul>
+                    @if (r.Strings > r.Sample.Count) { <p class="small muted" style="margin:.1rem 0">and @((r.Strings - r.Sample.Count).ToString("N0")) more, on its page</p> }
+                }
+                <p class="small" style="margin:.6rem 0 .2rem"><strong>Its identifiers:</strong>@(e.Equivalents.Count == 0 ? " none" : "")</p>
+                @if (r.Identifiers is { Count: > 0 })
+                {
+                    <ul class="small" style="margin:.1rem 0 .1rem 1.1rem; padding:0">
+                    @foreach (var (q, says) in r.Identifiers) { <li><a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> @(says ?? q.Uri.TrimEnd('/').Split('/').Last())</li> }
+                    </ul>
+                    @if (e.Equivalents.Count > r.Identifiers.Count) { <p class="small muted" style="margin:.1rem 0">and @(e.Equivalents.Count - r.Identifiers.Count) more</p> }
+                }
+                <p style="margin:.75rem 0 0"><label><input type="radio" name="survivor" value="@e.Id" checked="@(e.Id == Model.Suggested)" /> If they are one thing, <strong>keep this one</strong></label></p>
+            </div>
+        }
         </div>
-        <p class="small muted">The survivor suggested is the one with most strings, then the firmer status, then the one with more identifiers; a published id, when one of them has been published, is the better choice (doc 12 section 13, item 4).</p>
+
+        <div class="card" style="margin-top:1rem">
+            <h3 style="margin-top:0">They are one thing</h3>
+            <p class="small muted" style="margin-top:0">The @(pair ? "other merges" : "others merge") into the one kept: strings, labels and identifiers follow, and the old @(pair ? "id keeps" : "ids keep") resolving to it. The one suggested has the most strings, then the firmer status, then the more identifiers.</p>
+            <div class="row" style="gap:.6rem; align-items:center; flex-wrap:wrap">
+                <label class="small" for="label">Label after the merge</label>
+                <input type="text" id="label" name="label" value="@suggested?.Label" style="flex:1; min-width:14rem" title="The kept entity's label unless you write another; every other label is kept as a variant" />
+                @if (Model.ClassesDiffer)
+                {
+                    <label class="small" for="cls">as a</label>
+                    <select name="cls" id="cls" title="The entities differ in kind: the merged entity's kind">
+                        @foreach (var c in Model.Rows.Select(r => r.Entity.Class).Distinct()) { <option value="@c" selected="@(c == suggested?.Class)">@c.ToString().ToLowerInvariant()</option> }
+                    </select>
+                }
+                <button type="submit" style="white-space:nowrap">Merge into the one kept</button>
+            </div>
+        </div>
     </form>
+    @if (pair)
+    {
+        <form method="post" asp-page-handler="TwoThings" class="card" style="margin-top:1rem">
+            <input type="hidden" name="ids" value="@Model.Ids" />
+            <h3 style="margin-top:0">They are two things</h3>
+            <p class="small muted" style="margin-top:0">Each is noted as not the other, and the pair leaves the check's list. Say why if it will help the next person: a gallery in two cities, a body and its building, an earlier firm and its successor.</p>
+            <div class="row" style="gap:.6rem; align-items:center; flex-wrap:wrap">
+                <label class="small" for="why">Why (optional)</label>
+                <input type="text" id="why" name="why" style="flex:1; min-width:14rem" />
+                <button type="submit" class="secondary" style="white-space:nowrap">Two things</button>
+            </div>
+        </form>
+    }
 }

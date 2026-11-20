@@ -1069,6 +1069,13 @@ and the log (doc 15) records that. The order within an area is rough value.
   tell them apart on the row); a third thing to say of a pair, "one succeeded the other", when the succession
   can be held; and the pairs it does not find: the Louvre as a body and, under another label, as a person; two
   entities a rule joined without a link in the sources ("Thomas Winstanley & Co." and "Winstanley").
+  The same day: each of a pair says what it is (where TGN puts a place, what Wikidata says, a heading, or failing
+  all three its identifiers); seen in the browser for "Bonhams" and "Birmingham". Learnt from it: the two
+  "Leeds", "Derby" and others of the kind carry only the 2024 import's VIAF and LUX identifiers, no TGN and no
+  Wikidata item, so nothing in the index says where either is: the pairs of places are mostly the import's thin
+  entities beside a later, properly aligned one, and want the fuller identifiers before anyone can judge them.
+  And the desk, after a decision, goes on to the queued strings whose placeholders were candidates on that card,
+  once the name's own siblings are done (built; not seen in the browser, no decision made to try it).
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

@@ -1017,6 +1017,35 @@ and the log (doc 15) records that. The order within an area is rough value.
   lower candidate, nine, one of them not ("Musée d'art moderne"). So the head of the card speaks only for the
   top candidate. Seen on "Schwabe". Left: the candidate's row now says the one thing in three lines ("Already in
   this project", "the same entity as the longer form", "now held by"): BROUGHT TO ONE the same day, and the act left with one button, the candidate's; the head of the card and the hint point to it (the owner: "avoid having multiple buttons that do the same thing (the confusing calls-to-action we are trying to eliminate)": a rule for every card from here on).
+  The desk as a user, 2026-11-20 (the assistant as `claude`, the owner busy elsewhere): the cards where the head
+  says two things agree, twelve of the twenty opened. Thirteen strings decided, 281 records and more: "Steidl",
+  "Schwabe", "Walther König", "Louvre", "Phaidon" (224 records), "Allen & Unwin" and "Allen and Unwin", "Flowers
+  Gallery", "Nationalmuseum" (Sweden), "Christ Church" (the Oxford college among 145 of the name), "New Gallery"
+  in two fields, and "Society for the Encouragement of Arts, Manufactures and Commerce". One label mended on the
+  way, by "Use LoC's form": the entity of the New Gallery, right in its identifiers and strings, was labelled
+  "New gallery della Lambda Ars. Catane, Italie" by the 2024 import (`group/ad9uf8jj`). Left, by the ruling on
+  successors: "Albertina", "Mostyn", "Colnaghi and Co". Skipped: "Research Publications" (the record names
+  Woodbridge and Reading, and LoC has an Inc. and a Ltd.). Not opened: "Winstanley & Co" twice, "Consumption",
+  "Windsor Castle", "Walterstone", "Washington". What the cards showed:
+  - the agreement at the head can point at the successor. "Society for the Encouragement of Arts..." (a catalogue
+    of 1762): the head named the Royal Society of Arts, the later name, through the longer form "Royal Society
+    for the Encouragement..."; the body of the record's time, LoC's "Society for the Encouragement of Arts,
+    Manufactures, and Commerce (Great Britain)", was the second candidate at 0.85, the project's entity already
+    holding the catalogues of 1760 and 1761. Decided onto that, by the ruling. So the head is to stand aside, or
+    say so, when another candidate bears the string as written, or the records' dates are before the longer form's;
+  - one act still has several buttons where a group has several records all held by one entity acquired since
+    the card was written ("Louvre": the group's button reads "Accept these as one" and each row has "Same as
+    Musée du Louvre"; "New Gallery" the same): the group's button to read "Same as <entity>" and the rows' to go;
+  - a sibling string of a name just decided shows "Settle it onto <entity>" at its head beside the hint's "Same
+    as" and the candidate's: a third wording for the act;
+  - "Why it waits": "its one candidate at 1.00 comes from a single source ()" where the top candidate is another
+    string's placeholder ("Allen and Unwin"): an empty source, and not the reason;
+  - "If the records below are its books" reads oddly for a corporate author: "its" records;
+  - a body entered twice by kind: "Paris, France. Musée du Louvre", a person, on ULAN's owner record, beside the
+    Musée du Louvre; for the duplicate-entities check;
+  - after "Allen and Unwin" the desk did not go on to "Allen and Unwin [etc.]", a placeholder on the same card;
+  - what worked: "Christ Church" among 145 namesakes and "Nationalmuseum" among four national museums were one
+    press each with the reason on the card; the label fault at "New Gallery" stopped the press, as it should.
   The owner on the two hints (2026-11-19): "These are also good candidates for AI assist, which could group them
   into a set for consideration." So the set for help is defined by evidence the workbench already holds, not by
   a query of the assistant's own: the queued strings that have a longer form decided onto one entity (100

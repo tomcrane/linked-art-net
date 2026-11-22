@@ -22,6 +22,12 @@ public static class DecisionMethod
     public const string Single = "single";
     /// <summary>The string names several things ("Dublin; New York"): decided as its parts, which are strings of their own (source_string_parts); no entity of its own.</summary>
     public const string List = "list";
+    /// <summary>
+    /// The string is not a name: a cataloguer's statement that nothing is known ("s.n.", "S.l.", "[publisher not identified]") or what is
+    /// left of a slip ("S", "21"). No entity; the evidence says which (<see cref="Reconciliation.CurationService.NothingKnown"/> or
+    /// <see cref="Reconciliation.CurationService.RecordWantsFixing"/>). The owner, 2026-11-22.
+    /// </summary>
+    public const string NotAName = "not-a-name";
     /// <summary>A compound heading ("Painting--Canada") decided as a concept coordinated from its parts, which are strings of their own (source_string_parts); the entity is the heading's own Type (doc 10, section 7.5).</summary>
     public const string Composite = "composite";
     /// <summary>An equivalent a legacy alignment gained through its Wikidata item: the item's sameAs names the local record (the pass ThroughWikidata, 2026-11-06), reversible by undo-run.</summary>
@@ -399,6 +405,12 @@ public sealed record LongerForm(long StringId, string Raw, int Records, string E
 
 /// <summary>What of the project already stands on an authority record: the entity that holds it, and how many decided strings and records that entity carries.</summary>
 public sealed record Standing(string EntityId, string? EntityLabel, int Strings, int Records);
+
+/// <summary>
+/// An entity of a project every one of whose strings looks like no name at all ("S.l.", "Publisher not identified", "S"): a placeholder
+/// or a minted entity that stands for nothing. <see cref="Queued"/> is how many of its strings wait at the desk.
+/// </summary>
+public sealed record NotNameEntity(string EntityId, string? Label, string Class, IReadOnlyList<long> StringIds, IReadOnlyList<string> Strings, int Records, int Queued);
 
 /// <summary>
 /// Two of a project's entities that may be one thing: their authority records say so (<see cref="Linked"/>: a record one holds

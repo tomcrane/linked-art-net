@@ -506,11 +506,14 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                 and not exists (select 1 from decisions d where d.entity_id = e.id and d.valid)
                 and not exists (select 1 from entities m where m.merged_into = e.id)
                 and not exists (select 1 from entity_equivalents q where q.entity_id = e.id);
-            update decisions set entity_id = null where not valid and entity_id in (select id from remove_entity);
-            delete from entities where id in (select id from remove_entity)
+            update decisions set entity_id = null where not valid and entity_id in (select id from remove_entity)
             """, conn, tx);
         cmd.Parameters.AddWithValue("id", entityId);
-        var removed = await cmd.ExecuteNonQueryAsync(ct) == 1;
+        await cmd.ExecuteNonQueryAsync(ct);
+        // the delete on its own, so that what it reports is the entity and not the decisions let go before it: counted together, an
+        // entity with a superseded decision was removed and reported as kept (found by a test, 2026-11-22)
+        await using var delete = new NpgsqlCommand("delete from entities where id in (select id from remove_entity)", conn, tx);
+        var removed = await delete.ExecuteNonQueryAsync(ct) == 1;
         await tx.CommitAsync(ct);
         return removed;
     }
@@ -1541,6 +1544,27 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     /// <summary>TGN's chain of parents without the continent and the world; any other description as it is.</summary>
     private static string? About(string? text) =>
         text is null ? null : string.Join(", ", text.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or "North and Central America" or "Asia" or "Africa" or "South America" or "Oceania" or "")));
+
+    public async Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select e.id, e.label, e.class, array_agg(s.id order by s.id), array_agg(s.raw order by s.id),
+                   coalesce(sum((select count(*) from occurrences o where o.string_id = s.id)), 0)::int, count(*) filter (where d.method = 'queued')::int
+            from entities e join decisions d on d.entity_id = e.id and d.valid join source_strings s on s.id = d.source_string_id
+            where e.dataset = @dataset and e.merged_into is null and e.status = 'provisional'
+              and not exists (select 1 from entity_equivalents q where q.entity_id = e.id)
+            group by e.id, e.label, e.class
+            having bool_and(s.raw ~* @pattern)
+            order by 6 desc, e.label
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "pattern", pattern);
+        cmd.CommandTimeout = 120;
+        var list = new List<NotNameEntity>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new NotNameEntity(r.GetString(0), Str(r, 1), r.GetString(2), r.GetFieldValue<long[]>(3), r.GetFieldValue<string[]>(4), r.GetInt32(5), r.GetInt32(6)));
+        return list;
+    }
 
     public async Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, string twoThingsPrefix, CancellationToken ct = default)
     {

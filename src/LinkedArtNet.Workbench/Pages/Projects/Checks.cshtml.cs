@@ -17,6 +17,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     /// <summary>Which check's list to show: null for the first, the places; "duplicates" for the entities that may be one thing (the second check, 2026-11-20).</summary>
     [BindProperty(SupportsGet = true)] public string? Check { get; set; }
     public IReadOnlyList<PossibleDuplicate> Duplicates { get; private set; } = [];
+    /// <summary>The third check (2026-11-22): entities every one of whose strings is no name ("S.l.", "Publisher not identified", "S").</summary>
+    public IReadOnlyList<NotNameEntity> NotNames { get; private set; } = [];
     /// <summary>A search of the project's entities on the Mend screen, for a place known by another name (the owner, 2026-11-15, at "Bâle", which is Basel).</summary>
     [BindProperty(SupportsGet = true)] public string? Find { get; set; }
     public IReadOnlyList<Entity> Found { get; private set; } = [];
@@ -91,8 +93,21 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             Message ??= "That entity is not on the list any more.";
         }
         // with no check named the page is the list of checks, each with how much it holds, so both are counted
-        if (Check != "places") Duplicates = await Project.Curation.PossibleDuplicatesAsync(Dataset, HttpContext.RequestAborted);
-        if (Check != "duplicates") Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
+        if (Check is null or "duplicates") Duplicates = await Project.Curation.PossibleDuplicatesAsync(Dataset, HttpContext.RequestAborted);
+        if (Check is null or "places") Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
+        if (Check is null or "notnames") NotNames = await Project.Curation.NotNameEntitiesAsync(Dataset, HttpContext.RequestAborted);
+    }
+
+    /// <summary>Every string of a listed entity is decided as not a name, for the reason the row gave, and the entity goes.</summary>
+    public async Task<IActionResult> OnPostNotANameAsync(string id, string reason)
+    {
+        try
+        {
+            var label = (await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted))?.Label ?? id;
+            var (strings, removed) = await Project.Curation.NotANameEntityAsync(Dataset, id, Reviewer, reason, HttpContext.RequestAborted);
+            return Flash($"\"{label}\": {strings} string{(strings == 1 ? "" : "s")} decided as not a name ({(reason == CurationService.NothingKnown ? "nothing is known" : "the record wants fixing")}). {(removed ? "The entity is gone." : "The entity is kept: something else still points at it.")} Each string's card can undo it.", new { dataset = Dataset, check = "notnames" });
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, check = "notnames" }); }
     }
 
     /// <summary>The pair is two things: a note on each naming the other, and the pair leaves the list.</summary>

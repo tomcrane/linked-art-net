@@ -163,6 +163,16 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public Task<IActionResult> OnPostLocalAsync(long id, string? label, string? note, string? url, EntityClass? cls) =>
         Act(id, async () => (string.IsNullOrWhiteSpace(url) ? "Kept as a local authority." : "Kept as a local authority, with the URL as its identifier.", await Project.Desk.KeepLocalAsync(Dataset, id, Reviewer, label, note, url, cls)));
 
+    /// <summary>The string is not a name (the owner, 2026-11-22): no entity, and it leaves the queue. The reason is one of two, and the desk goes on.</summary>
+    public async Task<IActionResult> OnPostNotANameAsync(long id, string? reason, string? note)
+    {
+        try { await Project.Curation.NotANameAsync(Dataset, id, Reviewer, reason ?? "", note, HttpContext.RequestAborted); }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+        return Flash(reason == CurationService.NothingKnown
+            ? "Decided: not a name, the cataloguer's way of saying nothing is known. No entity stands for it."
+            : "Decided: not a name, and its record wants fixing. No entity stands for it.", new { dataset = Dataset, method = Method, context = Context, after = id });
+    }
+
     public Task<IActionResult> OnPostOverrideAsync(long id, string target, string? note) =>
         Act(id, async () => ("Override saved and applied.", await Project.Desk.OverrideAsync(Dataset, id, target, Reviewer, note)));
 

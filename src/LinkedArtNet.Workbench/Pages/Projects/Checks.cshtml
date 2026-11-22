@@ -295,6 +295,37 @@ else
         </table>
     }
 }
+else if (Model.Check == "notnames")
+{
+    @* the third check (the owner, 2026-11-22, "yes" to it): counted first, about forty strings on some 1,400 records are not names and most
+       had entities already ("S.l." a place with 157 records). A row has one button, with the reason the strings themselves suggest;
+       the other reason is on each string's own card *@
+    <h2>Entities that are not names <span class="muted small">@Model.NotNames.Count</span></h2>
+    <p class="small muted">An entity with no identifier, every one of whose strings is no name: the cataloguer's "s.n." (<em>sine nomine</em>, no publisher named), "S.l." (<em>sine loco</em>, no place) and "[publisher not identified]", or a stray letter or number. The button decides each of its strings as not a name and removes the entity; a string's own card can undo it, or give the other reason. Two letters ("UK", "RA") are not listed: they may be names, and wait at the desk.</p>
+    @if (Model.NotNames.Count == 0) { <p class="notice">Nothing is listed.</p> }
+    @foreach (var (reason, title, about, button) in new[] {
+        (CurationService.NothingKnown, "The cataloguer says nothing is known", "the record is as it should be; no entity is wanted", "Not a name: nothing is known"),
+        (CurationService.RecordWantsFixing, "Stray letters and numbers", "probably what is left of a slip; the record is one for a cataloguer to look at", "Not a name: the record wants fixing") })
+    {
+        var rows = Model.NotNames.Where(n => CurationService.SuggestedReason(n.Strings) == reason).ToList();
+        if (rows.Count == 0) { continue; }
+        <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
+        <table class="checks">
+            <thead><tr><th>Entity</th><th>Its strings</th><th>Records</th><th>Decide</th></tr></thead>
+            <tbody>
+            @foreach (var n in rows)
+            {
+                <tr>
+                    <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(n.EntityId)" target="_blank" rel="noopener"><strong>@(n.Label ?? n.EntityId)</strong></a> <span class="tag">@n.Class.ToLowerInvariant()</span></td>
+                    <td class="small">@for (var k = 0; k < n.Strings.Count; k++) { <a href="/p/@Model.Dataset/review?id=@n.StringIds[k]" target="_blank" rel="noopener" title="The string's card, with its records">“@n.Strings[k]”</a>@(k < n.Strings.Count - 1 ? " · " : "") }@if (n.Queued > 0) { <br /><span class="muted">@(n.Queued == n.Strings.Count ? "waiting at the desk" : $"{n.Queued} waiting at the desk")</span> }</td>
+                    <td class="small">@n.Records.ToString("N0")</td>
+                    <td class="small"><form method="post" asp-page-handler="NotAName" class="inline"><input type="hidden" name="id" value="@n.EntityId" /><input type="hidden" name="reason" value="@reason" /><button type="submit" class="secondary small" style="white-space:nowrap">@button</button></form></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+}
 else if (Model.Check == "places")
 {
 <h2>Places the import aligned to a namesake <span class="muted small">@Model.Away.Count</span></h2>
@@ -347,6 +378,11 @@ else
                 <td><a href="/p/@Model.Dataset/checks?check=places"><strong>Places the import aligned to a namesake</strong></a></td>
                 <td class="small">A place with no qualifier that the 2024 import put on a namesake abroad, where a place of the name stands in @(Model.HomePlace ?? "the project's home place"). Each is decided string by string.</td>
                 <td><strong>@Model.Away.Count.ToString("N0")</strong> place@(Model.Away.Count == 1 ? "" : "s")@if (Model.Away.Count > 0 && Model.Away.All(f => f.Reason is not null)) { <br /><span class="small muted">each left with a note</span> }</td>
+            </tr>
+            <tr>
+                <td><a href="/p/@Model.Dataset/checks?check=notnames"><strong>Entities that are not names</strong></a></td>
+                <td class="small">Entities made for "s.n.", "S.l.", "[publisher not identified]" or a stray letter: the cataloguer's way of saying nothing is known, or a slip. Each is decided as not a name and removed.</td>
+                <td><strong>@Model.NotNames.Count.ToString("N0")</strong> entit@(Model.NotNames.Count == 1 ? "y" : "ies")<br /><span class="small muted">on @Model.NotNames.Sum(n => n.Records).ToString("N0") records</span></td>
             </tr>
         </tbody>
     </table>

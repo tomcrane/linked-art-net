@@ -301,6 +301,55 @@ public class CurationServiceTests(PostgresFixture pg)
     }
 
     [PostgresFact]
+    public async Task A_string_that_is_not_a_name_is_decided_with_no_entity_and_its_placeholder_goes()
+    {
+        // the owner, 2026-11-22: "S.l." stood as a place with 157 records, "s.n." waited at the desk with 375
+        var ds = "cu-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var reconciler = new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions());
+        var curation = new CurationService(pg.Store, scheme, reconciler);
+        var sl = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "S.l."), scheme);
+        var one = await pg.Store.CollectAsync(ds, "place", "S.l.");
+        var two = await pg.Store.CollectAsync(ds, "place", "[S. l.]");
+        await pg.Store.DecideAsync(one.Id, sl.Id, DecisionMethod.Minted);
+        await pg.Store.DecideAsync(two.Id, sl.Id, DecisionMethod.ExactName);
+        var letter = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "S"), scheme);
+        var s = await pg.Store.CollectAsync(ds, "place", "S");
+        await pg.Store.DecideAsync(s.Id, letter.Id, DecisionMethod.Queued);
+        // a name beside them, and an entity with one string of each sort: neither is listed
+        var uk = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "UK"), scheme);
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", "UK")).Id, uk.Id, DecisionMethod.Queued);
+        var mixed = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Group, "Publisher"), scheme);
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "publisher", "Publisher not identified")).Id, mixed.Id, DecisionMethod.Minted);
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "publisher", "Publisher & Co")).Id, mixed.Id, DecisionMethod.ExactName);
+
+        var listed = await curation.NotNameEntitiesAsync(ds);
+        Assert.Equal(new[] { sl.Id, letter.Id }.Order(), listed.Select(n => n.EntityId).Order());
+        Assert.Equal(CurationService.NothingKnown, CurationService.SuggestedReason(listed.Single(n => n.EntityId == sl.Id).Strings));
+        Assert.Equal((CurationService.RecordWantsFixing, 1), (CurationService.SuggestedReason(listed.Single(n => n.EntityId == letter.Id).Strings), listed.Single(n => n.EntityId == letter.Id).Queued));
+
+        // the check's button: both strings decided with no entity, the entity gone
+        Assert.Equal((2, true), await curation.NotANameEntityAsync(ds, sl.Id, "tester", CurationService.NothingKnown));
+        var decision = (await pg.Store.DecisionForAsync(one.Id))!;
+        Assert.Equal((DecisionMethod.NotAName, (string?)null, "tester"), (decision.Method, decision.EntityId, decision.Reviewer));
+        Assert.Contains("nothing-known", decision.EvidenceJson);
+        Assert.Null(await pg.Store.GetEntityAsync(sl.Id));
+        Assert.Equal(letter.Id, Assert.Single(await curation.NotNameEntitiesAsync(ds)).EntityId);
+
+        // the card's button, and what it refuses: a reason that is neither, a string on an entity with identifiers
+        await Assert.ThrowsAsync<ArgumentException>(() => curation.NotANameAsync(ds, s.Id, "tester", "because"));
+        Assert.True(await curation.NotANameAsync(ds, s.Id, "tester", CurationService.RecordWantsFixing, "what is left of S.l."));
+        Assert.Empty(await curation.NotNameEntitiesAsync(ds));
+        var real = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "London", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(real.Id, new Equivalent("http://vocab.getty.edu/tgn/7011781", "tgn", DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow));
+        var l = await pg.Store.CollectAsync(ds, "place", "L");
+        await pg.Store.DecideAsync(l.Id, real.Id, DecisionMethod.Human, null, "tester");
+        await Assert.ThrowsAsync<InvalidOperationException>(() => curation.NotANameAsync(ds, l.Id, "tester", CurationService.RecordWantsFixing));
+        // not undecided: a reconcile leaves it alone
+        Assert.DoesNotContain(await pg.Store.UndecidedAsync(ds), x => x.Id == s.Id || x.Id == one.Id);
+    }
+
+    [PostgresFact]
     public async Task A_name_set_aside_stops_matching_stays_aside_and_reopens_what_a_rule_matched_by_it()
     {
         // the owner, 2026-11-15: the project's Plymouth gathered TGN's former name "Sutton", and the place of publication "Sutton" (two

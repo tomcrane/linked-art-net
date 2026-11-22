@@ -123,7 +123,8 @@ else
     {
         @* a card opened by its link after it was decided says so first (the owner, 2026-11-14, back at "Brockley" by an old queue link:
            "nothing tells me it has been settled... or is that Currently?"). Who or what decided it, onto what, and the way back and on *@
-        var byPerson = item.Decision.Method == DecisionMethod.Human;
+        var byPerson = item.Decision.Method is DecisionMethod.Human or DecisionMethod.NotAName;
+        var notNameWhy = item.Decision.Method == DecisionMethod.NotAName && ev.Extra is { } nx && nx.TryGetProperty("reason", out var nr) ? nr.GetString() : null;
         <div class="notice settled">
             <p><strong>This string is decided and is not in the queue.</strong>
                 @if (byPerson) { <text>@(item.Decision.Reviewer ?? "A reviewer") decided it on @item.Decision.DecidedAt.ToString("yyyy-MM-dd")</text> }
@@ -136,6 +137,7 @@ else
                     var tookWhy = took?.Members.Where(m => m.Veto != true).Select(m => m.Reason).FirstOrDefault(r => !string.IsNullOrWhiteSpace(r));
                 }
                 @if (item.Entity is not null) { <text>: it is </text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(item.Entity.Id)" target="_blank" rel="noopener">@item.Entity.Label</a>@if (tookWhere is not null) { <text> (@string.Join(", ", tookWhere.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0 && x != "World").Take(3)))</text> } <span class="tag">@item.Entity.Class.ToString().ToLowerInvariant()</span> <span class="tag">@item.Entity.Status.ToString().ToLowerInvariant()</span>@(item.Entity.Equivalents.Count == 0 ? ", a local authority with no identifier elsewhere" : $", with {item.Entity.Equivalents.Count} identifier{(item.Entity.Equivalents.Count == 1 ? "" : "s")}")<text>.</text> }
+                else if (item.Decision.Method == DecisionMethod.NotAName) { <text>: <strong>it is not a name</strong>, @(notNameWhy == CurationService.RecordWantsFixing ? "and its record wants fixing" : "the cataloguer's way of saying that nothing is known"). No entity stands for it.</text> }
                 else { <text>: left unresolved.</text> }
             </p>
             @if (tookWhy is not null) { <p class="small"><strong>Why:</strong> @tookWhy.</p> }
@@ -747,6 +749,19 @@ else
             <label for="lurl">Known elsewhere (URL, optional)</label>
             <input type="text" id="lurl" name="url" placeholder="https://manuscripts.nls.uk/agents/corporate_entities/1476" title="An archive's agent page, a VIAF cluster: kept as the entity's identifier" />
             <div class="actions"><button type="submit">Keep as local authority</button></div>
+        </form>
+        @* the third answer (the owner, 2026-11-22, to "S" in a place of publication and "s.n." in 375 records' publisher): not a thing at
+           all. One button, and the reason chosen beside it; the reason the string itself suggests is chosen to begin with *@
+        @{ var looksLike = System.Text.RegularExpressions.Regex.IsMatch(item.String.Raw, @"^\W*(s\W*[nl]|.*not identified|\p{L}\??|\P{L}+)\W*$", System.Text.RegularExpressions.RegexOptions.IgnoreCase) ? CurationService.SuggestedReason([item.String.Raw]) : null; }
+        <form method="post" asp-page-handler="NotAName" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="card">
+            <input type="hidden" name="id" value="@item.String.Id" />
+            <h3 style="margin-top:0">It is not a name</h3>
+            <p class="small muted">No entity is made for it and the string leaves the queue. Say which it is:</p>
+            <p class="small"><label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0"><input type="radio" name="reason" value="@CurationService.NothingKnown" required @(looksLike == CurationService.NothingKnown ? "checked" : "") /> <strong>Nothing is known.</strong> The cataloguer wrote that the book does not say: "s.n." (no publisher named), "S.l." (no place), "[publisher not identified]". The record is as it should be.</label></p>
+            <p class="small"><label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0"><input type="radio" name="reason" value="@CurationService.RecordWantsFixing" required @(looksLike == CurationService.RecordWantsFixing ? "checked" : "") /> <strong>The record wants fixing.</strong> A stray letter or number where a name should be ("S", "21"), for a cataloguer to look at.</label></p>
+            <label for="nnote">Note</label>
+            <input type="text" id="nnote" name="note" placeholder="what is left of “S.l.”, by the look of it" />
+            <div class="actions"><button type="submit">Not a name</button></div>
         </form>
     </div>
 

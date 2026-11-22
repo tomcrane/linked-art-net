@@ -139,6 +139,9 @@ public interface IAlignmentStore
     /// </summary>
     Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, string twoThingsPrefix, CancellationToken ct = default);
 
+    /// <summary>The dataset's provisional entities with no identifier, every one of whose strings matches the pattern given (a POSIX regular expression, case ignored): the most recorded first.</summary>
+    Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default);
+
     /// <summary>The dataset's records whose title contains the text given, or whose identifier is it, with the strings in each.</summary>
     Task<IReadOnlyList<RecordHit>> SearchRecordsAsync(string dataset, string text, int limit = 15, CancellationToken ct = default);
 

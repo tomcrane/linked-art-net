@@ -349,6 +349,59 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     /// <summary>The check "entities that may be one thing": pairs of the project's own entities, for a person to merge or to say are two.</summary>
     public Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, CancellationToken ct = default) => store.PossibleDuplicatesAsync(dataset, TwoThings, ct);
 
+    // ---- not a name --------------------------------------------------------------------------------------------------
+
+    /// <summary>Why a string is not a name: the cataloguer wrote that nothing is known ("s.n.", sine nomine; "S.l.", sine loco; RDA's "[publisher not identified]"). The record is as it should be.</summary>
+    public const string NothingKnown = "nothing-known";
+    /// <summary>Why a string is not a name: it is what is left of a slip ("S", "21"), and the record wants a cataloguer's eye.</summary>
+    public const string RecordWantsFixing = "record-wants-fixing";
+
+    /// <summary>
+    /// What the third check lists by: a string that is "s.n." or "S.l." however spaced and bracketed, that ends "not identified", that is
+    /// one letter (with or without a question mark), or that has no letter in it at all ("?", "21", "(1986)"). Counted before it was
+    /// built (2026-11-22): 25 entities or so in the PMC project, some 1,300 records on them. Two letters are not listed: "UK", "RA" and
+    /// "EP" are names or initials, for the desk.
+    /// </summary>
+    public const string NotNamePattern = @"^\W*(s\W*[nl]|.*not identified|[[:alpha:]]\??|[^[:alpha:]]+)\W*$";
+
+    private static readonly System.Text.RegularExpressions.Regex SaysNothingKnown = new(@"^\W*(s\W*[nl]|.*not identified|\?+)\W*$", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    /// <summary>The reason the check suggests for a string it lists: nothing known for the cataloguer's own forms and a bare "?", a record to fix for a letter or a number.</summary>
+    public static string SuggestedReason(IEnumerable<string> raws) => raws.All(SaysNothingKnown.IsMatch) ? NothingKnown : RecordWantsFixing;
+
+    /// <summary>The check "entities that are not names": placeholders and minted entities whose every string is no name.</summary>
+    public Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, CancellationToken ct = default) => store.NotNameEntitiesAsync(dataset, NotNamePattern, ct);
+
+    /// <summary>
+    /// A person says the string is not a name (the owner, 2026-11-22). The decision has no entity and the method
+    /// <see cref="DecisionMethod.NotAName"/>, the reason in its evidence; the string leaves the queue. The placeholder it stood on goes
+    /// when nothing else points at it. Undo puts the string back in the queue.
+    /// </summary>
+    /// <returns>True when the entity the string stood on was removed with it.</returns>
+    public async Task<bool> NotANameAsync(string dataset, long stringId, string reviewer, string reason, string? note = null, CancellationToken ct = default)
+    {
+        if (reason is not (NothingKnown or RecordWantsFixing)) throw new ArgumentException("Say which: nothing is known, or the record wants fixing.");
+        var decided = await store.DecidedStringAsync(stringId, ct) ?? throw new KeyNotFoundException($"No decided string {stringId}.");
+        if (!string.Equals(decided.String.Dataset, dataset, StringComparison.Ordinal)) throw new InvalidOperationException("The string belongs to another project.");
+        var was = decided.Decision.EntityId is null ? null : await store.ResolveEntityAsync(decided.Decision.EntityId, ct);
+        // only a string that stands on nothing real: one on an entity with identifiers or a person's confirmation is decided at that entity first
+        if (was is not null && (was.Status != EntityStatus.Provisional || was.Equivalents.Count > 0))
+            throw new InvalidOperationException($"\"{decided.String.Raw}\" stands on {was.Label}, an entity with identifiers or a confirmation of its own: move the string off it first.");
+        note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
+        await store.DecideAsync(stringId, null, DecisionMethod.NotAName, Reconciler.Evidence("not-a-name", reconciler.Read(decided.String), [], new { reason, note, was = was?.Id, wasLabel = was?.Label }), reviewer, ct: ct);
+        if (note is not null) await store.AddNoteAsync(dataset, ReviewService.StringTarget(stringId), reviewer, note, ct);
+        return was is not null && await store.RemoveProvisionalIfUnreferencedAsync(was.Id, ct);
+    }
+
+    /// <summary>Every string of an entity the third check lists is said to be no name, and the entity goes. Refused when a string on it does not match the check's pattern any more.</summary>
+    public async Task<(int Strings, bool Removed)> NotANameEntityAsync(string dataset, string entityId, string reviewer, string reason, CancellationToken ct = default)
+    {
+        var listed = (await NotNameEntitiesAsync(dataset, ct)).FirstOrDefault(e => e.EntityId == entityId) ?? throw new InvalidOperationException("That entity is not on the list any more.");
+        var removed = false;
+        foreach (var id in listed.StringIds) removed = await NotANameAsync(dataset, id, reviewer, reason, null, ct) || removed;
+        return (listed.StringIds.Count, removed);
+    }
+
     public static readonly IReadOnlyList<string> LeftUndecided = ["Left undecided at the checks:", "From the checks, left for the owner:"];
 
     private static readonly HashSet<string> ChainNoise = new(StringComparer.OrdinalIgnoreCase) { "Europe", "World", "Greater", "County", "City", "Borough", "United", "Kingdom", "States", "North", "South", "East", "West", "upon", "with" };

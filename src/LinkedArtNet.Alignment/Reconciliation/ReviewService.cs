@@ -361,7 +361,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         {
             var telling = words[k..];
             var found = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(string.Join(' ', words[..k])), source, null, telling.Length == 0 ? limit : 300, ct);
-            if (telling.Length > 0) found = found.Where(r => telling.All(w => ((ChainOf(r) ?? "") + " " + r.Label + " " + string.Join(' ', r.Labels)).Contains(w.Trim(',', '(', ')'), StringComparison.OrdinalIgnoreCase))).Take(limit).ToList();
+            if (telling.Length > 0) found = found.Where(r => telling.All(w => ((ChainOf(r) ?? "") + " " + (Authorities.RecordSummary.Says(r) ?? "") + " " + r.Label + " " + string.Join(' ', r.Labels)).Contains(w.Trim(',', '(', ')'), StringComparison.OrdinalIgnoreCase))).Take(limit).ToList();
             if (found.Count > 0) return found;
         }
         return [];

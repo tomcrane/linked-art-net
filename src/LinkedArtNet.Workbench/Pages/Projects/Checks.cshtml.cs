@@ -91,8 +91,12 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
                     Found = (await Project.Desk.SearchEntitiesAsync(Dataset, Find.Trim())).Where(e => e.Class == EntityClass.Place && e.MergedInto is null && e.Id != Plan.Entity.Id && Plan.Others.All(o => o.Id != e.Id)).Take(12).ToList();
                 if (!string.IsNullOrWhiteSpace(IFind))
                 {
-                    IFound = (await Project.Desk.SearchIndexesAsync(IFind.Trim(), null, 60, HttpContext.RequestAborted))
-                        .Where(r => r.Type == "Place" && r.Source is "tgn" or "loc" && Plan.Entity.Equivalents.All(q => q.Uri != r.Uri)).Take(12).ToList();
+                    // every index that has places, and in LCSH and Wikidata the houses and museums typed as bodies too (the owner, 2026-11-22, at
+                    // "Wallington": the Northumberland house is LCSH's "Wallington Hall (England)" and a Wikidata item typed as a body, and the
+                    // search looked only at TGN and LoC's names)
+                    IFound = (await Project.Desk.SearchIndexesAsync(IFind.Trim(), null, 120, HttpContext.RequestAborted))
+                        .Where(r => ((r.Type == "Place" && r.Source is "tgn" or "loc" or "lcsh" or "wikidata") || (r.Type == "Group" && r.Source is "lcsh" or "wikidata")) && Plan.Entity.Equivalents.All(q => q.Uri != r.Uri))
+                        .OrderBy(r => r.Type == "Place" ? 0 : 1).Take(16).ToList();
                 }
                 foreach (var other in Plan.Others.Concat(Plan.Holders.Values).Concat(Found)) Clues[other.Id] = await Project.Desk.ClueAsync(other, HttpContext.RequestAborted);
                 return;

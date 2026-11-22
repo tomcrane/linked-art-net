@@ -62,246 +62,61 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-20 evening; the one place to read first)
+## 0. Resume point (written 2026-11-22 evening; the one place to read first)
 
-**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile since, and none wanted: what
-was built on 2026-11-19 and 2026-11-20 is looked up when a card or a check opens. Schema version 12. 3,745
-strings queued (3,764 two days ago; 19 decided by the assistant as `claude` on 2026-11-20). The way of working is
-the assistant driving the workbench as a user, signed in as `claude`, the owner reviewing after and sending
-screenshots of what reads badly. The commits of 2026-11-20 are local on `de-pmc`, the full test loop green at day
-end; `git push` is the owner's word.
+**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile since, and none wanted. Schema
+version 13 (findings). 3,732 strings queued. The PMC manifest was saved again with `Align manifest --use-default`
+(the not-names added, nothing else changed). The way of working is the assistant driving the workbench as a user,
+signed in as `claude`, the owner reviewing after and sending screenshots; on 2026-11-22 the owner worked in the same
+browser and his own actions stand under `claude` too (the browser has one sign-in: say whose it is when a drive
+begins and ends). The commits of 2026-11-22 are local on `de-pmc`, the full test loop green at day end; `git push`
+is the owner's word.
 
-**Agreed by the owner on 2026-11-22, being built** ("yes to both proposals"; the counts are in
-`reports/q-abroad1.txt`, `q-abroad2.txt`, `q-abbr1.txt`):
+**Built on 2026-11-22** (section 7, "The work of 2026-11-22, in full", has each with its counts and what it taught):
 
-1. *A decision "this is not a name".* Counted first: in place, publisher and corporate author about 40 strings on
-   some 1,400 records are not names, and only 17 of them are queued; the rest are entities already ("S.l." a Place
-   with 157 records, "Place of Publication not identified" a Place with 437, "Publisher not identified" a Person
-   labelled "Publisher" with 288; "s.n." queued, 375). "s.n." and "S.l." are the cataloguer's *sine nomine* and
-   *sine loco* (AACR2), "[publisher not identified]" their RDA form: statements that nothing is known, not debris.
-   Agreed: a decision with no entity and a method of its own, `not-a-name` (as `list` has none); one button on the
-   card, "Not a name...", asking which of two reasons: nothing is known (the string leaves the queue), or the record
-   wants fixing ("S", "21": the record to the cataloguers' list, doc 12 section 14 step 2); a third check, "entities
-   that are not names", listing the entities that exist for such strings, each pressed by a person; the strings of
-   the first kind in the project's manifest so that a reconcile makes no entity of them, the list shown to the
-   owner first. Left out: the roles ("The author", "The artist", "The editor", about 50 records), whose answer is in
-   each record: with decisions by record. "Privately printed" (about 30) not settled.
-   BUILT 2026-11-22 (seen in the browser): the method `not-a-name`; on a card, under "Something else", "It is not
-   a name" with the two reasons and one button, the reason the string suggests chosen to begin with ("S", string
-   49336, decided so by the assistant as `claude`, undone and decided again: undo puts the string back in the
-   queue, without a placeholder); the third check, http://localhost:5200/p/pmc/checks?check=notnames, 23 entities
-   (12 the cataloguer's "nothing known" on 1,279 records, 11 stray letters and numbers), a button a row. The rows
-   are the owner's to press. A fault of the store found by the test: the removal of an unreferenced provisional
-   reported the entity kept when it had gone.
-   Learnt: the check as first shown listed 160, not the 25 counted: the count was over the name fields and the
-   listing over every entity, so 136 date subdivisions of subject headings ("1837-1901", concepts, rightly
-   entities) were on it. The count is to be of the listing's own condition. And its text named "UK" and "RA", the
-   PMC's data, in a page any project shows (the owner: "it looks specific to the current data rather than page
-   chrome"): a page's fixed text names nothing of one project.
-   NOT BUILT, in order: (a) the manifest's list of strings that say nothing is known, read by the reconciler so
-   that no entity is made of them, the list to the owner first (proposed: "s.n.", "s.l.", "publisher not
-   identified", "place of publication not identified", brackets and spacing ignored); (b) where "the record wants
-   fixing" goes: the reason is in the decision's evidence, and the cataloguers' list (doc 12 14.4, the findings
-   table) will be filled from those decisions when it is built; (c) after "Not a name" the desk goes to the next
-   card and not to the other strings of the name ("s" in two other fields); (d) the decided card's notice still
-   says "the candidate that was chosen first", which a string that is no name has not; (e) seen once: after a
-   card's action the next card opened part-way down the page, its flash out of sight (cause not looked for).
-2. *The import's namesakes abroad.* NOT BUILT. What stands in the way: the first check and its Decide screen are
-   made of rows that pair an entity with a TGN place of its name at home (`AwayRow`), and say "at home" in their
-   text; an entity with no namesake at home ("Atlanta", "San Marino") has no such row. The way in: a row made from
-   the TGN place the project's other entity of the name holds (the entity "Atlanta, Ga." went to), the screen's
-   text saying "elsewhere" where it says "at home".
-   COUNTED AGAIN 2026-11-22, the listing's own condition this time (`reports/q-abroad3.txt`), and it changes the
-   proposal, so it is back with the owner before anything is built. "The project has another place of this name"
-   gives 43 rows and is no signal: most are two right places (Andover in Hampshire and in Massachusetts, Salem,
-   Winchester, Windsor, Durham three ways). "A publisher of its records has records at the other place too" gives
-   11, 7 of them wrong (Atlanta, Evanston, Madison, Middleburg, San Marino, Shannon, one of the two St Ives), one
-   to look at (Cambridge), one a pair for the second check (Pittsburgh), one noise (the Bay of Naples). And the
-   way in proposed above does not hold: of the 7, three other entities hold no TGN identifier (Evanston, San
-   Marino, Shannon), so no row can be made from one. What the 7 want is what the Decide screen's "it is the other
-   place" already does with a project entity for its target (the import's identifiers removed, the entity merged
-   into the other): the screen must first open for an entity with no place of its name at home, which it does not
-   (it reads the item from its first row "at home"). Options put to the owner: (a) that change to the screen, the
-   11 as a part of the first check's list; (b) no build: the 7 mended at the desk and the entity page by hand, the
-   list kept as a report. Earlier count, for the record: 474 imported places with a bare label, a Wikidata item and no
-   confirmation. Where the same publisher's other records name a qualified place of the name that went elsewhere:
-   16 entities, about 9 wrong ("Atlanta" on Atlanta, Texas; "Evanston" on Wyoming's; "San Marino" on the republic,
-   the Huntington's; "Shannon" on a county in Missouri; "St Ives", 30 records, on the Cambridgeshire town where
-   Beric Tempest is Cornish; "Madison" on New Jersey's), the rest falling out when the qualifier is in the item's
-   own description. Where any string of the name is otherwise qualified: 29, adding "Williamsburg" on a hamlet in
-   Indiana, "Kingston" on Hull, "Douglas", "Christchurch", with right ones among them. Agreed: the first check
-   widened, not a third: the first signal "likely wrong", the second "for a look". "Middleburg" itself is a third
-   signal, a qualified string ("Middleburg, VA") on an entity whose item says otherwise, which wants abbreviations
-   read.
-   THE OWNER, 2026-11-22: "Let's fix the 7 by hand - you do it by driving the browser and see if leaving them for
-   hand-fixing was the right decision". Done as `claude`, nine strings at the desk, each by a search under
-   "Something else" and "Same as" on the project's entity for the right place: "Atlanta" (53423) to Atlanta (Ga.);
-   "Evanston" (54404) to Evanston (Ill.); "Shannon" (52413) to Shannon (Ireland); "Middleburg, VA" (56858) and
-   "Middleburg" (65975, The Sporting Gallery, 1964: at Middleburg in Virginia by the assistant's own knowledge, for
-   the owner to check) to Middleburg (Va.); "Madison" (61428, the University of Wisconsin's) to Madison (Wis.), the
-   New Jersey entity kept for its "Madison, N.J." strings; "St Ives" (61160, 23 records, all Cornish) and "St. Ives"
-   (61286) to St Ives (Cornwall); "San Marino" (61204) to San Marino (Calif.). The answer: yes, by hand was right
-   for seven, a quarter of an hour at the desk and no screen to rework. What it showed, none of it built:
-   - two of the seven are not one place: "St. Ives" is five Cornish records and two of Photo Precision's at St Ives
-     in Huntingdonshire, "San Marino" three of the Huntington's and one of Maretti's, a publisher in the republic.
-     Each was moved for the most of its records and a note left on the string; they want decisions by record (doc
-     12 section 14 step 3), and are two more cases for it;
-   - an entity left with no string stays: "Atlanta" on Atlanta, Texas, "Evanston" on Wyoming's, "Shannon" on the
-     county in Missouri, "Middleburg" on Pennsylvania's and "Middleburg (Fla.)" now stand for nothing, each a true
-     description of a place the catalogue does not name, and each still offered by a search ("stands for 0
-     strings", the Pennsylvanian one without where it is). Wanted: an entity's page to offer "remove it, nothing
-     uses it", or a search to leave such entities out; and LoC's form for their labels meanwhile;
-   - "Same as" on a search result takes no note, so why a string was moved is said only by a second step.
-   BUILT 2026-11-22 at the owner's word ("An entity page or string review should indicate to the user that the
-   string/entity is in the checks queue. Build the manifest and cataloguers lists"), each seen in the browser:
-   - an entity's page and a string's card say when the entity is on a check's list, with the way to where it is
-     decided (`CheckLists`: the three lists kept, remade behind the page when two minutes old, dropped when the
-     Checks or the merge page changes something; so a notice can be two minutes behind a decision made at the desk);
-   - the manifest's `notNames` ("s.n.", "s.l.", "publisher not identified", "place of publication not identified",
-     case, spacing and brackets ignored; saved to the PMC project with `Align manifest --use-default`, which changed
-     nothing else): the reconciler decides such a string as not a name and makes nothing of it. It counts them as
-     skipped in a run's report, which wants a count of its own. The entities that exist are still the third
-     check's, for a person;
-   - the cataloguers' list, http://localhost:5200/p/pmc/findings ("For cataloguers" in the header): schema 13, the
-     table of doc 12 14.4; a string decided "not a name: the record wants fixing" raises a finding on each of its
-     records, an undo withdraws those nobody has acted on; rows a record together, each marked mended or
-     declined, the open ones exported as a CSV and marked sent. One row on it, "S" in ZB270. Not built of 14.4:
-     raising a finding from a record on the card or the entity page, and from a check in bulk; the kinds beyond
-     "not a name"; a suggestion filled in by the desk; the filters by system, kind and field; the copy button;
-     what a collect does with a mended row (14.5).
-   THE OWNER AT THE THIRD CHECK, 2026-11-22: he merged the spellings by the tray before pressing any row ("This
-   involved quite a few clicks, but perhaps is not a common sequence"): the misspelt "Place of publication not
-   identified" entities into the right one, "s.l." the person into "S.l." the place, "S.n." the place into "s.n."
-   the person. Not needed (a row's button decides every string of its entity), and it would have left the three
-   behind: the removal refused an entity that others had been merged into. Mended: the placeholders merged into
-   it go with it. Nothing built for the clicks. And his actions that afternoon stand under the name `claude`, the
-   browser's one sign-in being the assistant's (the merges, and "s.n.", 375 records, decided not a name at 14:58
-   UTC, not by the assistant): to say at the start of a drive that the sign-in is `claude`, and when it ends.
-   THE OWNER AT "WALLINGTON" (`place/rzhwax7f`), 2026-11-22: "I'm pretty sure I want to align these to the
-   Northumberland house near Alnwick. But I can't do that from here I don't think". He can, by "Another place, by
-   its identifier" with LCSH's "Wallington Hall (England)" (sh85144940), and the screen does not lead him to it:
-   its search of the indexes looks only at TGN and LoC's names and at records typed as places, and the house is an
-   LCSH heading and a Wikidata item typed as a body (Q7963113). BUILT the same day at his word ("restart and build the search fix now"), seen in the browser: a search for "Wallington Hall" there offers LCSH's heading and the Wikidata item. As it was to be built (he
-   was working in it): the Decide screen's search to look in LCSH and Wikidata too, a house or a museum typed as a
-   body among them, each result saying what it is; the button's words to match.
-   THE OWNER AT "WALLINGTON" AGAIN, 2026-11-22: he sent both strings to Wallington Hall by the search's result, and
-   the screen came back with the entity still on the list: LCSH's identifier added, the import's three not removed
-   ("I had checked the three wrong identifiers"). Not reproduced: the assistant ran the same mend as `claude` by
-   typing the identifier and the three went ("3 identifiers removed"), and on "Charterhouse" the boxes stand
-   ticked after a search (looked at, not submitted). The server removes what the form sends; so the form sent none,
-   and the likeliest cause is that the boxes are ticked to begin with and a click on a ticked box unticks it. The
-   entity is now right in its identifier (LCSH only) and off the list; its label is still "Wallington" (the screen
-   offers no label when every string goes) and it has not the Wikidata item of the house (Q7963113): the owner's
-   to do on its page, or the assistant's at his word. TO BUILD at the next restart: the line under the button to
-   name what will be removed and what kept as the boxes change ("removes viaf, wikidata, lux; keeps loc"), so a
-   box unticked by mistake is seen before the button is pressed; and a label offered when every string goes and
-   the place meant has another name than the entity's.
-   THE OWNER, the same hour: "On both this and the wallington screen the offered identifiers were all valid and I
-   would want to tick both"; and Charterhouse "a different case ... the first one _might_ be its already aligned
-   place. The second and third are definitely the charterhouse in London". BUILT and seen in the browser: the
-   records a search of the indexes finds are tick boxes, one place under as many identifiers as are ticked, the
-   strings going to the first (a gazetteer's or a library's before Wikidata's) and the entity they stand on given
-   the rest; the line under the button names what is removed from the entity and what kept, as the boxes change.
-   Wallington finished by the assistant as `claude` on its page: Wikidata's Q7963113 added, the label made LoC's,
-   "Wallington Hall (England)". Charterhouse left for the owner, the screen not submitted. Still not built: a
-   label offered when every string goes.
-   CHARTERHOUSE, decided by the owner (as `claude`, the browser's sign-in) at 15:49 UTC and checked in the store:
-   the building's heading moved to a new entity, `group/qk3ve2t5`, with LCSH's sh2010012268; "Charterhouse"
-   confirmed on the Somerset village. A fault of the tick boxes built that hour: Wikidata's item for the London
-   Charterhouse (Q6670230) was ticked too and is held already by the project's "London Charterhouse (Smithfield,
-   London, England)" (`group/bqwmjvs7`, 2 strings), so it was refused and the project now has two entities for
-   the one building. BUILT the same hour: where a ticked record is held by an entity of the project, the strings go to
-   that entity, and the other records ticked are added to it. The two merged by the owner. The bare "Charterhouse"
-   (one record, D2225: a Crotch exhibition, "Charterhouse Studio", "Charterhouse Printing Group") is, on the
-   assistant's own knowledge and unverified, Charterhouse School at Godalming (Ian Fleming-Williams, its art
-   master, collected Crotch), not the Somerset village the entity was confirmed on: to check in a library
-   catalogue, then to move at the desk, and one for the cataloguers' list. And a pull of LUX that answered with an
-   empty body threw on the entity's page (the owner: "a Charterhouse pull threw an exception"): mended, a source
-   that answers with nothing readable is a failed pull, said on the page.
-   THE OWNER: "yes, check Library Hub and move it - via the UI and see that the flow for this makes sense as it's
-   likely a common scenario". Done as `claude`: Library Hub has the Oxford copy, "[held at] Charterhouse Studio
-   1964", "[S.l. : s.n., 1964]": the year, and no place; so Godalming rests on the assistant's knowledge of the
-   school and its art master, said in a note on the string. "Charterhouse" (56520) moved to the project's Godalming
-   (`place/rkauy8xk`) by a search under "Something else" and "Same as". The flow, a decided string found wrong and
-   put right, for the owner's word before anything is built:
-   - it works, in two presses, and nothing on a decided card says that this is how a decision is changed: the way
-     is under "Something else", a screen and a half down;
-   - after "Same as" the desk went on to the next string of the queue ("L. colonnade"), part-way down its card,
-     the flash out of sight: right for a queue being worked, wrong for one decided string being corrected, where
-     the person wants to see the card they changed. To stay on the card when it was not opened from the queue;
-   - the reason is a second step (the note box at the foot): "Same as" and "Accept" on a search result take none;
-   - the entity left behind stands for nothing ("Charterhouse", the Somerset village, confirmed that afternoon),
-     as the five of the namesakes abroad do: no way to remove it;
-   - the record could say better ("Charterhouse" as a place of publication is the school's name): no way yet to
-     raise a finding from a record.
-3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
-   column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
-   qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or
-   nation, its place type the type ("VA", "Hants", "Oxon", "IoW", "Middx", "N.J." without its dots); 114 (996
-   records) it does not, of which the abbreviations are some twenty forms on about 560 records ("Mich", "Conn",
-   "Mass", "D.C.", "Ont", "Ill", "Del", "N.S.W.", "Vic", "Fla", "Neb", "Alta", "Minn", "Tex", "Co. Meath"), the
-   rest towns and streets. So: TGN is the general table; a small table beside it for the cataloguers' forms TGN
-   lacks (abbreviation, name, type, TGN identifier, source: AACR2 appendix B.14, to be credited and checked
-   against the published list). An abbreviation with two readings ("CA" California or Canada, "Ga" Georgia or
-   Gabon) is settled by type, a state before a nation's code. Not built.
+- A decision "this is not a name" (method `not-a-name`, no entity; nothing is known, or the record wants fixing):
+  one button on a card, a third check for the entities that exist (all pressed by the owner), the cataloguer's
+  forms in the manifest so that a reconcile makes nothing of them.
+- The cataloguers' list, http://localhost:5200/p/pmc/findings: a first slice (rows from "the record wants fixing",
+  marked mended or declined, exported as a CSV).
+- An entity's page and a string's card say when the entity is on a check's list.
+- The Decide screen of the first check: its search looks in LCSH and Wikidata too; the records found are ticked,
+  one place under several identifiers; the line under the button names what is removed and what kept.
+- Mended: a pull that a source answers with nothing readable; the removal of a placeholder with others merged
+  into it.
+- By hand, as `claude`: the seven namesakes abroad (nine strings), "Wallington" to Wallington Hall, "Charterhouse"
+  to Godalming.
+
+**For the owner, when we resume** (he stopped at this point: "Leave for now ... we'll pick up next time"):
+
+1. *Correcting a decided string*, the flow he asked to be looked at as "likely a common scenario". It works in two
+   presses and is awkward in four ways (section 7): nothing on a decided card says how to decide it differently;
+   after the correction the desk goes on to the queue and not back to the card; the reason is a second step; the
+   entity left behind stands for nothing and cannot be removed. The assistant's pick: a "Decide it differently"
+   link in the decided notice, and staying on the card after a correction. Nothing built.
+2. *To check*: "Charterhouse" (56520) on Godalming and "Middleburg" (65975) on Middleburg, Virginia, both on the
+   assistant's own knowledge; "St. Ives" (61286) and "San Marino" (61204), each moved for most of its records with
+   a note, wanting decisions by record; why his submit at "Wallington" removed no identifier (not reproduced).
+3. *Entities that stand for nothing* after the day's moves: Atlanta (Tex.), Evanston (Wyo.), Shannon (Mo.),
+   Middleburg (Pa.), Middleburg (Fla.), Charterhouse (Somerset). A way to remove one, or to leave them out of
+   searches: to propose.
+4. *The namesakes abroad as a check*: not built, by the recount (11 rows by a shared publisher, 7 wrong and now
+   mended; the name alone no signal). The table of abbreviations: TGN is most of it; not built, nothing waits on it.
 
 Also waiting on his word from 2026-11-19: the check "a body aligned to a namesake elsewhere" (93 bodies whose
 heading's place agrees with none of their records' places; Country Life, Penguin Books, Pilgrim Press); whether
 the publishers' table should name the body as well as the place.
 
-**What the two days found** (section 7 has each in full: "The survey of the queue", the trials, "The desk as a
-user"):
-
-- The queue waits on judgement with the record in view, not on a missing rule. The assistant's firm verdicts on
-  sets held against the owner's marks (35 of 35, then 49 of 49); its hedged ones half the time, each miss a heading
-  judged by its label and not its record.
-- The right body is usually in the index under a fuller name and not offered; the project's own neighbours (a
-  longer form already decided) are evidence no rule used. Both are now hints on the card.
-- Project entities are themselves wrong in three ways: aligned to a namesake (the two checks), entered twice
-  (147 pairs), and thin, with only the 2024 import's VIAF and LUX identifiers.
-- RULED by the owner: a predecessor, a successor and a renamed body are each aligned to its own record as LoC or
-  Wikidata has it, the succession kept as data for the output and for the workbench; a place's chain and a
-  body's line are both to be published.
-- RULE for every card (the owner): one button for one act; no two calls to action that do the same thing.
-
-**Built on 2026-11-20, for the owner to look at** (seen by the assistant in the browser except where said):
-
-- On a card: where a longer form's entity holds the top candidate's record, the head says the two agree (as
-  agreement, not proof) and points to the one button; it stands aside where a lower candidate bears the string as
-  written. A record the project already holds is accepted as "Same as <entity> (where it is)". One line, "In
-  this project already", for what stands on a candidate. Cards: "Kingston" http://localhost:5200/p/pmc/review?id=49530
-- The Checks page is a list of checks: http://localhost:5200/p/pmc/checks. The second check, "entities that may be
-  one thing", 147 pairs in four parts (probably one 29, to look at 85, of different kinds 10, places apart 23):
-  http://localhost:5200/p/pmc/checks?check=duplicates (the four parts not seen in the browser). "Compare..." opens
-  the merge page, rebuilt as "Compare and merge": two panels, then "They are one thing" or "They are two things"
-  with a reason. Neither button pressed there in the browser.
-- After a decision the desk goes on to the near spellings that were candidates on that card (seen: "Winchester?"
-  after "Winchester").
-- Not seen in the browser: the settle notice as the only button for its entity; a merged placeholder's row
-  without its button; the shared reason said once; "its own" for "its books".
-- The assistant's 19 decisions as `claude` on 2026-11-20 (section 7 lists them with the reasons). Two to check:
-  the label of the New Gallery's entity (`group/ad9uf8jj`) changed to LoC's form, the import having left "New
-  gallery della Lambda Ars. Catane, Italie" on it; and "Society for the Encouragement of Arts, Manufactures and
-  Commerce" (1762) decided onto the body of that name and not the Royal Society of Arts, by the ruling on
-  successors, against the card's own head. Also "Middleburg, Virginia", which made a new entity.
-- From earlier and still for him: trial 2's blocks 50 to 100 unmarked (the assistant has enough from the 49);
-  the three decisions of 2026-11-17 on the assistant's own knowledge ("Royston", "Plaistow", "Kingston"); the
-  hand-finishes of 2026-11-15 ("Cardiff" `place/t7mbc5a4`, "Belfast" `place/scrhnxf9`, "Raleigh"
-  `place/mcgyqvqf`, the Ontario "Peterborough" `place/bk5w54aq`).
-
-**Next, in order.** (1) The two proposals held above. (2) The desk where it was left: the place queue,
-http://localhost:5200/p/pmc/review?context=place, at "Kingston" (string 49530: three Kingstons among its longer
-forms). The agreement cards not opened: "Winstanley & Co" in two fields (two project entities, Thomas Winstanley &
-Co. and Winstanley, which LoC and ULAN call one: a merge for the owner), "Consumption", "Windsor Castle",
-"Walterstone", "Washington". (3) The duplicates check carried on: the two cases that prompted it and it does not
-find (the Louvre as a body and, under another label, as a person; two entities a rule joined), a count first;
-"one succeeded the other" as a third answer when the succession can be held. (4) The succession of bodies: how
-Linked Art says it (the model and upstream issues first), whether the loaders keep LoC's earlier and later forms
-and Wikidata's "replaces", a count of bodies with several LoC headings and one Wikidata item. (5) The design of
-help on a set, to put to the owner (a "suggested" method; a third outcome "the record wants fixing"; a library
-catalogue asked by ISBN before the web). (6) Decisions by record (doc 12 section 14 step 3) and the cataloguers'
-list (step 2). (7) Housekeeping, long due: section 7 pruned of built items; doc 12 sections for the Checks page,
-the Decide screen, the merge page and the card's additions; doc 16's scenarios and pictures, stale.
+**Next, in order.** (1) The four above. (2) The cataloguers' list carried on (doc 12 14.4): a finding raised from a
+record on the card and the entity page, the kinds, the filters; a label offered on the Decide screen when every
+string goes. (3) The desk where it was left: the place queue, http://localhost:5200/p/pmc/review?context=place, at
+"Kingston" (string 49530); the agreement cards not opened ("Winstanley & Co" in two fields, "Consumption", "Windsor
+Castle", "Walterstone", "Washington"). (4) The duplicates check carried on (148 pairs; the Louvre as a body and a
+person; "one succeeded the other"). (5) The succession of bodies: how Linked Art says it (the model and upstream
+issues first). (6) The design of help on a set. (7) Decisions by record (doc 12 section 14 step 3): four cases
+more from this day. (8) Housekeeping, long due: section 7 pruned of built items; doc 12 sections for the Checks
+page, the Decide screen, the merge page, the card's additions, the findings page; doc 16's scenarios and
+pictures, stale.
 
 **What the alignment is for, and what comes after it** (the owner, 2026-11-19; he asked that its importance be
 noted). The alignment is not the end. "Soon we switch to what the old PMC C# code was doing (though hopefully,
@@ -554,6 +369,182 @@ Only question 7 is open.
 
 Each item carries the date it was seen and where its evidence is. An item leaves this list when it is built or closed,
 and the log (doc 15) records that. The order within an area is rough value.
+
+**The work of 2026-11-22, in full** (moved from the resume point at day end; the numbering is the day's):
+
+**Agreed by the owner on 2026-11-22, being built** ("yes to both proposals"; the counts are in
+`reports/q-abroad1.txt`, `q-abroad2.txt`, `q-abbr1.txt`):
+
+1. *A decision "this is not a name".* Counted first: in place, publisher and corporate author about 40 strings on
+   some 1,400 records are not names, and only 17 of them are queued; the rest are entities already ("S.l." a Place
+   with 157 records, "Place of Publication not identified" a Place with 437, "Publisher not identified" a Person
+   labelled "Publisher" with 288; "s.n." queued, 375). "s.n." and "S.l." are the cataloguer's *sine nomine* and
+   *sine loco* (AACR2), "[publisher not identified]" their RDA form: statements that nothing is known, not debris.
+   Agreed: a decision with no entity and a method of its own, `not-a-name` (as `list` has none); one button on the
+   card, "Not a name...", asking which of two reasons: nothing is known (the string leaves the queue), or the record
+   wants fixing ("S", "21": the record to the cataloguers' list, doc 12 section 14 step 2); a third check, "entities
+   that are not names", listing the entities that exist for such strings, each pressed by a person; the strings of
+   the first kind in the project's manifest so that a reconcile makes no entity of them, the list shown to the
+   owner first. Left out: the roles ("The author", "The artist", "The editor", about 50 records), whose answer is in
+   each record: with decisions by record. "Privately printed" (about 30) not settled.
+   BUILT 2026-11-22 (seen in the browser): the method `not-a-name`; on a card, under "Something else", "It is not
+   a name" with the two reasons and one button, the reason the string suggests chosen to begin with ("S", string
+   49336, decided so by the assistant as `claude`, undone and decided again: undo puts the string back in the
+   queue, without a placeholder); the third check, http://localhost:5200/p/pmc/checks?check=notnames, 23 entities
+   (12 the cataloguer's "nothing known" on 1,279 records, 11 stray letters and numbers), a button a row. The rows
+   are the owner's to press. A fault of the store found by the test: the removal of an unreferenced provisional
+   reported the entity kept when it had gone.
+   Learnt: the check as first shown listed 160, not the 25 counted: the count was over the name fields and the
+   listing over every entity, so 136 date subdivisions of subject headings ("1837-1901", concepts, rightly
+   entities) were on it. The count is to be of the listing's own condition. And its text named "UK" and "RA", the
+   PMC's data, in a page any project shows (the owner: "it looks specific to the current data rather than page
+   chrome"): a page's fixed text names nothing of one project.
+   NOT BUILT, in order: (a) the manifest's list of strings that say nothing is known, read by the reconciler so
+   that no entity is made of them, the list to the owner first (proposed: "s.n.", "s.l.", "publisher not
+   identified", "place of publication not identified", brackets and spacing ignored); (b) where "the record wants
+   fixing" goes: the reason is in the decision's evidence, and the cataloguers' list (doc 12 14.4, the findings
+   table) will be filled from those decisions when it is built; (c) after "Not a name" the desk goes to the next
+   card and not to the other strings of the name ("s" in two other fields); (d) the decided card's notice still
+   says "the candidate that was chosen first", which a string that is no name has not; (e) seen once: after a
+   card's action the next card opened part-way down the page, its flash out of sight (cause not looked for).
+2. *The import's namesakes abroad.* NOT BUILT. What stands in the way: the first check and its Decide screen are
+   made of rows that pair an entity with a TGN place of its name at home (`AwayRow`), and say "at home" in their
+   text; an entity with no namesake at home ("Atlanta", "San Marino") has no such row. The way in: a row made from
+   the TGN place the project's other entity of the name holds (the entity "Atlanta, Ga." went to), the screen's
+   text saying "elsewhere" where it says "at home".
+   COUNTED AGAIN 2026-11-22, the listing's own condition this time (`reports/q-abroad3.txt`), and it changes the
+   proposal, so it is back with the owner before anything is built. "The project has another place of this name"
+   gives 43 rows and is no signal: most are two right places (Andover in Hampshire and in Massachusetts, Salem,
+   Winchester, Windsor, Durham three ways). "A publisher of its records has records at the other place too" gives
+   11, 7 of them wrong (Atlanta, Evanston, Madison, Middleburg, San Marino, Shannon, one of the two St Ives), one
+   to look at (Cambridge), one a pair for the second check (Pittsburgh), one noise (the Bay of Naples). And the
+   way in proposed above does not hold: of the 7, three other entities hold no TGN identifier (Evanston, San
+   Marino, Shannon), so no row can be made from one. What the 7 want is what the Decide screen's "it is the other
+   place" already does with a project entity for its target (the import's identifiers removed, the entity merged
+   into the other): the screen must first open for an entity with no place of its name at home, which it does not
+   (it reads the item from its first row "at home"). Options put to the owner: (a) that change to the screen, the
+   11 as a part of the first check's list; (b) no build: the 7 mended at the desk and the entity page by hand, the
+   list kept as a report. Earlier count, for the record: 474 imported places with a bare label, a Wikidata item and no
+   confirmation. Where the same publisher's other records name a qualified place of the name that went elsewhere:
+   16 entities, about 9 wrong ("Atlanta" on Atlanta, Texas; "Evanston" on Wyoming's; "San Marino" on the republic,
+   the Huntington's; "Shannon" on a county in Missouri; "St Ives", 30 records, on the Cambridgeshire town where
+   Beric Tempest is Cornish; "Madison" on New Jersey's), the rest falling out when the qualifier is in the item's
+   own description. Where any string of the name is otherwise qualified: 29, adding "Williamsburg" on a hamlet in
+   Indiana, "Kingston" on Hull, "Douglas", "Christchurch", with right ones among them. Agreed: the first check
+   widened, not a third: the first signal "likely wrong", the second "for a look". "Middleburg" itself is a third
+   signal, a qualified string ("Middleburg, VA") on an entity whose item says otherwise, which wants abbreviations
+   read.
+   THE OWNER, 2026-11-22: "Let's fix the 7 by hand - you do it by driving the browser and see if leaving them for
+   hand-fixing was the right decision". Done as `claude`, nine strings at the desk, each by a search under
+   "Something else" and "Same as" on the project's entity for the right place: "Atlanta" (53423) to Atlanta (Ga.);
+   "Evanston" (54404) to Evanston (Ill.); "Shannon" (52413) to Shannon (Ireland); "Middleburg, VA" (56858) and
+   "Middleburg" (65975, The Sporting Gallery, 1964: at Middleburg in Virginia by the assistant's own knowledge, for
+   the owner to check) to Middleburg (Va.); "Madison" (61428, the University of Wisconsin's) to Madison (Wis.), the
+   New Jersey entity kept for its "Madison, N.J." strings; "St Ives" (61160, 23 records, all Cornish) and "St. Ives"
+   (61286) to St Ives (Cornwall); "San Marino" (61204) to San Marino (Calif.). The answer: yes, by hand was right
+   for seven, a quarter of an hour at the desk and no screen to rework. What it showed, none of it built:
+   - two of the seven are not one place: "St. Ives" is five Cornish records and two of Photo Precision's at St Ives
+     in Huntingdonshire, "San Marino" three of the Huntington's and one of Maretti's, a publisher in the republic.
+     Each was moved for the most of its records and a note left on the string; they want decisions by record (doc
+     12 section 14 step 3), and are two more cases for it;
+   - an entity left with no string stays: "Atlanta" on Atlanta, Texas, "Evanston" on Wyoming's, "Shannon" on the
+     county in Missouri, "Middleburg" on Pennsylvania's and "Middleburg (Fla.)" now stand for nothing, each a true
+     description of a place the catalogue does not name, and each still offered by a search ("stands for 0
+     strings", the Pennsylvanian one without where it is). Wanted: an entity's page to offer "remove it, nothing
+     uses it", or a search to leave such entities out; and LoC's form for their labels meanwhile;
+   - "Same as" on a search result takes no note, so why a string was moved is said only by a second step.
+   BUILT 2026-11-22 at the owner's word ("An entity page or string review should indicate to the user that the
+   string/entity is in the checks queue. Build the manifest and cataloguers lists"), each seen in the browser:
+   - an entity's page and a string's card say when the entity is on a check's list, with the way to where it is
+     decided (`CheckLists`: the three lists kept, remade behind the page when two minutes old, dropped when the
+     Checks or the merge page changes something; so a notice can be two minutes behind a decision made at the desk);
+   - the manifest's `notNames` ("s.n.", "s.l.", "publisher not identified", "place of publication not identified",
+     case, spacing and brackets ignored; saved to the PMC project with `Align manifest --use-default`, which changed
+     nothing else): the reconciler decides such a string as not a name and makes nothing of it. It counts them as
+     skipped in a run's report, which wants a count of its own. The entities that exist are still the third
+     check's, for a person;
+   - the cataloguers' list, http://localhost:5200/p/pmc/findings ("For cataloguers" in the header): schema 13, the
+     table of doc 12 14.4; a string decided "not a name: the record wants fixing" raises a finding on each of its
+     records, an undo withdraws those nobody has acted on; rows a record together, each marked mended or
+     declined, the open ones exported as a CSV and marked sent. One row on it, "S" in ZB270. Not built of 14.4:
+     raising a finding from a record on the card or the entity page, and from a check in bulk; the kinds beyond
+     "not a name"; a suggestion filled in by the desk; the filters by system, kind and field; the copy button;
+     what a collect does with a mended row (14.5).
+   THE OWNER AT THE THIRD CHECK, 2026-11-22: he merged the spellings by the tray before pressing any row ("This
+   involved quite a few clicks, but perhaps is not a common sequence"): the misspelt "Place of publication not
+   identified" entities into the right one, "s.l." the person into "S.l." the place, "S.n." the place into "s.n."
+   the person. Not needed (a row's button decides every string of its entity), and it would have left the three
+   behind: the removal refused an entity that others had been merged into. Mended: the placeholders merged into
+   it go with it. Nothing built for the clicks. And his actions that afternoon stand under the name `claude`, the
+   browser's one sign-in being the assistant's (the merges, and "s.n.", 375 records, decided not a name at 14:58
+   UTC, not by the assistant): to say at the start of a drive that the sign-in is `claude`, and when it ends.
+   THE OWNER AT "WALLINGTON" (`place/rzhwax7f`), 2026-11-22: "I'm pretty sure I want to align these to the
+   Northumberland house near Alnwick. But I can't do that from here I don't think". He can, by "Another place, by
+   its identifier" with LCSH's "Wallington Hall (England)" (sh85144940), and the screen does not lead him to it:
+   its search of the indexes looks only at TGN and LoC's names and at records typed as places, and the house is an
+   LCSH heading and a Wikidata item typed as a body (Q7963113). BUILT the same day at his word ("restart and build the search fix now"), seen in the browser: a search for "Wallington Hall" there offers LCSH's heading and the Wikidata item. As it was to be built (he
+   was working in it): the Decide screen's search to look in LCSH and Wikidata too, a house or a museum typed as a
+   body among them, each result saying what it is; the button's words to match.
+   THE OWNER AT "WALLINGTON" AGAIN, 2026-11-22: he sent both strings to Wallington Hall by the search's result, and
+   the screen came back with the entity still on the list: LCSH's identifier added, the import's three not removed
+   ("I had checked the three wrong identifiers"). Not reproduced: the assistant ran the same mend as `claude` by
+   typing the identifier and the three went ("3 identifiers removed"), and on "Charterhouse" the boxes stand
+   ticked after a search (looked at, not submitted). The server removes what the form sends; so the form sent none,
+   and the likeliest cause is that the boxes are ticked to begin with and a click on a ticked box unticks it. The
+   entity is now right in its identifier (LCSH only) and off the list; its label is still "Wallington" (the screen
+   offers no label when every string goes) and it has not the Wikidata item of the house (Q7963113): the owner's
+   to do on its page, or the assistant's at his word. TO BUILD at the next restart: the line under the button to
+   name what will be removed and what kept as the boxes change ("removes viaf, wikidata, lux; keeps loc"), so a
+   box unticked by mistake is seen before the button is pressed; and a label offered when every string goes and
+   the place meant has another name than the entity's.
+   THE OWNER, the same hour: "On both this and the wallington screen the offered identifiers were all valid and I
+   would want to tick both"; and Charterhouse "a different case ... the first one _might_ be its already aligned
+   place. The second and third are definitely the charterhouse in London". BUILT and seen in the browser: the
+   records a search of the indexes finds are tick boxes, one place under as many identifiers as are ticked, the
+   strings going to the first (a gazetteer's or a library's before Wikidata's) and the entity they stand on given
+   the rest; the line under the button names what is removed from the entity and what kept, as the boxes change.
+   Wallington finished by the assistant as `claude` on its page: Wikidata's Q7963113 added, the label made LoC's,
+   "Wallington Hall (England)". Charterhouse left for the owner, the screen not submitted. Still not built: a
+   label offered when every string goes.
+   CHARTERHOUSE, decided by the owner (as `claude`, the browser's sign-in) at 15:49 UTC and checked in the store:
+   the building's heading moved to a new entity, `group/qk3ve2t5`, with LCSH's sh2010012268; "Charterhouse"
+   confirmed on the Somerset village. A fault of the tick boxes built that hour: Wikidata's item for the London
+   Charterhouse (Q6670230) was ticked too and is held already by the project's "London Charterhouse (Smithfield,
+   London, England)" (`group/bqwmjvs7`, 2 strings), so it was refused and the project now has two entities for
+   the one building. BUILT the same hour: where a ticked record is held by an entity of the project, the strings go to
+   that entity, and the other records ticked are added to it. The two merged by the owner. The bare "Charterhouse"
+   (one record, D2225: a Crotch exhibition, "Charterhouse Studio", "Charterhouse Printing Group") is, on the
+   assistant's own knowledge and unverified, Charterhouse School at Godalming (Ian Fleming-Williams, its art
+   master, collected Crotch), not the Somerset village the entity was confirmed on: to check in a library
+   catalogue, then to move at the desk, and one for the cataloguers' list. And a pull of LUX that answered with an
+   empty body threw on the entity's page (the owner: "a Charterhouse pull threw an exception"): mended, a source
+   that answers with nothing readable is a failed pull, said on the page.
+   THE OWNER: "yes, check Library Hub and move it - via the UI and see that the flow for this makes sense as it's
+   likely a common scenario". Done as `claude`: Library Hub has the Oxford copy, "[held at] Charterhouse Studio
+   1964", "[S.l. : s.n., 1964]": the year, and no place; so Godalming rests on the assistant's knowledge of the
+   school and its art master, said in a note on the string. "Charterhouse" (56520) moved to the project's Godalming
+   (`place/rkauy8xk`) by a search under "Something else" and "Same as". The flow, a decided string found wrong and
+   put right, for the owner's word before anything is built:
+   - it works, in two presses, and nothing on a decided card says that this is how a decision is changed: the way
+     is under "Something else", a screen and a half down;
+   - after "Same as" the desk went on to the next string of the queue ("L. colonnade"), part-way down its card,
+     the flash out of sight: right for a queue being worked, wrong for one decided string being corrected, where
+     the person wants to see the card they changed. To stay on the card when it was not opened from the queue;
+   - the reason is a second step (the note box at the foot): "Same as" and "Accept" on a search result take none;
+   - the entity left behind stands for nothing ("Charterhouse", the Somerset village, confirmed that afternoon),
+     as the five of the namesakes abroad do: no way to remove it;
+   - the record could say better ("Charterhouse" as a place of publication is the school's name): no way yet to
+     raise a finding from a record.
+3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
+   column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
+   qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or
+   nation, its place type the type ("VA", "Hants", "Oxon", "IoW", "Middx", "N.J." without its dots); 114 (996
+   records) it does not, of which the abbreviations are some twenty forms on about 560 records ("Mich", "Conn",
+   "Mass", "D.C.", "Ont", "Ill", "Del", "N.S.W.", "Vic", "Fla", "Neb", "Alta", "Minn", "Tex", "Co. Meath"), the
+   rest towns and streets. So: TGN is the general table; a small table beside it for the cataloguers' forms TGN
+   lacks (abbreviation, name, type, TGN identifier, source: AACR2 appendix B.14, to be credited and checked
+   against the published list). An abbreviation with two readings ("CA" California or Canada, "Ga" Georgia or
+   Gabon) is settled by type, a state before a nation's code. Not built.
 
 **Workbench and desk** (doc 12 sections 5 to 8 and 11):
 

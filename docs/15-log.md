@@ -23,6 +23,27 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-22
+
+The two held proposals put, agreed and worked; the owner at the workbench all afternoon. No reconcile; schema 13;
+the full test loop green at day end.
+
+- Counted first, and the count changed both proposals. "Not a name": about forty strings on 1,400 records, most of
+  them entities already ("S.l." a place with 157 records), so a check was wanted as well as a decision. The
+  namesakes abroad: by the listing's own condition 11 rows and 7 wrong, the name alone no signal, so no check was
+  built and the seven were mended by hand at the desk, which was the right call.
+- Built: the decision `not-a-name` with its two reasons, on the card and as a third check; the manifest's
+  not-names; the cataloguers' list (schema 13, a first slice); a check's word on the entity page and the card;
+  the Decide screen's wider search and its tick boxes for one place under several identifiers.
+- The owner worked the third check to nothing, then "Wallington" and "Charterhouse" on the first. What his use
+  found: a merge before a row's button would have left the entity behind; the Decide screen could not find a house
+  in LCSH or Wikidata; its results were one choice where two identifiers were both right; a ticked record another
+  entity held made the building twice; a pull of LUX threw on an empty answer. Each mended the same hour.
+- Learnt: the third check as first shown listed 160 where 25 had been counted, the count having been of the name
+  fields and the listing of every entity: count the listing's own condition. A page's fixed text named the PMC's
+  data ("UK", "RA"): fixed text names nothing of one project. The owner's actions went under the assistant's
+  sign-in, the browser having one: say whose it is.
+
 ## 2026-11-20
 
 A day of the owner's screenshots and the assistant at the desk. No reconcile; schema unchanged; the full test loop

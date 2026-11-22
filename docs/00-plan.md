@@ -184,6 +184,18 @@ end; `git push` is the owner's word.
    LCSH heading and a Wikidata item typed as a body (Q7963113). BUILT the same day at his word ("restart and build the search fix now"), seen in the browser: a search for "Wallington Hall" there offers LCSH's heading and the Wikidata item. As it was to be built (he
    was working in it): the Decide screen's search to look in LCSH and Wikidata too, a house or a museum typed as a
    body among them, each result saying what it is; the button's words to match.
+   THE OWNER AT "WALLINGTON" AGAIN, 2026-11-22: he sent both strings to Wallington Hall by the search's result, and
+   the screen came back with the entity still on the list: LCSH's identifier added, the import's three not removed
+   ("I had checked the three wrong identifiers"). Not reproduced: the assistant ran the same mend as `claude` by
+   typing the identifier and the three went ("3 identifiers removed"), and on "Charterhouse" the boxes stand
+   ticked after a search (looked at, not submitted). The server removes what the form sends; so the form sent none,
+   and the likeliest cause is that the boxes are ticked to begin with and a click on a ticked box unticks it. The
+   entity is now right in its identifier (LCSH only) and off the list; its label is still "Wallington" (the screen
+   offers no label when every string goes) and it has not the Wikidata item of the house (Q7963113): the owner's
+   to do on its page, or the assistant's at his word. TO BUILD at the next restart: the line under the button to
+   name what will be removed and what kept as the boxes change ("removes viaf, wikidata, lux; keeps loc"), so a
+   box unticked by mistake is seen before the button is pressed; and a label offered when every string goes and
+   the place meant has another name than the entity's.
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
    column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
    qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or

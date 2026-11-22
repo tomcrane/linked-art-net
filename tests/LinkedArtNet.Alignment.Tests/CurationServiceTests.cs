@@ -323,6 +323,10 @@ public class CurationServiceTests(PostgresFixture pg)
         await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "publisher", "Publisher not identified")).Id, mixed.Id, DecisionMethod.Minted);
         await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "publisher", "Publisher & Co")).Id, mixed.Id, DecisionMethod.ExactName);
 
+        // a number among the concepts is a date subdivision of a heading, and an entity rightly
+        var years = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Type, "1837-1901"), scheme);
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "keywords:sub", "1837-1901")).Id, years.Id, DecisionMethod.Minted);
+
         var listed = await curation.NotNameEntitiesAsync(ds);
         Assert.Equal(new[] { sl.Id, letter.Id }.Order(), listed.Select(n => n.EntityId).Order());
         Assert.Equal(CurationService.NothingKnown, CurationService.SuggestedReason(listed.Single(n => n.EntityId == sl.Id).Strings));

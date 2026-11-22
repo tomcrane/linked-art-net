@@ -301,7 +301,7 @@ else if (Model.Check == "notnames")
        had entities already ("S.l." a place with 157 records). A row has one button, with the reason the strings themselves suggest;
        the other reason is on each string's own card *@
     <h2>Entities that are not names <span class="muted small">@Model.NotNames.Count</span></h2>
-    <p class="small muted">An entity with no identifier, every one of whose strings is no name: the cataloguer's "s.n." (<em>sine nomine</em>, no publisher named), "S.l." (<em>sine loco</em>, no place) and "[publisher not identified]", or a stray letter or number. The button decides each of its strings as not a name and removes the entity; a string's own card can undo it, or give the other reason. Two letters ("UK", "RA") are not listed: they may be names, and wait at the desk.</p>
+    <p class="small muted">A person, a body or a place with no identifier, every one of whose strings is no name: the cataloguer's "s.n." (<em>sine nomine</em>, no publisher named), "S.l." (<em>sine loco</em>, no place) and "[publisher not identified]", or a stray letter or number. The button decides each of its strings as not a name and removes the entity; a string's own card can undo it, or give the other reason. A string of two letters is not listed: it may be initials or a short name, and waits at the desk.</p>
     @if (Model.NotNames.Count == 0) { <p class="notice">Nothing is listed.</p> }
     @foreach (var (reason, title, about, button) in new[] {
         (CurationService.NothingKnown, "The cataloguer says nothing is known", "the record is as it should be; no entity is wanted", "Not a name: nothing is known"),

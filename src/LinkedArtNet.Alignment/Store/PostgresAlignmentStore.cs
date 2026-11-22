@@ -1553,6 +1553,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                    coalesce(sum((select count(*) from occurrences o where o.string_id = s.id)), 0)::int, count(*) filter (where d.method = 'queued')::int
             from entities e join decisions d on d.entity_id = e.id and d.valid join source_strings s on s.id = d.source_string_id
             where e.dataset = @dataset and e.merged_into is null and e.status = 'provisional'
+              -- a person, a body or a place only: among concepts a number is a date subdivision of a heading ("1837-1901"), rightly an entity
+              and e.class in ('Person', 'Group', 'Place')
               and not exists (select 1 from entity_equivalents q where q.entity_id = e.id)
             group by e.id, e.label, e.class
             having bool_and(s.raw ~* @pattern)

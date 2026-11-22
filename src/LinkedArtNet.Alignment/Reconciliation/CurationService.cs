@@ -360,7 +360,8 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     /// What the third check lists by: a string that is "s.n." or "S.l." however spaced and bracketed, that ends "not identified", that is
     /// one letter (with or without a question mark), or that has no letter in it at all ("?", "21", "(1986)"). Counted before it was
     /// built (2026-11-22): 25 entities or so in the PMC project, some 1,300 records on them. Two letters are not listed: "UK", "RA" and
-    /// "EP" are names or initials, for the desk.
+    /// "EP" are names or initials, for the desk. People, bodies and places only: the first list shown, uncounted beyond the name fields,
+    /// had 160 rows, 136 of them the date subdivisions of subject headings ("1837-1901"), which are concepts and rightly entities.
     /// </summary>
     public const string NotNamePattern = @"^\W*(s\W*[nl]|.*not identified|[[:alpha:]]\??|[^[:alpha:]]+)\W*$";
 

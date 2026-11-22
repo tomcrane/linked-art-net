@@ -205,6 +205,13 @@ end; `git push` is the owner's word.
    Wallington finished by the assistant as `claude` on its page: Wikidata's Q7963113 added, the label made LoC's,
    "Wallington Hall (England)". Charterhouse left for the owner, the screen not submitted. Still not built: a
    label offered when every string goes.
+   CHARTERHOUSE, decided by the owner (as `claude`, the browser's sign-in) at 15:49 UTC and checked in the store:
+   the building's heading moved to a new entity, `group/qk3ve2t5`, with LCSH's sh2010012268; "Charterhouse"
+   confirmed on the Somerset village. A fault of the tick boxes built that hour: Wikidata's item for the London
+   Charterhouse (Q6670230) was ticked too and is held already by the project's "London Charterhouse (Smithfield,
+   London, England)" (`group/bqwmjvs7`, 2 strings), so it was refused and the project now has two entities for
+   the one building. TO BUILD: where a ticked record is held by an entity of the project, the strings go to that
+   entity, and the other records ticked are added to it. The two to be merged by the owner, or at his word.
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
    column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
    qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or

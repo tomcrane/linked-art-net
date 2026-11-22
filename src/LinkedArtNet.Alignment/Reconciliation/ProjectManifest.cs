@@ -27,6 +27,13 @@ public sealed record ProjectManifest
     /// Empty, persons are never carried by it.
     /// </summary>
     public List<string> Trades { get; init; } = [];
+    /// <summary>
+    /// What a cataloguer writes when the item does not say: "s.n." (sine nomine, no publisher named), "S.l." (sine loco, no place),
+    /// RDA's "publisher not identified". A string that is one of these, whatever its case, spacing and brackets, is decided as not a
+    /// name (<see cref="DecisionMethod.NotAName"/>) and no entity is made of it (the owner, 2026-11-22). The forms are a catalogue's
+    /// conventions, so they are the project's to list. Empty, nothing is so decided.
+    /// </summary>
+    public List<string> NotNames { get; init; } = [];
     /// <summary>The local indexes to consult, in order.</summary>
     public List<string> Sources { get; init; } = ["ulan", "aat", "tgn", "loc", "lcsh"];
     /// <summary>
@@ -68,6 +75,7 @@ public sealed record ProjectManifest
         MintWhenNothingFound = MintWhenNothingFound,
         HomePlace = HomePlace,
         Trades = Trades,
+        NotNames = NotNames,
         Contexts = Contexts.ToDictionary(kv => kv.Key, kv => kv.Value.ToRule(), StringComparer.OrdinalIgnoreCase),
     };
 
@@ -78,6 +86,8 @@ public sealed record ProjectManifest
         // the Heritage library catalogue; its record identifier is the standard number (an ISBN where the book has one, else a lettered
         // number by kind of material: profiled 2026-11-15). No template: the assistant does not know of a page per record to link to
         Systems = new Dictionary<string, SourceSystemJson>(StringComparer.OrdinalIgnoreCase) { ["library"] = new("Library catalogue", "standard number") },
+        // AACR2's forms and RDA's, as the PMC records write them (counted 2026-11-22: some 1,280 records); the list was put to the owner first
+        NotNames = ["s.n.", "s.l.", "publisher not identified", "place of publication not identified"],
         Trades = ["auction", "dealer", "bookseller", "book seller", "printseller", "print seller", "publisher", "stationer"], // the sale catalogues' own trades (finding 109)
         Contexts = new Dictionary<string, ContextRuleJson>(StringComparer.OrdinalIgnoreCase)
         {
@@ -119,6 +129,7 @@ public sealed record ProjectManifest
             d.Add("the thresholds or policies");
         if (!string.Equals(HomePlace, other.HomePlace, StringComparison.Ordinal)) d.Add($"the home place ({HomePlace ?? "none"} against {other.HomePlace ?? "none"})");
         if (!Trades.SequenceEqual(other.Trades, cmp)) d.Add($"the trades ({(Trades.Count == 0 ? "none" : string.Join(", ", Trades))} against {(other.Trades.Count == 0 ? "none" : string.Join(", ", other.Trades))})");
+        if (!NotNames.SequenceEqual(other.NotNames, cmp)) d.Add($"the strings that are not names ({(NotNames.Count == 0 ? "none" : string.Join(", ", NotNames))} against {(other.NotNames.Count == 0 ? "none" : string.Join(", ", other.NotNames))})");
         return d;
     }
 }

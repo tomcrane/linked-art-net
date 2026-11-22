@@ -35,6 +35,8 @@ public sealed record ReconcilerOptions
     public string? HomePlace { get; init; }
     /// <summary>The trades of the catalogue, as a record's biography names them ("auctioneer", "dealer"), from the project's manifest: a person of one of them bearing a name with an honorific whole is carried by finding 109; empty, persons never are.</summary>
     public IReadOnlyList<string> Trades { get; init; } = [];
+    /// <summary>The cataloguer's forms for "the item does not say" ("s.n.", "S.l."), from the project's manifest: a string that is one of them is decided as not a name, with no entity.</summary>
+    public IReadOnlyList<string> NotNames { get; init; } = [];
     /// <summary>
     /// Prominence for the famous-name ties among places (finding 85, 2026-10-24): when groups two sources carry tie at acceptance score and no
     /// project entity is among them, the group whose Wikidata item has at least this many sitelinks, and at least <see cref="ProminenceRatio"/>
@@ -198,9 +200,22 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>
         (await ReconcileOneDetailedAsync(dataset, s, runId, ct)).Outcome;
 
+    /// <summary>A string as the manifest's not-names are compared: lower case, no spaces or brackets, no punctuation at either end ("[S. l.]" and "s.l." are one; "SL" is neither).</summary>
+    public static string NotNameKey(string raw) => new string(raw.Where(c => !char.IsWhiteSpace(c) && c is not ('[' or ']' or '(' or ')')).ToArray()).Trim('.', ',', ';', ':', '?').ToLowerInvariant();
+
+    /// <summary>Whether the project's manifest lists the string as one of the cataloguer's forms for "the item does not say".</summary>
+    public bool IsNotName(string raw) => _options.NotNames.Count > 0 && NotNameKey(raw) is { Length: > 0 } key && _options.NotNames.Any(n => NotNameKey(n) == key);
+
     /// <summary>Evaluates and commits one string, returning the evaluation so the caller can see how it was decided.</summary>
     public async Task<Evaluation> ReconcileOneDetailedAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default)
     {
+        // the cataloguer's "the item does not say": not a name, by the project's own list, and nothing is looked up or made for it
+        if (IsNotName(s.Raw))
+        {
+            var said = Read(s);
+            await store.DecideAsync(s.Id, null, DecisionMethod.NotAName, Evidence("not-a-name", said, [], new { reason = CurationService.NothingKnown, by = "manifest" }), runId: runId, ct: ct);
+            return new Evaluation(Outcome.Skipped, said, []);
+        }
         var evaluation = await EvaluateAsync(dataset, s, includeStore: true, ct);
         if (evaluation.Outcome == Outcome.Decomposed) return await DecomposeAsync(dataset, s, evaluation, runId, ct);
         var sw = System.Diagnostics.Stopwatch.StartNew();

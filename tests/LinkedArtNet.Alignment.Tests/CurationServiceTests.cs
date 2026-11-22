@@ -342,7 +342,37 @@ public class CurationServiceTests(PostgresFixture pg)
 
         // the card's button, and what it refuses: a reason that is neither, a string on an entity with identifiers
         await Assert.ThrowsAsync<ArgumentException>(() => curation.NotANameAsync(ds, s.Id, "tester", "because"));
+        await pg.Store.PutExamplesAsync([new StringExample(s.Id, "ZB270", "library", "A selected portion", "1937", "place", "{\"place\":[\"S\"]}")]);
         Assert.True(await curation.NotANameAsync(ds, s.Id, "tester", CurationService.RecordWantsFixing, "what is left of S.l."));
+        // the record is on the cataloguers' list, once; nothing known put nothing there; a status is set and counted; an export sends the open
+        var finding = Assert.Single(await pg.Store.FindingsAsync(ds));
+        Assert.Equal(("library", "ZB270", "place", "S", Finding.NotAName, Finding.Open, "A selected portion"), (finding.System, finding.RecordId, finding.Field, finding.Value, finding.Kind, finding.Status, finding.Title));
+        Assert.Equal(0, await pg.Store.RaiseFindingsForStringAsync(s.Id, Finding.NotAName, "S", null, null, "tester"));
+        Assert.Equal(finding.Id, Assert.Single(await pg.Store.SendOpenFindingsAsync(ds, "tester")).Id);
+        Assert.Equal(1, (await pg.Store.FindingCountsAsync(ds))[Finding.Sent]);
+        Assert.True(await pg.Store.SetFindingStatusAsync(ds, finding.Id, Finding.Mended, "tester", "corrected to S.l."));
+        Assert.Equal((Finding.Mended, "corrected to S.l."), ((await pg.Store.FindingsAsync(ds, Finding.Mended))[0].Status, (await pg.Store.FindingsAsync(ds, Finding.Mended))[0].Note));
+        Assert.False(await pg.Store.SetFindingStatusAsync("another-" + ds, finding.Id, Finding.Open, "tester"));
+        // an undo withdraws a finding nobody has acted on
+        var desk = new ReviewService(pg.Store, scheme, reconciler);
+        var b = await pg.Store.CollectAsync(ds, "publisher", "B");
+        await pg.Store.DecideAsync(b.Id, (await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "B"), scheme)).Id, DecisionMethod.Queued);
+        await pg.Store.PutExamplesAsync([new StringExample(b.Id, "R9", "library", "A book", "1900", "publisher", "{\"publisher\":[\"B\"]}")]);
+        await curation.NotANameAsync(ds, b.Id, "tester", CurationService.RecordWantsFixing);
+        Assert.Single(await pg.Store.FindingsAsync(ds, Finding.Open));
+        await desk.UndoAsync(ds, b.Id);
+        Assert.Empty(await pg.Store.FindingsAsync(ds, Finding.Open));
+        Assert.Equal(DecisionMethod.Queued, (await pg.Store.DecisionForAsync(b.Id))!.Method);
+
+        // the manifest's list: a reconcile decides the cataloguer's forms as not a name and makes nothing of them; a real two letters is not one
+        var listing = new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions());
+        Assert.True(listing.IsNotName("[S. l.]")); Assert.True(listing.IsNotName("Publisher not identified]")); Assert.False(listing.IsNotName("SL")); Assert.False(listing.IsNotName("Snell"));
+        Assert.False(reconciler.IsNotName("s.n.") && ProjectManifest.PmcDefault.NotNames.Count == 0);
+        var sn = await pg.Store.CollectAsync(ds, "publisher", "[s.n.]");
+        Assert.Equal(Outcome.Skipped, await listing.ReconcileOneAsync(ds, sn));
+        var byRule = (await pg.Store.DecisionForAsync(sn.Id))!;
+        Assert.Equal((DecisionMethod.NotAName, (string?)null, (string?)null), (byRule.Method, byRule.EntityId, byRule.Reviewer));
+        Assert.Contains("manifest", byRule.EvidenceJson);
         Assert.Empty(await curation.NotNameEntitiesAsync(ds));
         var real = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "London", Status: EntityStatus.Aligned), scheme);
         await pg.Store.AddEquivalentAsync(real.Id, new Equivalent("http://vocab.getty.edu/tgn/7011781", "tgn", DecisionMethod.Human, 1.0, DateTimeOffset.UtcNow));

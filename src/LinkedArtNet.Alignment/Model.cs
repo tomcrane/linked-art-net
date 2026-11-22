@@ -407,6 +407,20 @@ public sealed record LongerForm(long StringId, string Raw, int Records, string E
 public sealed record Standing(string EntityId, string? EntityLabel, int Strings, int Records);
 
 /// <summary>
+/// Something a source record could say better, on the cataloguers' list (design doc 12 section 14.4): the record by its system and
+/// identifier, the field and what it said when the finding was raised, the kind, and what became of it. <see cref="Title"/> and
+/// <see cref="Date"/> are the record's, for the list.
+/// </summary>
+public sealed record Finding(long Id, string Dataset, string System, string RecordId, string? Field, string? Value, string Kind, string? Suggestion, string? Why, long? StringId,
+    string? RaisedBy, DateTimeOffset RaisedAt, string Status, string? StatusBy, DateTimeOffset? StatusAt, string? Note, string? Title = null, string? Date = null)
+{
+    public const string Open = "open", Sent = "sent", Mended = "mended", Declined = "declined";
+    public static readonly IReadOnlyList<string> Statuses = [Open, Sent, Mended, Declined];
+    /// <summary>The kind of a finding raised when a string is decided as no name and its record wants fixing.</summary>
+    public const string NotAName = "not a name";
+}
+
+/// <summary>
 /// An entity of a project every one of whose strings looks like no name at all ("S.l.", "Publisher not identified", "S"): a placeholder
 /// or a minted entity that stands for nothing. <see cref="Queued"/> is how many of its strings wait at the desk.
 /// </summary>

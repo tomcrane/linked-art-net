@@ -391,6 +391,9 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
         await store.DecideAsync(stringId, null, DecisionMethod.NotAName, Reconciler.Evidence("not-a-name", reconciler.Read(decided.String), [], new { reason, note, was = was?.Id, wasLabel = was?.Label }), reviewer, ct: ct);
         if (note is not null) await store.AddNoteAsync(dataset, ReviewService.StringTarget(stringId), reviewer, note, ct);
+        // a record that wants fixing goes on the cataloguers' list, once for each record the string is in (doc 12 section 14.4)
+        if (reason == RecordWantsFixing)
+            await store.RaiseFindingsForStringAsync(stringId, Finding.NotAName, decided.String.Raw, null, note ?? "not a name: a stray letter or number where a name should be", reviewer, ct);
         return was is not null && await store.RemoveProvisionalIfUnreferencedAsync(was.Id, ct);
     }
 

@@ -10,6 +10,13 @@ namespace LinkedArtNet.Workbench.Pages.Projects;
 /// </summary>
 public sealed class MergeModel(ProjectServices services, ProjectAccess access) : ProjectPageModel(services, access)
 {
+    /// <summary>What is decided on this page changes the checks' lists: the kept copy that the entity pages and the cards read is dropped.</summary>
+    public override async Task OnPageHandlerExecutionAsync(Microsoft.AspNetCore.Mvc.Filters.PageHandlerExecutingContext context, Microsoft.AspNetCore.Mvc.Filters.PageHandlerExecutionDelegate next)
+    {
+        await base.OnPageHandlerExecutionAsync(context, next);
+        if (HttpMethods.IsPost(Request.Method)) CheckLists.Forget(Dataset);
+    }
+
     /// <summary>The entities' ids, comma-separated, as the tray sends them.</summary>
     [BindProperty(SupportsGet = true)] public string? Ids { get; set; }
 

@@ -34,6 +34,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     /// <summary>The first cached picture among the sources, for the top of the page.</summary>
     public Picture? Picture => Pullable.Select(q => Pulled.GetValueOrDefault(q.Uri)?.Picture).FirstOrDefault(p => p?.ThumbUrl is not null);
     public string? Message { get; private set; }
+    /// <summary>The checks whose lists this entity is on, with where each is decided.</summary>
+    public IReadOnlyList<CheckHit> OnChecks { get; private set; } = [];
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
     {
@@ -41,6 +43,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         var view = await Project.Curation.EntityAsync(Dataset, Id);
         if (view is null) return NotFound();
         View = view;
+        OnChecks = await CheckLists.ForAsync(Project, view.Entity.Id, HttpContext.RequestAborted);
         Pulled = view.Records.Select(r => (r.Key, Pulled: SourcePull.Read(r.Value))).Where(x => x.Pulled is not null).ToDictionary(x => x.Key, x => x.Pulled!);
         foreach (var q in view.Entity.Equivalents.OrderBy(q => q.Source == "tgn" ? 0 : 1))
             if (await LinkedArtNet.Alignment.Authorities.Coordinates.ResolveAsync(Services.Store, view.Records.GetValueOrDefault(q.Uri)) is { } placed && (Coordinates is null || !placed.Approximate)) { Coordinates = placed; if (!placed.Approximate) break; }

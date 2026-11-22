@@ -294,3 +294,32 @@ insert into schema_version (version) values (11) on conflict do nothing;
 alter table entities add column if not exists set_aside_labels text[] not null default '{}';
 
 insert into schema_version (version) values (12) on conflict do nothing;
+
+-- version 13 (2026-11-22): findings, the cataloguers' list (design doc 12 section 14.4): something a source record could say
+-- better, seen by a person at the desk or by a check. A finding names the record by its system and identifier, the field and
+-- what it said when the finding was raised. status: open, sent (exported), mended (as a person says), declined.
+-- closed_collect and value_after are for the collect that confirms a mend (14.5), not written yet.
+create table if not exists findings (
+    id              bigserial primary key,
+    dataset         text not null,
+    system          text not null,
+    record_id       text not null,
+    field           text,
+    value           text,
+    kind            text not null,
+    suggestion      text,
+    why             text,
+    string_id       bigint references source_strings(id) on delete set null,
+    raised_by       text,
+    raised_at       timestamptz not null default now(),
+    status          text not null default 'open',
+    status_by       text,
+    status_at       timestamptz,
+    closed_collect  text,
+    value_after     text,
+    note            text
+);
+create index if not exists findings_record on findings (dataset, system, record_id);
+create index if not exists findings_string on findings (string_id);
+
+insert into schema_version (version) values (13) on conflict do nothing;

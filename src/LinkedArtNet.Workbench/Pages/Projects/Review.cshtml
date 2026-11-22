@@ -145,6 +145,11 @@ else
                 <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = DecisionMethod.Queued, context = Model.Context, after = item.String.Id })">the next string in the queue →</a></p>
         </div>
     }
+    @* the entity the string stands on is on a check's list: said here, with the way there (the owner, 2026-11-22) *@
+    @foreach (var hit in Model.OnChecks)
+    {
+        <p class="notice small"><strong>The entity this string stands on@(item.Entity is null ? "" : $", {item.Entity.Label},") is on a check's list.</strong> @hit.Title: @hit.Says. <a href="@hit.Href" target="_blank" rel="noopener">@hit.Action</a></p>
+    }
     <p class="string">@item.String.Raw</p>
     @if (reading is not null)
     {

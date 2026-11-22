@@ -22,6 +22,11 @@
         var firstAtDesk = (Model.Waiting.Count > 0 ? Model.Waiting[0] : Model.OwnQueued[0]).String;
         <a class="tag src" href="/p/@Model.Dataset/review?id=@firstAtDesk.Id" title="Opens the desk at &quot;@firstAtDesk.Raw&quot;@(atDesk == 1 ? "" : $", the first of {atDesk} strings waiting under this name; the desk goes on to the others, and they are listed further down this page")">@atDesk waiting at the desk</a>
     }</h1>
+@* on a check's list: said at the top, with the way to where it is decided (the owner, 2026-11-22) *@
+@foreach (var hit in Model.OnChecks)
+{
+    <p class="notice small"><strong>On a check's list.</strong> @hit.Title: @hit.Says. <a href="@hit.Href">@hit.Action</a></p>
+}
 @if (e.Status == EntityStatus.Provisional && e.Equivalents.Count == 0)
 {
     @* a placeholder is a run's, and what is changed on it by hand goes when the run is taken back (the owner, 2026-11-14, having

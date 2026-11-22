@@ -1545,6 +1545,82 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     private static string? About(string? text) =>
         text is null ? null : string.Join(", ", text.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or "North and Central America" or "Asia" or "Africa" or "South America" or "Oceania" or "")));
 
+    // ---- findings ---------------------------------------------------------------------------------------------------
+
+    public async Task<int> RaiseFindingsForStringAsync(long stringId, string kind, string? value, string? suggestion, string? why, string? raisedBy, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            insert into findings (dataset, system, record_id, field, value, kind, suggestion, why, string_id, raised_by)
+            select o.dataset, o.system, o.record_id, o.field, @value, @kind, @suggestion, @why, o.string_id, @by
+            from occurrences o
+            where o.string_id = @string
+              and not exists (select 1 from findings f where f.dataset = o.dataset and f.system = o.system and f.record_id = o.record_id
+                                and f.string_id = o.string_id and f.kind = @kind and f.status in ('open', 'sent'))
+            """);
+        Add(cmd, "string", stringId); Add(cmd, "kind", kind); Add(cmd, "value", value); Add(cmd, "suggestion", suggestion); Add(cmd, "why", why); Add(cmd, "by", raisedBy);
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<int> RemoveOpenFindingsForStringAsync(long stringId, string kind, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("delete from findings where string_id = @string and kind = @kind and status = 'open'");
+        Add(cmd, "string", stringId); Add(cmd, "kind", kind);
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    private const string FindingColumns = "f.id, f.dataset, f.system, f.record_id, f.field, f.value, f.kind, f.suggestion, f.why, f.string_id, f.raised_by, f.raised_at, f.status, f.status_by, f.status_at, f.note";
+
+    private static Finding ReadFinding(NpgsqlDataReader r, bool withRecord) => new(r.GetInt64(0), r.GetString(1), r.GetString(2), r.GetString(3), Str(r, 4), Str(r, 5), r.GetString(6), Str(r, 7), Str(r, 8),
+        r.IsDBNull(9) ? null : r.GetInt64(9), Str(r, 10), r.GetFieldValue<DateTimeOffset>(11), r.GetString(12), Str(r, 13), r.IsDBNull(14) ? null : r.GetFieldValue<DateTimeOffset>(14), Str(r, 15),
+        withRecord ? Str(r, 16) : null, withRecord ? Str(r, 17) : null);
+
+    public async Task<IReadOnlyList<Finding>> FindingsAsync(string dataset, string? status = null, int limit = 500, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            $"""
+            select {FindingColumns}, r.title, r.date
+            from findings f left join records r on r.dataset = f.dataset and r.system = f.system and r.record_id = f.record_id
+            where f.dataset = @dataset and (@status::text is null or f.status = @status)
+            order by max(f.raised_at) over (partition by f.system, f.record_id) desc, f.system, f.record_id, f.id
+            limit @limit
+            """);
+        Add(cmd, "dataset", dataset); cmd.Parameters.Add(new NpgsqlParameter("status", NpgsqlTypes.NpgsqlDbType.Text) { Value = (object?)status ?? DBNull.Value }); Add(cmd, "limit", limit);
+        var list = new List<Finding>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(ReadFinding(r, true));
+        return list;
+    }
+
+    public async Task<IReadOnlyDictionary<string, int>> FindingCountsAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select status, count(*)::int from findings where dataset = @dataset group by status");
+        Add(cmd, "dataset", dataset);
+        var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) counts[r.GetString(0)] = r.GetInt32(1);
+        return counts;
+    }
+
+    public async Task<bool> SetFindingStatusAsync(string dataset, long id, string status, string? by, string? note = null, CancellationToken ct = default)
+    {
+        if (!Finding.Statuses.Contains(status)) throw new ArgumentException($"No such status: {status}.");
+        await using var cmd = _db.CreateCommand("update findings set status = @status, status_by = @by, status_at = @now, note = coalesce(@note, note) where id = @id and dataset = @dataset");
+        Add(cmd, "status", status); Add(cmd, "by", by); Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "id", id); Add(cmd, "dataset", dataset);
+        cmd.Parameters.Add(new NpgsqlParameter("note", NpgsqlTypes.NpgsqlDbType.Text) { Value = (object?)note ?? DBNull.Value });
+        return await cmd.ExecuteNonQueryAsync(ct) == 1;
+    }
+
+    public async Task<IReadOnlyList<Finding>> SendOpenFindingsAsync(string dataset, string? by, CancellationToken ct = default)
+    {
+        var open = await FindingsAsync(dataset, Finding.Open, int.MaxValue, ct);
+        if (open.Count == 0) return open;
+        await using var cmd = _db.CreateCommand("update findings set status = 'sent', status_by = @by, status_at = @now where dataset = @dataset and id = any(@ids) and status = 'open'");
+        Add(cmd, "by", by); Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "dataset", dataset); Add(cmd, "ids", open.Select(f => f.Id).ToArray());
+        await cmd.ExecuteNonQueryAsync(ct);
+        return open;
+    }
+
     public async Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

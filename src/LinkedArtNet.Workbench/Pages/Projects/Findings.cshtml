@@ -1,0 +1,69 @@
+@page "/p/{dataset}/findings"
+@model FindingsModel
+@{
+    ViewData["Title"] = "For the cataloguers";
+    ViewData["KeepPlace"] = true;
+    string Count(string status) => Model.Counts.TryGetValue(status, out var n) ? n.ToString("N0") : "0";
+    var total = Model.Counts.Values.Sum();
+}
+<h1>For the cataloguers</h1>
+<p class="muted">Things a source record could say better, noticed while its strings were being decided. A row is one finding on one record; a record's findings stand together. Mark a row when the record has been mended in the catalogue, or when it is right as it is. The next collect of the source will show what changed.</p>
+@if (Model.Message is not null) { <p class="notice">@Model.Message</p> }
+<p class="small">
+    @foreach (var (key, name) in new[] { (Finding.Open, "Open"), (Finding.Sent, "Sent"), (Finding.Mended, "Mended"), (Finding.Declined, "Declined") })
+    {
+        if (Model.Showing == key) { <strong>@name @Count(key)</strong> } else { <a href="/p/@Model.Dataset/findings?status=@key">@name @Count(key)</a> }
+        <text> · </text>
+    }
+    @if (Model.Showing == "all") { <strong>All @total.ToString("N0")</strong> } else { <a href="/p/@Model.Dataset/findings?status=all">All @total.ToString("N0")</a> }
+</p>
+@if (Model.Findings.Count == 0)
+{
+    <p class="notice">@(total == 0 ? "Nothing has been found yet. A finding is raised when a string is decided as \u201cnot a name: the record wants fixing\u201d at the desk or on the Checks page." : "Nothing with this status.")</p>
+}
+else
+{
+    <table class="checks">
+        <thead><tr><th>Record</th><th>Field and what it says</th><th>What is wrong</th><th>Raised</th><th>Status</th></tr></thead>
+        <tbody>
+        @{ string? last = null; }
+        @foreach (var f in Model.Findings)
+        {
+            var key = f.System + "|" + f.RecordId;
+            var first = key != last;
+            last = key;
+            var url = Model.Project.Manifest.RecordUrl(f.System, f.RecordId);
+            <tr>
+                <td>@if (first)
+                    {
+                        <strong>@(f.Title ?? "(no title)")</strong>@(f.Date is null ? "" : $" ({f.Date})")<br />
+                        <span class="small muted">@Model.Project.Manifest.SystemName(f.System) · </span>@if (url is not null) { <a class="small" href="@url" target="_blank" rel="noopener"><code>@f.RecordId</code></a> } else { <code class="small">@f.RecordId</code> }
+                    }</td>
+                <td class="small"><span class="muted">@Model.Project.Manifest.FieldName(f.Field):</span> <strong>@f.Value</strong>@if (f.StringId is { } sid) { <br /><a href="/p/@Model.Dataset/review?id=@sid" target="_blank" rel="noopener">the string's card</a> }</td>
+                <td class="small">@f.Kind@if (f.Why is not null) { <br /><span class="muted">@f.Why</span> }@if (f.Suggestion is not null) { <br /><span>Suggested: @f.Suggestion</span> }</td>
+                <td class="small">@f.RaisedAt.ToString("yyyy-MM-dd")<br /><span class="muted">@f.RaisedBy</span></td>
+                <td class="small">
+                    <strong>@f.Status</strong>@if (f.StatusAt is { } at && f.Status != Finding.Open) { <span class="muted"> · @at.ToString("yyyy-MM-dd")@(f.StatusBy is null ? "" : " by " + f.StatusBy)</span> }
+                    @if (f.Note is not null) { <br /><span class="muted">@f.Note</span> }
+                    <form method="post" asp-page-handler="Status" asp-route-status="@Model.Status" class="inline" style="display:block; margin-top:.3rem">
+                        <input type="hidden" name="id" value="@f.Id" />
+                        @if (f.Status is Finding.Open or Finding.Sent)
+                        {
+                            <button type="submit" name="status" value="@Finding.Mended" class="secondary small" title="The record has been corrected in the catalogue">Mended</button>
+                            <button type="submit" name="status" value="@Finding.Declined" class="quiet small" title="The record is right as it is, or will not be changed">Declined</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="status" value="@Finding.Open" class="quiet small">Open it again</button>
+                        }
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+<form method="post" asp-page-handler="Export" asp-route-status="@Model.Status" style="margin-top:1.2rem">
+    <button type="submit" class="secondary" @(Count(Finding.Open) == "0" ? "disabled" : "")>Export the open rows as a spreadsheet</button>
+    <span class="small muted">A CSV file, a row a finding, for a cataloguer who works from a file. The rows exported are marked sent.</span>
+</form>

@@ -139,6 +139,20 @@ public interface IAlignmentStore
     /// </summary>
     Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, string twoThingsPrefix, CancellationToken ct = default);
 
+    // ---- findings: the cataloguers' list (design doc 12 section 14.4)
+    /// <summary>Raises a finding of the kind given on every record the string occurs in that has no open or sent one of that kind for it already; how many were raised.</summary>
+    Task<int> RaiseFindingsForStringAsync(long stringId, string kind, string? value, string? suggestion, string? why, string? raisedBy, CancellationToken ct = default);
+    /// <summary>Withdraws the findings of a kind raised for a string that nobody has acted on (still open): the decision that raised them was undone. How many went.</summary>
+    Task<int> RemoveOpenFindingsForStringAsync(long stringId, string kind, CancellationToken ct = default);
+    /// <summary>The dataset's findings, one record's together, the newest record first; of one status when given.</summary>
+    Task<IReadOnlyList<Finding>> FindingsAsync(string dataset, string? status = null, int limit = 500, CancellationToken ct = default);
+    /// <summary>How many findings the dataset has, by status.</summary>
+    Task<IReadOnlyDictionary<string, int>> FindingCountsAsync(string dataset, CancellationToken ct = default);
+    /// <summary>Sets a finding's status, by whom and when, with a note when given. False when the dataset has no such finding.</summary>
+    Task<bool> SetFindingStatusAsync(string dataset, long id, string status, string? by, string? note = null, CancellationToken ct = default);
+    /// <summary>Marks the dataset's open findings sent, and returns them: what an export hands to the cataloguers.</summary>
+    Task<IReadOnlyList<Finding>> SendOpenFindingsAsync(string dataset, string? by, CancellationToken ct = default);
+
     /// <summary>The dataset's provisional people, bodies and places with no identifier, every one of whose strings matches the pattern given (a POSIX regular expression, case ignored): the most recorded first.</summary>
     Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default);
 

@@ -58,6 +58,9 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     /// <summary>The entity the previous action made or chose, for the banner's link to it.</summary>
     public (string Id, string Label)? Decided { get; private set; }
 
+    /// <summary>The checks whose lists the string's entity is on, with where each is decided.</summary>
+    public IReadOnlyList<CheckHit> OnChecks { get; private set; } = [];
+
     public long Remaining => Queue.Where(r => Context is null || r.Context == Context).Sum(r => r.Count);
 
     public async Task OnGetAsync(string? message = null)
@@ -68,6 +71,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         Queue = await Project.Desk.QueueCountsAsync(Dataset, Method);
         Item = Id is { } id ? (Look ? await Project.Desk.LookAgainAsync(Dataset, id) : await Project.Desk.GetAsync(id)) : await Project.Desk.NextAsync(Dataset, Method, Context, After);
         if (Item is not null && Item.String.Dataset != Dataset) Item = null;
+        if (Item?.Entity is { } stands) OnChecks = await CheckLists.ForAsync(Project, stands.Id, HttpContext.RequestAborted);
         // a card with no candidate at all is searched for the reviewer under the string's name (the owner, 2026-11-14, sent from the
         // placeholder "Osterley Park" to its publisher string: "there's nothing to do at the desk"). The rules look only among the
         // kinds the field allows, a person or a body for a publisher; the search looks at every entity of the project and every

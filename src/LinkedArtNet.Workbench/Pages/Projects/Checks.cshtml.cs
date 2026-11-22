@@ -13,6 +13,13 @@ namespace LinkedArtNet.Workbench.Pages.Projects;
 /// </summary>
 public sealed class ChecksModel(ProjectServices services, ProjectAccess access) : ProjectPageModel(services, access)
 {
+    /// <summary>What is decided on this page changes the checks' lists: the kept copy that the entity pages and the cards read is dropped.</summary>
+    public override async Task OnPageHandlerExecutionAsync(Microsoft.AspNetCore.Mvc.Filters.PageHandlerExecutingContext context, Microsoft.AspNetCore.Mvc.Filters.PageHandlerExecutionDelegate next)
+    {
+        await base.OnPageHandlerExecutionAsync(context, next);
+        if (HttpMethods.IsPost(Request.Method)) CheckLists.Forget(Dataset);
+    }
+
     [BindProperty(SupportsGet = true)] public string? Mend { get; set; }
     /// <summary>Which check's list to show: null for the first, the places; "duplicates" for the entities that may be one thing (the second check, 2026-11-20).</summary>
     [BindProperty(SupportsGet = true)] public string? Check { get; set; }

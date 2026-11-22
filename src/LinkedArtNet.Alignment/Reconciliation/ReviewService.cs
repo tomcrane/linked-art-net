@@ -632,6 +632,8 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             else
                 await store.RemoveOverrideAsync(dataset, scope, key, ct);
         }
+        // the findings the decision raised and nobody has acted on go with it
+        if (decided.Decision.Method == DecisionMethod.NotAName) await store.RemoveOpenFindingsForStringAsync(stringId, Finding.NotAName, ct);
         return await store.RevertDecisionAsync(stringId, ct);
     }
 

@@ -181,7 +181,7 @@ end; `git push` is the owner's word.
    Northumberland house near Alnwick. But I can't do that from here I don't think". He can, by "Another place, by
    its identifier" with LCSH's "Wallington Hall (England)" (sh85144940), and the screen does not lead him to it:
    its search of the indexes looks only at TGN and LoC's names and at records typed as places, and the house is an
-   LCSH heading and a Wikidata item typed as a body (Q7963113). TO BUILD at the next restart of the workbench (he
+   LCSH heading and a Wikidata item typed as a body (Q7963113). BUILT the same day at his word ("restart and build the search fix now"), seen in the browser: a search for "Wallington Hall" there offers LCSH's heading and the Wikidata item. As it was to be built (he
    was working in it): the Decide screen's search to look in LCSH and Wikidata too, a house or a museum typed as a
    body among them, each result saying what it is; the button's words to match.
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'

@@ -169,9 +169,10 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
             @if (!string.IsNullOrWhiteSpace(Model.Find) && Model.Found.Count == 0) { <p class="small muted">No other place of the project matches "@Model.Find".</p> }
             <p class="small"><strong>A place the project does not have yet:</strong> <input type="search" name="ifind" form="mend-find" value="@Model.IFind" placeholder="Kingston Jamaica" title="The place's name, then a word of where it is to tell it from its namesakes" style="width:14rem; display:inline-block" /> <button type="submit" form="mend-find" class="secondary">Search the indexes</button> <span class="muted">TGN, the Library of Congress and Wikidata; a house or a museum may be there as a body</span></p>
             @if (!string.IsNullOrWhiteSpace(Model.IFind) && Model.IFound.Count == 0) { <p class="small muted">The indexes have no place matching "@Model.IFind". Give the place's name as an authority would have it, then a word of where it is ("Kingston Jamaica"); a house by its full name ("Wallington Hall").</p> }
+            @if (Model.IFound.Count > 0) { <p class="small muted" style="margin-bottom:.2rem">Tick every record that is the place meant: one place often stands in several indexes, and the entity is given each identifier ticked.</p> }
             @foreach (var rec in Model.IFound)
             {
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@rec.Uri" /> <strong>@rec.Label</strong>@if (ChecksModel.ChainOf(rec) is { } where) { <span> (@where)</span> } else if (LinkedArtNet.Alignment.Authorities.RecordSummary.Says(rec) is { } says && says != rec.Label) { <span class="muted"> · @says</span> } <span class="tag">@rec.Source</span>@if (rec.Type != "Place") { <span class="tag" title="The source has it as a body, not a place">@((rec.Type ?? "").ToLowerInvariant())</span> }</label> <a href="@rec.Uri" target="_blank" rel="noopener">@rec.Uri.Split('/')[^1]</a></p>
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="records" value="@rec.Uri" data-record /> <strong>@rec.Label</strong>@if (ChecksModel.ChainOf(rec) is { } where) { <span> (@where)</span> } else if (LinkedArtNet.Alignment.Authorities.RecordSummary.Says(rec) is { } says && says != rec.Label) { <span class="muted"> · @says</span> } <span class="tag">@rec.Source</span>@if (rec.Type != "Place") { <span class="tag" title="The source has it as a body, not a place">@((rec.Type ?? "").ToLowerInvariant())</span> }</label> <a href="@rec.Uri" target="_blank" rel="noopener">@rec.Uri.Split('/')[^1]</a></p>
             }
             <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="other" /> <strong>Another place</strong>, by its identifier:</label> <input type="text" name="otherUri" placeholder="http://vocab.getty.edu/tgn/..." style="width:22rem; display:inline-block" /></p>
             <p class="small muted">If an entity of the project holds the place chosen, the strings go to that entity. If none does and every string goes, this entity is given the place's identifier; if only some go, a new entity is made for the place.</p>
@@ -207,7 +208,7 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
             <p class="small muted">The entity was then aligned to the wrong place altogether. The import's identifiers are ticked for removal: they usually describe the same wrong place. One a rule or a person added since is left unticked. Change either as you judge.</p>
             @foreach (var q in pe.Equivalents)
             {
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" @(q.Method.StartsWith("imported", StringComparison.Ordinal) || q.Method.StartsWith("through", StringComparison.Ordinal) ? "checked" : "") /> remove <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == first.Item ? " · " + (first.ItemDescription ?? "not in the local index") : "")</span></label></p>
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" data-remove="@q.Source" @(q.Method.StartsWith("imported", StringComparison.Ordinal) || q.Method.StartsWith("through", StringComparison.Ordinal) ? "checked" : "") /> remove <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == first.Item ? " · " + (first.ItemDescription ?? "not in the local index") : "")</span></label></p>
             }
             </div>
 
@@ -247,10 +248,17 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
             show("other-place", go > 0 || searched); show("stays", go < total || total === 0); show("removes", total > 0 && go === total);
             var b = document.getElementById("apply"), says = document.getElementById("apply-says");
             if (go === 0) { b.textContent = total <= 1 ? "Confirm: it is this place" : "Confirm: all " + total + " strings are this place"; says.textContent = "The entity is kept and confirmed, with the label chosen. Nothing is removed from it."; }
-            else if (go === total) { b.textContent = total === 1 ? "Mend: it is the other place" : "Mend: all " + total + " strings are the other place"; says.textContent = "The identifiers ticked are removed, and the entity is merged into the project's entity for the other place or given that place's identifier."; }
+            else if (go === total) { b.textContent = total === 1 ? "Mend: it is the other place" : "Mend: all " + total + " strings are the other place"; var gone = [], kept = []; form.querySelectorAll("input[data-remove]").forEach(function (c) { (c.checked ? gone : kept).push(c.getAttribute("data-remove")); });
+                says.textContent = (gone.length ? "Removed from this entity: " + gone.join(", ") + ". " : "Nothing is removed from this entity. ") + (kept.length ? "Kept on it: " + kept.join(", ") + ". " : "") + "Then it is merged into the project's entity for the other place, or given that place's identifier"+ (form.querySelectorAll("input[data-record]:checked").length > 1 ? "s, each one ticked." : "."); }
             else { b.textContent = "Move " + go + " string" + (go === 1 ? "" : "s") + " to the other place, and confirm this entity for the other " + (total - go); says.textContent = "The strings that go are decided onto the other place. This entity keeps its identifiers and is confirmed for the strings that stay."; }
         }
-        form.addEventListener("change", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-outcome")) update(); });
+        form.addEventListener("change", function (e) {
+            var x = e.target; if (!x || !x.hasAttribute) return;
+            // a record ticked is the other place: the single choices above and below it are let go, and the other way about
+            if (x.hasAttribute("data-record") && x.checked) form.querySelectorAll("input[name=home]").forEach(function (r) { r.checked = false; });
+            if (x.name === "home" && x.checked) form.querySelectorAll("input[data-record]").forEach(function (c) { c.checked = false; });
+            if (x.hasAttribute("data-outcome") || x.hasAttribute("data-remove") || x.hasAttribute("data-record") || x.name === "home") update();
+        });
         update();
     })();
     </script>

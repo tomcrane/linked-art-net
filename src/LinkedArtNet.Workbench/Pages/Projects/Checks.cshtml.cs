@@ -140,14 +140,30 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     /// Afterwards the person is returned to the same entity if the check still lists it, with what was done and what is left, and to
     /// the list when it does not.
     /// </summary>
-    public async Task<IActionResult> OnPostApplyAsync(string id, Dictionary<long, string>? outcome, string? home, string? otherUri, string[]? remove, string? label, string? other, string? addUri)
+    /// <param name="records">The records of the indexes ticked as the other place: one place under several identifiers (the owner, 2026-11-22, at "Wallington" and "Charterhouse": LCSH's heading and Wikidata's item, "all valid and I would want to tick both"). The first, a gazetteer's or a library's before Wikidata's, is where the strings go; the entity they stand on is then given the rest.</param>
+    public async Task<IActionResult> OnPostApplyAsync(string id, Dictionary<long, string>? outcome, string? home, string? otherUri, string[]? remove, string? label, string? other, string? addUri, string[]? records)
     {
         try
         {
             var goes = (outcome ?? []).Where(o => o.Value == "go").Select(o => o.Key).ToHashSet();
-            var target = home == "other" ? (otherUri ?? "").Trim() : home;
+            static int Rank(string uri) => AuthorityUris.SourceOf(uri) switch { "tgn" => 0, "loc" or "lcsh" => 1, "wikidata" => 3, _ => 2 };
+            var picked = goes.Count == 0 ? [] : (records ?? []).Where(r => !string.IsNullOrWhiteSpace(r)).Distinct(StringComparer.Ordinal).OrderBy(Rank).ToList();
+            var target = picked.Count > 0 ? picked[0] : home == "other" ? (otherUri ?? "").Trim() : home;
             var keepAs = string.IsNullOrWhiteSpace(label) ? (other ?? "").Trim() : label.Trim();
             var (result, summary) = await Project.Curation.ApplyAsync(Dataset, id, goes, target, remove ?? [], keepAs, string.IsNullOrWhiteSpace(addUri) ? null : addUri, Reviewer, HttpContext.RequestAborted);
+            // the place's other identifiers, on whichever entity holds the first now
+            if (picked.Count > 1 && (await Services.Store.FindEntitiesByEquivalentAsync(picked[0], HttpContext.RequestAborted)).FirstOrDefault(e => e.Dataset == Dataset && e.MergedInto is null) is { } placed)
+            {
+                var added = 0; var refused = new List<string>();
+                foreach (var uri in picked.Skip(1).Where(u => placed.Equivalents.All(q => q.Uri != u)))
+                {
+                    try { await Project.Curation.AddEquivalentAsync(Dataset, placed.Id, uri, Reviewer, HttpContext.RequestAborted); added++; }
+                    catch (Exception e) when (e is InvalidOperationException or KeyNotFoundException or ArgumentException or IdentifierInUseException) { refused.Add($"{uri} ({e.Message})"); }
+                }
+                if (added > 0) summary += $" \"{placed.Label}\" also given {added} more identifier{(added == 1 ? "" : "s")} of the place.";
+                if (refused.Count > 0) summary += " Not added: " + string.Join("; ", refused) + ".";
+                if (result.Id == placed.Id) result = (await Services.Store.GetEntityAsync(placed.Id, HttpContext.RequestAborted)) ?? result;
+            }
             var still = result.Id == id && (await Project.Curation.PlacesAlignedAwayAsync(Dataset, Project.Manifest.HomePlace, HttpContext.RequestAborted)).Any(f => f.Row.EntityId == id);
             return still
                 ? Flash(summary + " It is still on the list: see below what is left to decide.", new { dataset = Dataset, mend = id }, result)

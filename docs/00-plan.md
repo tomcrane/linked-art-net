@@ -71,19 +71,41 @@ the assistant driving the workbench as a user, signed in as `claude`, the owner 
 screenshots of what reads badly. The commits of 2026-11-20 are local on `de-pmc`, the full test loop green at day
 end; `git push` is the owner's word.
 
-**Held for the owner, to open with when we resume** (he asked on 2026-11-20 that they wait): two proposals the
-assistant is to put before building anything.
+**Agreed by the owner on 2026-11-22, being built** ("yes to both proposals"; the counts are in
+`reports/q-abroad1.txt`, `q-abroad2.txt`, `q-abbr1.txt`):
 
-1. *A decision "this is not a name".* "S" in a place of publication (record ZB270, a Sotheby's sale of 1937), "s"
-   in publisher and corporate author: what is left of "S.l." and "s.n.". The string leaves the queue without an
-   entity, and the record goes to the cataloguers' list (doc 12 section 14 step 2, not built). To propose: what
-   the decision is called and where it sits on the card, what the string's state is in the store (a method of
-   its own, no entity), what the export does with it, and the list it feeds.
-2. *The import's namesakes abroad.* The project's "Middleburg" (`place/mustp7pf`) is on Wikidata's Middleburg in
-   Pennsylvania, its two records the National Sporting Library's exhibitions, which is at Middleburg, Virginia;
-   the first check does not see it, comparing only with the home place. To count first: places the 2024 import
-   aligned where the string names no state or country and other records of the same publisher name one. Then to
-   propose whether it is a third check or a widening of the first.
+1. *A decision "this is not a name".* Counted first: in place, publisher and corporate author about 40 strings on
+   some 1,400 records are not names, and only 17 of them are queued; the rest are entities already ("S.l." a Place
+   with 157 records, "Place of Publication not identified" a Place with 437, "Publisher not identified" a Person
+   labelled "Publisher" with 288; "s.n." queued, 375). "s.n." and "S.l." are the cataloguer's *sine nomine* and
+   *sine loco* (AACR2), "[publisher not identified]" their RDA form: statements that nothing is known, not debris.
+   Agreed: a decision with no entity and a method of its own, `not-a-name` (as `list` has none); one button on the
+   card, "Not a name...", asking which of two reasons: nothing is known (the string leaves the queue), or the record
+   wants fixing ("S", "21": the record to the cataloguers' list, doc 12 section 14 step 2); a third check, "entities
+   that are not names", listing the entities that exist for such strings, each pressed by a person; the strings of
+   the first kind in the project's manifest so that a reconcile makes no entity of them, the list shown to the
+   owner first. Left out: the roles ("The author", "The artist", "The editor", about 50 records), whose answer is in
+   each record: with decisions by record. "Privately printed" (about 30) not settled.
+2. *The import's namesakes abroad.* Counted first: 474 imported places with a bare label, a Wikidata item and no
+   confirmation. Where the same publisher's other records name a qualified place of the name that went elsewhere:
+   16 entities, about 9 wrong ("Atlanta" on Atlanta, Texas; "Evanston" on Wyoming's; "San Marino" on the republic,
+   the Huntington's; "Shannon" on a county in Missouri; "St Ives", 30 records, on the Cambridgeshire town where
+   Beric Tempest is Cornish; "Madison" on New Jersey's), the rest falling out when the qualifier is in the item's
+   own description. Where any string of the name is otherwise qualified: 29, adding "Williamsburg" on a hamlet in
+   Indiana, "Kingston" on Hull, "Douglas", "Christchurch", with right ones among them. Agreed: the first check
+   widened, not a third: the first signal "likely wrong", the second "for a look". "Middleburg" itself is a third
+   signal, a qualified string ("Middleburg, VA") on an entity whose item says otherwise, which wants abbreviations
+   read.
+3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
+   column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
+   qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or
+   nation, its place type the type ("VA", "Hants", "Oxon", "IoW", "Middx", "N.J." without its dots); 114 (996
+   records) it does not, of which the abbreviations are some twenty forms on about 560 records ("Mich", "Conn",
+   "Mass", "D.C.", "Ont", "Ill", "Del", "N.S.W.", "Vic", "Fla", "Neb", "Alta", "Minn", "Tex", "Co. Meath"), the
+   rest towns and streets. So: TGN is the general table; a small table beside it for the cataloguers' forms TGN
+   lacks (abbreviation, name, type, TGN identifier, source: AACR2 appendix B.14, to be credited and checked
+   against the published list). An abbreviation with two readings ("CA" California or Canada, "Ga" Georgia or
+   Gabon) is settled by type, a state before a nation's code. Not built.
 
 Also waiting on his word from 2026-11-19: the check "a body aligned to a namesake elsewhere" (93 bodies whose
 heading's place agrees with none of their records' places; Country Life, Penguin Books, Pilgrim Press); whether

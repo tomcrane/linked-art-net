@@ -169,6 +169,14 @@ end; `git push` is the owner's word.
      raising a finding from a record on the card or the entity page, and from a check in bulk; the kinds beyond
      "not a name"; a suggestion filled in by the desk; the filters by system, kind and field; the copy button;
      what a collect does with a mended row (14.5).
+   THE OWNER AT THE THIRD CHECK, 2026-11-22: he merged the spellings by the tray before pressing any row ("This
+   involved quite a few clicks, but perhaps is not a common sequence"): the misspelt "Place of publication not
+   identified" entities into the right one, "s.l." the person into "S.l." the place, "S.n." the place into "s.n."
+   the person. Not needed (a row's button decides every string of its entity), and it would have left the three
+   behind: the removal refused an entity that others had been merged into. Mended: the placeholders merged into
+   it go with it. Nothing built for the clicks. And his actions that afternoon stand under the name `claude`, the
+   browser's one sign-in being the assistant's (the merges, and "s.n.", 375 records, decided not a name at 14:58
+   UTC, not by the assistant): to say at the start of a drive that the sign-in is `claude`, and when it ends.
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
    column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
    qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or

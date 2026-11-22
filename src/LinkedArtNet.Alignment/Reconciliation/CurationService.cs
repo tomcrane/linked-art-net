@@ -394,7 +394,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         // a record that wants fixing goes on the cataloguers' list, once for each record the string is in (doc 12 section 14.4)
         if (reason == RecordWantsFixing)
             await store.RaiseFindingsForStringAsync(stringId, Finding.NotAName, decided.String.Raw, null, note ?? "a stray letter or number where a name should be", reviewer, ct);
-        return was is not null && await store.RemoveProvisionalIfUnreferencedAsync(was.Id, ct);
+        return was is not null && await store.RemoveProvisionalIfUnreferencedAsync(was.Id, ct, withMerged: true);
     }
 
     /// <summary>Every string of an entity the third check lists is said to be no name, and the entity goes. Refused when a string on it does not match the check's pattern any more.</summary>

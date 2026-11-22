@@ -211,7 +211,8 @@ public interface IAlignmentStore
     Task<int> InvalidateDecisionsForEntityAsync(string entityId, CancellationToken ct = default);
 
     /// <summary>Removes a provisional entity that nothing points at any more (no valid decision, no equivalents, nothing merged into it): the placeholder of a queued string the second pass settled. True when it went.</summary>
-    Task<bool> RemoveProvisionalIfUnreferencedAsync(string entityId, CancellationToken ct = default);
+    /// <param name="withMerged">Also when placeholders have been merged into it, each of them without identifiers: they go with it (the owner, 2026-11-22, merged the spellings of "Place of publication not identified" before deciding them not a name, and the entity would have stayed).</param>
+    Task<bool> RemoveProvisionalIfUnreferencedAsync(string entityId, CancellationToken ct = default, bool withMerged = false);
 
     // ---- overrides
 

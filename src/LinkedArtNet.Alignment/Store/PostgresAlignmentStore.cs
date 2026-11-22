@@ -494,7 +494,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             order by e.class, lower(trim(e.label)), e.created_at, e.id
             """, cmd => Add(cmd, "dataset", dataset), ct);
 
-    public async Task<bool> RemoveProvisionalIfUnreferencedAsync(string entityId, CancellationToken ct = default)
+    public async Task<bool> RemoveProvisionalIfUnreferencedAsync(string entityId, CancellationToken ct = default, bool withMerged = false)
     {
         // as the undo does: the superseded decisions that still name the placeholder let go of it first (the foreign key), then it goes
         await using var conn = await _db.OpenConnectionAsync(ct);
@@ -502,18 +502,22 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await using var cmd = new NpgsqlCommand(
             """
             create temp table remove_entity on commit drop as
-              select e.id from entities e where e.id = @id and e.status = 'provisional' and e.merged_into is null
-                and not exists (select 1 from decisions d where d.entity_id = e.id and d.valid)
-                and not exists (select 1 from entities m where m.merged_into = e.id)
-                and not exists (select 1 from entity_equivalents q where q.entity_id = e.id);
+              with recursive family as (
+                  select e.id, true as head from entities e where e.id = @id and e.status = 'provisional' and e.merged_into is null
+                  union
+                  select m.id, false from entities m join family f on m.merged_into = f.id)
+              select f.id, f.head from family f
+              where not exists (select 1 from family x join decisions d on d.entity_id = x.id and d.valid)
+                and not exists (select 1 from family x join entity_equivalents q on q.entity_id = x.id)
+                and (@merged or (select count(*) from family) = 1);
             update decisions set entity_id = null where not valid and entity_id in (select id from remove_entity)
             """, conn, tx);
-        cmd.Parameters.AddWithValue("id", entityId);
+        cmd.Parameters.AddWithValue("id", entityId); cmd.Parameters.AddWithValue("merged", withMerged);
         await cmd.ExecuteNonQueryAsync(ct);
         // the delete on its own, so that what it reports is the entity and not the decisions let go before it: counted together, an
         // entity with a superseded decision was removed and reported as kept (found by a test, 2026-11-22)
         await using var delete = new NpgsqlCommand("delete from entities where id in (select id from remove_entity)", conn, tx);
-        var removed = await delete.ExecuteNonQueryAsync(ct) == 1;
+        var removed = await delete.ExecuteNonQueryAsync(ct) >= 1;
         await tx.CommitAsync(ct);
         return removed;
     }

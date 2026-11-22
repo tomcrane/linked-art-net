@@ -332,12 +332,16 @@ public class CurationServiceTests(PostgresFixture pg)
         Assert.Equal(CurationService.NothingKnown, CurationService.SuggestedReason(listed.Single(n => n.EntityId == sl.Id).Strings));
         Assert.Equal((CurationService.RecordWantsFixing, 1), (CurationService.SuggestedReason(listed.Single(n => n.EntityId == letter.Id).Strings), listed.Single(n => n.EntityId == letter.Id).Queued));
 
+        // a spelling's placeholder merged into it beforehand goes with it (the owner merged them first, 2026-11-22)
+        var typo = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "S.1."), scheme);
+        await pg.Store.MergeAsync(typo.Id, sl.Id, "tester");
         // the check's button: both strings decided with no entity, the entity gone
         Assert.Equal((2, true), await curation.NotANameEntityAsync(ds, sl.Id, "tester", CurationService.NothingKnown));
         var decision = (await pg.Store.DecisionForAsync(one.Id))!;
         Assert.Equal((DecisionMethod.NotAName, (string?)null, "tester"), (decision.Method, decision.EntityId, decision.Reviewer));
         Assert.Contains("nothing-known", decision.EvidenceJson);
         Assert.Null(await pg.Store.GetEntityAsync(sl.Id));
+        Assert.Null(await pg.Store.GetEntityAsync(typo.Id));
         Assert.Equal(letter.Id, Assert.Single(await curation.NotNameEntitiesAsync(ds)).EntityId);
 
         // the card's button, and what it refuses: a reason that is neither, a string on an entity with identifiers

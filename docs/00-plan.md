@@ -177,6 +177,13 @@ end; `git push` is the owner's word.
    it go with it. Nothing built for the clicks. And his actions that afternoon stand under the name `claude`, the
    browser's one sign-in being the assistant's (the merges, and "s.n.", 375 records, decided not a name at 14:58
    UTC, not by the assistant): to say at the start of a drive that the sign-in is `claude`, and when it ends.
+   THE OWNER AT "WALLINGTON" (`place/rzhwax7f`), 2026-11-22: "I'm pretty sure I want to align these to the
+   Northumberland house near Alnwick. But I can't do that from here I don't think". He can, by "Another place, by
+   its identifier" with LCSH's "Wallington Hall (England)" (sh85144940), and the screen does not lead him to it:
+   its search of the indexes looks only at TGN and LoC's names and at records typed as places, and the house is an
+   LCSH heading and a Wikidata item typed as a body (Q7963113). TO BUILD at the next restart of the workbench (he
+   was working in it): the Decide screen's search to look in LCSH and Wikidata too, a house or a museum typed as a
+   body among them, each result saying what it is; the button's words to match.
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
    column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
    qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or

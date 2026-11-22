@@ -125,6 +125,19 @@ public class SourcePullTests(PostgresFixture pg)
     }
 
     [PostgresFact]
+    public async Task A_source_that_answers_with_nothing_readable_is_a_failed_pull_and_not_an_exception()
+    {
+        // the owner, 2026-11-22: LUX answered an identifier of "Charterhouse" with an empty body, and the entity's page fell over
+        var pull = new SourcePull(pg.Store, new Canned(new() { ["lux.collections.yale.edu/data/place/empty"] = "", ["lux.collections.yale.edu/data/place/html"] = "<html>moved</html>" }));
+        foreach (var uri in new[] { "https://lux.collections.yale.edu/data/place/empty", "https://lux.collections.yale.edu/data/place/html" })
+        {
+            var p = await pull.PullAsync(uri);
+            Assert.NotNull(p.Error);
+            Assert.Null(await pg.Store.GetAuthorityAsync(uri)); // nothing cached of a failed pull
+        }
+    }
+
+    [PostgresFact]
     public async Task Ulan_and_loc_bring_the_biography_the_dates_the_variants_and_the_sources()
     {
         var pull = new SourcePull(pg.Store, Web());

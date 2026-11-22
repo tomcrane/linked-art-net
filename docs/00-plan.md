@@ -210,8 +210,14 @@ end; `git push` is the owner's word.
    confirmed on the Somerset village. A fault of the tick boxes built that hour: Wikidata's item for the London
    Charterhouse (Q6670230) was ticked too and is held already by the project's "London Charterhouse (Smithfield,
    London, England)" (`group/bqwmjvs7`, 2 strings), so it was refused and the project now has two entities for
-   the one building. TO BUILD: where a ticked record is held by an entity of the project, the strings go to that
-   entity, and the other records ticked are added to it. The two to be merged by the owner, or at his word.
+   the one building. BUILT the same hour: where a ticked record is held by an entity of the project, the strings go to
+   that entity, and the other records ticked are added to it. The two merged by the owner. The bare "Charterhouse"
+   (one record, D2225: a Crotch exhibition, "Charterhouse Studio", "Charterhouse Printing Group") is, on the
+   assistant's own knowledge and unverified, Charterhouse School at Godalming (Ian Fleming-Williams, its art
+   master, collected Crotch), not the Somerset village the entity was confirmed on: to check in a library
+   catalogue, then to move at the desk, and one for the cataloguers' list. And a pull of LUX that answered with an
+   empty body threw on the entity's page (the owner: "a Charterhouse pull threw an exception"): mended, a source
+   that answers with nothing readable is a failed pull, said on the page.
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
    column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
    qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or

@@ -148,6 +148,13 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             var goes = (outcome ?? []).Where(o => o.Value == "go").Select(o => o.Key).ToHashSet();
             static int Rank(string uri) => AuthorityUris.SourceOf(uri) switch { "tgn" => 0, "loc" or "lcsh" => 1, "wikidata" => 3, _ => 2 };
             var picked = goes.Count == 0 ? [] : (records ?? []).Where(r => !string.IsNullOrWhiteSpace(r)).Distinct(StringComparer.Ordinal).OrderBy(Rank).ToList();
+            // a record an entity of the project holds already comes first: the strings go to that entity, and it is given the others
+            // (the owner at "Charterhouse", 2026-11-22: Wikidata's item was held by the project's London Charterhouse, the strings
+            // went to a new entity made for LCSH's heading, and the project had the building twice)
+            var heldFirst = new List<string>();
+            foreach (var uri in picked)
+                if ((await Services.Store.FindEntitiesByEquivalentAsync(uri, HttpContext.RequestAborted)).Any(e => e.Dataset == Dataset && e.MergedInto is null && e.Id != id)) heldFirst.Add(uri);
+            picked = heldFirst.Concat(picked.Except(heldFirst)).ToList();
             var target = picked.Count > 0 ? picked[0] : home == "other" ? (otherUri ?? "").Trim() : home;
             var keepAs = string.IsNullOrWhiteSpace(label) ? (other ?? "").Trim() : label.Trim();
             var (result, summary) = await Project.Curation.ApplyAsync(Dataset, id, goes, target, remove ?? [], keepAs, string.IsNullOrWhiteSpace(addUri) ? null : addUri, Reviewer, HttpContext.RequestAborted);

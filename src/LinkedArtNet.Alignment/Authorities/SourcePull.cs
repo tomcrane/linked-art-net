@@ -114,14 +114,25 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
     {
         var source = AuthorityUris.SourceOf(uri);
         var now = DateTimeOffset.UtcNow;
-        Pulled result = source switch
+        Pulled result;
+        try
         {
-            "wikidata" => await WikidataAsync(uri, now, ct),
-            "ulan" => await UlanAsync(uri, now, ct),
-            "loc" => await LocAsync(uri, now, ct),
-            "lux" => await LuxAsync(uri, now, ct),
-            _ => new Pulled(uri, source, now, null, null, [], [], Error: "No fetcher for this source."),
-        };
+            result = source switch
+            {
+                "wikidata" => await WikidataAsync(uri, now, ct),
+                "ulan" => await UlanAsync(uri, now, ct),
+                "loc" => await LocAsync(uri, now, ct),
+                "lux" => await LuxAsync(uri, now, ct),
+                _ => new Pulled(uri, source, now, null, null, [], [], Error: "No fetcher for this source."),
+            };
+        }
+        // a source that answers with nothing, or with something that is not the record expected, is a pull that failed and not a
+        // page that fell over (the owner, 2026-11-22: LUX answered a Charterhouse identifier with an empty body, and the entity's
+        // page showed the exception)
+        catch (Exception e) when (e is JsonException or InvalidOperationException or KeyNotFoundException or FormatException)
+        {
+            result = new Pulled(uri, source, now, null, null, [], [], Error: $"The source answered, but not with a record that could be read ({e.GetType().Name}).");
+        }
         if (result.Error is null)
             await store.PutPulledAsync(uri, source, result.Label, JsonSerializer.Serialize(result, JsonOptions), ct);
         return result;

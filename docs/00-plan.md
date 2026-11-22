@@ -133,6 +133,42 @@ end; `git push` is the owner's word.
    widened, not a third: the first signal "likely wrong", the second "for a look". "Middleburg" itself is a third
    signal, a qualified string ("Middleburg, VA") on an entity whose item says otherwise, which wants abbreviations
    read.
+   THE OWNER, 2026-11-22: "Let's fix the 7 by hand - you do it by driving the browser and see if leaving them for
+   hand-fixing was the right decision". Done as `claude`, nine strings at the desk, each by a search under
+   "Something else" and "Same as" on the project's entity for the right place: "Atlanta" (53423) to Atlanta (Ga.);
+   "Evanston" (54404) to Evanston (Ill.); "Shannon" (52413) to Shannon (Ireland); "Middleburg, VA" (56858) and
+   "Middleburg" (65975, The Sporting Gallery, 1964: at Middleburg in Virginia by the assistant's own knowledge, for
+   the owner to check) to Middleburg (Va.); "Madison" (61428, the University of Wisconsin's) to Madison (Wis.), the
+   New Jersey entity kept for its "Madison, N.J." strings; "St Ives" (61160, 23 records, all Cornish) and "St. Ives"
+   (61286) to St Ives (Cornwall); "San Marino" (61204) to San Marino (Calif.). The answer: yes, by hand was right
+   for seven, a quarter of an hour at the desk and no screen to rework. What it showed, none of it built:
+   - two of the seven are not one place: "St. Ives" is five Cornish records and two of Photo Precision's at St Ives
+     in Huntingdonshire, "San Marino" three of the Huntington's and one of Maretti's, a publisher in the republic.
+     Each was moved for the most of its records and a note left on the string; they want decisions by record (doc
+     12 section 14 step 3), and are two more cases for it;
+   - an entity left with no string stays: "Atlanta" on Atlanta, Texas, "Evanston" on Wyoming's, "Shannon" on the
+     county in Missouri, "Middleburg" on Pennsylvania's and "Middleburg (Fla.)" now stand for nothing, each a true
+     description of a place the catalogue does not name, and each still offered by a search ("stands for 0
+     strings", the Pennsylvanian one without where it is). Wanted: an entity's page to offer "remove it, nothing
+     uses it", or a search to leave such entities out; and LoC's form for their labels meanwhile;
+   - "Same as" on a search result takes no note, so why a string was moved is said only by a second step.
+   BUILT 2026-11-22 at the owner's word ("An entity page or string review should indicate to the user that the
+   string/entity is in the checks queue. Build the manifest and cataloguers lists"), each seen in the browser:
+   - an entity's page and a string's card say when the entity is on a check's list, with the way to where it is
+     decided (`CheckLists`: the three lists kept, remade behind the page when two minutes old, dropped when the
+     Checks or the merge page changes something; so a notice can be two minutes behind a decision made at the desk);
+   - the manifest's `notNames` ("s.n.", "s.l.", "publisher not identified", "place of publication not identified",
+     case, spacing and brackets ignored; saved to the PMC project with `Align manifest --use-default`, which changed
+     nothing else): the reconciler decides such a string as not a name and makes nothing of it. It counts them as
+     skipped in a run's report, which wants a count of its own. The entities that exist are still the third
+     check's, for a person;
+   - the cataloguers' list, http://localhost:5200/p/pmc/findings ("For cataloguers" in the header): schema 13, the
+     table of doc 12 14.4; a string decided "not a name: the record wants fixing" raises a finding on each of its
+     records, an undo withdraws those nobody has acted on; rows a record together, each marked mended or
+     declined, the open ones exported as a CSV and marked sent. One row on it, "S" in ZB270. Not built of 14.4:
+     raising a finding from a record on the card or the entity page, and from a check in bulk; the kinds beyond
+     "not a name"; a suggestion filled in by the desk; the filters by system, kind and field; the copy button;
+     what a collect does with a mended row (14.5).
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
    column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
    qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or

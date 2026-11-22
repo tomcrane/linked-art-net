@@ -86,7 +86,31 @@ end; `git push` is the owner's word.
    the first kind in the project's manifest so that a reconcile makes no entity of them, the list shown to the
    owner first. Left out: the roles ("The author", "The artist", "The editor", about 50 records), whose answer is in
    each record: with decisions by record. "Privately printed" (about 30) not settled.
-2. *The import's namesakes abroad.* Counted first: 474 imported places with a bare label, a Wikidata item and no
+   BUILT 2026-11-22 (seen in the browser): the method `not-a-name`; on a card, under "Something else", "It is not
+   a name" with the two reasons and one button, the reason the string suggests chosen to begin with ("S", string
+   49336, decided so by the assistant as `claude`, undone and decided again: undo puts the string back in the
+   queue, without a placeholder); the third check, http://localhost:5200/p/pmc/checks?check=notnames, 23 entities
+   (12 the cataloguer's "nothing known" on 1,279 records, 11 stray letters and numbers), a button a row. The rows
+   are the owner's to press. A fault of the store found by the test: the removal of an unreferenced provisional
+   reported the entity kept when it had gone.
+   Learnt: the check as first shown listed 160, not the 25 counted: the count was over the name fields and the
+   listing over every entity, so 136 date subdivisions of subject headings ("1837-1901", concepts, rightly
+   entities) were on it. The count is to be of the listing's own condition. And its text named "UK" and "RA", the
+   PMC's data, in a page any project shows (the owner: "it looks specific to the current data rather than page
+   chrome"): a page's fixed text names nothing of one project.
+   NOT BUILT, in order: (a) the manifest's list of strings that say nothing is known, read by the reconciler so
+   that no entity is made of them, the list to the owner first (proposed: "s.n.", "s.l.", "publisher not
+   identified", "place of publication not identified", brackets and spacing ignored); (b) where "the record wants
+   fixing" goes: the reason is in the decision's evidence, and the cataloguers' list (doc 12 14.4, the findings
+   table) will be filled from those decisions when it is built; (c) after "Not a name" the desk goes to the next
+   card and not to the other strings of the name ("s" in two other fields); (d) the decided card's notice still
+   says "the candidate that was chosen first", which a string that is no name has not; (e) seen once: after a
+   card's action the next card opened part-way down the page, its flash out of sight (cause not looked for).
+2. *The import's namesakes abroad.* NOT BUILT. What stands in the way: the first check and its Decide screen are
+   made of rows that pair an entity with a TGN place of its name at home (`AwayRow`), and say "at home" in their
+   text; an entity with no namesake at home ("Atlanta", "San Marino") has no such row. The way in: a row made from
+   the TGN place the project's other entity of the name holds (the entity "Atlanta, Ga." went to), the screen's
+   text saying "elsewhere" where it says "at home". Counted first: 474 imported places with a bare label, a Wikidata item and no
    confirmation. Where the same publisher's other records name a qualified place of the name that went elsewhere:
    16 entities, about 9 wrong ("Atlanta" on Atlanta, Texas; "Evanston" on Wyoming's; "San Marino" on the republic,
    the Huntington's; "Shannon" on a county in Missouri; "St Ives", 30 records, on the Cambridgeshire town where

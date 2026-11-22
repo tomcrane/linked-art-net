@@ -110,7 +110,20 @@ end; `git push` is the owner's word.
    made of rows that pair an entity with a TGN place of its name at home (`AwayRow`), and say "at home" in their
    text; an entity with no namesake at home ("Atlanta", "San Marino") has no such row. The way in: a row made from
    the TGN place the project's other entity of the name holds (the entity "Atlanta, Ga." went to), the screen's
-   text saying "elsewhere" where it says "at home". Counted first: 474 imported places with a bare label, a Wikidata item and no
+   text saying "elsewhere" where it says "at home".
+   COUNTED AGAIN 2026-11-22, the listing's own condition this time (`reports/q-abroad3.txt`), and it changes the
+   proposal, so it is back with the owner before anything is built. "The project has another place of this name"
+   gives 43 rows and is no signal: most are two right places (Andover in Hampshire and in Massachusetts, Salem,
+   Winchester, Windsor, Durham three ways). "A publisher of its records has records at the other place too" gives
+   11, 7 of them wrong (Atlanta, Evanston, Madison, Middleburg, San Marino, Shannon, one of the two St Ives), one
+   to look at (Cambridge), one a pair for the second check (Pittsburgh), one noise (the Bay of Naples). And the
+   way in proposed above does not hold: of the 7, three other entities hold no TGN identifier (Evanston, San
+   Marino, Shannon), so no row can be made from one. What the 7 want is what the Decide screen's "it is the other
+   place" already does with a project entity for its target (the import's identifiers removed, the entity merged
+   into the other): the screen must first open for an entity with no place of its name at home, which it does not
+   (it reads the item from its first row "at home"). Options put to the owner: (a) that change to the screen, the
+   11 as a part of the first check's list; (b) no build: the 7 mended at the desk and the entity page by hand, the
+   list kept as a report. Earlier count, for the record: 474 imported places with a bare label, a Wikidata item and no
    confirmation. Where the same publisher's other records name a qualified place of the name that went elsewhere:
    16 entities, about 9 wrong ("Atlanta" on Atlanta, Texas; "Evanston" on Wyoming's; "San Marino" on the republic,
    the Huntington's; "Shannon" on a county in Missouri; "St Ives", 30 records, on the Cambridgeshire town where

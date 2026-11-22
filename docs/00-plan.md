@@ -218,6 +218,22 @@ end; `git push` is the owner's word.
    catalogue, then to move at the desk, and one for the cataloguers' list. And a pull of LUX that answered with an
    empty body threw on the entity's page (the owner: "a Charterhouse pull threw an exception"): mended, a source
    that answers with nothing readable is a failed pull, said on the page.
+   THE OWNER: "yes, check Library Hub and move it - via the UI and see that the flow for this makes sense as it's
+   likely a common scenario". Done as `claude`: Library Hub has the Oxford copy, "[held at] Charterhouse Studio
+   1964", "[S.l. : s.n., 1964]": the year, and no place; so Godalming rests on the assistant's knowledge of the
+   school and its art master, said in a note on the string. "Charterhouse" (56520) moved to the project's Godalming
+   (`place/rkauy8xk`) by a search under "Something else" and "Same as". The flow, a decided string found wrong and
+   put right, for the owner's word before anything is built:
+   - it works, in two presses, and nothing on a decided card says that this is how a decision is changed: the way
+     is under "Something else", a screen and a half down;
+   - after "Same as" the desk went on to the next string of the queue ("L. colonnade"), part-way down its card,
+     the flash out of sight: right for a queue being worked, wrong for one decided string being corrected, where
+     the person wants to see the card they changed. To stay on the card when it was not opened from the queue;
+   - the reason is a second step (the note box at the foot): "Same as" and "Accept" on a search result take none;
+   - the entity left behind stands for nothing ("Charterhouse", the Somerset village, confirmed that afternoon),
+     as the five of the namesakes abroad do: no way to remove it;
+   - the record could say better ("Charterhouse" as a place of publication is the school's name): no way yet to
+     raise a finding from a record.
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
    column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
    qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or

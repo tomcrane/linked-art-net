@@ -196,6 +196,15 @@ end; `git push` is the owner's word.
    name what will be removed and what kept as the boxes change ("removes viaf, wikidata, lux; keeps loc"), so a
    box unticked by mistake is seen before the button is pressed; and a label offered when every string goes and
    the place meant has another name than the entity's.
+   THE OWNER, the same hour: "On both this and the wallington screen the offered identifiers were all valid and I
+   would want to tick both"; and Charterhouse "a different case ... the first one _might_ be its already aligned
+   place. The second and third are definitely the charterhouse in London". BUILT and seen in the browser: the
+   records a search of the indexes finds are tick boxes, one place under as many identifiers as are ticked, the
+   strings going to the first (a gazetteer's or a library's before Wikidata's) and the entity they stand on given
+   the rest; the line under the button names what is removed from the entity and what kept, as the boxes change.
+   Wallington finished by the assistant as `claude` on its page: Wikidata's Q7963113 added, the label made LoC's,
+   "Wallington Hall (England)". Charterhouse left for the owner, the screen not submitted. Still not built: a
+   label offered when every string goes.
 3. *The table of abbreviations* (the owner: "it sounds like that table could be more general ... with a 'type'
    column? (not quite the same as linked art type... eg US State is a type...)"). Counted: of 348 distinct
    qualifiers in the place strings, TGN's own names resolve 234 (1,144 records) to a state, province, county or

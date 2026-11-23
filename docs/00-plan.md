@@ -413,6 +413,28 @@ it is the owner's to agree.
   pleasure of it: like cards gathered into runs, the count of what is left of a kind in view, the last thing done
   always in sight.
 
+**The ways out, BUILT 2026-11-23** (the owner: "Do all of the ways out in the order that is most sensible for
+you"), each tried on a real card as `claude`:
+
+- On every card, under "Can't decide it as it stands?": *the record is wrong* (a finding for the cataloguers on
+  each record with the text, of a kind chosen, the corrected text its suggestion; the card comes back at the search
+  results for the corrected text; tried on "Gainsville, Ga.", which then took LoC's Gainesville (Ga.), and on the
+  decided "Guilford"); *different things in different records* and *not sure* (the string set aside with its
+  reason; tried on "Kingston" and on "Enfield"); *an entity of the project is wrong* (a report on the entity;
+  tried on the thin "Guildford").
+- A page "Set aside", http://localhost:5200/p/pmc/set-aside: the strings by reason, the entities reported with a
+  "Dealt with", the plain skips. The cataloguers' list has the three spelling findings.
+- A decided card links to deciding it differently, and a correction comes back to its card (not tried in the
+  browser).
+- Seen and mended while trying them: setting a string aside said "Nothing waiting" where the next card should
+  have come; "the record is wrong" came back at the foot of the card.
+- NOT BUILT, seen on the way: the desk's search results take one identifier where a place stands in two indexes
+  (LoC's and Wikidata's Gainesville: the Decide screen has tick boxes for it, the card has not); a set-aside
+  string has no way to be decided record by record yet (doc 12 section 14 step 3), so "Kingston" waits on that;
+  a report on an entity is a note and a list, with no check that it was put right; the cataloguer's doubt ("?")
+  kept as data; like cards as a run decided in one act; the place at home first among level candidates; a near
+  spelling of a name the project has offered on the card ("Londo").
+
 **The work of 2026-11-22, in full** (moved from the resume point at day end; the numbering is the day's):
 
 **Agreed by the owner on 2026-11-22, being built** ("yes to both proposals"; the counts are in

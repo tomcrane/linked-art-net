@@ -186,7 +186,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         var said = raised == 0 ? "Already on the cataloguers' list for this." : $"Logged for the cataloguers, on {raised} record{(raised == 1 ? "" : "s")}.";
         return string.IsNullOrWhiteSpace(shouldRead)
             ? Flash(said + " The string is still to decide.", new { dataset = Dataset, method = Method, context = Context, id })
-            : Flash(said + $" Now choose what it should have been: the results for \"{shouldRead.Trim()}\" are under Something else.", new { dataset = Dataset, method = Method, context = Context, id, q = shouldRead.Trim() });
+            : FlashAt(said + $" Now choose what it should have been, from the results for \"{shouldRead.Trim()}\" below.", new { dataset = Dataset, method = Method, context = Context, id, q = shouldRead.Trim() }, "something-else");
     }
 
     /// <summary>A way out: set aside, as different things in different records or with a question. The desk goes on.</summary>
@@ -194,7 +194,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     {
         try { await Project.Desk.SetAsideAsync(Dataset, id, Reviewer, mixed, text, HttpContext.RequestAborted); }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
-        return Flash(mixed ? "Set aside: it wants deciding record by record. It is on the Set aside list." : "Set aside with your question. It is on the Set aside list.", new { dataset = Dataset, method = Method, context = Context, after = id });
+        return Flash(mixed ? "Set aside: it wants deciding record by record. It is on the Set aside list." : "Set aside with your question. It is on the Set aside list.", new { dataset = Dataset, method = Method, context = Context });
     }
 
     /// <summary>A way out: an entity of the project is wrong. A note on the entity; the card stays.</summary>
@@ -239,6 +239,13 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         try { restored = await Project.Desk.UndoAsync(Dataset, id); }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
         return Flash(restored is null ? "Nothing to undo." : $"Undone; the earlier decision ({restored.Method}) stands again.", new { dataset = Dataset, method = Method, context = Context, id });
+    }
+
+    /// <summary>A flash that lands at a part of the page, where what it speaks of is.</summary>
+    private IActionResult FlashAt(string message, object routeValues, string fragment)
+    {
+        TempData["Flash"] = message;
+        return RedirectToPage(pageName: null, pageHandler: null, routeValues: routeValues, fragment: fragment);
     }
 
     private async Task<IActionResult> Act(long id, Func<Task<(string Message, Entity Entity)>> action)

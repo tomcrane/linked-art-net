@@ -710,6 +710,8 @@ else
             </form>
             @if (Model.Q is not null)
             {
+                @* what was just done, said where the reader lands after "the record is wrong" *@
+                @if (Model.Message is not null && Model.Message.StartsWith("Logged for the cataloguers", StringComparison.Ordinal) || Model.Message?.StartsWith("Already on the cataloguers", StringComparison.Ordinal) == true) { <p class="notice small">@Model.Message</p> }
                 @if (Model.Searched && Model.EntityMatches.Count + Model.IndexMatches.Count > 0) { <p class="small"><strong>Found by searching for "@Model.Q"</strong>, since the rules offered nothing:</p> }
                 @if (Model.EntityMatches.Count == 0 && Model.IndexMatches.Count == 0) { <p class="muted small">Nothing found for "@Model.Q". The project's entities and the local indexes (TGN, ULAN, AAT, the Library of Congress, Wikidata) were searched and have nothing of that name: it is not there, or is there under another name.</p> }
                 @if (Model.NearName is not null) { <p class="small"><strong>Nothing matches all of "@Model.Q".</strong> The indexes were searched, and what follows is everything they have named "@Model.NearName": if the one you want is not among them, the indexes do not have it.</p> }

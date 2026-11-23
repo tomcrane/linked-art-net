@@ -23,6 +23,26 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-23
+
+The assistant at the desk as a user, at the owner's word ("do lots of browser-driving, observing the common
+scenarios"; "a best-in-class tool ... make it fun"; "a clear path out"). No reconcile; schema 14; the full test loop started at day end, its result recorded in the plan if it finished.
+
+- The scenarios of a card that cannot be decided: the record is wrong; one string, two things; the cataloguer's
+  doubt; more than a place; in no index; the leavings of the old run. Built for them, each leaving a record: the
+  four ways out, the page of what is set aside, "decide it differently" on a decided card.
+- Then, at "Build all the 'Seen on the way and not built'": decisions by record (`record_decisions`), a run in one
+  act, the near spelling, the place at home first, search results as one, the "?" notice, entity reports.
+- Used: seventeen strings whole and two by record; the place queue 139 to 124, the whole queue 3,716. What use
+  showed was mended the same hour (scroll, the group tick, ticks across a search, the search by a telling word,
+  the map opening on the home candidates). A second Newport (Wales) was made by the assistant for want of the
+  search; to merge.
+- The map, as the owner asked: useful on "Murcia", beside the point on "Londo", wrong by omission on "Newport"
+  and "Chatham", the right place being the one candidate without coordinates and the gazetteer's record for it
+  cut from the twelve.
+- Five things put to the owner (which twelve a card keeps; borrowed coordinates; a rule for street addresses; a
+  check for thin entities; two merges): "I want you to do all of these starting with 1 and 4", next session.
+
 ## 2026-11-22
 
 The two held proposals put, agreed and worked; the owner at the workbench all afternoon. No reconcile; schema 13;

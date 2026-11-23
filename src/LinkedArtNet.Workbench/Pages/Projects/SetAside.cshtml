@@ -1,0 +1,62 @@
+@page "/p/{dataset}/set-aside"
+@model SetAsideModel
+@{
+    ViewData["Title"] = "Set aside";
+    ViewData["KeepPlace"] = true;
+}
+<h1>Set aside</h1>
+<p class="muted">What could not be decided at the desk as it stood, by the reason given there. A string here is still undecided: open its card to decide it, or to put it back in its place. What a cataloguer is to mend in the source is on <a href="/p/@Model.Dataset/findings">its own list</a>.</p>
+@if (Model.Message is not null) { <p class="notice" data-flash>@Model.Message</p> }
+@functions {
+    string After(string? note, string prefix) => note is null ? "" : note[prefix.Length..].TrimStart(':', ' ', '.');
+    void Rows(IReadOnlyList<ParkedString> rows, string prefix)
+    {
+        <table class="checks">
+            <thead><tr><th>String</th><th>Field</th><th>Records</th><th>What was said</th><th>Set aside</th></tr></thead>
+            <tbody>
+            @foreach (var p in rows)
+            {
+                <tr>
+                    <td><a href="/p/@Model.Dataset/review?id=@p.Id"><strong>@p.Raw</strong></a></td>
+                    <td class="small">@Model.Project.Manifest.FieldName(p.Context)</td>
+                    <td class="small">@p.Records.ToString("N0")</td>
+                    <td class="small">@(prefix.Length > 0 ? After(p.Note, prefix) : p.Note)@if (p.NoteBy is not null && (prefix.Length > 0 || p.Note is not null)) { <span class="muted"> · @p.NoteBy</span> }</td>
+                    <td class="small">@p.ParkedAt.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+}
+<h2>Different things in different records <span class="muted small">@Model.Mixed.Count</span></h2>
+<p class="small muted">One spelling that the records use for two things. Each wants deciding record by record.</p>
+@if (Model.Mixed.Count == 0) { <p class="small muted">None.</p> } else { Rows(Model.Mixed, ReviewService.SetAsideMixed); }
+
+<h2>With a question <span class="muted small">@Model.Questions.Count</span></h2>
+<p class="small muted">The reviewer could not tell, and said what would settle it. If you know, open the card and decide it.</p>
+@if (Model.Questions.Count == 0) { <p class="small muted">None.</p> } else { Rows(Model.Questions, ReviewService.SetAsideQuestion); }
+
+<h2>Entities reported wrong <span class="muted small">@Model.Reported.Count</span></h2>
+<p class="small muted">An entity of the project that a reviewer, at a card, saw to be wrong. Put it right on its page, then mark the report dealt with.</p>
+@if (Model.Reported.Count == 0) { <p class="small muted">None.</p> }
+else
+{
+    <table class="checks">
+        <thead><tr><th>Entity</th><th>What was said</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var (e, report) in Model.Reported)
+        {
+            <tr>
+                <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(e.Id)"><strong>@e.Label</strong></a> <span class="tag">@e.Class.ToString().ToLowerInvariant()</span> <span class="tag">@e.Status.ToString().ToLowerInvariant()</span></td>
+                <td class="small">@report</td>
+                <td class="small"><form method="post" asp-page-handler="Dealt" class="inline"><input type="hidden" name="id" value="@e.Id" /><button type="submit" class="secondary small">Dealt with</button></form></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<h2>Skipped, with no reason given <span class="muted small">@Model.Skipped.Count</span></h2>
+<p class="small muted">Sent to the back of the desk with "Skip for now". They come round again after everything else.</p>
+@if (Model.Skipped.Count == 0) { <p class="small muted">None.</p> } else { Rows(Model.Skipped.Take(100).ToList(), ""); }
+@if (Model.Skipped.Count > 100) { <p class="small muted">The latest 100 of @Model.Skipped.Count.</p> }

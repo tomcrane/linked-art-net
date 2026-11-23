@@ -388,6 +388,54 @@ public class CurationServiceTests(PostgresFixture pg)
     }
 
     [PostgresFact]
+    public async Task The_desks_ways_out_each_leave_a_record_and_decide_nothing()
+    {
+        // the owner, 2026-11-23: "I want to fix this but can't, or don't know how to"
+        var ds = "cu-" + IdMinter.Generate(6);
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var desk = new ReviewService(pg.Store, scheme, new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions()));
+        async Task<SourceString> Queued(string raw, string record)
+        {
+            var s = await pg.Store.CollectAsync(ds, "place", raw);
+            await pg.Store.DecideAsync(s.Id, (await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, raw), scheme)).Id, DecisionMethod.Queued);
+            await pg.Store.PutExamplesAsync([new StringExample(s.Id, record, "library", "A book", "1990", "place", "{}")]);
+            return s;
+        }
+        var guilford = await Queued("Guilford", "R1");
+        var kingston = await Queued("Kingston", "R2");
+        var eastcombe = await Queued("Eastcombe", "R3");
+
+        // the record is wrong: a finding with the corrected text; said twice it is raised once; the string still waits
+        Assert.Equal(1, await desk.RecordWrongAsync(ds, guilford.Id, "tester", "spelling", "Guildford", null));
+        Assert.Equal(0, await desk.RecordWrongAsync(ds, guilford.Id, "tester", "spelling", "Guildford", null));
+        var finding = Assert.Single(await pg.Store.FindingsAsync(ds));
+        Assert.Equal(("spelling", "Guilford", "Guildford", "R1"), (finding.Kind, finding.Value, finding.Suggestion, finding.RecordId));
+        Assert.Equal(DecisionMethod.Queued, (await pg.Store.DecisionForAsync(guilford.Id))!.Method);
+        await Assert.ThrowsAsync<ArgumentException>(() => desk.RecordWrongAsync(ds, guilford.Id, "tester", "spelling", null, null));
+        await Assert.ThrowsAsync<ArgumentException>(() => desk.RecordWrongAsync(ds, guilford.Id, "tester", "ugly", "x", null));
+
+        // set aside, by the reason; a question must be asked
+        await desk.SetAsideAsync(ds, kingston.Id, "tester", true, "Ontario for one press, upon Thames for the other");
+        await Assert.ThrowsAsync<ArgumentException>(() => desk.SetAsideAsync(ds, eastcombe.Id, "tester", false, " "));
+        await desk.SetAsideAsync(ds, eastcombe.Id, "tester", false, "which Eastcombe?");
+        var parked = await pg.Store.ParkedStringsAsync(ds);
+        Assert.Equal(2, parked.Count);
+        Assert.StartsWith(ReviewService.SetAsideMixed, parked.Single(p => p.Raw == "Kingston").Note);
+        Assert.Equal(ReviewService.SetAsideQuestion + "which Eastcombe?", parked.Single(p => p.Raw == "Eastcombe").Note);
+        // decided, it is on the list no more
+        await desk.KeepLocalAsync(ds, eastcombe.Id, "tester");
+        Assert.Single(await pg.Store.ParkedStringsAsync(ds));
+
+        // an entity reported wrong is listed until the report is dealt with
+        var thin = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Guildford", Status: EntityStatus.Aligned), scheme);
+        await desk.ReportEntityAsync(ds, guilford.Id, thin.Id, "tester", "nothing says where it is");
+        var (entity, report) = Assert.Single(await desk.ReportedEntitiesAsync(ds));
+        Assert.Equal(thin.Id, entity.Id); Assert.StartsWith("nothing says where it is", report);
+        await pg.Store.AddNoteAsync(ds, thin.Id, "tester", ReviewService.EntityReportDealt + ".");
+        Assert.Empty(await desk.ReportedEntitiesAsync(ds));
+    }
+
+    [PostgresFact]
     public async Task A_name_set_aside_stops_matching_stays_aside_and_reopens_what_a_rule_matched_by_it()
     {
         // the owner, 2026-11-15: the project's Plymouth gathered TGN's former name "Sutton", and the place of publication "Sutton" (two

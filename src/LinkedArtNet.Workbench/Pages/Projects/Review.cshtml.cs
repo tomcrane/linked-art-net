@@ -177,6 +177,37 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             : "Decided: not a name, and its record wants fixing. No entity stands for it.", new { dataset = Dataset, method = Method, context = Context, after = id });
     }
 
+    /// <summary>A way out: the record is wrong. The finding is raised, and the card comes back searched for what the text should have read.</summary>
+    public async Task<IActionResult> OnPostRecordWrongAsync(long id, string kind, string? shouldRead, string? note)
+    {
+        int raised;
+        try { raised = await Project.Desk.RecordWrongAsync(Dataset, id, Reviewer, kind, shouldRead, note, HttpContext.RequestAborted); }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+        var said = raised == 0 ? "Already on the cataloguers' list for this." : $"Logged for the cataloguers, on {raised} record{(raised == 1 ? "" : "s")}.";
+        return string.IsNullOrWhiteSpace(shouldRead)
+            ? Flash(said + " The string is still to decide.", new { dataset = Dataset, method = Method, context = Context, id })
+            : Flash(said + $" Now choose what it should have been: the results for \"{shouldRead.Trim()}\" are under Something else.", new { dataset = Dataset, method = Method, context = Context, id, q = shouldRead.Trim() });
+    }
+
+    /// <summary>A way out: set aside, as different things in different records or with a question. The desk goes on.</summary>
+    public async Task<IActionResult> OnPostSetAsideAsync(long id, bool mixed, string? text)
+    {
+        try { await Project.Desk.SetAsideAsync(Dataset, id, Reviewer, mixed, text, HttpContext.RequestAborted); }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+        return Flash(mixed ? "Set aside: it wants deciding record by record. It is on the Set aside list." : "Set aside with your question. It is on the Set aside list.", new { dataset = Dataset, method = Method, context = Context, after = id });
+    }
+
+    /// <summary>A way out: an entity of the project is wrong. A note on the entity; the card stays.</summary>
+    public async Task<IActionResult> OnPostReportEntityAsync(long id, string entity, string? text)
+    {
+        try
+        {
+            var reported = await Project.Desk.ReportEntityAsync(Dataset, id, entity, Reviewer, text, HttpContext.RequestAborted);
+            return Flash($"\"{reported.Label}\" reported as wrong, with your note on it. It is on the Set aside list. The string is still to decide.", new { dataset = Dataset, method = Method, context = Context, id }, reported);
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+    }
+
     public Task<IActionResult> OnPostOverrideAsync(long id, string target, string? note) =>
         Act(id, async () => ("Override saved and applied.", await Project.Desk.OverrideAsync(Dataset, id, target, Reviewer, note)));
 
@@ -216,9 +247,15 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         // enough to be offered is the next thing to settle (seen as a user, 2026-11-20: after "Allen and Unwin" the desk left "Allen and
         // Unwin [etc.]", a candidate on that card, and went on down the list)
         List<DecidedString> cardmates = [];
+        var correcting = false;
         if (await Project.Desk.GetAsync(id) is { } card && card.String.Dataset == Dataset)
+        {
+            // a string that was not waiting is being corrected: the person wants to see the card they changed, not the queue
+            // (seen as a user, 2026-11-22, moving "Charterhouse": the desk went on to a string of the queue)
+            correcting = card.Decision.Method is not (DecisionMethod.Queued or DecisionMethod.Minted);
             cardmates = card.Evidence.Groups.SelectMany(g => g.Members).Where(m => m.IsStore && card.Entities.TryGetValue(m.Uri, out var f) && f.IsPlaceholder)
                 .SelectMany(m => card.Entities[m.Uri].Strings).Where(x => x.String.Id != id && x.Decision.Method == DecisionMethod.Queued).DistinctBy(x => x.String.Id).ToList();
+        }
         (string Message, Entity Entity) done;
         try { done = await action(); }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException)
@@ -227,6 +264,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         }
         // the desk finishes a name before it leaves it: the other queued strings under this one's name come next, in list order, and only
         // then the list goes on (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd")
+        if (correcting) return Flash(done.Message + " This card shows it as it now stands.", new { dataset = Dataset, method = Method, context = Context, id }, done.Entity);
         var siblings = await Project.Desk.SiblingsAsync(Dataset, id, done.Entity);
         if (siblings.Count == 0)
         {

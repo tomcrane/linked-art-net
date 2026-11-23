@@ -141,7 +141,7 @@ else
                 else { <text>: left unresolved.</text> }
             </p>
             @if (tookWhy is not null) { <p class="small"><strong>Why:</strong> @tookWhy.</p> }
-            <p class="small">Nothing more is needed. Below is the card as it was decided: the candidate that was chosen first, and the others it was chosen from folded away. You can decide it differently with any action here, take the decision back with <strong>Undo last decision</strong> at the foot, or go on:
+            <p class="small">Nothing more is needed. Below is the card as it was decided: the candidate that was chosen first, and the others it was chosen from folded away. You can <a href="#something-else">decide it differently</a> with any action here, take the decision back with <strong>Undo last decision</strong> at the foot, or go on:
                 <a href="@Url.Page("/Projects/Review", new { dataset = Model.Dataset, method = DecisionMethod.Queued, context = Model.Context, after = item.String.Id })">the next string in the queue →</a></p>
         </div>
     }
@@ -768,6 +768,55 @@ else
             <input type="text" id="nnote" name="note" placeholder="what is left of “S.l.”, by the look of it" />
             <div class="actions"><button type="submit">Not a name</button></div>
         </form>
+    </div>
+
+    @* the ways out (the owner, 2026-11-23): a card that cannot be decided as it stands has a named way out for each reason, and each
+       leaves a record that a list shows. Not a decision: the string stays to be decided, or is set aside saying why *@
+    var cardEntities = item.Entities.Values.Where(f => !f.IsPlaceholder).Select(f => f.Entity).Concat(item.Entity is { Status: not EntityStatus.Provisional } own ? [own] : Array.Empty<LinkedArtNet.Alignment.Entity>())
+            .Concat(Model.EntityMatches.Where(e => e.Status != EntityStatus.Provisional).Take(8)).DistinctBy(e => e.Id).ToList();
+    <h2 id="ways-out">Can't decide it as it stands?</h2>
+    <p class="small muted">Say why, and it is recorded where someone will see it. None of these decides the string.</p>
+    <div class="grid">
+        <form method="post" asp-page-handler="RecordWrong" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="card">
+            <input type="hidden" name="id" value="@item.String.Id" />
+            <h3 style="margin-top:0">The record is wrong</h3>
+            <p class="small muted">A misspelling, two things in one field, the wrong field. It goes on the list for the cataloguers, on each record that has this text; then the card looks for what it should have been.</p>
+            <label for="wkind">What is wrong</label>
+            <select id="wkind" name="kind">@foreach (var k in Finding.DeskKinds) { <option value="@k">@k</option> }</select>
+            <label for="wshould">It should read</label>
+            <input type="text" id="wshould" name="shouldRead" placeholder="the text as it ought to be" />
+            <label for="wnote">Note for the cataloguer (optional)</label>
+            <input type="text" id="wnote" name="note" />
+            <div class="actions"><button type="submit" class="secondary">Log it for the cataloguers</button></div>
+        </form>
+        <div class="card">
+            <form method="post" asp-page-handler="SetAside" asp-route-method="@Model.Method" asp-route-context="@Model.Context">
+                <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="mixed" value="true" />
+                <h3 style="margin-top:0">It is different things in different records</h3>
+                <p class="small muted">One spelling, and the records mean two places or two people by it. It cannot be decided as one string; it is set aside to be decided record by record.</p>
+                <input type="text" name="text" placeholder="which records are which, if you can say (optional)" />
+                <div class="actions"><button type="submit" class="secondary">Set aside: decide by record</button></div>
+            </form>
+            <form method="post" asp-page-handler="SetAside" asp-route-method="@Model.Method" asp-route-context="@Model.Context" style="margin-top:1.2rem">
+                <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="mixed" value="false" />
+                <h3 style="margin-top:0">Not sure: it wants someone who knows</h3>
+                <input type="text" name="text" placeholder="what would someone need to know to decide it?" />
+                <div class="actions"><button type="submit" class="secondary">Set aside with this question</button></div>
+            </form>
+        </div>
+        @if (cardEntities.Count > 0)
+        {
+            <form method="post" asp-page-handler="ReportEntity" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="card">
+                <input type="hidden" name="id" value="@item.String.Id" />
+                <h3 style="margin-top:0">An entity of the project is wrong</h3>
+                <p class="small muted">One of the project's own entities on this card is aligned to the wrong thing, is two things, or says too little to tell. A note goes on the entity, and it is listed to be put right.</p>
+                <label for="rentity">Which</label>
+                <select id="rentity" name="entity">@foreach (var ce in cardEntities) { <option value="@ce.Id">@NamedById(ce.Id, ce.Label) · @ce.Class.ToString().ToLowerInvariant()</option> }</select>
+                <label for="rtext">What is wrong with it</label>
+                <input type="text" id="rtext" name="text" required />
+                <div class="actions"><button type="submit" class="secondary">Report the entity</button></div>
+            </form>
+        }
     </div>
 
     <div class="actions" style="margin-top:1.5rem">

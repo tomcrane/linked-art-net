@@ -418,7 +418,12 @@ public sealed record Finding(long Id, string Dataset, string System, string Reco
     public static readonly IReadOnlyList<string> Statuses = [Open, Sent, Mended, Declined];
     /// <summary>The kind of a finding raised when a string is decided as no name and its record wants fixing.</summary>
     public const string NotAName = "not a name";
+    /// <summary>The kinds a person may give a finding raised at the desk ("the record is wrong"): a short list, from design doc 12 section 14.4.</summary>
+    public static readonly IReadOnlyList<string> DeskKinds = ["spelling", "two values in one field", "truncated", "wrong field", "other"];
 }
+
+/// <summary>A string a reviewer set aside at the desk, with the latest note on it: why, when one was given.</summary>
+public sealed record ParkedString(long Id, string Context, string Raw, string Method, DateTimeOffset ParkedAt, int Records, string? Note, string? NoteBy);
 
 /// <summary>
 /// An entity of a project every one of whose strings looks like no name at all ("S.l.", "Publisher not identified", "S"): a placeholder

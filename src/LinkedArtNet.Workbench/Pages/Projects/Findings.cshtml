@@ -19,7 +19,7 @@
 </p>
 @if (Model.Findings.Count == 0)
 {
-    <p class="notice">@(total == 0 ? "Nothing has been found yet. A finding is raised when a string is decided as \u201cnot a name: the record wants fixing\u201d at the desk or on the Checks page." : "Nothing with this status.")</p>
+    <p class="notice">@(total == 0 ? "Nothing has been found yet. A finding is raised at a string's card, under \u201cThe record is wrong\u201d, or when a string is decided as \u201cnot a name: the record wants fixing\u201d." : "Nothing with this status.")</p>
 }
 else
 {

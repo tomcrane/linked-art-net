@@ -195,6 +195,8 @@ public interface IAlignmentStore
     Task UnskipAsync(long stringId, CancellationToken ct = default);
     /// <summary>When the string was skipped, or null.</summary>
     Task<DateTimeOffset?> SkippedAtAsync(long stringId, CancellationToken ct = default);
+    /// <summary>The dataset's strings set aside at the desk and still undecided there, the latest first, each with the latest note on it.</summary>
+    Task<IReadOnlyList<ParkedString>> ParkedStringsAsync(string dataset, int limit = 500, CancellationToken ct = default);
     /// <summary>The queued strings of a dataset whose normalised text is one of the keys, in id order: a string's siblings under its name, for the desk to finish a name before it leaves it (2026-11-06).</summary>
     Task<IReadOnlyList<DecidedString>> QueuedByKeysAsync(string dataset, IReadOnlyList<string> keys, int limit = 20, CancellationToken ct = default);
 

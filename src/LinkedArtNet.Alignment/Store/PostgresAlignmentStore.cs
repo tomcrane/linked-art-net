@@ -1549,6 +1549,23 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     private static string? About(string? text) =>
         text is null ? null : string.Join(", ", text.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or "North and Central America" or "Asia" or "Africa" or "South America" or "Oceania" or "")));
 
+    public async Task<IReadOnlyList<ParkedString>> ParkedStringsAsync(string dataset, int limit = 500, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select s.id, s.context, s.raw, d.method, s.skipped_at, (select count(*) from occurrences o where o.string_id = s.id)::int, n.text, n.author
+            from source_strings s join decisions d on d.source_string_id = s.id and d.valid and d.method in ('queued', 'minted')
+                 left join lateral (select x.text, x.author from notes x where x.dataset = s.dataset and x.target = 'string:' || s.id order by x.created_at desc, x.id desc limit 1) n on true
+            where s.dataset = @dataset and s.skipped_at is not null
+            order by s.skipped_at desc limit @limit
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "limit", limit);
+        var list = new List<ParkedString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new ParkedString(r.GetInt64(0), r.GetString(1), r.GetString(2), r.GetString(3), r.GetFieldValue<DateTimeOffset>(4), r.GetInt32(5), Str(r, 6), Str(r, 7)));
+        return list;
+    }
+
     // ---- findings ---------------------------------------------------------------------------------------------------
 
     public async Task<int> RaiseFindingsForStringAsync(long stringId, string kind, string? value, string? suggestion, string? why, string? raisedBy, CancellationToken ct = default)

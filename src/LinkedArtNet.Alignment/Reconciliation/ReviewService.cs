@@ -92,6 +92,62 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         await store.SkipAsync(stringId, ct);
     }
 
+    // ---- ways out of a card that cannot be decided as it stands (the owner, 2026-11-23: "I want to fix this but can't, or don't know
+    // how to"; "a clear path out of such scenarios - what the user should do about it"). Each leaves a record that a list shows.
+
+    /// <summary>How the note begins that sets a string aside because its records mean different things by it.</summary>
+    public const string SetAsideMixed = "Set aside: different things in different records";
+    /// <summary>How the note begins that sets a string aside with a question for someone who knows.</summary>
+    public const string SetAsideQuestion = "Set aside with a question: ";
+    /// <summary>How a note on an entity begins that says, from the desk, that the entity is wrong; and the note that says the report was dealt with.</summary>
+    public const string EntityReported = "Reported from the desk as wrong: ";
+    public const string EntityReportDealt = "Report from the desk dealt with";
+
+    /// <summary>
+    /// The record is wrong (a misspelling, two values in one field): a finding is raised on every record the string is in, for the
+    /// cataloguers, with what the text should read as its suggestion. The string is not decided by it: the desk then looks for what
+    /// it should have said. How many findings were raised.
+    /// </summary>
+    public async Task<int> RecordWrongAsync(string dataset, long stringId, string reviewer, string kind, string? shouldRead, string? note, CancellationToken ct = default)
+    {
+        var decided = await OwnAsync(dataset, stringId, ct);
+        if (!Finding.DeskKinds.Contains(kind)) throw new ArgumentException("Say what is wrong with the record.");
+        shouldRead = string.IsNullOrWhiteSpace(shouldRead) ? null : shouldRead.Trim();
+        note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
+        if (shouldRead is null && note is null) throw new ArgumentException("Say what the record should read, or what is wrong with it.");
+        return await store.RaiseFindingsForStringAsync(stringId, kind, decided.String.Raw, shouldRead, note, reviewer, ct);
+    }
+
+    /// <summary>The string is set aside with its reason as a note: to the back of the desk, and onto the list of what is set aside.</summary>
+    public async Task SetAsideAsync(string dataset, long stringId, string reviewer, bool mixed, string? text, CancellationToken ct = default)
+    {
+        await OwnAsync(dataset, stringId, ct);
+        text = string.IsNullOrWhiteSpace(text) ? null : text.Trim();
+        if (!mixed && text is null) throw new ArgumentException("Write the question first: what would someone need to know to decide it?");
+        await store.AddNoteAsync(dataset, StringTarget(stringId), reviewer, mixed ? SetAsideMixed + (text is null ? "." : ": " + text) : SetAsideQuestion + text, ct);
+        await store.SkipAsync(stringId, ct);
+    }
+
+    /// <summary>An entity of the project is wrong, seen from a card: a note on the entity that says so and names the string, for the list of what is set aside.</summary>
+    public async Task<Entity> ReportEntityAsync(string dataset, long stringId, string entityId, string reviewer, string? text, CancellationToken ct = default)
+    {
+        var decided = await OwnAsync(dataset, stringId, ct);
+        var entity = await store.ResolveEntityAsync(entityId, ct) ?? throw new KeyNotFoundException($"No entity {entityId}.");
+        if (entity.Dataset != dataset) throw new InvalidOperationException("The entity belongs to another project.");
+        if (string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Say what is wrong with the entity.");
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"{EntityReported}{text.Trim()} (seen at the card of \"{decided.String.Raw}\", string {stringId})", ct);
+        return entity;
+    }
+
+    /// <summary>The entities reported wrong from the desk and not yet dealt with, each with the report.</summary>
+    public async Task<IReadOnlyList<(Entity Entity, string Report)>> ReportedEntitiesAsync(string dataset, CancellationToken ct = default)
+    {
+        var list = new List<(Entity, string)>();
+        foreach (var (target, text) in await store.NotedAsync(dataset, [EntityReported, EntityReportDealt], ct))
+            if (text.StartsWith(EntityReported, StringComparison.Ordinal) && await store.GetEntityAsync(target, ct) is { MergedInto: null } e) list.Add((e, text[EntityReported.Length..]));
+        return list.OrderBy(x => x.Item1.Label, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
     /// <summary>The skip taken back: the string is in its place by id again.</summary>
     public async Task UnskipAsync(string dataset, long stringId, CancellationToken ct = default)
     {

@@ -279,7 +279,7 @@ else
         @foreach (var g in recs.Groups)
         {
             var several = recs.Groups.Count > 1;
-            @if (several) { @:<details class="rec-group" @(ReferenceEquals(g, recs.Groups[0]) ? "open" : "")><summary class="small"><span class="muted">@recs.By:</span> <strong>@(g.Value ?? "(none given)")</strong> <span class="muted">· @g.Records.ToString("N0") record@(g.Records == 1 ? "" : "s")</span>@if (g.Value is not null && recs.Hints.TryGetValue(g.Value, out var hs) && hs.FirstOrDefault(h => h.Place is not null) is { } lead) { <span class="hint" title="A hint, not a decision: where this publisher is, by @(lead.From == "table" ? "the shipped table of publishers" : "its other imprints in this project")"> · in @lead.Place</span> }</summary>
+            @if (several) { @:<details class="rec-group" @(ReferenceEquals(g, recs.Groups[0]) ? "open" : "")><summary class="small"><span class="muted">@recs.By:</span> <strong>@(g.Value ?? "(none given)")</strong> <span class="muted">· @g.Records.ToString("N0") record@(g.Records == 1 ? "" : "s")</span>@if (g.Value is not null && recs.Hints.TryGetValue(g.Value, out var hs) && hs.FirstOrDefault(h => h.Place is not null) is { } lead) { <span class="hint" title="A hint, not a decision: where this publisher is, by @(lead.From == "table" ? "the shipped table of publishers" : "its other imprints in this project")"> · in @lead.Place</span> }@if (recs.Via is null && g.Value is not null) { <label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0 0 0 .8rem; display:inline" title="Decide only the records of this group: the next Accept or Same as you press decides the ticked records, each for itself, and not the string"><input type="checkbox" data-records value="by|@recs.By|@g.Value" /> decide only @(g.Records == 1 ? "this record" : $"these {g.Records:N0}")</label> }</summary>
             }
             @if (g.Value is not null && recs.Hints.TryGetValue(g.Value, out var groupHints))
             {
@@ -291,10 +291,6 @@ else
                     }
                     <span class="muted">· a hint: nothing is decided by it</span>
                 </p>
-            }
-            @if (recs.Via is null && recs.Count > 1 && g.Value is not null && g.Records > 1)
-            {
-                <p class="small" style="margin:.2rem 0"><label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0"><input type="checkbox" data-records value="by|@recs.By|@g.Value" /> decide only these @g.Records.ToString("N0") records, where @recs.By says "@g.Value"</label></p>
             }
             @foreach (var x in g.First)
             {
@@ -365,7 +361,8 @@ else
     var homePlace = Model.Project.Manifest.HomePlace;
     bool AtHome(LinkedArtNet.Alignment.Reconciliation.EvidenceGroup g) => !string.IsNullOrWhiteSpace(homePlace) && g.Members.Any(m => m.Veto != true && m.SetAside != true
         && ((item.Records.TryGetValue(m.Uri, out var hr) && (LinkedArtNet.Alignment.Authorities.Coordinates.Parents(hr) ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase))
-            || (item.Entities.TryGetValue(m.Uri, out var hf) && (hf.Placement ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase))));
+            || (item.Entities.TryGetValue(m.Uri, out var hf) && ((hf.Placement ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase)
+                || hf.Entity.Equivalents.Any(q => item.Records.TryGetValue(q.Uri, out var er) && (LinkedArtNet.Alignment.Authorities.Coordinates.Parents(er) ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase))))));
     var inOrder = ev.Groups.Select((g, i) => (g, i)).OrderByDescending(x => Math.Round(x.g.Score, 2)).ThenByDescending(x => AtHome(x.g) ? 1 : 0).ThenBy(x => x.i).Select(x => x.g).ToList();
     var shownGroups = chosenGroup is null ? inOrder : ev.Groups.Where(g => ReferenceEquals(g, chosenGroup)).Concat(ev.Groups.Where(g => !ReferenceEquals(g, chosenGroup))).ToList();
     var foldOpen = false;
@@ -496,11 +493,11 @@ else
                 // a borrowed marker is drawn only when the group has none of its own: LoC's "Madison (Wis.)" at the coordinates of TGN's
                 // Madison lay over that record's own marker and made it look approximate (the owner's card, 2026-11-15)
                 if (at.Approximate && g.Members.Any(o => !ReferenceEquals(o, m) && item.Placed is not null && item.Placed.TryGetValue(o.Uri, out var own) && !own.Approximate)) continue;
-                points.Add(new { lat = at.Lat, lng = at.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, approximate = at.Approximate, source = m.Source, pin = PinOf(g) });
+                points.Add(new { lat = at.Lat, lng = at.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, approximate = at.Approximate, source = m.Source, pin = PinOf(g), focus = AtHome(g) });
             }
     if (points.Count > 0)
     {
-        <div id="map" class="map" data-points='@System.Text.Json.JsonSerializer.Serialize(points)' aria-label="The candidates on a map"></div>
+        <div id="map" class="map" data-focus-label="in @homePlace" data-points='@System.Text.Json.JsonSerializer.Serialize(points)' aria-label="The candidates on a map"></div>
         @* a place with no coordinates anywhere is named, so the map's silence about it is not read as absence (the owner, 2026-11-08, at Windsor Castle) *@
         @if (unplaced.Count > 0) { <p class="small muted" style="margin-top:-.6rem">Not on the map, no coordinates in its record: @string.Join(" · ", unplaced.Distinct().Take(6)).</p> }
         @if (points.Any(p => (bool)p.GetType().GetProperty("approximate")!.GetValue(p)!)) { <p class="small muted" style="margin-top:-.4rem">A hollow marker stands where the record itself carries no coordinates: at its TGN parent, or where TGN puts the same name in the same place.</p> }
@@ -898,6 +895,15 @@ else
             if (note) { note.hidden = n === 0; document.getElementById("by-record-count").textContent = n === 1 ? "1 record or group" : n + " records or groups"; }
         }
         document.addEventListener("change", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-records")) show(); });
+        // a search reloads the card: what was ticked goes with it and is ticked again (seen as a user: three records ticked, a search
+        // for the place they were, and the ticks gone)
+        document.addEventListener("submit", function (e) {
+            var f = e.target; if (!f.matches || !f.matches("form[method=get]")) return;
+            ticked("input[data-records], input[data-also]").forEach(function (c) { var h = document.createElement("input"); h.type = "hidden"; h.name = "tick"; h.value = c.value; f.appendChild(h); });
+        }, true);
+        new URLSearchParams(location.search).getAll("tick").forEach(function (v) {
+            document.querySelectorAll("input[data-records], input[data-also]").forEach(function (c) { if (c.value === v) { c.checked = true; var d = c.closest("details"); if (d) d.open = true; } });
+        });
         document.addEventListener("submit", function (e) {
             var f = e.target, action = (f.getAttribute && f.getAttribute("action")) || "";
             if (!/handler=(Accept|SameAs|AcceptTogether)\b/.test(action)) return;

@@ -39,11 +39,29 @@
             card.addEventListener("mouseleave", function () { mine.forEach(function (m) { if (m._icon) m._icon.classList.remove("hot"); m.setZIndexOffset(0); m.closeTooltip(); }); });
         });
         var group = L.featureGroup(markers);
+        // some points are the ones to look at first (the candidates in the project's home place): the map opens on them, since a view of
+        // the whole world puts every place of one country under one marker (the owner, 2026-11-23: "sometimes it's not showing the right
+        // thing"; "Newport", the Isle of Wight's and the Welsh one a dot apart beside ten American ones). A line under it widens the view
+        var focus = markers.filter(function (m, i) { return points[i].focus; });
+        var narrowed = focus.length > 0 && focus.length < markers.length;
         function fit() {
-            if (points.length === 1) map.setView([points[0].lat, points[0].lng], 8);
-            else map.fitBounds(group.getBounds().pad(0.3), { maxZoom: 10 });
+            var on = narrowed ? L.featureGroup(focus) : group, n = narrowed ? focus.length : points.length;
+            if (n === 1) { var c = on.getBounds().getCenter(); map.setView(c, narrowed ? 6 : 8); }
+            else map.fitBounds(on.getBounds().pad(0.3), { maxZoom: 10 });
         }
         fit();
+        if (focus.length > 0 && focus.length < markers.length) {
+            var line = document.createElement("p"); line.className = "small muted"; line.style.marginTop = "-.4rem";
+            var where = el.getAttribute("data-focus-label") || "nearest";
+            var link = document.createElement("a"); link.href = "#";
+            var say = function () {
+                line.textContent = narrowed ? "The map shows the " + focus.length + " " + where + ". " + (markers.length - focus.length) + " more are elsewhere: " : "The map shows all " + markers.length + ": ";
+                link.textContent = narrowed ? "show them all" : "show only those " + where;
+                line.appendChild(link);
+            };
+            link.addEventListener("click", function (e) { e.preventDefault(); narrowed = !narrowed; fit(); say(); });
+            say(); el.parentNode.insertBefore(line, el.nextSibling);
+        }
         // folded away (the checks' Decide screen, 2026-11-17): a map has no size until its <details> is opened, so it is measured and fitted then
         var fold = el.closest("details");
         if (fold) fold.addEventListener("toggle", function () { if (fold.open) { map.invalidateSize(); fit(); } });

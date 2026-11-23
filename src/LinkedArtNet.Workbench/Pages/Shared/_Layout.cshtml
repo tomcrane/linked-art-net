@@ -64,14 +64,24 @@
     var KEY = "keep-place";
     function about(url) { var q = new URL(url, location.href).searchParams; return q.get("id") || q.get("mend") || ""; }
     function note() { try { sessionStorage.setItem(KEY, JSON.stringify({ path: location.pathname, about: about(location.href), y: window.scrollY })); } catch (e) { } }
-    document.addEventListener("submit", function (e) { if (e.target.closest && e.target.closest("[data-keep-place]")) note(); }, true);
+    document.addEventListener("submit", function (e) {
+        if (e.target.closest && e.target.closest("[data-keep-place]")) note();
+        // any other form goes on to a page that opens where it means to: the browser, coming back to the same address after an action,
+        // otherwise restores how far down this page was (seen as a user, 2026-11-23, three ways)
+        else { try { history.scrollRestoration = "manual"; } catch (x) { } }
+    }, true);
     document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest("a[href]"); if (a && a.closest("[data-keep-place]") && a.target !== "_blank") note(); }, true);
     var kept = null;
     try { kept = JSON.parse(sessionStorage.getItem(KEY) || "null"); sessionStorage.removeItem(KEY); } catch (e) { }
     // a page that opens with the word of an action just done opens at its top, where that word is: the browser otherwise brought the
     // next card up as far down as the last one had been left, the message out of sight (seen as a user at every decision, 2026-11-23)
     function top() {
-        if (location.hash || !document.querySelector("[data-flash]")) return;
+        if (location.hash) {
+            var at = document.getElementById(location.hash.slice(1));
+            if (at) { var to = function () { at.scrollIntoView(); }; to(); setTimeout(to, 150); window.addEventListener("load", to); }
+            return;
+        }
+        if (!document.querySelector("[data-flash]")) return;
         try { history.scrollRestoration = "manual"; } catch (e) { }
         function up() { window.scrollTo(0, 0); }
         up(); setTimeout(up, 150); window.addEventListener("load", up);

@@ -127,6 +127,20 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             IndexMatches = (await Project.Desk.SearchIndexesAsync(Q)).OrderByDescending(r => kind is not null && string.Equals(r.Type, kind.ToString(), StringComparison.OrdinalIgnoreCase) ? 1 : 0).ToList();
             foreach (var e in EntityMatches.Take(15)) MatchClues[e.Id] = await Project.Desk.ClueAsync(e, HttpContext.RequestAborted);
             var words = Q.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            // a name and a word of where it is ("Newport Wales") finds the project's entity of the name that is there, as it finds an
+            // index's record (seen as a user, 2026-11-23: the project's Newport in Wales not found, and a second made beside it)
+            for (var k = words.Length - 1; k >= 1; k--)
+            {
+                var telling = words[k..].Select(w => w.Trim(',', '(', ')', '.').ToLowerInvariant()).Where(w => w.Length > 0).ToList();
+                var placed = new List<Entity>();
+                foreach (var e in (await Project.Desk.SearchEntitiesAsync(Dataset, string.Join(' ', words[..k]), 40)).Where(e => e.Id != Item.Entity?.Id && e.Status != EntityStatus.Provisional && EntityMatches.All(x => x.Id != e.Id)))
+                {
+                    var clue = await Project.Desk.ClueAsync(e, HttpContext.RequestAborted);
+                    var says = ((e.Label ?? "") + " " + (clue.Placement ?? "")).ToLowerInvariant();
+                    if (telling.All(says.Contains)) { placed.Add(e); MatchClues[e.Id] = clue; }
+                }
+                if (placed.Count > 0) { EntityMatches = placed.Concat(EntityMatches).ToList(); break; }
+            }
             for (var k = words.Length - 1; k >= 1 && EntityMatches.Count == 0 && IndexMatches.Count == 0; k--)
             {
                 var name = string.Join(' ', words[..k]);

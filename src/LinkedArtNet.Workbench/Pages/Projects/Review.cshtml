@@ -86,7 +86,7 @@
     </form>
 </div>
 @if (Model.Plan is { } waiting) { <p class="notice"><strong>Confirm first:</strong> @waiting.Ours.Count of the project's own entities are ticked and would become one. <a href="#confirm-together">What will happen, and the choice, is under the candidates</a>; nothing is done until you press Merge and accept there.</p> }
-@if (Model.Message is not null) { <p class="notice">@Model.Message @if (Model.Decided is { } d) { <text>· </text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.Id)"><strong>@d.Label</strong></a><text>, to add identifiers or notes before going on</text> }</p> }
+@if (Model.Message is not null) { <p class="notice" data-flash>@Model.Message @if (Model.Decided is { } d) { <text>· </text><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(d.Id)"><strong>@d.Label</strong></a><text>, to add identifiers or notes before going on</text> }</p> }
 
 <details class="help">
     <summary>What am I supposed to do here?</summary>
@@ -650,7 +650,7 @@ else
                     {
                         @* ruled out by dates or class, and the person knows better: the catalogue's two years on a birth should not cost a detour
                            through "Something else" (the owner, 2026-11-07, at "Hall, Harry, 1815-1882") *@
-                        <form method="post" asp-page-handler="@(m.IsStore ? "SameAs" : "Accept")" class="inline">
+                        <form method="post" asp-page-handler="@(m.IsStore ? "SameAs" : "Accept")" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                             <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="@(m.IsStore ? "entity" : "target")" value="@m.Uri" />
                             <button type="submit" class="link small" title="Ruled out for the reason shown; you know better. Recorded as your decision.">accept anyway</button>
                         </form>

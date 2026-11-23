@@ -67,9 +67,16 @@
     document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest("a[href]"); if (a && a.closest("[data-keep-place]") && a.target !== "_blank") note(); }, true);
     var kept = null;
     try { kept = JSON.parse(sessionStorage.getItem(KEY) || "null"); sessionStorage.removeItem(KEY); } catch (e) { }
-    if (!kept || kept.path !== location.pathname) return;
+    // a page that opens with the word of an action just done opens at its top, where that word is: the browser otherwise brought the
+    // next card up as far down as the last one had been left, the message out of sight (seen as a user at every decision, 2026-11-23)
+    function top() {
+        if (location.hash || !document.querySelector("[data-flash]")) return;
+        try { history.scrollRestoration = "manual"; } catch (e) { }
+        function up() { window.scrollTo(0, 0); }
+        up(); setTimeout(up, 150); window.addEventListener("load", up);
+    }
     var here = about(location.href);
-    if (kept.about && here && kept.about !== here) return;
+    if (!kept || kept.path !== location.pathname || (kept.about && here && kept.about !== here) || (kept.about && !here)) { document.addEventListener("DOMContentLoaded", top); return; }
     function go() { window.scrollTo(0, kept.y); }
     document.addEventListener("DOMContentLoaded", function () { go(); setTimeout(go, 150); });
 })();

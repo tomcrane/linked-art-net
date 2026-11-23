@@ -98,7 +98,7 @@ then the other fields.
 (13 findings, 14 `record_decisions`). 3,716 strings queued, 124 of them places. The workbench is stopped. The way
 of working is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in:
 say whose it is when a drive begins and ends), the owner reviewing after. The commits of 2026-11-22 and 2026-11-23
-are local on `de-pmc` (the full test loop was started at day end and its result is not in this note: if this line still says so, run the loop first); `git push` is the owner's word.
+are local on `de-pmc` (the full test loop green at day end, eight projects); `git push` is the owner's word.
 
 **Built on 2026-11-23** (section 7 has three dated blocks above "The work of 2026-11-22, in full"):
 

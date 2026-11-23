@@ -26,7 +26,7 @@ misfire, nothing new in the samples. The count is no longer the measure; the dif
 ## 2026-11-23
 
 The assistant at the desk as a user, at the owner's word ("do lots of browser-driving, observing the common
-scenarios"; "a best-in-class tool ... make it fun"; "a clear path out"). No reconcile; schema 14; the full test loop started at day end, its result recorded in the plan if it finished.
+scenarios"; "a best-in-class tool ... make it fun"; "a clear path out"). No reconcile; schema 14; the full test loop green at day end.
 
 - The scenarios of a card that cannot be decided: the record is wrong; one string, two things; the cataloguer's
   doubt; more than a place; in no index; the leavings of the old run. Built for them, each leaving a record: the

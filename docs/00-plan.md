@@ -435,6 +435,54 @@ you"), each tried on a real card as `claude`:
   kept as data; like cards as a run decided in one act; the place at home first among level candidates; a near
   spelling of a name the project has offered on the card ("Londo").
 
+**The second batch, BUILT 2026-11-23, and the desk used with it** (the owner: "Build all the 'Seen on the way
+and not built' so that you can then return to driving the browser ... Important to keep going. I think we balance
+the need to react to perceived issues quickly ... with churning through a lot of cards/tasks to be sure we are
+addressing common patterns rather than continuously bending the UI one way and another responding to individual
+cases"; and of the map: "people like maps and it's good to have one to visually confirm. But sometimes it's not
+showing the right thing!").
+
+- Built: decisions by record (schema 14, `record_decisions`, doc 12 14.3: records ticked on a card, one or a
+  group, decided each for itself by the next Accept or Same as; the string decided `by-record`, with no entity,
+  when every record has its own; shown and taken back on the card); a run in one act (strings that may be the
+  same thing written another way, ticked and decided with the card); a near spelling offered ("Londo"); the place
+  at home first among level candidates; the desk's search results ticked and accepted as one; the question mark
+  said to be the cataloguer's doubt; a report from the desk shown and closed on the entity's page.
+- Used as `claude`, the place queue: "Kingston" decided by record (two to Kingston (Ont.), two to Kingston upon
+  Thames) and out of the queue; "Newport?" to LoC's Newport (Wales); "Newport" by record (one to the Isle of
+  Wight, three to Wales); "Shepton Beauchamp, Somserset" logged as a misspelling and decided on Wikidata's
+  village; "Gloucester" (55 records, every publisher English) to Gloucester (England); "Chatham" (5 records) to
+  Chatham (Kent). With the morning: seventeen strings and two by record; the place queue 139 to 124.
+- What the run showed, and MENDED the same hour: a card still opened part-way down after some actions (the
+  browser restoring the scroll: turned off at the submit); a group of one record was folded and could not be
+  ticked without opening it (the tick is in each group's heading now); ticks were lost at a search of the card
+  (they go with it); "Newport Wales" did not find the project's own Newport in Wales, eleventh on its card under
+  ten American ones and not on the map, and the assistant made a second beside it (the search finds an entity by
+  a word of where it is now); the map of "Newport" was the world, the two British ones a dot (it opens on the
+  candidates in the home place, with a line to show all).
+- THE MAP, as asked, on the cards of the day: useful once, on "Murcia" (Spain against the Philippines at a
+  glance); beside the point on "Londo" (the Congo and Baluchistan, truly where the wrong candidates are); and
+  wrong by omission twice: on "Newport" and on "Chatham" the right place was the one candidate not on it
+  ("Not on the map, no coordinates in its record: Chatham (Kent)"), every marker being a place it is not. The
+  cause is the same both times: the project's own entity holds only a library's heading, which has no
+  coordinates, and the gazetteer's record for the place at home is not among the twelve the card keeps.
+- TO PUT TO THE OWNER (rules and design, not built):
+  1. Which twelve a card keeps: "the most written-about first" keeps eleven American Chathams and drops TGN's
+     Chatham in Kent. For a project with a home place, the candidates at home to be kept first. A rule of the
+     reconciler's evidence: a count first (how many queued places have a candidate at home among those hidden).
+  2. A place with no coordinates on the map: to borrow them from the gazetteer by name and where it is, and to
+     say so, so that the right answer is not the one missing.
+  3. A street address or a building after a city ("London (59 Gordon Sq., W.C.1)", "King Street" for Christie's,
+     "New Bond Street"): a rule to read the city, counted first.
+  4. The project's thin entities (a heading and nothing else, or the import's VIAF and LUX alone): they are why
+     right answers sit low and off the map. A check, "entities that say too little", to give each its gazetteer
+     record; a count first.
+  5. To merge: the two entities for Newport in Wales (`place/zk843mqs`, which holds LoC's heading for Gwent, and
+     the one made that morning from LoC's Newport (Wales)); the two for Kingston upon Thames.
+- Not tried in the browser: the run in one act; the near spelling's hint (no card of the day had one after it was
+  built); the search results accepted as one; the entity page's report and its closing; a correction coming back
+  to its card.
+
 **The work of 2026-11-22, in full** (moved from the resume point at day end; the numbering is the day's):
 
 **Agreed by the owner on 2026-11-22, being built** ("yes to both proposals"; the counts are in

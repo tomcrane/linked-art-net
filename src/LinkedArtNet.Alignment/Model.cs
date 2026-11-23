@@ -28,6 +28,8 @@ public static class DecisionMethod
     /// <see cref="Reconciliation.CurationService.RecordWantsFixing"/>). The owner, 2026-11-22.
     /// </summary>
     public const string NotAName = "not-a-name";
+    /// <summary>The string means different things in different records, and every record it is in has a decision of its own (record_decisions): no entity for the string itself.</summary>
+    public const string ByRecord = "by-record";
     /// <summary>A compound heading ("Painting--Canada") decided as a concept coordinated from its parts, which are strings of their own (source_string_parts); the entity is the heading's own Type (doc 10, section 7.5).</summary>
     public const string Composite = "composite";
     /// <summary>An equivalent a legacy alignment gained through its Wikidata item: the item's sameAs names the local record (the pass ThroughWikidata, 2026-11-06), reversible by undo-run.</summary>
@@ -421,6 +423,9 @@ public sealed record Finding(long Id, string Dataset, string System, string Reco
     /// <summary>The kinds a person may give a finding raised at the desk ("the record is wrong"): a short list, from design doc 12 section 14.4.</summary>
     public static readonly IReadOnlyList<string> DeskKinds = ["spelling", "two values in one field", "truncated", "wrong field", "other"];
 }
+
+/// <summary>A decision for one record: what a string means in that record, where it differs from what the string means elsewhere (design doc 12 section 14.3).</summary>
+public sealed record RecordDecision(long Id, string System, string RecordId, string Field, string? EntityId, string? EntityLabel, string? Reviewer, DateTimeOffset DecidedAt);
 
 /// <summary>A string a reviewer set aside at the desk, with the latest note on it: why, when one was given.</summary>
 public sealed record ParkedString(long Id, string Context, string Raw, string Method, DateTimeOffset ParkedAt, int Records, string? Note, string? NoteBy);

@@ -148,6 +148,75 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         return list.OrderBy(x => x.Item1.Label, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
+    // ---- a decision for some of a string's records (design doc 12 section 14.3; the owner's go, 2026-11-23)
+
+    /// <summary>
+    /// The records ticked on a card are decided, and the string is not: each gets a decision of its own for this string, which wins for
+    /// that record. A selector is <c>rec|system|record</c> for one record, or <c>by|field|value</c> for every record of the string
+    /// whose field says that (a group as the desk shows it). The target is a record's URI or an entity of the project, as for Accept.
+    /// When every record of the string has its own decision, the string itself is decided "by record", with no entity, and leaves
+    /// the queue.
+    /// </summary>
+    /// <returns>The entity, how many records were decided, and whether every record of the string now has a decision of its own.</returns>
+    public async Task<(Entity Entity, int Records, bool All)> DecideRecordsAsync(string dataset, long stringId, IReadOnlyList<string> selectors, string target, string reviewer, string? note = null, CancellationToken ct = default)
+    {
+        var decided = await OwnAsync(dataset, stringId, ct);
+        var all = await store.RecordsOfStringAsync(stringId, null, null, ct);
+        var chosen = new List<(string System, string RecordId, string Field)>();
+        foreach (var selector in selectors.Distinct(StringComparer.Ordinal))
+        {
+            var parts = selector.Split('|', 3);
+            if (parts is ["rec", var system, var record]) chosen.AddRange(all.Where(o => o.System == system && o.RecordId == record));
+            else if (parts is ["by", var field, var value]) chosen.AddRange(await store.RecordsOfStringAsync(stringId, field, value, ct));
+        }
+        chosen = chosen.Distinct().ToList();
+        if (chosen.Count == 0) throw new InvalidOperationException("Tick the records to decide: none of those ticked is a record of this string.");
+        await EnsureTargetAsync(dataset, decided, target, ct);
+        var reading = reconciler.Read(decided.String);
+        var entity = await reconciler.EntityForUriAsync(dataset, target, reading, null, ct);
+        foreach (var o in chosen)
+            await store.PutRecordDecisionAsync(dataset, o.System, o.RecordId, o.Field, decided.String.Normalised, entity.Id, DecisionMethod.Human, Evidence("by-record", reading, new { target, entity = entity.Id, note }), reviewer, ct);
+        var have = (await store.RecordDecisionsForStringAsync(stringId, ct)).Select(d => (d.System, d.RecordId)).ToHashSet();
+        var everyOne = all.Count > 0 && all.All(o => have.Contains((o.System, o.RecordId)));
+        if (everyOne && decided.Decision.Method is DecisionMethod.Queued or DecisionMethod.Minted)
+        {
+            await store.DecideAsync(stringId, null, DecisionMethod.ByRecord, Evidence("by-record", reading, new { records = all.Count }), reviewer, ct: ct);
+            if (decided.Decision.EntityId is { } was) await store.RemoveProvisionalIfUnreferencedAsync(was, ct, withMerged: true);
+        }
+        await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
+        return (entity, chosen.Count, everyOne);
+    }
+
+    /// <summary>A record's own decision taken back: the string's decision stands for that record again.</summary>
+    public async Task<bool> UndoRecordDecisionAsync(string dataset, long stringId, long recordDecisionId, CancellationToken ct = default)
+    {
+        await OwnAsync(dataset, stringId, ct);
+        return await store.RevertRecordDecisionAsync(dataset, recordDecisionId, ct);
+    }
+
+    /// <summary>
+    /// Names the project already uses that are one letter from the text ("London" for "Londo", "Guildford" for "Guilford"), the most
+    /// used first: a hint for a card whose candidates are of the string as misspelt. Only names of five letters or more, with at
+    /// least five records on them.
+    /// </summary>
+    public async Task<IReadOnlyList<(string Id, string Label, int Records)>> NearSpellingsAsync(string dataset, string text, IReadOnlyCollection<EntityClass> classes, CancellationToken ct = default)
+    {
+        text = text.Trim();
+        if (text.Length < 5 || classes.Count == 0) return [];
+        return (await store.LabelsNearAsync(dataset, text, classes, ct)).Where(e => e.Records >= 5 && OneApart(e.Label.ToLowerInvariant(), text.ToLowerInvariant()))
+            .OrderByDescending(e => e.Records).Take(2).ToList();
+    }
+
+    /// <summary>Whether two texts differ by one letter added, dropped or changed.</summary>
+    internal static bool OneApart(string a, string b)
+    {
+        if (a == b || Math.Abs(a.Length - b.Length) > 1) return false;
+        if (a.Length > b.Length) (a, b) = (b, a);
+        var i = 0;
+        while (i < a.Length && a[i] == b[i]) i++;
+        return a.Length == b.Length ? a[(i + 1)..] == b[(i + 1)..] : a[i..] == b[(i + 1)..];
+    }
+
     /// <summary>The skip taken back: the string is in its place by id again.</summary>
     public async Task UnskipAsync(string dataset, long stringId, CancellationToken ct = default)
     {

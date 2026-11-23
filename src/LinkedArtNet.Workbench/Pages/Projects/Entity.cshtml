@@ -22,6 +22,14 @@
         var firstAtDesk = (Model.Waiting.Count > 0 ? Model.Waiting[0] : Model.OwnQueued[0]).String;
         <a class="tag src" href="/p/@Model.Dataset/review?id=@firstAtDesk.Id" title="Opens the desk at &quot;@firstAtDesk.Raw&quot;@(atDesk == 1 ? "" : $", the first of {atDesk} strings waiting under this name; the desk goes on to the others, and they are listed further down this page")">@atDesk waiting at the desk</a>
     }</h1>
+@if (Model.Report is not null)
+{
+    <form method="post" asp-page-handler="ReportDealt" class="notice small">
+        <input type="hidden" name="id" value="@e.Id" />
+        <strong>Reported from the desk as wrong:</strong> @Model.Report
+        <button type="submit" class="secondary small">It is put right: dealt with</button>
+    </form>
+}
 @* on a check's list: said at the top, with the way to where it is decided (the owner, 2026-11-22) *@
 @foreach (var hit in Model.OnChecks)
 {

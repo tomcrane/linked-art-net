@@ -36,6 +36,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     public string? Message { get; private set; }
     /// <summary>The checks whose lists this entity is on, with where each is decided.</summary>
     public IReadOnlyList<CheckHit> OnChecks { get; private set; } = [];
+    /// <summary>What a reviewer at the desk reported wrong with this entity, until someone says it is dealt with.</summary>
+    public string? Report { get; private set; }
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
     {
@@ -44,6 +46,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         if (view is null) return NotFound();
         View = view;
         OnChecks = await CheckLists.ForAsync(Project, view.Entity.Id, HttpContext.RequestAborted);
+        Report = (await Project.Desk.ReportedEntitiesAsync(Dataset, HttpContext.RequestAborted)).Where(r => r.Entity.Id == view.Entity.Id).Select(r => r.Report).FirstOrDefault();
         Pulled = view.Records.Select(r => (r.Key, Pulled: SourcePull.Read(r.Value))).Where(x => x.Pulled is not null).ToDictionary(x => x.Key, x => x.Pulled!);
         foreach (var q in view.Entity.Equivalents.OrderBy(q => q.Source == "tgn" ? 0 : 1))
             if (await LinkedArtNet.Alignment.Authorities.Coordinates.ResolveAsync(Services.Store, view.Records.GetValueOrDefault(q.Uri)) is { } placed && (Coordinates is null || !placed.Approximate)) { Coordinates = placed; if (!placed.Approximate) break; }
@@ -116,6 +119,12 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         var ok = results.Where(r => r.Error is null).Select(r => r.Source).ToList();
         var failed = results.Where(r => r.Error is not null).Select(r => r.Error!).Distinct().ToList();
         return (ok.Count == 0 ? "" : $"Pulled from {string.Join(", ", ok)}.") + (failed.Count == 0 ? "" : " " + string.Join(" ", failed));
+    });
+
+    public Task<IActionResult> OnPostReportDealtAsync(string id) => Act(id, async () =>
+    {
+        await Project.Curation.NoteAsync(Dataset, id, Reviewer, ReviewService.EntityReportDealt + ".");
+        return "The report from the desk is marked as dealt with.";
     });
 
     private async Task<IActionResult> Act(string id, Func<Task<string>> action)

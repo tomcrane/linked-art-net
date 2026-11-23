@@ -61,6 +61,13 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     /// <summary>The checks whose lists the string's entity is on, with where each is decided.</summary>
     public IReadOnlyList<CheckHit> OnChecks { get; private set; } = [];
 
+    /// <summary>The decisions single records of this string have, by "system|record".</summary>
+    public Dictionary<string, RecordDecision> RecordDecisions { get; } = new(StringComparer.Ordinal);
+    /// <summary>Queued strings that may be this one written another way: under its name, or a candidate on its card. Ticked, they are decided with it in one act (seen as a user, 2026-11-23: five London street addresses, one card after another).</summary>
+    public List<DecidedString> Mates { get; } = [];
+    /// <summary>Names the project uses that are one letter from this string's: a hint for a misspelling ("Londo").</summary>
+    public IReadOnlyList<(string Id, string Label, int Records)> NearSpellings { get; private set; } = [];
+
     public long Remaining => Queue.Where(r => Context is null || r.Context == Context).Sum(r => r.Count);
 
     public async Task OnGetAsync(string? message = null)
@@ -91,6 +98,18 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
                 else if (Item.Holders is { } hs && hs.TryGetValue(m.Uri, out var holder)) CandidateEntity[m.Uri] = (holder.Entity.Id, holder.Entity.Label);
                 else if (StandingOn.TryGetValue(m.Uri, out var st)) CandidateEntity[m.Uri] = (st.EntityId, st.EntityLabel);
             }
+        if (Item is not null)
+        {
+            foreach (var d in await Services.Store.RecordDecisionsForStringAsync(Item.String.Id, HttpContext.RequestAborted)) RecordDecisions[d.System + "|" + d.RecordId] = d;
+            if (Item.Decision.Method == DecisionMethod.Queued)
+            {
+                Mates.AddRange(Item.Siblings.Concat(Item.Evidence.Groups.SelectMany(g => g.Members).Where(m => m.IsStore && Item.Entities.TryGetValue(m.Uri, out var f) && f.IsPlaceholder)
+                    .SelectMany(m => Item.Entities[m.Uri].Strings)).Where(x => x.String.Id != Item.String.Id && x.Decision.Method == DecisionMethod.Queued).DistinctBy(x => x.String.Id).Take(12));
+                var held = CandidateEntity.Values.Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
+                NearSpellings = (await Project.Desk.NearSpellingsAsync(Dataset, Item.Evidence.Reading?.Text is { Length: > 0 } read2 ? read2 : Item.String.Raw, Project.Reconciler.Read(Item.String).Classes, HttpContext.RequestAborted))
+                    .Where(n => !held.Contains(n.Id)).ToList();
+            }
+        }
         if (Item is not null && string.IsNullOrWhiteSpace(Q) && Item.Evidence.Groups.Count == 0)
         {
             Q = Item.Evidence.Reading?.Text is { Length: > 0 } name ? name : Item.String.Raw;
@@ -122,13 +141,37 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         }
     }
 
-    public Task<IActionResult> OnPostAcceptAsync(long id, string target, string? note) =>
-        Act(id, async () => ("Accepted.", await Project.Desk.AcceptAsync(Dataset, id, target, Reviewer, note)));
+    public Task<IActionResult> OnPostAcceptAsync(long id, string target, string? note, string[]? records, long[]? also) =>
+        records is { Length: > 0 } ? ByRecord(id, records, target, note)
+        : Act(id, async () => ("Accepted.", await Project.Desk.AcceptAsync(Dataset, id, target, Reviewer, note)), also);
 
-    public async Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note, string? survivor, bool confirmed, bool always, EntityClass? cls = null)
+    /// <summary>Records were ticked: they are decided, each for itself, and the string is not; the card comes back to show it (design doc 12 section 14.3).</summary>
+    private async Task<IActionResult> ByRecord(long id, string[] records, string target, string? note)
+    {
+        try
+        {
+            var (entity, n, all) = await Project.Desk.DecideRecordsAsync(Dataset, id, records, target, Reviewer, note, HttpContext.RequestAborted);
+            var said = $"{n} record{(n == 1 ? "" : "s")} decided as {entity.Label}, for {(n == 1 ? "that record" : "those records")} only.";
+            return all
+                ? Flash(said + " Every record of this string now has its own decision, so the string has left the queue.", new { dataset = Dataset, method = Method, context = Context, after = id }, entity)
+                : Flash(said + " The string's other records are still to decide.", new { dataset = Dataset, method = Method, context = Context, id }, entity);
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+    }
+
+    public async Task<IActionResult> OnPostRecordUndoAsync(long id, long decision)
+    {
+        var undone = await Project.Desk.UndoRecordDecisionAsync(Dataset, id, decision, HttpContext.RequestAborted);
+        return Flash(undone ? "That record's own decision is taken back; the string's decision stands for it again." : "Nothing to undo.", new { dataset = Dataset, method = Method, context = Context, id });
+    }
+
+    public async Task<IActionResult> OnPostAcceptTogetherAsync(long id, string[]? targets, string? note, string? survivor, bool confirmed, bool always, EntityClass? cls = null, string[]? records = null, long[]? also = null)
     {
         // a group's tick carries its members' URIs in one value, space-joined (the group is the card, 2026-11-06)
         var all = (targets ?? []).SelectMany(t => t.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).Distinct(StringComparer.Ordinal).ToArray();
+        if (all.Length == 0) return Flash("Tick the records that are the thing first.", new { dataset = Dataset, method = Method, context = Context, id });
+        // records ticked: decided for themselves onto the group's entity of the project, or its first record
+        if (records is { Length: > 0 }) return await ByRecord(id, records, all.FirstOrDefault(Project.Scheme.Owns) ?? all[0], note);
         // two or more of the project's own entities among the ticked are a merge: shown first, done on the reviewer's word. Entities, not
         // URIs: two rows for one entity (a merge since the evidence was written) are no merge (the owner, 2026-11-06, sent to a confirm
         // step with one entity on it)
@@ -145,11 +188,12 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             var entity = await Project.Desk.AcceptTogetherAsync(Dataset, id, all, Reviewer, note, survivor, mergeOurs: true, always, cls);
             var message = confirmed ? $"Merged and accepted together: {entity.Label}, with {entity.Equivalents.Count} identifiers." : $"Accepted together, with {entity.Equivalents.Count} identifiers.";
             return (always ? message + " This spelling will always mean it in this field." : message, entity);
-        });
+        }, also);
     }
 
-    public Task<IActionResult> OnPostSameAsAsync(long id, string entity, string? note) =>
-        Act(id, async () => ("Marked as the same entity.", await Project.Desk.SameAsAsync(Dataset, id, entity, Reviewer, note)));
+    public Task<IActionResult> OnPostSameAsAsync(long id, string entity, string? note, string[]? records, long[]? also) =>
+        records is { Length: > 0 } ? ByRecord(id, records, entity, note)
+        : Act(id, async () => ("Marked as the same entity.", await Project.Desk.SameAsAsync(Dataset, id, entity, Reviewer, note)), also);
 
     /// <summary>Pulls the records named (LoC's and ULAN's among a card's candidates, twelve at most) so that the card can show what each heading was made from; decides nothing.</summary>
     public async Task<IActionResult> OnPostWorksAsync(long id, string[]? uris)
@@ -248,7 +292,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         return RedirectToPage(pageName: null, pageHandler: null, routeValues: routeValues, fragment: fragment);
     }
 
-    private async Task<IActionResult> Act(long id, Func<Task<(string Message, Entity Entity)>> action)
+    private async Task<IActionResult> Act(long id, Func<Task<(string Message, Entity Entity)>> action, long[]? also = null)
     {
         // the queued strings whose placeholders stand among this card's candidates, read before the card is decided: a spelling near
         // enough to be offered is the next thing to settle (seen as a user, 2026-11-20: after "Allen and Unwin" the desk left "Allen and
@@ -271,6 +315,14 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         }
         // the desk finishes a name before it leaves it: the other queued strings under this one's name come next, in list order, and only
         // then the list goes on (the owner, 2026-11-06, after the first merge at "Chris Beetles Ltd")
+        // the strings ticked as the same thing written another way are decided with it, in the one act
+        var with = 0;
+        foreach (var other in (also ?? []).Distinct().Where(x => x != id))
+        {
+            try { await Project.Desk.SameAsAsync(Dataset, other, done.Entity.Id, Reviewer, $"decided with string {id}, as the same thing"); with++; }
+            catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { }
+        }
+        if (with > 0) done = (done.Message + $" {with} more string{(with == 1 ? "" : "s")} decided with it.", done.Entity);
         if (correcting) return Flash(done.Message + " This card shows it as it now stands.", new { dataset = Dataset, method = Method, context = Context, id }, done.Entity);
         var siblings = await Project.Desk.SiblingsAsync(Dataset, id, done.Entity);
         if (siblings.Count == 0)

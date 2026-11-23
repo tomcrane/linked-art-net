@@ -323,3 +323,30 @@ create index if not exists findings_record on findings (dataset, system, record_
 create index if not exists findings_string on findings (string_id);
 
 insert into schema_version (version) values (13) on conflict do nothing;
+
+-- version 14 (2026-11-23): a decision for one record (design doc 12 section 14.3). The string's decision is the default for every
+-- record it is in; a record may carry its own, which wins there: "Kingston" is Kingston, Ontario in a McGill-Queen's book and
+-- Kingston upon Thames in a Kingston University one. Keyed on the record, the field and the string's normalised text, not on
+-- row numbers, so that it survives a collect. Invalidated, never deleted.
+create table if not exists record_decisions (
+    id          bigserial primary key,
+    dataset     text not null,
+    system      text not null,
+    record_id   text not null,
+    field       text not null,
+    normalised  text not null,
+    entity_id   text references entities(id),
+    method      text not null,
+    evidence    jsonb,
+    reviewer    text,
+    decided_at  timestamptz not null default now(),
+    run_id      text,
+    valid       boolean not null default true,
+    supersedes  bigint references record_decisions(id),
+    closed_at   timestamptz,
+    closed_why  text
+);
+create unique index if not exists record_decisions_one_valid on record_decisions (dataset, system, record_id, field, normalised) where valid;
+create index if not exists record_decisions_entity on record_decisions (entity_id);
+
+insert into schema_version (version) values (14) on conflict do nothing;

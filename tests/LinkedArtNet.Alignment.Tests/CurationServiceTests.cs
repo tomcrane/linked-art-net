@@ -426,6 +426,40 @@ public class CurationServiceTests(PostgresFixture pg)
         await desk.KeepLocalAsync(ds, eastcombe.Id, "tester");
         Assert.Single(await pg.Store.ParkedStringsAsync(ds));
 
+        // by record: "Kingston" in two records of one press and one of another; a group, then the last record, each onto its own place
+        var ontario = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Kingston (Ont.)", Status: EntityStatus.Confirmed), scheme);
+        var thames = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Kingston upon Thames", Status: EntityStatus.Confirmed), scheme);
+        await pg.Store.PutExamplesAsync([
+            new StringExample(kingston.Id, "K1", "library", "One", "2018", "place", "{\"publisher\":[\"McGill-Queen's University Press\"]}"),
+            new StringExample(kingston.Id, "K2", "library", "Two", "2019", "place", "{\"publisher\":[\"McGill-Queen's University Press\"]}")]);
+        await pg.Store.PutRecordsAsync(ds, "c1", [new SourceRecord("library", "R2", "A book", "1990", "{\"publisher\":[\"Kingston University Press\"]}", null)]);
+        var (to, n, all) = await desk.DecideRecordsAsync(ds, kingston.Id, ["by|publisher|McGill-Queen's University Press"], ontario.Id, "tester");
+        Assert.Equal((ontario.Id, 2, false), (to.Id, n, all));
+        Assert.Equal(DecisionMethod.Queued, (await pg.Store.DecisionForAsync(kingston.Id))!.Method);
+        var own = await pg.Store.RecordDecisionsForStringAsync(kingston.Id);
+        Assert.Equal(["K1", "K2"], own.Select(d => d.RecordId));
+        Assert.All(own, d => Assert.Equal((ontario.Id, "tester", "place"), (d.EntityId, d.Reviewer, d.Field)));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => desk.DecideRecordsAsync(ds, kingston.Id, ["rec|library|nowhere"], thames.Id, "tester"));
+        // one taken back and decided again; then the last record: every record has its own, and the string leaves the queue with no entity
+        Assert.True(await desk.UndoRecordDecisionAsync(ds, kingston.Id, own[0].Id));
+        Assert.Single(await pg.Store.RecordDecisionsForStringAsync(kingston.Id));
+        await desk.DecideRecordsAsync(ds, kingston.Id, ["rec|library|K1"], ontario.Id, "tester");
+        (_, n, all) = await desk.DecideRecordsAsync(ds, kingston.Id, ["rec|library|R2"], thames.Id, "tester");
+        Assert.Equal((1, true), (n, all));
+        var whole = (await pg.Store.DecisionForAsync(kingston.Id))!;
+        Assert.Equal((DecisionMethod.ByRecord, (string?)null), (whole.Method, whole.EntityId));
+        Assert.Empty(await pg.Store.ParkedStringsAsync(ds));
+
+        // a near spelling: a name the project uses on five records or more, one letter away
+        var london = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "London", Status: EntityStatus.Confirmed), scheme);
+        var londonString = await pg.Store.CollectAsync(ds, "place", "London");
+        await pg.Store.DecideAsync(londonString.Id, london.Id, DecisionMethod.Human, null, "tester");
+        await pg.Store.PutExamplesAsync(Enumerable.Range(1, 5).Select(k => new StringExample(londonString.Id, "L" + k, "library", "T", "1990", "place", "{}")).ToList());
+        Assert.Equal("London", Assert.Single(await desk.NearSpellingsAsync(ds, "Londo", [EntityClass.Place])).Label);
+        Assert.Empty(await desk.NearSpellingsAsync(ds, "London", [EntityClass.Place]));
+        Assert.Empty(await desk.NearSpellingsAsync(ds, "Londres", [EntityClass.Place]));
+        Assert.Empty(await desk.NearSpellingsAsync(ds, "Londo", [EntityClass.Person]));
+
         // an entity reported wrong is listed until the report is dealt with
         var thin = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Guildford", Status: EntityStatus.Aligned), scheme);
         await desk.ReportEntityAsync(ds, guilford.Id, thin.Id, "tester", "nothing says where it is");

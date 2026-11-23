@@ -220,6 +220,29 @@ else
         }
         </div>
     }
+    @if (item.String.Raw.Contains('?') && item.Decision.Method == DecisionMethod.Queued)
+    {
+        <p class="small notice">The record itself is unsure: the cataloguer wrote a question mark. Decide what it most probably is. The question mark stays in the record's text, so the doubt is not lost.</p>
+    }
+    @foreach (var near in Model.NearSpellings)
+    {
+        @* a name the project uses, one letter away (seen as a user, 2026-11-23: "Londo", an Agnew's catalogue, offered Londo in the Congo) *@
+        <form method="post" asp-page-handler="SameAs" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="notice small">
+            <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="entity" value="@near.Id" />
+            <strong>A misspelling, perhaps.</strong> This project has <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(near.Id)" target="_blank" rel="noopener">@NamedById(near.Id, near.Label)</a>, one letter away, on @near.Records.ToString("N0") records. A hint by spelling alone: the records below say whether it is meant.
+            <button type="submit" class="secondary">Same as @NamedById(near.Id, near.Label)</button>
+            <span class="muted">If it is, the misspelling can go to the cataloguers under <a href="#ways-out">The record is wrong</a>.</span>
+        </form>
+    }
+    @if (Model.Mates.Count > 0)
+    {
+        <div class="small" id="run"><strong>The same thing, written another way?</strong> Tick any of these that are, and the button you press decides them too:
+            @foreach (var mate in Model.Mates)
+            {
+                <label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0 .8rem 0 0; display:inline-block"><input type="checkbox" data-also value="@mate.String.Id" /> "@mate.String.Raw" <span class="muted">(@F(mate.String.Context))</span></label>
+            }
+        </div>
+    }
     @if (item.Siblings.Count > 0)
     {
         @* the other queued strings under this name; after an action the desk goes to these first (the owner, 2026-11-06) *@
@@ -237,6 +260,7 @@ else
     var recs = await Model.Project.Desk.RecordsForAsync(item.String, Model.By, Model.Project.Manifest);
     @if (recs.Count > 0)
     {
+        <p class="notice small" id="by-record-note" hidden><strong><span id="by-record-count">0</span> ticked: the next Accept or Same as you press decides only the ticked records</strong>, each for itself. The string's other records are left as they are. Untick to decide the whole string.</p>
         var shown = recs.Groups.Sum(g => g.Records);
         var groupFields = recs.Groups.SelectMany(g => g.First).SelectMany(x => x.NamingFields().Select(f => f.Name)).Append("medium").Append("class").Distinct().Where(f => f != recs.By).ToList();
         <div class="card"><h3 style="margin-top:0">In the records</h3>
@@ -268,10 +292,23 @@ else
                     <span class="muted">· a hint: nothing is decided by it</span>
                 </p>
             }
+            @if (recs.Via is null && recs.Count > 1 && g.Value is not null && g.Records > 1)
+            {
+                <p class="small" style="margin:.2rem 0"><label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0"><input type="checkbox" data-records value="by|@recs.By|@g.Value" /> decide only these @g.Records.ToString("N0") records, where @recs.By says "@g.Value"</label></p>
+            }
             @foreach (var x in g.First)
             {
                 var recordUrl = Model.Project.Manifest.RecordUrl(x.Source, x.RecordId);
-                <p class="small"><strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @if (recordUrl is not null) { <a href="@recordUrl" target="_blank" rel="noopener" title="This record in the @Model.Project.Manifest.SystemName(x.Source)">@x.RecordId</a> } else { <span title="@Model.Project.Manifest.SystemName(x.Source)">@x.RecordId</span> } · from &lt;@x.Field&gt;</span>
+                Model.RecordDecisions.TryGetValue(x.Source + "|" + x.RecordId, out var recOwn);
+                @if (recOwn is not null)
+                {
+                    <form method="post" asp-page-handler="RecordUndo" asp-route-method="@Model.Method" asp-route-context="@Model.Context" data-keep-place class="small notice" style="margin:.3rem 0">
+                        <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="decision" value="@recOwn.Id" />
+                        <strong>In this record it is <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(recOwn.EntityId ?? "")" target="_blank" rel="noopener">@NamedById(recOwn.EntityId ?? "", recOwn.EntityLabel)</a></strong>, decided for this record alone by @(recOwn.Reviewer ?? "a reviewer") on @recOwn.DecidedAt.ToString("yyyy-MM-dd").
+                        <button type="submit" class="link small">take it back</button>
+                    </form>
+                }
+                <p class="small">@if (recs.Via is null && recs.Count > 1 && recOwn is null) { <input type="checkbox" data-records value="rec|@x.Source|@x.RecordId" title="Decide this record alone: the next Accept or Same as you press decides the ticked records, not the string" /> }<strong>@(x.Title ?? "(no title)")</strong>@(x.Date is null ? "" : $" ({x.Date})") <span class="muted">· @if (recordUrl is not null) { <a href="@recordUrl" target="_blank" rel="noopener" title="This record in the @Model.Project.Manifest.SystemName(x.Source)">@x.RecordId</a> } else { <span title="@Model.Project.Manifest.SystemName(x.Source)">@x.RecordId</span> } · from &lt;@x.Field&gt;</span>
                 @* the title looked up outside (the owner, 2026-11-19: "I'm often googling the book title to try to find publisher info"): a trial of two
                    places to look, a union catalogue of UK libraries and the web; the title up to its statement of responsibility, in quotes for the web *@
                 @if (!string.IsNullOrWhiteSpace(x.Title))
@@ -323,7 +360,14 @@ else
     // notice said decided, and the map and the candidates below "suggest there is still work to do")
     var decidedCard = item.LookedAgain is null && item.Decision.Method is not (DecisionMethod.Queued or "minted") && Model.Plan is null;
     var chosenGroup = decidedCard && item.Entity is not null ? ev.Groups.FirstOrDefault(g => g.Members.Any(m => m.Uri == item.Entity.Id || item.Entity.Equivalents.Any(q => q.Uri == m.Uri))) : null;
-    var shownGroups = chosenGroup is null ? ev.Groups : ev.Groups.Where(g => ReferenceEquals(g, chosenGroup)).Concat(ev.Groups.Where(g => !ReferenceEquals(g, chosenGroup))).ToList();
+    // among candidates level in score, one in the project's home place comes first (seen as a user, 2026-11-23: Birmingham in Alabama
+    // above Birmingham in England, for a library in the United Kingdom); the order is otherwise as the evidence has it
+    var homePlace = Model.Project.Manifest.HomePlace;
+    bool AtHome(LinkedArtNet.Alignment.Reconciliation.EvidenceGroup g) => !string.IsNullOrWhiteSpace(homePlace) && g.Members.Any(m => m.Veto != true && m.SetAside != true
+        && ((item.Records.TryGetValue(m.Uri, out var hr) && (LinkedArtNet.Alignment.Authorities.Coordinates.Parents(hr) ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase))
+            || (item.Entities.TryGetValue(m.Uri, out var hf) && (hf.Placement ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase))));
+    var inOrder = ev.Groups.Select((g, i) => (g, i)).OrderByDescending(x => Math.Round(x.g.Score, 2)).ThenByDescending(x => AtHome(x.g) ? 1 : 0).ThenBy(x => x.i).Select(x => x.g).ToList();
+    var shownGroups = chosenGroup is null ? inOrder : ev.Groups.Where(g => ReferenceEquals(g, chosenGroup)).Concat(ev.Groups.Where(g => !ReferenceEquals(g, chosenGroup))).ToList();
     var foldOpen = false;
     // a reason every candidate shares is said once for the card and not on each (the assistant as a user, 2026-11-19: "Athens" said one
     // sentence thirty times; the owner: "show what they need to see and not more")
@@ -726,12 +770,20 @@ else
                 }
                 @foreach (var r in Model.IndexMatches)
                 {
-                    <div class="row result"><div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Display is { } l) { <span class="muted">@l</span> } @if (!string.IsNullOrWhiteSpace(r.Type)) { <span class="tag">@r.Type.ToLowerInvariant()</span> } <span class="tag">@r.Source</span>
+                    <div class="row result">@if (Model.IndexMatches.Count > 1) { <input type="checkbox" form="found-together" name="targets" value="@r.Uri" title="Tick the records that are one thing, then Accept the ticked as one" style="margin-right:.5rem" /> }<div style="flex:1"><strong>@r.Label</strong> @if (r.Lifespan?.Display is { } l) { <span class="muted">@l</span> } @if (!string.IsNullOrWhiteSpace(r.Type)) { <span class="tag">@r.Type.ToLowerInvariant()</span> } <span class="tag">@r.Source</span>
                         @* what the record is, so that two results of one name can be told apart (the owner, 2026-11-14: two Wikidata "Brockley"s, a village in Suffolk and the district of London, and an empty tag where one had no kind) *@
                         @if (LinkedArtNet.Alignment.Authorities.RecordSummary.Says(r) is { } says && says != r.Label) { <div class="small muted">@says</div> } else { <br /> }
                         <a class="small" href="@r.Uri" target="_blank" rel="noopener">@r.Uri</a></div>
                         <form method="post" asp-page-handler="Accept" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline"><input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="target" value="@r.Uri" /><button type="submit">Accept</button></form></div>
                 }
+            }
+            @if (Model.Q is not null && Model.IndexMatches.Count > 1)
+            {
+                @* one thing in two indexes (seen as a user, 2026-11-23: LoC's and Wikidata's Gainesville, and a button for each) *@
+                <form id="found-together" method="post" asp-page-handler="AcceptTogether" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="small" style="margin-top:.6rem">
+                    <input type="hidden" name="id" value="@item.String.Id" />
+                    <button type="submit" class="secondary">Accept the ticked as one</button> <span class="muted">where two indexes have the same thing: one entity, with each identifier ticked</span>
+                </form>
             }
         </div>
         <form method="post" asp-page-handler="Local" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="card">
@@ -836,5 +888,24 @@ else
     </div>
 }
 @section Scripts {
+    <script>
+    // what is ticked on the card travels with whichever deciding button is pressed: records, to be decided for themselves; other
+    // strings, to be decided with this one. Without scripts the ticks do nothing and the buttons decide the string, as before.
+    (function () {
+        function ticked(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel + ":checked")); }
+        function show() {
+            var n = ticked("input[data-records]").length, note = document.getElementById("by-record-note");
+            if (note) { note.hidden = n === 0; document.getElementById("by-record-count").textContent = n === 1 ? "1 record or group" : n + " records or groups"; }
+        }
+        document.addEventListener("change", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-records")) show(); });
+        document.addEventListener("submit", function (e) {
+            var f = e.target, action = (f.getAttribute && f.getAttribute("action")) || "";
+            if (!/handler=(Accept|SameAs|AcceptTogether)\b/.test(action)) return;
+            function carry(name, sel) { ticked(sel).forEach(function (c) { var h = document.createElement("input"); h.type = "hidden"; h.name = name; h.value = c.value; f.appendChild(h); }); }
+            carry("records", "input[data-records]"); carry("also", "input[data-also]");
+        }, true);
+        show();
+    })();
+    </script>
     <partial name="_Map" />
 }

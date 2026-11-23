@@ -1549,6 +1549,84 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     private static string? About(string? text) =>
         text is null ? null : string.Join(", ", text.Split(',').Select(x => x.Trim()).Where(x => x is not ("Europe" or "World" or "North and Central America" or "Asia" or "Africa" or "South America" or "Oceania" or "")));
 
+    // ---- decisions for one record -------------------------------------------------------------------------------------
+
+    public async Task<IReadOnlyList<(string System, string RecordId, string Field)>> RecordsOfStringAsync(long stringId, string? byField = null, string? value = null, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(byField is null
+            ? "select o.system, o.record_id, o.field from occurrences o where o.string_id = @id order by o.record_id"
+            : "select o.system, o.record_id, o.field from occurrences o join records r using (dataset, system, record_id) where o.string_id = @id " +
+              "and (select string_agg(v, ' · ') from jsonb_array_elements_text(case when jsonb_typeof(r.fields->@by) = 'array' then r.fields->@by else '[]'::jsonb end) v) = @value order by o.record_id");
+        Add(cmd, "id", stringId);
+        if (byField is not null) { Add(cmd, "by", byField); Add(cmd, "value", value ?? ""); }
+        var list = new List<(string, string, string)>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add((r.GetString(0), r.GetString(1), r.GetString(2)));
+        return list;
+    }
+
+    public async Task PutRecordDecisionAsync(string dataset, string system, string recordId, string field, string normalised, string? entityId, string method, string? evidenceJson, string? reviewer, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        long? superseded;
+        await using (var cmd = new NpgsqlCommand("update record_decisions set valid = false, closed_at = @now, closed_why = 'superseded' where dataset = @dataset and system = @system and record_id = @record and field = @field and normalised = @normalised and valid returning id", conn, tx))
+        {
+            Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "dataset", dataset); Add(cmd, "system", system); Add(cmd, "record", recordId); Add(cmd, "field", field); Add(cmd, "normalised", normalised);
+            superseded = (long?)await cmd.ExecuteScalarAsync(ct);
+        }
+        await using (var cmd = new NpgsqlCommand(
+            "insert into record_decisions (dataset, system, record_id, field, normalised, entity_id, method, evidence, reviewer, decided_at, valid, supersedes) " +
+            "values (@dataset, @system, @record, @field, @normalised, @entity, @method, @evidence, @reviewer, @now, true, @supersedes)", conn, tx))
+        {
+            Add(cmd, "dataset", dataset); Add(cmd, "system", system); Add(cmd, "record", recordId); Add(cmd, "field", field); Add(cmd, "normalised", normalised); Add(cmd, "entity", entityId);
+            Add(cmd, "method", method); AddJson(cmd, "evidence", evidenceJson); Add(cmd, "reviewer", reviewer); Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "supersedes", superseded);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await tx.CommitAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<RecordDecision>> RecordDecisionsForStringAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select d.id, d.system, d.record_id, d.field, d.entity_id, e.label, d.reviewer, d.decided_at
+            from occurrences o join source_strings s on s.id = o.string_id
+                 join record_decisions d on d.dataset = o.dataset and d.system = o.system and d.record_id = o.record_id and d.field = o.field and d.normalised = s.normalised and d.valid
+                 left join entities e on e.id = d.entity_id
+            where o.string_id = @id order by d.record_id
+            """);
+        Add(cmd, "id", stringId);
+        var list = new List<RecordDecision>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new RecordDecision(r.GetInt64(0), r.GetString(1), r.GetString(2), r.GetString(3), Str(r, 4), Str(r, 5), Str(r, 6), r.GetFieldValue<DateTimeOffset>(7)));
+        return list;
+    }
+
+    public async Task<bool> RevertRecordDecisionAsync(string dataset, long id, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("update record_decisions set valid = false, closed_at = @now, closed_why = 'undone' where id = @id and dataset = @dataset and valid");
+        Add(cmd, "now", DateTimeOffset.UtcNow); Add(cmd, "id", id); Add(cmd, "dataset", dataset);
+        return await cmd.ExecuteNonQueryAsync(ct) == 1;
+    }
+
+    public async Task<IReadOnlyList<(string Id, string Label, int Records)>> LabelsNearAsync(string dataset, string text, IReadOnlyCollection<EntityClass> classes, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select e.id, e.label, (select count(*) from decisions d join occurrences o on o.string_id = d.source_string_id where d.valid and d.entity_id = e.id)::int
+            from entities e
+            where e.dataset = @dataset and e.merged_into is null and e.status <> 'provisional' and e.class = any(@classes) and e.label is not null
+              and lower(left(e.label, 2)) = lower(left(@text, 2)) and length(e.label) between length(@text) - 1 and length(@text) + 1 and lower(e.label) <> lower(@text)
+            limit 400
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "text", text); Add(cmd, "classes", classes.Select(c => c.ToString()).ToArray());
+        var list = new List<(string, string, int)>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add((r.GetString(0), r.GetString(1), r.GetInt32(2)));
+        return list;
+    }
+
     public async Task<IReadOnlyList<ParkedString>> ParkedStringsAsync(string dataset, int limit = 500, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

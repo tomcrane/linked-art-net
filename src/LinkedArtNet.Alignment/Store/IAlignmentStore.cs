@@ -139,6 +139,18 @@ public interface IAlignmentStore
     /// </summary>
     Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, string twoThingsPrefix, CancellationToken ct = default);
 
+    // ---- decisions for one record (design doc 12 section 14.3)
+    /// <summary>The records a string occurs in, with the field it is in; only those whose field <paramref name="byField"/> says <paramref name="value"/> (its values joined with " · ", as the desk groups them) when given.</summary>
+    Task<IReadOnlyList<(string System, string RecordId, string Field)>> RecordsOfStringAsync(long stringId, string? byField = null, string? value = null, CancellationToken ct = default);
+    /// <summary>Records what a string means in one record, superseding the record's earlier decision for it.</summary>
+    Task PutRecordDecisionAsync(string dataset, string system, string recordId, string field, string normalised, string? entityId, string method, string? evidenceJson, string? reviewer, CancellationToken ct = default);
+    /// <summary>The valid decisions for single records among the records a string occurs in.</summary>
+    Task<IReadOnlyList<RecordDecision>> RecordDecisionsForStringAsync(long stringId, CancellationToken ct = default);
+    /// <summary>Takes back a record's decision: the string's own stands for that record again. False when the dataset has no such valid decision.</summary>
+    Task<bool> RevertRecordDecisionAsync(string dataset, long id, CancellationToken ct = default);
+    /// <summary>Entities of the dataset, aligned or confirmed and of the classes given, whose label begins as the text does and is as long to within a letter: candidates for a near spelling, with how many records stand on each.</summary>
+    Task<IReadOnlyList<(string Id, string Label, int Records)>> LabelsNearAsync(string dataset, string text, IReadOnlyCollection<EntityClass> classes, CancellationToken ct = default);
+
     // ---- findings: the cataloguers' list (design doc 12 section 14.4)
     /// <summary>Raises a finding of the kind given on every record the string occurs in that has no open or sent one of that kind for it already; how many were raised.</summary>
     Task<int> RaiseFindingsForStringAsync(long stringId, string kind, string? value, string? suggestion, string? why, string? raisedBy, CancellationToken ct = default);

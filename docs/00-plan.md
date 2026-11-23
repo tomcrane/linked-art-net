@@ -370,6 +370,49 @@ Only question 7 is open.
 Each item carries the date it was seen and where its evidence is. An item leaves this list when it is built or closed,
 and the log (doc 15) records that. The order within an area is rough value.
 
+**The desk as a user, 2026-11-23: the scenarios, for a design of "ways out"** (the owner: "do lots of
+browser-driving, observing the common scenarios"; "there's often 'I want to fix this but can't, or don't know how
+to' and it's often due to either my previous run or a dodgy source record"; "a best-in-class tool ... without
+wishing to be overly swayed by PMC specifics, or my previous run. Clear ways of fixing things, or logging what
+needs fixing ... and, all other things being equal, make it fun"; of a card that cannot be fixed, "a clear path out
+of such scenarios - what the user should do about it"). Nine strings decided as `claude` in the place queue
+("Murcia, Espana", "Gill, Edmund Ward, op 1843-1872", "Birmingham?", "Guilford", "Stowe, Buckingham", "Londo", and
+three London street addresses), and the next 45 of the queue read from the store. Nothing of the design built;
+it is the owner's to agree.
+
+- *The scenarios*, in general terms, each with what the person can do today:
+  1. The record is wrong: a misspelling ("Guilford" for Guildford, "Londo", "Gainsville, Ga.", "Espana"). The right
+     thing is found by a search and "Same as"; the card does not offer it ("Londo" was offered Londo in the Congo
+     and in Baluchistan; "Murcia, Espana" had the right Murcia greyed at 0.00, ruled out by "Espana", with a faint
+     "accept anyway"), and nothing records that the record wants mending.
+  2. One string, two things: "Kingston" (Ontario for McGill-Queen's, upon Thames for Kingston University), as "St.
+     Ives" and "San Marino" the day before. No way out but "Skip", which says nothing and comes round again.
+  3. The cataloguer's own doubt: "[Birmingham?]", "[Newport?]", "[Leicester?]", "[Taunton, Eng.?]". Decided as the
+     place, and the doubt, which is data, is lost.
+  4. More than a place in the string: a street address ("London (59 Gordon Sq., W.C.1)", "New Bond Street"), a
+     house ("Brantwood", "Arniston", "Mount Stuart, [Rothesay]"), "near" ("Walterstone, near Abergavenny"), a
+     village with its town ("Firle, Lewes"), two cities unsplit ("Kingston, Montreal", "London, New York & Bombay").
+     The addresses decide well and wait only because the address is read as a qualifier that no place bears.
+  5. In no index: "Walterstone" waits as three placeholders under three spellings; the way to one local authority
+     for the three is three cards and not obvious.
+  6. The earlier run's leavings: an entity with only the import's thin identifiers and nothing to say where it is
+     ("Guildford": viaf and lux); an entity whose import identifiers disagree, so a plain card waits ("Stowe": two
+     groups at 1.00 that are the one entity, each with its own button); entities that stand for nothing.
+- *Faults of the desk seen*: the next card opened as far down as the last was left, its message out of sight
+  (MENDED that hour, with "accept anyway" dropping the field being worked); among level candidates the place at
+  home does not lead (Birmingham, Alabama above Birmingham, England); a near spelling of a name the project
+  already has in thousands is not offered.
+- *What went well, to keep and extend*: after one London address the desk went to the next, and the next, each at
+  its top with what had just been done: a run of like cards is quick and satisfying. A run could be one act ("these
+  five are London with an address").
+- *To propose to the owner* (not built): on every card a named way out for each scenario, each leaving a record:
+  "the record is wrong" (decide what it should be and raise the finding for the cataloguers in the same act,
+  with the corrected value as the suggestion); "it is different things in different records" (to decisions by
+  record; until then, parked under that name and listed); "not sure" (parked with a question, on a list someone
+  who knows can work); "the project's entity is wrong" (to the entity's page or a check, with a note). And for the
+  pleasure of it: like cards gathered into runs, the count of what is left of a kind in view, the last thing done
+  always in sight.
+
 **The work of 2026-11-22, in full** (moved from the resume point at day end; the numbering is the day's):
 
 **Agreed by the owner on 2026-11-22, being built** ("yes to both proposals"; the counts are in

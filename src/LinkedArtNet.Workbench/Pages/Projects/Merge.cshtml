@@ -40,18 +40,23 @@ else
                 @if (r.Identifiers is { Count: > 0 })
                 {
                     <ul class="small" style="margin:.1rem 0 .1rem 1.1rem; padding:0">
-                    @foreach (var (q, says) in r.Identifiers) { <li><a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> @(says ?? q.Uri.TrimEnd('/').Split('/').Last())</li> }
+                    @* an identifier that describes something else is left out here, before it travels (the owner, 2026-11-24: he had to go to
+                       the wrong entity's own page to remove a dead identifier and an American place's, then find the right entity again).
+                       The box comes unticked and its words say what a tick will do *@
+                    @foreach (var (q, says) in r.Identifiers) { <li style="list-style:none; margin-left:-1.1rem"><label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0" title="Tick to leave this identifier out of the merge: it is taken off this entity and does not go to the one kept"><input type="checkbox" name="leave" value="@q.Uri" data-leave /> <a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> <span data-leave-what>@(says ?? q.Uri.TrimEnd('/').Split('/').Last() + " · the store has no record of it")</span> <span class="muted" data-leave-says></span></label></li> }
                     </ul>
                     @if (e.Equivalents.Count > r.Identifiers.Count) { <p class="small muted" style="margin:.1rem 0">and @(e.Equivalents.Count - r.Identifiers.Count) more</p> }
                 }
                 <p style="margin:.75rem 0 0"><label style="text-transform:none; letter-spacing:normal; font-size:1rem; font-weight:400; color:inherit"><input type="radio" name="survivor" value="@e.Id" checked="@(e.Id == Model.Suggested)" /> If they are one thing, <strong>keep this one</strong></label></p>
+                @if (Model.Rows.Count > 2) { <p class="small" style="margin:.3rem 0 0"><a href="/p/@Model.Dataset/merge?ids=@Uri.EscapeDataString(string.Join(",", Model.Rows.Where(x => x.Entity.Id != e.Id).Select(x => x.Entity.Id)))@(Model.From is null ? "" : "&from=" + Model.From)">take it out of the comparison</a></p> }
             </div>
         }
         </div>
 
         <div class="card" style="margin-top:1rem">
             <h3 style="margin-top:0">They are one thing</h3>
-            <p class="small muted" style="margin-top:0">The @(pair ? "other merges" : "others merge") into the one kept: strings, labels and identifiers follow, and the old @(pair ? "id keeps" : "ids keep") resolving to it. The one suggested has the most strings, then the firmer status, then the more identifiers.</p>
+            <p class="small muted" style="margin-top:0">The @(pair ? "other merges" : "others merge") into the one kept: strings, labels and identifiers follow, and the old @(pair ? "id keeps" : "ids keep") resolving to it. An identifier that describes something else, or leads nowhere, should not follow: tick it above and it is left out. The one suggested has the most strings, then the firmer status, then the more identifiers.</p>
+            <p class="small" id="leave-says" style="margin:.2rem 0 .6rem"></p>
             <div class="row" style="gap:.6rem; align-items:center; flex-wrap:wrap">
                 <label class="small" for="label">Label after the merge</label>
                 <input type="text" id="label" name="label" value="@suggested?.Label" style="flex:1; min-width:14rem" title="The kept entity's label unless you write another; every other label is kept as a variant" />
@@ -66,6 +71,40 @@ else
             </div>
         </div>
     </form>
+    @* the right one is not here: found and brought in, without leaving the page (the owner, 2026-11-24) *@
+    <form method="get" class="card" style="margin-top:1rem" data-keep-place>
+        <input type="hidden" name="ids" value="@Model.Ids" />
+        @if (Model.From is not null) { <input type="hidden" name="from" value="@Model.From" /> }
+        <h3 style="margin-top:0">The one it should merge with is not here</h3>
+        <div class="row" style="gap:.6rem; align-items:center; flex-wrap:wrap">
+            <label class="small" for="q">Find another of the project's entities</label>
+            <input type="text" id="q" name="q" value="@Model.Q" placeholder="a name" style="flex:1; min-width:14rem" />
+            <button type="submit" class="secondary" style="white-space:nowrap">Search</button>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.Q) && Model.Found.Count == 0) { <p class="small muted">Nothing else of that name in the project.</p> }
+        @foreach (var (fe, where, n) in Model.Found)
+        {
+            <p class="small" style="margin:.4rem 0 0"><a class="button secondary small" href="/p/@Model.Dataset/merge?ids=@Uri.EscapeDataString(Model.Ids + "," + fe.Id)@(Model.From is null ? "" : "&from=" + Model.From)">Add to the comparison</a> <strong>@(fe.Label ?? fe.Id)</strong> <span class="tag">@fe.Class.ToString().ToLowerInvariant()</span> <span class="tag">@fe.Status.ToString().ToLowerInvariant()</span> <span class="muted">@where · @string.Join(" ", fe.Equivalents.Select(q => q.Source).Distinct()) · stands for @n string@(n == 1 ? "" : "s")</span></p>
+        }
+    </form>
+    <script>
+    (function () {
+        var form = document.getElementById("merge"); if (!form) return;
+        function update() {
+            var out = 0;
+            form.querySelectorAll("input[data-leave]").forEach(function (c) {
+                var line = c.closest("label"), what = line.querySelector("[data-leave-what]"), says = line.querySelector("[data-leave-says]");
+                if (what) what.style.textDecoration = c.checked ? "line-through" : "";
+                if (says) says.textContent = c.checked ? "· left out of the merge" : "";
+                if (c.checked) out++;
+            });
+            var line = document.getElementById("leave-says");
+            if (line) line.textContent = out === 0 ? "Every identifier shown above goes to the one kept." : out + " identifier" + (out === 1 ? " is" : "s are") + " left out; the rest go to the one kept.";
+        }
+        form.addEventListener("change", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-leave")) update(); });
+        update();
+    })();
+    </script>
     @if (pair)
     {
         <form method="post" asp-page-handler="TwoThings" class="card" style="margin-top:1rem">

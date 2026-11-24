@@ -37,10 +37,25 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
     /// <summary>Where the person came from, to go back to: "duplicates" for the check's list.</summary>
     [BindProperty(SupportsGet = true)] public string? From { get; set; }
 
+    /// <summary>A search for another of the project's entities to bring into the comparison (the owner, 2026-11-24: the pair on the page was not the right pair, and the "real" entity had to be found from the other's own page).</summary>
+    [BindProperty(SupportsGet = true)] public string? Q { get; set; }
+    public IReadOnlyList<(Entity Entity, string? Placement, int Strings)> Found { get; private set; } = [];
+
     public async Task<IActionResult> OnGetAsync()
     {
         Message = TakeFlash();
         Rows = await LoadAsync();
+        if (!string.IsNullOrWhiteSpace(Q))
+        {
+            var found = new List<(Entity, string?, int)>();
+            foreach (var e in (await Project.Desk.SearchEntitiesAsync(Dataset, Q.Trim(), 30)).Where(e => e.MergedInto is null && Rows.All(r => r.Entity.Id != e.Id))
+                .OrderByDescending(e => Rows.Any(r => r.Entity.Class == e.Class) ? 1 : 0).ThenBy(e => e.Status == EntityStatus.Provisional ? 1 : 0).Take(12))
+            {
+                var clue = await Project.Desk.ClueAsync(e, HttpContext.RequestAborted);
+                found.Add((e, clue.Placement, clue.Strings));
+            }
+            Found = found;
+        }
         return Page();
     }
 
@@ -55,7 +70,7 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
             var counted = new List<(SourceString String, int Records)>();
             foreach (var st in strings.Take(40)) counted.Add((st.String, await Services.Store.RecordCountAsync(st.String.Id, HttpContext.RequestAborted)));
             var identifiers = new List<(Equivalent Id, string? Says)>();
-            foreach (var q in entity.Equivalents.Take(10))
+            foreach (var q in entity.Equivalents.Take(16))
                 identifiers.Add((q, await Services.Store.GetAuthorityAsync(q.Uri, HttpContext.RequestAborted) is { } record ? LinkedArtNet.Alignment.Authorities.RecordSummary.Says(record) ?? record.Label : null));
             var clue = await Project.Desk.ClueAsync(entity, HttpContext.RequestAborted);
             rows.Add(new Row(entity, strings.Count, strings.Count(s => s.Decision.Method == DecisionMethod.Queued), clue.Placement, counted.Sum(x => x.Records),
@@ -77,14 +92,19 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
         return Redirect($"/p/{Dataset}/checks?check=duplicates");
     }
 
-    public async Task<IActionResult> OnPostAsync(string survivor, string? label, EntityClass? cls)
+    /// <param name="leave">Identifiers ticked to be left out of the merge: each is taken off the entity that holds it first, so that one that describes something else does not travel to the entity kept (the owner, 2026-11-24, at "Birmingham" and "Sheffield": from the Compare page he went to the wrong entity's own page, removed a dead LUX identifier and an American place's, searched for the right entity and merged there).</param>
+    public async Task<IActionResult> OnPostAsync(string survivor, string? label, EntityClass? cls, string[]? leave)
     {
         Rows = await LoadAsync();
         var keep = Rows.FirstOrDefault(r => r.Entity.Id == survivor)?.Entity;
         if (keep is null || Rows.Count < 2) { Message = "Choose the survivor among at least two entities."; return Page(); }
         var merged = new List<string>();
+        var left = 0;
         try
         {
+            foreach (var uri in (leave ?? []).Where(u => !string.IsNullOrWhiteSpace(u)).Distinct(StringComparer.Ordinal))
+                foreach (var row in Rows.Where(r => r.Entity.Equivalents.Any(q => q.Uri == uri)))
+                { await Project.Curation.RemoveEquivalentAsync(Dataset, row.Entity.Id, uri, Reviewer); left++; }
             foreach (var row in Rows.Where(r => r.Entity.Id != keep.Id))
             {
                 await Project.Curation.MergeAsync(Dataset, row.Entity.Id, keep.Id, Reviewer, ClassesDiffer ? cls : null);
@@ -99,7 +119,7 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
             return Page();
         }
         Services.Invalidate(Dataset);
-        TempData["Flash"] = $"Merged {string.Join(", ", merged.Select(m => $"\"{m}\""))} into \"{keep.Label}\".";
+        TempData["Flash"] = $"Merged {string.Join(", ", merged.Select(m => $"\"{m}\""))} into \"{keep.Label}\"{(left == 0 ? "" : $", {left} identifier{(left == 1 ? "" : "s")} left out")}.";
         // the fragment tells the tray script the tray's work is done, so it empties itself
         return RedirectToPage("/Projects/Entity", pageHandler: null, routeValues: new { dataset = Dataset, id = keep.Id }, fragment: "tray-cleared");
     }

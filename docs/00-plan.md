@@ -548,6 +548,12 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
   wanted for entities like it.
 
+**The owner at the duplicates check, 2026-11-24 evening** ("I ended up fixing them by going to the _incorrect_ entity from the Compare page, removing its identifiers (a 403 LUX one and a place in the US for both), and then searching for the 'real' one to merge it onto. For Sheffield I then went through three further 'same as' at the desk").
+
+- BUILT: on the Compare page each identifier has a box, unticked, "leave it out of the merge", its line struck and saying so when ticked, and a line under the panels counting what is left out; the merge takes them off first. A search on the page finds another of the project's entities and adds it to the comparison; with three or more, one can be taken out. Seen on the two entities for Leeds, not pressed.
+- NOT BUILT, and what his words still ask: the page says of a VIAF or LUX identifier only that the store has no record of it, so that it was dead, or an American place's, he learnt by following it: to pull what such identifiers are onto the page (the entity's page has "Pull in from the sources"). And the strings of the same name still waiting at the desk after a merge ("three further same as"): to offer them on the page the merge lands on, to be decided with it.
+- The pairs of the list below (Leeds, Leicester, Derby) are left for him to try the page on.
+
 **Working alone, 2026-11-24 evening** (the owner: "I can't spend time on the bench right now, so you can continue
 working through things yourself. You can store up interesting things for me to look at - but don't let something's
 presence on the list stop you from making fixes that might then take it off the list. We are still aiming for

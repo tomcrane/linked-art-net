@@ -141,6 +141,13 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
                 }
                 if (placed.Count > 0) { EntityMatches = placed.Concat(EntityMatches).ToList(); break; }
             }
+            // what is exactly the words searched leads, then the string's own kind, then what a person or a source has aligned before a
+            // placeholder; the rest as found (seen as a user, 2026-11-24: "Washington D.C." listed Decatur House, an embassy heading and
+            // three bodies above the confirmed place Washington (D.C.), and "Cambridge England" a village above Cambridge (England))
+            var asked = NameMatcher.Keys(Q).ToHashSet(StringComparer.Ordinal);
+            bool Exactly(Entity e) => e.Labels.Append(e.Label ?? "").Any(l => l.Length > 0 && NameMatcher.Keys(l).Any(asked.Contains));
+            EntityMatches = EntityMatches.OrderBy(e => Exactly(e) ? 0 : 1).ThenBy(e => e.Class == kind ? 0 : 1).ThenBy(e => e.Status == EntityStatus.Provisional ? 1 : 0).ToList();
+            foreach (var e in EntityMatches.Take(15)) if (!MatchClues.ContainsKey(e.Id)) MatchClues[e.Id] = await Project.Desk.ClueAsync(e, HttpContext.RequestAborted);
             for (var k = words.Length - 1; k >= 1 && EntityMatches.Count == 0 && IndexMatches.Count == 0; k--)
             {
                 var name = string.Join(' ', words[..k]);

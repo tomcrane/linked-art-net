@@ -61,7 +61,18 @@
        fields and the records they were seen in stand at the head of the page, above the label's facts and the identifiers *@
     var top = v.Strings.OrderByDescending(x => x.String.Occurrences).Take(3).ToList();
     <div class="stands">
-        @if (v.Strings.Count == 0)
+        @if (Model.ByRecord.Count > 0)
+        {
+            @* the records decided each for itself: the entity stands for them too, though no string as a whole is on it for them *@
+            <p><strong>@Model.ByRecord.Count record@(Model.ByRecord.Count == 1 ? " was" : "s were") decided onto this entity one by one</strong>, where one spelling means different things in different records:
+            @foreach (var g in Model.ByRecord.GroupBy(x => (x.StringId, x.Raw, x.Field)))
+            {
+                <span>@if (g.Key.StringId is { } sid) { <a href="/p/@Model.Dataset/review?id=@sid" title="The string's card, where each record's decision shows and can be taken back">"@g.Key.Raw"</a> } else { <span>a string no longer collected</span> } in @string.Join(", ", g.Select(x => x.RecordId).Take(8))@(g.Count() > 8 ? " …" : ""). </span>
+            }
+            </p>
+        }
+        @if (v.Strings.Count == 0 && Model.ByRecord.Count > 0) { }
+        else if (v.Strings.Count == 0)
         {
             <p><strong>No string of the catalogue resolves to this entity.</strong> It stands for nothing at present: its label and identifiers describe it, and nothing in the records uses it.</p>
         }

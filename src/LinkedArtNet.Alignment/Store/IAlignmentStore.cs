@@ -145,6 +145,9 @@ public interface IAlignmentStore
     /// <summary>Records what a string means in one record, superseding the record's earlier decision for it.</summary>
     Task PutRecordDecisionAsync(string dataset, string system, string recordId, string field, string normalised, string? entityId, string method, string? evidenceJson, string? reviewer, CancellationToken ct = default);
     /// <summary>The valid decisions for single records among the records a string occurs in.</summary>
+    /// <summary>The records decided each for itself onto the entity, by the string's text and the record.</summary>
+    Task<IReadOnlyList<EntityRecord>> RecordDecisionsForEntityAsync(string entityId, CancellationToken ct = default);
+
     Task<IReadOnlyList<RecordDecision>> RecordDecisionsForStringAsync(long stringId, CancellationToken ct = default);
     /// <summary>Takes back a record's decision: the string's own stands for that record again. False when the dataset has no such valid decision.</summary>
     Task<bool> RevertRecordDecisionAsync(string dataset, long id, CancellationToken ct = default);

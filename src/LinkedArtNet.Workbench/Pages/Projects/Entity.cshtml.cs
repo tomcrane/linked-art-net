@@ -38,6 +38,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<CheckHit> OnChecks { get; private set; } = [];
     /// <summary>What a reviewer at the desk reported wrong with this entity, until someone says it is dealt with.</summary>
     public string? Report { get; private set; }
+    /// <summary>The records decided each for itself onto this entity (seen as a user, 2026-11-24: an entity with three such records said only "2 strings").</summary>
+    public IReadOnlyList<EntityRecord> ByRecord { get; private set; } = [];
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
     {
@@ -46,6 +48,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         if (view is null) return NotFound();
         View = view;
         OnChecks = await CheckLists.ForAsync(Project, view.Entity.Id, HttpContext.RequestAborted);
+        ByRecord = await Services.Store.RecordDecisionsForEntityAsync(view.Entity.Id, HttpContext.RequestAborted);
         Report = (await Project.Desk.ReportedEntitiesAsync(Dataset, HttpContext.RequestAborted)).Where(r => r.Entity.Id == view.Entity.Id).Select(r => r.Report).FirstOrDefault();
         Pulled = view.Records.Select(r => (r.Key, Pulled: SourcePull.Read(r.Value))).Where(x => x.Pulled is not null).ToDictionary(x => x.Key, x => x.Pulled!);
         foreach (var q in view.Entity.Equivalents.OrderBy(q => q.Source == "tgn" ? 0 : 1))

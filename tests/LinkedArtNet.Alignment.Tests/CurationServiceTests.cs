@@ -454,6 +454,10 @@ public class CurationServiceTests(PostgresFixture pg)
         await pg.Store.MergeAsync(thames.Id, surrey.Id, "tester");
         Assert.Contains(await pg.Store.RecordDecisionsForStringAsync(kingston.Id), d => d.EntityId == surrey.Id);
         Assert.DoesNotContain(await pg.Store.RecordDecisionsForStringAsync(kingston.Id), d => d.EntityId == thames.Id);
+        // and the entity's page can say which records were decided onto it, with the string whose text they are
+        var onSurrey = await pg.Store.RecordDecisionsForEntityAsync(surrey.Id);
+        Assert.NotEmpty(onSurrey); Assert.All(onSurrey, x => Assert.Equal((kingston.Id, "Kingston"), (x.StringId, x.Raw)));
+        Assert.Empty(await pg.Store.RecordDecisionsForEntityAsync(thames.Id));
 
         // a near spelling: a name the project uses on five records or more, one letter away
         var london = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "London", Status: EntityStatus.Confirmed), scheme);

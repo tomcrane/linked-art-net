@@ -1589,6 +1589,23 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await tx.CommitAsync(ct);
     }
 
+    public async Task<IReadOnlyList<EntityRecord>> RecordDecisionsForEntityAsync(string entityId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select d.id, d.system, d.record_id, d.field, s.id, s.raw, d.reviewer, d.decided_at
+            from record_decisions d
+                 left join lateral (select s.id, s.raw from occurrences o join source_strings s on s.id = o.string_id
+                                    where o.dataset = d.dataset and o.system = d.system and o.record_id = d.record_id and o.field = d.field and s.normalised = d.normalised limit 1) s on true
+            where d.valid and d.entity_id = @id order by s.raw, d.record_id
+            """);
+        Add(cmd, "id", entityId);
+        var list = new List<EntityRecord>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new EntityRecord(r.GetInt64(0), r.GetString(1), r.GetString(2), r.GetString(3), r.IsDBNull(4) ? null : r.GetInt64(4), Str(r, 5), Str(r, 6), r.GetFieldValue<DateTimeOffset>(7)));
+        return list;
+    }
+
     public async Task<IReadOnlyList<RecordDecision>> RecordDecisionsForStringAsync(long stringId, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

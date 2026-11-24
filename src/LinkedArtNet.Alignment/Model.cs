@@ -425,6 +425,9 @@ public sealed record Finding(long Id, string Dataset, string System, string Reco
 }
 
 /// <summary>A decision for one record: what a string means in that record, where it differs from what the string means elsewhere (design doc 12 section 14.3).</summary>
+/// <summary>A record decided for itself onto an entity: the record, the field, and the string (with its card) whose text it is.</summary>
+public sealed record EntityRecord(long Id, string System, string RecordId, string Field, long? StringId, string? Raw, string? Reviewer, DateTimeOffset DecidedAt);
+
 public sealed record RecordDecision(long Id, string System, string RecordId, string Field, string? EntityId, string? EntityLabel, string? Reviewer, DateTimeOffset DecidedAt);
 
 /// <summary>A string a reviewer set aside at the desk, with the latest note on it: why, when one was given.</summary>

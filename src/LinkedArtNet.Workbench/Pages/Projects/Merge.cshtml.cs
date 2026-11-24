@@ -32,7 +32,7 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
     /// it was: "this looks a bit clunky", a table with a name, a count and the sources' names, and nothing to compare by).
     /// </summary>
     public sealed record Row(Entity Entity, int Strings, int Queued, string? Placement = null, int Records = 0,
-        IReadOnlyList<(SourceString String, int Records)>? Sample = null, IReadOnlyList<(Equivalent Id, string? Says)>? Identifiers = null);
+        IReadOnlyList<(SourceString String, int Records)>? Sample = null, IReadOnlyList<(Equivalent Id, string? Says)>? Identifiers = null, int ByRecord = 0);
 
     /// <summary>Where the person came from, to go back to: "duplicates" for the check's list.</summary>
     [BindProperty(SupportsGet = true)] public string? From { get; set; }
@@ -59,7 +59,7 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
                 identifiers.Add((q, await Services.Store.GetAuthorityAsync(q.Uri, HttpContext.RequestAborted) is { } record ? LinkedArtNet.Alignment.Authorities.RecordSummary.Says(record) ?? record.Label : null));
             var clue = await Project.Desk.ClueAsync(entity, HttpContext.RequestAborted);
             rows.Add(new Row(entity, strings.Count, strings.Count(s => s.Decision.Method == DecisionMethod.Queued), clue.Placement, counted.Sum(x => x.Records),
-                counted.OrderByDescending(x => x.Records).Take(6).ToList(), identifiers));
+                counted.OrderByDescending(x => x.Records).Take(6).ToList(), identifiers, (await Services.Store.RecordDecisionsForEntityAsync(entity.Id, HttpContext.RequestAborted)).Count));
         }
         return rows;
     }

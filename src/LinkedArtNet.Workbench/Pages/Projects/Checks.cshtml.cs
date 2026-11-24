@@ -140,14 +140,16 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     public async Task<IActionResult> OnPostGiveRecordsAsync(string[]? give)
     {
         var given = new List<string>(); var refused = new List<string>();
-        foreach (var pair in (give ?? []).Where(g => !string.IsNullOrWhiteSpace(g)).Distinct(StringComparer.Ordinal))
+        // the rows ticked, and the rows of several where one of the name was chosen (each such row sends its own field)
+        var chosen = Request.Form.Where(f => f.Key.StartsWith("pick", StringComparison.Ordinal)).SelectMany(f => f.Value).OfType<string>();
+        foreach (var pair in (give ?? []).Concat(chosen).Where(g => !string.IsNullOrWhiteSpace(g)).Distinct(StringComparer.Ordinal))
         {
             var cut = pair.IndexOf('|');
             if (cut <= 0) continue;
             try { given.Add((await Project.Curation.AddEquivalentAsync(Dataset, pair[..cut], pair[(cut + 1)..], Reviewer, HttpContext.RequestAborted)).Label ?? pair[..cut]); }
             catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException or IdentifierInUseException) { refused.Add(e.Message); }
         }
-        if (given.Count == 0 && refused.Count == 0) return Flash("Tick the places to give their records first.", new { dataset = Dataset, check = "thin" });
+        if (given.Count == 0 && refused.Count == 0) return Flash("Tick a place, or choose a record on a row of several, first.", new { dataset = Dataset, check = "thin" });
         return Flash($"{given.Count} place{(given.Count == 1 ? "" : "s")} given the gazetteer's record: {string.Join(", ", given)}.{(refused.Count > 0 ? " Not given: " + string.Join("; ", refused) + "." : "")} Each one's page can remove it.", new { dataset = Dataset, check = "thin" });
     }
 

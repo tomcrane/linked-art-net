@@ -457,6 +457,8 @@ public sealed record ThinPlace(ThinPlaceRow Row, IReadOnlyList<AuthorityRecord> 
     public string Name { get; init; } = "";
     /// <summary>The record offered is in the home place, and not where the entity's own label says the entity is: offered apart, to be read before it is given.</summary>
     public bool Doubt { get; init; }
+    /// <summary>What kind of place each of <see cref="ThinPlace.Named"/> is, by its URI, as the gazetteer says ("inhabited places", "counties"), where it says.</summary>
+    public IReadOnlyDictionary<string, string> Kinds { get; init; } = new Dictionary<string, string>();
 }
 
 public sealed record NotNameEntity(string EntityId, string? Label, string Class, IReadOnlyList<long> StringIds, IReadOnlyList<string> Strings, int Records, int Queued);

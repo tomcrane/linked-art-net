@@ -383,6 +383,16 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     public async Task<IReadOnlyList<ThinPlace>> ThinPlacesAsync(string dataset, string? homePlace, CancellationToken ct = default)
     {
         var list = new List<ThinPlace>();
+        var kindLabels = new Dictionary<string, string?>(StringComparer.Ordinal);
+        async Task<string?> KindOfAsync(AuthorityRecord r)
+        {
+            if (r.DataJson is null) return null;
+            string? type;
+            using (var doc = JsonDocument.Parse(r.DataJson)) type = doc.RootElement.ValueKind == JsonValueKind.Object && doc.RootElement.TryGetProperty("placeType", out var pt) && pt.ValueKind == JsonValueKind.String ? pt.GetString() : null;
+            if (type is null) return null;
+            if (!kindLabels.TryGetValue(type, out var label)) kindLabels[type] = label = (await store.GetAuthorityAsync(type, ct))?.Label;
+            return label;
+        }
         foreach (var row in await store.ThinPlacesAsync(dataset, NoGazetteerRecord, ct))
         {
             if (row.Keys.Count == 0) continue;
@@ -394,7 +404,12 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             var key = StringKey.Normalise(name);
             if (named.Where(r => r.Label is not null && StringKey.Normalise(r.Label) == key).ToList() is { Count: > 0 } own) named = own;
             bool Home(AuthorityRecord r) => !string.IsNullOrWhiteSpace(homePlace) && (ReviewService.ChainOf(r) ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase);
-            var ordered = named.OrderByDescending(Home).ThenBy(r => r.Label, StringComparer.Ordinal).ToList();
+            // where there are several, those at home lead and a town before the district or county of its name, so that the few shown
+            // on the row are the likeliest (the assistant as a user, 2026-11-24: 115 rows of several, "Cardiff", "Nottingham",
+            // "Sheffield", each a search and a press on another page)
+            var kinds = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var r in named.Take(30)) if (await KindOfAsync(r) is { } kind) kinds[r.Uri] = kind;
+            var ordered = named.OrderByDescending(Home).ThenByDescending(r => kinds.TryGetValue(r.Uri, out var k) && k.Contains("inhabited", StringComparison.OrdinalIgnoreCase) ? 1 : 0).ThenBy(r => r.Label, StringComparer.Ordinal).ThenBy(r => r.Uri, StringComparer.Ordinal).ToList();
             var atHome = ordered.Count(Home);
             var offer = ordered.Count == 1 ? ordered[0] : atHome == 1 ? ordered[0] : null;
             var doubt = false;
@@ -402,16 +417,16 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             // the record's chain (read as a user, 2026-11-24, of 99 offers some 18 contradicted the label: "Rowsley (England)" a place
             // in Victoria, "Calton Hill (Edinburgh, Scotland)" one in Queensland, "Crimea (Ukraine)" one in Louisiana, "Audley End
             // (Essex)" one in Suffolk). An abbreviation the chain spells out loses its offer too ("(N.J.)"): it is found by hand
-            if (offer is not null && System.Text.RegularExpressions.Regex.Match(row.Label ?? "", @"\(([^)]*)\)\s*$") is { Success: true } said)
+            if (offer is not null && System.Text.RegularExpressions.Regex.Match(row.Label ?? "", @"(?:\(([^)]*)\)|,\s*([^,()]+))\s*$") is { Success: true } said)
             {
                 var chain = (ReviewService.ChainOf(offer) ?? "").ToLowerInvariant();
-                var qualifierWords = System.Text.RegularExpressions.Regex.Matches(said.Groups[1].Value.ToLowerInvariant(), @"\p{L}{3,}").Select(w => w.Value).Where(w => w is not ("and" or "the")).ToList();
+                var qualifierWords = System.Text.RegularExpressions.Regex.Matches((said.Groups[1].Value + " " + said.Groups[2].Value).ToLowerInvariant(), @"\p{L}{3,}").Select(w => w.Value).Where(w => w is not ("and" or "the")).ToList();
                 // not borne out: abroad it is no offer; at home it is offered apart, to be read, since a gazetteer files a town under
                 // its present district where the label has the county ("Chatham (Kent)" is under Medway)
                 if (qualifierWords.Count > 0 && !qualifierWords.All(w => chain.Contains(w, StringComparison.Ordinal))) { if (Home(offer)) doubt = true; else offer = null; }
             }
             var holder = offer is null ? null : (await store.FindEntitiesByEquivalentAsync(offer.Uri, ct)).FirstOrDefault(o => o.Dataset == dataset && o.MergedInto is null && o.Id != row.EntityId);
-            list.Add(new ThinPlace(row, ordered, atHome, offer, holder) { Name = name, Doubt = doubt && offer is not null });
+            list.Add(new ThinPlace(row, ordered, atHome, offer, holder) { Name = name, Doubt = doubt && offer is not null, Kinds = kinds });
         }
         return list;
     }

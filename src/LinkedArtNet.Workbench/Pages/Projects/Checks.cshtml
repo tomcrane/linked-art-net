@@ -384,18 +384,19 @@ else if (Model.Check == "thin")
     <h2>Places that say too little <span class="muted small">@Model.Thin.Count</span></h2>
     <p class="small muted">A place none of whose identifiers is a gazetteer's or Wikidata's, so nothing the project holds says where it is: on a card it stands below its namesakes and is missing from the map. The gazetteer has a record, or several, of its name. Where there is one of the name, or one in @(Model.HomePlace ?? "the project's home place") among several, it is offered: read where it is against the entity's strings before giving it. A place whose name the gazetteer does not have is not listed.</p>
     @if (Model.Thin.Count == 0) { <p class="notice">Nothing is listed.</p> }
+    <form id="give-ticked" method="post" asp-page-handler="GiveRecords"></form>
     @foreach (var (title, rows, about) in new[] {
         ("One record to give", Model.Thin.Where(p => p.Offer is not null && p.Holder is null && !p.Doubt).ToList(), "the only record of the name, or the only one at home"),
         ("One record, in another place than the label says", Model.Thin.Where(p => p.Offer is not null && p.Holder is null && p.Doubt).ToList(), "the record is at home, and its place is not the one in the entity's own label. It may be the same place filed under a newer district, or a namesake in the next county: read both before giving it"),
         ("Held by another entity", Model.Thin.Where(p => p.Offer is not null && p.Holder is not null).ToList(), "the record that would be given is on another of the project's entities: the two may be one place"),
-        ("Several of the name", Model.Thin.Where(p => p.Offer is null).ToList(), "the entity's page searches the indexes for it") })
+        ("Several of the name", Model.Thin.Where(p => p.Offer is null).ToList(), "the likeliest of the name are on the row, those at home first and a town before the district of its name: choose the one the entity's strings mean, or search for another on the entity's page") })
     {
         if (rows.Count == 0) { continue; }
         <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
-        @if (rows.Any(p => p.Offer is not null && p.Holder is null && !p.Doubt))
+        @if (rows.Any(p => (p.Offer is not null && p.Holder is null && !p.Doubt) || p.Offer is null))
         {
             @* several at once (the assistant as a user, 2026-11-24: ninety-nine rows, most of them plain, a press and a page each) *@
-            <form id="give-ticked" method="post" asp-page-handler="GiveRecords" class="row" style="align-items:center; margin:.3rem 0 .6rem"><button type="submit" class="secondary small">Give the ticked places their records</button> <span class="small muted">tick the rows you have read; each row's own button gives one</span></form>
+            <p class="row" style="align-items:center; margin:.3rem 0 .6rem"><button type="submit" form="give-ticked" class="secondary small">Give the places ticked or chosen their records</button> <span class="small muted">@(rows[0].Offer is null ? "choose the record on the rows you have read; a row left at \u201cnot chosen\u201d is not touched" : "tick the rows you have read; each row's own button gives one")</span></p>
         }
         <table class="checks">
             <thead><tr><th>Place</th><th>It holds</th><th>The gazetteer has</th><th>Decide</th></tr></thead>
@@ -414,7 +415,13 @@ else if (Model.Check == "thin")
                         }
                         else
                         {
-                            <span>@p.Named.Count of the name@(p.AtHome > 0 ? $", {p.AtHome} at home" : "")</span><br /><span class="muted">@string.Join(" · ", p.Named.Take(3).Select(n => ReviewService.ChainOf(n) is { } c ? c.Split(", ")[0] : n.Label))@(p.Named.Count > 3 ? " …" : "")</span>
+                            var k = Model.Thin.ToList().IndexOf(p);
+                            <span class="muted">@p.Named.Count of the name@(p.AtHome > 0 ? $", {p.AtHome} at home" : ""):</span>
+                            @foreach (var n in p.Named.Take(4))
+                            {
+                                <br /><label style="margin:0; color:inherit; font-size:inherit; text-transform:none; letter-spacing:normal; font-weight:400"><input type="radio" form="give-ticked" name="pick@(k)" value="@p.Row.EntityId|@n.Uri" /> <strong>@n.Label</strong> <span class="muted">@(ReviewService.ChainOf(n) ?? "")@(p.Kinds.TryGetValue(n.Uri, out var kind) ? " · " + kind : "")</span></label> <a href="@n.Uri" target="_blank" rel="noopener">@n.Uri.Split('/')[^1]</a>
+                            }
+                            <br /><label style="margin:0; color:inherit; font-size:inherit; text-transform:none; letter-spacing:normal; font-weight:400"><input type="radio" form="give-ticked" name="pick@(k)" value="" checked /> <span class="muted">not chosen@(p.Named.Count > 4 ? $" · {p.Named.Count - 4} more of the name not shown" : "")</span></label>
                         }
                     </td>
                     <td class="small decide">

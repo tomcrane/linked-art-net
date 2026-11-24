@@ -208,10 +208,13 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
 
             <div class="decide-part" id="removes">
             <h3>This entity's identifiers, when every string goes</h3>
-            <p class="small muted">The entity was then aligned to the wrong place altogether. The import's identifiers are ticked for removal: they usually describe the same wrong place. One a rule or a person added since is left unticked. Change either as you judge.</p>
+            @* each line says what will happen to its identifier, in words that change with the tick (the owner, 2026-11-22 at "Wallington" and
+               2026-11-24 at "Milano (Tex.)": "I definitely removed the identifiers before I clicked mend", and none was removed: the boxes
+               come ticked, each said only "remove", and a press to remove one unticked it) *@
+            <p class="small muted">The entity was then aligned to the wrong place altogether. The import's identifiers are set to be removed already: they usually describe the same wrong place. One a rule or a person added since is set to be kept. Each line says what will happen to its identifier; press a line to change it.</p>
             @foreach (var q in pe.Equivalents)
             {
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" data-remove="@q.Source" @(q.Method.StartsWith("imported", StringComparison.Ordinal) || q.Method.StartsWith("through", StringComparison.Ordinal) ? "checked" : "") /> remove <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener">@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == first.Item ? " · " + (first.ItemDescription ?? "not in the local index") : "")</span></label></p>
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" data-remove="@q.Source" @(q.Method.StartsWith("imported", StringComparison.Ordinal) || q.Method.StartsWith("through", StringComparison.Ordinal) ? "checked" : "") /> <strong data-remove-says>remove</strong> <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener" data-remove-what>@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == first.Item ? " · " + (first.ItemDescription ?? "not in the local index") : "")</span></label></p>
             }
             </div>
 
@@ -245,6 +248,11 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
             form.querySelectorAll("input[data-string]:checked").forEach(function (r) { var h = document.createElement("input"); h.type = "hidden"; h.name = "go"; h.value = r.getAttribute("data-string"); finder.appendChild(h); });
         });
         function update() {
+            form.querySelectorAll("input[data-remove]").forEach(function (c) {
+                var line = c.closest("label"), says = line && line.querySelector("[data-remove-says]"), what = line && line.querySelector("[data-remove-what]");
+                if (says) says.textContent = c.checked ? "will be removed:" : "will be kept:";
+                if (what) what.style.textDecoration = c.checked ? "line-through" : "";
+            });
             var chosen = form.querySelectorAll("input[data-outcome]:checked");
             var total = chosen.length, go = 0;
             chosen.forEach(function (r) { if (r.value === "go") go++; });

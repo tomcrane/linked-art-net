@@ -97,6 +97,14 @@ public class ThroughWikidataTests(PostgresFixture pg)
         Assert.Equal((texas.Id, $"Mil{x} (Tex.)", lombardy.Uri, 226, 31), (listed.Row.EntityId, listed.Row.EntityLabel, listed.Row.HomeUri, listed.Row.HomeSitelinks, listed.Row.ItemSitelinks));
         var plan = (await curation.MendPlanAsync(ds, texas.Id, "United Kingdom"))!;
         Assert.Equal(lombardy.Uri, Assert.Single(plan.Homes).HomeUri);
+        // mended whole to the better-known place: the identifiers named go, and the label that said the wrong place goes with them
+        var (mended, said) = await curation.ApplyAsync(ds, texas.Id, [bare.Id], lombardy.Uri, ["http://www.wikidata.org/entity/Q1" + x], null, null, "tester");
+        Assert.Equal(("Mil" + x, texas.Id), (mended.Label, mended.Id));
+        Assert.Equal(lombardy.Uri, Assert.Single(mended.Equivalents).Uri);
+        Assert.Contains("1 identifier removed", said);
+        Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
+        await pg.Store.AddEquivalentAsync(texas.Id, new Equivalent("http://www.wikidata.org/entity/Q1" + x, "wikidata", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        await curation.SetLabelAsync(ds, texas.Id, $"Mil{x} (Tex.)", "tester");
         // a string that says where it is does not list the entity, and nor does a person's word for it
         var qualified = await pg.Store.CollectAsync(ds, "place", $"Mil{x}, Texas");
         await pg.Store.DecideAsync(qualified.Id, texas.Id, DecisionMethod.Imported, null, "tester");

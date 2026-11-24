@@ -787,6 +787,11 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             return await MergeAsync(dataset, entity.Id, holder.Id, reviewer, null, ct);
         }
         if (!entity.Equivalents.Any(q => q.Uri == homeUri)) await AddEquivalentAsync(dataset, entity.Id, homeUri, reviewer, ct);
+        // a label whose qualifier said the wrong place does not outlive it: the entity takes the name of the place it now is (the owner,
+        // 2026-11-24: "Milano (Tex.)", mended to Milan, was still called "Milano (Tex.)")
+        if (home?.Label is { Length: > 0 } named && entity.Label is { } old && old.Contains('(') && !string.Equals(old, named, StringComparison.Ordinal)
+            && !home.Labels.Append(named).Any(l => string.Equals(l, old, StringComparison.OrdinalIgnoreCase)))
+            await SetLabelAsync(dataset, entity.Id, named, reviewer, ct);
         await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Mended from the checks: aligned by the import to a namesake; now {where}.", ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }

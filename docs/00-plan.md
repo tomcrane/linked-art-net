@@ -493,6 +493,31 @@ and 4"). Counts in `reports/q-twelve1.txt` and `reports/q-thin1.txt`.
   disabling at the press.
 - Tried in passing: a correction coming back to its card ("Gwent"): it does.
 
+**The same day, after the owner's "Agree to all"** (the reconcile now; item 4 as a pass and a shorter check; item 3
+by hand; the order left to the assistant, who took item 4 first so that one reconcile serves both).
+
+- THE PASS, `align-through-headings`, BUILT AND RUN: run `run-20261124-122043-y6bp64` (undo-run takes it back).
+  Of 617 thin places, 252 given the one Wikidata item that names their library heading, 81 of them the item's
+  TGN record too; 157 have no library heading, 176 a heading no item names, 32 left alone (lists in
+  `reports/through-headings-run.txt`). The sample of seventy changed the rule first: an item reached by a VIAF
+  identifier alone was often the old import's namesake abroad ("Darlington" a suburb of Perth, "Leipsic" in Ohio),
+  so only library headings are followed, which is why 252 and not 395. All 252 read before the run: one wrong,
+  "Devon (England)" given a mine in South Africa (Wikidata's own link): TO REMOVE BY HAND on its page. Loose and
+  left: "Russia" (the Empire), "Waltham Abbey" (the house), "Mile End" (Mile End New Town).
+- What the pass's lists show, NOT ACTED ON: some 28 entities classed as places that are not ("Castles", "Brass",
+  "Princes", "World War, 1939-1945", "Sun", the houses Wikidata types as bodies); and places the import put on
+  a namesake abroad by a library heading ("Milano (Tex.)", "Stuttgart (Ark.)", "Hove (Belgium)", "North Wales
+  (Pa.)", "Gloucester (Mass.)", "Sevilla (Valle del Cauca, Colombia)"), which the first check may list now that
+  they hold an item: to look at there.
+- THE FOURTH CHECK, "Places that say too little", BUILT (/p/{dataset}/checks?check=thin): the thin places whose
+  name the gazetteer has; the one record offered in a press, a held record leading to the merge page, several
+  leading to the entity's page with the indexes searched, "none of them is it" as a note that takes it off the
+  list. Not yet seen in the browser, and its count not yet read on the page.
+- THE RECONCILE: begun 12:25, ykb9jd taken back, output in `reports/reconcile-20261124.txt` and `.err`. To do
+  when it ends: the method diff against ykb9jd (section 0, command 4), read string by string (the home-first
+  order should move no method; the manifest's trades and not-names, and the 333 new identifiers, will); the
+  cards of "Cambridge", "Windsor", "Preston" looked at with their maps; then the seven address cards by hand.
+
 **The second batch, BUILT 2026-11-23, and the desk used with it** (the owner: "Build all the 'Seen on the way
 and not built' so that you can then return to driving the browser ... Important to keep going. I think we balance
 the need to react to perceived issues quickly ... with churning through a lot of cards/tasks to be sure we are

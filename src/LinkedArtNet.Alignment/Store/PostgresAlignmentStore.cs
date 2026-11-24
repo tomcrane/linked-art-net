@@ -288,6 +288,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         }
         await using (var cmd = new NpgsqlCommand("delete from entity_equivalents where entity_id = @loser", conn, tx)) { Add(cmd, "loser", loserId); await cmd.ExecuteNonQueryAsync(ct); }
         await using (var cmd = new NpgsqlCommand("update decisions set entity_id = @survivor where entity_id = @loser and valid", conn, tx)) { Add(cmd, "survivor", survivorId); Add(cmd, "loser", loserId); await cmd.ExecuteNonQueryAsync(ct); }
+        // the records decided each for itself follow as the strings do (seen as a user, 2026-11-24: three records of "Newport" decided on an
+        // entity stayed on its id when it was merged into another)
+        await using (var cmd = new NpgsqlCommand("update record_decisions set entity_id = @survivor where entity_id = @loser and valid", conn, tx)) { Add(cmd, "survivor", survivorId); Add(cmd, "loser", loserId); await cmd.ExecuteNonQueryAsync(ct); }
         await using (var cmd = new NpgsqlCommand("update entities set status = 'merged', merged_into = @survivor, updated_at = @now where id = @loser and status <> 'merged'", conn, tx))
         {
             Add(cmd, "survivor", survivorId); Add(cmd, "loser", loserId); Add(cmd, "now", now);
@@ -1590,10 +1593,11 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     {
         await using var cmd = _db.CreateCommand(
             """
-            select d.id, d.system, d.record_id, d.field, d.entity_id, e.label, d.reviewer, d.decided_at
+            select d.id, d.system, d.record_id, d.field, coalesce(m.merged_into, d.entity_id), e.label, d.reviewer, d.decided_at
             from occurrences o join source_strings s on s.id = o.string_id
                  join record_decisions d on d.dataset = o.dataset and d.system = o.system and d.record_id = o.record_id and d.field = o.field and d.normalised = s.normalised and d.valid
-                 left join entities e on e.id = d.entity_id
+                 left join entities m on m.id = d.entity_id
+                 left join entities e on e.id = coalesce(m.merged_into, d.entity_id)
             where o.string_id = @id order by d.record_id
             """);
         Add(cmd, "id", stringId);

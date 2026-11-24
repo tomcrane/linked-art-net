@@ -449,6 +449,11 @@ public class CurationServiceTests(PostgresFixture pg)
         var whole = (await pg.Store.DecisionForAsync(kingston.Id))!;
         Assert.Equal((DecisionMethod.ByRecord, (string?)null), (whole.Method, whole.EntityId));
         Assert.Empty(await pg.Store.ParkedStringsAsync(ds));
+        // an entity merged into another takes its records with it
+        var surrey = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Kingston-upon-Thames (Surrey, England)", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.MergeAsync(thames.Id, surrey.Id, "tester");
+        Assert.Contains(await pg.Store.RecordDecisionsForStringAsync(kingston.Id), d => d.EntityId == surrey.Id);
+        Assert.DoesNotContain(await pg.Store.RecordDecisionsForStringAsync(kingston.Id), d => d.EntityId == thames.Id);
 
         // a near spelling: a name the project uses on five records or more, one letter away
         var london = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "London", Status: EntityStatus.Confirmed), scheme);

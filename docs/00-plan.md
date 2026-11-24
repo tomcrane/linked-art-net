@@ -555,6 +555,7 @@ nothing had happened ... Is this a caching issue?"), which is his "Wallington" o
   submit arrived with the three boxes unticked. THE CONTROL WAS THE FAULT: the boxes come ticked, each said only
   "remove", and a press meant as "remove this" unticked it and kept the identifier. MENDED: each line says what
   will happen, in words that change with the tick ("will be removed:", struck through; "will be kept:").
+- OPEN, the owner of the reworded lines, the same day: "that is clearer than before. I still think there is a better UI but not sure what it is. Anyway, OK for now." To think about and put to him: two columns, "stays on this entity" and "goes", an identifier moved between them; or no boxes at all, the identifiers of the wrong place removed as a set with one line to keep one back.
 - An entity mended whole to another place kept a label whose qualifier said the wrong one ("Milano (Tex.)" for
   Milan). MENDED: it takes the name of the place it now is. (The open item "a label offered on the Decide screen
   when every string goes" is answered for this case; a choice of label there is still not built.)

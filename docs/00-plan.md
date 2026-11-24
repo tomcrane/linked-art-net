@@ -518,6 +518,40 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   order should move no method; the manifest's trades and not-names, and the 333 new identifiers, will); the
   cards of "Cambridge", "Windsor", "Preston" looked at with their maps; then the seven address cards by hand.
 
+**The reconcile of 2026-11-24, run t52ndf, READ; a second begun** (`reports/diff-20261124.txt`, `...b.txt`).
+
+- The report: considered 45,839; matched in store 6,141; accepted 9,396; queued 3,660; minted 10,764. The diff
+  against ykb9jd: 132 strings moved, every one a place; 93 a new label on the same entity (the 333 identifiers
+  the pass gave make them exact names). No person moved: the manifest's trades, in force for the first time,
+  changed nothing; the home-first order moved no method.
+- Thirty moved to another entity or the queue. Right: "Ely", "Stamford, Lincolnshire", "Lewiston" (three),
+  "Victoria, Australia", "Goodwood, Chichester", "Shepton Beauchamp" (two), "Edinburgh (Lothian)", "Salford
+  (Greater Manchester, England)", "Sutton" off Plymouth and into the queue. WRONG, each by a place the pass
+  had just given a record: "Washington" (55 records, the National Gallery of Art's) accepted onto the project's
+  Washington in Tyne and Wear; "[Cambridge]" onto the bare "Cambridge", which is Cambridge, Massachusetts;
+  "Jamestown (Accra, Ghana)" onto Jamestown (Va.); "Hannover" (a subject) onto the Province. Newly queued and
+  the desk's: "New York", "[New York]", "New York?" (two project entities of the name now, the city and the
+  State), "Glasgow (Scotland)", "Salford (England)", "Middletown, C T", "New Castle, D.E.", "Columbia".
+- By hand as `claude` after it: "Washington" to Washington (D.C.); "[Cambridge]" to Cambridge (England);
+  "New York" with "New York?", "[New York]" and "New York (Madison Avenue)" in one act (the run in one act,
+  tried: it works) to New York (N.Y.). Still to do after the second run: "Jamestown (Accra, Ghana)",
+  "Hannover", the two "Compton (Surrey)" (on an entity with only VIAF and LUX: to check), Devon's wrong item.
+- TO PUT TO THE OWNER, a rule: the store stage takes a bare name onto the project's one entity of that name once
+  the entity is placed, with no weighing of what the name usually means: "Washington" went to Tyne and Wear.
+  Finding 123's guard (not when a namesake abroad is far the more written about) is not asked there. Not yet
+  diagnosed further; count first (how many store matches are a bare name onto a place with a far larger
+  namesake).
+- ITEM 1 MENDED after the run showed it wrong: home first always put New York in Lincolnshire at the head of
+  "New York" (1,194 records) and opened the map there. Now `Reconciler.HomeWithinTheCut`: most written-about
+  first, home leading only within prominence's guard, those at home always within the twelve. A second
+  reconcile, begun 13:25, carries it (t52ndf taken back; `reports/reconcile-20261124b.*`): its diff against
+  t52ndf should move no method.
+- Seen at the desk, NOT BUILT: the card's search lists bodies and subjects that contain the words above the
+  place that is exactly them ("Washington D.C." gave Decatur House first, the confirmed Washington (D.C.)
+  seventh; "Cambridge England" gave Brampton first): exact names and the field's own kind first. "New York
+  (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
+  wanted for entities like it.
+
 **The second batch, BUILT 2026-11-23, and the desk used with it** (the owner: "Build all the 'Seen on the way
 and not built' so that you can then return to driving the browser ... Important to keep going. I think we balance
 the need to react to perceived issues quickly ... with churning through a lot of cards/tasks to be sure we are

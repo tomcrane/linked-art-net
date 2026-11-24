@@ -548,6 +548,21 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
   wanted for entities like it.
 
+**The owner at "Milano (Tex.)", 2026-11-24** ("I definitely removed the identifiers before I clicked mend ... as if
+nothing had happened ... Is this a caching issue?"), which is his "Wallington" of 2026-11-22 again, and now found.
+
+- Not caching, and not the form: tried as a user, the screen left as it opens removed three identifiers. His
+  submit arrived with the three boxes unticked. THE CONTROL WAS THE FAULT: the boxes come ticked, each said only
+  "remove", and a press meant as "remove this" unticked it and kept the identifier. MENDED: each line says what
+  will happen, in words that change with the tick ("will be removed:", struck through; "will be kept:").
+- An entity mended whole to another place kept a label whose qualifier said the wrong one ("Milano (Tex.)" for
+  Milan). MENDED: it takes the name of the place it now is. (The open item "a label offered on the Decide screen
+  when every string goes" is answered for this case; a choice of label there is still not built.)
+- By hand as `claude`: the three Texas identifiers removed; then the entity merged into the project's "Milan"
+  (34 records, VIAF and LUX only), which now stands for 134 records with TGN's Milano.
+- The assistant stopped the workbench twice in the hour while the owner was at the checks, the first time
+  without a word.
+
 **The first check widened, BUILT 2026-11-24** (the owner: "add this condition to the first check and reuse its
 Decide screen as it is"), and a fault of the fourth check he found, MENDED.
 

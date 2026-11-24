@@ -1440,6 +1440,47 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct), CultureInfo.InvariantCulture);
     }
 
+    public async Task<IReadOnlyList<AwayRow>> QualifiedPlacesOutweighedAsync(string dataset, CancellationToken ct = default)
+    {
+        // each name looked up on its own (lateral, offset 0), as in the check beside it; half a second over PMC
+        await using var cmd = _db.CreateCommand(
+            """
+            with m as materialized (
+                select distinct e.id, e.label, e.status, s.normalised as key
+                from entities e join decisions d on d.entity_id = e.id and d.valid and d.method <> 'human' join source_strings s on s.id = d.source_string_id
+                where e.dataset = @dataset and e.class = 'Place' and e.merged_into is null and e.status <> 'confirmed' and e.label ~ '\([^)]*\)\s*$' and s.raw !~ '[,(\[?]'),
+            o as materialized (
+                select m.*, w.uri as item, w.descr, w.sitelinks, w.ilat, w.ilong
+                from m cross join lateral (
+                    select q.uri, coalesce(a.data->>'description', a.data->'pulled'->>'description') as descr, coalesce((a.data->>'sitelinks')::int, 0) as sitelinks,
+                           coalesce(a.data->>'lat', a.data->'pulled'->>'lat')::double precision as ilat, coalesce(a.data->>'long', a.data->'pulled'->>'long')::double precision as ilong
+                    from entity_equivalents q join authority_records a on a.uri = q.uri where q.entity_id = m.id and q.source = 'wikidata' order by 3 desc limit 1) w)
+            select distinct on (o.id) o.id, coalesce(n.label, o.label), o.status, (select count(*) from decisions d where d.valid and d.entity_id = o.id), o.item, o.descr, o.sitelinks,
+                   coalesce(t.uri, n.uri), coalesce(t.data->>'parentString', n.descr, ''), n.sitelinks, n.uri, false, n.descr,
+                   o.ilat, o.ilong, (t.data->>'lat')::double precision, (t.data->>'long')::double precision, o.label
+            from o cross join lateral (
+                    select a.uri, a.label, a.same_as, coalesce((a.data->>'sitelinks')::int, 0) as sitelinks, a.data->>'description' as descr from authority_records a
+                    where a.source = 'wikidata' and a.type = 'Place' and a.normalised_labels @> array[o.key]
+                      and not exists (select 1 from entity_equivalents q where q.entity_id = o.id and q.uri = a.uri)
+                    order by 4 desc limit 1 offset 0) n
+                 left join lateral (select t.uri, t.data from authority_records t where t.uri = any(n.same_as) and t.source = 'tgn' and t.type = 'Place' limit 1 offset 0) t on true
+            where n.sitelinks > 1.5 * greatest(o.sitelinks, 1)
+            order by o.id, n.sitelinks desc
+            """);
+        Add(cmd, "dataset", dataset);
+        cmd.CommandTimeout = 120;
+        var list = new List<AwayRow>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+            list.Add(new AwayRow(r.GetString(0), Str(r, 1) ?? "", r.GetString(2), Convert.ToInt32(r.GetInt64(3)), r.GetString(4), Str(r, 5), r.GetInt32(6), r.GetString(7), Str(r, 8) ?? "", r.GetInt32(9), Str(r, 10), r.GetBoolean(11), Str(r, 12))
+            {
+                ItemAt = r.IsDBNull(13) || r.IsDBNull(14) ? null : (r.GetDouble(13), r.GetDouble(14)),
+                HomeAt = r.IsDBNull(15) || r.IsDBNull(16) ? null : (r.GetDouble(15), r.GetDouble(16)),
+                EntityLabel = Str(r, 17),
+            });
+        return list;
+    }
+
     public async Task<IReadOnlyList<AwayRow>> ImportedPlacesWithHomeNamesakesAsync(string dataset, string homePlace, CancellationToken ct = default)
     {
         // the source literal lets the lookup use TGN's own label index (schema version 5)

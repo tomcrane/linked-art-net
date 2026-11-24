@@ -378,6 +378,9 @@ public sealed record SourceRecord(string System, string RecordId, string? Title,
 /// </summary>
 public sealed record AwayRow(string EntityId, string Label, string Status, int Strings, string Item, string? ItemDescription, int ItemSitelinks, string HomeUri, string HomeChain, int HomeSitelinks, string? HomeItem, bool Holds = false, string? HomeKind = null)
 {
+    /// <summary>The entity's own label, when <see cref="Label"/> is the name the row is about and not the entity's label ("Milano (Tex.)" for the name "Milan"): the second kind of row, a bare name on a place labelled as another.</summary>
+    public string? EntityLabel { get; init; }
+
     /// <summary>The nearest place the home place is in: the first of its chain that is not its own name ("Aberdeenshire" of "Bridgend, Aberdeenshire, Scotland, United Kingdom"); null when the chain has none.</summary>
     public string? Within => HomeChain.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
         .FirstOrDefault(x => x is not ("Europe" or "World") && !string.Equals(x, Label, StringComparison.OrdinalIgnoreCase));
@@ -448,7 +451,11 @@ public sealed record ThinPlaceRow(string EntityId, string? Label, IReadOnlyList<
 /// <param name="AtHome">How many of them are in the project's home place.</param>
 /// <param name="Offer">The record to offer in one press: the only one of the name, or the only one at home. Null when there are several to choose among.</param>
 /// <param name="Holder">The entity of the project that already holds the offered record, when one does: the two may be one place.</param>
-public sealed record ThinPlace(ThinPlaceRow Row, IReadOnlyList<AuthorityRecord> Named, int AtHome, AuthorityRecord? Offer, Entity? Holder);
+public sealed record ThinPlace(ThinPlaceRow Row, IReadOnlyList<AuthorityRecord> Named, int AtHome, AuthorityRecord? Offer, Entity? Holder)
+{
+    /// <summary>The entity's name without its qualifier, for searching the indexes for it.</summary>
+    public string Name { get; init; } = "";
+}
 
 public sealed record NotNameEntity(string EntityId, string? Label, string Class, IReadOnlyList<long> StringIds, IReadOnlyList<string> Strings, int Records, int Queued);
 

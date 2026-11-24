@@ -388,12 +388,17 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             if (row.Keys.Count == 0) continue;
             var named = await store.FindAuthoritiesByLabelsAsync(row.Keys.ToList(), "tgn", "Place", 30, ct);
             if (named.Count == 0) continue;
+            // the records whose own name it is, where there are any: a record that bears the name as a variant only is another place
+            // (the owner, 2026-11-24: "Norwich" was offered a search for "Northwich", which the gazetteer also calls Norwich)
+            var name = Qualified.Split(row.Label ?? "").Name;
+            var key = StringKey.Normalise(name);
+            if (named.Where(r => r.Label is not null && StringKey.Normalise(r.Label) == key).ToList() is { Count: > 0 } own) named = own;
             bool Home(AuthorityRecord r) => !string.IsNullOrWhiteSpace(homePlace) && (ReviewService.ChainOf(r) ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase);
             var ordered = named.OrderByDescending(Home).ThenBy(r => r.Label, StringComparer.Ordinal).ToList();
             var atHome = ordered.Count(Home);
             var offer = ordered.Count == 1 ? ordered[0] : atHome == 1 ? ordered[0] : null;
             var holder = offer is null ? null : (await store.FindEntitiesByEquivalentAsync(offer.Uri, ct)).FirstOrDefault(o => o.Dataset == dataset && o.MergedInto is null && o.Id != row.EntityId);
-            list.Add(new ThinPlace(row, ordered, atHome, offer, holder));
+            list.Add(new ThinPlace(row, ordered, atHome, offer, holder) { Name = name });
         }
         return list;
     }
@@ -517,6 +522,18 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             // (no description, no count) and places at home with no Wikidata item found through TGN's id standing as "0 against 0"
             found.Add(new AwayFinding(home, home.ItemDescription is not null && home.HomeItem is not null && home.HomeSitelinks >= home.ItemSitelinks, strings, null) { HomeDoubt = doubt });
         }
+        // the second kind (the owner, 2026-11-24, "add this condition to the first check and reuse its Decide screen as it is"): a string
+        // with no qualifier on a place whose label has one, where the best-known place of the name is another. Counted first: 58
+        // strings flagged, some 33 wrong on about 480 records, of two kinds, the import's namesake abroad ("Milano" in 100 records on
+        // Milano (Tex.), "Stuttgart" on Stuttgart (Ark.)) and the wrong level of the right place ("Chichester" on the District, "Munich"
+        // on the Landkreis); some 22 right ("Dedham (England)", outweighed by Massachusetts's). So a list for a person, never likely
+        foreach (var r in await store.QualifiedPlacesOutweighedAsync(dataset, ct))
+        {
+            if (found.Any(f => f.Row.EntityId == r.EntityId)) continue;
+            var standing = await store.StringsForEntityAsync(r.EntityId, 200, ct);
+            var raws = standing.Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList();
+            found.Add(new AwayFinding(r, false, raws, $"a string with no qualifier stands on it, and the best-known place of that name is another, written about in {r.HomeSitelinks} against {r.ItemSitelinks}") { Outweighed = true });
+        }
         // the likely first, the widest margin leading; then the rest, the least written-about abroad first ("Perth" in Tasmania before "New York")
         // a label that says which place it is, for the rows that are right as aligned and only want telling from their namesakes (the
         // owner, 2026-11-15: "nothing to mend, and the fix is to clarify the place name, e.g. Berkeley => Berkeley (Calif.)"): LoC's
@@ -605,6 +622,8 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         var entity = await OwnEntityAsync(dataset, entityId, ct);
         var homes = (await store.ImportedPlacesWithHomeNamesakesAsync(dataset, homePlace, ct)).Where(r => r.EntityId == entity.Id)
             .GroupBy(r => r.HomeUri).Select(g => g.First()).ToList();
+        // the second kind of row: the better-known place of the name stands where the places at home do
+        if (homes.Count == 0) homes = (await store.QualifiedPlacesOutweighedAsync(dataset, ct)).Where(r => r.EntityId == entity.Id).ToList();
         if (homes.Count == 0) return null;
         // the place at home that the item's own description names, if one: the entity is then probably right; the homes stand with
         // that one first, then those a string's qualifier names, then the most written-about
@@ -827,6 +846,8 @@ public sealed record AwayFinding(AwayRow Row, bool Likely, IReadOnlyList<string>
     public string? SuggestedLabel { get; init; }
     /// <summary>Said on the row when every string of the entity places it, and none in a place of the name at home: the place at home shown is then beside the point.</summary>
     public string? HomeDoubt { get; init; }
+    /// <summary>The second kind of row: a bare name on a place labelled as another, the row's "home" being the better-known place of the name, wherever it is.</summary>
+    public bool Outweighed { get; init; }
 }
 
 public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IReadOnlyDictionary<string, Entity> Holders)

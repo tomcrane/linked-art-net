@@ -3,8 +3,11 @@
 @{
     ViewData["Title"] = "Checks";
     var likely = Model.Away.Where(a => a.Likely).ToList();
-    var look = Model.Away.Where(a => !a.Likely && a.Row.ItemDescription is not null).ToList();
-    var unknown = Model.Away.Where(a => !a.Likely && a.Row.ItemDescription is null).ToList(); // one a string speaks for is among the likely, not here too
+    var look = Model.Away.Where(a => !a.Likely && !a.Outweighed && a.Row.ItemDescription is not null).ToList();
+    var outweighed = Model.Away.Where(a => a.Outweighed).ToList();
+    // the place a row is compared with is a gazetteer's record, or Wikidata's item when the gazetteer link is not known
+    string SourceOf(string uri) => uri.Contains("wikidata.org", StringComparison.Ordinal) ? "Wikidata" : "TGN";
+    var unknown = Model.Away.Where(a => !a.Likely && !a.Outweighed && a.Row.ItemDescription is null).ToList(); // one a string speaks for is among the likely, not here too
     // the place by its own name and then where it is (the owner, 2026-11-15, at "Glencoe": "why does this not say Glencoe?"; only the
     // chain of its parents was shown). A place in a district of its own name ("Cardiff" in Cardiff, Wales) is not named twice
     // and broadest first (2026-11-17), so that two places of one name are read from what they share to where they part:
@@ -90,11 +93,11 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
                 <a href="@first.Item" target="_blank" rel="noopener">@first.Item.Split('/')[^1]</a></td></tr>
             @foreach (var h in plan.Homes.Where(h => h.Holds))
             {
-                <tr><td>The TGN identifier it holds</td><td><span class="path">@PathHtml(Path(h.Label, h.HomeChain), common)</span> <span class="muted">@(h.HomeKind is null ? "" : "· " + h.HomeKind) @Away(first, h)</span> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a></td></tr>
+                <tr><td>The TGN identifier it holds</td><td><span class="path">@PathHtml(Path(h.Label, h.HomeChain), common)</span> <span class="muted">@(h.HomeKind is null ? "" : "· " + h.HomeKind) @Away(first, h)</span> <a href="@h.HomeUri" target="_blank" rel="noopener">@SourceOf(h.HomeUri) @h.HomeUri.Split('/')[^1]</a></td></tr>
             }
             @foreach (var h in plan.Homes.Where(h => !h.Holds && h.HomeUri != plan.Agreeing).Take(8))
             {
-                <tr><td>Also called "@pe.Label"</td><td><span class="path">@PathHtml(Path(h.Label, h.HomeChain), common)</span> <span class="muted">@(h.HomeKind is null ? "" : "· " + h.HomeKind) @Away(first, h)</span> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a></td></tr>
+                <tr><td>Also called "@pe.Label"</td><td><span class="path">@PathHtml(Path(h.Label, h.HomeChain), common)</span> <span class="muted">@(h.HomeKind is null ? "" : "· " + h.HomeKind) @Away(first, h)</span> <a href="@h.HomeUri" target="_blank" rel="noopener">@SourceOf(h.HomeUri) @h.HomeUri.Split('/')[^1]</a></td></tr>
             }
         </table>
         @if (plan.Meant is not null && plan.Homes.FirstOrDefault(h => h.HomeUri == plan.Meant) is { } meant)
@@ -153,7 +156,7 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
             @foreach (var h in plan.Homes)
             {
                 var holder = plan.Holders.GetValueOrDefault(h.HomeUri);
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @((plan.Homes.Count == 1 && plan.Others.Count == 0 && Model.Found.Count == 0 && Model.IFound.Count == 0) || h.HomeUri == plan.Preselect ? "checked" : "") /> <span class="path">@PathHtml(Path(h.Label, h.HomeChain), common)</span></label> <a href="@h.HomeUri" target="_blank" rel="noopener">TGN @h.HomeUri.Split('/')[^1]</a> <span class="muted">@(h.HomeKind is null ? "" : $"· {h.HomeKind} ")@Away(first, h)</span><br />
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="home" value="@h.HomeUri" @((plan.Homes.Count == 1 && plan.Others.Count == 0 && Model.Found.Count == 0 && Model.IFound.Count == 0) || h.HomeUri == plan.Preselect ? "checked" : "") /> <span class="path">@PathHtml(Path(h.Label, h.HomeChain), common)</span></label> <a href="@h.HomeUri" target="_blank" rel="noopener">@SourceOf(h.HomeUri) @h.HomeUri.Split('/')[^1]</a> <span class="muted">@(h.HomeKind is null ? "" : $"· {h.HomeKind} ")@Away(first, h)</span><br />
                 @if (pe.Equivalents.Any(q => q.Uri == h.HomeUri)) { <span class="muted">This entity holds this identifier already.</span> }
                 else if (holder is not null) { <span class="muted">The project has an entity for it, <a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(holder.Id)" target="_blank" rel="noopener">@holder.Label</a>: the strings go there.</span> }
                 else { <span class="muted">No entity of the project holds it yet.</span> }</p>
@@ -197,7 +200,7 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
                 var offer = agreed ?? (plan.Homes.Count == 1 ? plan.Homes[0] : null);
                 if (offer is not null)
                 {
-                    <p class="small" style="margin:.6rem 0 .2rem"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="addUri" value="@offer.HomeUri" @(agreed is not null ? "checked" : "") /> also give it the identifier of <span class="path">@PathHtml(Path(offer.Label, offer.HomeChain), Path(offer.Label, offer.HomeChain).Count - 1)</span> (<a href="@offer.HomeUri" target="_blank" rel="noopener">TGN @offer.HomeUri.Split('/')[^1]</a>): it has no TGN identifier@(agreed is null ? "; tick it if the records say this is the place" : "")</label></p>
+                    <p class="small" style="margin:.6rem 0 .2rem"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="addUri" value="@offer.HomeUri" @(agreed is not null ? "checked" : "") /> also give it the identifier of <span class="path">@PathHtml(Path(offer.Label, offer.HomeChain), Path(offer.Label, offer.HomeChain).Count - 1)</span> (<a href="@offer.HomeUri" target="_blank" rel="noopener">@SourceOf(offer.HomeUri) @offer.HomeUri.Split('/')[^1]</a>): it has no TGN identifier@(agreed is null ? "; tick it if the records say this is the place" : "")</label></p>
                 }
             }
             <p class="small muted">The entity is confirmed with this label and leaves the list. Nothing is removed from it.</p>
@@ -380,7 +383,7 @@ else if (Model.Check == "thin")
                         }
                         else
                         {
-                            <a class="button secondary small" href="@entityHref&find=@Uri.EscapeDataString(p.Named[0].Label ?? p.Row.Label ?? "")" target="_blank" rel="noopener" title="Opens the entity's page with the indexes searched for the name: add the record that is this place">Find its record…</a>
+                            <a class="button secondary small" href="@entityHref&find=@Uri.EscapeDataString(p.Name.Length > 0 ? p.Name : p.Row.Label ?? "")" target="_blank" rel="noopener" title="Opens the entity's page with the indexes searched for the name: add the record that is this place">Find its record…</a>
                         }
                         <form method="post" asp-page-handler="NoRecord" class="inline" style="margin-top:.3rem"><input type="hidden" name="id" value="@p.Row.EntityId" /><button type="submit" class="link small" title="None of the gazetteer's records of the name is this place: a note is put on it and it leaves the list">none of them is it</button></form>
                     </td>
@@ -401,22 +404,23 @@ else if (Model.Check == "places")
 else
 {
     <p class="small muted">A place whose name has no qualifier ("Glasgow"), whose Wikidata identifier came from an import, where a place of exactly that name stands in @Model.HomePlace and the Wikidata item's own description names nothing of it. The strings are read too: an entity whose every string carries a qualifier the item bears ("Birmingham, Ala." on Birmingham, Alabama) is not listed, and one with a string that names the place at home ("Stowe (England)" on Stowe, Vermont) leads the likely. "Written about" is the number of Wikipedia editions with an article (sitelinks). The place at home shown is the most written-about of that name.</p>
-    @foreach (var (title, rows, about) in new[] { ("Likely wrong", likely, "a string of the entity names the place at home, or the place at home is at least as written about as the one the entity is aligned to"), ("To look at", look, "the entity's place is the more written about, or the place at home has no count to compare; the least written-about first"), ("Cannot tell", unknown, "the Wikidata item is not in the local index, so there is no description to read yet: \u201cDecide\u2026\u201d fetches it from Wikidata and says what it is") })
+    @foreach (var (title, rows, about) in new[] { ("Likely wrong", likely, "a string of the entity names the place at home, or the place at home is at least as written about as the one the entity is aligned to"), ("To look at", look, "the entity's place is the more written about, or the place at home has no count to compare; the least written-about first"), ("Cannot tell", unknown, "the Wikidata item is not in the local index, so there is no description to read yet: \u201cDecide\u2026\u201d fetches it from Wikidata and says what it is"),
+        ("A bare name on a place labelled as another", outweighed, "a string with no qualifier stands on a place whose label says where or what it is, and the best-known place of the name is another: a namesake elsewhere, or a district or region where the town of the name is meant. Shown beside it is that better-known place, wherever it is") })
     {
         <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
         @if (rows.Count == 0) { <p class="small muted">None.</p> }
         else
         {
             <table class="checks">
-                <thead><tr><th>Entity and its strings</th><th>Aligned to</th><th>At home</th><th>Decide</th></tr></thead>
+                <thead><tr><th>Entity and its strings</th><th>Aligned to</th><th>@(rows.Count > 0 && rows[0].Outweighed ? "Better known by the name" : "At home")</th><th>Decide</th></tr></thead>
                 <tbody>
                 @foreach (var f in rows)
                 {
                     var r = f.Row;
                     <tr>
-                        <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(r.EntityId)"><strong>@r.Label</strong></a><br /><span class="small muted">@r.Status · stands for @r.Strings string@(r.Strings == 1 ? "" : "s")</span>@if (f.Strings.Count > 0) { <br /><span class="small" title="The strings that stand on this entity, as the records write them">@string.Join(" · ", f.Strings.Take(6).Select(x => $"\u201c{x}\u201d"))@(f.Strings.Count > 6 ? " …" : "")</span> }@if (f.Reason is not null) { <br /><strong class="small">@f.Reason</strong> }</td>
+                        <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(r.EntityId)"><strong>@(r.EntityLabel ?? r.Label)</strong></a><br /><span class="small muted">@r.Status · stands for @r.Strings string@(r.Strings == 1 ? "" : "s")</span>@if (f.Strings.Count > 0) { <br /><span class="small" title="The strings that stand on this entity, as the records write them">@string.Join(" · ", f.Strings.Take(6).Select(x => $"\u201c{x}\u201d"))@(f.Strings.Count > 6 ? " …" : "")</span> }@if (f.Reason is not null) { <br /><strong class="small">@f.Reason</strong> }</td>
                         <td class="small">@(r.ItemDescription ?? "(the item is not in the index)")<br /><a href="@r.Item" target="_blank" rel="noopener">@r.Item.Split('/')[^1]</a> <span class="muted">@(r.ItemDescription is null ? "" : $"· written about in {r.ItemSitelinks}")</span></td>
-                        <td class="small">@if (f.HomeDoubt is not null) { <span class="muted">@f.HomeDoubt. The nearest by name:</span><br /> }<span class="path">@PathHtml(Path(r.Label, r.HomeChain), Path(r.Label, r.HomeChain).Count - 1)</span><br /><a href="@r.HomeUri" target="_blank" rel="noopener">TGN @r.HomeUri.Split('/')[^1]</a> <span class="muted">· @(r.HomeItem is null ? "no count known" : $"written about in {r.HomeSitelinks}")</span><br /><code class="small">@r.HomeUri</code></td>
+                        <td class="small">@if (f.HomeDoubt is not null) { <span class="muted">@f.HomeDoubt. The nearest by name:</span><br /> }<span class="path">@PathHtml(Path(r.Label, r.HomeChain), Path(r.Label, r.HomeChain).Count - 1)</span><br /><a href="@r.HomeUri" target="_blank" rel="noopener">@SourceOf(r.HomeUri) @r.HomeUri.Split('/')[^1]</a> <span class="muted">· @(r.HomeItem is null ? "no count known" : $"written about in {r.HomeSitelinks}")</span><br /><code class="small">@r.HomeUri</code></td>
                         @* one call to action a row (the owner, 2026-11-15: three were confusing, and "you need to see the records, which means going to the mend page. The Relabel option could be there too, or in fact only there") *@
                         <td class="small decide"><a class="button secondary small" href="/p/@Model.Dataset/checks?mend=@Uri.EscapeDataString(r.EntityId)" title="Shows the records the entity's strings are in, and what can be done: keep it as the right place (with a clearer label), mend it, or move some of its strings. Nothing is changed until you choose there">Decide…</a></td>
                     </tr>

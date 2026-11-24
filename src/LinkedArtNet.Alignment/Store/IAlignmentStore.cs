@@ -118,6 +118,13 @@ public interface IAlignmentStore
     /// Place entities of the dataset, not confirmed by a person, with a label that has no qualifier and a Wikidata item given by an
     /// import, beside each TGN place of exactly that name whose chain is in the home place: one row a pair, for the check that reads them.
     /// </summary>
+    /// <summary>
+    /// Places whose label carries a qualifier, standing for a string that carries none, where the most written-about Wikidata place of
+    /// that string's name is another than the entity's own item and more than one and a half times as written about. The row's
+    /// "home" fields carry that better-known place: the TGN record its item names, or the item itself when it names none.
+    /// </summary>
+    Task<IReadOnlyList<AwayRow>> QualifiedPlacesOutweighedAsync(string dataset, CancellationToken ct = default);
+
     Task<IReadOnlyList<AwayRow>> ImportedPlacesWithHomeNamesakesAsync(string dataset, string homePlace, CancellationToken ct = default);
 
     /// <summary>The most written-about Wikidata place of exactly this name in the local index, other than the item given: its URI, what it says it is, and its sitelinks; null when the index has no other place of the name.</summary>

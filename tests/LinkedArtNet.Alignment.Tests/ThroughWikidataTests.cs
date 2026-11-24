@@ -73,6 +73,38 @@ public class ThroughWikidataTests(PostgresFixture pg)
     }
 
     [PostgresFact]
+    public async Task A_bare_name_on_a_place_labelled_as_another_is_listed_with_the_better_known_place()
+    {
+        // the owner, 2026-11-24: "Milano" in 100 records stood on the import's Milano (Tex.). The first check lists it beside the
+        // best-known place of the name, and its Decide screen is offered that place as it is offered a place at home
+        var x = "z" + string.Concat(Guid.NewGuid().ToString("N").Where(char.IsLetter).Take(7));
+        var ds = "ow" + x;
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        static AuthorityRecord Counted(string q, string label, int sitelinks, string descr, params string[] sameAs) =>
+            new($"http://www.wikidata.org/entity/{q}", "wikidata", label, [label], "Place", null, sameAs, $"{{\"sitelinks\":{sitelinks},\"description\":\"{descr}\"}}", DateTimeOffset.UtcNow, "test");
+        var lombardy = Tgn("9" + x, "Mil" + x, "Lombardy, Italy, Europe, World");
+        await pg.Store.PutAuthorityAsync(lombardy);
+        await pg.Store.PutAuthorityAsync(Counted("Q1" + x, "Mil" + x, 31, "city in Milam County, Texas, United States"));
+        await pg.Store.PutAuthorityAsync(Counted("Q2" + x, "Mil" + x, 226, "Italian comune", lombardy.Uri));
+        var texas = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, $"Mil{x} (Tex.)", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(texas.Id, new Equivalent("http://www.wikidata.org/entity/Q1" + x, "wikidata", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        var bare = await pg.Store.CollectAsync(ds, "place", "Mil" + x);
+        await pg.Store.DecideAsync(bare.Id, texas.Id, DecisionMethod.Imported, null, "tester");
+        var curation = new CurationService(pg.Store, scheme, new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions()));
+
+        var listed = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
+        Assert.True(listed.Outweighed); Assert.False(listed.Likely);
+        Assert.Equal((texas.Id, $"Mil{x} (Tex.)", lombardy.Uri, 226, 31), (listed.Row.EntityId, listed.Row.EntityLabel, listed.Row.HomeUri, listed.Row.HomeSitelinks, listed.Row.ItemSitelinks));
+        var plan = (await curation.MendPlanAsync(ds, texas.Id, "United Kingdom"))!;
+        Assert.Equal(lombardy.Uri, Assert.Single(plan.Homes).HomeUri);
+        // a string that says where it is does not list the entity, and nor does a person's word for it
+        var qualified = await pg.Store.CollectAsync(ds, "place", $"Mil{x}, Texas");
+        await pg.Store.DecideAsync(qualified.Id, texas.Id, DecisionMethod.Imported, null, "tester");
+        await pg.Store.DecideAsync(bare.Id, texas.Id, DecisionMethod.Human, null, "tester");
+        Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
+    }
+
+    [PostgresFact]
     public async Task A_thin_place_gains_the_item_that_names_its_heading_and_the_items_gazetteer_record()
     {
         // the owner, 2026-11-23, after "Chatham": the project's Chatham (Kent) held LoC's heading alone, so it was the one candidate not
@@ -109,6 +141,7 @@ public class ThroughWikidataTests(PostgresFixture pg)
         var listed = Assert.Single(thin);
         Assert.Equal((chatham.Id, kent.Uri, 1), (listed.Row.EntityId, listed.Offer?.Uri, listed.AtHome));
         Assert.Null(listed.Holder);
+        Assert.Equal("Chatham", listed.Name);
         await curation.NoteAsync(ds, chatham.Id, "tester", CurationService.NoGazetteerRecord + ": a test");
         Assert.Empty(await curation.ThinPlacesAsync(ds, "United Kingdom"));
 

@@ -453,6 +453,46 @@ you"), each tried on a real card as `claude`:
   kept as data; like cards as a run decided in one act; the place at home first among level candidates; a near
   spelling of a name the project has offered on the card ("Londo").
 
+**The owner's five, 2026-11-24: where each stands** (section 0 lists them; he: "do all of these starting with 1
+and 4"). Counts in `reports/q-twelve1.txt` and `reports/q-thin1.txt`.
+
+- 1, WHICH TWELVE A CARD KEEPS: BUILT, not yet on the cards. Counted: of the queued strings whose card hides
+  level candidates (445; 37 of them places), some 25 have a gazetteer record at home cut ("Cambridge" in three
+  fields, "Windsor", "Preston" with 17, "Warwick", "Manchester", "Easton"), six with none at home shown at all.
+  The cause is the order, not the cut: most written-about first, and a gazetteer's record alone counts no
+  sitelinks. Now the candidates at home lead, each set most written-about first; order only. IT REACHES A CARD
+  WHEN ITS STRING IS EVALUATED AGAIN: a reconcile (ykb9jd taken back, some 45 minutes). TO PUT TO THE OWNER:
+  when. Its diff will also show the next item.
+- FOUND reading the reconcile command: it took only the contexts and the home place from the manifest, so no run
+  by the tool has known the manifest's trades (finding 109) or its not-names. Mended. The next run's diff will
+  show what the trades move; to be read string by string as any rule's first run.
+- 4, THIN ENTITIES: COUNTED, NOT BUILT; the count changes the shape, so it is the owner's. 617 live places hold
+  no gazetteer's or Wikidata's identifier. 395 have exactly one TGN or Wikidata record that names one of their
+  identifiers as the same thing (Norwich, Liverpool, Germany, Hull): mechanical. 14 have several such. 29 have
+  one TGN record of the name; 65 several (22 with one at home, 18 with several at home, 25 with none at home);
+  114 have no gazetteer record of the name (houses, regions, "Prisons"). PROPOSED: a pass, as a run that
+  undo-run takes back, gives the 395 their record (the pass through Wikidata of 2026-11-06 is the model; a
+  sample read first); the check then lists the hundred or so that want a person (the 14, the 29, the 65), and
+  not the 114.
+- 3, STREET ADDRESSES: COUNTED, and no rule is worth it: of 124 queued places, four are a city with an address
+  in brackets ("London (31 Foubert's Place, W1V 1HE)", "[London] ([Royle House ...])", "Stoke-on-Trent (P.O. Box
+  ...)", "New York (Madison Avenue)"), one a city and a building ("Glasgow, Central Hotel"), two a street alone
+  ("King Street", "New Bond Street"), which no rule could read. PROPOSED: by hand at the desk, seven cards.
+- 2, BORROWED COORDINATES: not begun. Less wanted once item 4's pass has run (a place with its gazetteer record
+  has its own); to be judged after it.
+- 5, THE MERGES: DONE at the desk as `claude`. Kingston upon Thames: one entity,
+  "Kingston-upon-Thames (Surrey, England)". Newport: the entity labelled "Newport" held LoC's "Gwent (Wales)" and
+  stood for "Newport, Gwent" (3 records), "Gwent" (1 record, a guide to Penhow Castle) and three records of
+  "Newport" decided by record; merged into "Newport (Wales)", LoC's Gwent heading then removed from it, and
+  "Gwent" decided again as LoC's Gwent (Wales). The VIAF and LUX identifiers that came with the Gwent heading are
+  still on Newport (Wales), unverified: to pull and remove if they are Gwent's.
+- What the merges showed. MENDED: a merge did not take the records decided by record with it. NOT BUILT: the
+  merge page and the entity's page count strings and say nothing of records decided onto the entity one by one
+  (the Newport entity read "2 strings, 4 records" with three more records on it); the merge page, pressed, showed
+  no change for some seconds, and a second press posted again ("Only one entity here"): the button wants
+  disabling at the press.
+- Tried in passing: a correction coming back to its card ("Gwent"): it does.
+
 **The second batch, BUILT 2026-11-23, and the desk used with it** (the owner: "Build all the 'Seen on the way
 and not built' so that you can then return to driving the browser ... Important to keep going. I think we balance
 the need to react to perceived issues quickly ... with churning through a lot of cards/tasks to be sure we are

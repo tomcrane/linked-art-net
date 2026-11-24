@@ -23,6 +23,31 @@ understated by up to some 230 placeholder self-acceptances (finding 95), every c
 ended with awn284 on the stopping criterion proposed that afternoon: a diff explained by the findings built for it, no
 misfire, nothing new in the samples. The count is no longer the measure; the diff is.
 
+## 2026-11-24
+
+The owner's five of the day before, all done; two reconciles (t52ndf, then kfg394, the last full run); schema 14.
+
+- Each counted first, and the counts changed three of the five. The twelve a card keeps: some 25 queued cards
+  with a gazetteer record at home cut, the cause the order and not the cut. Thin places: 617, of which 395
+  reachable by a link, so a pass before a check; a sample then showed the VIAF links were often the import's
+  namesakes, so the pass followed library headings only and gave 252 their record (run y6bp64). Street
+  addresses: seven cards, no rule, decided by hand.
+- Built: the order for a card's twelve (`HomeWithinTheCut`); the pass `align-through-headings`; the fourth
+  check, "Places that say too little"; borrowed coordinates from the gazetteer; the card's search order; the
+  records decided one by one on the entity and merge pages; a button pressed once. Found and mended: the
+  reconcile command had taken only the contexts and the home place from the manifest; a merge had left the
+  records decided one by one behind.
+- The first reconcile showed the first build of the order wrong (home first always: "New York", 1,194 records,
+  led by New York in Lincolnshire) and four wrong acceptances onto places the pass had just given a record
+  ("Washington" onto Tyne and Wear's, 55 records). The order was reworked and run again: no method moved. The
+  four were put right by hand. A guard on bare names was counted and not proposed (two caught, a dozen right
+  ones queued).
+- At the desk as `claude`: the two merges (Newport's entity held Gwent's heading), some twenty-five strings,
+  the queue 3,716 to 3,700, the place queue 124 to 113.
+- Learnt: an "order only" change is to be read on a card before it is called done, as well as in a diff; a pass
+  that gives entities identifiers changes what the rules do with them at the next run, so its reconcile's diff
+  is the pass's measure too.
+
 ## 2026-11-23
 
 The assistant at the desk as a user, at the owner's word ("do lots of browser-driving, observing the common

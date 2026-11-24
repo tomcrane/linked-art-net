@@ -62,79 +62,65 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-23 evening; the one place to read first)
+## 0. Resume point (written 2026-11-24 afternoon; the one place to read first)
 
-**OPEN WITH THIS** (the owner, 2026-11-23, of the five things put to him, and then he shut down: "I want you to do
-all of these starting with 1 and 4. But that will have to be in the next session"). All five are agreed; nothing is
-to be asked again. Each is counted first, with the listing's own exact condition, and the rows read, before it is
-built; a count that changes what was agreed goes back to him. In this order:
+**State.** The last full run is kfg394 (`run-20261124-131349-kfg394`), the second of 2026-11-24; the pass
+through the headings is `run-20261124-122043-y6bp64` (252 places given a record; undo-run takes it back). Schema
+version 14. 3,700 strings queued, 113 of them places. 63 findings open on the cataloguers' list. The way of
+working is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in: say
+whose it is when a drive begins and ends), the owner reviewing after. The commits of 2026-11-24 are local on
+`de-pmc`; `git push` is the owner's word. The full test loop has NOT been run since the morning's work began:
+run it before a push and at the day's end.
 
-1. *Which twelve candidates a card keeps.* "The most written-about first" keeps eleven American Chathams and drops
-   TGN's Chatham in Kent. For a project with a home place (the manifest's), the candidates at home are kept first.
-   Where: the reconciler's evidence, `Reconciler.cs` near lines 796 and 1842 (the groups the evidence shows; a
-   group holding a project entity is already never cut); the card's notice of what is hidden is in
-   `Review.cshtml` ("A card keeps twelve"). The count: queued places with a candidate at home among those cut.
-   The evidence is written at a reconcile, so say how it reaches the cards already queued (a reconcile, the last
-   full run ykb9jd taken back first, or the queued strings evaluated again) before building.
-4. *A check, "entities that say too little"*: the project's thin entities (a library's heading and nothing else,
-   or the import's VIAF and LUX alone), which is why right answers sit low and off the map. The check gives each
-   its gazetteer record. A fourth check on `Checks.cshtml(.cs)`, cached in `Services/CheckLists.cs`, beside the
-   three there. The count: places first, by what their equivalents are.
-2. *A place with no coordinates on the map*: borrowed from the gazetteer by name and where it is, and said to be
-   borrowed (the hollow marker exists: `Coordinates.ResolveAsync`, `Borrow`), so the right answer is not the one
-   missing ("Not on the map, no coordinates in its record: Chatham (Kent)").
-3. *A street address or a building after a city* ("London (59 Gordon Sq., W.C.1)", "King Street" for Christie's,
-   "New Bond Street"): a rule to read the city. Counted first; a rule of the reconciler, so measured by a run.
-5. *Two merges*, at the desk as `claude`: the two entities for Newport in Wales (`place/zk843mqs`, which holds
-   LoC's heading for Gwent, and the one made on 2026-11-23 from LoC's Newport (Wales)); the two for Kingston upon
-   Thames.
+**The owner's five of 2026-11-23, all done on 2026-11-24** (section 7 has the day in five dated blocks above
+"The second batch"; the log has the day):
 
-Then back to driving the desk in volume (his standing instruction: "do lots of browser-driving, observing the
-common scenarios"; react to what recurs, not to single cases; watch whether the map shows the right thing): the
-place queue, http://localhost:5200/p/pmc/review?method=queued&context=place&after=52440, at "Brook" (string 53088),
-then the other fields.
+1. *Which twelve a card keeps*: most written-about first, the candidates at home leading only when none abroad
+   outweighs them, and those at home always within the twelve (`Reconciler.HomeWithinTheCut`). The first build,
+   home first always, was wrong ("New York" led by Lincolnshire's) and was mended after its first reconcile.
+   Seen right on "Windsor" and "Preston".
+2. *Borrowed coordinates*: from the gazetteer beyond a card's own records, by parents or by nearness
+   (`ReviewService.BorrowFromGazetteerAsync`). Built and tested; seen once ("Windsor"), not yet on a
+   "Chatham"-like card.
+3. *Street addresses*: counted, no rule; the seven decided by hand, "King Street" logged for the cataloguers.
+4. *Thin places*: the pass (252 given a record), then the fourth check, "Places that say too little",
+   http://localhost:5200/p/pmc/checks?check=thin : 226 listed, 89 with one record to give in a press.
+5. *The merges*: done; Newport's entity held Gwent's heading, put right.
 
-**State.** The last full run is ykb9jd (`run-20261115-123145-ykb9jd`); no reconcile since. Schema version 14
-(13 findings, 14 `record_decisions`). 3,716 strings queued, 124 of them places. The workbench is stopped. The way
-of working is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in:
-say whose it is when a drive begins and ends), the owner reviewing after. The commits of 2026-11-22 and 2026-11-23
-are local on `de-pmc` (the full test loop green at day end, eight projects); `git push` is the owner's word.
+**For the owner, when we resume:**
 
-**Built on 2026-11-23** (section 7 has three dated blocks above "The work of 2026-11-22, in full"):
+- *The fourth check is his to work, or the assistant's at his word*: 89 one-press rows (read each against the
+  entity's strings: "Blackrock" is offered Caerphilly's, and the strings may mean Dublin's), 137 to find.
+- *The first check lists nothing*, though the pass gave Wikidata items to places the import put on a namesake by
+  a library heading ("Milano (Tex.)", "Stuttgart (Ark.)", "Hove (Belgium)", the bare "Cambridge" that is
+  Cambridge, Massachusetts). Its condition asks for an item that came from the import; the pass's did not. To
+  count and put to him: the check widened to an item however it came.
+- *A fault of the rules, seen and not mended*: "Jamestown (Accra, Ghana)" was taken onto the project's
+  "Jamestown (Va.)" by name, its qualifier unread, though LoC has the heading exactly. To count (qualified
+  strings on an entity whose own qualifier differs) and propose.
+- *No guard on bare names* (counted, `reports/q-bare1.txt`: it would catch two and queue a dozen right ones).
+- *Entities classed as places that are not* (some 28: "Castles", "Brass", "World War, 1939-1945"); entities
+  with a slightly wrong item ("Dorset", "Shropshire", "Russia", "Turkey"); two "Glasgow (Strathclyde)".
+- *Still to look at*: the two "Compton (Surrey)" on an entity with only VIAF and LUX; "Jefferson"; "New
+  Brunswick"; "Hannover" as a place of publication (queued); the VIAF and LUX identifiers left on Newport
+  (Wales).
+- *From before, still his to check*: "Charterhouse" (56520) on Godalming and "Middleburg" (65975) on Virginia,
+  on the assistant's own knowledge; "St. Ives" (61286) and "San Marino" (61204); six entities that stand for
+  nothing; the check "a body aligned to a namesake elsewhere" (93 bodies); whether the publishers' table names
+  the body.
 
-- Ways out of a card that cannot be decided as it stands, each leaving a record: the record is wrong (a finding
-  for the cataloguers, the card searched again for the corrected text); different things in different records;
-  not sure (a question); an entity of the project is wrong (a report, shown and closed on the entity's page).
-  A page of what is set aside, http://localhost:5200/p/pmc/set-aside. A decided card links to deciding it
-  differently, and a correction comes back to its card.
-- Decisions by record (doc 12 14.3): records ticked on a card, one or a group, decided each for itself; the string
-  decided `by-record` when every record has its own. A run of spellings decided in one act. A near spelling
-  offered. The place at home first among level candidates. The desk's search results ticked and accepted as one.
-  A "?" in the record said to be the cataloguer's doubt.
-- Mended from use: where a page opens after an action; a group of one ticked from its heading; ticks kept across
-  a search; the card's search finding the project's entity by a word of where it is; the map opening on the
-  candidates at home with a line to show all.
-- At the desk as `claude`: seventeen strings decided whole and two by record ("Kingston", "Newport"); "Enfield"
-  set aside with a question; the Guildford entity reported; spelling findings logged.
+**Tried in the browser on 2026-11-24 and working:** the run in one act ("New York" and three spellings); search
+results accepted as one ("Hannover"); a correction coming back to its card; the record is wrong, then decided
+("King Street"); the search's new order; a button pressed once. **Not yet seen:** the near spelling's hint; the
+entity page's records decided one by one, and its report closed; the merge page's count of them.
 
-**Not yet tried in the browser:** the run in one act; the near spelling's hint; search results accepted as one;
-the entity page's report and its closing; a correction coming back to its card; the group tick; ticks across a
-search (tried once).
-
-**For the owner to check:** "Charterhouse" (56520) on Godalming and "Middleburg" (65975) on Middleburg, Virginia,
-both on the assistant's own knowledge; "St. Ives" (61286) and "San Marino" (61204), moved for most of their records
-(they can be decided by record now); why his submit at "Wallington" removed no identifier (not reproduced). Six
-entities stand for nothing (Atlanta (Tex.), Evanston (Wyo.), Shannon (Mo.), Middleburg (Pa.), Middleburg (Fla.),
-Charterhouse (Somerset)): a way to remove one is still to propose. Waiting on his word from 2026-11-19: the check
-"a body aligned to a namesake elsewhere" (93 bodies); whether the publishers' table names the body.
-
-**After the five and the desk.** The cataloguers' list carried on (doc 12 14.4: a finding raised from a record,
-filters, the collect's confirmation); a label offered on the Decide screen when every string goes; the reconcile
-report counting the manifest's not-names as skipped; "Walterstone", three placeholders; the table of abbreviations
-(a general table with a type column, the owner's word; TGN is most of it); the export's handling of not-a-name,
-by-record and doubt; the duplicates check carried on (148 pairs); the succession of bodies in Linked Art; help on
-a set; housekeeping long due (section 7 pruned; doc 12 for the Checks page, the Decide screen, the merge page, the
-ways out, decisions by record, the findings page; doc 16's scenarios and pictures, stale).
+**Next.** The desk in volume again (the owner, 2026-11-23: "do lots of browser-driving, observing the common
+scenarios"; react to what recurs; watch the map): the place queue, 113, then the other fields. Then: the
+cataloguers' list carried on (doc 12 14.4); a label offered on the Decide screen when every string goes;
+"Walterstone"; the table of abbreviations; the export's handling of not-a-name, by-record and doubt; the
+duplicates check (150 pairs); the succession of bodies; help on a set; housekeeping long due (section 7 pruned;
+doc 12 for the Checks page and its four checks, the Decide screen, the merge page, the ways out, decisions by
+record, the findings page; doc 16's scenarios and pictures, stale).
 
 **What the alignment is for, and what comes after it** (the owner, 2026-11-19; he asked that its importance be
 noted). The alignment is not the end. "Soon we switch to what the old PMC C# code was doing (though hopefully,
@@ -561,6 +547,17 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   seventh; "Cambridge England" gave Brampton first): exact names and the field's own kind first. "New York
   (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
   wanted for entities like it.
+
+**After the second reconcile, 2026-11-24, at the desk as `claude`.** Run kfg394: not one method moved against
+t52ndf. Decided: "Windsor" and "Preston" with "Preston?" (their cards and maps right: Preston in Lancashire
+leads, the map on the six British ones; Windsor shows Ontario's first by 80 sitelinks to 67, the project's own
+second, the British ones on the map); "Jamestown (Accra, Ghana)" to LoC's heading; "Hannover" the subject to
+the city, LoC's and Wikidata's ticked as one; Devon's wrong item removed; "Suffolk" given its record at the
+fourth check; the address cards ("London (31 Foubert's Place ...)", "[London] ([Royle House ...])", "Glasgow,
+Central Hotel", the Stoke-on-Trent one, "King Street" with a finding, "New Bond Street"). The queue 3,700.
+Seen and not built: after "the record is wrong" the card comes back part-way down the search results; the
+reconciler's "at home" does not know a project entity placed by a library's heading (Windsor's own entity),
+only a gazetteer's chain.
 
 **Built while the second reconcile ran, 2026-11-24** (the owner: "Anything you could be doing while the reconcile
 runs?"). None of it seen in the browser yet: the workbench is stopped until the run ends.

@@ -419,7 +419,7 @@ else if (Model.Check == "thin")
                             <span class="muted">@p.Named.Count of the name@(p.AtHome > 0 ? $", {p.AtHome} at home" : ""):</span>
                             @foreach (var n in p.Named.Take(4))
                             {
-                                <br /><label style="margin:0; color:inherit; font-size:inherit; text-transform:none; letter-spacing:normal; font-weight:400"><input type="radio" form="give-ticked" name="pick@(k)" value="@p.Row.EntityId|@n.Uri" /> <strong>@n.Label</strong> <span class="muted">@(ReviewService.ChainOf(n) ?? "")@(p.Kinds.TryGetValue(n.Uri, out var kind) ? " · " + kind : "")</span></label> <a href="@n.Uri" target="_blank" rel="noopener">@n.Uri.Split('/')[^1]</a>
+                                <br /><label style="margin:0; color:inherit; font-size:inherit; text-transform:none; letter-spacing:normal; font-weight:400"><input type="radio" form="give-ticked" name="pick@(k)" value="@p.Row.EntityId|@n.Uri" /> <strong>@n.Label</strong> <span class="muted">@(ReviewService.ChainOf(n) ?? "")@(p.Kinds.TryGetValue(n.Uri, out var kind) ? " · " + kind : "")@(p.Written.TryGetValue(n.Uri, out var w) ? " · written about in " + w : "")</span></label> <a href="@n.Uri" target="_blank" rel="noopener">@n.Uri.Split('/')[^1]</a>
                             }
                             <br /><label style="margin:0; color:inherit; font-size:inherit; text-transform:none; letter-spacing:normal; font-weight:400"><input type="radio" form="give-ticked" name="pick@(k)" value="" checked /> <span class="muted">not chosen@(p.Named.Count > 4 ? $" · {p.Named.Count - 4} more of the name not shown" : "")</span></label>
                         }

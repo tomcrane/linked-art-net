@@ -409,7 +409,22 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             // "Sheffield", each a search and a press on another page)
             var kinds = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (var r in named.Take(30)) if (await KindOfAsync(r) is { } kind) kinds[r.Uri] = kind;
-            var ordered = named.OrderByDescending(Home).ThenByDescending(r => kinds.TryGetValue(r.Uri, out var k) && k.Contains("inhabited", StringComparison.OrdinalIgnoreCase) ? 1 : 0).ThenBy(r => r.Label, StringComparer.Ordinal).ThenBy(r => r.Uri, StringComparer.Ordinal).ToList();
+            // and the most written-about before the rest, by the Wikidata item that names each ("Madrid" showed four small Madrids and
+            // not Spain's): counted only where there is a choice to make
+            var written = new Dictionary<string, int>(StringComparer.Ordinal);
+            if (named.Count > 1)
+                foreach (var r in named.Take(30))
+                {
+                    var most = 0;
+                    foreach (var item in await store.FindAuthoritiesBySameAsAsync(r.Uri, ct))
+                        if (item.Source == "wikidata" && item.DataJson is not null)
+                        {
+                            using var doc = JsonDocument.Parse(item.DataJson);
+                            if (doc.RootElement.ValueKind == JsonValueKind.Object && doc.RootElement.TryGetProperty("sitelinks", out var sl) && sl.TryGetInt32(out var n) && n > most) most = n;
+                        }
+                    if (most > 0) written[r.Uri] = most;
+                }
+            var ordered = named.OrderByDescending(Home).ThenByDescending(r => written.GetValueOrDefault(r.Uri)).ThenByDescending(r => kinds.TryGetValue(r.Uri, out var k) && k.Contains("inhabited", StringComparison.OrdinalIgnoreCase) ? 1 : 0).ThenBy(r => r.Label, StringComparer.Ordinal).ThenBy(r => r.Uri, StringComparer.Ordinal).ToList();
             var atHome = ordered.Count(Home);
             var offer = ordered.Count == 1 ? ordered[0] : atHome == 1 ? ordered[0] : null;
             var doubt = false;
@@ -426,7 +441,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
                 if (qualifierWords.Count > 0 && !qualifierWords.All(w => chain.Contains(w, StringComparison.Ordinal))) { if (Home(offer)) doubt = true; else offer = null; }
             }
             var holder = offer is null ? null : (await store.FindEntitiesByEquivalentAsync(offer.Uri, ct)).FirstOrDefault(o => o.Dataset == dataset && o.MergedInto is null && o.Id != row.EntityId);
-            list.Add(new ThinPlace(row, ordered, atHome, offer, holder) { Name = name, Doubt = doubt && offer is not null, Kinds = kinds });
+            list.Add(new ThinPlace(row, ordered, atHome, offer, holder) { Name = name, Doubt = doubt && offer is not null, Kinds = kinds, Written = written });
         }
         return list;
     }

@@ -459,6 +459,8 @@ public sealed record ThinPlace(ThinPlaceRow Row, IReadOnlyList<AuthorityRecord> 
     public bool Doubt { get; init; }
     /// <summary>What kind of place each of <see cref="ThinPlace.Named"/> is, by its URI, as the gazetteer says ("inhabited places", "counties"), where it says.</summary>
     public IReadOnlyDictionary<string, string> Kinds { get; init; } = new Dictionary<string, string>();
+    /// <summary>How much is written of each of <see cref="ThinPlace.Named"/>, by its URI: the sitelinks of the Wikidata item that names it, where one does. Counted only where there are several to choose among.</summary>
+    public IReadOnlyDictionary<string, int> Written { get; init; } = new Dictionary<string, int>();
 }
 
 public sealed record NotNameEntity(string EntityId, string? Label, string Class, IReadOnlyList<long> StringIds, IReadOnlyList<string> Strings, int Records, int Queued);

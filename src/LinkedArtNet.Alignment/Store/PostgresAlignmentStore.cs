@@ -1782,6 +1782,25 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return open;
     }
 
+    public async Task<IReadOnlyDictionary<string, int>> SitelinksOfAsync(IReadOnlyCollection<string> uris, CancellationToken ct = default)
+    {
+        var found = new Dictionary<string, int>(StringComparer.Ordinal);
+        if (uris.Count == 0) return found;
+        // each record looked up on its own through the index of what items name (lateral, offset 0), as the checks beside it do
+        await using var cmd = _db.CreateCommand(
+            """
+            select u.uri, w.sitelinks from unnest(@uris) as u(uri)
+            cross join lateral (select max(coalesce((a.data->>'sitelinks')::int, 0)) as sitelinks from authority_records a
+                                where a.source = 'wikidata' and a.same_as @> array[u.uri] offset 0) w
+            where w.sitelinks > 0
+            """);
+        Add(cmd, "uris", uris.Distinct(StringComparer.Ordinal).ToArray());
+        cmd.CommandTimeout = 120;
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) found[r.GetString(0)] = r.GetInt32(1);
+        return found;
+    }
+
     public async Task<IReadOnlyList<ThinPlaceRow>> ThinPlacesAsync(string dataset, string dismissedPrefix, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

@@ -177,6 +177,9 @@ public interface IAlignmentStore
 
     /// <summary>The dataset's provisional people, bodies and places with no identifier, every one of whose strings matches the pattern given (a POSIX regular expression, case ignored): the most recorded first.</summary>
     /// <summary>The dataset's live places, aligned or confirmed, none of whose identifiers is a gazetteer's (TGN) or Wikidata's, leaving out those with a note that begins with the prefix (a person has said no gazetteer has it). Most strings first.</summary>
+    /// <summary>For each record named, the most sitelinks of a Wikidata item that names it as the same thing; a record no item names is left out. One query for all of them.</summary>
+    Task<IReadOnlyDictionary<string, int>> SitelinksOfAsync(IReadOnlyCollection<string> uris, CancellationToken ct = default);
+
     Task<IReadOnlyList<ThinPlaceRow>> ThinPlacesAsync(string dataset, string dismissedPrefix, CancellationToken ct = default);
 
     Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default);

@@ -393,11 +393,17 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             if (!kindLabels.TryGetValue(type, out var label)) kindLabels[type] = label = (await store.GetAuthorityAsync(type, ct))?.Label;
             return label;
         }
+        var gathered = new List<(ThinPlaceRow Row, IReadOnlyList<AuthorityRecord> Named)>();
         foreach (var row in await store.ThinPlacesAsync(dataset, NoGazetteerRecord, ct))
         {
             if (row.Keys.Count == 0) continue;
-            var named = await store.FindAuthoritiesByLabelsAsync(row.Keys.ToList(), "tgn", "Place", 30, ct);
-            if (named.Count == 0) continue;
+            var records = await store.FindAuthoritiesByLabelsAsync(row.Keys.ToList(), "tgn", "Place", 30, ct);
+            if (records.Count > 0) gathered.Add((row, records));
+        }
+        var sitelinks = await store.SitelinksOfAsync(gathered.Where(g => g.Named.Count > 1).SelectMany(g => g.Named.Select(r => r.Uri)).ToList(), ct);
+        foreach (var (row, records) in gathered)
+        {
+            var named = records;
             // the records whose own name it is, where there are any: a record that bears the name as a variant only is another place
             // (the owner, 2026-11-24: "Norwich" was offered a search for "Northwich", which the gazetteer also calls Norwich)
             var name = Qualified.Split(row.Label ?? "").Name;
@@ -411,19 +417,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             foreach (var r in named.Take(30)) if (await KindOfAsync(r) is { } kind) kinds[r.Uri] = kind;
             // and the most written-about before the rest, by the Wikidata item that names each ("Madrid" showed four small Madrids and
             // not Spain's): counted only where there is a choice to make
-            var written = new Dictionary<string, int>(StringComparer.Ordinal);
-            if (named.Count > 1)
-                foreach (var r in named.Take(30))
-                {
-                    var most = 0;
-                    foreach (var item in await store.FindAuthoritiesBySameAsAsync(r.Uri, ct))
-                        if (item.Source == "wikidata" && item.DataJson is not null)
-                        {
-                            using var doc = JsonDocument.Parse(item.DataJson);
-                            if (doc.RootElement.ValueKind == JsonValueKind.Object && doc.RootElement.TryGetProperty("sitelinks", out var sl) && sl.TryGetInt32(out var n) && n > most) most = n;
-                        }
-                    if (most > 0) written[r.Uri] = most;
-                }
+            var written = named.Count > 1 ? named.Where(r => sitelinks.ContainsKey(r.Uri)).ToDictionary(r => r.Uri, r => sitelinks[r.Uri], StringComparer.Ordinal) : new Dictionary<string, int>(StringComparer.Ordinal);
             var ordered = named.OrderByDescending(Home).ThenByDescending(r => written.GetValueOrDefault(r.Uri)).ThenByDescending(r => kinds.TryGetValue(r.Uri, out var k) && k.Contains("inhabited", StringComparison.OrdinalIgnoreCase) ? 1 : 0).ThenBy(r => r.Label, StringComparer.Ordinal).ThenBy(r => r.Uri, StringComparer.Ordinal).ToList();
             var atHome = ordered.Count(Home);
             var offer = ordered.Count == 1 ? ordered[0] : atHome == 1 ? ordered[0] : null;

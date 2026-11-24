@@ -548,6 +548,47 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
   wanted for entities like it.
 
+**Working alone, 2026-11-24 evening** (the owner: "I can't spend time on the bench right now, so you can continue
+working through things yourself. You can store up interesting things for me to look at - but don't let something's
+presence on the list stop you from making fixes that might then take it off the list. We are still aiming for
+something that is pleasurable to use, and as simple as it can be without over-simplifying and removing the nuances
+necessary to create accurate data.").
+
+- Decided by the assistant, his two questions being left with it: NO "tick all" (it invites pressing unread);
+  the rows of several of the name carry their likeliest records, those at home first, then the most
+  written-about, a town before the district of its name, each with where it is, what kind of place and how much
+  is written of it; one is chosen on the row and given with the ticked rows in one press. A qualifier after a
+  comma is read as one in a parenthesis. One query asks how much is written of all the candidates (a question a
+  record had made the page slow for a minute).
+- The fourth check, 152 to 134: eighteen places given the record chosen by a plain test (a bare name, the first
+  record an inhabited place written about in sixty or more and three times the second): Cardiff, Madrid,
+  Nottingham, Swansea, Leeds, Leicester, Derby, Southampton, Stockholm, Bordeaux, Haarlem, Porto, Potsdam,
+  Versailles, Weimar, Fribourg, Kamakura, Sintra.
+- The first check, 50 to 31: twenty mended whole, each bare string to the town or city where the entity was the
+  district, prefecture or a namesake abroad (Chichester, Munich, Aachen, Passau, Calais, Valenciennes,
+  Nogent-le-Rotrou, Kyoto, Osaka, Rio de Janeiro, Nicosia, Schwerin, Recklinghausen, Esslingen, Bregenz,
+  Dartford, Horsham; Sevilla and Zaragoza to Spain's; "Oxon" to Oxfordshire). Four merged into the entity the
+  project had already. MENDED on the way: a mended entity keeps the name its strings use where the record bears
+  it ("Munich" had become "München").
+- The pressing was by a script in the page that set the screen's own controls and pressed its own button, read
+  back each time: the same acts a person makes, without sixty page loads by hand.
+
+FOR THE OWNER TO LOOK AT (kept short; none of it waits on him):
+
+1. Duplicates the day uncovered, each a pair to compare and merge: a second entity for Birmingham, Sheffield,
+   Leningrad/St Petersburg, Derby, Leeds and Leicester (their record was refused as held by another entity);
+   "Abertillery" and "Abertillery (Wales)"; two "Glasgow (Strathclyde)"; "München (Kreisfreie Stadt München)",
+   made before the label was mended, beside the project's "München".
+2. Rows left for a person because the name is as likely the American one: "Kensington", "Marlborough",
+   "Chesterfield", "Cranbrook", "Dartmouth", "Falmouth", "Phoenix", "Alva", "Fitzwilliam"; and "Winterthur
+   (Del.)", which may rightly be the Delaware museum's.
+3. "Strassburg (Germany)" is Strasbourg and is offered a Strassburg in Bavaria; "Brass" is no place.
+4. "Dedham (England)", "Woburn (England)", "Leominster (England)", "Launceston (England)", "Louth (England)":
+   on the first check because an American or Irish namesake is better known; probably right as they are, to
+   confirm.
+5. The wording of a mend's note says "aligned by the import to a namesake" when the fault was a district for a
+   town.
+
 **The fourth check worked as `claude`, 2026-11-24 late afternoon** (the owner: "I'll go with your suggestion": the full tests, the checks' plain rows, then the desk).
 
 - The full test loop green (3,262 tests) before it.

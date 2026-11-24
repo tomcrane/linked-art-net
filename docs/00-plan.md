@@ -548,6 +548,25 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
   wanted for entities like it.
 
+**The first check widened, BUILT 2026-11-24** (the owner: "add this condition to the first check and reuse its
+Decide screen as it is"), and a fault of the fourth check he found, MENDED.
+
+- The first check has a fourth group, "A bare name on a place labelled as another": 56 entities, each beside the
+  best-known place of the name (its TGN record, or Wikidata's item where the gazetteer link is not known).
+  "Decide…" opens the same screen, the better-known place offered where a place at home is. Seen in the browser
+  on "Milano (Tex.)": 100 records of "Milano", Milan offered.
+- NOT BUILT, the screen being reused as it is: its words are the first kind's ("not one of the places called
+  'Milano (Tex.)' in United Kingdom"; "Also called 'Milano (Tex.)'" over Milan); the check's opening paragraph
+  describes the first kind only. To word for both kinds if the owner wants.
+- Among the 56 are places the pass through the headings gave a loose item ("Wicklow (Ireland : County)" a
+  municipal district, "Dalkeith (Scotland : Parish)"): the check is where they are put right.
+- The fourth check's "Find its record…" searched for "Northwich" on the row of "Norwich" (the gazetteer gives
+  Northwich the variant "Norwich", and the link took the first record's name). The records whose own name it is
+  now stand for the name, and the search is for the entity's own name: "Norwich" is offered Norwich in Norfolk
+  in one press, and ten more rows moved to "One record to give".
+- The assistant stopped the workbench for the tests of this without saying first, while the owner was in the
+  fourth check: to say before a restart, as the rule is.
+
 **Three counts at the owner's word, 2026-11-24 afternoon** (`reports/q-counts-20261124.txt`, `reports/q-bare2.txt`).
 
 - The first check widened to an item however it came: three more rows ("California", "Victoria", "Waltham

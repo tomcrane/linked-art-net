@@ -283,6 +283,14 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         foreach (var (uri, facts) in entities)
             if (facts.Coordinates is { } p) placed[uri] = p;
             else if (Authorities.Coordinates.Borrow(facts.Placement, facts.Entity.Label, records.Values) is { } borrowed) placed[uri] = borrowed;
+        // a place still nowhere, though something says where it is, is looked for in the gazetteer itself, beyond the card's own records
+        // (the owner's second of five, 2026-11-23: "Chatham (Kent)", the project's entity with a library's heading, was the one candidate
+        // not on its map, the gazetteer's Chatham in Kent not being among the card's twelve). A few a card, a hollow marker each
+        var wanting = entities.Where(kv => !placed.ContainsKey(kv.Key) && kv.Value.Entity.Class == EntityClass.Place).Select(kv => (Uri: kv.Key, kv.Value.Entity.Label, kv.Value.Placement))
+            .Concat(records.Where(kv => !placed.ContainsKey(kv.Key) && kv.Value.Type == "Place").Select(kv => (Uri: kv.Key, kv.Value.Label, Placement: Qualified.PlacementOf(null, kv.Value.Labels.Append(kv.Value.Label)))))
+            .Where(x => !string.IsNullOrWhiteSpace(x.Placement)).Take(6).ToList();
+        foreach (var (uri, label, placement) in wanting)
+            if (await BorrowFromGazetteerAsync(label, placement, ct) is { } far) placed[uri] = far;
         return new ReviewItem(decided.String, decided.Decision, evidence, entity, notes, records, await ExamplesForAsync(decided.String.Id, ct), entities, await SiblingsAsync(decided.String, entity, ct), lookedAgain, holders, await store.SkippedAtAsync(decided.String.Id, ct), placed);
     }
 
@@ -334,6 +342,37 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             if (examples.Count >= 3) break;
         }
         return new EntityFacts(entity, strings, examples.Take(3).ToList(), await PlacementAsync(entity, ct), await CoordinatesAsync(entity, ct));
+    }
+
+    /// <summary>
+    /// Coordinates for a place that has none, from the gazetteer's record of its name: the one whose parents agree with where the place
+    /// is said to be ("Chatham" under "Kent"), or, the gazetteer filing it elsewhere (Chatham is under Medway), the one of the name
+    /// within 75 km of a place called what the placement says, when there is one such, or one such in the project's home place. Marked
+    /// as borrowed (<see cref="Authorities.Placed.Via"/>), so the map draws it hollow and says whose coordinates they are. Null when
+    /// nothing fits or more than one does.
+    /// </summary>
+    public async Task<Authorities.Placed?> BorrowFromGazetteerAsync(string? label, string? placement, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(label) || string.IsNullOrWhiteSpace(placement)) return null;
+        var name = Qualified.Split(label).Name;
+        var named = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(name), "tgn", nameof(EntityClass.Place), 50, ct);
+        if (named.Count == 0) return null;
+        if (Authorities.Coordinates.Borrow(placement, label, named) is { } agreed) return agreed;
+        var said = placement.Split(',')[0].Trim();
+        if (said.Length < 3) return null;
+        var anchors = (await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(said), "tgn", nameof(EntityClass.Place), 30, ct))
+            .Select(r => Authorities.Coordinates.Of(r)).Where(c => c is not null).Select(c => c!.Value).ToList();
+        if (anchors.Count == 0) return null;
+        var key = StringKey.Normalise(name);
+        var near = named.Where(r => r.Label is not null && StringKey.Normalise(r.Label) == key && Authorities.Coordinates.Of(r) is not null)
+            .Select(r => (Record: r, At: Authorities.Coordinates.Of(r)!.Value)).Select(x => (x.Record, x.At, Km: anchors.Min(a => Authorities.Coordinates.Kilometres(a, x.At))))
+            .Where(x => x.Km <= 75).OrderBy(x => x.Km).ToList();
+        if (near.Count > 1 && reconciler.Options.HomePlace is { } home)
+            near = near.Where(x => (Authorities.Coordinates.Parents(x.Record) ?? "").Contains(home, StringComparison.OrdinalIgnoreCase)).ToList();
+        if (near.Count != 1) return null;
+        var parents = Authorities.Coordinates.Parents(near[0].Record);
+        var where = parents is null ? "" : " in " + string.Join(", ", parents.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).Take(2));
+        return new Authorities.Placed(near[0].At.Lat, near[0].At.Long, Via: $"TGN's {near[0].Record.Label}{where}, {near[0].Km:0} km from {said}");
     }
 
     /// <summary>Where the entity is, from the first of its TGN, Wikidata or LUX records that places it (Authorities.Coordinates), for the map.</summary>

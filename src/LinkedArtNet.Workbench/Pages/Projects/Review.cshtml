@@ -491,7 +491,9 @@ else
                 var label = ef is not null ? Named(ef.Entity) : (m.Label ?? rec?.Label ?? m.Uri);
                 if (ef is null && rec?.DataJson is { } dj && System.Text.Json.JsonDocument.Parse(dj).RootElement.TryGetProperty("parentString", out var ps) && ps.GetString() is { } parents)
                     label += " (" + string.Join(", ", parents.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).Take(2)) + ")";
-                if (item.Placed is null || !item.Placed.TryGetValue(m.Uri, out var at)) { if (isPlace) unplaced.Add(label); continue; }
+                // not on the map is said of a candidate none of whose records is on it: the project's New York (N.Y.) was named as missing
+                // while the gazetteer's record in its own group stood on the map (seen as a user, 2026-11-24)
+                if (item.Placed is null || !item.Placed.TryGetValue(m.Uri, out var at)) { if (isPlace && !g.Members.Any(o => item.Placed is not null && item.Placed.ContainsKey(o.Uri))) unplaced.Add(label); continue; }
                 if (at.Near is not null) label += $", near {at.Near}";
                 if (at.Via is not null) label += $" (the coordinates of {at.Via})";
                 // a borrowed marker is drawn only when the group has none of its own: LoC's "Madison (Wis.)" at the coordinates of TGN's
@@ -504,7 +506,7 @@ else
         <div id="map" class="map" data-focus-label="in @homePlace" data-points='@System.Text.Json.JsonSerializer.Serialize(points)' aria-label="The candidates on a map"></div>
         @* a place with no coordinates anywhere is named, so the map's silence about it is not read as absence (the owner, 2026-11-08, at Windsor Castle) *@
         @if (unplaced.Count > 0) { <p class="small muted" style="margin-top:-.6rem">Not on the map, no coordinates in its record: @string.Join(" · ", unplaced.Distinct().Take(6)).</p> }
-        @if (points.Any(p => (bool)p.GetType().GetProperty("approximate")!.GetValue(p)!)) { <p class="small muted" style="margin-top:-.4rem">A hollow marker stands where the record itself carries no coordinates: at its TGN parent, or where TGN puts the same name in the same place.</p> }
+        @if (points.Any(p => (bool)p.GetType().GetProperty("approximate")!.GetValue(p)!)) { <p class="small muted" style="margin-top:-.4rem">A hollow marker stands where the record itself carries no coordinates: at its TGN parent, or where TGN puts the same name in or near the same place.</p> }
     }
     var first = true;
     foreach (var group in shownGroups)

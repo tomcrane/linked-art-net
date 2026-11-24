@@ -13,6 +13,33 @@ public class DeskEvidenceTests(PostgresFixture pg)
     private const string A = "http://vocab.getty.edu/ulan/500900001", B = "http://vocab.getty.edu/ulan/500900002";
 
     [PostgresFact]
+    public async Task A_place_with_no_coordinates_borrows_the_gazetteers_by_name_and_where_it_is_said_to_be()
+    {
+        // the owner's second of five, 2026-11-23: "Chatham (Kent)" was the one candidate not on its map. The gazetteer files Chatham
+        // under Medway, not Kent, so the parents do not agree: the record of the name near a place called Kent is taken, the one at home
+        // when Ontario has a Chatham near its own Kent too
+        var x = "q" + string.Concat(Guid.NewGuid().ToString("N").Where(char.IsLetter).Take(7));
+        static AuthorityRecord Tgn(string id, string label, string parents, double lat, double lon) =>
+            new($"http://vocab.getty.edu/tgn/{id}", "tgn", label, [label], "Place", null, [], $"{{\"parentString\":\"{parents}\",\"lat\":{lat.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"long\":{lon.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}", DateTimeOffset.UtcNow, "test");
+        await pg.Store.PutAuthorityAsync(Tgn(x + "1", "Chat" + x, "Medway, England, United Kingdom, Europe, World", 51.37, 0.53));
+        await pg.Store.PutAuthorityAsync(Tgn(x + "2", "Chat" + x, "Ontario, Canada, North and Central America, World", 42.40, -82.18));
+        await pg.Store.PutAuthorityAsync(Tgn(x + "3", "Kent" + x, "England, United Kingdom, Europe, World", 51.25, 0.75));
+        await pg.Store.PutAuthorityAsync(Tgn(x + "4", "Kent" + x, "Ontario, Canada, North and Central America, World", 42.45, -82.20));
+        await pg.Store.PutAuthorityAsync(Tgn(x + "5", "Dove" + x, "Kent" + x + ", England, United Kingdom, Europe, World", 51.13, 1.31));
+        var scheme = new IdentifierScheme("https://data.example.org/bw" + x);
+        var desk = new ReviewService(pg.Store, scheme, new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions()));
+        var borrowed = (await desk.BorrowFromGazetteerAsync($"Chat{x} (Kent{x})", "Kent" + x))!;
+        Assert.Equal((51.37, 0.53), (borrowed.Lat, borrowed.Long));
+        Assert.True(borrowed.Approximate);
+        Assert.Contains("Medway", borrowed.Via); Assert.Contains("km from Kent" + x, borrowed.Via);
+        // parents that agree are taken as before, with no distance asked
+        Assert.Contains("TGN's Dove" + x, (await desk.BorrowFromGazetteerAsync($"Dove{x} (Kent{x})", "Kent" + x))!.Via);
+        // nothing of the name, or nothing near: nothing borrowed
+        Assert.Null(await desk.BorrowFromGazetteerAsync("Nowhere" + x, "Kent" + x));
+        Assert.Null(await desk.BorrowFromGazetteerAsync("Chat" + x, "Dove" + x + "zz"));
+    }
+
+    [PostgresFact]
     public async Task The_second_pass_keeps_its_reasons_on_a_string_it_leaves_queued_and_a_card_knows_its_records_holder()
     {
         var ds = "de-" + Guid.NewGuid().ToString("N")[..5];

@@ -126,13 +126,15 @@ switch (args[0])
         await store.InitialiseAsync();
         var limit = int.TryParse(Option("--limit"), out var l) ? l : 0; // no limit: every undecided string
         var manifestOptions = (await ManifestAsync(store, dataset)).ToOptions();
-        var options = new ReconcilerOptions
+        // the manifest's options whole, the command line over them: built field by field, the options had only the contexts and the home
+        // place of the manifest, so a run knew neither its trades (finding 109) nor its strings that are not names (found 2026-11-24,
+        // reading the command before a run)
+        var options = manifestOptions with
         {
             AcceptScore = double.TryParse(Option("--accept"), System.Globalization.CultureInfo.InvariantCulture, out var a) ? a : 0.9,
             ReviewScore = double.TryParse(Option("--review"), System.Globalization.CultureInfo.InvariantCulture, out var rv) ? rv : 0.6,
             AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact"),
             MintWhenNothingFound = !args.Contains("--no-mint"),
-            Contexts = manifestOptions.Contexts, HomePlace = manifestOptions.HomePlace,
         };
         var sources = await SourcesAsync(store, dataset);
         var run = await store.StartRunAsync(dataset, System.Text.Json.JsonSerializer.Serialize(options));

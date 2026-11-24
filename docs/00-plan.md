@@ -541,6 +541,16 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   Finding 123's guard (not when a namesake abroad is far the more written about) is not asked there. Not yet
   diagnosed further; count first (how many store matches are a bare name onto a place with a far larger
   namesake).
+- THE RULE COUNTED at the owner's word, and NOT PROPOSED (`reports/q-bare1.txt`). In run t52ndf 351 place names
+  with no qualifier were taken onto the project's own entity of the name. Asked of each whether a namesake is
+  written about more than 1.5 times as much as the entity's own Wikidata item: 125 are flagged, but 107 of those
+  are entities with no item at all, where the "namesake" is the place itself (England, Great Britain, Norwich).
+  Of the 18 with an item to compare: wrong, "Washington" (55 records) and "Hannover" (1), both mended by hand;
+  to look at, "Jefferson" (1) and "New Brunswick" (2); right and would be queued for nothing, "Salisbury" (28
+  records: Wiltshire's, outweighed by the old name of Harare), "Wentworth", "Richmond upon Thames"; and the
+  same place under two items, "Princeton", "Dorset", "Shropshire", "Turin", "Brussels", "Russia", "Turkey". A
+  guard would catch two and queue a dozen right ones. No rule. Seen in the rows: "Dorset" and "Shropshire" hold
+  the unitary authority's item where the county is meant; "Russia" the Empire's, "Turkey" the Ottoman Empire's.
 - ITEM 1 MENDED after the run showed it wrong: home first always put New York in Lincolnshire at the head of
   "New York" (1,194 records) and opened the map there. Now `Reconciler.HomeWithinTheCut`: most written-about
   first, home leading only within prominence's guard, those at home always within the twelve. A second

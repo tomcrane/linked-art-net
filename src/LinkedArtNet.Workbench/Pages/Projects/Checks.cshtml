@@ -334,6 +334,62 @@ else if (Model.Check == "notnames")
         </table>
     }
 }
+else if (Model.Check == "thin")
+{
+    @* the fourth check (the owner, 2026-11-23, "entities that say too little"; 2026-11-24, as a pass and then this list): a place with a
+       library's heading or the import's identifiers and no gazetteer record is unplaced, so it stands low on a card and is off its map.
+       One call to action a row: the record offered where there is one to offer, the entity's page searched where there are several *@
+    <h2>Places that say too little <span class="muted small">@Model.Thin.Count</span></h2>
+    <p class="small muted">A place none of whose identifiers is a gazetteer's or Wikidata's, so nothing the project holds says where it is: on a card it stands below its namesakes and is missing from the map. The gazetteer has a record, or several, of its name. Where there is one of the name, or one in @(Model.HomePlace ?? "the project's home place") among several, it is offered: read where it is against the entity's strings before giving it. A place whose name the gazetteer does not have is not listed.</p>
+    @if (Model.Thin.Count == 0) { <p class="notice">Nothing is listed.</p> }
+    @foreach (var (title, rows, about) in new[] {
+        ("One record to give", Model.Thin.Where(p => p.Offer is not null && p.Holder is null).ToList(), "the only record of the name, or the only one at home"),
+        ("Held by another entity", Model.Thin.Where(p => p.Offer is not null && p.Holder is not null).ToList(), "the record that would be given is on another of the project's entities: the two may be one place"),
+        ("Several of the name", Model.Thin.Where(p => p.Offer is null).ToList(), "the entity's page searches the indexes for it") })
+    {
+        if (rows.Count == 0) { continue; }
+        <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
+        <table class="checks">
+            <thead><tr><th>Place</th><th>It holds</th><th>The gazetteer has</th><th>Decide</th></tr></thead>
+            <tbody>
+            @foreach (var p in rows)
+            {
+                var entityHref = $"/p/{Model.Dataset}/entity?id={Uri.EscapeDataString(p.Row.EntityId)}";
+                <tr>
+                    <td><a href="@entityHref" target="_blank" rel="noopener"><strong>@(p.Row.Label ?? p.Row.EntityId)</strong></a><br /><span class="small muted">stands for @p.Row.Strings string@(p.Row.Strings == 1 ? "" : "s")</span></td>
+                    <td class="small">@(p.Row.Sources.Count == 0 ? "no identifier" : string.Join(", ", p.Row.Sources.Select(s => s.ToUpperInvariant())))</td>
+                    <td class="small">
+                        @if (p.Offer is { } o)
+                        {
+                            <strong>@o.Label</strong> <span class="muted">@(ReviewService.ChainOf(o) ?? "")</span><br /><a href="@o.Uri" target="_blank" rel="noopener">TGN @o.Uri.Split('/')[^1]</a>
+                            @if (p.Named.Count > 1) { <span class="muted"> · @(p.Named.Count - 1) more of the name elsewhere</span> }
+                        }
+                        else
+                        {
+                            <span>@p.Named.Count of the name@(p.AtHome > 0 ? $", {p.AtHome} at home" : "")</span><br /><span class="muted">@string.Join(" · ", p.Named.Take(3).Select(n => ReviewService.ChainOf(n) is { } c ? c.Split(", ")[0] : n.Label))@(p.Named.Count > 3 ? " …" : "")</span>
+                        }
+                    </td>
+                    <td class="small decide">
+                        @if (p.Offer is { } give && p.Holder is null)
+                        {
+                            <form method="post" asp-page-handler="GiveRecord" class="inline"><input type="hidden" name="id" value="@p.Row.EntityId" /><input type="hidden" name="uri" value="@give.Uri" /><button type="submit" class="secondary small" style="white-space:nowrap" title="Adds the gazetteer's record to the entity's identifiers; the entity's page can remove it">Give it this record</button></form>
+                        }
+                        else if (p.Holder is { } h)
+                        {
+                            <a class="button secondary small" href="/p/@Model.Dataset/merge?from=thin&ids=@Uri.EscapeDataString(p.Row.EntityId + "," + h.Id)" title="The record is held by @h.Label: compare the two side by side, then merge them or say they are two things">Compare with @h.Label…</a>
+                        }
+                        else
+                        {
+                            <a class="button secondary small" href="@entityHref&find=@Uri.EscapeDataString(p.Named[0].Label ?? p.Row.Label ?? "")" target="_blank" rel="noopener" title="Opens the entity's page with the indexes searched for the name: add the record that is this place">Find its record…</a>
+                        }
+                        <form method="post" asp-page-handler="NoRecord" class="inline" style="margin-top:.3rem"><input type="hidden" name="id" value="@p.Row.EntityId" /><button type="submit" class="link small" title="None of the gazetteer's records of the name is this place: a note is put on it and it leaves the list">none of them is it</button></form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+}
 else if (Model.Check == "places")
 {
 <h2>Places the import aligned to a namesake <span class="muted small">@Model.Away.Count</span></h2>
@@ -391,6 +447,11 @@ else
                 <td><a href="/p/@Model.Dataset/checks?check=notnames"><strong>Entities that are not names</strong></a></td>
                 <td class="small">Entities made for "s.n.", "S.l.", "[publisher not identified]" or a stray letter: the cataloguer's way of saying nothing is known, or a slip. Each is decided as not a name and removed.</td>
                 <td><strong>@Model.NotNames.Count.ToString("N0")</strong> entit@(Model.NotNames.Count == 1 ? "y" : "ies")<br /><span class="small muted">on @Model.NotNames.Sum(n => n.Records).ToString("N0") records</span></td>
+            </tr>
+            <tr>
+                <td><a href="/p/@Model.Dataset/checks?check=thin"><strong>Places that say too little</strong></a></td>
+                <td class="small">Places with no gazetteer's or Wikidata's identifier, so nothing says where they are: they stand low on a card and are missing from its map. Each is given the gazetteer's record of it.</td>
+                <td><strong>@Model.Thin.Count.ToString("N0")</strong> place@(Model.Thin.Count == 1 ? "" : "s")<br /><span class="small muted">@Model.Thin.Count(p => p.Offer is not null && p.Holder is null) with one record to give</span></td>
             </tr>
         </tbody>
     </table>

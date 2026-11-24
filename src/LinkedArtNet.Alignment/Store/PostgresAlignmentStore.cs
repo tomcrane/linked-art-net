@@ -1724,6 +1724,26 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return open;
     }
 
+    public async Task<IReadOnlyList<ThinPlaceRow>> ThinPlacesAsync(string dataset, string dismissedPrefix, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select e.id, e.label, e.normalised_labels,
+                   coalesce((select array_agg(distinct q.source order by q.source) from entity_equivalents q where q.entity_id = e.id), '{}'),
+                   (select count(*) from decisions d where d.entity_id = e.id and d.valid)::int
+            from entities e
+            where e.dataset = @dataset and e.class = 'Place' and e.merged_into is null and e.status in ('aligned', 'confirmed')
+              and not exists (select 1 from entity_equivalents q where q.entity_id = e.id and q.source in ('tgn', 'wikidata'))
+              and not exists (select 1 from notes n where n.dataset = @dataset and n.target = e.id and n.text like @prefix)
+            order by 5 desc, e.label
+            """);
+        Add(cmd, "dataset", dataset); Add(cmd, "prefix", dismissedPrefix.Replace("%", "\\%").Replace("_", "\\_") + "%");
+        var list = new List<ThinPlaceRow>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new ThinPlaceRow(r.GetString(0), Str(r, 1), r.GetFieldValue<string[]>(2), r.GetFieldValue<string[]>(3), r.GetInt32(4)));
+        return list;
+    }
+
     public async Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

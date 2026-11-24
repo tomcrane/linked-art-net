@@ -166,6 +166,9 @@ public interface IAlignmentStore
     Task<IReadOnlyList<Finding>> SendOpenFindingsAsync(string dataset, string? by, CancellationToken ct = default);
 
     /// <summary>The dataset's provisional people, bodies and places with no identifier, every one of whose strings matches the pattern given (a POSIX regular expression, case ignored): the most recorded first.</summary>
+    /// <summary>The dataset's live places, aligned or confirmed, none of whose identifiers is a gazetteer's (TGN) or Wikidata's, leaving out those with a note that begins with the prefix (a person has said no gazetteer has it). Most strings first.</summary>
+    Task<IReadOnlyList<ThinPlaceRow>> ThinPlacesAsync(string dataset, string dismissedPrefix, CancellationToken ct = default);
+
     Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default);
 
     /// <summary>The dataset's records whose title contains the text given, or whose identifier is it, with the strings in each.</summary>

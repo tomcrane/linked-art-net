@@ -371,6 +371,33 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     public static string SuggestedReason(IEnumerable<string> raws) => raws.All(SaysNothingKnown.IsMatch) ? NothingKnown : RecordWantsFixing;
 
     /// <summary>The check "entities that are not names": placeholders and minted entities whose every string is no name.</summary>
+    /// <summary>The note that takes a place off the fourth check's list: a person has looked, and no gazetteer has it (a house, a region of a library's own making).</summary>
+    public const string NoGazetteerRecord = "At the checks: no gazetteer record is this place";
+
+    /// <summary>
+    /// The fourth check (the owner, 2026-11-23, after "Chatham": "entities that say too little"; counted 2026-11-24, 617 places, 252
+    /// of them then given their record by the pass through their headings): the places still without a gazetteer's or Wikidata's
+    /// identifier whose name the gazetteer has. One of the name, or one at home among several, is offered in a press; the rest are
+    /// found on the entity's page. A place whose name the gazetteer has not is not listed: there is nothing to give it.
+    /// </summary>
+    public async Task<IReadOnlyList<ThinPlace>> ThinPlacesAsync(string dataset, string? homePlace, CancellationToken ct = default)
+    {
+        var list = new List<ThinPlace>();
+        foreach (var row in await store.ThinPlacesAsync(dataset, NoGazetteerRecord, ct))
+        {
+            if (row.Keys.Count == 0) continue;
+            var named = await store.FindAuthoritiesByLabelsAsync(row.Keys.ToList(), "tgn", "Place", 30, ct);
+            if (named.Count == 0) continue;
+            bool Home(AuthorityRecord r) => !string.IsNullOrWhiteSpace(homePlace) && (ReviewService.ChainOf(r) ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase);
+            var ordered = named.OrderByDescending(Home).ThenBy(r => r.Label, StringComparer.Ordinal).ToList();
+            var atHome = ordered.Count(Home);
+            var offer = ordered.Count == 1 ? ordered[0] : atHome == 1 ? ordered[0] : null;
+            var holder = offer is null ? null : (await store.FindEntitiesByEquivalentAsync(offer.Uri, ct)).FirstOrDefault(o => o.Dataset == dataset && o.MergedInto is null && o.Id != row.EntityId);
+            list.Add(new ThinPlace(row, ordered, atHome, offer, holder));
+        }
+        return list;
+    }
+
     public Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, CancellationToken ct = default) => store.NotNameEntitiesAsync(dataset, NotNamePattern, ct);
 
     /// <summary>

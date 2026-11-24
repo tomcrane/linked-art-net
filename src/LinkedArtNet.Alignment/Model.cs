@@ -434,6 +434,19 @@ public sealed record ParkedString(long Id, string Context, string Raw, string Me
 /// An entity of a project every one of whose strings looks like no name at all ("S.l.", "Publisher not identified", "S"): a placeholder
 /// or a minted entity that stands for nothing. <see cref="Queued"/> is how many of its strings wait at the desk.
 /// </summary>
+/// <summary>A live place of the project with no gazetteer's and no Wikidata identifier: what the store knows of it before the indexes are asked.</summary>
+public sealed record ThinPlaceRow(string EntityId, string? Label, IReadOnlyList<string> Keys, IReadOnlyList<string> Sources, int Strings);
+
+/// <summary>
+/// A place that says too little (the fourth check, 2026-11-24): it holds a library's heading or the import's identifiers and no
+/// gazetteer record, so nothing says where it is; the gazetteer has records of its name.
+/// </summary>
+/// <param name="Named">The gazetteer's records bearing one of the entity's names, those in the home place first.</param>
+/// <param name="AtHome">How many of them are in the project's home place.</param>
+/// <param name="Offer">The record to offer in one press: the only one of the name, or the only one at home. Null when there are several to choose among.</param>
+/// <param name="Holder">The entity of the project that already holds the offered record, when one does: the two may be one place.</param>
+public sealed record ThinPlace(ThinPlaceRow Row, IReadOnlyList<AuthorityRecord> Named, int AtHome, AuthorityRecord? Offer, Entity? Holder);
+
 public sealed record NotNameEntity(string EntityId, string? Label, string Class, IReadOnlyList<long> StringIds, IReadOnlyList<string> Strings, int Records, int Queued);
 
 /// <summary>

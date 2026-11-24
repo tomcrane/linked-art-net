@@ -102,6 +102,16 @@ public class ThroughWikidataTests(PostgresFixture pg)
         var darlington = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Darlington", Status: EntityStatus.Aligned), scheme);
         await pg.Store.AddEquivalentAsync(darlington.Id, new Equivalent("http://viaf.org/viaf/" + h, "viaf", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
 
+        // the fourth check lists the thin places whose name the gazetteer has, and offers the one record of the name; a place a person
+        // has said is in no gazetteer leaves the list
+        var curation = new CurationService(pg.Store, scheme, new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions()));
+        var thin = await curation.ThinPlacesAsync(ds, "United Kingdom");
+        var listed = Assert.Single(thin);
+        Assert.Equal((chatham.Id, kent.Uri, 1), (listed.Row.EntityId, listed.Offer?.Uri, listed.AtHome));
+        Assert.Null(listed.Holder);
+        await curation.NoteAsync(ds, chatham.Id, "tester", CurationService.NoGazetteerRecord + ": a test");
+        Assert.Empty(await curation.ThinPlacesAsync(ds, "United Kingdom"));
+
         // a dry run writes nothing and says what it would do
         var dry = await new ThroughHeadings(pg.Store).RunAsync(ds, null);
         Assert.Equal((4, 1, 1), (dry.Read, dry.Given, dry.NoHeading));

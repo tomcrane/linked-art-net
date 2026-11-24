@@ -26,6 +26,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<PossibleDuplicate> Duplicates { get; private set; } = [];
     /// <summary>The third check (2026-11-22): entities every one of whose strings is no name ("S.l.", "Publisher not identified", "S").</summary>
     public IReadOnlyList<NotNameEntity> NotNames { get; private set; } = [];
+    /// <summary>The fourth check (2026-11-24): places with no gazetteer's or Wikidata's identifier, whose name the gazetteer has.</summary>
+    public IReadOnlyList<ThinPlace> Thin { get; private set; } = [];
     /// <summary>A search of the project's entities on the Mend screen, for a place known by another name (the owner, 2026-11-15, at "Bâle", which is Basel).</summary>
     [BindProperty(SupportsGet = true)] public string? Find { get; set; }
     public IReadOnlyList<Entity> Found { get; private set; } = [];
@@ -107,6 +109,28 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         if (Check is null or "duplicates") Duplicates = await Project.Curation.PossibleDuplicatesAsync(Dataset, HttpContext.RequestAborted);
         if (Check is null or "places") Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
         if (Check is null or "notnames") NotNames = await Project.Curation.NotNameEntitiesAsync(Dataset, HttpContext.RequestAborted);
+        if (Check is null or "thin") Thin = await Project.Curation.ThinPlacesAsync(Dataset, HomePlace, HttpContext.RequestAborted);
+    }
+
+    /// <summary>The place is given the gazetteer's record the row offered: an identifier added, as on the entity's own page.</summary>
+    public async Task<IActionResult> OnPostGiveRecordAsync(string id, string uri)
+    {
+        try
+        {
+            var entity = await Project.Curation.AddEquivalentAsync(Dataset, id, uri, Reviewer, HttpContext.RequestAborted);
+            var record = await Services.Store.GetAuthorityAsync(uri, HttpContext.RequestAborted);
+            return Flash($"\"{entity.Label}\" given the gazetteer's {record?.Label ?? uri}{(record is not null && ReviewService.ChainOf(record) is { } chain ? " (" + chain + ")" : "")}. Its page can remove it.", new { dataset = Dataset, check = "thin" }, entity);
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException or IdentifierInUseException) { return Flash(e.Message, new { dataset = Dataset, check = "thin" }); }
+    }
+
+    /// <summary>No gazetteer has the place: a note on it, and it leaves the list.</summary>
+    public async Task<IActionResult> OnPostNoRecordAsync(string id)
+    {
+        var entity = await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted);
+        if (entity is null || entity.Dataset != Dataset) return NotFound();
+        await Project.Curation.NoteAsync(Dataset, id, Reviewer, CurationService.NoGazetteerRecord + ": none of the records of its name is it.");
+        return Flash($"\"{entity.Label}\" noted as in no gazetteer; it is off the list.", new { dataset = Dataset, check = "thin" }, entity);
     }
 
     /// <summary>Every string of a listed entity is decided as not a name, for the reason the row gave, and the entity goes.</summary>

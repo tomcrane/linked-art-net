@@ -365,6 +365,22 @@ switch (args[0])
         return 0;
     }
 
+    case "align-through-headings":
+    {
+        // the pass over the thin places (2026-11-24): a place with a library heading and no gazetteer's or Wikidata's identifier gains
+        // the one item that names its heading, and the item's one TGN record. Without --apply it writes nothing and lists what it would do
+        var apply = args.Contains("--apply");
+        var run = apply ? await store.StartRunAsync(dataset, null, "{\"pass\":\"through-headings\"}") : null;
+        Console.Error.WriteLine(apply ? $"run {run!.Id}: through headings over {dataset}" : $"through headings over {dataset}: a dry run, nothing is written (--apply writes)");
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {DateTime.Now:HH:mm:ss} {m}"));
+        var report = await new ThroughHeadings(store).RunAsync(dataset, run?.Id, progress);
+        if (run is not null) await store.FinishRunAsync(run.Id, System.Text.Json.JsonSerializer.Serialize(new { report.Read, report.Given, report.AddedBySource, report.NoHeading, report.NoItem, leftAlone = report.LeftAlone.Count }), report.ToString());
+        Console.WriteLine($"{(run is null ? "dry run" : "run " + run.Id)}: {report}");
+        foreach (var g in report.Gave) Console.WriteLine($"  {(apply ? "given" : "would give")}: {g}");
+        foreach (var a in report.LeftAlone) Console.WriteLine($"  left alone: {a}");
+        return 0;
+    }
+
     case "vacuum":
     {
         // the store's housekeeping, said as it goes; no row changes, only the space and the planner's statistics
@@ -448,6 +464,9 @@ static void Usage() => Console.WriteLine(
       align-through-wikidata [--dataset]     the legacy alignments: an aligned entity with a Wikidata item and no record of the local
                                              indexes gains the TGN, LoC, ULAN and AAT records its item names, one per source, as a run
                                              of its own; an item naming two records of one source is listed and left alone
+      align-through-headings [--dataset] [--apply]  the thin places: a place with a library heading and no gazetteer's or Wikidata's
+                                             identifier gains the one item that names its heading and the item's one TGN record;
+                                             lists what it would do, and writes, as a run of its own, only with --apply
       undo-run --run <id>                    take a run back: its decisions, equivalents and unreferenced entities removed
       vacuum                                 vacuum and analyse the store's tables (after pulls, undone runs, or when a page is slow); changes no row
       collect-records --file <export.xml> [--system library] [--collect name] [--per-string n] [--keywords <pmc_subjects_csv.sql>] [--dataset]

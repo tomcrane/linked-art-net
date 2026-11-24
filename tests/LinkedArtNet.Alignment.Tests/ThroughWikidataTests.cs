@@ -71,4 +71,54 @@ public class ThroughWikidataTests(PostgresFixture pg)
         Assert.DoesNotContain(undone.Equivalents, q => q.Source == "tgn");
         Assert.Equal(EntityStatus.Aligned, undone.Status);
     }
+
+    [PostgresFact]
+    public async Task A_thin_place_gains_the_item_that_names_its_heading_and_the_items_gazetteer_record()
+    {
+        // the owner, 2026-11-23, after "Chatham": the project's Chatham (Kent) held LoC's heading alone, so it was the one candidate not
+        // on the map. A VIAF identifier is not followed: the old import's were often a namesake's ("Darlington", a suburb of Perth)
+        var ds = "thh" + Guid.NewGuid().ToString("N")[..5];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        static AuthorityRecord Heading(string id, string label) => new($"http://id.loc.gov/authorities/names/{id}", "loc", label, [label], "Place", null, [], null, DateTimeOffset.UtcNow, "test");
+        static Equivalent Loc(string id) => new($"http://id.loc.gov/authorities/names/{id}", "loc", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow);
+        var kent = Tgn("7011427" + ds.GetHashCode().ToString("x")[..3], "Chatham", "Medway, England, United Kingdom, Europe, World");
+        var h = "thh" + Guid.NewGuid().ToString("N")[..8];
+        await pg.Store.PutAuthorityAsync(kent);
+        await pg.Store.PutAuthorityAsync(Heading(h + "1", "Chatham (Kent)"));
+        await pg.Store.PutAuthorityAsync(Heading(h + "2", "Castles"));
+        await pg.Store.PutAuthorityAsync(Heading(h + "3", "Wells (England)"));
+        await pg.Store.PutAuthorityAsync(Item("Q" + h + "1", "Chatham", "Place", $"http://id.loc.gov/authorities/names/{h}1", kent.Uri));
+        await pg.Store.PutAuthorityAsync(Item("Q" + h + "2", "castle", "Type", $"http://id.loc.gov/authorities/names/{h}2"));
+        await pg.Store.PutAuthorityAsync(Item("Q" + h + "3", "Wells", "Place", $"http://id.loc.gov/authorities/names/{h}3"));
+        await pg.Store.PutAuthorityAsync(Item("Q" + h + "4", "Darlington", "Place", "http://viaf.org/viaf/" + h));
+        var chatham = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Chatham (Kent)", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(chatham.Id, Loc(h + "1"));
+        var castles = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Castles", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(castles.Id, Loc(h + "2"));
+        var wells = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Wells (England)", Status: EntityStatus.Confirmed), scheme);
+        await pg.Store.AddEquivalentAsync(wells.Id, Loc(h + "3"));
+        var other = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Wells", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(other.Id, Wikidata("Q" + h + "3"));
+        var darlington = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Darlington", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(darlington.Id, new Equivalent("http://viaf.org/viaf/" + h, "viaf", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+
+        // a dry run writes nothing and says what it would do
+        var dry = await new ThroughHeadings(pg.Store).RunAsync(ds, null);
+        Assert.Equal((4, 1, 1), (dry.Read, dry.Given, dry.NoHeading));
+        Assert.Single((await pg.Store.GetEntityAsync(chatham.Id))!.Equivalents);
+
+        var run = await pg.Store.StartRunAsync(ds);
+        var report = await new ThroughHeadings(pg.Store).RunAsync(ds, run.Id);
+        Assert.Equal(1, report.Given);
+        Assert.Equal((1, 1), (report.AddedBySource["wikidata"], report.AddedBySource["tgn"]));
+        var gained = (await pg.Store.GetEntityAsync(chatham.Id))!;
+        Assert.Contains(gained.Equivalents, q => q.Uri == kent.Uri && q.RunId == run.Id);
+        Assert.Contains(gained.Equivalents, q => q.Source == "wikidata");
+        // what is no place, and what another entity of the project holds, is left alone and said
+        Assert.Contains(report.LeftAlone, l => l.StartsWith("Castles") && l.Contains("no place"));
+        Assert.Contains(report.LeftAlone, l => l.StartsWith("Wells (England)") && l.Contains("one place twice?"));
+        Assert.Single((await pg.Store.GetEntityAsync(darlington.Id))!.Equivalents);
+        await pg.Store.UndoRunAsync(run.Id);
+        Assert.Single((await pg.Store.GetEntityAsync(chatham.Id))!.Equivalents);
+    }
 }

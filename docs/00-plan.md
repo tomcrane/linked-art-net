@@ -66,7 +66,7 @@ current in their status lines.
 
 **State.** The last full run is kfg394 (`run-20261124-131349-kfg394`), the second of 2026-11-24; the pass
 through the headings is `run-20261124-122043-y6bp64` (252 places given a record; undo-run takes it back). Schema
-version 14. 3,700 strings queued, 113 of them places. 63 findings open on the cataloguers' list. The way of
+version 14. 3,700 strings queued, 110 of them places. 63 findings open on the cataloguers' list. The way of
 working is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in: say
 whose it is when a drive begins and ends), the owner reviewing after. The commits of 2026-11-24 are local on
 `de-pmc`; `git push` is the owner's word. The full test loop has NOT been run since the morning's work began:
@@ -115,7 +115,7 @@ results accepted as one ("Hannover"); a correction coming back to its card; the 
 entity page's records decided one by one, and its report closed; the merge page's count of them.
 
 **Next.** The desk in volume again (the owner, 2026-11-23: "do lots of browser-driving, observing the common
-scenarios"; react to what recurs; watch the map): the place queue, 113, then the other fields. Then: the
+scenarios"; react to what recurs; watch the map): the place queue, 110, then the other fields. Then: the
 cataloguers' list carried on (doc 12 14.4); a label offered on the Decide screen when every string goes;
 "Walterstone"; the table of abbreviations; the export's handling of not-a-name, by-record and doubt; the
 duplicates check (150 pairs); the succession of bodies; help on a set; housekeeping long due (section 7 pruned;

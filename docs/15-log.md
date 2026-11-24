@@ -43,7 +43,7 @@ The owner's five of the day before, all done; two reconciles (t52ndf, then kfg39
   four were put right by hand. A guard on bare names was counted and not proposed (two caught, a dozen right
   ones queued).
 - At the desk as `claude`: the two merges (Newport's entity held Gwent's heading), some twenty-five strings,
-  the queue 3,716 to 3,700, the place queue 124 to 113.
+  the queue 3,716 to 3,700, the place queue 124 to 110.
 - Learnt: an "order only" change is to be read on a card before it is called done, as well as in a diff; a pass
   that gives entities identifiers changes what the rules do with them at the next run, so its reconcile's diff
   is the pass's measure too.

@@ -328,6 +328,43 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         entity.Labels.Where(l => name is null || NameMatcher.Score(name, [l]) >= 0.85 || (entity.Label is not null && NameMatcher.Score(entity.Label, [l]) >= 0.85))
             .Append(entity.Label).OfType<string>().Distinct(StringComparer.Ordinal).SelectMany(l => NameMatcher.Keys(l).Append(StringKey.Normalise(l))).Distinct(StringComparer.Ordinal);
 
+    /// <summary>
+    /// The strings still waiting at the desk under an entity's name, each with what tells whether it is this entity (the owner,
+    /// 2026-11-24, after merging two entities for Sheffield: "three further 'same as' at the desk"; and "the danger there is that one
+    /// of the Sheffields is NOT right, and there's enough evidence to know what to do and not include that one"): how many records it
+    /// is in, one of them, whether the string carries a qualifier of its own, and where this entity stands among the candidates the
+    /// rules found for it (first, lower, or not among them).
+    /// </summary>
+    public async Task<IReadOnlyList<Waiting>> WaitingUnderAsync(Entity entity, CancellationToken ct = default)
+    {
+        var keys = LabelKeys(entity, entity.Label).ToList();
+        if (keys.Count == 0) return [];
+        var own = entity.Equivalents.Select(q => q.Uri).Append(entity.Id).ToHashSet(StringComparer.Ordinal);
+        var list = new List<Waiting>();
+        foreach (var x in (await store.QueuedByKeysAsync(entity.Dataset, keys, 20, ct)).Where(x => x.Decision.EntityId != entity.Id).Take(12))
+        {
+            int? rank = null; var groups = 0; string? first = null;
+            if (x.Decision.EvidenceJson is { } json)
+                try
+                {
+                    using var doc = System.Text.Json.JsonDocument.Parse(json);
+                    if (doc.RootElement.TryGetProperty("groups", out var gs) && gs.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        foreach (var g in gs.EnumerateArray())
+                        {
+                            if (g.TryGetProperty("vetoed", out var v) && v.ValueKind == System.Text.Json.JsonValueKind.True) continue;
+                            groups++;
+                            if (!g.TryGetProperty("members", out var ms)) continue;
+                            if (groups == 1) first = ms.EnumerateArray().Select(m => m.TryGetProperty("label", out var l) ? l.GetString() : null).FirstOrDefault(l => l is not null);
+                            if (rank is null && ms.EnumerateArray().Any(m => m.TryGetProperty("uri", out var u) && u.GetString() is { } uri && own.Contains(uri))) rank = groups;
+                        }
+                }
+                catch (System.Text.Json.JsonException) { }
+            var examples = await ExamplesForAsync(x.String.Id, ct);
+            list.Add(new Waiting(x.String, await store.RecordCountAsync(x.String.Id, ct), examples.FirstOrDefault(), Qualified.Split(x.String.Raw).Qualifier, rank, groups, first));
+        }
+        return list;
+    }
+
     /// <summary>The facts of one of the project's own entities for its card: the entity (followed through a merge), its strings, and the records behind the most frequent of them, three at most.</summary>
     public async Task<EntityFacts?> FactsAsync(string entityId, CancellationToken ct = default)
     {

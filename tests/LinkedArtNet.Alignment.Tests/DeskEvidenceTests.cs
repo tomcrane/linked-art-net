@@ -13,6 +13,27 @@ public class DeskEvidenceTests(PostgresFixture pg)
     private const string A = "http://vocab.getty.edu/ulan/500900001", B = "http://vocab.getty.edu/ulan/500900002";
 
     [PostgresFact]
+    public async Task The_strings_waiting_under_an_entitys_name_say_where_the_entity_stands_on_their_cards()
+    {
+        // the owner, 2026-11-24, after a merge at "Sheffield": three more of the name waited at the desk, and one of them might not be it
+        var x = "w" + string.Concat(Guid.NewGuid().ToString("N").Where(char.IsLetter).Take(7));
+        var ds = "wu" + x;
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var desk = new ReviewService(pg.Store, scheme, new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions()));
+        var entity = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Shef" + x, ["Shef" + x], Status: EntityStatus.Aligned), scheme);
+        var second = await pg.Store.CollectAsync(ds, "place", "Shef" + x);
+        await pg.Store.DecideAsync(second.Id, (await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Shef" + x + " (queued)", Status: EntityStatus.Provisional), scheme)).Id, DecisionMethod.Queued, $"{{\"groups\":[{{\"members\":[{{\"uri\":\"http://example.org/other\",\"label\":\"Shef (Ala.)\"}}]}},{{\"members\":[{{\"uri\":\"{entity.Id}\"}}]}}]}}", null);
+        var absent = await pg.Store.CollectAsync(ds, "keywords:sub", "Shef" + x);
+        await pg.Store.DecideAsync(absent.Id, (await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, "Shef" + x + " (queued too)", Status: EntityStatus.Provisional), scheme)).Id, DecisionMethod.Queued, "{\"groups\":[{\"members\":[{\"uri\":\"http://example.org/other\",\"label\":\"Shef (Ala.)\"}]}]}", null);
+        var waiting = await desk.WaitingUnderAsync((await pg.Store.GetEntityAsync(entity.Id))!);
+        Assert.Equal(2, waiting.Count);
+        Assert.Equal(((int?)2, 2, "Shef (Ala.)"), (waiting.Single(w => w.String.Id == second.Id).Rank, waiting.Single(w => w.String.Id == second.Id).Candidates, waiting.Single(w => w.String.Id == second.Id).First));
+        Assert.Null(waiting.Single(w => w.String.Id == absent.Id).Rank);
+        await desk.SameAsAsync(ds, second.Id, entity.Id, "tester");
+        Assert.Single(await desk.WaitingUnderAsync((await pg.Store.GetEntityAsync(entity.Id))!));
+    }
+
+    [PostgresFact]
     public async Task A_place_with_no_coordinates_borrows_the_gazetteers_by_name_and_where_it_is_said_to_be()
     {
         // the owner's second of five, 2026-11-23: "Chatham (Kent)" was the one candidate not on its map. The gazetteer files Chatham

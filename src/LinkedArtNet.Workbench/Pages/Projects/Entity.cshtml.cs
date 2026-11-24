@@ -40,6 +40,8 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     public string? Report { get; private set; }
     /// <summary>The records decided each for itself onto this entity (seen as a user, 2026-11-24: an entity with three such records said only "2 strings").</summary>
     public IReadOnlyList<EntityRecord> ByRecord { get; private set; } = [];
+    /// <summary>Queued strings that bear this entity's name, with what tells whether each is this entity: to be decided here, the ones ticked, after a merge or at any time.</summary>
+    public IReadOnlyList<Waiting> WaitingHere { get; private set; } = [];
 
     public async Task<IActionResult> OnGetAsync(string? message = null)
     {
@@ -49,6 +51,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         View = view;
         OnChecks = await CheckLists.ForAsync(Project, view.Entity.Id, HttpContext.RequestAborted);
         ByRecord = await Services.Store.RecordDecisionsForEntityAsync(view.Entity.Id, HttpContext.RequestAborted);
+        if (view.Entity.MergedInto is null && view.Entity.Status != EntityStatus.Provisional) WaitingHere = await Project.Desk.WaitingUnderAsync(view.Entity, HttpContext.RequestAborted);
         Report = (await Project.Desk.ReportedEntitiesAsync(Dataset, HttpContext.RequestAborted)).Where(r => r.Entity.Id == view.Entity.Id).Select(r => r.Report).FirstOrDefault();
         Pulled = view.Records.Select(r => (r.Key, Pulled: SourcePull.Read(r.Value))).Where(x => x.Pulled is not null).ToDictionary(x => x.Key, x => x.Pulled!);
         foreach (var q in view.Entity.Equivalents.OrderBy(q => q.Source == "tgn" ? 0 : 1))
@@ -82,6 +85,17 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
         return aside ? $"\"{name}\" set aside." + (n == 0 ? "" : $" {n} string(s) that a rule had matched here by it are reopened for the next reconcile.") : $"\"{name}\" restored.";
     });
     public Task<IActionResult> OnPostClassAsync(string id, EntityClass cls) => Act(id, async () => { var e = await Project.Curation.SetClassAsync(Dataset, id, cls, Reviewer); return $"Class: {e.Class.ToString().ToLowerInvariant()}."; });
+    /// <summary>The queued strings ticked on the page are this entity: each decided as the same, as its own card's "Same as" does.</summary>
+    public async Task<IActionResult> OnPostTheseTooAsync(string id, long[]? strings)
+    {
+        var done = new List<string>(); var failed = new List<string>();
+        foreach (var sid in (strings ?? []).Distinct())
+            try { await Project.Desk.SameAsAsync(Dataset, sid, id, Reviewer, "decided from the entity's page, with others of its name"); done.Add(sid.ToString()); }
+            catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { failed.Add(e.Message); }
+        if (done.Count == 0 && failed.Count == 0) return Flash("Tick the strings that are this entity first.", new { dataset = Dataset, id });
+        return Flash($"{done.Count} string{(done.Count == 1 ? "" : "s")} decided as this entity.{(failed.Count > 0 ? " Not decided: " + string.Join("; ", failed) : "")} Each one's card can undo it.", new { dataset = Dataset, id });
+    }
+
     public async Task<IActionResult> OnPostAddEquivalentAsync(string id, string uri)
     {
         try { await Project.Curation.AddEquivalentAsync(Dataset, id, uri, Reviewer); return Flash("Identifier added.", new { dataset = Dataset, id }); }

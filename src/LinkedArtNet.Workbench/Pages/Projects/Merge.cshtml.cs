@@ -71,12 +71,41 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
             foreach (var st in strings.Take(40)) counted.Add((st.String, await Services.Store.RecordCountAsync(st.String.Id, HttpContext.RequestAborted)));
             var identifiers = new List<(Equivalent Id, string? Says)>();
             foreach (var q in entity.Equivalents.Take(16))
-                identifiers.Add((q, await Services.Store.GetAuthorityAsync(q.Uri, HttpContext.RequestAborted) is { } record ? LinkedArtNet.Alignment.Authorities.RecordSummary.Says(record) ?? record.Label : null));
+                identifiers.Add((q, await SaysAsync(q)));
             var clue = await Project.Desk.ClueAsync(entity, HttpContext.RequestAborted);
             rows.Add(new Row(entity, strings.Count, strings.Count(s => s.Decision.Method == DecisionMethod.Queued), clue.Placement, counted.Sum(x => x.Records),
                 counted.OrderByDescending(x => x.Records).Take(6).ToList(), identifiers, (await Services.Store.RecordDecisionsForEntityAsync(entity.Id, HttpContext.RequestAborted)).Count));
         }
         return rows;
+    }
+
+    private int _pulls;
+
+    /// <summary>
+    /// What an identifier is, for a person deciding whether it should follow a merge (the owner, 2026-11-24: of two entities' VIAF and
+    /// LUX identifiers the page said only that the store had no record; one was dead and the other an American place's, learnt by
+    /// following them). The store's record; else, for a source that can be asked, what it answers now, asked as the page opens (a few
+    /// a page) and kept; else what a Wikidata item that gives the identifier says it is.
+    /// </summary>
+    private async Task<string?> SaysAsync(Equivalent q)
+    {
+        var ct = HttpContext.RequestAborted;
+        var record = await Services.Store.GetAuthorityAsync(q.Uri, ct);
+        if (record is not null && (LinkedArtNet.Alignment.Authorities.RecordSummary.Says(record) ?? record.Label) is { } known) return known;
+        foreach (var item in await Services.Store.FindAuthoritiesBySameAsAsync(q.Uri, ct))
+            if (item.Source == "wikidata") return $"Wikidata gives this identifier to {LinkedArtNet.Alignment.Authorities.RecordSummary.Says(item) ?? item.Label}";
+        if (!LinkedArtNet.Alignment.Authorities.SourcePull.CanPull(q.Uri)) return null;
+        var pulled = LinkedArtNet.Alignment.Authorities.SourcePull.Read(record);
+        if (pulled is null && _pulls++ < 6)
+        {
+            try { pulled = await Project.Pull.PullAsync(q.Uri, ct); }
+            catch (Exception e) when (e is HttpRequestException or TaskCanceledException or InvalidOperationException) { return $"asked just now, and it could not be reached ({e.Message})"; }
+        }
+        if (pulled is null) return null;
+        if (pulled.Error is { } error) return $"asked just now: {error}";
+        var what = string.Join(": ", new[] { pulled.Label, pulled.Description }.Where(x => !string.IsNullOrWhiteSpace(x)));
+        var facts = string.Join("; ", pulled.Facts.Take(2).Select(f => $"{f.Key} {f.Value}"));
+        return (what.Length > 0 ? what : "a record with no name") + (facts.Length > 0 ? " · " + facts : "") + (pulled.SelfEcho ? " · this project's own earlier export, reflected back" : "");
     }
 
     /// <summary>The two are two things: a note on each naming the other, with the reason if one was given, and the pair leaves the check's list.</summary>

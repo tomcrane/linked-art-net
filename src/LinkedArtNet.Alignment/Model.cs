@@ -260,6 +260,9 @@ public sealed record Run(string Id, string Dataset, string? ManifestJson, string
 public sealed record Override(string Dataset, string? Context, string Normalised, string Target, string Source, string? Note = null);
 
 /// <summary>A string with the decision a run made about it.</summary>
+/// <summary>A queued string that bears an entity's name, with what tells whether it is that entity: its records, one of them, its own qualifier if it has one, and where the entity stands among the candidates the rules found for the string (<paramref name="Rank"/>: 1 for first; null when it is not among them), of how many, and what the first candidate is called.</summary>
+public sealed record Waiting(SourceString String, int Records, StringExample? Example, string? Qualifier, int? Rank, int Candidates, string? First);
+
 public sealed record DecidedString(SourceString String, Decision Decision);
 
 /// <summary>What undoing a run removed.</summary>

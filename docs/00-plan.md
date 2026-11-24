@@ -562,6 +562,28 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
   wanted for entities like it.
 
+**Built while the second reconcile ran, 2026-11-24** (the owner: "Anything you could be doing while the reconcile
+runs?"). None of it seen in the browser yet: the workbench is stopped until the run ends.
+
+- The card's search: what is exactly the words searched leads, then the string's own kind, then what is aligned
+  before a placeholder.
+- An entity's page says which records were decided onto it one by one, each with its string's card; the merge
+  page counts them.
+- ITEM 2, BORROWED COORDINATES, BUILT: a place with none, of which something says where it is, is looked for in
+  the gazetteer beyond the card's records (`ReviewService.BorrowFromGazetteerAsync`): the record of its name
+  whose parents agree, or the one within 75 km of a place called what the placement says, the one at home when
+  two fit; a hollow marker, said to be borrowed. A candidate is "not on the map" only when none of its group is.
+- A form's buttons go out of use at the press.
+- TO DO WHEN THE RUN ENDS, in order: its diff against t52ndf (no method should move but by the hand decisions
+  between); the workbench started; "Jamestown (Accra, Ghana)" and "Hannover" put right, the two "Compton
+  (Surrey)", "Jefferson", "New Brunswick" looked at; Devon's wrong item removed; the cards of "Cambridge",
+  "Windsor", "Preston", a "Chatham"-like card and "New York"-like card with their maps; the fourth check and the
+  first check (which should now list the import's namesakes that the pass gave items) in the browser; the search
+  order and the entity page's records seen; the address cards by hand ("London (31 Foubert's Place ...)",
+  "[London] ([Royle House ...])", "Stoke-on-Trent (P.O. Box ...)", "Glasgow, Central Hotel", "King Street",
+  "New Bond Street"; "New York (Madison Avenue)" is done); then the day's end (full tests, section 0, the log,
+  memory).
+
 **The second batch, BUILT 2026-11-23, and the desk used with it** (the owner: "Build all the 'Seen on the way
 and not built' so that you can then return to driving the browser ... Important to keep going. I think we balance
 the need to react to perceived issues quickly ... with churning through a lot of cards/tasks to be sure we are

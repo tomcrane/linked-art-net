@@ -69,7 +69,7 @@ through the headings is `run-20261124-122043-y6bp64` (252 places given a record;
 version 14. 3,700 strings queued, 110 of them places. 63 findings open on the cataloguers' list. The way of
 working is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in: say
 whose it is when a drive begins and ends), the owner reviewing after. The commits of 2026-11-24 are local on
-`de-pmc`; `git push` is the owner's word. The full test loop has NOT been run since the morning's work began:
+`de-pmc`; `git push` is the owner's word. The full test loop was green on 2026-11-24 in the afternoon (eight projects, 3,262 tests); after later code:
 run it before a push and at the day's end.
 
 **The owner's five of 2026-11-23, all done on 2026-11-24** (section 7 has the day in five dated blocks above

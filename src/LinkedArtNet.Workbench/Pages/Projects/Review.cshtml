@@ -237,10 +237,14 @@ else
     @if (Model.Mates.Count > 0)
     {
         <div class="small" id="run"><strong>The same thing, written another way?</strong> Tick any of these that are, and the button you press decides them too:
+            @* the boxes on a line of their own, each whole: the first had sat at the end of the sentence and the next at the start of
+               the line below (the owner, 2026-11-24: "Alignment issue here") *@
+            <div style="display:flex; flex-wrap:wrap; gap:.15rem 1.2rem; margin:.2rem 0 .1rem">
             @foreach (var mate in Model.Mates)
             {
-                <label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0 .8rem 0 0; display:inline-block"><input type="checkbox" data-also value="@mate.String.Id" /> "@mate.String.Raw" <span class="muted">(@F(mate.String.Context))</span></label>
+                <label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0; white-space:nowrap"><input type="checkbox" data-also value="@mate.String.Id" /> "@mate.String.Raw" <span class="muted">(@F(mate.String.Context))</span></label>
             }
+            </div>
         </div>
     }
     @if (item.Siblings.Count > 0)

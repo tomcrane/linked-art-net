@@ -548,6 +548,11 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
   wanted for entities like it.
 
+**The owner of the new group, 2026-11-24** ("sometimes easy because the mistake is ... a small town in the US ... But they are sometimes hard, where the 'mistake' is a category error rather than a place error", of "Kingston-upon-Thames (Surrey, England)" and "West Sussex (England)", whose item is a military unit).
+
+- COUNTED (`reports/q-outweighed-rows.txt`): of 53 rows, 18 are a namesake elsewhere (the label's qualifier is nowhere in where the better-known place is: "Oxon Hill (Md.)", "Sevilla (... Colombia)"; among them the right ones, "Dedham (England)", "Woburn (England)"), and 35 are the same place or the same country under another record. Those 35 are three things: the label itself names a level (": District", ": Landkreis", ": Prefecture", ": Parish", ": Arrondissement", some 20: the entity is the district and the strings mean the town, so it is mended whole as a namesake is); only the Wikidata item is off, the library's heading being right ("West Sussex (England)" a military unit, "Dumfries and Galloway" a constituency, "Saint-Quentin" a basilica); and nothing wrong ("Kingston-upon-Thames", "Kensington and Chelsea"). A few namesakes within one country fall among the 35 by the word "England" ("Chippenham (Cambridgeshire, England)", "Highgate (Birmingham, England)").
+- PROPOSED, NOT BUILT: the group split in two by that test, "Labelled as somewhere else" and "The same place under another record"; on the second, the row says which it is (the label names a district; or only the item differs, and what the item is), and the Decide screen gains one act for the case it cannot do now: "it is this place: replace its Wikidata item with the better-known record", the library's heading and the label kept.
+
 **The owner at "Milano (Tex.)", 2026-11-24** ("I definitely removed the identifiers before I clicked mend ... as if
 nothing had happened ... Is this a caching issue?"), which is his "Wallington" of 2026-11-22 again, and now found.
 

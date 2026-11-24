@@ -62,65 +62,60 @@ in the day goes to the log (doc 15) and the findings to doc 10 section 7.6. Sect
 loses an item when it is done (the log records it). Sections 1 to 6 are the plan as proposed on 2026-10-13, kept
 current in their status lines.
 
-## 0. Resume point (written 2026-11-24 afternoon; the one place to read first)
+## 0. Resume point (written 2026-11-24 night; the one place to read first)
 
-**State.** The last full run is kfg394 (`run-20261124-131349-kfg394`), the second of 2026-11-24; the pass
-through the headings is `run-20261124-122043-y6bp64` (252 places given a record; undo-run takes it back). Schema
-version 14. 3,700 strings queued, 110 of them places. 63 findings open on the cataloguers' list. The way of
-working is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in: say
-whose it is when a drive begins and ends), the owner reviewing after. The commits of 2026-11-24 are local on
-`de-pmc`; `git push` is the owner's word. The full test loop was green on 2026-11-24 in the afternoon (eight projects, 3,262 tests); after later code:
-run it before a push and at the day's end.
+**State.** The last full run is kfg394 (`run-20261124-131349-kfg394`); the pass through the headings is
+`run-20261124-122043-y6bp64` (252 places given a record; undo-run takes it back). Schema version 14. 3,676 strings
+queued, 92 of them places. 63 findings open on the cataloguers' list. The workbench is stopped. The way of working
+is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in, and on
+2026-11-24 the owner worked in it too: say whose it is when a drive begins and ends, and SAY BEFORE A RESTART: the
+assistant restarted it under him several times that day, twice without a word). The commits of 2026-11-24 are
+local on `de-pmc`, the full test loop green at day end (eight projects, 3,263 tests); `git push` is the owner's
+word.
 
-**The owner's five of 2026-11-23, all done on 2026-11-24** (section 7 has the day in five dated blocks above
-"The second batch"; the log has the day):
+**The owner's standing word** (2026-11-24 evening): "you can continue working through things yourself. You can
+store up interesting things for me to look at - but don't let something's presence on the list stop you from making
+fixes that might then take it off the list. We are still aiming for something that is pleasurable to use, and as
+simple as it can be without over-simplifying and removing the nuances necessary to create accurate data." So: work
+the checks and the desk; mend what recurs; decide small design questions the cautious way and say so; keep the
+list for him short.
 
-1. *Which twelve a card keeps*: most written-about first, the candidates at home leading only when none abroad
-   outweighs them, and those at home always within the twelve (`Reconciler.HomeWithinTheCut`). The first build,
-   home first always, was wrong ("New York" led by Lincolnshire's) and was mended after its first reconcile.
-   Seen right on "Windsor" and "Preston".
-2. *Borrowed coordinates*: from the gazetteer beyond a card's own records, by parents or by nearness
-   (`ReviewService.BorrowFromGazetteerAsync`). Built and tested; seen once ("Windsor"), not yet on a
-   "Chatham"-like card.
-3. *Street addresses*: counted, no rule; the seven decided by hand, "King Street" logged for the cataloguers.
-4. *Thin places*: the pass (252 given a record), then the fourth check, "Places that say too little",
-   http://localhost:5200/p/pmc/checks?check=thin : 226 listed, 89 with one record to give in a press.
-5. *The merges*: done; Newport's entity held Gwent's heading, put right.
+**Done on 2026-11-24** (section 7 has the day in dated blocks, newest first, above "The second batch"; the log has
+the day in brief):
 
-**For the owner, when we resume:**
+- His five of 2026-11-23: the order of a card's twelve (`Reconciler.HomeWithinTheCut`); borrowed coordinates;
+  no rule for street addresses; the pass over thin places and the fourth check; the merges.
+- The checks: the first has two new groups ("A bare name on a place labelled as somewhere else", "The same place
+  under another record") and its Decide screen a third answer (the entity is right and only its Wikidata item is
+  wrong: a record chosen from those of the name); the fourth ("Places that say too little") ticks and chooses on
+  the row and gives in one press. Counts at the stop: the fourth 134, the first 31.
+- The Compare page: says what each identifier is (the store, Wikidata, or the source asked as the page opens);
+  an identifier unticked is left out of the merge; another entity found and added on the page.
+- An entity's page: the records decided onto it one by one; the strings of its name still waiting at the desk,
+  each with what tells whether it is this entity, decided there.
+- One convention for identifier boxes, the owner's: TICKED IS INCLUDED OR KEPT, unticked is struck through and
+  left out or removed (the Compare page and the Decide screen).
+- At the desk as `claude`: some forty strings; 87 places given a gazetteer record; twenty entities mended from a
+  district or a namesake to the town.
 
-- *The fourth check is his to work, or the assistant's at his word*: 89 one-press rows (read each against the
-  entity's strings: "Blackrock" is offered Caerphilly's, and the strings may mean Dublin's), 137 to find.
-- *The first check lists nothing*, though the pass gave Wikidata items to places the import put on a namesake by
-  a library heading ("Milano (Tex.)", "Stuttgart (Ark.)", "Hove (Belgium)", the bare "Cambridge" that is
-  Cambridge, Massachusetts). Its condition asks for an item that came from the import; the pass's did not. To
-  count and put to him: the check widened to an item however it came.
-- *A fault of the rules, seen and not mended*: "Jamestown (Accra, Ghana)" was taken onto the project's
-  "Jamestown (Va.)" by name, its qualifier unread, though LoC has the heading exactly. To count (qualified
-  strings on an entity whose own qualifier differs) and propose.
-- *No guard on bare names* (counted, `reports/q-bare1.txt`: it would catch two and queue a dozen right ones).
-- *Entities classed as places that are not* (some 28: "Castles", "Brass", "World War, 1939-1945"); entities
-  with a slightly wrong item ("Dorset", "Shropshire", "Russia", "Turkey"); two "Glasgow (Strathclyde)".
-- *Still to look at*: the two "Compton (Surrey)" on an entity with only VIAF and LUX; "Jefferson"; "New
-  Brunswick"; "Hannover" as a place of publication (queued); the VIAF and LUX identifiers left on Newport
-  (Wales).
-- *From before, still his to check*: "Charterhouse" (56520) on Godalming and "Middleburg" (65975) on Virginia,
-  on the assistant's own knowledge; "St. Ives" (61286) and "San Marino" (61204); six entities that stand for
-  nothing; the check "a body aligned to a namesake elsewhere" (93 bodies); whether the publishers' table names
-  the body.
+**Next, in order.** (1) The desk in volume: the place queue (92; `reports/q-placequeue.txt` has it with
+publishers; the next plain ones "Bern", "Geneva", "Málaga", "Valencia", "Essen", "UK"/"United Kingdom", "Athens"
+by record), then publishers (735) and the other fields, where the ways out get their real test. (2) The checks'
+remaining rows: the fourth (the rows of several, by the candidates now on them), the first's 31, the duplicates
+(150 pairs; the Compare page is much better for them now). (3) Small things left rough: the Decide screen's older
+words on the new kinds of row; namesakes within one country sorting into "the same place"; the card coming back
+part-way down after "the record is wrong"; the mend note's wording for a district; the reconciler's "at home" not
+knowing an entity placed by a library heading. (4) Then as before: the cataloguers' list carried on; the export's
+handling of not-a-name, by-record and doubt; the succession of bodies; help on a set; housekeeping long due
+(section 7 pruned; doc 12 for the checks, the Decide screen, the Compare page, the ways out, decisions by record;
+doc 16's scenarios and pictures, stale).
 
-**Tried in the browser on 2026-11-24 and working:** the run in one act ("New York" and three spellings); search
-results accepted as one ("Hannover"); a correction coming back to its card; the record is wrong, then decided
-("King Street"); the search's new order; a button pressed once. **Not yet seen:** the near spelling's hint; the
-entity page's records decided one by one, and its report closed; the merge page's count of them.
-
-**Next.** The desk in volume again (the owner, 2026-11-23: "do lots of browser-driving, observing the common
-scenarios"; react to what recurs; watch the map): the place queue, 110, then the other fields. Then: the
-cataloguers' list carried on (doc 12 14.4); a label offered on the Decide screen when every string goes;
-"Walterstone"; the table of abbreviations; the export's handling of not-a-name, by-record and doubt; the
-duplicates check (150 pairs); the succession of bodies; help on a set; housekeeping long due (section 7 pruned;
-doc 12 for the Checks page and its four checks, the Decide screen, the merge page, the ways out, decisions by
-record, the findings page; doc 16's scenarios and pictures, stale).
+**For the owner to look at** (none of it waits on him; the fuller list is in section 7 under "Working alone"):
+duplicate pairs to merge (Leicester, Derby, Abertillery, two "Glasgow (Strathclyde)", "München"); rows that may be
+the American namesake ("Kensington", "Marlborough", "Cranbrook", "Dartmouth", "Winterthur (Del.)"); some 28
+entities classed as places that are not ("Castles", "Brass", "World War, 1939-1945"); "Charterhouse" on Godalming
+and "Middleburg" on Virginia, on the assistant's own knowledge; the check "a body aligned to a namesake elsewhere"
+(93 bodies), not ruled on.
 
 **What the alignment is for, and what comes after it** (the owner, 2026-11-19; he asked that its importance be
 noted). The alignment is not the end. "Soon we switch to what the old PMC C# code was doing (though hopefully,

@@ -44,6 +44,15 @@ The owner's five of the day before, all done; two reconciles (t52ndf, then kfg39
   ones queued).
 - At the desk as `claude`: the two merges (Newport's entity held Gwent's heading), some twenty-five strings,
   the queue 3,716 to 3,700, the place queue 124 to 110.
+- Afternoon and evening, the owner at the checks and the assistant beside him: the first check widened to a bare
+  name on a place labelled as another (counted: 58 strings, some 33 wrong on about 480 records), then split in
+  two at his word (a place error, or "a category error rather than a place error"), with a third answer on the
+  Decide screen. His "Milano (Tex.)" found the fault of "Wallington" two days before: boxes that came ticked and
+  said "remove" were pressed to remove and so unticked. Boxes now mean what he said they should: ticked is
+  included or kept. The Compare page learnt to say what an identifier is, to leave one out, and to find another
+  entity; the entity's page to decide the strings of its name still waiting.
+- Alone at his word in the evening: the fourth check 221 to 134 and the first 50 to 31; the place queue to 92;
+  the whole queue 3,676. The full test loop green at day end.
 - Learnt: an "order only" change is to be read on a card before it is called done, as well as in a diff; a pass
   that gives entities identifiers changes what the rules do with them at the next run, so its reconcile's diff
   is the pass's measure too.

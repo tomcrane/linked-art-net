@@ -920,7 +920,12 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         // 2026-11-24: "Milano (Tex.)", mended to Milan, was still called "Milano (Tex.)")
         if (home?.Label is { Length: > 0 } named && entity.Label is { } old && old.Contains('(') && !string.Equals(old, named, StringComparison.Ordinal)
             && !home.Labels.Append(named).Any(l => string.Equals(l, old, StringComparison.OrdinalIgnoreCase)))
-            await SetLabelAsync(dataset, entity.Id, named, reviewer, ct);
+        {
+            // the name its strings use, where the record bears it too, before the record's own first name ("Munich (Germany :
+            // Landkreis)", mended to the city, became "München": seen as a user, 2026-11-24)
+            var bare = Qualified.Split(old).Name;
+            await SetLabelAsync(dataset, entity.Id, bare.Length > 0 && home.Labels.Append(named).Any(l => string.Equals(l, bare, StringComparison.OrdinalIgnoreCase)) ? bare : named, reviewer, ct);
+        }
         await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Mended from the checks: aligned by the import to a namesake; now {where}.", ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }

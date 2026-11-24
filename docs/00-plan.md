@@ -548,6 +548,27 @@ by hand; the order left to the assistant, who took item 4 first so that one reco
   (N.Y.)", confirmed, is "not on the map, no coordinates in its record": item 2 (borrowed coordinates) is still
   wanted for entities like it.
 
+**Three counts at the owner's word, 2026-11-24 afternoon** (`reports/q-counts-20261124.txt`, `reports/q-bare2.txt`).
+
+- The first check widened to an item however it came: three more rows ("California", "Victoria", "Waltham
+  Abbey"), none of them the import's mistake. NOT WORTH IT as worded: the check reads only places whose label has
+  no qualifier, and the mistakes the pass uncovered are on labels that have one.
+- A qualified string on an entity whose own qualifier differs ("Jamestown (Accra, Ghana)" on "Jamestown
+  (Va.)"): 505 qualified strings stand by name on a qualified entity; 64 differ in words; all 64 read, and every
+  one is the same place said another way ("Abingdon, Berkshire" on "Abingdon (England)", "New York, NY" on "New
+  York (N.Y.)"). Jamestown was the one. NO RULE.
+- THE PATTERN THAT IS REAL, counted because the first count pointed at it: a string with no qualifier standing on
+  a place whose label has one, where a namesake is written about more than 1.5 times as much as the place the
+  entity is aligned to. 617 such strings; 446 on an entity with an item to compare; 58 flagged, all read. Some 33
+  wrong, on about 480 records, of two kinds: the import's namesake abroad ("Milano" in 100 records on Milano
+  (Tex.), "Stuttgart" on Stuttgart (Ark.), "Hove" on Hove (Belgium), "Sevilla" and "Zaragoza" in Colombia,
+  "Orkney" in Saskatchewan, "Oxon" on Oxon Hill (Md.), "Montrose", "Dunedin"), and the wrong level of the right
+  place ("Chichester" in 124 records on the District, "Munich" in 74 on the Landkreis, "Osaka" and "Kyoto" on the
+  prefectures, "Rio de Janeiro" on the State, "Calais", "Aachen", "Passau", "Nicosia", "Dartford", "Horsham").
+  Some 22 right ("Dedham (England)", "Launceston (England)", "Woburn (England)", "Leominster (England)": the
+  English one outweighed by an American). TO PUT TO THE OWNER: a list, not a rule: the first check widened to
+  this condition, its Decide screen as it is (the strings moved to the right place, or the entity kept).
+
 **After the second reconcile, 2026-11-24, at the desk as `claude`.** Run kfg394: not one method moved against
 t52ndf. Decided: "Windsor" and "Preston" with "Preston?" (their cards and maps right: Preston in Lancashire
 leads, the map on the six British ones; Windsor shows Ontario's first by 80 sitelinks to 67, the project's own

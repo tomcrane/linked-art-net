@@ -212,10 +212,10 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
             @* each line says what will happen to its identifier, in words that change with the tick (the owner, 2026-11-22 at "Wallington" and
                2026-11-24 at "Milano (Tex.)": "I definitely removed the identifiers before I clicked mend", and none was removed: the boxes
                come ticked, each said only "remove", and a press to remove one unticked it) *@
-            <p class="small muted">The entity was then aligned to the wrong place altogether. The import's identifiers are set to be removed already: they usually describe the same wrong place. One a rule or a person added since is set to be kept. Each line says what will happen to its identifier; press a line to change it.</p>
+            <p class="small muted">The entity was then aligned to the wrong place altogether. A ticked identifier stays on the entity; an unticked one is crossed out and removed. The import's identifiers come unticked: they usually describe the same wrong place. One a rule or a person added since comes ticked. Change either as you judge.</p>
             @foreach (var q in pe.Equivalents)
             {
-                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="remove" value="@q.Uri" data-remove="@q.Source" @(q.Method.StartsWith("imported", StringComparison.Ordinal) || q.Method.StartsWith("through", StringComparison.Ordinal) ? "checked" : "") /> <strong data-remove-says>remove</strong> <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener" data-remove-what>@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == first.Item ? " · " + (first.ItemDescription ?? "not in the local index") : "")</span></label></p>
+                <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="hidden" name="shownIds" value="@q.Uri" /><input type="checkbox" name="keep" value="@q.Uri" data-remove="@q.Source" @(q.Method.StartsWith("imported", StringComparison.Ordinal) || q.Method.StartsWith("through", StringComparison.Ordinal) ? "" : "checked") /> <strong data-remove-says>remove</strong> <span class="tag">@q.Source</span> <a href="@q.Uri" target="_blank" rel="noopener" data-remove-what>@q.Uri</a> <span class="muted">· @q.Method@(q.Uri == first.Item ? " · " + (first.ItemDescription ?? "not in the local index") : "")</span></label></p>
             }
             </div>
 
@@ -281,8 +281,8 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
         function update() {
             form.querySelectorAll("input[data-remove]").forEach(function (c) {
                 var line = c.closest("label"), says = line && line.querySelector("[data-remove-says]"), what = line && line.querySelector("[data-remove-what]");
-                if (says) says.textContent = c.checked ? "will be removed:" : "will be kept:";
-                if (what) what.style.textDecoration = c.checked ? "line-through" : "";
+                if (says) says.textContent = c.checked ? "kept:" : "removed:";
+                if (what) what.style.textDecoration = c.checked ? "" : "line-through";
             });
             var chosen = form.querySelectorAll("input[data-outcome]:checked");
             var total = chosen.length, go = 0;
@@ -290,7 +290,7 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
             show("other-place", go > 0 || searched); show("stays", go < total || total === 0); show("removes", total > 0 && go === total);
             var b = document.getElementById("apply"), says = document.getElementById("apply-says");
             if (go === 0) { b.textContent = total <= 1 ? "Confirm: it is this place" : "Confirm: all " + total + " strings are this place"; says.textContent = "The entity is kept and confirmed, with the label chosen. Nothing is removed from it."; }
-            else if (go === total) { b.textContent = total === 1 ? "Mend: it is the other place" : "Mend: all " + total + " strings are the other place"; var gone = [], kept = []; form.querySelectorAll("input[data-remove]").forEach(function (c) { (c.checked ? gone : kept).push(c.getAttribute("data-remove")); });
+            else if (go === total) { b.textContent = total === 1 ? "Mend: it is the other place" : "Mend: all " + total + " strings are the other place"; var gone = [], kept = []; form.querySelectorAll("input[data-remove]").forEach(function (c) { (c.checked ? kept : gone).push(c.getAttribute("data-remove")); });
                 says.textContent = (gone.length ? "Removed from this entity: " + gone.join(", ") + ". " : "Nothing is removed from this entity. ") + (kept.length ? "Kept on it: " + kept.join(", ") + ". " : "") + "Then it is merged into the project's entity for the other place, or given that place's identifier"+ (form.querySelectorAll("input[data-record]:checked").length > 1 ? "s, each one ticked." : "."); }
             else { b.textContent = "Move " + go + " string" + (go === 1 ? "" : "s") + " to the other place, and confirm this entity for the other " + (total - go); says.textContent = "The strings that go are decided onto the other place. This entity keeps its identifiers and is confirmed for the strings that stay."; }
         }

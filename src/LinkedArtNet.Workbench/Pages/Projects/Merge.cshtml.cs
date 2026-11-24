@@ -122,9 +122,12 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
         return Redirect($"/p/{Dataset}/checks?check=duplicates");
     }
 
-    /// <param name="leave">Identifiers ticked to be left out of the merge: each is taken off the entity that holds it first, so that one that describes something else does not travel to the entity kept (the owner, 2026-11-24, at "Birmingham" and "Sheffield": from the Compare page he went to the wrong entity's own page, removed a dead LUX identifier and an American place's, searched for the right entity and merged there).</param>
-    public async Task<IActionResult> OnPostAsync(string survivor, string? label, EntityClass? cls, string[]? leave)
+    /// <remarks>Identifiers unticked are left out of the merge: each is taken off the entity that holds it first, so that one that describes something else does not travel to the entity kept (the owner, 2026-11-24, at "Birmingham" and "Sheffield": from the Compare page he went to the wrong entity's own page, removed a dead LUX identifier and an American place's, searched for the right entity and merged there).</remarks>
+    /// <param name="shown">The identifiers the page showed with a box.</param>
+    /// <param name="bring">Those of them still ticked: they go with the merge. One shown and not ticked is left out.</param>
+    public async Task<IActionResult> OnPostAsync(string survivor, string? label, EntityClass? cls, string[]? shown, string[]? bring)
     {
+        var leave = (shown ?? []).Except(bring ?? [], StringComparer.Ordinal).ToArray();
         Rows = await LoadAsync();
         var keep = Rows.FirstOrDefault(r => r.Entity.Id == survivor)?.Entity;
         if (keep is null || Rows.Count < 2) { Message = "Choose the survivor among at least two entities."; return Page(); }

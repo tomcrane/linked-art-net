@@ -194,10 +194,13 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     /// the list when it does not.
     /// </summary>
     /// <param name="records">The records of the indexes ticked as the other place: one place under several identifiers (the owner, 2026-11-22, at "Wallington" and "Charterhouse": LCSH's heading and Wikidata's item, "all valid and I would want to tick both"). The first, a gazetteer's or a library's before Wikidata's, is where the strings go; the entity they stand on is then given the rest.</param>
-    public async Task<IActionResult> OnPostApplyAsync(string id, Dictionary<long, string>? outcome, string? home, string? otherUri, string[]? remove, string? label, string? other, string? addUri, string[]? records)
+    public async Task<IActionResult> OnPostApplyAsync(string id, Dictionary<long, string>? outcome, string? home, string? otherUri, string[]? shownIds, string[]? keep, string? label, string? other, string? addUri, string[]? records)
     {
         try
         {
+            // an identifier shown and left unticked is removed; a tick keeps it (the owner, 2026-11-24: "they should be checked if the
+            // entity is to be included")
+            var remove = (shownIds ?? []).Except(keep ?? [], StringComparer.Ordinal).ToArray();
             var goes = (outcome ?? []).Where(o => o.Value == "go").Select(o => o.Key).ToHashSet();
             static int Rank(string uri) => AuthorityUris.SourceOf(uri) switch { "tgn" => 0, "loc" or "lcsh" => 1, "wikidata" => 3, _ => 2 };
             var picked = goes.Count == 0 ? [] : (records ?? []).Where(r => !string.IsNullOrWhiteSpace(r)).Distinct(StringComparer.Ordinal).OrderBy(Rank).ToList();
@@ -210,7 +213,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             picked = heldFirst.Concat(picked.Except(heldFirst)).ToList();
             var target = picked.Count > 0 ? picked[0] : home == "other" ? (otherUri ?? "").Trim() : home;
             var keepAs = string.IsNullOrWhiteSpace(label) ? (other ?? "").Trim() : label.Trim();
-            var (result, summary) = await Project.Curation.ApplyAsync(Dataset, id, goes, target, remove ?? [], keepAs, string.IsNullOrWhiteSpace(addUri) ? null : addUri, Reviewer, HttpContext.RequestAborted);
+            var (result, summary) = await Project.Curation.ApplyAsync(Dataset, id, goes, target, remove, keepAs, string.IsNullOrWhiteSpace(addUri) ? null : addUri, Reviewer, HttpContext.RequestAborted);
             // the place's other identifiers, on whichever entity holds the first now
             if (picked.Count > 1 && (await Services.Store.FindEntitiesByEquivalentAsync(picked[0], HttpContext.RequestAborted)).FirstOrDefault(e => e.Dataset == Dataset && e.MergedInto is null) is { } placed)
             {

@@ -42,8 +42,10 @@ else
                     <ul class="small" style="margin:.1rem 0 .1rem 1.1rem; padding:0">
                     @* an identifier that describes something else is left out here, before it travels (the owner, 2026-11-24: he had to go to
                        the wrong entity's own page to remove a dead identifier and an American place's, then find the right entity again).
-                       The box comes unticked and its words say what a tick will do *@
-                    @foreach (var (q, says) in r.Identifiers) { <li style="list-style:none; margin-left:-1.1rem"><label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0" title="Tick to leave this identifier out of the merge: it is taken off this entity and does not go to the one kept"><input type="checkbox" name="leave" value="@q.Uri" data-leave /> <a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> <span data-leave-what>@(says ?? q.Uri.TrimEnd('/').Split('/').Last() + " · the store has no record of it")</span> <span class="muted" data-leave-says></span></label></li> }
+                       A tick is "it goes with the merge", every box ticked as the page opens; unticked, the line is struck through and says it is
+                       left out (the owner, the same day, of the first form, where a tick left one out: "The checkboxes feel the wrong way
+                       round, they should be checked if the entity is to be included in the merge. On unchecking, the text should be crossed out") *@
+                    @foreach (var (q, says) in r.Identifiers) { <li style="list-style:none; margin-left:-1.1rem"><label style="text-transform:none; letter-spacing:normal; font-size:inherit; font-weight:400; color:inherit; margin:0" title="Ticked, this identifier goes with the merge. Untick it to leave it out: it is taken off this entity and does not go to the one kept"><input type="hidden" name="shown" value="@q.Uri" /><input type="checkbox" name="bring" value="@q.Uri" data-leave checked /> <a class="tag src" href="@q.Uri" target="_blank" rel="noopener" title="@q.Uri">@q.Source</a> <span data-leave-what>@(says ?? q.Uri.TrimEnd('/').Split('/').Last() + " · the store has no record of it")</span> <span class="muted" data-leave-says></span></label></li> }
                     </ul>
                     @if (e.Equivalents.Count > r.Identifiers.Count) { <p class="small muted" style="margin:.1rem 0">and @(e.Equivalents.Count - r.Identifiers.Count) more</p> }
                 }
@@ -55,7 +57,7 @@ else
 
         <div class="card" style="margin-top:1rem">
             <h3 style="margin-top:0">They are one thing</h3>
-            <p class="small muted" style="margin-top:0">The @(pair ? "other merges" : "others merge") into the one kept: strings, labels and identifiers follow, and the old @(pair ? "id keeps" : "ids keep") resolving to it. An identifier that describes something else, or leads nowhere, should not follow: tick it above and it is left out. The one suggested has the most strings, then the firmer status, then the more identifiers.</p>
+            <p class="small muted" style="margin-top:0">The @(pair ? "other merges" : "others merge") into the one kept: strings, labels and identifiers follow, and the old @(pair ? "id keeps" : "ids keep") resolving to it. An identifier that describes something else, or leads nowhere, should not follow: untick it above and it is left out. The one suggested has the most strings, then the firmer status, then the more identifiers.</p>
             <p class="small" id="leave-says" style="margin:.2rem 0 .6rem"></p>
             <div class="row" style="gap:.6rem; align-items:center; flex-wrap:wrap">
                 <label class="small" for="label">Label after the merge</label>
@@ -94,9 +96,9 @@ else
             var out = 0;
             form.querySelectorAll("input[data-leave]").forEach(function (c) {
                 var line = c.closest("label"), what = line.querySelector("[data-leave-what]"), says = line.querySelector("[data-leave-says]");
-                if (what) what.style.textDecoration = c.checked ? "line-through" : "";
-                if (says) says.textContent = c.checked ? "· left out of the merge" : "";
-                if (c.checked) out++;
+                if (what) what.style.textDecoration = c.checked ? "" : "line-through";
+                if (says) says.textContent = c.checked ? "" : "· left out of the merge";
+                if (!c.checked) out++;
             });
             var line = document.getElementById("leave-says");
             if (line) line.textContent = out === 0 ? "Every identifier shown above goes to the one kept." : out + " identifier" + (out === 1 ? " is" : "s are") + " left out; the rest go to the one kept.";

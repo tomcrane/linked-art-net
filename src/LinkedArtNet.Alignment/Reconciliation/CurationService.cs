@@ -532,7 +532,14 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             if (found.Any(f => f.Row.EntityId == r.EntityId)) continue;
             var standing = await store.StringsForEntityAsync(r.EntityId, 200, ct);
             var raws = standing.Select(s => s.String.Raw).Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList();
-            found.Add(new AwayFinding(r, false, raws, $"a string with no qualifier stands on it, and the best-known place of that name is another, written about in {r.HomeSitelinks} against {r.ItemSitelinks}") { Outweighed = true });
+            // two kinds (the owner, 2026-11-24: "sometimes easy because the mistake is ... a small town in the US ... sometimes hard,
+            // where the 'mistake' is a category error rather than a place error"; counted, 18 and 35 of 53): a namesake elsewhere, and
+            // the same place, or one in the same country, under another record; the row says which, and of the second what differs
+            var (same, level) = SamePlace(r);
+            var says = !same ? $"a string with no qualifier stands on it, and the best-known place of that name is elsewhere, written about in {r.HomeSitelinks} against {r.ItemSitelinks}"
+                : level is not null ? $"its label says it is a {level.ToLowerInvariant()}; a string with no qualifier stands on it, and the best-known place of the name is {r.HomeKind ?? "another record"}"
+                : $"its Wikidata item is {r.ItemDescription ?? "of no description"}; the best-known place of the name is {r.HomeKind ?? "another record"}";
+            found.Add(new AwayFinding(r, false, raws, says) { Outweighed = true, SamePlace = same });
         }
         // the likely first, the widest margin leading; then the rest, the least written-about abroad first ("Perth" in Tasmania before "New York")
         // a label that says which place it is, for the rows that are right as aligned and only want telling from their namesakes (the
@@ -547,6 +554,45 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
                 { found[i] = found[i] with { SuggestedLabel = heading }; break; }
         }
         return found.OrderByDescending(f => f.Likely).ThenByDescending(f => f.Reason is not null).ThenByDescending(f => f.Likely ? f.Row.HomeSitelinks - f.Row.ItemSitelinks : -f.Row.ItemSitelinks).ThenBy(f => f.Row.Label, StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>
+    /// For a row of the second kind: whether the better-known place is where the entity's own label says the entity is (a word of the
+    /// label's qualifier is in the better-known place's chain or description), and the kind of thing the label names when it names one
+    /// after a colon, as a library's heading does ("Chichester (England : District)").
+    /// </summary>
+    public static (bool Same, string? Level) SamePlace(AwayRow r)
+    {
+        // the label's own last parenthesis, whole: the reading of a qualifier drops the kind after the colon
+        var qualifier = System.Text.RegularExpressions.Regex.Match(r.EntityLabel ?? r.Label, @"\(([^)]*)\)\s*$") is { Success: true } m ? m.Groups[1].Value : "";
+        var parts = qualifier.Split(':', 2, StringSplitOptions.TrimEntries);
+        var level = parts.Length == 2 && parts[1].Length > 0 ? parts[1] : null;
+        var where = (r.HomeChain + " " + r.HomeKind).ToLowerInvariant();
+        var same = System.Text.RegularExpressions.Regex.Matches(parts[0].ToLowerInvariant(), @"\p{L}{3,}").Any(w => w.Value != "and" && where.Contains(w.Value, StringComparison.Ordinal));
+        return (same, same ? level : null);
+    }
+
+    /// <summary>
+    /// The entity is the place its strings mean, and only its Wikidata item is another record (the owner, 2026-11-24, at "West Sussex
+    /// (England)", whose item was a military unit): the item is replaced by the better-known record of the name, and the gazetteer's
+    /// record that item names is added when no other entity holds it. The library's heading and the label stay. Returns the entity
+    /// and what was done.
+    /// </summary>
+    public async Task<(Entity Result, string Summary)> ReplaceItemAsync(string dataset, string entityId, string reviewer, CancellationToken ct = default)
+    {
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        var row = (await store.QualifiedPlacesOutweighedAsync(dataset, ct)).FirstOrDefault(r => r.EntityId == entity.Id) ?? throw new InvalidOperationException("That entity is not on the list any more.");
+        if (row.HomeItem is not { } better) throw new InvalidOperationException("There is no better-known record to give it.");
+        if ((await store.FindEntitiesByEquivalentAsync(better, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id) is { } holder)
+            throw new InvalidOperationException($"The better-known record is held by \"{holder.Label}\" already: the two may be one place. Compare them from that entity's page, or move the strings there.");
+        await RemoveEquivalentAsync(dataset, entity.Id, row.Item, reviewer, ct);
+        await AddEquivalentAsync(dataset, entity.Id, better, reviewer, ct);
+        var gazetteer = false;
+        if (row.HomeUri != better && entity.Equivalents.All(q => q.Uri != row.HomeUri)
+            && !(await store.FindEntitiesByEquivalentAsync(row.HomeUri, ct)).Any(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id))
+        { await AddEquivalentAsync(dataset, entity.Id, row.HomeUri, reviewer, ct); gazetteer = true; }
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"At the checks: the place is right and its Wikidata item was another record ({row.ItemDescription ?? row.Item}); replaced by {better} ({row.HomeKind ?? row.Label}).", ct);
+        return ((await store.GetEntityAsync(entity.Id, ct))!, $"\"{entity.Label}\": its Wikidata item ({row.ItemDescription ?? "no description"}) replaced by the better-known record ({row.HomeKind ?? row.Label}){(gazetteer ? ", and the gazetteer's record of it added" : "")}. Its label and its other identifiers are as they were.");
     }
 
     /// <summary>Whether what an item says of itself names the place at home: the item is the home place's own, or its description bears the home place, a place of the chain, or a telling word of one.</summary>
@@ -662,7 +708,8 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         foreach (var key in StringKey.Variants(entity.Label ?? "").Take(1))
             foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, EntityClass.Place, ct))
                 if (e.Id != entity.Id && e.MergedInto is null && holders.Values.All(h => h.Id != e.Id) && others.All(o => o.Id != e.Id)) others.Add(e);
-        return new MendPlan(entity, homes, holders) { Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival, Meant = conflict ? meant[0].HomeUri : null, Odd = odd,
+        var swap = (await store.QualifiedPlacesOutweighedAsync(dataset, ct)).FirstOrDefault(r => r.EntityId == entity.Id);
+        return new MendPlan(entity, homes, holders) { Swap = swap is not null && SamePlace(swap) is { Same: true, Level: null } ? swap : null, Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival, Meant = conflict ? meant[0].HomeUri : null, Odd = odd,
             Preselect = conflict ? meant[0].HomeUri : meant.Select(m => m.HomeUri).Distinct(StringComparer.Ordinal).ToList() is [var only] ? only : null };
     }
 
@@ -853,6 +900,8 @@ public sealed record AwayFinding(AwayRow Row, bool Likely, IReadOnlyList<string>
     public string? HomeDoubt { get; init; }
     /// <summary>The second kind of row: a bare name on a place labelled as another, the row's "home" being the better-known place of the name, wherever it is.</summary>
     public bool Outweighed { get; init; }
+    /// <summary>Of the second kind: the better-known place is where the entity's own label says the entity is, so it is the same place, or one in the same country, under another record; false for a namesake elsewhere.</summary>
+    public bool SamePlace { get; init; }
 }
 
 public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IReadOnlyDictionary<string, Entity> Holders)
@@ -869,6 +918,8 @@ public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IRead
     public string? Meant { get; init; }
     /// <summary>A string of the entity that is neither where its item is nor in the place at home the item names ("Wallington (Northumberland)" on Wallington in Sutton): the entity is wrong for that string at least. Null when none.</summary>
     public string? Odd { get; init; }
+    /// <summary>Set when the entity may be the right place with only its Wikidata item another record (the better-known place is where its label says it is, and the label names no district or other level): the row whose better-known record could replace the item.</summary>
+    public AwayRow? Swap { get; init; }
     /// <summary>The place at home to have chosen for the person under "the place meant": the one the entity holds or its strings name, when there is exactly one such, or the one of a conflict. Null when the person must choose.</summary>
     public string? Preselect { get; init; }
     /// <summary>A better-known place of the same name elsewhere, which the bare label would be taken for: a reason to give this entity a label with a qualifier. Null when there is none.</summary>

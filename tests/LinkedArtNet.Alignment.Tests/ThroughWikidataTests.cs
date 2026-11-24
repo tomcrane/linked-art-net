@@ -105,6 +105,27 @@ public class ThroughWikidataTests(PostgresFixture pg)
         Assert.Empty(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"));
         await pg.Store.AddEquivalentAsync(texas.Id, new Equivalent("http://www.wikidata.org/entity/Q1" + x, "wikidata", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
         await curation.SetLabelAsync(ds, texas.Id, $"Mil{x} (Tex.)", "tester");
+        // the other kind: the same place under another record. "West Sussex (England)" held a military unit's item; the row says so,
+        // and the item is replaced by the better-known record, the library's heading and the label kept
+        var county = Tgn("8" + x, "Wes" + x, "England, United Kingdom, Europe, World");
+        await pg.Store.PutAuthorityAsync(county);
+        await pg.Store.PutAuthorityAsync(Counted("Q3" + x, "Wes" + x, 1, "military unit"));
+        await pg.Store.PutAuthorityAsync(Counted("Q4" + x, "Wes" + x, 82, "ceremonial county of England", county.Uri));
+        var sussex = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, $"Wes{x} (England)", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(sussex.Id, new Equivalent("http://www.wikidata.org/entity/Q3" + x, "wikidata", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        await pg.Store.AddEquivalentAsync(sussex.Id, new Equivalent("http://id.loc.gov/authorities/names/n" + x, "loc", DecisionMethod.Imported, 1, DateTimeOffset.UtcNow));
+        await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", "Wes" + x)).Id, sussex.Id, DecisionMethod.Imported, null, "tester");
+        var same = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sussex.Id);
+        Assert.True(same.SamePlace); Assert.Contains("its Wikidata item is military unit", same.Reason);
+        Assert.NotNull((await curation.MendPlanAsync(ds, sussex.Id, "United Kingdom"))!.Swap);
+        var (swapped, did) = await curation.ReplaceItemAsync(ds, sussex.Id, "tester");
+        Assert.Equal($"Wes{x} (England)", swapped.Label);
+        Assert.Equal(new[] { "http://id.loc.gov/authorities/names/n" + x, "http://www.wikidata.org/entity/Q4" + x, county.Uri }.Order(), swapped.Equivalents.Select(q => q.Uri).Order());
+        Assert.Contains("replaced by the better-known record", did);
+        Assert.DoesNotContain(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sussex.Id);
+        // a label that names a division is the same place too, and is not offered the replacement: it is the division, mended whole
+        Assert.Equal((true, "District"), CurationService.SamePlace(new AwayRow("e", "Chichester", "aligned", 1, "i", "district", 17, "h", "West Sussex, England, United Kingdom, Europe, World", 78, "hi") { EntityLabel = "Chichester (England : District)" }));
+        Assert.False(CurationService.SamePlace(new AwayRow("e", "Milan", "aligned", 1, "i", "city in Texas", 31, "h", "Lombardy, Italy, Europe, World", 226, "hi") { EntityLabel = "Milano (Tex.)" }).Same);
         // a string that says where it is does not list the entity, and nor does a person's word for it
         var qualified = await pg.Store.CollectAsync(ds, "place", $"Mil{x}, Texas");
         await pg.Store.DecideAsync(qualified.Id, texas.Id, DecisionMethod.Imported, null, "tester");

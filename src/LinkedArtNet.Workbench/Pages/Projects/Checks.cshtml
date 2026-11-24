@@ -4,7 +4,8 @@
     ViewData["Title"] = "Checks";
     var likely = Model.Away.Where(a => a.Likely).ToList();
     var look = Model.Away.Where(a => !a.Likely && !a.Outweighed && a.Row.ItemDescription is not null).ToList();
-    var outweighed = Model.Away.Where(a => a.Outweighed).ToList();
+    var elsewhere = Model.Away.Where(a => a.Outweighed && !a.SamePlace).ToList();
+    var sameRecord = Model.Away.Where(a => a.Outweighed && a.SamePlace).ToList();
     // the place a row is compared with is a gazetteer's record, or Wikidata's item when the gazetteer link is not known
     string SourceOf(string uri) => uri.Contains("wikidata.org", StringComparison.Ordinal) ? "Wikidata" : "TGN";
     var unknown = Model.Away.Where(a => !a.Likely && !a.Outweighed && a.Row.ItemDescription is null).ToList(); // one a string speaks for is among the likely, not here too
@@ -223,6 +224,21 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
         </form>
         <form id="mend-find" method="get" data-keep-place><input type="hidden" name="mend" value="@pe.Id" /></form>
 
+        @if (plan.Swap is { } swap)
+        {
+            @* the third answer (the owner, 2026-11-24, at "West Sussex (England)", whose item was a military unit): the entity is the place its
+               strings mean and only its Wikidata item is another record. Confirming would keep the wrong item; mending whole would lose the
+               heading that is right *@
+            <div class="decide-part">
+            <h3>Or: it is this place, and only its Wikidata item is wrong</h3>
+            <p class="small">Its item says it is: <strong>@(swap.ItemDescription ?? "nothing")</strong>. The best-known record of the name says: <strong>@(swap.HomeKind ?? swap.Label)</strong> <a href="@swap.HomeItem" target="_blank" rel="noopener">@(swap.HomeItem?.Split('/')[^1])</a>.</p>
+            <form method="post" asp-page-handler="SwapItem">
+                <input type="hidden" name="id" value="@pe.Id" />
+                <div class="actions"><button type="submit" class="secondary">Replace its Wikidata item with the better-known record</button></div>
+            </form>
+            <p class="small muted">The item is taken off the entity and the better-known one put in its place, with the gazetteer's record of it when the project has that nowhere else. The label, the strings and the other identifiers stay as they are.</p>
+            </div>
+        }
         <div class="decide-part">
         <h3>Not sure, or it wants more than this screen can do: leave it</h3>
         <form method="post" asp-page-handler="Note">
@@ -413,7 +429,8 @@ else
 {
     <p class="small muted">A place whose name has no qualifier ("Glasgow"), whose Wikidata identifier came from an import, where a place of exactly that name stands in @Model.HomePlace and the Wikidata item's own description names nothing of it. The strings are read too: an entity whose every string carries a qualifier the item bears ("Birmingham, Ala." on Birmingham, Alabama) is not listed, and one with a string that names the place at home ("Stowe (England)" on Stowe, Vermont) leads the likely. "Written about" is the number of Wikipedia editions with an article (sitelinks). The place at home shown is the most written-about of that name.</p>
     @foreach (var (title, rows, about) in new[] { ("Likely wrong", likely, "a string of the entity names the place at home, or the place at home is at least as written about as the one the entity is aligned to"), ("To look at", look, "the entity's place is the more written about, or the place at home has no count to compare; the least written-about first"), ("Cannot tell", unknown, "the Wikidata item is not in the local index, so there is no description to read yet: \u201cDecide\u2026\u201d fetches it from Wikidata and says what it is"),
-        ("A bare name on a place labelled as another", outweighed, "a string with no qualifier stands on a place whose label says where or what it is, and the best-known place of the name is another: a namesake elsewhere, or a district or region where the town of the name is meant. Shown beside it is that better-known place, wherever it is") })
+        ("A bare name on a place labelled as somewhere else", elsewhere, "a string with no qualifier stands on a place whose label says where it is, and the best-known place of the name is somewhere else. Usually the strings mean the better-known place and go to it; sometimes the labelled place is right and is confirmed"),
+        ("The same place under another record", sameRecord, "the best-known place of the name is where the entity's own label says the entity is. Each row says what differs: the label names a district or other division where the town of the name is probably meant, and the strings go to the town; or only the Wikidata item is another record, and it can be replaced; or nothing is wrong, and the entity is confirmed") })
     {
         <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
         @if (rows.Count == 0) { <p class="small muted">None.</p> }

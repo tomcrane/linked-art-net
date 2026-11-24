@@ -112,6 +112,17 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         if (Check is null or "thin") Thin = await Project.Curation.ThinPlacesAsync(Dataset, HomePlace, HttpContext.RequestAborted);
     }
 
+    /// <summary>The entity is the right place and its Wikidata item another record: the item is replaced by the better-known one, the rest kept.</summary>
+    public async Task<IActionResult> OnPostSwapItemAsync(string id)
+    {
+        try
+        {
+            var (entity, summary) = await Project.Curation.ReplaceItemAsync(Dataset, id, Reviewer, HttpContext.RequestAborted);
+            return Flash(summary, new { dataset = Dataset, check = "places" }, entity);
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException or IdentifierInUseException) { return Flash(e.Message, new { dataset = Dataset, mend = id }); }
+    }
+
     /// <summary>The place is given the gazetteer's record the row offered: an identifier added, as on the entity's own page.</summary>
     public async Task<IActionResult> OnPostGiveRecordAsync(string id, string uri)
     {

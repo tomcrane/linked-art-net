@@ -537,7 +537,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             // the same place, or one in the same country, under another record; the row says which, and of the second what differs
             var (same, level) = SamePlace(r);
             var says = !same ? $"a string with no qualifier stands on it, and the best-known place of that name is elsewhere, written about in {r.HomeSitelinks} against {r.ItemSitelinks}"
-                : level is not null ? $"its label says it is a {level.ToLowerInvariant()}; a string with no qualifier stands on it, and the best-known place of the name is {r.HomeKind ?? "another record"}"
+                : level is not null ? $"its label says what kind of place it is ({level}); a string with no qualifier stands on it, and the best-known place of the name is another kind: {r.HomeKind ?? "another record"}"
                 : $"its Wikidata item is {r.ItemDescription ?? "of no description"}; the best-known place of the name is {r.HomeKind ?? "another record"}";
             found.Add(new AwayFinding(r, false, raws, says) { Outweighed = true, SamePlace = same });
         }
@@ -569,6 +569,9 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         var level = parts.Length == 2 && parts[1].Length > 0 ? parts[1] : null;
         var where = (r.HomeChain + " " + r.HomeKind).ToLowerInvariant();
         var same = System.Text.RegularExpressions.Regex.Matches(parts[0].ToLowerInvariant(), @"\p{L}{3,}").Any(w => w.Value != "and" && where.Contains(w.Value, StringComparison.Ordinal));
+        // a label that names the kind the better-known record is too ("Wicklow (Ireland : County)" beside "county in Ireland") names no
+        // other division than the place meant: there it is the item that differs
+        if (level is not null && (r.HomeKind ?? "").TrimStart().StartsWith(level, StringComparison.OrdinalIgnoreCase)) level = null;
         return (same, same ? level : null);
     }
 

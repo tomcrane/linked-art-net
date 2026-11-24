@@ -125,6 +125,7 @@ public class ThroughWikidataTests(PostgresFixture pg)
         Assert.DoesNotContain(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sussex.Id);
         // a label that names a division is the same place too, and is not offered the replacement: it is the division, mended whole
         Assert.Equal((true, "District"), CurationService.SamePlace(new AwayRow("e", "Chichester", "aligned", 1, "i", "district", 17, "h", "West Sussex, England, United Kingdom, Europe, World", 78, "hi") { EntityLabel = "Chichester (England : District)" }));
+        Assert.Equal((true, (string?)null), CurationService.SamePlace(new AwayRow("e", "County Wicklow", "aligned", 1, "i", "municipal district", 0, "h", "county in Ireland", 66, "hi", false, "county in Ireland") { EntityLabel = "Wicklow (Ireland : County)" }));
         Assert.False(CurationService.SamePlace(new AwayRow("e", "Milan", "aligned", 1, "i", "city in Texas", 31, "h", "Lombardy, Italy, Europe, World", 226, "hi") { EntityLabel = "Milano (Tex.)" }).Same);
         // a string that says where it is does not list the entity, and nor does a person's word for it
         var qualified = await pg.Store.CollectAsync(ds, "place", $"Mil{x}, Texas");

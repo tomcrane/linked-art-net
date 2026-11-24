@@ -385,12 +385,18 @@ else if (Model.Check == "thin")
     <p class="small muted">A place none of whose identifiers is a gazetteer's or Wikidata's, so nothing the project holds says where it is: on a card it stands below its namesakes and is missing from the map. The gazetteer has a record, or several, of its name. Where there is one of the name, or one in @(Model.HomePlace ?? "the project's home place") among several, it is offered: read where it is against the entity's strings before giving it. A place whose name the gazetteer does not have is not listed.</p>
     @if (Model.Thin.Count == 0) { <p class="notice">Nothing is listed.</p> }
     @foreach (var (title, rows, about) in new[] {
-        ("One record to give", Model.Thin.Where(p => p.Offer is not null && p.Holder is null).ToList(), "the only record of the name, or the only one at home"),
+        ("One record to give", Model.Thin.Where(p => p.Offer is not null && p.Holder is null && !p.Doubt).ToList(), "the only record of the name, or the only one at home"),
+        ("One record, in another place than the label says", Model.Thin.Where(p => p.Offer is not null && p.Holder is null && p.Doubt).ToList(), "the record is at home, and its place is not the one in the entity's own label. It may be the same place filed under a newer district, or a namesake in the next county: read both before giving it"),
         ("Held by another entity", Model.Thin.Where(p => p.Offer is not null && p.Holder is not null).ToList(), "the record that would be given is on another of the project's entities: the two may be one place"),
         ("Several of the name", Model.Thin.Where(p => p.Offer is null).ToList(), "the entity's page searches the indexes for it") })
     {
         if (rows.Count == 0) { continue; }
         <h3>@title <span class="muted small">@rows.Count · @about</span></h3>
+        @if (rows.Any(p => p.Offer is not null && p.Holder is null && !p.Doubt))
+        {
+            @* several at once (the assistant as a user, 2026-11-24: ninety-nine rows, most of them plain, a press and a page each) *@
+            <form id="give-ticked" method="post" asp-page-handler="GiveRecords" class="row" style="align-items:center; margin:.3rem 0 .6rem"><button type="submit" class="secondary small">Give the ticked places their records</button> <span class="small muted">tick the rows you have read; each row's own button gives one</span></form>
+        }
         <table class="checks">
             <thead><tr><th>Place</th><th>It holds</th><th>The gazetteer has</th><th>Decide</th></tr></thead>
             <tbody>
@@ -398,7 +404,7 @@ else if (Model.Check == "thin")
             {
                 var entityHref = $"/p/{Model.Dataset}/entity?id={Uri.EscapeDataString(p.Row.EntityId)}";
                 <tr>
-                    <td><a href="@entityHref" target="_blank" rel="noopener"><strong>@(p.Row.Label ?? p.Row.EntityId)</strong></a><br /><span class="small muted">stands for @p.Row.Strings string@(p.Row.Strings == 1 ? "" : "s")</span></td>
+                    <td>@if (p.Offer is { } tick && p.Holder is null && !p.Doubt) { <input type="checkbox" form="give-ticked" name="give" value="@p.Row.EntityId|@tick.Uri" title="Tick to give this place its record with the others ticked, by the button above the list" style="margin-right:.4rem" /> }<a href="@entityHref" target="_blank" rel="noopener"><strong>@(p.Row.Label ?? p.Row.EntityId)</strong></a><br /><span class="small muted">stands for @p.Row.Strings string@(p.Row.Strings == 1 ? "" : "s")</span></td>
                     <td class="small">@(p.Row.Sources.Count == 0 ? "no identifier" : string.Join(", ", p.Row.Sources.Select(s => s.ToUpperInvariant())))</td>
                     <td class="small">
                         @if (p.Offer is { } o)

@@ -136,6 +136,21 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException or IdentifierInUseException) { return Flash(e.Message, new { dataset = Dataset, check = "thin" }); }
     }
 
+    /// <summary>Several places ticked on the list are each given the record its row offered, in one press: each a pair of the entity and the record, as the row's own button sends them.</summary>
+    public async Task<IActionResult> OnPostGiveRecordsAsync(string[]? give)
+    {
+        var given = new List<string>(); var refused = new List<string>();
+        foreach (var pair in (give ?? []).Where(g => !string.IsNullOrWhiteSpace(g)).Distinct(StringComparer.Ordinal))
+        {
+            var cut = pair.IndexOf('|');
+            if (cut <= 0) continue;
+            try { given.Add((await Project.Curation.AddEquivalentAsync(Dataset, pair[..cut], pair[(cut + 1)..], Reviewer, HttpContext.RequestAborted)).Label ?? pair[..cut]); }
+            catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException or IdentifierInUseException) { refused.Add(e.Message); }
+        }
+        if (given.Count == 0 && refused.Count == 0) return Flash("Tick the places to give their records first.", new { dataset = Dataset, check = "thin" });
+        return Flash($"{given.Count} place{(given.Count == 1 ? "" : "s")} given the gazetteer's record: {string.Join(", ", given)}.{(refused.Count > 0 ? " Not given: " + string.Join("; ", refused) + "." : "")} Each one's page can remove it.", new { dataset = Dataset, check = "thin" });
+    }
+
     /// <summary>No gazetteer has the place: a note on it, and it leaves the list.</summary>
     public async Task<IActionResult> OnPostNoRecordAsync(string id)
     {

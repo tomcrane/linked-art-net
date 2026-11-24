@@ -175,15 +175,24 @@ public class ThroughWikidataTests(PostgresFixture pg)
         var curation = new CurationService(pg.Store, scheme, new Reconciler(pg.Store, scheme, [], ProjectManifest.PmcDefault.ToOptions()));
         var thin = await curation.ThinPlacesAsync(ds, "United Kingdom");
         var listed = Assert.Single(thin);
+        Assert.True(listed.Doubt); // the gazetteer files Chatham under Medway, the label says Kent: offered apart
         Assert.Equal((chatham.Id, kent.Uri, 1), (listed.Row.EntityId, listed.Offer?.Uri, listed.AtHome));
         Assert.Null(listed.Holder);
         Assert.Equal("Chatham", listed.Name);
+        // a label that says where the place is, and the one record of the name somewhere else: listed, and not offered
+        var elsewhere = Tgn("6" + h.GetHashCode().ToString("x")[..5], "Rows" + h, "Victoria, Australia, Oceania, World");
+        await pg.Store.PutAuthorityAsync(elsewhere);
+        var rowsley = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Place, $"Rows{h} (England)", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(rowsley.Id, Loc(h + "9"));
+        var unoffered = Assert.Single(await curation.ThinPlacesAsync(ds, "United Kingdom"), p => p.Row.EntityId == rowsley.Id);
+        Assert.Null(unoffered.Offer); Assert.Single(unoffered.Named);
+        await curation.NoteAsync(ds, rowsley.Id, "tester", CurationService.NoGazetteerRecord + ": a test");
         await curation.NoteAsync(ds, chatham.Id, "tester", CurationService.NoGazetteerRecord + ": a test");
         Assert.Empty(await curation.ThinPlacesAsync(ds, "United Kingdom"));
 
         // a dry run writes nothing and says what it would do
         var dry = await new ThroughHeadings(pg.Store).RunAsync(ds, null);
-        Assert.Equal((4, 1, 1), (dry.Read, dry.Given, dry.NoHeading));
+        Assert.Equal((5, 1, 1), (dry.Read, dry.Given, dry.NoHeading));
         Assert.Single((await pg.Store.GetEntityAsync(chatham.Id))!.Equivalents);
 
         var run = await pg.Store.StartRunAsync(ds);

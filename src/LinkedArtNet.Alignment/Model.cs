@@ -455,6 +455,8 @@ public sealed record ThinPlace(ThinPlaceRow Row, IReadOnlyList<AuthorityRecord> 
 {
     /// <summary>The entity's name without its qualifier, for searching the indexes for it.</summary>
     public string Name { get; init; } = "";
+    /// <summary>The record offered is in the home place, and not where the entity's own label says the entity is: offered apart, to be read before it is given.</summary>
+    public bool Doubt { get; init; }
 }
 
 public sealed record NotNameEntity(string EntityId, string? Label, string Class, IReadOnlyList<long> StringIds, IReadOnlyList<string> Strings, int Records, int Queued);

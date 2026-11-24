@@ -736,7 +736,7 @@ else
     @if (foldOpen) { @Html.Raw("</details>") }
     @if (ev.Hidden > 0)
     {
-        <p class="notice small"><strong>@ev.Hidden more candidate@(ev.Hidden == 1 ? "" : "s") level with these @(ev.Hidden == 1 ? "is" : "are") not shown.</strong> A card keeps twelve, the most written-about first. If the right one is not here, search for it under <a href="#something-else">Something else</a> with a word that tells it apart ("Plymouth Devon").</p>
+        <p class="notice small"><strong>@ev.Hidden more candidate@(ev.Hidden == 1 ? "" : "s") level with these @(ev.Hidden == 1 ? "is" : "are") not shown.</strong> A card keeps twelve: those in the project's home place first, then the most written-about. If the right one is not here, search for it under <a href="#something-else">Something else</a> with a word that tells it apart ("Plymouth Devon").</p>
     }
 
     <h2 id="something-else">@(chosenGroup is not null ? "Decide it differently" : "Something else")</h2>

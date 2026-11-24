@@ -798,7 +798,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 // card's cut and nowhere to be seen)
                 var homeWordsForOrder = _options.HomePlace is { } hp ? Qualified.Tokens(hp) : [];
                 bool Home(CandidateGroup g) => homeWordsForOrder.Count > 0 && g.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWordsForOrder));
-                var inOrder = ranked.OrderByDescending(x => x.Sitelinks).ThenByDescending(x => Home(x.Group) ? 1 : 0).Select(x => x.Group).ToList();
+                // the ones at home lead, each set most written-about first (the owner, 2026-11-23, see below)
+                var inOrder = ranked.OrderByDescending(x => Home(x.Group) ? 1 : 0).ThenByDescending(x => x.Sitelinks).Select(x => x.Group).ToList();
                 groups = inOrder.Concat(groups.Where(g => !tied.Contains(g))).ToList();
                 groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks; this one {ranked.First(x => x.Group == g).Sitelinks})" }).ToList() } : g).ToList();
             }
@@ -818,7 +819,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 bool Home(CandidateGroup g) => homeWords.Count > 0 && g.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWords));
                 var counted = new List<(CandidateGroup Group, int Sitelinks)>();
                 foreach (var g in level) counted.Add((g, (await ProminenceAsync(g.Uris, ct)).Sitelinks));
-                var ordered = counted.OrderByDescending(x => x.Sitelinks).ThenByDescending(x => Home(x.Group) ? 1 : 0)
+                // the candidates in the project's home place lead, and so are among the twelve a card keeps, each set most written-about
+                // first: "most written-about first" alone kept the towns abroad, which have Wikidata's items, and cut the gazetteer's
+                // record of the place at home, a group of one source with no sitelinks counted, the project's own entity holding the
+                // library's heading (the owner's word, 2026-11-23, after "Chatham": eleven American Chathams on the card and its map, and
+                // Chatham in Kent on neither. Counted 2026-11-24 over the queue: some 25 cards with a record at home cut, "Cambridge",
+                // "Windsor", "Preston", "Warwick", "Manchester" among them, six with none at home shown at all). Order only, as before
+                var ordered = counted.OrderByDescending(x => Home(x.Group) ? 1 : 0).ThenByDescending(x => x.Sitelinks)
                     .Select(x => x.Group.Members.Any(m => m.Reason.Contains("sitelinks", StringComparison.Ordinal)) || x.Sitelinks == 0 ? x.Group
                         : x.Group with { Members = x.Group.Members.Select(m => m with { Reason = m.Reason + $"; {x.Sitelinks} sitelinks" }).ToList() }).ToList();
                 groups = ordered.Concat(groups.Where(g => !level.Contains(g))).ToList();

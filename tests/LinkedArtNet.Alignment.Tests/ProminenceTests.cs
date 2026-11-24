@@ -111,9 +111,11 @@ public class ProminenceTests(PostgresFixture pg)
         Assert.Equal(Outcome.Queued, aside.Outcome);
         // and every group level with the first is ordered most written-about first, a group of one source among them (the owner's desk,
         // 2026-11-15, at "Cambridge": the city in Cambridgeshire among 36 not shown, behind eight American namesakes in the index's order)
-        Assert.Contains("http://vocab.getty.edu/tgn/2092990", aside.Groups[0].Uris);
-        Assert.Contains("http://vocab.getty.edu/tgn/7010692", aside.Groups[1].Uris);
-        Assert.Contains("200 sitelinks", aside.Groups[0].Best.Reason);
+        // the one at home leads them, and so is among the twelve a card keeps (the owner, 2026-11-23, after "Chatham"); the rest most
+        // written-about first
+        Assert.Contains("http://vocab.getty.edu/tgn/7010692", aside.Groups[0].Uris);
+        Assert.Contains("http://vocab.getty.edu/tgn/2092990", aside.Groups[1].Uris);
+        Assert.Contains("200 sitelinks", aside.Groups[1].Best.Reason);
         Assert.Contains(aside.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("prominence stands aside: the project's own entity Sheffield is among the live groups"));
         // and the evidence shows every group at the top score and every group with a project entity, not the first five
         var evidence = Reconciler.Evidence("queued", aside.Reading, aside.Groups, null);

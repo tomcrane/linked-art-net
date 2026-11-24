@@ -117,11 +117,17 @@ public class ThroughWikidataTests(PostgresFixture pg)
         await pg.Store.DecideAsync((await pg.Store.CollectAsync(ds, "place", "Wes" + x)).Id, sussex.Id, DecisionMethod.Imported, null, "tester");
         var same = Assert.Single(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sussex.Id);
         Assert.True(same.SamePlace); Assert.Contains("its Wikidata item is military unit", same.Reason);
-        Assert.NotNull((await curation.MendPlanAsync(ds, sussex.Id, "United Kingdom"))!.Swap);
+        var choices = (await curation.MendPlanAsync(ds, sussex.Id, "United Kingdom"))!;
+        Assert.NotNull(choices.Swap);
+        // the person is shown the records of the name to choose among, the most written-about first, and the gazetteer's of the name
+        Assert.Equal("http://www.wikidata.org/entity/Q4" + x, choices.SwapItems[0].Record.Uri);
+        Assert.Contains("Wes" + x, choices.SwapItems[0].Gazetteer);
+        Assert.Equal(county.Uri, Assert.Single(choices.SwapGazetteer).Uri);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => curation.ReplaceItemAsync(ds, sussex.Id, "tester", county.Uri));
         var (swapped, did) = await curation.ReplaceItemAsync(ds, sussex.Id, "tester");
         Assert.Equal($"Wes{x} (England)", swapped.Label);
         Assert.Equal(new[] { "http://id.loc.gov/authorities/names/n" + x, "http://www.wikidata.org/entity/Q4" + x, county.Uri }.Order(), swapped.Equivalents.Select(q => q.Uri).Order());
-        Assert.Contains("replaced by the better-known record", did);
+        Assert.Contains("replaced by the record chosen", did);
         Assert.DoesNotContain(await curation.PlacesAlignedAwayAsync(ds, "United Kingdom"), f => f.Row.EntityId == sussex.Id);
         // a label that names a division is the same place too, and is not offered the replacement: it is the division, mended whole
         Assert.Equal((true, "District"), CurationService.SamePlace(new AwayRow("e", "Chichester", "aligned", 1, "i", "district", 17, "h", "West Sussex, England, United Kingdom, Europe, World", 78, "hi") { EntityLabel = "Chichester (England : District)" }));

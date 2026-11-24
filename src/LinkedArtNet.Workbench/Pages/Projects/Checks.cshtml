@@ -231,12 +231,27 @@ else if (Model.Check == "places" || Model.Plan is not null) { <p class="muted">L
                heading that is right *@
             <div class="decide-part">
             <h3>Or: it is this place, and only its Wikidata item is wrong</h3>
-            <p class="small">Its item says it is: <strong>@(swap.ItemDescription ?? "nothing")</strong>. The best-known record of the name says: <strong>@(swap.HomeKind ?? swap.Label)</strong> <a href="@swap.HomeItem" target="_blank" rel="noopener">@(swap.HomeItem?.Split('/')[^1])</a>.</p>
+            @* the person chooses the record (the owner at "Kingston-upon-Thames", 2026-11-24: the best-known record of the name was the
+               Royal Borough, and the strings, places of publication, mean the town, the second on the list) *@
+            <p class="small">Its item says it is: <strong>@(swap.ItemDescription ?? "nothing")</strong>. Wikidata's places of this name, the most written-about first: choose the one the strings above mean. The best-known is not always it: a town and the district or borough named for it are separate records.</p>
             <form method="post" asp-page-handler="SwapItem">
                 <input type="hidden" name="id" value="@pe.Id" />
-                <div class="actions"><button type="submit" class="secondary">Replace its Wikidata item with the better-known record</button></div>
+                @foreach (var c in plan.SwapItems)
+                {
+                    <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="radio" name="item" value="@c.Record.Uri" /> <strong>@c.Record.Label</strong> · @(LinkedArtNet.Alignment.Authorities.RecordSummary.Says(c.Record) ?? "no description") <span class="muted">· written about in @c.Sitelinks@(c.Gazetteer is null ? "" : " · names the gazetteer's " + c.Gazetteer)</span></label> <a href="@c.Record.Uri" target="_blank" rel="noopener">@c.Record.Uri.Split('/')[^1]</a></p>
+                }
+                @if (plan.SwapItems.Count == 0) { <p class="small muted">The local index has no other Wikidata place of this name. The entity's own page can add an identifier by its address.</p> }
+                @if (plan.SwapGazetteer.Count > 0)
+                {
+                    <p class="small" style="margin-top:.6rem">The gazetteer's places of this name. The one the record chosen names is added with it; tick another here if that is the place and the record names none:</p>
+                    @foreach (var g in plan.SwapGazetteer)
+                    {
+                        <p class="small"><label style="margin:0; color:inherit; font-size:inherit"><input type="checkbox" name="gazetteer" value="@g.Uri" /> <strong>@g.Label</strong> <span class="muted">@(ReviewService.ChainOf(g) ?? "")</span></label> <a href="@g.Uri" target="_blank" rel="noopener">TGN @g.Uri.Split('/')[^1]</a></p>
+                    }
+                }
+                <div class="actions"><button type="submit" class="secondary" @(plan.SwapItems.Count == 0 ? "disabled" : "")>Replace its Wikidata item with the record chosen</button></div>
             </form>
-            <p class="small muted">The item is taken off the entity and the better-known one put in its place, with the gazetteer's record of it when the project has that nowhere else. The label, the strings and the other identifiers stay as they are.</p>
+            <p class="small muted">The item is taken off the entity and the one chosen put in its place, with the gazetteer's record where the project has that nowhere else. The label, the strings and the other identifiers stay as they are.</p>
             </div>
         }
         <div class="decide-part">

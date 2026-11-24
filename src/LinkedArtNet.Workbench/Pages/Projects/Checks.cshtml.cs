@@ -113,11 +113,12 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     }
 
     /// <summary>The entity is the right place and its Wikidata item another record: the item is replaced by the better-known one, the rest kept.</summary>
-    public async Task<IActionResult> OnPostSwapItemAsync(string id)
+    public async Task<IActionResult> OnPostSwapItemAsync(string id, string? item, string[]? gazetteer)
     {
         try
         {
-            var (entity, summary) = await Project.Curation.ReplaceItemAsync(Dataset, id, Reviewer, HttpContext.RequestAborted);
+            if (string.IsNullOrWhiteSpace(item)) return Flash("Choose which record is this place first.", new { dataset = Dataset, mend = id });
+            var (entity, summary) = await Project.Curation.ReplaceItemAsync(Dataset, id, Reviewer, item, gazetteer, HttpContext.RequestAborted);
             return Flash(summary, new { dataset = Dataset, check = "places" }, entity);
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException or IdentifierInUseException) { return Flash(e.Message, new { dataset = Dataset, mend = id }); }

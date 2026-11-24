@@ -581,21 +581,40 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     /// record that item names is added when no other entity holds it. The library's heading and the label stay. Returns the entity
     /// and what was done.
     /// </summary>
-    public async Task<(Entity Result, string Summary)> ReplaceItemAsync(string dataset, string entityId, string reviewer, CancellationToken ct = default)
+    public async Task<(Entity Result, string Summary)> ReplaceItemAsync(string dataset, string entityId, string reviewer, string? itemUri = null, IReadOnlyList<string>? gazetteerUris = null, CancellationToken ct = default)
     {
         var entity = await OwnEntityAsync(dataset, entityId, ct);
         var row = (await store.QualifiedPlacesOutweighedAsync(dataset, ct)).FirstOrDefault(r => r.EntityId == entity.Id) ?? throw new InvalidOperationException("That entity is not on the list any more.");
-        if (row.HomeItem is not { } better) throw new InvalidOperationException("There is no better-known record to give it.");
+        // the record chosen, or the best-known when none is named. A person chooses because the best-known is not always the one
+        // meant (the owner at "Kingston-upon-Thames", 2026-11-24: the most written-about record of the name is the Royal Borough, and
+        // the strings, places of publication, mean the town, the second)
+        var better = string.IsNullOrWhiteSpace(itemUri) ? row.HomeItem ?? throw new InvalidOperationException("There is no better-known record to give it.") : AuthorityUris.Canonical(itemUri.Trim());
+        var item = await store.GetAuthorityAsync(better, ct);
+        if (item is not { Source: "wikidata" }) throw new InvalidOperationException("Choose one of the Wikidata records listed.");
+        if (entity.Equivalents.Any(q => q.Uri == better)) throw new InvalidOperationException("The entity holds that record already.");
         if ((await store.FindEntitiesByEquivalentAsync(better, ct)).FirstOrDefault(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id) is { } holder)
-            throw new InvalidOperationException($"The better-known record is held by \"{holder.Label}\" already: the two may be one place. Compare them from that entity's page, or move the strings there.");
-        await RemoveEquivalentAsync(dataset, entity.Id, row.Item, reviewer, ct);
+            throw new InvalidOperationException($"That record is held by \"{holder.Label}\" already: the two may be one place. Compare them from that entity's page, or move the strings there.");
+        var was = new List<string>();
+        foreach (var q in entity.Equivalents.Where(q => q.Source == "wikidata").ToList())
+        {
+            was.Add(Authorities.RecordSummary.Says(await store.GetAuthorityAsync(q.Uri, ct)) ?? q.Uri);
+            await RemoveEquivalentAsync(dataset, entity.Id, q.Uri, reviewer, ct);
+        }
         await AddEquivalentAsync(dataset, entity.Id, better, reviewer, ct);
-        var gazetteer = false;
-        if (row.HomeUri != better && entity.Equivalents.All(q => q.Uri != row.HomeUri)
-            && !(await store.FindEntitiesByEquivalentAsync(row.HomeUri, ct)).Any(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id))
-        { await AddEquivalentAsync(dataset, entity.Id, row.HomeUri, reviewer, ct); gazetteer = true; }
-        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"At the checks: the place is right and its Wikidata item was another record ({row.ItemDescription ?? row.Item}); replaced by {better} ({row.HomeKind ?? row.Label}).", ct);
-        return ((await store.GetEntityAsync(entity.Id, ct))!, $"\"{entity.Label}\": its Wikidata item ({row.ItemDescription ?? "no description"}) replaced by the better-known record ({row.HomeKind ?? row.Label}){(gazetteer ? ", and the gazetteer's record of it added" : "")}. Its label and its other identifiers are as they were.");
+        // the gazetteer's record: the one the item names, and any a person ticked, where the project has it nowhere else
+        var wanted = new List<string>();
+        foreach (var uri in item.SameAs) if (await store.GetAuthorityAsync(uri, ct) is { Source: "tgn", Type: "Place" }) wanted.Add(uri);
+        wanted.AddRange((gazetteerUris ?? []).Where(u => !string.IsNullOrWhiteSpace(u)).Select(u => AuthorityUris.Canonical(u.Trim())));
+        var gazetteer = 0;
+        foreach (var uri in wanted.Distinct(StringComparer.Ordinal))
+        {
+            if (entity.Equivalents.Any(q => q.Uri == uri) || await store.GetAuthorityAsync(uri, ct) is not { Source: "tgn" }) continue;
+            if ((await store.FindEntitiesByEquivalentAsync(uri, ct)).Any(e => e.Dataset == dataset && e.MergedInto is null && e.Id != entity.Id)) continue;
+            await AddEquivalentAsync(dataset, entity.Id, uri, reviewer, ct); gazetteer++;
+        }
+        var now = Authorities.RecordSummary.Says(item) ?? item.Label ?? better;
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"At the checks: the place is right and its Wikidata item was another record ({string.Join("; ", was)}); replaced by {better} ({now}).", ct);
+        return ((await store.GetEntityAsync(entity.Id, ct))!, $"\"{entity.Label}\": its Wikidata item ({(was.Count == 0 ? "none" : string.Join("; ", was))}) replaced by the record chosen ({now}){(gazetteer > 0 ? $", and {(gazetteer == 1 ? "the gazetteer's record" : gazetteer + " gazetteer records")} added" : "")}. Its label and its other identifiers are as they were.");
     }
 
     /// <summary>Whether what an item says of itself names the place at home: the item is the home place's own, or its description bears the home place, a place of the chain, or a telling word of one.</summary>
@@ -683,6 +702,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         var qualified = (await store.StringsForEntityAsync(entity.Id, 200, ct)).Select(s => s.String.Raw).Distinct(StringComparer.Ordinal)
             .Select(raw => (Raw: raw, Words: Qualified.Tokens(Qualified.Split(raw).Qualifier))).Where(q => q.Words.Count > 0).ToList();
         var words = qualified.Select(q => q.Words).ToList();
+        var qualifiedNames = (await store.StringsForEntityAsync(entity.Id, 200, ct)).Select(s => Qualified.Split(s.String.Raw).Name).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         bool Said(AwayRow h) => words.Any(w => Qualified.Contains(h.HomeChain, w));
         // a string that is neither where the item is nor in the place at home the item names: the entity is wrong for that string at least
         var odd = qualified.FirstOrDefault(q => !Qualified.Contains(descr, q.Words) && !homes.Any(h => agreeing.Contains(h.HomeUri) && Qualified.Contains(h.HomeChain, q.Words))).Raw;
@@ -712,7 +732,29 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
             foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, EntityClass.Place, ct))
                 if (e.Id != entity.Id && e.MergedInto is null && holders.Values.All(h => h.Id != e.Id) && others.All(o => o.Id != e.Id)) others.Add(e);
         var swap = (await store.QualifiedPlacesOutweighedAsync(dataset, ct)).FirstOrDefault(r => r.EntityId == entity.Id);
-        return new MendPlan(entity, homes, holders) { Swap = swap is not null && SamePlace(swap) is { Same: true, Level: null } ? swap : null, Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival, Meant = conflict ? meant[0].HomeUri : null, Odd = odd,
+        // the records to choose among, should only the item be wrong: Wikidata's places of the name, the most written-about first, and
+        // the gazetteer's places of exactly that name
+        var swapItems = new List<(AuthorityRecord Record, int Sitelinks, string? Gazetteer)>();
+        var swapGazetteer = new List<AuthorityRecord>();
+        if (swap is not null && SamePlace(swap) is { Same: true, Level: null })
+        {
+            var names = new[] { Qualified.Split(entity.Label ?? "").Name }.Concat(qualifiedNames).Where(n => !string.IsNullOrWhiteSpace(n)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            var keys = names.SelectMany(NameMatcher.Keys).Distinct(StringComparer.Ordinal).ToList();
+            foreach (var r in await store.FindAuthoritiesByLabelsAsync(keys, "wikidata", nameof(EntityClass.Place), 40, ct))
+            {
+                if (entity.Equivalents.Any(q => q.Uri == r.Uri)) continue;
+                var links = 0;
+                if (r.DataJson is not null) { using var doc = JsonDocument.Parse(r.DataJson); if (doc.RootElement.TryGetProperty("sitelinks", out var sl) && sl.TryGetInt32(out var n)) links = n; }
+                string? linked = null;
+                foreach (var uri in r.SameAs) if (uri.Contains("/tgn/", StringComparison.Ordinal) && await store.GetAuthorityAsync(uri, ct) is { Source: "tgn" } g) { linked = $"{g.Label} ({ReviewService.ChainOf(g)})"; break; }
+                swapItems.Add((r, links, linked));
+            }
+            swapItems = swapItems.OrderByDescending(x => x.Sitelinks).Take(6).ToList();
+            var nameKeys = names.Select(StringKey.Normalise).ToHashSet(StringComparer.Ordinal);
+            swapGazetteer = (await store.FindAuthoritiesByLabelsAsync(keys, "tgn", nameof(EntityClass.Place), 40, ct))
+                .Where(g => g.Label is not null && nameKeys.Contains(StringKey.Normalise(g.Label)) && entity.Equivalents.All(q => q.Uri != g.Uri)).Take(6).ToList();
+        }
+        return new MendPlan(entity, homes, holders) { Swap = swap is not null && SamePlace(swap) is { Same: true, Level: null } ? swap : null, SwapItems = swapItems, SwapGazetteer = swapGazetteer, Others = others, Agreeing = homes.FirstOrDefault(h => agreeing.Contains(h.HomeUri))?.HomeUri, Rival = rival, Meant = conflict ? meant[0].HomeUri : null, Odd = odd,
             Preselect = conflict ? meant[0].HomeUri : meant.Select(m => m.HomeUri).Distinct(StringComparer.Ordinal).ToList() is [var only] ? only : null };
     }
 
@@ -923,6 +965,10 @@ public sealed record MendPlan(Entity Entity, IReadOnlyList<AwayRow> Homes, IRead
     public string? Odd { get; init; }
     /// <summary>Set when the entity may be the right place with only its Wikidata item another record (the better-known place is where its label says it is, and the label names no district or other level): the row whose better-known record could replace the item.</summary>
     public AwayRow? Swap { get; init; }
+    /// <summary>For <see cref="Swap"/>: Wikidata's places of the entity's name, the most written-about first, each with how much is written of it and the gazetteer record it names, if any. The person chooses; the best-known is not always the one meant.</summary>
+    public IReadOnlyList<(AuthorityRecord Record, int Sitelinks, string? Gazetteer)> SwapItems { get; init; } = [];
+    /// <summary>For <see cref="Swap"/>: the gazetteer's places of exactly the entity's name, to give it one where the item chosen names none.</summary>
+    public IReadOnlyList<AuthorityRecord> SwapGazetteer { get; init; } = [];
     /// <summary>The place at home to have chosen for the person under "the place meant": the one the entity holds or its strings name, when there is exactly one such, or the one of a conflict. Null when the person must choose.</summary>
     public string? Preselect { get; init; }
     /// <summary>A better-known place of the same name elsewhere, which the bare label would be taken for: a reason to give this entity a label with a qualifier. Null when there is none.</summary>

@@ -573,6 +573,8 @@ necessary to create accurate data.").
 - The pressing was by a script in the page that set the screen's own controls and pressed its own button, read
   back each time: the same acts a person makes, without sixty page loads by hand.
 
+- The desk, the place queue, the same evening as `claude`: "Manchester" (447 records) with "Manchester?", "Durham", "Andover", "Feltham", "Aberdeen" with its two other strings (LoC's Aberdeen (Scotland)), "Zurich" with "Zürich" (Wikidata's city, the project having none), "Washington D.C." with three spellings and "Washington [DC]", "Olympia, London" and "Londra" to London, "Hannover", "Warwick" with "[Warwick]". The queue then: 3,681, 92 of them places. STOPPED HERE at a usage limit: the place queue with its publishers is in `reports/q-placequeue.txt`; the next plain ones are "Bern", "Geneva", "Málaga", "Valencia", "Essen", "UK"/"United Kingdom", and "Athens" by record (Greece and Georgia). The workbench was left running.
+
 FOR THE OWNER TO LOOK AT (kept short; none of it waits on him):
 
 1. Duplicates the day uncovered, each a pair to compare and merge: a second entity for Birmingham, Sheffield,

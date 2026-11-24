@@ -111,15 +111,28 @@ public class ProminenceTests(PostgresFixture pg)
         Assert.Equal(Outcome.Queued, aside.Outcome);
         // and every group level with the first is ordered most written-about first, a group of one source among them (the owner's desk,
         // 2026-11-15, at "Cambridge": the city in Cambridgeshire among 36 not shown, behind eight American namesakes in the index's order)
-        // the one at home leads them, and so is among the twelve a card keeps (the owner, 2026-11-23, after "Chatham"); the rest most
-        // written-about first
-        Assert.Contains("http://vocab.getty.edu/tgn/7010692", aside.Groups[0].Uris);
-        Assert.Contains("http://vocab.getty.edu/tgn/2092990", aside.Groups[1].Uris);
-        Assert.Contains("200 sitelinks", aside.Groups[1].Best.Reason);
+        Assert.Contains("http://vocab.getty.edu/tgn/2092990", aside.Groups[0].Uris);
+        Assert.Contains("http://vocab.getty.edu/tgn/7010692", aside.Groups[1].Uris);
+        Assert.Contains("200 sitelinks", aside.Groups[0].Best.Reason);
         Assert.Contains(aside.Groups.SelectMany(g => g.Members), m => m.Reason.Contains("prominence stands aside: the project's own entity Sheffield is among the live groups"));
         // and the evidence shows every group at the top score and every group with a project entity, not the first five
         var evidence = Reconciler.Evidence("queued", aside.Reading, aside.Groups, null);
         Assert.Contains("tgn/7010692", evidence); Assert.Contains("tgn/2030130", evidence); Assert.Contains("tgn/2081865", evidence); Assert.Contains("tgn/2092990", evidence);
+
+        // the order for a card that keeps twelve (the owner, 2026-11-23, after "Chatham"): most written-about first, the ones at home
+        // leading only when none abroad outweighs them, and those at home within the twelve whatever the order
+        var chathams = Enumerable.Range(1, 14).Select(k => ("abroad" + k, 100 - k, false)).Append(("Kent", 0, true)).ToList();
+        var cut = Reconciler.HomeWithinTheCut(chathams);
+        Assert.Equal("abroad1", cut[0]);
+        Assert.Contains("Kent", cut.Take(12)); Assert.DoesNotContain("abroad12", cut.Take(12)); Assert.Equal(15, cut.Count);
+        // "Reading": home at 63 and abroad at 91 are within the guard, so home leads; "New York": Lincolnshire's 5 against 300, so it does not
+        Assert.Equal("home", Reconciler.HomeWithinTheCut(new[] { ("abroad", 91, false), ("home", 63, true) })[0]);
+        Assert.Equal("abroad", Reconciler.HomeWithinTheCut(new[] { ("abroad", 300, false), ("home", 5, true) })[0]);
+        // twenty at home and twenty abroad: six of each, the most written-about
+        var prestons = Enumerable.Range(1, 20).Select(k => ("home" + k, 40 - k, true)).Concat(Enumerable.Range(1, 20).Select(k => ("abroad" + k, 400 - k, false))).ToList();
+        var twelve = Reconciler.HomeWithinTheCut(prestons).Take(12).ToList();
+        Assert.Equal((6, 6), (twelve.Count(x => x.StartsWith("home")), twelve.Count(x => x.StartsWith("abroad"))));
+        Assert.Contains("home1", twelve); Assert.Equal("abroad1", twelve[0]);
 
         // the rule off: the tie stands
         var off = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "tgn"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions() with { ProminenceMinSitelinks = 0 });

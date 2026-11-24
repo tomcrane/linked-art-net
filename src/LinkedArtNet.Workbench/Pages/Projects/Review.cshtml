@@ -363,7 +363,11 @@ else
         && ((item.Records.TryGetValue(m.Uri, out var hr) && (LinkedArtNet.Alignment.Authorities.Coordinates.Parents(hr) ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase))
             || (item.Entities.TryGetValue(m.Uri, out var hf) && ((hf.Placement ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase)
                 || hf.Entity.Equivalents.Any(q => item.Records.TryGetValue(q.Uri, out var er) && (LinkedArtNet.Alignment.Authorities.Coordinates.Parents(er) ?? "").Contains(homePlace, StringComparison.OrdinalIgnoreCase))))));
-    var inOrder = ev.Groups.Select((g, i) => (g, i)).OrderByDescending(x => Math.Round(x.g.Score, 2)).ThenByDescending(x => AtHome(x.g) ? 1 : 0).ThenBy(x => x.i).Select(x => x.g).ToList();
+    // where the rules counted how much is written of each (their reasons say so) the order is theirs, and the place at home leads only
+    // when none abroad outweighs it; elsewhere, among level candidates, the one at home leads (seen as a user, 2026-11-24: "New York",
+    // in 1,194 records, led by New York in Lincolnshire, and the map opened on Lincolnshire)
+    var rulesOrdered = ev.Groups.Any(g => g.Members.Any(m => (m.Reason ?? "").Contains("sitelinks", StringComparison.Ordinal)));
+    var inOrder = ev.Groups.Select((g, i) => (g, i)).OrderByDescending(x => Math.Round(x.g.Score, 2)).ThenByDescending(x => !rulesOrdered && AtHome(x.g) ? 1 : 0).ThenBy(x => x.i).Select(x => x.g).ToList();
     var shownGroups = chosenGroup is null ? inOrder : ev.Groups.Where(g => ReferenceEquals(g, chosenGroup)).Concat(ev.Groups.Where(g => !ReferenceEquals(g, chosenGroup))).ToList();
     var foldOpen = false;
     // a reason every candidate shares is said once for the card and not on each (the assistant as a user, 2026-11-19: "Athens" said one
@@ -493,7 +497,7 @@ else
                 // a borrowed marker is drawn only when the group has none of its own: LoC's "Madison (Wis.)" at the coordinates of TGN's
                 // Madison lay over that record's own marker and made it look approximate (the owner's card, 2026-11-15)
                 if (at.Approximate && g.Members.Any(o => !ReferenceEquals(o, m) && item.Placed is not null && item.Placed.TryGetValue(o.Uri, out var own) && !own.Approximate)) continue;
-                points.Add(new { lat = at.Lat, lng = at.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, approximate = at.Approximate, source = m.Source, pin = PinOf(g), focus = AtHome(g) });
+                points.Add(new { lat = at.Lat, lng = at.Long, label, chosen = ReferenceEquals(g, bestGroup) && m.Veto != true && m.SetAside != true, approximate = at.Approximate, source = m.Source, pin = PinOf(g), focus = shownGroups.Count > 0 && AtHome(shownGroups[0]) && AtHome(g) });
             }
     if (points.Count > 0)
     {
@@ -736,7 +740,7 @@ else
     @if (foldOpen) { @Html.Raw("</details>") }
     @if (ev.Hidden > 0)
     {
-        <p class="notice small"><strong>@ev.Hidden more candidate@(ev.Hidden == 1 ? "" : "s") level with these @(ev.Hidden == 1 ? "is" : "are") not shown.</strong> A card keeps twelve: those in the project's home place first, then the most written-about. If the right one is not here, search for it under <a href="#something-else">Something else</a> with a word that tells it apart ("Plymouth Devon").</p>
+        <p class="notice small"><strong>@ev.Hidden more candidate@(ev.Hidden == 1 ? "" : "s") level with these @(ev.Hidden == 1 ? "is" : "are") not shown.</strong> A card keeps twelve: the most written-about, with those in the project's home place among them. If the right one is not here, search for it under <a href="#something-else">Something else</a> with a word that tells it apart ("Plymouth Devon").</p>
     }
 
     <h2 id="something-else">@(chosenGroup is not null ? "Decide it differently" : "Something else")</h2>

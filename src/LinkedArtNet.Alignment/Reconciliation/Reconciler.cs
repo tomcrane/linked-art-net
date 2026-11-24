@@ -798,8 +798,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 // card's cut and nowhere to be seen)
                 var homeWordsForOrder = _options.HomePlace is { } hp ? Qualified.Tokens(hp) : [];
                 bool Home(CandidateGroup g) => homeWordsForOrder.Count > 0 && g.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWordsForOrder));
-                // the ones at home lead, each set most written-about first (the owner, 2026-11-23, see below)
-                var inOrder = ranked.OrderByDescending(x => Home(x.Group) ? 1 : 0).ThenByDescending(x => x.Sitelinks).Select(x => x.Group).ToList();
+                var inOrder = HomeWithinTheCut(ranked.Select(x => (x.Group, x.Sitelinks, Home(x.Group))).ToList());
                 groups = inOrder.Concat(groups.Where(g => !tied.Contains(g))).ToList();
                 groups = groups.Select(g => tied.Contains(g) ? g with { Members = g.Members.Select(m => m with { Reason = m.Reason + $"; prominence does not separate them ({string.Join(", ", ranked.Select(x => x.Sitelinks))} sitelinks; this one {ranked.First(x => x.Group == g).Sitelinks})" }).ToList() } : g).ToList();
             }
@@ -819,13 +818,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 bool Home(CandidateGroup g) => homeWords.Count > 0 && g.Members.Any(m => !m.Veto && m.Candidate.Placement is { } chain && chain.EndsWith("World", StringComparison.Ordinal) && Qualified.Contains(chain, homeWords));
                 var counted = new List<(CandidateGroup Group, int Sitelinks)>();
                 foreach (var g in level) counted.Add((g, (await ProminenceAsync(g.Uris, ct)).Sitelinks));
-                // the candidates in the project's home place lead, and so are among the twelve a card keeps, each set most written-about
-                // first: "most written-about first" alone kept the towns abroad, which have Wikidata's items, and cut the gazetteer's
-                // record of the place at home, a group of one source with no sitelinks counted, the project's own entity holding the
-                // library's heading (the owner's word, 2026-11-23, after "Chatham": eleven American Chathams on the card and its map, and
-                // Chatham in Kent on neither. Counted 2026-11-24 over the queue: some 25 cards with a record at home cut, "Cambridge",
-                // "Windsor", "Preston", "Warwick", "Manchester" among them, six with none at home shown at all). Order only, as before
-                var ordered = counted.OrderByDescending(x => Home(x.Group) ? 1 : 0).ThenByDescending(x => x.Sitelinks)
+                var sitelinksOf = counted.ToDictionary(x => x.Group, x => x.Sitelinks);
+                var ordered = HomeWithinTheCut(counted.Select(x => (x.Group, x.Sitelinks, Home(x.Group))).ToList()).Select(g => (Group: g, Sitelinks: sitelinksOf[g]))
                     .Select(x => x.Group.Members.Any(m => m.Reason.Contains("sitelinks", StringComparison.Ordinal)) || x.Sitelinks == 0 ? x.Group
                         : x.Group with { Members = x.Group.Members.Select(m => m with { Reason = m.Reason + $"; {x.Sitelinks} sitelinks" }).ToList() }).ToList();
                 groups = ordered.Concat(groups.Where(g => !level.Contains(g))).ToList();
@@ -1072,6 +1066,29 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
 
     /// <summary>How much more written about a namesake abroad may be before the home place's presumption gives way (finding 123): Washington, D.C. against Washington in Tyne and Wear, Hamilton in Ontario against Hamilton in Lanarkshire.</summary>
     public const double HomeGuard = 1.5;
+
+    /// <summary>
+    /// The order of the groups level with the first, for the card that will keep twelve of them (the owner, 2026-11-23, after "Chatham":
+    /// eleven American Chathams on the card and its map, and Chatham in Kent, the gazetteer's record with no sitelinks counted, on
+    /// neither; counted 2026-11-24, some 25 queued cards with a record at home cut, "Cambridge", "Windsor", "Preston"). Most
+    /// written-about first; the ones in the project's home place lead only when none abroad outweighs them by prominence's own guard
+    /// (<see cref="HomeGuard"/>), and whatever the order, those at home are among the first <paramref name="keep"/>: as many as there
+    /// is room for, and half the places when there are more of each than fit. The first build put home first always, and the first
+    /// reconcile with it showed why not: "New York", in 1,194 records, led by New York in Lincolnshire. Order only: nothing is decided
+    /// by it.
+    /// </summary>
+    public static List<T> HomeWithinTheCut<T>(IReadOnlyList<(T Item, int Sitelinks, bool Home)> counted, int keep = 12)
+    {
+        var homes = counted.Where(x => x.Home).ToList();
+        var abroad = counted.Where(x => !x.Home).ToList();
+        var homeLeads = homes.Count > 0 && (abroad.Count == 0 || abroad.Max(x => x.Sitelinks) <= HomeGuard * Math.Max(homes.Max(x => x.Sitelinks), 1));
+        var ordered = counted.OrderByDescending(x => homeLeads && x.Home ? 1 : 0).ThenByDescending(x => x.Sitelinks).ToList();
+        if (ordered.Count <= keep || homes.Count == 0 || ordered.Take(keep).Count(x => x.Home) == homes.Count) return ordered.Select(x => x.Item).ToList();
+        // the cut would lose some at home: they are given room, the most written-about of each kind kept
+        var room = Math.Min(homes.Count, Math.Max(keep / 2, keep - abroad.Count));
+        var kept = ordered.Where(x => x.Home).Take(room).Concat(ordered.Where(x => !x.Home).Take(keep - room)).ToHashSet();
+        return ordered.Where(kept.Contains).Concat(ordered.Where(x => !kept.Contains(x))).Select(x => x.Item).ToList();
+    }
 
     /// <summary>How near a candidate must lie to the town a qualifier names for the qualifier to place it (finding 120): "Chillingham, Alnwick" is 18 km, "Tisbury, Salisbury" 21.</summary>
     public const double NearKilometres = 20;

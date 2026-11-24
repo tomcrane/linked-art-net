@@ -102,7 +102,8 @@ public sealed class MergeModel(ProjectServices services, ProjectAccess access) :
             catch (Exception e) when (e is HttpRequestException or TaskCanceledException or InvalidOperationException) { return $"asked just now, and it could not be reached ({e.Message})"; }
         }
         if (pulled is null) return null;
-        if (pulled.Error is { } error) return $"asked just now: {error}";
+        // a source that answers with something that is no record has usually withdrawn it: said so, in a person's words
+        if (pulled.Error is { } error) return error.Contains("not with a record that could be read", StringComparison.Ordinal) ? "asked just now: its source gave no record for it. It has probably been withdrawn, and leads nowhere" : $"asked just now: {error}";
         var what = string.Join(": ", new[] { pulled.Label, pulled.Description }.Where(x => !string.IsNullOrWhiteSpace(x)));
         var facts = string.Join("; ", pulled.Facts.Take(2).Select(f => $"{f.Key} {f.Value}"));
         return (what.Length > 0 ? what : "a record with no name") + (facts.Length > 0 ? " · " + facts : "") + (pulled.SelfEcho ? " · this project's own earlier export, reflected back" : "");

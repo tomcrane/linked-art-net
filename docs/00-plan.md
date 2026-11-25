@@ -113,6 +113,14 @@ it up with the owner:
      bare place labels ("Amherst"); an old firm name as the label (Marlborough-Gerson).
   10. Slow pages: the Checks index 8-12 s, the project home 3 s; cards 0.4-1 s. And the list's "after=" can say
       "Nothing waiting" with 1,270 waiting.
+  LATER THAT NIGHT (the last four entries, ~100 more cards, queue to ~3,100), the new kinds:
+  11. Dates: "op"/"fl" dates are never compared with ULAN's "active" dates, only with its estimated life span, so
+      exact matches wait ("op" alone: 148 queued subject headings); the life-span estimate can be too tight (Gillick).
+  12. False pairings and false signals: "one record each, neither at odds" pairs an undated LoC record with ULAN's man
+      (George Graham, Henry Duke: wrong); "names a record of this string" fires on the name in a title; a qualifier
+      that is a kind ("(Plants)", "(Writing)") does not rule a candidate out, nor does a clashing place.
+  13. The jump after a decision offers a different thing as "a spelling among that card's candidates" (another
+      year's fair, another church, another Alexander Pope); a log for the cataloguers is not shown on the card again.
 - 2026-11-25, Opus at the place queue (98 to about 30). HELD, by kind:
   - Athens (string 32959): 12 of 13 records decided by record (Georgia 3, Ohio 2, Greece 7). The 13th (record
     9608154332, Olkos, Greece) is outside the eight largest groups the card shows, so it cannot be ticked; regrouping

@@ -656,6 +656,36 @@ it up with the owner:
   - Also: Concentration camps (AAT, which covers internment; the record is enemy aliens interned in Britain, so LCSH's
     "Nazi concentration camps" would be wrong), Royal Academy Schools (London) onto "(Great Britain)", Henry Montagu
     Roland (LoC, b. Heinrich Rosenbaum).
+- 2026-11-26 small hours, Opus, GAUGING THE PATTERNS (the owner: "doing more helps gauge how widespread the patterns
+  are"). Counts are read-only, on decisions.evidence->'groups'; the conclusions are Fable's.
+  - THE QUEUE BY CARD SHAPE (reports/q-cardshape.sql; "clear" = one candidate group >= 0.95 and no other >= 0.90):
+    personal authors 280 clear, 901 several level, 21 one at 0.90-0.95, 43 none above 0.90 (1,254); whole subject
+    headings 185 / 349 / 28 / 263 (838); publishers 50 / 207 / 59 / 65 (401); main headings 91 / 164 / 9 / 56 (331);
+    corporate authors 29 / 71 / 8 / 35 (156); subdivisions 1 / 32 / 0 / 6; places 5 / 10 / 1 / 4. So "several level"
+    is the common card everywhere; it is where "Fetch what each heading was made from" and the records do the work.
+  - THE CLEAR ONES BY SOURCE (reports/q-oneclear.sql): personal authors 259 of the 280 on LoC alone, 11 ULAN alone;
+    whole subject headings 92 ULAN alone, 66 LoC alone; main headings 69 LoC alone. These wait only for the
+    single-source rule ("the string carries nothing to check it by").
+  - HOW OFTEN THE CLEAR LOC CANDIDATE IS RIGHT, a sample of 30 personal authors (reports/q-oneclear-sample.sql, by
+    md5 order), judged by title and my knowledge: about 24 plainly right (Cross, Keymer, Fenwick, Konody, Goswamy,
+    Pigler, Tuer, Ralegh Radford ...), about 4 likely but undatable (LoC's record has no dates: Jane Hawkes, Hilary
+    Chapman, Anna Forrest, P. da Ponte), 2 WRONG: "Winter, C" on The British school of miniature portrait painters
+    (1948) offered "Rickmeyer, Marie, 1848-1919", whose pseudonym was C. Winter (the author is Carl Winter, 1906-1966);
+    "Smith, W N" on a 1990 catalogue offered W.N. Smith born 1868 (skipped). Both wrong ones fail a check the store
+    could make: the candidate dead, or 120 years old, at the record's date. So "one clear LoC candidate" is right
+    about nine times in ten here, and a record-year check would catch the misses seen. HELD: whether that is a rule.
+  - UNTANGLED Carl Winter on the way: "Winter, Carl (foreword by)" (Fitzwilliam handbook 1960) had been decided by the
+    import onto LoC n2011034143, which "Pull in from the sources" shows was made from a 2010 book by another Carl
+    Winter. Removed that LoC and its VIAF from the entity, then "Merge into another entity" onto Winter, Carl,
+    1906-1966 (LoC n83013551 + Wikidata Q5040977, made from the C. Winter card's search). Four presses; the page
+    after the removals still said ALIGNED over "None: a local authority".
+  - ROLE VARIANTS, measured (reports/q-rolevariants*.sql, role "(...)" stripped): of 1,254 queued personal-author
+    strings, 1,043 names have one string, 88 names have 2-5 (205 strings); 30 queued strings have a sibling role
+    already decided onto one entity. Smaller than it felt. And on Murdo Macdonald's card the two other roles were
+    offered under "written another way", ticked, and went in one press with the "Same as": the one-at-a-time cost is
+    where they are not offered so.
+  - The card shows three records per place group ("and N more"): Kenneth Powell's 13 records showed 5 titles. A
+    reviewer deciding a string with many records cannot read them all on the card.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

@@ -73,6 +73,23 @@ assistant restarted it under him several times that day, twice without a word). 
 local on `de-pmc`, the full test loop green at day end (eight projects, 3,263 tests); `git push` is the owner's
 word.
 
+**Which model is working** (the owner, 2026-11-25: "What are the implications if I switch from Fable 5.2 to Opus
+5.5 for a bit? I'm nearing the end of my week's Fable allowance"; then "make a note for Opus to read when I switch,
+deferring some decisions for when I can pick up again with Fable"). A session that is not Fable does the desk in
+volume and the checks' plain rows, small plain fixes and the day's housekeeping, and holds the rest: any change to
+what the rules decide, any reconcile or pass, the reading of a diff, a count that decides a build, a new screen or
+check, a desk decision resting on its own knowledge and not the card's, a merge that is not plain. The memory
+file `project-interim-model-scope.md` has it in full. What is held is written here, a line each, and Fable takes
+it up with the owner:
+
+**Held for Fable** (append below; newest last):
+
+- 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the
+  reconciler's "at home" not knowing an entity placed by a library heading ("Windsor"); the Decide screen's older
+  words on the first check's new kinds of row; namesakes within one country sorting into "the same place under
+  another record" and being offered the replace button ("Chippenham", "Highgate"); some 28 entities classed as
+  places that are not; the check "a body aligned to a namesake elsewhere" (93 bodies), not ruled on.
+
 **The owner's standing word** (2026-11-24 evening): "you can continue working through things yourself. You can
 store up interesting things for me to look at - but don't let something's presence on the list stop you from making
 fixes that might then take it off the list. We are still aiming for something that is pleasurable to use, and as

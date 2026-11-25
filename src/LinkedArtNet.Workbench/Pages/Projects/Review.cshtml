@@ -909,7 +909,9 @@ else
         // for the place they were, and the ticks gone)
         document.addEventListener("submit", function (e) {
             var f = e.target; if (!f.matches || !f.matches("form[method=get]")) return;
-            ticked("input[data-records], input[data-also]").forEach(function (c) { var h = document.createElement("input"); h.type = "hidden"; h.name = "tick"; h.value = c.value; f.appendChild(h); });
+            // each selector ticked on its own: ":checked" after a list applies to its last part only, and every record box had gone with a
+            // search, ticked or not, and come back ticked (found at the desk, 2026-11-25; no decision had been made by it)
+            ticked("input[data-records]").concat(ticked("input[data-also]")).forEach(function (c) { var h = document.createElement("input"); h.type = "hidden"; h.name = "tick"; h.value = c.value; f.appendChild(h); });
         }, true);
         new URLSearchParams(location.search).getAll("tick").forEach(function (v) {
             document.querySelectorAll("input[data-records], input[data-also]").forEach(function (c) { if (c.value === v) { c.checked = true; var d = c.closest("details"); if (d) d.open = true; } });

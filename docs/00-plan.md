@@ -379,6 +379,22 @@ it up with the owner:
     bare Stewarts. The imported "..., Ann (role)" strings are right; only those parsed afresh show it. Skipped.
   - "Greenwood" bare as a publisher of 1987 is Greenwood Press, not the auctioneers of the 1790s: the desk offered it
     next after the auctioneers; the records' years told them apart.
+- 2026-11-25 later still, Opus, the place queue's held cards again, now with research allowed (31 to 22):
+  decided Amherst (Erie Co., N.Y.: Cambria Press), Augusta (Ga.: Morris Museum of Art), Beeston (Notts.: Shoestring
+  Press; the book about murals in Bilborough), Burlington (Vt.: Ashgate), Halfmoon Bay (B.C.: Caitlin Press),
+  Hamilton (Vic.: the City of Hamilton Art Gallery; found only through Wikidata, the card search in a place field
+  listing six persons named Victoria Hamilton), Lamport (Northants.), Tarrytown (Westchester), Auckland (the city).
+  Still held: Brook (Canterton Books: not findable), Grosmont (Illuminati Books: Monmouthshire or North Yorkshire?).
+  - The card's "Where this publisher is" line says "its sources do not say where it is" while the publisher entity's
+    own label says it: "Morris Museum of Art (Augusta, Ga.)", "City of Hamilton Art Gallery (Hamilton, Vic.)". The
+    hint could read the label's qualifier, and rank the place it names first (Augusta's card led with "Same as
+    London").
+  - The same record's other fields placed two: Lamport's keyword "Lamport Hall (Northamptonshire)"; Beeston's title.
+    The rules do not read them.
+  - For small presses the fact that settles a place is the ISBN registrant's address (Canterton Books, Illuminati
+    Books): a lookup an assistant could be given; web search did not find them.
+  - The new place entities are labelled bare ("Amherst", "Augusta", "Burlington", "Hamilton"): the published label
+    will not say which.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

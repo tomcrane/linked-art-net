@@ -758,6 +758,32 @@ it up with the owner:
     entities already, so those records lose their link to each real publisher. The desk has "two values in one field"
     only as a log for the cataloguers; there is no "these are A and B" decision. HELD: splitting on ";" in the
     publisher field (a rule), and a desk act for a two-value string.
+  - AN UNTANGLING JOURNEY, worked end to end: CHRISTOPHER WOOD. From one corporate-author card ("Christopher Wood"
+    with Richard Green, 1990: the gallery) the candidates showed the project's Wood entities were tangled; 4 of the 9
+    import/rule decisions on the name were wrong. Before: "Wood, Christopher (author)" (13 records: Olympian
+    dreamers, The Pre-Raphaelites, Tissot) on Wikidata's "British painter (born 1962)" + LoC "1962-"; the subject
+    "Christopher Wood" (exhibitions at his gallery, 1981, 1983) on Christopher S. Wood (b. 1961, the art historian);
+    "(curator)" and "(introduction by)" on LoC n50013162, a catch-all LoC record (an IBM author, a fabulist, a health
+    worker in Nairobi), together with the main heading "Wood, Christopher, 1901-1930" (the painter Kit Wood), put
+    there by EXACT-NAME although that entity's label is undated "Wood, Christopher". After: the dealer and historian
+    (1941-2009) holds the four author strings; the gallery the six gallery strings; Kit Wood the 1901-1930 headings;
+    Christopher S. and Christopher P. Wood only their own. What the journey showed:
+    - "Reopen selected strings" on the entity page put the main heading straight back: the history says "reopened for
+      the next reconcile", and a minute later the string had a new valid exact-name decision onto the same wrong
+      entity (decided_at 17:04, no reviewer). Reopen cannot untangle a string that a rule will re-decide.
+    - What worked: the decided card's "Decide it differently" (search, then "Same as"): the string moved, the old
+      entity was not merged away. Then on the old entity, "Remove" the wrong identifiers (after "Pull in from the
+      sources" showed what they were), then "Merge into another entity".
+    - The merge search listed two rows reading exactly "Christopher Wood PERSON ALIGNED viaf wikidata lux loc · stands
+      for 1 string" (the 1962 painter and the 1941-2009 dealer): no way to tell them apart without opening each. The
+      rows want the dates, the identifiers' labels, or the strings.
+    - The Compare page (reached from the entity page's "On a check's list ... Compare…") is the best tool met:
+      what stands on each with record counts, and each identifier with a box to leave it out ("4 identifiers left
+      out"). It should be reachable from the plain "Merge into another entity" too.
+    - Banners with the same label twice: 'Merged "Christopher Wood" into "Christopher Wood"'.
+    - The entity page says "seen 1 time" for a string with 13 records (Compare's count).
+    - Ask-an-AI: "these strings share a name: which are one person?" with each string's titles and each identifier's
+      sources was exactly the judgement needed; the assistant needs the titles per string and the pulled sources.
   - Hamilton & Hamilton (Dublin estate agents and auctioneers, with Christie's at Irish country-house sales) kept
     local; its other string onto it from the jump (rightly this time). Hampton Court Palace as corporate author onto
     ULAN's repository (the body, as Anglesey Abbey's corporate author), leaving LCSH's building for subject headings.

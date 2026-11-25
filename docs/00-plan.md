@@ -439,6 +439,26 @@ it up with the owner:
     usual or present name, the old ones as alternatives.
   - Douglas Young (& Co), auctioneers, 1920, with its publisher twin (ticked "written another way": "Same as" carries
     the tick, as it should).
+- 2026-11-25 night, Opus, personal authors (persauthorfull):
+  - Decided: John Gray 1866-1934 (Beardsley's editor; LoC's record alone: the card's group paired it with ULAN's
+    "British artist, active ca. 1906", which its records call the same man and which is doubtful), Bryan Little
+    (LoC "Little, Bryan D. G.", the Bristol historian), Giles Robertson ("G H Robertson", the Fitzwilliam's 1967
+    Italian catalogue; the card offered only a George Harcourt Robertson born 1943), Joseph W. Reed 1932-2019 (the
+    Yale Walpole), James White 1913-2003 (the National Gallery of Ireland's director: author, compiler, "preface by",
+    "introduction by", four strings), John Guy the Tudor historian (to the project's "Guy, J. A. (John Alexander)";
+    LoC's "Guy, John, 1949-" fetched and found to be the curator of Asian ceramics, "Palm-leaf and paper").
+  - Role variants: "White, James (author)", "(compiler)", "(preface by)", "(introduction by)" are four strings decided
+    one at a time, each with a search, because the desk's jump does not offer the entity just chosen and "written
+    another way" does not list the other roles of the same name. The name with its role taken off is one string to a
+    reviewer; the desk could offer the role variants together, with their records, to tick.
+  - Common names with one local book (David Taylor of Cobham, Martin Roberts of the Durham Pevsner, David Jenkins of
+    Phaidon's architecture monographs, James Russell of Ravilious) are the bulk of what is skipped: the right LoC
+    heading is often in the index (James Russell: 1948-, 1952-, 1966-, 1972-, 1977- ...) but not among the card's
+    candidates, and "Fetch what each heading was made from" works only on the candidates shown. To fetch sources for
+    every heading of the name, or to search LoC's "made from" notes by the record's title, would settle most: the
+    assistant's work here is that lookup.
+  - The list's "after=<id>" goes wrong: from persauthorfull "after=13764" and "after=13799" said "Nothing waiting for
+    review in persauthorfull" (1,270 waiting); opened without "after", the list began at 13817.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

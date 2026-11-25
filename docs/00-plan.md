@@ -686,6 +686,29 @@ it up with the owner:
     where they are not offered so.
   - The card shows three records per place group ("and N more"): Kenneth Powell's 13 records showed 5 titles. A
     reviewer deciding a string with many records cannot read them all on the card.
+  - ACTIVE DATES, measured (reports/q-activedates.sql): 158 queued strings carry "op"/"fl"/"active" with a year (157
+    whole subject headings, 1 main heading). For 65 a ULAN candidate's own description states the very same years
+    ("active 1847-1883"); 80 have a ULAN candidate whose years differ or overlap (Thomas Hastings "op 1804-1831"
+    against ULAN's "active ca. 1813-1831", the right man, with "Hastings, Captain Thomas" matching the record's
+    "Hastings, Thomas Captain": accepted); 13 have no ULAN candidate. So an exact "active" check would settle about 65
+    at once, and an overlap check more, with judgement.
+  - THE HYPHEN FAULT IS WORSE THAN QUEUED FRAGMENTS: THE RULES HAVE DECIDED SOME. Bare prefixes in main headings
+    (reports/q-hyphenfrag*.sql): "Pre" 193 records (queued), "Anglo" 5, "Anti" 3, "High" 2, "Counter" 2 (queued); but
+    "Self" 26 records (exact-name, onto a concept "Self" with no identifier), "Post" 11 (VOTE, onto a PLACE "Post",
+    LoC n82161690 + TGN 2106910), "Avant" 10 (vote, onto the place Avant, LoC no2025076556 + TGN 2082812), "Non" 1
+    (vote, onto the place Non), "Cross" 1. Then single-word main headings decided onto places
+    (reports/q-voteplace*.sql) show the same fault in other words and in double-barrelled names, all by rule onto real
+    places: "Still" 11 records (from Still-life painting; vote, TGN 2694923), "Letter" (Letter-pictures), "Single"
+    (Single-parent families; exact-single, TGN 8000613), "North" (North-western Ireland), "Lennox" (Lennox-Boyd),
+    "Mackenzie" (Mackenzie-Fraser family), "Clayton" (the Clayton-Stamm Collection, onto Clayton, Victoria, Australia),
+    "Narcissus" (Narcissus-(Greek mythological character), onto Battles Wharf), "Wells" (Wells-England-London, the
+    springs). About 40 records wrongly given a place by rule, besides the queued 200. The vote rule (TGN and LoC agree
+    on a name) is what makes a fragment a confident place. HELD: the splitter, and an undo of those decisions, are
+    Fable's (a rule change and a reconcile); NOT touched at the desk.
+  - SUBJECT CONCEPTS FILED AS PLACES: "Castles" (43 records), "Prisons", "Archaeology", "Americans", "Princes"
+    (exact-name) sit on entities under place/ holding the right LCSH subject heading plus an IMPORTED LUX place/
+    identifier (from the old PMC data; not in the store, so not checkable here). The LUX place identifier on a topic
+    looks wrong, and seems to be what classes the entity a place. HELD: check those LUX ids, and the class.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

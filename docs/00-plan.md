@@ -784,6 +784,33 @@ it up with the owner:
     - The entity page says "seen 1 time" for a string with 13 records (Compare's count).
     - Ask-an-AI: "these strings share a name: which are one person?" with each string's titles and each identifier's
       sources was exactly the judgement needed; the assistant needs the titles per string and the pulled sources.
+  - EXACT-NAME ONTO AN UNDATED ENTITY, measured (reports/q-exactname-dates*.sql): 693 exact-name decisions took a
+    dated string onto an entity with no dates in its label or fields (main headings 518, whole headings 155, persons
+    10, corporate 5, publishers 5). Of the 622 person ones, checked against the entity's authority records: 384 birth
+    year agrees (+-3), 10 the year within the life, 201 identifiers without dates in the store, 26 no identifiers, 2
+    conflict. So the rule is mostly right; the risk is the 227 it cannot check (Kit Wood was one: the entity's LoC
+    record was a catch-all). The 2 conflicts: Lesley Anne Ivory ("active 1964-1996" against a birth year, a false
+    alarm) and NICHOLAS HILLIARD: "Hilliard, Nicholas, 1537-1619" (13 records) taken by exact-name onto an entity the
+    import had aligned to Wikidata Q14945717 and LoC no2019030549, both Sir Nicholas Hilliard KC, the judge, born
+    1959 ("Pull in from the sources" shows Archbold, 2018). UNTANGLED: removed the four (Wikidata, its VIAF, LoC,
+    LUX), searched the indexes from the entity page; "Add as identifier" refused LoC n50035194, ULAN 500028850,
+    Wikidata Q318114 with "already held by the project's entity 'Hilliard, Nicholas, 1547?-1619': merge into it rather
+    than make a twin" and a "Merge into this" button: merged, five strings now on the miniaturist. Good guidance; but
+    the first two refusals showed nothing I could see, only the third. Events too: exact-name put "Biennale di Venezia
+    (56th : 2015 : Venice, Italy)", "Royal Academy ... Summer Exhibition (251st : 2019 ...)", "Coventry Biennial (3rd :
+    2021)" onto the undated series: an edition is not its series (the Photo London question again).
+  - A CHECK THAT FINDS WRONG ALIGNMENTS: "BORN AFTER THE BOOK" (reports/q-bornafter.sql): person entities whose
+    authority records give a birth year more than 5 years after the earliest year of the records their strings stand
+    in: 47, almost all IMPORTED. Plainly wrong: "Thomson, James (author)" on an 1824 record aligned to the actress Lily
+    James (b. 1989); "Malone, Edmund (author)" (1798) on an Edmund Malone b. 1965; "Dart, John (author)" (1723) on
+    John Olney Dart b. 1921; "Bowles, Thomas" (1720) on one b. 1926; Dugdale (1718) on William Francis Stratford
+    Dugdale b. 1872; Milton, Henry; Rossini, Pietro; Heidegger; Todhunter; Aitken, Charles; Bennett, Arnold (on Arnold
+    Anthony Bennett b. 1966); Eberlein; Sadler, Michael; Kahrl; Hubbard, Elbert; Boswell, James (on the painter
+    1906-1971 for an 1887 record) ... Some are one wrong identifier among right ones (Housman, Beardsley, Francis Bacon,
+    Martin Davies, Ainslie show a 1960s birth from one record); a few "born 2000" look like a source placeholder (Buck,
+    Borzello, Johnson, Beddard). NOT fixed beyond Hilliard: each takes the Hilliard path (pull, remove, search, add or
+    merge), about six presses. HELD: this as a check on the Checks page ("may be aligned to a namesake"), which would
+    list them for the desk; the threshold and the false alarms are Fable's to judge.
   - Hamilton & Hamilton (Dublin estate agents and auctioneers, with Christie's at Irish country-house sales) kept
     local; its other string onto it from the jump (rightly this time). Hampton Court Palace as corporate author onto
     ULAN's repository (the body, as Anglesey Abbey's corporate author), leaving LCSH's building for subject headings.

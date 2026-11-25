@@ -719,6 +719,25 @@ it up with the owner:
     (Gemäldegalerie, Staatliche Museen Preussischer Kulturbesitz, Bethnal Green Museum, Modern Art Oxford) and
     Galleria Borghese holding an LCSH subject besides. Those are for the duplicates/Compare check, not the pairing
     rule. (The fragments Post, Avant, Still above are also vote decisions, but on TGN + LoC place names.)
+  - "HOUSE (COUNTY)", measured at last (reports/q-housecounty*.sql, on the strings, quick; the index count had
+    stalled): subject strings ending "(<British county>)": 372 MINTED (nothing found), 207 single, 73 queued, 68
+    exact-name, 47 vote, 29 human (mine today), 16 imported, 12 exact-single, 11 composite. The 372 minted matter most:
+    four searched from a card gave Ordsall Hall (Lancashire) = LoC "Ordsall Hall (Salford, Greater Manchester,
+    England)" (a county-contains-town check would have found it), Hidcote nothing, Lulworth Castle and Bowood only
+    namesakes. So the county check reaches the 73 queued and some of the 372 minted. HELD: the rule; the count of how
+    many minted ones LCSH/LoC hold needs an exact-label lookup, not a LIKE over the index.
+  - MINTED CORPORATE AUTHORS CLASSED AS PERSONS (reports/q-mint*.sql): minted entities by field and class:
+    corporate authors 693 Group, 241 PERSON; publishers 3,388 Group, 1,453 PERSON; whole subject headings 1,402 Type,
+    402 Person; main headings 302 Type, 242 Person. A sample of 50 of the corporate-author "persons": nearly all bodies
+    or places (The Hunterian, Parke-Bernet, Musées de l'Institut de France, Lulworth Castle, Alnwick Garden, Raby
+    Castle, Zamek Królewski w Warszawie, Fundación AXA Winterthur, Precarious Workers Brigade, No. 80 Pall Mall); a
+    few dealers under a personal name (W B Hallett, Julian Armytage, Ian MacNicol), firms in effect. The minted class
+    seems to come from the name's shape, not the field. A corporate-author string minted as a person then pulls the
+    publisher string onto it by exact name (Lulworth Castle: corpauthor minted person, publisher exact-name onto it).
+    HELD: the minting class (a rule).
+  - TRANSCRIPTION FAULTS that cannot match anything: "Gosudarstvennyæi Ermitazh (Russia)" (the Hermitage; an
+    "ĭ" turned "æi"), "Håøosinlapa håµng Chåat (Thailand)" (the National Gallery of Thailand?), "Parke-Bernet
+    Gallleries". Minted. A check for non-Latin-1 debris in strings would find them.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

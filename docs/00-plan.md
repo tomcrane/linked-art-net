@@ -324,6 +324,41 @@ it up with the owner:
     hint offers the town "Colchester" for the auctioneer "Mr Colchester" (class not respected); "Keep as local
     authority" for a common name ("Smith, Margaret") would draw every later Margaret Smith to it: the label wants a
     qualifier the matcher respects.
+- 2026-11-25 later, Opus, the general queue continued (subjects, corporate authors, publishers; ~35 cards):
+  - A parser fault, the largest finding of the stretch: the subject splitter takes a hyphen between two letters for
+    the catalogue's subdivision separator. "Pre" stands at 193 records ("Pre-Raphaelitism", "Pre-Raphaelites", "Pre-
+    Raphaelite Brotherhood"); about 15 strings are such halves: Anglo and Saxon (Anglo-Saxon), Anti (Anti-racism),
+    Counter (Counter-Reformation), Human (Human-animal relationships), High (High-rise), Kit (Kit-Cat Club), Guide
+    (Guide-books), Sea (Sea-power), and double-barrelled names Drury (Drury-Lowe family), Campbell (Campbell-
+    Wilson), Easton (Easton-Neston), Bevan (Bevan-Petman), Kay (Kay-Shuttleworth), Hughs (Hughs-Stanton, a misspelt
+    Hughes-Stanton). The splits on "-" between a heading and its subdivision ("Windsor Castle-Art Collections") are
+    right. A card has no action for "the software split this wrongly": "Pre" and "Drury" are set aside with the
+    question. To count and rule (no split between two letters with no space?): Fable's.
+  - "Fetch what each heading was made from" settled four people at once (Mary Bennett, Antony Williams 1964- by
+    "b. 1964 in Kingston-upon-Thames ... Ondaatje Prize", Paul Kenny by "Seaworks", and ruled out three John
+    Partridges). Where the string has dates and the candidate heading has none, the card could fetch unasked.
+  - A group row's "Same as <entity>" also brings the group's other identifiers: on "Cole, George, 1810-1883" I took
+    ULAN's record "just this one" (LoC's undated "Cole, George" possibly another man); its keywords twin's "Same as
+    Cole, George" then "Accepted together, with 3 identifiers", adding LoC after all. The label does not say it.
+  - The candidate ranking ignores the string's own qualifier: "Museum of Modern Art (Oxford)" was offered MoMA New
+    York first; the card search found LoC's "Museum of Modern Art (Oxford, England)" and ULAN's "Modern Art Oxford",
+    accepted as one.
+  - Generic labels: "Museum of Fine Arts" for St Petersburg, Florida (ULAN "American repository, Saint Petersburg")
+    is now an entity labelled just "Museum of Fine Arts". The published label wants the place.
+  - Obsolete LCSH forms met: "Paintings, European" (to the project's "Painting, European", offered by the card's
+    "A misspelling, perhaps" hint: right entity, wrong framing, it is an older form not a misspelling), "Labor and
+    laboring classes" (to "Working class"), "Art, Primitive" (to AAT "primitive art"). A rule or a table of LCSH's
+    changed headings would do these.
+  - Local authorities made: Partridge, John, 1924-2016 (architect); Bowyers (London, England), auctioneers;
+    Williamson, James (printer, Lincoln). "Keep as local authority" ignored the ticked publisher twin of Bowyers
+    (the "written another way" tick, as the record tick before), so the desk brought it separately.
+  - Body and building again: Anglesey Abbey, the subject to LCSH's building, the corporate author to ULAN's
+    repository; the card offered the building first for the corporate author.
+  - Decided besides: Working class, César de Saussure, Stephen Somerville Ltd, Royal Collection, Leeds, Durham
+    Cathedral, Ogmore Castle, John Wheatley, Robert Bevan (ULAN 1865-1925; the heading's 1926 a year out),
+    Alexander Mackenzie 1923-2002, John Kirby 1949-, Herbert Hughes-Stanton (after logging the misspelling: the log
+    then search flow again worked well), Museum of Fine Arts (Boston 2, St Petersburg 1, by place), Norwich Castle
+    Museum, Edward Lumley 1806-1874, William Wilson active 1769-1801, Charles H. Kelly (LoC, both spellings).
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

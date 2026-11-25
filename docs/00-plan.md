@@ -89,6 +89,35 @@ it up with the owner:
   words on the first check's new kinds of row; namesakes within one country sorting into "the same place under
   another record" and being offered the replace button ("Chippenham", "Highgate"); some 28 entities classed as
   places that are not; the check "a body aligned to a namesake elsewhere" (93 bodies), not ruled on.
+- 2026-11-25, Opus at the place queue (98 to about 30). HELD, by kind:
+  - Athens (string 32959): 12 of 13 records decided by record (Georgia 3, Ohio 2, Greece 7). The 13th (record
+    9608154332, Olkos, Greece) is outside the eight largest groups the card shows, so it cannot be ticked; regrouping
+    did not reach it. Left queued. A UI gap: a record outside the shown groups has no box.
+  - Duplicate project entities met on cards: two for Athens (Ohio) ("Athens (Ohio)" and "Athens" placed in Ohio),
+    two for Athens (Greece).
+  - The old "Derry" placeholder (place/qxak8wp5) is merged into Derby (place/s8vm42q3), by a wrong press of Opus's
+    (Derry was accepted as Derby, then undone, "Derry" set aside on Derby, and Derry decided as Derry (Northern
+    Ireland)). The placeholder's id now resolves to Derby; it stood for nothing else.
+  - Skipped because the answer rests on knowing where a small publisher is, not on the card: "Amherst, New
+    York" (Cambria Press: Erie or Genesee county), "Augusta" (Morris Museum of Art; the rules' first candidate is
+    London), "Auckland, New Zealand" (city, region, or the project's thin "Auckland"), "Beeston" (Shoestring
+    Press), "Brook" (Canterton Books), "Burlington" (Ashgate), "Grosmont" (Illuminati Books: Wales or Yorkshire),
+    "Halfmoon Bay" (Caitlin Press), "Hamilton" (City of Hamilton Art Gallery: Victoria or Ontario), "Lamport"
+    (Lamport Hall Trust: the first candidate is Buckinghamshire), "Tarrytown, New York" (Albany or Westchester).
+  - Skipped because no candidate or search found the place: "Botley, Oxford" (only Hampshire's), "Broughton Hall,
+    Nr. Skipton" (only Staffordshire's), "Kirstead, Norfolk", "Moggerhanger, Bedfordshire", "Mount Stuart,
+    [Rothesay]", "Stanbridge, Wimborne Minster", "Stanbury, nr Haworth", "Wickford", "Wilton, Cork", "Wynyard
+    Park, Billingham, Teeside", "Hampton Hill" was found; "L (colonnade)" (Sotheby's, no candidates: perhaps a
+    stray).
+  - Several places in one field, not decided: "Kingston, Montreal" and "Rutherford, Madison, Teaneck" (a
+    university press's two or three seats), "London, New York & Bombay". Whether to log them as "two values in
+    one field" or decide them by their first place is the owner's call.
+  - "Walterstone" and "Walterstone, near Abergavenny": the open item of three placeholders; not touched.
+  - Labels in the vernacular left as the gazetteer gives them: "Ash-Shāriqah" for Sharjah, "Genève".
+- 2026-11-25, Opus: a fault found and MENDED (plain, workbench only): the card carried every record box across a
+  search, ticked or not, and they came back ticked, so the next Accept would have decided every record one by one.
+  No record decision had been made by it. The press of the cards was by a script in the page that submitted each
+  card's own Accept or Same as form, read back in the store after each batch.
 
 **The owner's standing word** (2026-11-24 evening): "you can continue working through things yourself. You can
 store up interesting things for me to look at - but don't let something's presence on the list stop you from making

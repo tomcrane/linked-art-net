@@ -89,6 +89,30 @@ it up with the owner:
   words on the first check's new kinds of row; namesakes within one country sorting into "the same place under
   another record" and being offered the replace button ("Chippenham", "Highgate"); some 28 entities classed as
   places that are not; the check "a body aligned to a namesake elsewhere" (93 bodies), not ruled on.
+- 2026-11-25, Opus: THE DAY IN TEN LINES, for Fable to start from (details in the entries below, oldest first).
+  About 500 strings decided at the desk as a reviewer would (queue 3,676 to 3,177), every press read first and read
+  back in the store; seven quick publisher presses that did not hold were untangled. The owner's aim for this work:
+  "perfecting the UI rather than delivering the data"; the whole process may be rerun.
+  1. Undo does not undo "Same as": the string's placeholder stays merged into the wrong entity (Pearson, Derry).
+  2. Ticks: only Accept, Same as and Accept-together carry record or "written another way" ticks; Keep as local,
+     Not a name, Log it and the set-asides act on the whole string with the banner on screen.
+  3. The subject splitter takes a hyphen between letters for the subdivision separator ("Pre" 193 records, "Saxon",
+     "Colours (Great Britain)" 26, Drury-Lowe ...): about 25 strings, ~300 records. No card action says "split wrong".
+  4. Auctioneers: ULAN's Getty Provenance Index auction houses are in the store but buried under painters of the
+     surname; a rule (medium "Auction catalogue": auction houses first) would do most of what an assistant would.
+  5. Ask-an-AI, worked case by case: most help needed is lookups (the record's series, an index filtered by kind,
+     LoC by title, ISBN registrant, id.loc.gov label); the model's own judgement earns its place on body-or-building,
+     which-of-two-namesakes, and framing the question. The prompt's inputs are listed in the entry below.
+  6. "Fetch what each heading was made from" settles people at once; it should run for every heading of the name,
+     and unasked where the string has dates and the candidate none.
+  7. Role variants of one person ("(author)", "(compiler)", "(preface by)") are separate strings decided one at a time;
+     the desk's jump to them does not offer the entity just chosen.
+  8. Wrong alignments the publisher overview exposed (Penguin N.Z., Cape & Harrison Smith, Country Life Academy N.C.,
+     John Donald Robb Archive ...) and duplicate entities met (two Derbys, Leicester, Waterman, Nottingham Castle ...).
+  9. Labels: kept local entities keep a person/ path when they are groups; TGN's vernacular labels ("Pākistān");
+     bare place labels ("Amherst"); an old firm name as the label (Marlborough-Gerson).
+  10. Slow pages: the Checks index 8-12 s, the project home 3 s; cards 0.4-1 s. And the list's "after=" can say
+      "Nothing waiting" with 1,270 waiting.
 - 2026-11-25, Opus at the place queue (98 to about 30). HELD, by kind:
   - Athens (string 32959): 12 of 13 records decided by record (Georgia 3, Ohio 2, Greece 7). The 13th (record
     9608154332, Olkos, Greece) is outside the eight largest groups the card shows, so it cannot be ticked; regrouping

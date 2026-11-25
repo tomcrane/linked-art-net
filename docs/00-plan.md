@@ -509,8 +509,11 @@ it up with the owner:
     1887-1938" against ULAN's "Scottish painter, active 1887-1938" says "dates not comparable" and "the string carries
     nothing to check it by". The same for Priwitzer (op 1627-1647 = ULAN active 1627-1647), Jardine (op 1839-1841 =
     active 1839-1841), Henry Duke (op 1864 = active 1864), Rogers (op 1848-1872 within active 1842-1883), Larkin,
-    Baldwin. Each was a plain accept that a rule reading "op"/"op." as "active" would have made. NOT COUNTED: how many
-    queued keywords strings carry ", op " (a count for Fable, on the strings table, not the index).
+    Baldwin. Each was a plain accept that a rule reading "op"/"op." as "active" would have made. COUNTED
+    (reports/q-opdate.sql, raw ~* ',\s*op\.?\s*[0-9]', valid decisions): keywords 148 queued, 102 exact-single, 77
+    minted, 49 vote, 10 composite, 10 human, 9 exact-name, 7 single; keywords:sub 4 minted; keywords:head 2 minted, 2
+    vote, 1 each exact-single, queued, exact-name. So 148 of the 880 queued subject headings carry the date; how many of
+    them a "op = active" reading would settle, and whether the 77 minted were minted for want of it, is for Fable.
   - THE "WHY IT WAITS" WORDING misleads on a dated string: "Gillespie, Michael, 1929-" is told "the string carries
     something to check it by, a date or a place; this one does not". It does; the candidate has no date.
   - FALSE PAIRINGS by "loc's one record of the name, as ulan's one is, neither at odds with the dates": George

@@ -131,6 +131,10 @@ it up with the owner:
   16. What rules could take off the desk, with the misses seen: 259 personal authors wait on one clear LoC candidate
       alone (a sample of 30: ~24 right, 2 wrong, both caught by a record-year check); 65 active-dated headings have a
       ULAN candidate stating the same years. Role variants are smaller than they felt (88 names, 205 strings).
+  17. Imported namesake alignments are findable: a "born after the book" query lists 47 person entities (Lily James
+      for James Thomson, a judge for Nicholas Hilliard, an Edmund Malone b. 1965 ...). Untangling them works (Carl
+      Winter, Christopher Wood, Hilliard done) by pull, remove, "Decide it differently", merge or Compare; "Reopen"
+      does not (a rule re-decides at once), and merge rows with the same label cannot be told apart.
 - 2026-11-25, Opus at the place queue (98 to about 30). HELD, by kind:
   - Athens (string 32959): 12 of 13 records decided by record (Georgia 3, Ohio 2, Greece 7). The 13th (record
     9608154332, Olkos, Greece) is outside the eight largest groups the card shows, so it cannot be ticked; regrouping

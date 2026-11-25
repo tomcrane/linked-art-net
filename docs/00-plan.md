@@ -741,6 +741,16 @@ it up with the owner:
     transliteration with MARC-8 ligature debris ("æi" for "ĭ", "§" for the soft sign): the Hermitage twice, the
     Moscow Kremlin museums, "Britanskiæi Sovet sovmestno s Galereeæi Malboro", "Klokov, Sergeæi". Small: a
     cataloguers' list, not a rule.
+  - CO-PUBLISHERS IN ONE STRING (reports/q-multivalue.sql, ";" only): 275 publisher strings MINTED as one group each
+    ("Royal Academy of Arts ; National Portrait Gallery ; National Gallery", "Tate ; Ipswich Borough Council",
+    "Éditions Nicolas Chaudun; Musée d'Orsay", "Duckworth & Co. ; New York : E.P. Dutton & Co"), 17 more decided by
+    exact name onto such an entity, 1 imported; corporate authors 4. The bodies named are mostly the project's own
+    entities already, so those records lose their link to each real publisher. The desk has "two values in one field"
+    only as a log for the cataloguers; there is no "these are A and B" decision. HELD: splitting on ";" in the
+    publisher field (a rule), and a desk act for a two-value string.
+  - Hamilton & Hamilton (Dublin estate agents and auctioneers, with Christie's at Irish country-house sales) kept
+    local; its other string onto it from the jump (rightly this time). Hampton Court Palace as corporate author onto
+    ULAN's repository (the body, as Anglesey Abbey's corporate author), leaving LCSH's building for subject headings.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

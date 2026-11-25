@@ -118,6 +118,116 @@ it up with the owner:
   search, ticked or not, and they came back ticked, so the next Accept would have decided every record one by one.
   No record decision had been made by it. The press of the cards was by a script in the page that submitted each
   card's own Accept or Same as form, read back in the store after each batch.
+- 2026-11-25 afternoon, Opus at the publisher queue (735 to 565: 170 decided, 6 set aside with a question). The
+  notes below are written as a reviewer met them; the owner asked for usability, untangling and slow pages to be
+  collected for Fable. The overview query was reports/q-pubheli.sql (git-ignored with reports/; what it does is under DESIGN QUESTIONS).
+    PUBLISHER QUEUE, 2026-11-25, Opus. Notes for Fable, in the order met.
+
+    The owner's words during the session (for the scope note): "You can do web searches, research etc to try to work out
+    who a publisher is. A real user would either have more domain knowledge, or do similar searching, or likely both";
+    "If your research activities are inconclusive or if you're not confident in the results, still skip"; "Also consider
+    where an overview of all the publishers would help you resolve an individual one, a 'helicopter view'"; "It's the user
+    journey, the flow, how nice the UI is to use, how _satisfying_ the UI is to use in cleaning up records - that what we
+    want to perfect here. Not overburden the user with too many ways to control the process, but not to skimp on the tools
+    they have available - these users can handle complexity, but they won't like frustration or confusion."; on the
+    scratch overview: "Is that scratch view (in modified form) something you think would help a human?"; then "Yes, I can
+    see where sometimes a user might want to query the store. The extent to which we provide pre-canned queries as views,
+    vs providing a sophisticated query-building search facility, is something to consider."
+
+    DESIGN QUESTIONS (new screens: Fable's)
+    - A publisher overview ("helicopter view"). What decided most of the short forms was a read-only query
+      (reports/q-pubheli.sql): each queued publisher string beside the project's entities already decided for other
+      publisher strings whose name contains it as a word, with how many of their records share a place. "Faber" (London,
+      47 records) beside "Faber & Faber" (London, 111) is the decision; the card's own candidates (ULAN painters named
+      Faber) are noise for it. The table also shows wrong alignments at a glance (below). Risk: it invites pressing without
+      the records where several firms of one name share a city (Bell, Allen, Seeley, Macdonald, Virtue): a row should offer
+      its button only when one entity agrees on place and years, and send the rest to the card.
+    - Pre-canned views versus a query-building search (the owner's question). The questions I actually needed: the places
+      and year range of a string's records; the entities whose name contains a short form, by shared place; which
+      entities' records sit in a place far from their identifier's qualifier.
+
+    WRONG ALIGNMENTS ON PUBLISHER ENTITIES (seen from the overview; not touched: "a body aligned to a namesake elsewhere"
+    is held, and these are concrete rows for it)
+    - "Penguin Books" on LoC "Penguin Books (Firm : N.Z.)": 16 records, and the hint offered for "Penguin" (string 4152,
+      202 Harmondsworth records). Pressing the hint would have put 218 records on the New Zealand firm. Not pressed.
+    - "Jonathan Cape" on LoC "Jonathan Cape & Harrison Smith (Firm)" (the New York firm of 1929-31): 25 London records;
+      offered for "Cape" (5304, 28) and "Harrison" (9420).
+    - "Country Life Academy (Star, N.C.)": 87 records whose places are London (Country Life).
+    - "Pilgrim Press (Auckland, N.Z.)": 23 records, mostly British places.
+    - "John Donald Robb Archive of Southwestern Music": 7 Edinburgh records (John Donald, publishers).
+    - "Merrell & Associates/Black & Veatch": 32 records (Merrell Publishers, London?).
+    - "Black and White Band": 10 records ('Black and White', the illustrated weekly).
+    - "Pall Mall Press (Paris, France)", "Black Dog Press (Clinton, Wash.)", "ICA Gallery (Jaipur, India)", "Unicorn
+      Press (Bryan, Tex.)" (offered for "Unicorn Press Ltd", London), "Anderson & Garland" (Newcastle auctioneers) offered
+      as the hint for "Garland" (New York), "Electa Napoli" as the hint for "Electa" (Milan; decided as Electa editrice).
+
+    DUPLICATE ENTITIES MET (a merge each, not done: Compare page first)
+    - Two "Edinburgh City Art Centre" entities: the card for "City Art Centre" (4756) shows two identical buttons "Same as
+      Edinburgh City Art Centre" and nothing to tell them apart. Not pressed.
+    - "Waterman Fine Art Ltd" and "Waterman Fine Art Limited" (card 8474). "Thomas Nelson & Son" and "Thomas Nelson &
+      Sons". "George Bell & Sons" and "G Bell & Sons". "Les Arts décoratifs" and "Musée des arts décoratifs (France)".
+      "Nottingham Castle Museum" and "Nottingham Castle Museum & Art Gallery". "Virtue and Company", "James S. Virtue
+      (Firm)", "G. Virtue" (perhaps one firm under three names).
+
+    A FAULT IN WHAT A DECISION RECORDS (held: it is what the decision writes, not the page)
+    - "Christie, Sharp and Harper" (7085): "Accept the ticked together" on the ULAN group (a British auction house) with
+      the project's placeholder for the same name kept the placeholder's class and id: the entity is now
+      person/unrec_j956hax5, class Person, aligned to a ULAN group. The banner said "with 1 identifiers".
+
+    UNTANGLING (the owner: "Untangling is an important user journey, not just aligning")
+    - The most important finding of the day. "Same as" on a queued string merges the string's placeholder into the target.
+      "Undo last decision" takes the decision back but not the merge: the string is queued again yet "Currently" still
+      shows the wrong entity, the card says "the entity it points at is already aligned: ... Settle it onto ...", the
+      "Keep as local authority" label is prefilled with the wrong entity's label, and the string's spelling stays among the
+      wrong entity's names. So Undo is not a way back. Met on "Pearson" (12094, Same as Pearson/Prentice Hall, a US imprint
+      heading) and the same residue as the Derry placeholder in Derby this morning.
+    - The way out I found, as a reviewer: decide the string again onto the right thing from its card (search "Pearson
+      Education"; Accept the Wikidata British firm), then find the wrong entity by the site search, open its page, and
+      press "set aside" by the string's spelling under "Also". It works and the entity page is clear ("restore" is there),
+      but it takes three pages and the reviewer has to know the residue is there. The card that re-decides could offer
+      "also take 'Pearson' off Pearson/Prentice Hall", or Undo could do both.
+    - Where the right answer is not known, Undo then "Set aside with this question" leaves the string on the Set aside
+      list (good, clear) but still pointing at the wrong entity through the merged placeholder: "Houses of Parliament",
+      "Palace of Westminster" (Westminster Palace, a LoC subject heading for the building), "Arts Council Collection,
+      Hayward Gallery", "Alfa" (Nuova Alfa editoriale, perhaps a later firm), "Castle Ashby" (a place entity). There is no
+      way at the desk to give a string back its own placeholder.
+    - "An entity of the project is wrong" (Report the entity) is on the card only when the project's entities are among
+      the candidates. On "Penguin" the wrong entity is offered by the hint line, so it cannot be reported from the card.
+    - "Longman & Co." (LoC nr2002013989, the 19th-century style) holds "Longman" with records of 1990-98 in Harlow: the
+      modern Longman. The project has six or more Longman entities, one per LoC heading of the firm's successive names
+      (Longman, Brown, Green, and Longmans; Longmans, Green, and Co.; ...): whether one firm under successive names is one
+      entity or several is a modelling question.
+
+    PAGE TIMES (the owner: "notice where a page load is over-long and could benefit from query improvement, indexes")
+    Measured from the browser, warm, one at a time:
+    - /p/pmc/checks: 12.1 s for a 9 KB page. The worst by far.
+    - /p/pmc (project home): 3.1 s for 20 KB.
+    - A card: 350-620 ms (Penguin 415, Allen 501, Robinson 616); a card with a search 960 ms; the list page 890 ms.
+    - Site search "Murray": 930 ms. Entities list 220 ms; Variants 36 ms.
+
+    THE CARD, USED AS A REVIEWER WOULD (usability)
+    - Good: record-by-record on "Henry Overton" (5769: the 1717 catalogue is Overton I, the 1754 one his nephew) was
+      clear and satisfying: tick a record, a banner says the next press decides only it, the record then shows "In this
+      record it is ... take it back", and when the last record is decided the banner says the string has left the queue.
+    - When a record is ticked, the banner saying so is at the top of the page; down at the candidates, where the press is
+      made, nothing says that the press will decide only the ticked record. A line by the candidates would help.
+    - Ticking a record pushes the page down (the banner appears above the records): the next box moves under the pointer.
+    - The card's search box is filled with the string; clicking it puts the caret at the end, so typing a fuller name
+      appends ("MITMIT Press"). Selecting the text on focus would save a step.
+    - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
+      under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
+      the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the
+      choice with them. (After "Christie, Sharp and Harper" the same jump to its corporate-author string was helpful.)
+    - The first candidate row is tinted as the lead even when it is one of several level at 1.00 and plainly not it (a
+      South African artist "Murray, J." for the publisher "J Murray"): the tint draws the eye to it.
+    - "The same thing, written another way?" lists other strings by text alone; their records (place, years) are not
+      shown, so ticking one is on trust.
+    - For a short publisher name the card's candidates are mostly people of the surname (ULAN painters "Faber", "Bell",
+      "Murray"); the project's own firms of that name, the likely answer, are only in the hint line and its buttons, and
+      are absent when the hint does not fire ("MIT": had to search "MIT Press").
+    - Not obvious how to leave a by-time case (one firm renamed: "Lowell Libson Ltd" then "Lowell Libson & Jonny Yarker
+      Ltd"; "Seeley and Co." then "Seeley, Service & Co.") other than skipping: these are one body under two names, which
+      the project holds as two entities.
 
 **The owner's standing word** (2026-11-24 evening): "you can continue working through things yourself. You can
 store up interesting things for me to look at - but don't let something's presence on the list stop you from making

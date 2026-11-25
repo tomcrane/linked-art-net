@@ -359,6 +359,26 @@ it up with the owner:
     Alexander Mackenzie 1923-2002, John Kirby 1949-, Herbert Hughes-Stanton (after logging the misspelling: the log
     then search flow again worked well), Museum of Fine Arts (Boston 2, St Petersburg 1, by place), Norwich Castle
     Museum, Edward Lumley 1806-1874, William Wilson active 1769-1801, Charles H. Kelly (LoC, both spellings).
+- 2026-11-25 later still, Opus, the auctioneers again and a few more:
+  - The store's ULAN index answered most "Mr X" auctioneers once asked for auction houses of the surname: decided
+    Saunders (Robert), Richards, Hone (William), Herbert (J.D., Irish, for the Dublin sale), Cameron (Francis,
+    Scottish, for Edinburgh), Smallbone (James), Cheatle, "Messrs Robins" (Henry J. & George Henry Robins), Stewart
+    (William), Greenwood (both spellings). Several of the name, left: Abbott (William, John, Jonathan), Thomas,
+    Williams, Wilson (and an auctioneer of 1722), Jones (two Irish, one English), Eyre/Eyres, Wright/Wright James.
+  - The card search could not reach ULAN's "Greenwood" or "Stewart, William" (English auction house) among the many
+    people of those names; searching by the ULAN URI finds nothing ("Nothing found"). What worked: "Keep as local
+    authority" with the URI in "Known elsewhere (URL)", which says "Kept as a local authority, with the URL as its
+    identifier": the right result under the wrong heading ("None of these: it is real and local"). The desk wants
+    "I have its identifier: paste a URI" as its own plain action, and a kind filter on the search (group, person,
+    place; auction house, repository).
+  - "Keep as local authority" ignored the ticked "written another way" twin each time (Bowyers, Stewart): the desk
+    then jumps to the twin, whose card does not offer the entity just made, so it is searched for again.
+  - The desk's next-card jump "a spelling that was among that card's candidates" went from the auctioneer William
+    Stewart to "Stewart, Ann (author)", another person: a tangent, not a related string.
+  - A parse fault: "Stewart, Ann (author)" is read as "Stewart" (the forename dropped), so its candidates are all
+    bare Stewarts. The imported "..., Ann (role)" strings are right; only those parsed afresh show it. Skipped.
+  - "Greenwood" bare as a publisher of 1987 is Greenwood Press, not the auctioneers of the 1790s: the desk offered it
+    next after the auctioneers; the records' years told them apart.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

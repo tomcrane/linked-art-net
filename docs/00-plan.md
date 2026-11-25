@@ -418,6 +418,27 @@ it up with the owner:
   - Left: Galway (County) and Wexford (County) (TGN offers the towns; the county not on the card), Illinois (TGN's
     rows unclear; AAT's "Illinois", the people, first), Windermere (town or lake?), Antwerp, Walmer, Londonderry,
     Armagh, Down, Kerry (city, district or county?), and the form subdivisions.
+- 2026-11-25 later, Opus, form subdivisions and corporate authors:
+  - Form subdivisions decided to AAT: "Details" (details (components)), "Provenance" (history of ownership),
+    "Textbooks"; "Exhibition" to the project's "Exhibitions" (the card's "a misspelling, perhaps": a singular, not
+    a misspelling). Whether form subdivisions want AAT, LCSH's form headings, or none (they are the form of the item,
+    not its subject) is a modelling question.
+  - Dealers kept local, the firm named for the man, labelled with the place: Nicholas Shaw (London, England), Simon C.
+    Dickinson Ltd (London, England) (LoC has only Simon Dickinson Inc., the New York company), John Manning (London,
+    England) (seven numbered drawings exhibitions, 1950s-60s). Each time the publisher twin came separately.
+  - Body or building: Huis ten Bosch and the Royal Pavilion as corporate authors to the bodies (ULAN's repository; the
+    project's "Royal Pavilion, Art Gallery, and Museums"), not LCSH's buildings.
+  - "Ireland." and "Great Britain." as corporate authors: the records themselves hold "Ireland." and "Office of Public
+    Works." as two values (an export of one jurisdictional name in two parts); logged for the cataloguers ("Ireland.
+    Office of Public Works"), and the log-then-search offered LoC's heading at once.
+  - "Liverpool Biennial of Contemporary Art (8th : 2014)": the project holds six or more provisional entities labelled
+    "Liverpool Biennial of Contemporary Art", each classed person, each for one string; the edition is an event, the
+    Biennial a body. Set aside: merging the placeholders and mending their class is a job for the cluster screen.
+  - "Marlborough" (corporate author) by place: London to Marlborough Fine Art Limited, New York to the entity labelled
+    "Marlborough-Gerson Gallery" (its 1963-71 name; it holds "Marlborough Gallery Inc" too): a firm's label wants its
+    usual or present name, the old ones as alternatives.
+  - Douglas Young (& Co), auctioneers, 1920, with its publisher twin (ticked "written another way": "Same as" carries
+    the tick, as it should).
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

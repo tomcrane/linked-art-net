@@ -483,6 +483,26 @@ it up with the owner:
     assistant's work here is that lookup.
   - The list's "after=<id>" goes wrong: from persauthorfull "after=13764" and "after=13799" said "Nothing waiting for
     review in persauthorfull" (1,270 waiting); opened without "after", the list began at 13817.
+- 2026-11-25 night, Opus, whole subject headings (keywords, 925 queued), the largest first:
+  - Dealers in the catalogue's own form "Surname (City)": "Leger (London)" (43 records), "Koetser Ltd, Leonard
+    (London)", "Appleby (London)", "Weiss (London)", "Sabin, Frank T. (London)", "Mandell (Norwich)": the card reads
+    "(London)" as a place qualifier and offers places named Weiss, Appleby (Cumbria, South Africa ...); the project
+    already holds each dealer (Leger Galleries, Leonard Koetser Gallery, Appleby Brothers Limited, Weiss Gallery,
+    Frank T. Sabin (Firm), Mandell's Gallery): all decided by search. A rule: in subject headings "Name (City)" with a
+    city is the PMC form for a firm there.
+  - Country houses "House (County)" against LCSH's "House (Town, England)": the qualifier test cannot see that
+    Sussex holds Arundel, so each scores 0.85 and waits: decided Powis Castle, Arundel Castle, West Wycombe Park,
+    Uppark, Hever Castle, Fonthill Abbey, Syon House, Osborne House, Renishaw Hall, Lamport Hall, Dunster Castle,
+    Dudmaston, Bolsover Castle, Brodsworth Hall, Eastnor Castle, Kelmscott Manor, Red House. A county-contains-town
+    check through TGN would accept them; "Mount Stuart (Bute)" was offered only Mount Stuart, Townsville (Qld.).
+    A count of all such headings (reports/q-housequal.sql: a prefix match over the 10 million index rows) was still
+    running after many minutes: a count that needs the label index, not a LIKE.
+  - Artists in the PMC date style whose candidates were all "ruled out" for a date conflict, though they are the man:
+    A.C. Pugin (1769 vs ULAN's ca. 1762), M.A. Rooker (1743 vs 1746; ULAN's own description says 1743-1801), G.S.
+    Shepherd (d. 1858 vs 1861/1862), George Barret I (1732 vs ULAN 1728, whose description says "1728 or 1732"): all
+    four accepted with "accept anyway". The date test ignores the alternative dates in the record's own description,
+    and a birth "ca." a few years out. A reviewer would ask an assistant exactly this ("are these one man?"): the
+    sources' variant dates are what it would know or look up.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

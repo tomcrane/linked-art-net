@@ -709,6 +709,16 @@ it up with the owner:
     (exact-name) sit on entities under place/ holding the right LCSH subject heading plus an IMPORTED LUX place/
     identifier (from the old PMC data; not in the store, so not checkable here). The LUX place identifier on a topic
     looks wrong, and seems to be what classes the entity a place. HELD: check those LUX ids, and the class.
+  - THE "ONE RECORD EACH" PAIRING, measured (reports/q-onerecpair*.sql): 125 decisions by the vote rule rest on it
+    (keywords 63, main headings 27, publishers 18, corporate authors 17), 4 queued. A sample of 40 of the vote ones
+    REFINES the earlier worry: the person pairings hold (Devoto, Dixon, Darly, Bulman, Friston, Scannell, Hamerton:
+    unusual names), and so do the bodies. The two wrong pairings met at the desk (George Graham, Henry Duke) were on
+    queued cards, with common names. What the sample shows instead is labels and merges: "Sterling and Francine Clark
+    Art Institute (Williamstown ...)" on an entity labelled "... Library" (it holds the institute's and the library's
+    LoC records); "Leeds City Art Gallery" labelled bare "City Art Gallery"; entities holding two LoC records each
+    (Gemäldegalerie, Staatliche Museen Preussischer Kulturbesitz, Bethnal Green Museum, Modern Art Oxford) and
+    Galleria Borghese holding an LCSH subject besides. Those are for the duplicates/Compare check, not the pairing
+    rule. (The fragments Post, Avant, Still above are also vote decisions, but on TGN + LoC place names.)
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

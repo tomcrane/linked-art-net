@@ -214,6 +214,31 @@ it up with the owner:
     - Ticking a record pushes the page down (the banner appears above the records): the next box moves under the pointer.
     - The card's search box is filled with the string; clicking it puts the caret at the end, so typing a fuller name
       appends ("MITMIT Press"). Selecting the text on focus would save a step.
+- 2026-11-25 evening, Opus, publisher queue continued (565 to 435; 135 more decided through the card, each read
+  first, all read back in the store). More for Fable, as met:
+  - After a decision the desk goes to the same name in another field ("Next: 'Mr Stanley' in corpauthor"), which was
+    right, but that card does not offer the entity just chosen: the reviewer searches for it again. The card the desk
+    jumps to should lead with "Same as <the entity you just chose>".
+  - "Same as this" on a placeholder row does not name its target (the owner's rule: a button names its target).
+  - Auctioneers: "Mr Stanley" (61 sale catalogues, 1821-34) is George Stanley, a ULAN auction house, but the card's
+    candidates were painters named Stanley and LoC people; the card search "Stanley auction" found nothing (all
+    words must match) and only "George Stanley" found it. Where the records say medium: Auction catalogue, ULAN's
+    auction houses of the name could lead the candidates. Still queued for want of a first name or place: "Mr Wright",
+    "Mr Cameron", "Messrs Robins" (perhaps George Robins and his father), "Mr Hone", "Mr Stewart", "Mr Cauty", and
+    a score more with no place.
+  - "Fuller names in the indexes" (the section that adds Press, Books, Publishing ... to a short name) found the right
+    firm for Berg, Sphere and AMS: good, and worth keeping in view.
+  - Eponymous imprints: LoC has the person ("Tyas, Shaun"; "De la Mare, Giles"; "Watkins, Paul"; "Royce, Robert")
+    where the publisher is effectively his firm. "Shaun Tyas" was accepted as the person; the others left. Whether
+    the publisher is the person or a firm named for him is a modelling question.
+  - More duplicates met: "Sutton Publishing" (LoC) and "Alan Sutton Publishing" (provisional); "Sims Reed Gallery"
+    and the ULAN/LoC "Sims Reed Ltd" (so "Sims & Reed" and "Sims and Reed Ltd" left).
+  - What is left (435): short names of firms that need a decision on which firm or which years (Bell, Allen,
+    Macdonald, Seeley, Virtue, Lowell Libson, Blackwell, Viking, Rizzoli, Scala, Museum of Fine Arts, Norton,
+    Studio), the wrong-alignment cases above (Penguin, Cape, Garland, Pilgrim, Black Dog, Unicorn), auctioneers
+    without a first name, about 150 single-record names with no index entry (a local authority each, person or
+    group to be said), and the old-style "Surname, Forename (publisher)" strings where the candidate's dates do not
+    agree.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

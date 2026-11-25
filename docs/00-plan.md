@@ -395,6 +395,29 @@ it up with the owner:
     Books): a lookup an assistant could be given; web search did not find them.
   - The new place entities are labelled bare ("Amherst", "Augusta", "Burlington", "Hamilton"): the published label
     will not say which.
+- 2026-11-25 later, Opus, subject subdivisions (keywords:sub, 64 queued; surveyed by query, then card by card):
+  - Three kinds in the 64. More hyphen and name splits: "Colours (Great Britain)" (26 records, from "Royal Society of
+    Painters in Water-Colours (Great Britain)"), "garde (Aesthetics)" (Avant-garde), "Saxon", "François" (Louis-
+    François), "Marie" (Anne-Marie), "Mont" (Chamonix-Mont-Blanc), "talk" (Table-talk), "Museum" (Wallraf-Richartz-
+    Museum), "Neston" (Easton-Neston), "S" (from "Eliot, T. S.": split at the initials), "Kingsgate (Church ...)"
+    (St. Swithun-upon-Kingsgate). Titles of works from name-title headings: "De profundis" (Wilde), "Allegro"
+    (Milton), "White horse (Frick Collection)" (Constable): "Keep as local authority" has no class for a work, so
+    there is nowhere right to put them (set aside). Real subdivisions: places and forms.
+  - Places decided: Durham (England : County) (LoC; the card's lead was the city, and the county came only by a
+    search for "Durham county"), Cyprus and Pakistan (TGN with LoC, ticked together), Nepal, Genève, United Kingdom,
+    Québec (Province), Clwyd, South Australia, Llandaff (Cardiff), Yugoslavia, South Korea, Upper Canada (the
+    historic province, not today's Ontario, which the card offered), Prince Edward Island, Mantua (Mantova with LoC
+    Mantua (Italy); the card also offered AAT's "mantuas", a gown), Leicester, Victoria (Australia), Derby.
+  - A subdivision that follows a country or a place ("Art-Italy-Mantua", "Architecture-England-Durham (County)") is
+    a place: the position says so, and the candidates could be filtered by it (no AAT gowns, no persons).
+  - New country entities take TGN's vernacular label ("Pākistān", "Nepāl", "Han'guk" for South Korea): a label rule.
+  - Two project entities each for Derby ("Derby" with TGN and LoC, 3 strings; "Derby" with VIAF and LUX only) and
+    Leicester (two with TGN and LoC, perhaps city and district): the card's buttons "Same as Derby (England)" and
+    "Same as Derby (Derbyshire, England)" do not say which entity; I chose by the search row's identifiers. A pair for
+    the duplicates check, and a button-label fault.
+  - Left: Galway (County) and Wexford (County) (TGN offers the towns; the county not on the card), Illinois (TGN's
+    rows unclear; AAT's "Illinois", the people, first), Windermere (town or lake?), Antwerp, Walmer, Londonderry,
+    Armagh, Down, Kerry (city, district or county?), and the form subdivisions.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

@@ -121,6 +121,16 @@ it up with the owner:
       that is a kind ("(Plants)", "(Writing)") does not rule a candidate out, nor does a clashing place.
   13. The jump after a decision offers a different thing as "a spelling among that card's candidates" (another
       year's fair, another church, another Alexander Pope); a log for the cataloguers is not shown on the card again.
+  MEASURED IN THE SMALL HOURS (the entry "GAUGING THE PATTERNS"; queries in reports/, all read-only):
+  14. Wrong decisions already made by rules, the most urgent: the hyphen fragments put onto real places by the vote
+      and exact rules (Post 11 records, Still 11, Avant 10, Clayton, Lennox, Mackenzie, Narcissus onto Battles Wharf
+      ...: ~40 records), besides "Pre" (193) and the rest queued.
+  15. Minted with the wrong class: corporate authors 241 as persons, publishers 1,453; topics (Castles 43 records,
+      Prisons, Archaeology) under place/ through imported LUX place ids. 275 co-publisher strings ("A ; B ; C")
+      minted as one group each. 372 "House (County)" subject strings minted with nothing found (some LCSH has).
+  16. What rules could take off the desk, with the misses seen: 259 personal authors wait on one clear LoC candidate
+      alone (a sample of 30: ~24 right, 2 wrong, both caught by a record-year check); 65 active-dated headings have a
+      ULAN candidate stating the same years. Role variants are smaller than they felt (88 names, 205 strings).
 - 2026-11-25, Opus at the place queue (98 to about 30). HELD, by kind:
   - Athens (string 32959): 12 of 13 records decided by record (Georgia 3, Ohio 2, Greece 7). The 13th (record
     9608154332, Olkos, Greece) is outside the eight largest groups the card shows, so it cannot be ticked; regrouping

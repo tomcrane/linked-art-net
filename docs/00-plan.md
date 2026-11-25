@@ -275,6 +275,55 @@ it up with the owner:
     card had read the string as the name "pe", dropping the bracketed text.
   - "Not a name" on "Anonymous" (an 1829 sale with no auctioneer named): clear, one press, the banner says no entity
     stands for it. The same record's corporate-author "Anonymous" was not offered next.
+- 2026-11-25 night, Opus, the general queue (all fields), with the owner's question: where would a reviewer "ask an
+  AI" rather than do the legwork, and, doing that work myself as the assistant would, how useful is it and what does
+  the prompt need. About 25 cards: places, people, bodies, subjects, auctioneers.
+  - What went at the desk: "Department of the Environment" (with its publisher twin) to Great Britain's; R.H.A.
+    Gallagher Gallery; National Preservation Office (British Library, ULAN and LoC as one); "Mr Shuttleworth",
+    "Mr Cauty", "Mr Colchester", "Mr Wheatley", "Messrs Woodburn" to ULAN's auction houses; Bristol's City Museum;
+    John Gay the poet (1685-1732, by the record's keywords); William Waters to the project's Bill Waters (all four
+    records stained glass); Mary Bennett to LoC's 1927- (the fetched source: her Ford Madox Brown catalogue), and her
+    "(editor)" twin; "S.W." of Lassels' Voyage of Italy (1670) kept local as Simon Wilson, active 1670; James
+    Mackinnon (London dealer) kept local; Marble Hill House (both fields); Anglesey Abbey (the subject to LCSH's
+    building, the corporate author to ULAN's repository: a body and its building); John Wheatley 1892-1955;
+    Ogmore Castle. Set aside with a question: Mr Wright, Mr Tait, Mr Colchester (since decided), Mr Eyre and Son.
+    Logged: "Hall," (truncated). Skipped: SOGO, Winstanley and Co (Manchester), Margaret Smith, John Ford (Ackermann),
+    James Russell (Ravilious), Newcastle (Bridgend, Wales).
+  - Ask-an-AI, case by case (I did the assistant's work and judged it):
+    - Auctioneers ("Mr Wright", "Mr Tait", "Mr Eyre and Son" ...): the most useful case, but what it needs is not a
+      language model. Two lookups settled most: the record's series (the ZA run is London sales of 1824-34 by
+      Christie, Phillips, Foster, Stanley, Robins, Southgate ...: so "Mr Wright" is a London auctioneer though his
+      records give no place), and ULAN's auction houses of the surname (the Getty Provenance Index ones are in the
+      store: Colchester, Cauty T., Wheatley Benjamin, Tait Charles Bertram, Wright and Wright James, Eyre Thomas and
+      Eyres ...). The card buries these under the surname's painters. A rule (medium "Auction catalogue": offer the
+      surname's auction houses first) would do what the assistant did; the assistant is left the residue (two of the
+      name: which years?) and the question for someone who knows.
+    - People with common names (James Russell, John Ford, Margaret Smith, Mary Bennett): "Fetch what each heading was
+      made from" settled Mary Bennett at once (LoC's 670: her Ford Madox Brown); for the others the right person was
+      not among the card's candidates. The assistant's legwork is a title search in LoC/VIAF ("which heading was made
+      from Ravilious (2015)?"), which web search did not do well. Useful if it can search LoC by title; otherwise it
+      can only say "not in the indexes; keep local, labelled thus".
+    - A body or its building (Anglesey Abbey, Marble Hill, Westminster Palace earlier): a judgement the assistant can
+      explain well from the field and the records (subject of a guidebook: the building; corporate author: the body),
+      and where a reviewer would want a second opinion. A good case.
+    - Venue or institution (SOGO, 1988, publisher The British Art Fair): web search did not settle it; the assistant
+      would say "probably a Sogo store gallery in Japan; not settled" -- worth having only as a framed question.
+    - Exact LoC headings the local index lacks ("Newcastle (Bridgend, Wales)"): a live id.loc.gov label lookup, a tool.
+  - So the prompt, from the plan's 2026-11-15 shape (verdict; how sure; the evidence and which field told; what each
+    candidate is; the action proposed for the person to press; what was not checked), wants as input: the string and
+    field; every record's fields (not only the first few); the record's series or siblings (records sharing its
+    class, medium and years, with their decided entities); the card's candidates with their "made from" notes; the
+    project's entities of the name with where their records are; and tools: the store's indexes filtered by kind
+    (auction house, repository, place), LoC/VIAF search by title, and the web. Its answer should end in one of the
+    card's own actions (Accept a row, Same as, keep local with a label and class, set aside with a question), so the
+    person presses it and the decision stays theirs.
+  - Desk faults met on the way: "Skip for now" drops the field filter (from persauthorfull to all fields); after a
+    jump to another field the list goes on "after" the jumped id, past the end of the list chosen, and says "Nothing
+    waiting for review in persauthorfull" though the selector says 1,276 (the list does not wrap); a truncated
+    heading, once logged, stays on the desk ("The string is still to decide") with nothing a reviewer can do; the
+    hint offers the town "Colchester" for the auctioneer "Mr Colchester" (class not respected); "Keep as local
+    authority" for a common name ("Smith, Margaret") would draw every later Margaret Smith to it: the label wants a
+    qualifier the matcher respects.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

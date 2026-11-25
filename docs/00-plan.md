@@ -503,6 +503,58 @@ it up with the owner:
     four accepted with "accept anyway". The date test ignores the alternative dates in the record's own description,
     and a birth "ca." a few years out. A reviewer would ask an assistant exactly this ("are these one man?"): the
     sources' variant dates are what it would know or look up.
+- 2026-11-25 night, Opus, whole subject headings continued: the photographic archive's artists (keywords 897 to
+  ~880; ~25 cards):
+  - THE "op" DATE (the archive's "operated", i.e. active) is not read as a date: "Stewart, Charles Edward, op
+    1887-1938" against ULAN's "Scottish painter, active 1887-1938" says "dates not comparable" and "the string carries
+    nothing to check it by". The same for Priwitzer (op 1627-1647 = ULAN active 1627-1647), Jardine (op 1839-1841 =
+    active 1839-1841), Henry Duke (op 1864 = active 1864), Rogers (op 1848-1872 within active 1842-1883), Larkin,
+    Baldwin. Each was a plain accept that a rule reading "op"/"op." as "active" would have made. NOT COUNTED: how many
+    queued keywords strings carry ", op " (a count for Fable, on the strings table, not the index).
+  - THE "WHY IT WAITS" WORDING misleads on a dated string: "Gillespie, Michael, 1929-" is told "the string carries
+    something to check it by, a date or a place; this one does not". It does; the candidate has no date.
+  - FALSE PAIRINGS by "loc's one record of the name, as ulan's one is, neither at odds with the dates": George
+    Graham (ULAN English painter 1881-1949, paired with LoC "active 1896-1903", when he was 15) and Henry Duke (ULAN
+    British artist active 1864, paired with LoC n85368681, which "Fetch what each heading was made from" shows is the
+    author of Londons-nonsuch, 1668). Both decided "just this one" on ULAN. An undated LoC record is a weak partner;
+    fetching its sources undid both pairings in one press each. HELD: whether the pairing rule should want a date on
+    both sides.
+  - "names a record of this string" in the fetched sources is a false signal for a subject heading about a person:
+    it fired on LoC's John Middleton made from "Clothing in colonial Russian America" and "Marketing Scottish venison"
+    (the record is "John Middleton : Victorian, provincial architect") and on Gillespie, Michael. It seems to match the
+    name in the record's title, which a heading about the person always has. HELD: what that test should match.
+  - TWO BUTTONS, ONE ACT: Claude Lorrain's card had "Same as Lorrain, Claude, 1600-1682" twice, on the ULAN row and on
+    the LoC row, both onto the one entity that holds both. The rule "one button for one act" is broken where an
+    entity holds two candidate records; one button, on a row naming the entity, would do.
+  - Labels after accept: ULAN's bare "Scott, Samuel", "White, John", "Larkin, William" for famous men with namesakes;
+    Wikidata's natural-order "Charles Lamb" beside inverted LoC/ULAN forms. Keep as local's label box drops the
+    string's dates by default ("Cavalcanti, Giovanni"), so a local authority for a common name is ambiguous unless the
+    reviewer retypes them.
+  - SEARCH FOUND WHAT THE CANDIDATES DID NOT: Charles Lamb RHA (Wikidata Q21463237, "Irish painter (1893-1964)"; the
+    string says 1965, its own record's title 1964; LoC's only undated Charles Lamb is a Notre Dame archivist) and Forde
+    Abbey (Wikidata Q689615, the house; the only candidate offered was LoC's medieval abbey community c.1142-1539, which
+    the publisher string "Forde Abbey" of a 2006 garden guide already holds: a probable WRONG ALIGNMENT, not untangled).
+    Anglesey Abbey (Cambridgeshire) decided onto "Anglesey Abbey (Lode, England)", the house, not ULAN's repository.
+  - "Known elsewhere" refuses an archive's authority record (St John's College Cambridge, an AtoM site, for the
+    Florentine banker Giovanni Cavalcanti, 1480-1544, kept local): only listed namespaces pass, so the URL went into
+    the note. A reviewer's best source is often such a page.
+  - EDITIONS OF A FAIR: "Photo London (2015..2019 : London, England)", five strings, each a candidate on the others'
+    cards (all placeholders classed TYPE). LoC has the fair (no2016153200) and only the 1st (2015) edition: 2015
+    accepted to it, 2016-2019 kept local as events, each pointing to the fair in a note (there is no "edition of"
+    relation). The desk's jump after each said "a spelling that was among that card's candidates" and offered the
+    sibling year I had just kept, an easy wrong "Same as". The class list says "event (not usual in this field)" in
+    subject headings, where meetings, fairs and exhibitions are common.
+  - A MIS-INVERTED NAME: "Guy, Head, 1758-1800" is Guy Head the painter (the record's own title "Head, Guy"): decided
+    "Same as Head, Guy". Ask-an-AI: the inversion is a judgement it would make at once.
+  - LOG IT, THEN WHAT: "Tyrone, Thomas, 1634-1704" (string 40852) is very likely Thomas Tryon (1634-1703; LoC
+    n83051080), but research did not confirm it, so I logged it (spelling, should read "Tryon, Thomas, 1634-1703") and
+    skipped. The log's next step is good: the card searched for the corrected reading at once. But on coming back the
+    card shows nothing of the log: no "logged for the cataloguers", no suggested reading. The next reviewer repeats the
+    research. HELD: show a card's open log entries, and the suggested reading, on the card.
+  - Thomas Armstrong (1835-1911 in the catalogue; ULAN 1832-1911, born 1832 per Wikipedia and the Victorian Web)
+    accepted anyway: the catalogue's date is the slip. Two ULAN records for H.T. Baldwin ("active 1861",
+    500011251, and "flourished 1850-1874", 500672196) look like one man twice; accepted the exact one only.
+  - "just this one" sent the desk to the all-fields list (after=40369, no context): the same context drop as Skip.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

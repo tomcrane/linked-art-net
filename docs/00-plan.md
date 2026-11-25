@@ -558,6 +558,60 @@ it up with the owner:
     accepted anyway: the catalogue's date is the slip. Two ULAN records for H.T. Baldwin ("active 1861",
     500011251, and "flourished 1850-1874", 500672196) look like one man twice; accepted the exact one only.
   - "just this one" sent the desk to the all-fields list (after=40369, no context): the same context drop as Skip.
+- 2026-11-25 night, Opus, whole subject headings, a third run (~30 cards from the top of the list):
+  - THE after= FAULT, DIAGNOSED (by observation, not code): "Nothing waiting for review in keywords" came twice, each
+    time on after=<a string I had just skipped> (40852, 29104); after=<a decided string> always went on, and
+    after=29101 stepped over the skipped 29104 correctly. So a skipped string as the marker loses the place.
+  - WIDER THAN "op": "Turner, Daniel, fl 1782-1817" against ULAN's "British painter, active 1782-1817" is also
+    "dates not comparable": a flourished date is compared with ULAN's estimated life span (1752~-~1831), never with the
+    "active" dates its description states. And Morgan, John, 1823-1886 waited although ULAN's English painter
+    1823-1886 is the only candidate whose dates agree (the rest "not comparable"). HELD: whether "the one candidate
+    whose dates agree, the rest not comparable" may decide.
+  - THE "WHY IT WAITS" WORDING again: "Stafford House (London)" told the string carries no date or place, while the
+    row says "qualifier places it (London, England)"; "Lindner, 1854-1949" the same with "dates near".
+  - QUALIFIERS THAT ARE KINDS, NOT PLACES, should rule a candidate out: "White Ladies (Shropshire)" (White Ladies
+    Priory) was offered only Snowdrops, through LCSH's variant "White ladies (Plants)"; "Gothic style" only "Writing,
+    Gothic" through "Gothic style (Writing)". And a place qualifier that clashes is not a rule-out: "St. Peter's Church
+    (Helperthorpe, Yorkshire, England)" had eleven St Peter's churches level at 0.85 (Congleton, Chicago, Havelock
+    N.Z.).
+  - Country houses, more of the "House (County)" kind: Broadlands, Castle Hedingham, Holland House ("Middlesex",
+    a historic county: a TGN county check needs historic counties), Mompesson House, East Riddlesden Hall, all accepted
+    to LCSH. Moor Park (Hertfordshire) was offered only LCSH's Moor Park (England), whose variant is "Moor Park
+    (Surrey)": a different house; kept local. Helperthorpe's and Kirby Grindalythe's churches kept local.
+  - "Miles, Roy (London)" is the firm (corporate author Roy Miles Fine Paintings), not the man LoC offered at 1.00:
+    decided onto the firm by search (the "Name (City)" dealer form again).
+  - THE JUMP OFFERS A DIFFERENT THING AS "A SPELLING THAT WAS AMONG THAT CARD'S CANDIDATES": after Alexander Pope
+    (the poet) it offered "Pope, Alexander, 1763-1845"; after St. Andrew's Church (Kirby Grindalythe) "St. Andrew's
+    Church (Freckenham, England)"; after Photo London 2019 the other years. Right once (Franco--British exhibition
+    (1908 : London) after Franco-British Exhibition). It is a candidate list, not a spelling list; "Same as" from that
+    jump is the easy wrong press.
+  - RULED-OUT ROWS HAVE NO "together" BOX: Andrea Soldi (1682-1771 in the catalogue, from Ingamells; ULAN and LoC
+    c.1703-1771) had both authorities ruled out for the date; only one can be taken ("accept anyway"). The other went on
+    from the entity page's "Add a URI", with the LoC URI copied from the decided card: it worked ("3 identifiers that
+    cite one another"), but it is three screens for one act.
+  - A WHOLE-PAGE OF STORE ENTITIES HIDES THE INDEXES: searching "Church" for "Christian church" (4 records; the UK
+    keyword for the Church as an institution; LCSH "Church" is the heading) listed 38 of the project's own entities
+    containing the word and no index row at all; "Summers, S" listed every Summers in the store (the ", S" ignored).
+    id.loc.gov itself asks a browser to prove it is not a bot, so a reviewer (or an assistant) cannot check a label
+    there by script. "Christian church" skipped. Ask-an-AI: "what is the LCSH form of this old keyword" is a good
+    question for it, but it needs an exact-label lookup in the store's LCSH to check its answer.
+  - "Politics" (16 records, after a place: "England · Politics") skipped: AAT politics, LCSH Political science, LCSH
+    Politics, Practical and the hint's "Politics and government" all fit some way; which vocabulary a flattened
+    subdivision should go to is a policy question, HELD.
+  - "Hall," (string 13465, first in the keywords list): a bare surname. "Log it" said "Already on the cataloguers' list
+    for this", which the card had not shown; set aside with a question. A truncated name has no single action that parks
+    it: Log leaves it queued, so it needs Log and then Set aside.
+  - "Nibes, Richard Henry, 1954-" is ULAN's own variant of Richard Henry Nibbs (c.1816-1893): logged (the date looks a
+    slip), then decided onto the project's Richard Henry Nibbs from the log's search. Search rows say only "Same as",
+    without the entity's name.
+  - Also decided: Harcourt (1868 vs ULAN 1869-after 1923), Henry Alken (Sparrow's 1774-1850 vs 1785-1851, onto the
+    project's Henry Thomas Alken), Kasmin Limited (LoC's sources show the London gallery), Canadian Art Club, RIBA.
+    Drawings Collection (the "(London)" between body and unit cost it the rule's 0.90), Brighton Museum, Rome (City) in
+    art (to Rome (Italy)--In art; bare "Rome" is the ancient state), Gothic style (AAT Gothic (Medieval)), William
+    Turner of Walthamstow (ULAN has a second William Turner 1762-1835 with the variant "Turner, Of Walthamstow": a
+    possible ULAN duplicate), Summers, S., active 1739 (kept local), Franco-British Exhibition (1908) with LoC and
+    Wikidata ticked together from search: "Franco--British" is the hyphen fault in another form, the hyphen turned
+    into the subdivision mark.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

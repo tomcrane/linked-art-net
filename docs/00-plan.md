@@ -612,6 +612,42 @@ it up with the owner:
     possible ULAN duplicate), Summers, S., active 1739 (kept local), Franco-British Exhibition (1908) with LoC and
     Wikidata ticked together from search: "Franco--British" is the hyphen fault in another form, the hyphen turned
     into the subdivision mark.
+- 2026-11-25 night, Opus, main headings (keywords:head, 348 queued; ~20 cards from the top):
+  - A NAME THAT MATCHES AND IS WRONG: "Boyle family" (3 records, Hayward 1986, Docklands series) was offered LCSH's
+    "Boyle family" (the genealogical family, with "Boyl family", "Boyles family") at 1.00; the records are the artists'
+    group, already the project's "Boyle Family (Group of artists)". Decided onto that. A rule would have accepted the
+    family had it had a second source.
+  - A MISSPELLING THE RECORD ITSELF SHOWS: "David, Michael, 1943-" on "Michael Davis : drawings" (1996): logged as a
+    spelling ("Davis, Michael, 1943-"), and the log's search at once offered ULAN's "British painter, born 1943":
+    accepted. The smoothest log-then-choose so far. Ask-an-AI: "does the heading agree with the title?" is a check it
+    can make on every person heading; this one is cheap and certain.
+  - THE MISSPELLING HINT ON A REAL NAME: "Hertford (England)" carried "A misspelling, perhaps. This project has
+    Hereford, one letter away, on 21 records", though Hertford is the project's own entity, with TGN, LoC and
+    Wikidata. The hint should not show when the string matches an entity exactly.
+  - ULAN'S ESTIMATED LIFE SPAN TOO TIGHT: "Gillick, James, 1972-" against ULAN's "British artist, active 2003" was
+    "dates conflict (1972- vs 1973~-~2123)": the estimate assumes he was at least 30 when active. Accepted anyway, and
+    his "introduction by" author string onto him from the jump. The card then said '"Gillick, James" has merged into
+    Gillick, James', the same label twice.
+  - DATES WRONG IN THE CATALOGUE, logged then decided: Robert Louis Stevenson "1860-1894" (born 1850), onto the
+    project's entity. LoC's record for him shows as "R.L. スティーブンソン": a Japanese variant chosen as LoC's display label.
+    Dame Ethel Walker: LoC's record has birth "181-06-09" against its own label's 1861 (a LoC data fault, "the cluster
+    stands"); her whole-heading string then showed two identical "Same as Walker, Ethel" buttons (ULAN and LoC rows of
+    the one entity), as Claude Lorrain's did.
+  - WORKS AGAIN (no class for them): "Hogarth, William, 1697-1764. Rake's progress" (offered Hogarth the man at 0.85)
+    and "Ark (London, England : 1950)", the RCA magazine, offered AAT "arks (case furniture)" and "sheets (paper
+    artifacts)" at 1.00 through the Scandinavian variant "ark (sheet)". Foreign-language AAT variants match at full
+    score. Both skipped.
+  - "High" (2 records, Lubetkin and Goldfinger: high-rise housing): another hyphen fragment; its hint offered "High Barn
+    Cottage (Malham, England)". Skipped.
+  - COLLECTORS KEPT LOCAL: Donald and Barbara Cameron (the Cameron Collection of Baxter prints, Canada): twelve and six
+    LoC namesakes, "Fetch what each heading was made from" showed none cites the collection. Kept local, each labelled
+    "(collector of Baxter prints)" so the label tells them from the namesakes.
+  - Manchester (England), onto the five-record cluster (city and borough; the manor of Manchester, a LoC group, rightly
+    left out). The card also showed TWO MORE "Manchester" place entities, each a place of publication aligned only to
+    a different VIAF record (viaf 131384326, 137326658): probable duplicates for the duplicates check, not merged.
+  - Also: Concentration camps (AAT, which covers internment; the record is enemy aliens interned in Britain, so LCSH's
+    "Nazi concentration camps" would be wrong), Royal Academy Schools (London) onto "(Great Britain)", Henry Montagu
+    Roland (LoC, b. Heinrich Rosenbaum).
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

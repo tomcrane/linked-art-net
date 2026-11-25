@@ -239,6 +239,36 @@ it up with the owner:
     without a first name, about 150 single-record names with no index entry (a local authority each, person or
     group to be said), and the old-style "Surname, Forename (publisher)" strings where the candidate's dates do not
     agree.
+- 2026-11-25 late, Opus, an evidence run on the journeys not yet tried (the owner: "this alignment activity is about
+  perfecting the UI rather than delivering the data"; the process may be reset and rerun):
+  - By place, record by record: "Rizzoli" (Milano 13 to Rizzoli editore; New York 36 and the one without a place to
+    Rizzoli International) and "Museum of Fine Arts" (Boston 7, Houston 2): three presses each, the banners exact,
+    "the string has left the queue" at the end. Good. Rough edges: groups split on the place's spelling ("Boston",
+    "Boston, Mass", "Boston, Mass." are three groups; grouping by the place's decided entity would make one); a group
+    already decided still says "decide only these 5" in its heading; the banner says "1 record or group ticked" for a
+    group of 13; the hint offered four other Museums of Fine Arts but not Boston or Houston, where the records are.
+  - A tick carried across a card search (this morning's fix) held: "tick=by|place|London" in the URL, the box ticked
+    again, the press decided that group only.
+  - With a record ticked, only Accept, Same as and Accept-together carry the tick (Review.cshtml, the submit handler
+    matches handler=Accept|SameAs|AcceptTogether). "Keep as local authority", "Not a name", "Log it for the
+    cataloguers" and the set-asides decide or note the whole string though the banner is on screen. On "Pitman"
+    (London 1934 decided as Isaac Pitman & Sons; Petone NZ 1987 left) I did not press: the string is left half done.
+    Either those actions should take the ticks, or say plainly that they are for the whole string.
+  - "Keep as local authority": the class defaults to Person in the publisher field ("Amber Lane", a firm), and the
+    kept entity keeps the placeholder's path: "Amber Lane Press" is class Group at person/unrec_ppna3bd5, as
+    "Christie, Sharp and Harper" is. The published URI says person for a firm.
+  - Merge from the entity page ("Waterman Fine Art Ltd" into "...Limited"; the same records name one as author and
+    the other as publisher): one search, "Merge into this", "Merged.", a history line, then the waiting string settled
+    from the same page with "The ticked are this entity". Satisfying. But no confirmation and no unmerge; the
+    search lists a third, provisional "Waterman Fine Art Ltd" beside the two, with nothing to say which is which
+    beyond "aligned"/"provisional".
+  - Merge from the check ("Graphische Sammlung Albertina" and "Albertina"): the Compare page is the best screen met
+    today: what stands on each, the dead LUX identifier marked "leads nowhere" with a box to leave it out, a live
+    "1 identifier is left out", the survivor explained. After the merge it lands on the entity page, not back on the
+    check's list where the reviewer was working. The duplicates check grew from 150 to 161 pairs during the day's
+    desk work: whether desk Accepts make duplicates (an authority record accepted where a project entity holds the
+    same thing from another source) wants a count.
+  - Checks index 8.4 s this time (12.1 s earlier); the duplicates check 4.5 s.
     - After a decision the desk can jump to the same name in another field ("Next: 'Country life' in keywords:head, also
       under this name"): I was working the publisher list and landed on a subject heading. Useful sometimes, but it takes
       the reviewer out of the list they chose without asking; a link "also waiting in keywords:head" would leave the

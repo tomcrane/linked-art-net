@@ -76,7 +76,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     /// <summary>Drops every table of the store. For disposable test databases only.</summary>
     internal async Task DropAllAsync(CancellationToken ct = default)
     {
-        await using var cmd = _db.CreateCommand("drop table if exists decisions, entity_equivalents, overrides, source_strings, authority_records, authority_sources, runs, entities, schema_version, getty_staging, triple_staging, memberships, notes, projects, users cascade; do $$ declare t text; begin for t in select tablename from pg_tables where schemaname = current_schema() and tablename like 'triple_staging_%' loop execute 'drop table if exists ' || quote_ident(t); end loop; end $$");
+        await using var cmd = _db.CreateCommand("drop table if exists decisions, hyphenated_names, entity_equivalents, overrides, source_strings, authority_records, authority_sources, runs, entities, schema_version, getty_staging, triple_staging, memberships, notes, projects, users cascade; do $$ declare t text; begin for t in select tablename from pg_tables where schemaname = current_schema() and tablename like 'triple_staging_%' loop execute 'drop table if exists ' || quote_ident(t); end loop; end $$");
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
@@ -778,6 +778,42 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             $"select {StringColumns} from source_strings s where s.dataset = @dataset and s.context = any(@contexts) " +
             "and not exists (select 1 from source_string_parts p where p.part_id = s.id and not " + StaleParent + ") order by s.context, s.raw");
         Add(cmd, "dataset", dataset); Add(cmd, "contexts", partContexts.ToArray());
+        var list = new List<SourceString>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(ReadString(r));
+        return list;
+    }
+
+    public async Task<IReadOnlyList<HyphenatedName>> HyphenatedNamesAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("select written, reviewer, added_at from hyphenated_names where dataset = @dataset order by normalised");
+        Add(cmd, "dataset", dataset);
+        var list = new List<HyphenatedName>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) list.Add(new HyphenatedName(dataset, r.GetString(0), r.IsDBNull(1) ? null : r.GetString(1), r.GetFieldValue<DateTimeOffset>(2)));
+        return list;
+    }
+
+    public async Task PutHyphenatedNameAsync(string dataset, string written, string? reviewer, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("insert into hyphenated_names (dataset, normalised, written, reviewer) values (@dataset, @normalised, @written, @reviewer) on conflict do nothing");
+        Add(cmd, "dataset", dataset); Add(cmd, "normalised", HyphenatedName.Key(written)); Add(cmd, "written", written.Trim()); Add(cmd, "reviewer", (object?)reviewer ?? DBNull.Value);
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<bool> RemoveHyphenatedNameAsync(string dataset, string written, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand("delete from hyphenated_names where dataset = @dataset and normalised = @normalised");
+        Add(cmd, "dataset", dataset); Add(cmd, "normalised", HyphenatedName.Key(written));
+        return await cmd.ExecuteNonQueryAsync(ct) > 0;
+    }
+
+    public async Task<IReadOnlyList<SourceString>> StringsCarryingNameAsync(string dataset, IReadOnlyCollection<string> contexts, string written, string separator, CancellationToken ct = default)
+    {
+        // each hyphen of the name may stand in the text as the separator or as itself; the name is met at a word's edge
+        var pattern = @"(^|[^\w])" + string.Join("(" + Regex.Escape(separator) + "|-)", written.Trim().Split('-').Select(Regex.Escape)) + @"($|[^\w])";
+        await using var cmd = _db.CreateCommand($"select {StringColumns} from source_strings s where s.dataset = @dataset and s.context = any(@contexts) and s.raw ~* @pattern order by s.id");
+        Add(cmd, "dataset", dataset); Add(cmd, "contexts", contexts.ToArray()); Add(cmd, "pattern", pattern);
         var list = new List<SourceString>();
         await using var r = await cmd.ExecuteReaderAsync(ct);
         while (await r.ReadAsync(ct)) list.Add(ReadString(r));

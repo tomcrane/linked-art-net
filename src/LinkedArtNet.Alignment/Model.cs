@@ -257,6 +257,13 @@ public sealed record AuthorityRecord(string Uri, string Source, string? Label, I
 public sealed record Run(string Id, string Dataset, string? ManifestJson, string? DumpsJson, DateTimeOffset StartedAt, DateTimeOffset? FinishedAt, string? GitSha, string? CountsJson, string? Report);
 
 /// <summary>A curated answer for a string: this normalised text in this dataset (and context, or any context when null) is this entity or authority URI. Always wins.</summary>
+/// <summary>A name written with a hyphen that a compound heading's split broke, joined at the desk: read joined wherever a heading of the dataset carries it.</summary>
+public sealed record HyphenatedName(string Dataset, string Written, string? Reviewer, DateTimeOffset AddedAt)
+{
+    /// <summary>How a name is compared: lower case, no surrounding space.</summary>
+    public static string Key(string written) => written.Trim().ToLowerInvariant();
+}
+
 public sealed record Override(string Dataset, string? Context, string Normalised, string Target, string Source, string? Note = null);
 
 /// <summary>A string with the decision a run made about it.</summary>

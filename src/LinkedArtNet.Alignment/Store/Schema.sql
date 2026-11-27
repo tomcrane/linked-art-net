@@ -350,3 +350,17 @@ create unique index if not exists record_decisions_one_valid on record_decisions
 create index if not exists record_decisions_entity on record_decisions (entity_id);
 
 insert into schema_version (version) values (14) on conflict do nothing;
+
+-- version 15 (2026-11-27): names written with a hyphen that a compound heading's split broke, said so at the desk. Where a source writes
+-- one mark for the subdivision separator and for a hyphen ("Drury--Lowe family"), and no index holds the name, a reviewer joins it once
+-- and the splitter reads it joined wherever it stands. A decision of a person's, kept by name; also the report of hyphens the export lost.
+create table if not exists hyphenated_names (
+    dataset     text not null,
+    normalised  text not null,
+    written     text not null,
+    reviewer    text,
+    added_at    timestamptz not null default now(),
+    primary key (dataset, normalised)
+);
+
+insert into schema_version (version) values (15) on conflict do nothing;

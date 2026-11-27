@@ -88,6 +88,14 @@ public interface IAlignmentStore
     Task<int> ClearStalePartsAsync(string dataset, CancellationToken ct = default);
     /// <summary>Strings of the part contexts given that no heading decided as a compound carries any more (a heading with no standing decision counts as carrying, a heading decided whole does not): fragments of a split since repaired, never a string of the catalogue's own.</summary>
     Task<IReadOnlyList<SourceString>> OrphanPartStringsAsync(string dataset, IReadOnlyCollection<string> partContexts, CancellationToken ct = default);
+    /// <summary>The names a reviewer has joined at a hyphen, for the splitter.</summary>
+    Task<IReadOnlyList<HyphenatedName>> HyphenatedNamesAsync(string dataset, CancellationToken ct = default);
+    /// <summary>Records a joined name (again is no change).</summary>
+    Task PutHyphenatedNameAsync(string dataset, string written, string? reviewer, CancellationToken ct = default);
+    /// <summary>Takes a joined name back. True when there was one.</summary>
+    Task<bool> RemoveHyphenatedNameAsync(string dataset, string written, CancellationToken ct = default);
+    /// <summary>The strings of the contexts given whose text carries the name with its hyphens written as the separator or as hyphens ("Drury--Lowe family" for "Drury-Lowe").</summary>
+    Task<IReadOnlyList<SourceString>> StringsCarryingNameAsync(string dataset, IReadOnlyCollection<string> contexts, string written, string separator, CancellationToken ct = default);
     /// <summary>Deletes strings outright, with their decisions, examples and part rows (the cascade); for fragments only, never for a string the catalogue wrote.</summary>
     Task<int> DeleteStringsAsync(IReadOnlyCollection<long> stringIds, CancellationToken ct = default);
     /// <summary>The parts of a string, in order; empty when it has none.</summary>

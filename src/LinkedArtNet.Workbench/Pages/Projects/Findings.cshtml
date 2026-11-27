@@ -67,3 +67,22 @@ else
     <button type="submit" class="secondary" @(Count(Finding.Open) == "0" ? "disabled" : "")>Export the open rows as a spreadsheet</button>
     <span class="small muted">A CSV file, a row a finding, for a cataloguer who works from a file. The rows exported are marked sent.</span>
 </form>
+
+@if (Model.HyphenatedNames.Count > 0)
+{
+    <h2 style="margin-top:2rem">Hyphens the export lost</h2>
+    <p class="small muted">Not the catalogue's errors: these names have their hyphen in the catalogue, and the export wrote it as the mark that breaks a heading into its subdivisions. Each was said at the desk to be one name, and is read so. For whoever makes the next export.</p>
+    <table>
+        <thead><tr><th>Name</th><th>Said by</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var n in Model.HyphenatedNames)
+        {
+            <tr>
+                <td><strong>@n.Written</strong></td>
+                <td class="small">@n.AddedAt.ToString("yyyy-MM-dd")<br /><span class="muted">@n.Reviewer</span></td>
+                <td class="small"><form method="post" asp-page-handler="Unjoin" asp-route-status="@Model.Status" class="inline"><input type="hidden" name="name" value="@n.Written" /><button type="submit" class="quiet small" title="Its headings are read again, broken at the mark as before">Not one name after all</button></form></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

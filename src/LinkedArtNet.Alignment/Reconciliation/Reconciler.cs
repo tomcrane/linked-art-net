@@ -194,6 +194,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             Time("second-pass-evidence", sw);
             progress?.Report($"second pass: the reasons kept on {kept} strings still queued");
         }
+        // a heading this run read whole keeps no rows of the split it once had (2026-11-27: such rows kept "Pre" at the desk on 193 records)
+        await store.ClearStalePartsAsync(dataset, ct);
         return new ReconcileReport(strings.Count, overridden, matched, accepted, queued, minted, deferred, skipped, exactSingle, lists, parts, single, compounds, decidedEarlier, reconsidered, settled, rounds);
     }
 
@@ -411,12 +413,20 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// </summary>
     private async Task<StringReading> WithHyphenatedHeadAsync(SourceString s, StringReading reading, CancellationToken ct)
     {
-        if (reading.Shape != PartsShape.Compound || reading.Parts is not { Count: > 1 } parts || parts[0].Contains(' ') || reading.PartsRule is not { } pr) return reading;
-        if (!await HeadingResplit.KnownHyphenatedAsync(store, parts[0], parts[1], ct)) return reading;
-        var joined = new List<string> { parts[0] + "-" + parts[1] }; joined.AddRange(parts.Skip(2));
+        if (reading.Shape != PartsShape.Compound || reading.Parts is not { Count: > 1 } parts || reading.PartsRule is not { } pr) return reading;
+        IReadOnlyList<string> joined = parts;
+        if (!parts[0].Contains(' ') && await HeadingResplit.KnownHyphenatedAsync(store, parts[0], parts[1], ct))
+            joined = [parts[0] + "-" + parts[1], .. parts.Skip(2)];
+        // and the names a reviewer has joined in this dataset, wherever in the heading they stand (2026-11-27: "Drury--Lowe family",
+        // "Guiguer, Louis--François": nothing in the text or the indexes says so, and it is said once at the desk)
+        if (joined.Count > 1) joined = HeadingResplit.JoinNamed(joined, await HeadingResplit.NamesAsync(store, s.Dataset, ct));
+        if (joined.Count == parts.Count) return reading;
         var rule = _options.Contexts.TryGetValue(s.Context, out var r) ? r : _options.DefaultContext;
         return StringReading.Read(s with { Raw = string.Join(pr.Separator, joined) }, rule, ParserFor(rule.AgentProfile));
     }
+
+    /// <summary>The string as the reconciler reads it with its hyphenated names joined (the indexes' and the desk's), for a pass that asks what a heading's parts are now.</summary>
+    public Task<StringReading> ReadJoinedAsync(SourceString s, CancellationToken ct = default) => WithHyphenatedHeadAsync(s, Read(s), ct);
 
     /// <summary>
     /// A subdivision that is a place is placed by its sibling parts (finding 114, 2026-11-08, "Birmingham" in keywords:sub under

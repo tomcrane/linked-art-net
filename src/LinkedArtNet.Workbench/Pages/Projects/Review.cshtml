@@ -835,6 +835,21 @@ else
        leaves a record that a list shows. Not a decision: the string stays to be decided, or is set aside saying why *@
     var cardEntities = item.Entities.Values.Where(f => !f.IsPlaceholder).Select(f => f.Entity).Concat(item.Entity is { Status: not EntityStatus.Provisional } own ? [own] : Array.Empty<LinkedArtNet.Alignment.Entity>())
             .Concat(Model.EntityMatches.Where(e => e.Status != EntityStatus.Provisional).Take(8)).DistinctBy(e => e.Id).ToList();
+    @if (Model.HyphenJoins.Count > 0)
+        {
+            <div class="card" id="hyphen" style="margin-top:1.5rem">
+                <h3 style="margin-top:0">It is half of a hyphenated name</h3>
+                <p class="small muted">The source writes one mark for a hyphen and for the break before a subdivision, and this heading was broken at a hyphen. Say so once: the name is read joined wherever it stands, the headings are decided again now, and this half leaves the desk.</p>
+                @foreach (var join in Model.HyphenJoins.Take(4))
+                {
+                    <form method="post" asp-page-handler="JoinHyphen" asp-route-method="@Model.Method" asp-route-context="@Model.Context" style="margin-top:.6rem">
+                        <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="name" value="@join.Name" />
+                        <p class="small" style="margin:0">In @foreach (var h in join.Headings.Take(3)) { <code>@h</code><text> </text> }@if (join.Headings.Count > 3) { <span class="muted">and @(join.Headings.Count - 3) more</span> }</p>
+                        <div class="actions"><button type="submit" class="secondary">"@join.Name" is one name</button></div>
+                    </form>
+                }
+            </div>
+        }
     <h2 id="ways-out">Can't decide it as it stands?</h2>
     <p class="small muted">Say why, and it is recorded where someone will see it. None of these decides the string.</p>
     <div class="grid">

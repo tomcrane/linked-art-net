@@ -68,6 +68,9 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     /// <summary>Names the project uses that are one letter from this string's: a hint for a misspelling ("Londo").</summary>
     public IReadOnlyList<(string Id, string Label, int Records)> NearSpellings { get; private set; } = [];
 
+    /// <summary>For a part of a compound heading: the names it would make with the part beside it were the mark between them a hyphen, each with the headings it is read from. Offered as "this is half of a hyphenated name" (2026-11-27).</summary>
+    public IReadOnlyList<(string Name, IReadOnlyList<string> Headings)> HyphenJoins { get; private set; } = [];
+
     public long Remaining => Queue.Where(r => Context is null || r.Context == Context).Sum(r => r.Count);
 
     public async Task OnGetAsync(string? message = null)
@@ -101,6 +104,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         if (Item is not null)
         {
             foreach (var d in await Services.Store.RecordDecisionsForStringAsync(Item.String.Id, HttpContext.RequestAborted)) RecordDecisions[d.System + "|" + d.RecordId] = d;
+            if (HeadingResplit.PartContexts(Project.Reconciler.Options).Contains(Item.String.Context)) HyphenJoins = await new HeadingResplit(Services.Store).ProposedJoinsAsync(Item.String, HttpContext.RequestAborted);
             if (Item.Decision.Method == DecisionMethod.Queued)
             {
                 Mates.AddRange(Item.Siblings.Concat(Item.Evidence.Groups.SelectMany(g => g.Members).Where(m => m.IsStore && Item.Entities.TryGetValue(m.Uri, out var f) && f.IsPlaceholder)
@@ -252,6 +256,25 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         return string.IsNullOrWhiteSpace(shouldRead)
             ? Flash(said + " The string is still to decide.", new { dataset = Dataset, method = Method, context = Context, id })
             : FlashAt(said + $" Now choose what it should have been, from the results for \"{shouldRead.Trim()}\" below.", new { dataset = Dataset, method = Method, context = Context, id, q = shouldRead.Trim() }, "something-else");
+    }
+
+    /// <summary>
+    /// A way out for half of a hyphenated name ("Drury" of "Drury--Lowe family"): the name is kept as the reviewer's, every heading that
+    /// carries it is read again with it joined and decided now, and the fragment goes with its card. The desk goes on.
+    /// </summary>
+    public async Task<IActionResult> OnPostJoinHyphenAsync(long id, string name)
+    {
+        var part = await Services.Store.GetSourceStringAsync(id, HttpContext.RequestAborted);
+        if (part is null || part.Dataset != Dataset) return NotFound();
+        var resplit = new HeadingResplit(Services.Store);
+        if (!(await resplit.ProposedJoinsAsync(part, HttpContext.RequestAborted)).Any(j => string.Equals(j.Name, name, StringComparison.OrdinalIgnoreCase)))
+            return Flash("That name is not one this string's headings would make.", new { dataset = Dataset, method = Method, context = Context, id });
+        var read = await resplit.JoinNameAsync(Dataset, name, Reviewer, Project.Reconciler, HttpContext.RequestAborted);
+        var gone = await Services.Store.GetSourceStringAsync(id, HttpContext.RequestAborted) is null;
+        var said = $"\"{name}\" is kept as one name: {read} heading{(read == 1 ? "" : "s")} read again with it joined.";
+        return gone
+            ? Flash(said + " This string was only its half, and has gone from the desk.", new { dataset = Dataset, method = Method, context = Context, after = id })
+            : Flash(said + " Other headings still carry this string, so it stays.", new { dataset = Dataset, method = Method, context = Context, id });
     }
 
     /// <summary>A way out: set aside, as different things in different records or with a question. The desk goes on.</summary>

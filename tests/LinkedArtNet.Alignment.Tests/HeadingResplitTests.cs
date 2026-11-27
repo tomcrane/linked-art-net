@@ -127,16 +127,76 @@ public class HeadingResplitTests(PostgresFixture pg)
         var raph = await pg.Store.CollectAsync(ds, "keywords:sub", "Raphaelitism");
         await pg.Store.LinkPartAsync(wholeNow.Id, 0, pre.Id, "head"); await pg.Store.LinkPartAsync(wholeNow.Id, 1, raph.Id, "sub");
         await pg.Store.LinkPartAsync(wholeNow.Id, 2, england.Id, "sub"); // a part other headings carry: its row goes, the string stays
-        await reconciler.RunAsync(ds);
-        Assert.NotEqual(DecisionMethod.Composite, (await pg.Store.DecisionForAsync(wholeNow.Id))!.Method);
+        await pg.Store.DecideAsync(wholeNow.Id, concept.Id, DecisionMethod.ExactSingle); // decided whole, by an earlier run
         Assert.Equal(3, (await pg.Store.PartsAsync(wholeNow.Id)).Count);
         var (fragments, _, _) = await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: false);
         Assert.Equal([pre.Id, raph.Id], fragments.Select(f => f.Id).Order());
         Assert.Equal(3, (await pg.Store.PartsAsync(wholeNow.Id)).Count); // the listing writes nothing
         await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: true);
         Assert.Empty(await pg.Store.PartsAsync(wholeNow.Id));
+        // and a reconcile clears such rows itself, so they do not gather again
+        var again = await pg.Store.CollectAsync(ds, "keywords", "Pre--Raphaelitism in literature");
+        var pre2 = await pg.Store.CollectAsync(ds, "keywords:head", "Pre");
+        await pg.Store.LinkPartAsync(again.Id, 0, pre2.Id, "head");
+        await reconciler.RunAsync(ds);
+        Assert.NotEqual(DecisionMethod.Composite, (await pg.Store.DecisionForAsync(again.Id))!.Method);
+        Assert.Empty(await pg.Store.PartsAsync(again.Id));
+        await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: true);
         Assert.Null(await pg.Store.DecisionForAsync(pre.Id));
         Assert.NotNull(await pg.Store.DecisionForAsync(england.Id));
         Assert.NotEmpty(await pg.Store.PartsAsync(art.Id)); // a compound's rows are not touched
+    }
+
+    /// <summary>A hyphenated name no rule or index can tell ("Drury--Lowe family" beside "Abbeys--England") is said once at the desk, kept in the store, and read joined wherever it stands (2026-11-27).</summary>
+    [PostgresFact]
+    public async Task A_name_joined_at_the_desk_is_read_joined_wherever_it_stands()
+    {
+        Assert.Equal("Louis-François", HeadingResplit.NameAcross("Guiguer, Louis", "François"));
+        Assert.Equal("Water-Colours", HeadingResplit.NameAcross("Royal Society of Painters in Water", "Colours (Great Britain)"));
+        Assert.Equal("Chamonix-Mont", HeadingResplit.NameAcross("Musée Alpin (Chamonix", "Mont"));
+        Assert.Equal("Lennox-Boyd", HeadingResplit.NameAcross("Lennox", "Boyd, Christopher A."));
+        IReadOnlySet<string> names = new HashSet<string> { "drury-lowe", "water-colours", "wallraf-richartz", "wallraf-richartz-museum" };
+        Assert.Equal(["Drury-Lowe family"], HeadingResplit.JoinNamed(["Drury", "Lowe family"], names));
+        Assert.Equal(["Royal Society of Painters in Water-Colours (Great Britain)", "Exhibitions"], HeadingResplit.JoinNamed(["Royal Society of Painters in Water", "Colours (Great Britain)", "Exhibitions"], names));
+        Assert.Equal(["Wallraf-Richartz-Museum", "Catalogs"], HeadingResplit.JoinNamed(["Wallraf", "Richartz", "Museum", "Catalogs"], names));
+        Assert.Equal(["Abbeys", "England"], HeadingResplit.JoinNamed(["Abbeys", "England"], names));
+
+        var ds = "hn-" + Guid.NewGuid().ToString("N")[..5];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "lcsh"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
+        var resplit = new HeadingResplit(pg.Store);
+        var family = await pg.Store.CollectAsync(ds, "keywords", "Drury--Lowe family");
+        var man = await pg.Store.CollectAsync(ds, "keywords", "Drury--Lowe, P J B--Art collections");
+        var other = await pg.Store.CollectAsync(ds, "keywords", "Abbeys--England");
+        await reconciler.RunAsync(ds);
+        var drury = (await pg.Store.PartsAsync(family.Id))[0];
+        Assert.Equal("Drury", drury.Raw);
+        Assert.Equal(2, (await pg.Store.ParentsAsync(drury.Id)).Count);
+
+        // the card of the half offers the name, read from its headings; the other half's card offers the same
+        var offered = await resplit.ProposedJoinsAsync(drury);
+        Assert.Equal("Drury-Lowe", Assert.Single(offered).Name);
+        Assert.Equal(2, offered[0].Headings.Count);
+        Assert.Equal("Drury-Lowe", Assert.Single(await resplit.ProposedJoinsAsync((await pg.Store.PartsAsync(family.Id))[1])).Name);
+        Assert.Equal("Abbeys-England", Assert.Single(await resplit.ProposedJoinsAsync((await pg.Store.PartsAsync(other.Id))[0])).Name); // offered, never assumed
+
+        // said once: both headings are read again, the family whole and the man's with its subdivision, and the halves go
+        Assert.Equal(2, await resplit.JoinNameAsync(ds, "Drury-Lowe", "tester", reconciler));
+        Assert.Empty(await pg.Store.PartsAsync(family.Id));
+        Assert.NotEqual(DecisionMethod.Composite, (await pg.Store.DecisionForAsync(family.Id))!.Method);
+        Assert.Equal(["Drury-Lowe, P J B", "Art collections"], (await pg.Store.PartsAsync(man.Id)).Select(p => p.Raw));
+        Assert.Null(await pg.Store.GetSourceStringAsync(drury.Id));
+        Assert.Equal(["Abbeys", "England"], (await pg.Store.PartsAsync(other.Id)).Select(p => p.Raw));
+        Assert.Equal("tester", Assert.Single(await pg.Store.HyphenatedNamesAsync(ds)).Reviewer);
+        // a heading met later is read joined from the start, and the pass over the headings finds nothing to change
+        var later = await pg.Store.CollectAsync(ds, "keywords", "Drury--Lowe family--Art collections");
+        await reconciler.RunAsync(ds);
+        Assert.Equal(["Drury-Lowe family", "Art collections"], (await pg.Store.PartsAsync(later.Id)).Select(p => p.Raw));
+        Assert.Empty((await resplit.DryRunAsync(ds)).Changes);
+
+        // taken back: the headings are split at the mark again
+        Assert.Equal(3, await resplit.UnjoinNameAsync(ds, "Drury-Lowe", reconciler));
+        Assert.Equal(["Drury", "Lowe, P J B", "Art collections"], (await pg.Store.PartsAsync(man.Id)).Select(p => p.Raw));
+        Assert.Empty(await pg.Store.HyphenatedNamesAsync(ds));
     }
 }

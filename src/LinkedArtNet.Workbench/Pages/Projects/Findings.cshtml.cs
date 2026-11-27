@@ -20,11 +20,22 @@ public sealed class FindingsModel(ProjectServices services, ProjectAccess access
     public string? Message { get; private set; }
     public string Showing => string.IsNullOrWhiteSpace(Status) ? Finding.Open : Status;
 
+    /// <summary>The names joined at a hyphen at the desk: not the cataloguers' errors (the catalogue has the hyphen; the export lost it), listed here for whoever makes the next export.</summary>
+    public IReadOnlyList<LinkedArtNet.Alignment.HyphenatedName> HyphenatedNames { get; private set; } = [];
+
     public async Task OnGetAsync()
     {
         Message = TakeFlash();
+        HyphenatedNames = await Services.Store.HyphenatedNamesAsync(Dataset, HttpContext.RequestAborted);
         Counts = await Services.Store.FindingCountsAsync(Dataset, HttpContext.RequestAborted);
         Findings = await Services.Store.FindingsAsync(Dataset, Showing == "all" ? null : Showing, 500, HttpContext.RequestAborted);
+    }
+
+    /// <summary>Take a joined name back: its headings are read again, split as the rules alone split them.</summary>
+    public async Task<IActionResult> OnPostUnjoinAsync(string name)
+    {
+        var read = await new LinkedArtNet.Alignment.Reconciliation.HeadingResplit(Services.Store).UnjoinNameAsync(Dataset, name, Project.Reconciler, HttpContext.RequestAborted);
+        return Flash($"\"{name}\" is no longer kept as one name; {read} heading{(read == 1 ? "" : "s")} read again.", new { dataset = Dataset, status = Status });
     }
 
     public async Task<IActionResult> OnPostStatusAsync(long id, string status, string? note)

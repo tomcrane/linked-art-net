@@ -107,13 +107,30 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   "Wallraf--Richartz--Museum", "T--S". Nothing in the text tells "Drury--Lowe family" from "Abbeys--England". PROPOSED
   (for the owner): a list of hyphenated names in the project's manifest that the splitter consults as it does the
   indexes, added to from the part's card by one action ("this is half of a hyphenated name": the desk's missing
-  "split wrongly"). Not built.
+  "split wrongly"). BUILT the same day, on the owner's word and shaped by his questions ("how big that could grow in
+  other collections"; "data that could be grown in the workbench? i.e., stored in the db?"; "feeds into the list for
+  the cataloguers but allows alignment to proceed?"): a table of the store's (`hyphenated_names`, schema 15), by
+  name and not by heading, a reviewer's decision with who and when. On the card of a part of a compound heading: "It
+  is half of a hyphenated name", with the heading it was read from and one button, '"Drury-Lowe" is one name' (a head
+  with the part after it, a subdivision with the part before; the name is the last word of the one and the first of
+  the other). The press keeps the name, reads again every heading that carries it and decides it then
+  (`HeadingResplit.JoinNameAsync`, a run of its own), and removes the halves. The reconciler and the re-split pass
+  read the names as they read the indexes (rule "n"). The names are listed on the cataloguers' page under "Hyphens
+  the export lost", said there NOT to be the catalogue's errors (the catalogue has the hyphen; the export wrote it as
+  the separator), each with "Not one name after all". It stays small: only a source that writes one mark for both
+  needs it, and only for names no rule or index tells. At the desk as `claude`: 16 names (Drury-Lowe, Kay-
+  Shuttleworth, Bevan-Petman, Campbell-Wilson, Lennox-Boyd, Mackenzie-Fraser, Hughs-Stanton, Louis-François,
+  Anne-Marie, Water-Colours, Easton-Neston, Kit-Cat, Antoine-Lécuyer, Pont-Aven, Wallraf-Richartz and
+  Wallraf-Richartz-Museum), 18 headings read again; "Pont-Aven" also mended "Artist colonies--France--Pont--Aven
+  Region". Left for the cataloguers: "Eliot, T--S--(Thomas Stearns)" (initials, not a hyphen). Queue 3,005.
+  A fault met and mended in it: the catalogue's no-break spaces ("Boyd,&nbsp;Christopher") were not word breaks.
+  The reconcile now clears stale part rows itself at its end.
   NOT the splitter's, seen on the way: "Sea--Exhibitions" and "Wells--England--London" are split rightly; "Wells" on a
   place and "Narcissus (Greek mythological character)" on "Battles Wharf" by exact-name are the matcher taking a
   topic or a qualified name for a place (item 5: a qualifier that is a kind rules a candidate out). The editions
   ("Summer Exhibition (1917 ...)", "International Architectural Exhibition (15th ...)") now read whole and went by
   exact-name onto their series: the edition-or-series question (item 7).
-  STILL TO DO here: the reconcile should clear stale part rows itself when it decides a compound whole.
+
 
 **Held for Fable** (append below; newest last):
 

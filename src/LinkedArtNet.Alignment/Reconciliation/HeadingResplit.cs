@@ -35,8 +35,8 @@ public sealed class HeadingResplit(IAlignmentStore store)
 {
     private static readonly string[] Sources = ["lcsh", "loc"];
 
-    /// <summary>The parts of a heading under today's rules: the one splitter's (finding 4 and 112, <see cref="StringReading.JoinHyphenated"/>, rule "a"), then the indexes asked whether a one-word head and the next part are a hyphenated name they hold (rule "b"); "" when the plain split stands.</summary>
-    public async Task<(IReadOnlyList<string> Parts, string Rule)> SplitAsync(string heading, CancellationToken ct = default)
+    /// <summary>The parts of a heading under today's rules: the one splitter's (finding 4 and 112, <see cref="StringReading.JoinHyphenated"/>, rule "a"), then the indexes asked whether a one-word head and the next part are a hyphenated name they hold (rule "b"), then the names a reviewer has joined in this dataset (rule "n"); "" when the plain split stands.</summary>
+    public async Task<(IReadOnlyList<string> Parts, string Rule)> SplitAsync(string heading, string? dataset = null, CancellationToken ct = default)
     {
         var pieces = heading.Split("--", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var joined = StringReading.JoinHyphenated(pieces);
@@ -44,7 +44,100 @@ public sealed class HeadingResplit(IAlignmentStore store)
         var tokens = joined.ToList();
         if (tokens.Count > 1 && !tokens[0].Contains(' ') && await KnownHyphenatedAsync(store, tokens[0], tokens[1], ct))
         { tokens[0] = tokens[0] + "-" + tokens[1]; tokens.RemoveAt(1); rule += "b"; }
+        if (dataset is not null && tokens.Count > 1)
+        {
+            var named = JoinNamed(tokens, await NamesAsync(store, dataset, ct));
+            if (named.Count != tokens.Count) { tokens = named.ToList(); rule += "n"; }
+        }
         return (tokens, rule);
+    }
+
+    /// <summary>The keys of the names joined at the desk in a dataset.</summary>
+    public static async Task<IReadOnlySet<string>> NamesAsync(IAlignmentStore store, string dataset, CancellationToken ct = default) =>
+        (await store.HyphenatedNamesAsync(dataset, ct)).Select(n => HyphenatedName.Key(n.Written)).ToHashSet(StringComparer.Ordinal);
+
+    /// <summary>The name two neighbouring parts would make if the mark between them were a hyphen: the last word of the one and the first of the other ("Guiguer, Louis" and "François" give "Louis-François"; "Painters in Water" and "Colours (Great Britain)" give "Water-Colours"), an opening bracket and closing punctuation left off.</summary>
+    public static string NameAcross(string before, string after)
+    {
+        // words are parted by any white space: the catalogue writes no-break spaces too ("Boyd, Christopher")
+        var cut = before.Length; while (cut > 0 && !char.IsWhiteSpace(before[cut - 1])) cut--;
+        var a = before[cut..].TrimStart('(', '[', '"');
+        var end = 0; while (end < after.Length && !char.IsWhiteSpace(after[end])) end++;
+        var b = after[..end].TrimEnd(',', ')', ']', '.', ';', ':', '"');
+        return a + "-" + b;
+    }
+
+    /// <summary>The parts with every neighbouring pair joined whose name across the mark a reviewer has joined (rule "n": a double-barrelled surname or a compound no index holds, said once at the desk).</summary>
+    public static IReadOnlyList<string> JoinNamed(IReadOnlyList<string> parts, IReadOnlySet<string> names)
+    {
+        if (names.Count == 0 || parts.Count < 2) return parts;
+        var joined = new List<string> { parts[0] };
+        foreach (var part in parts.Skip(1))
+        {
+            if (names.Contains(HyphenatedName.Key(NameAcross(joined[^1], part)))) joined[^1] = joined[^1] + "-" + part;
+            else joined.Add(part);
+        }
+        return joined.Count == parts.Count ? parts : joined;
+    }
+
+    /// <summary>What a reviewer may say of a part string that is half of a hyphenated name: for each compound heading that carries it, the name across the mark beside it (a head with the part after it, a subdivision with the part before). The names, each with the headings it was read from.</summary>
+    public async Task<IReadOnlyList<(string Name, IReadOnlyList<string> Headings)>> ProposedJoinsAsync(SourceString part, CancellationToken ct = default)
+    {
+        var found = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        foreach (var heading in await store.ParentsAsync(part.Id, ct))
+        {
+            if (await store.DecisionForAsync(heading.Id, ct) is not { Method: DecisionMethod.Composite }) continue;
+            var parts = (await store.PartsAsync(heading.Id, ct)).ToList();
+            var i = parts.FindIndex(p => p.Id == part.Id);
+            if (i < 0 || parts.Count < 2) continue;
+            var name = i == 0 ? NameAcross(parts[0].Raw, parts[1].Raw) : NameAcross(parts[i - 1].Raw, parts[i].Raw);
+            if (name.StartsWith('-') || name.EndsWith('-')) continue;
+            if (!found.TryGetValue(name, out var list)) found[name] = list = [];
+            list.Add(heading.Raw);
+        }
+        return found.Select(f => (f.Key, (IReadOnlyList<string>)f.Value)).ToList();
+    }
+
+    /// <summary>
+    /// A reviewer says a name is written with a hyphen (2026-11-27, the owner: grown in the workbench, kept in the store, and alignment
+    /// goes on): the name is kept, every heading of the dataset that carries it is read again and decided now, and the fragments left
+    /// with no heading go. Returns the headings read again.
+    /// </summary>
+    public async Task<int> JoinNameAsync(string dataset, string name, string? reviewer, Reconciler reconciler, CancellationToken ct = default)
+    {
+        await store.PutHyphenatedNameAsync(dataset, name, reviewer, ct);
+        return await RereadAsync(dataset, name, reconciler, "joined", ct);
+    }
+
+    /// <summary>Takes a joined name back: the headings that carry it are read again, split as the rules alone split them.</summary>
+    public async Task<int> UnjoinNameAsync(string dataset, string name, Reconciler reconciler, CancellationToken ct = default)
+    {
+        if (!await store.RemoveHyphenatedNameAsync(dataset, name, ct)) return 0;
+        return await RereadAsync(dataset, name, reconciler, "unjoined", ct);
+    }
+
+    private async Task<int> RereadAsync(string dataset, string name, Reconciler reconciler, string what, CancellationToken ct)
+    {
+        var read = 0;
+        Run? run = null;
+        foreach (var (context, rule) in reconciler.Options.Contexts.Where(c => c.Value.Parts is { Shape: PartsShape.Compound }))
+            foreach (var heading in await store.StringsCarryingNameAsync(dataset, [context], name, rule.Parts!.Separator, ct))
+            {
+                var old = (await store.PartsAsync(heading.Id, ct)).Select(p => StringKey.Normalise(p.Raw)).ToList();
+                var reading = await reconciler.ReadJoinedAsync(heading, ct);
+                var now = (reading.Parts ?? []).Select(StringKey.Normalise).ToList();
+                // a heading whose parts are as they would be read stands, as does one decided whole that is still read whole
+                if (old.SequenceEqual(now, StringComparer.Ordinal)) continue;
+                run ??= await store.StartRunAsync(dataset, null, System.Text.Json.JsonSerializer.Serialize(new { pass = "hyphenated-name", name, what }), ct: ct);
+                await SplitAgainAsync(dataset, reconciler, run.Id, heading, reading.Parts ?? [], "n", ct);
+                read++;
+            }
+        if (run is not null)
+        {
+            await RemoveOrphanPartsAsync(dataset, PartContexts(reconciler.Options), apply: true, ct);
+            await store.FinishRunAsync(run.Id, null, $"hyphenated name \"{name}\" {what}: {read} headings read again", ct);
+        }
+        return read;
     }
 
     /// <summary>Whether "head-next" (or "head-" plus the first word of next) is a label the LCSH or LoC index holds written with the hyphen: rule (b), asked by the pass and by the reconciler's reading alike.</summary>
@@ -80,37 +173,46 @@ public sealed class HeadingResplit(IAlignmentStore store)
             ct.ThrowIfCancellationRequested();
             var heading = change.Heading;
             var oldParts = await store.PartsAsync(heading.Id, ct);
-            var standing = await store.DecisionForAsync(heading.Id, ct);
-            await store.ClearPartsAsync(heading.Id, ct);
-            if (change.NewParts.Count == 1)
-            {
-                // no compound: the heading is a string like any other, read whole (the reconciler's rule (b) joins the head for it)
-                await store.ReopenStringAsync(heading.Id, ct);
-                if (standing?.EntityId is { } concept) await store.RemoveProvisionalIfUnreferencedAsync(concept, ct);
-                await reconciler.ReconcileOneDetailedAsync(dataset, heading, runId, ct);
-                whole++;
-            }
-            else
-            {
-                var ids = new List<long>();
-                var reading = reconciler.Read(heading);
-                var rule = reading.PartsRule;
-                for (var i = 0; i < change.NewParts.Count; i++)
-                {
-                    var context = rule is null ? heading.Context : (i == 0 ? rule.HeadContext ?? rule.Context ?? heading.Context : rule.Context ?? heading.Context);
-                    var part = await store.CollectAsync(dataset, context, change.NewParts[i], ct: ct, count: false);
-                    await store.LinkPartAsync(heading.Id, i, part.Id, i == 0 ? "head" : "sub", ct);
-                    ids.Add(part.Id);
-                    if (await store.DecisionForAsync(part.Id, ct) is null) { await reconciler.ReconcileOneDetailedAsync(dataset, part, runId, ct); partsReconciled++; }
-                }
-                if (standing is { EntityId: { } entity })
-                    await store.DecideAsync(heading.Id, entity, DecisionMethod.Composite, Reconciler.Evidence("composite", reading, [], new { parts = ids, texts = change.NewParts, resplit = change.Rule }), runId: runId, ct: ct);
-            }
+            var (wasWhole, reconciled) = await SplitAgainAsync(dataset, reconciler, runId, heading, change.NewParts, change.Rule, ct);
+            if (wasWhole) whole++;
+            partsReconciled += reconciled;
             foreach (var old in oldParts)
                 if (change.NewParts.All(p => StringKey.Normalise(p) != StringKey.Normalise(old.Raw)) && (await store.ParentsAsync(old.Id, ct)).Count == 0)
                     orphans.Add($"{old.Context} \"{old.Raw}\"");
         }
         return new ResplitApplied(dry, whole, partsReconciled, orphans);
+    }
+
+    /// <summary>
+    /// One heading split again: its part rows go; with two parts or more, and a compound's concept standing, the new parts are collected,
+    /// linked and reconciled where undecided, and the heading's composite decision is written again on the same concept; otherwise the
+    /// heading is a string like any other, opened and reconciled whole (which decomposes it afresh when it has parts and nothing holds it).
+    /// </summary>
+    private async Task<(bool Whole, int PartsReconciled)> SplitAgainAsync(string dataset, Reconciler reconciler, string runId, SourceString heading, IReadOnlyList<string> newParts, string ruleNote, CancellationToken ct)
+    {
+        var standing = await store.DecisionForAsync(heading.Id, ct);
+        await store.ClearPartsAsync(heading.Id, ct);
+        if (newParts.Count < 2 || standing is not { Method: DecisionMethod.Composite, EntityId: not null })
+        {
+            await store.ReopenStringAsync(heading.Id, ct);
+            if (standing?.EntityId is { } concept) await store.RemoveProvisionalIfUnreferencedAsync(concept, ct);
+            await reconciler.ReconcileOneDetailedAsync(dataset, heading, runId, ct);
+            return (true, 0);
+        }
+        var ids = new List<long>();
+        var reconciled = 0;
+        var reading = reconciler.Read(heading);
+        var rule = reading.PartsRule;
+        for (var i = 0; i < newParts.Count; i++)
+        {
+            var context = rule is null ? heading.Context : (i == 0 ? rule.HeadContext ?? rule.Context ?? heading.Context : rule.Context ?? heading.Context);
+            var part = await store.CollectAsync(dataset, context, newParts[i], ct: ct, count: false);
+            await store.LinkPartAsync(heading.Id, i, part.Id, i == 0 ? "head" : "sub", ct);
+            ids.Add(part.Id);
+            if (await store.DecisionForAsync(part.Id, ct) is null) { await reconciler.ReconcileOneDetailedAsync(dataset, part, runId, ct); reconciled++; }
+        }
+        await store.DecideAsync(heading.Id, standing.EntityId, DecisionMethod.Composite, Reconciler.Evidence("composite", reading, [], new { parts = ids, texts = newParts, resplit = ruleNote }), runId: runId, ct: ct);
+        return (false, reconciled);
     }
 
     /// <summary>
@@ -150,7 +252,7 @@ public sealed class HeadingResplit(IAlignmentStore store)
             {
                 ct.ThrowIfCancellationRequested();
                 read++;
-                var (parts, rule) = await SplitAsync(d.String.Raw, ct);
+                var (parts, rule) = await SplitAsync(d.String.Raw, dataset, ct);
                 var old = (await store.PartsAsync(d.String.Id, ct)).Select(p => p.Raw).ToList();
                 // compared by key, not text: a part string is shared by every heading that carries it and keeps the spelling of the first
                 // ("portraits" for "Portraits"), and the key folds the no-break spaces and trailing stops of the catalogue's forms

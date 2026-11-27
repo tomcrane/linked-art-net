@@ -1791,5 +1791,16 @@ public class ReconcilerStoreTests(PostgresFixture pg)
         Assert.Null(await pg.Store.GetEntityAsync(veraEntity.Id));
         Assert.Empty(await pg.Store.FindEntitiesByEquivalentAsync("http://vocab.getty.edu/ulan/500999999"));
         Assert.Equal(1, (await reconciler.RunAsync(ds)).Considered); // the string is open again
+        // but an entity a person has decided a record onto stays, with what the run gave it: the run's decision goes, the person's stands
+        var keptRun = await pg.Store.StartRunAsync(ds);
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://vocab.getty.edu/ulan/500999998", "ulan", "Kept, Kate", ["Kept, Kate"], "Person", GettyVocabLoader.LifespanFromYears("1901", "1981"), ["http://id.loc.gov/authorities/names/n99999998"], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://id.loc.gov/authorities/names/n99999998", "loc", "Kept, Kate", ["Kept, Kate"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        vera = await pg.Store.CollectAsync(ds, "persauthorfull", "Kept, Kate, 1901-1981");
+        Assert.Equal(Outcome.Accepted, await reconciler.ReconcileOneAsync(ds, vera, keptRun.Id));
+        var kept = (await pg.Store.ResolveAsync(ds, "persauthorfull", "Kept, Kate, 1901-1981"))!;
+        await pg.Store.PutRecordDecisionAsync(ds, "library", "R1", "persauthorfull", "another vera", kept.Id, DecisionMethod.Human, null, "tester");
+        await pg.Store.UndoRunAsync(keptRun.Id);
+        Assert.NotEmpty((await pg.Store.GetEntityAsync(kept.Id))!.Equivalents);
+        Assert.Null(await pg.Store.DecisionForAsync(vera.Id));
     }
 }

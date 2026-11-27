@@ -877,7 +877,9 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await using (var cmd = new NpgsqlCommand(
             """
             create temp table undo_touched on commit drop as select distinct entity_id from entity_equivalents where run_id = @run;
-            delete from entity_equivalents where run_id = @run;
+            -- an entity a person decided a record onto keeps what the run gave it: the person's decision stands on it (2026-11-27:
+            -- one record of "Pitman" decided at the desk onto a body the run had voted, and the undo failed on the reference)
+            delete from entity_equivalents q where q.run_id = @run and not exists (select 1 from record_decisions rd where rd.entity_id = q.entity_id and rd.valid);
             update entities e set status = 'provisional', updated_at = now()
               where e.id in (select entity_id from undo_touched) and e.status = 'aligned'
                 and not exists (select 1 from entity_equivalents q where q.entity_id = e.id)
@@ -893,7 +895,8 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
               select e.id from entities e where e.run_id = @run and e.merged_into is null
                 and not exists (select 1 from decisions d where d.entity_id = e.id and d.valid)
                 and not exists (select 1 from entities m where m.merged_into = e.id)
-                and not exists (select 1 from entity_equivalents q where q.entity_id = e.id);
+                and not exists (select 1 from entity_equivalents q where q.entity_id = e.id)
+                and not exists (select 1 from record_decisions rd where rd.entity_id = e.id);
             update decisions set entity_id = null where not valid and entity_id in (select id from undo_entities)
             """, conn, tx) { CommandTimeout = 0 })
         {

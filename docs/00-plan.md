@@ -166,6 +166,35 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   "[Great Britain]", "Great Britain", "Amherst", "Newark" went exact-name to queued: two entities of the name since the
   desk run (item 6, duplicates). The odd members of a publisher list are minted as they stand ("New York : E.P. Dutton
   & Co", "distributed by A. Zwemmer"): a place prefix and a role phrase to be read off them, counted first.
+- 3, THE UNTANGLING FAULTS (summary lines 1, 2, 10 and 17), DONE 2026-11-27, each confirmed in the code first:
+  - UNDO. Accept, Same as and Accept-together fold the string's placeholder into the entity chosen
+    (`FoldProvisionalAsync`: so that nothing is left behind), and the merge re-points the string's standing queued
+    decision too, so Undo brought back a queued decision that already pointed at the refused entity. Now the
+    decision keeps the placeholder it folded (`folded` in its evidence) and Undo unfolds it
+    (`UnfoldPlaceholderAsync`): the placeholder is provisional and its own again, the queued and minted strings of
+    its names come back to it, and its spellings leave the refused entity's names. Tried at the desk on "Garland"
+    (Same as "Anderson & Garland", then Undo): back on its own placeholder. Decisions made before today carry no
+    `folded` and are not unfolded by Undo.
+  - REOPEN. "Reopen selected strings" only invalidated; the string's card, opened next, reconciled it with the
+    project's entities asked, and the entity it had been taken from claimed it back by its name. Now a string taken
+    off an entity from its page is decided there and then from the authorities alone
+    (`Reconciler.ReconcileOneAfreshAsync`, the store's entities not asked; an accepted record still lands on the
+    entity that holds it), and the page says so. "Set aside" of a name reopens as before.
+  - TICKS. Keep as local authority honours ticked records (a new confirmed local entity for those records, the
+    string's placeholder untouched: "Pitman"'s Petone record can now be kept local) and ticked spellings; Not a name
+    and the set-asides take the ticked spellings; the acts that are of the whole string (Not a name, the log, the
+    set-asides, the hyphenated name) say so on the form while records are ticked.
+  - THE LIST. `after=` a skipped string is by design the later-skipped only (the skipped go to the back), so
+    "Nothing waiting" came when the string just skipped was the marker. The list now begins again from its front
+    with a line saying so, whenever strings still wait in it. "just this one" lacked the field filter on its form:
+    mended. Skip itself kept the filter; a card opened by its id alone has no list, and goes on in all fields.
+  - THE RESIDUES of the desk run put right through the workbench as `claude`: "Houses of Parliament", "Palace of
+    Westminster" (off Westminster Palace, the building), "Alfa" (off Nuova Alfa editoriale), "Arts Council
+    Collection, Hayward Gallery" (off Arts Council Collection), by "set aside" of each spelling on the entity's page,
+    which reopened what the rule had matched by it; all four wait at the desk on placeholders of their own, with the
+    questions the desk run set them aside with. "Castle Ashby" and "Derry" were already right after the reconcile.
+  - NOT DONE, of the same family: a merge from an entity's page has no confirmation and no way back (the Compare
+    page is the confirmation; an unmerge is not built); the merge search's rows of one label (item 6).
 
 
 **Held for Fable** (append below; newest last):

@@ -371,7 +371,7 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     /// </summary>
     public async Task<(int Removed, int Redecided, int Settled)> MendNamesakeAsync(string dataset, string entityId, IReadOnlyCollection<string> keep, string reviewer, CancellationToken ct = default)
     {
-        var listed = (await NamesakePeopleAsync(dataset, ct)).FirstOrDefault(p => p.EntityId == entityId) ?? throw new InvalidOperationException("That entity is not on the list any more.");
+        var listed = (await store.NamesakePeopleAsync(dataset, NotANamesake, ct, entityId)).FirstOrDefault() ?? throw new InvalidOperationException("That entity is not on the list any more.");
         var entity = await OwnEntityAsync(dataset, entityId, ct);
         var going = entity.Equivalents.Where(q => !keep.Contains(q.Uri, StringComparer.Ordinal)).ToList();
         if (going.Count == 0) throw new InvalidOperationException("Untick the identifiers that are another person's first; or say the entity is right as it is.");

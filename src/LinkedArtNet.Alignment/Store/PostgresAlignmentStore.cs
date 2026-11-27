@@ -1907,7 +1907,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return await cmd.ExecuteScalarAsync(ct) is int y ? y : null;
     }
 
-    public async Task<IReadOnlyList<NamesakePerson>> NamesakePeopleAsync(string dataset, string rightPrefix, CancellationToken ct = default)
+    public async Task<IReadOnlyList<NamesakePerson>> NamesakePeopleAsync(string dataset, string rightPrefix, CancellationToken ct = default, string? only = null)
     {
         // counted before it was built (2026-11-27, reports/i1.sql): 56 persons with a birth after the first record, 105 with one fewer
         // than fifteen years before it. A birth of exactly 2000 written "2000-" is a source's "twentieth century" read as a year (the
@@ -1918,7 +1918,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                 select d.entity_id as eid, s.id as sid, s.raw
                 from source_strings s join decisions d on d.source_string_id = s.id and d.valid
                 join entities e on e.id = d.entity_id and e.class = 'Person' and e.merged_into is null
-                where s.dataset = @dataset
+                where s.dataset = @dataset and (@only::text is null or d.entity_id = @only)
             ), ry as (
                 select st.eid, min(substring(r.date from '(1[4-9][0-9]{2}|20[0-2][0-9])')::int) as y
                 from st join occurrences o on o.string_id = st.sid
@@ -1945,6 +1945,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
             """);
         cmd.CommandTimeout = 120;
         Add(cmd, "dataset", dataset); Add(cmd, "prefix", rightPrefix.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_"));
+        cmd.Parameters.Add(new NpgsqlParameter("only", NpgsqlTypes.NpgsqlDbType.Text) { Value = (object?)only ?? DBNull.Value });
         var list = new List<NamesakePerson>();
         await using var r = await cmd.ExecuteReaderAsync(ct);
         while (await r.ReadAsync(ct))

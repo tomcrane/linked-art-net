@@ -208,7 +208,8 @@ public interface IAlignmentStore
     Task<IReadOnlyList<ThinPlaceRow>> ThinPlacesAsync(string dataset, string dismissedPrefix, CancellationToken ct = default);
 
     /// <summary>The fifth check: persons with an identifier whose source says they were born after, or fewer than <see cref="NamesakePerson.YearsBefore"/> years before, the earliest record their strings stand in. An entity with a note beginning <paramref name="rightPrefix"/> has been said to be right and is left out.</summary>
-    Task<IReadOnlyList<NamesakePerson>> NamesakePeopleAsync(string dataset, string rightPrefix, CancellationToken ct = default);
+    /// <param name="only">One entity asked of alone, for the mend of its row: the whole list takes seconds.</param>
+    Task<IReadOnlyList<NamesakePerson>> NamesakePeopleAsync(string dataset, string rightPrefix, CancellationToken ct = default, string? only = null);
     Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default);
 
     /// <summary>The dataset's records whose title contains the text given, or whose identifier is it, with the strings in each.</summary>

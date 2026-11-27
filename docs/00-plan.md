@@ -64,7 +64,7 @@ current in their status lines.
 
 ## 0. Resume point (written 2026-11-24 night; the one place to read first)
 
-**State.** (2026-11-27: the last full run is `run-20261127-100528-s9t8kg`, schema version 15, 3,035 queued; what follows is the state of 2026-11-24.) The last full run was kfg394 (`run-20261124-131349-kfg394`); the pass through the headings is
+**State.** (2026-11-27 evening: the last full run is `run-20261127-150511-bdamw3`, schema version 15, 2,682 queued; AAT loaded again with English labels only; what follows is the state of 2026-11-24.) The last full run was kfg394 (`run-20261124-131349-kfg394`); the pass through the headings is
 `run-20261124-122043-y6bp64` (252 places given a record; undo-run takes it back). Schema version 14. 3,676 strings
 queued, 92 of them places. 63 findings open on the cataloguers' list. The workbench is stopped. The way of working
 is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in, and on
@@ -221,6 +221,69 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   reconcile it will show in the diff.
   The mend asked the whole list first and took ten seconds; it asks of the one entity now (0.6 s). The Checks index
   runs every check to count it (the 8 to 12 seconds the desk run timed, now more): item 6.
+
+
+- 5, THE DATE AND SINGLE-CANDIDATE RULES (summary lines 11, 12, 16; the entries "THE op DATE", "WIDER THAN op", "ULAN'S
+  ESTIMATED LIFE SPAN", "QUALIFIERS THAT ARE KINDS", "HOUSE (COUNTY)", "THE CLEAR ONES BY SOURCE"), BUILT AND MEASURED
+  2026-11-27. THE LAST FULL RUN IS NOW `run-20261127-150511-bdamw3` (after asnfwv the same afternoon, which measured the
+  rules and was taken back for two mends and the AAT load). Queue 3,035 to 2,682. Tests `DescribedDatesTests`.
+  THE METHOD, new and worth keeping: a dry run of the rules over the queue before any reconcile,
+  `shadow --method queued --all` (every string's line, with the rule and the top candidate's reason), run once with the
+  rules as committed and once with the new ones and compared string by string (reports/shadow_diff.py). Eight minutes
+  each, the store untouched but for a run record. It showed 338 of 3,066 queued strings moving, let me read them, and
+  caught a fault of mine before it reached the store (below).
+  The rules:
+  - WORKING DATES FROM A DESCRIPTION (`Lifespan.ActiveIn`): where a source dates a record only by an estimated life and
+    its description says "active 1887-1938", "active ca. 1906", "flourished 1850-74", those are its working dates. The
+    catalogue's "op"/"fl" then compare as working dates do (each end within a decade agrees; finding 26), and a birth
+    year no longer conflicts with ULAN's estimate (Gillick). Of 65 accepted on it in the dry run, 46 state the very
+    years and the other 19 were read: all the same people (Lynn "op 1826-1838" on "active 1826-1847").
+    THE FAULT IT EXPOSED, older than today: one working year against the same year was a conflict (the year's last day
+    after its first, in `CrossConflict`); seven strings would have been minted. A begin known only by its latest edge is
+    now after nothing.
+  - THE OTHER YEAR OF A DOUBT (`Lifespan.AsDescribed`): ULAN's "1629 or 1630-1700" for a record dated 1629. Nine
+    queued headings counted (reports/j3.sql). Not reached: a "ca." some years out with nothing stated (Pugin).
+  - AN UNDATED NAMESAKE DOES NOT HOLD A DATED STRING: a group none of whose records has dates agreeing is no rival of
+    one whose dates agree (not a near miss; a project entity among the rivals still holds it). 77 queued counted
+    (reports/j2.sql). This answers "whether the one candidate whose dates agree, the rest not comparable, may decide".
+  - AN UNDATED AUTHOR CLAIMS A DATED HEADING WHOSE LIFE HOLDS THE RECORDS: in a field the manifest marks
+    `namesMakers` (the personal authors), a heading's only bar was "a dated heading an undated string cannot claim";
+    the records' dates are the check: born fifteen years before the first, alive at the last (the stated death, or
+    95 years from the birth: `MakerLifeYears`, my figure). 208 in the first dry run; 60 read, one doubtful, a heading
+    bearing the name only as a variant ("Hardie, William" on "Hardie, Bill, 1916-1995"); such are left to the desk
+    (which also leaves Devonshire's "Stoker" and Jane R. Cohen, who were right). 146 decided by the run.
+    The manifest was saved to the store again for the flag.
+  - A HEADING PLACED BY ITS TOWN AGREES WITH A STRING PLACED BY ITS COUNTY (`PlacedByTownAsync`): TGN has a place of
+    the town's name inside the county and inside whatever else the heading says. Auckland Castle, Chiddingstone,
+    Chillingham, Clevedon Court, Eyam Hall, Falkland Palace, Hellens ... some forty. Only where the qualifier as
+    written places nothing (the first run queued Shibden Hall, Wakehurst Place and Castle Ashby, whose TGN record and
+    town-placed heading stood as rivals: mended, back in the second run). NOT REACHED: historic counties (Middlesex;
+    Lancashire for Salford), and so few of the 372 minted "House (County)" strings moved (three).
+  - A CONCEPT WHOSE BRACKETS SAY ITS KIND ("White ladies (Plants)") is not a string placed in a known place: brackets
+    that name no place TGN has. Small. NOT DONE: an unqualified string against a variant with a kind ("Gothic style"
+    onto "Gothic style (Writing)"); a clashing place the walk does not resolve (St Peter's, Helperthorpe).
+  - A RECORD'S WORKING DATES AGAINST A STRING'S LIFE ARE THE DESK'S, NOT A MINT (finding 93 widened): descriptions are
+    rough ("Vernon, Emile, 1872-1919" against "active 1870-1904").
+  - The born-too-late veto of item 4 showed too: "Adams & Dart" and "Burt Franklin", publishers queued beside a person
+    born after the book, are minted as the firms they are.
+  THE DIFFS, read (reports/diff-20261127b.txt against s9t8kg, diff-20261127c.txt against asnfwv): personal authors 146
+  queued to exact-single, 20 to exact-name; subject headings 118 queued to single, 35 to vote, 69 exact-single to
+  single (the same record, now by its dates); a handful the other way, each read: "Ross, James, op 1729-1733" (two LoC
+  records ten years apart both agree: the desk's), "Evans, Mary" (two alive), "Manley, George P, op 1848-1859" minted
+  against ULAN's "active 1848-1959", a slip in ULAN, "Tatton Park (Cheshire)" single to queued, not traced.
+  AAT IN ENGLISH (the entry "WORKS AGAIN": "Ark" offered "sheets (paper artifacts)" through the Scandinavian "ark
+  (sheet)"). AAT's terms are in a dozen languages (522,689 terms: 189,141 English, 74,888 Dutch, 55,894 Spanish, the
+  Chinese forms, German ...), all loaded as labels. `load-getty --languages en` keeps the named languages and the
+  untagged; the owner plugged in the dumps (D:\datadumps) and AAT was loaded again: 57,322 concepts, labels 545,837
+  to 221,740. The second run's diff shows little by method (a dozen topic headings between exact-single and vote).
+  NOT MEASURED: decisions that kept their method and changed their concept. ULAN and TGN are loaded whole: names
+  are not words of a language in the same way. For a collection in another language the option is the project's.
+  HELD FROM ITEM 5, with my view:
+  - Auctioneers first on a sale catalogue's card: an ordering of candidates, so with the card in item 6.
+  - The "one record each" pairing wanting a date on both sides: left as it is; Opus's sample of 40 found the pairings
+    right, and the two wrong ones were on queued cards.
+  - "names a record of this string" firing on a title: a card signal, item 6.
+  - Century dates read as the year 2000 (item 4's loader fault): still not mended; LoC and Wikidata would need loading.
 
 
 **Held for Fable** (append below; newest last):

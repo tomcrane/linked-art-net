@@ -147,6 +147,13 @@ public class ReviewServiceTests(PostgresFixture pg)
         // searching for "same as" and for other records
         Assert.Contains(await desk.SearchEntitiesAsync(ds, "john smith"), e => e.Id == accepted.Id);
         Assert.Equal(2, (await desk.SearchIndexesAsync("Smith, John", "ulan")).Count);
+        // capitals run together are tried as initials too (the owner at T. S. Eliot's card, 2026-11-27)
+        Assert.Contains("t s eliot", ReviewService.SearchKeys("TS Eliot"));
+        Assert.Contains("j m w turner", ReviewService.SearchKeys("JMW Turner"));
+        Assert.Contains("t s eliot", ReviewService.SearchKeys("Eliot, TS"));
+        Assert.DoesNotContain(ReviewService.SearchKeys("BBC"), k => k.Contains(' '));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord("http://www.wikidata.org/entity/Q-initials-" + ds, "wikidata", "T. S. Eliot", ["T. S. Eliot"], "Person", null, [], null, DateTimeOffset.UtcNow, "test"));
+        Assert.Contains(await desk.SearchIndexesAsync("TS Eliot", "wikidata"), r => r.Label == "T. S. Eliot");
 
         // skip sends a string to the back of the desk, kept across sessions (the owner, 2026-11-07): two queued namesakes, the first skipped,
         // the second is the desk's next from the front; after the last unskipped comes the skipped; after the last skipped, nothing

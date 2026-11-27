@@ -539,7 +539,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
     public async Task<IReadOnlyList<Entity>> SearchEntitiesAsync(string dataset, string text, int limit = 20, CancellationToken ct = default)
     {
         var found = new Dictionary<string, Entity>(StringComparer.Ordinal);
-        foreach (var key in NameMatcher.Keys(text))
+        foreach (var key in SearchKeys(text))
             foreach (var e in await store.FindEntitiesByLabelAsync(key, dataset, null, ct))
                 if (found.Count < limit) found[e.Id] = e;
         // then anything whose labels contain the text, for a single word or a part of a name
@@ -547,6 +547,23 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             foreach (var e in await store.FindEntitiesByLabelContainingAsync(dataset, StringKey.Normalise(text), limit - found.Count, ct))
                 found.TryAdd(e.Id, e);
         return found.Values.ToList();
+    }
+
+    /// <summary>
+    /// The keys a name typed at the desk is looked up by: the matcher's own, and, where the name has a run of two to four capitals
+    /// beside another word, the same with the capitals read as initials ("TS Eliot" as "T S Eliot", "JMW Turner" as "J M W Turner":
+    /// the owner at T. S. Eliot's card, 2026-11-27, where "TS Eliot" found nothing and "T.S. Eliot" found him). For a person's search
+    /// only: the rules do not read a catalogue's string so.
+    /// </summary>
+    public static IReadOnlyList<string> SearchKeys(string text)
+    {
+        var keys = NameMatcher.Keys(text).ToList();
+        var words = (text ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length < 2) return keys;
+        var spaced = words.Select(w => w.TrimEnd(',') is { Length: >= 2 and <= 4 } caps && caps.All(char.IsAsciiLetterUpper) ? string.Join(' ', caps.ToCharArray()) + (w.EndsWith(',') ? "," : "") : w).ToArray();
+        if (!spaced.SequenceEqual(words))
+            foreach (var key in NameMatcher.Keys(string.Join(' ', spaced))) if (!keys.Contains(key, StringComparer.Ordinal)) keys.Add(key);
+        return keys;
     }
 
     /// <summary>
@@ -561,7 +578,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         for (var k = words.Length; k >= 1; k--)
         {
             var telling = words[k..];
-            var found = await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(string.Join(' ', words[..k])), source, null, telling.Length == 0 ? limit : 300, ct);
+            var found = await store.FindAuthoritiesByLabelsAsync(SearchKeys(string.Join(' ', words[..k])), source, null, telling.Length == 0 ? limit : 300, ct);
             if (telling.Length > 0) found = found.Where(r => telling.All(w => ((ChainOf(r) ?? "") + " " + (Authorities.RecordSummary.Says(r) ?? "") + " " + r.Label + " " + string.Join(' ', r.Labels)).Contains(w.Trim(',', '(', ')'), StringComparison.OrdinalIgnoreCase))).Take(limit).ToList();
             if (found.Count > 0) return found;
         }

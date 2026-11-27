@@ -265,12 +265,16 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         return $"{have} of this string's {total} records {(have == 1 ? "has" : "have")} a decision of {(have == 1 ? "its" : "their")} own now; the other {(left == 1 ? "one waits" : left + " wait")} here. Decide {(left == 1 ? "it" : "them")} the same way, in any order: each record's decision stands by itself.";
     }
 
+    /// <summary>The choice in the panel that is none of the card's candidates: a new local authority.</summary>
+    public const string ShareLocal = "@local";
+    public const string ShareNothingChosen = "Nothing was chosen, so nothing was decided: every record was left at \"leave it\". Choose who or what a record names, or \"none of these\" to keep it as a local authority.";
+
     /// <summary>The panel "Give each record its own": every record given a choice is decided as that choice, for itself, in one press.</summary>
-    public async Task<IActionResult> OnPostShareAsync(long id, string[]? pick, string? note)
+    public async Task<IActionResult> OnPostShareAsync(long id, string[]? pick, string? note, string? local)
     {
         // a record left at "leave it" posts an empty value, which arrives as null
         var chosen = (pick ?? []).Where(p => !string.IsNullOrEmpty(p)).Select(p => p.Split("=>", 2)).Where(p => p.Length == 2 && p[0].Length > 0 && p[1].Length > 0).GroupBy(p => p[1], p => p[0], StringComparer.Ordinal).ToList();
-        if (chosen.Count == 0) return FlashAt("Choose who or what at least one record names first.", new { dataset = Dataset, method = Method, context = Context, id }, "share");
+        if (chosen.Count == 0) return FlashAt(ShareNothingChosen, new { dataset = Dataset, method = Method, context = Context, id }, "share");
         try
         {
             var said = new List<string>();
@@ -278,7 +282,11 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             Entity? last = null;
             foreach (var g in chosen)
             {
-                var (entity, n, all) = await Project.Desk.DecideRecordsAsync(Dataset, id, g.Distinct(StringComparer.Ordinal).ToList(), g.Key, Reviewer, note, HttpContext.RequestAborted);
+                // "none of these": the records so chosen are kept together on one new local authority of the string's name, as "Keep as a
+                // local authority" does with records ticked (the owner, 2026-11-27: the last record had no right candidate, and the panel
+                // came back for ever)
+                var target = g.Key == ShareLocal ? (await Project.Desk.NewLocalAsync(Dataset, id, local, null, HttpContext.RequestAborted)).Id : g.Key;
+                var (entity, n, all) = await Project.Desk.DecideRecordsAsync(Dataset, id, g.Distinct(StringComparer.Ordinal).ToList(), target, Reviewer, note, HttpContext.RequestAborted);
                 said.Add($"{n} as {entity.Label}");
                 everyOne = all; last = entity; note = null;
             }

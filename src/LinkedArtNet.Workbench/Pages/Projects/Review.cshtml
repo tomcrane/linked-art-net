@@ -334,6 +334,7 @@ else
         @* open when the dates ask for it, or when the string is part done: some records decided for themselves, others waiting *@
         <details class="card" id="share" @(Model.TwoPeople is not null || (undecided > 0 && undecided < Model.ShareRecords.Count) ? "open" : "")>
             <summary><strong>Different in different records?</strong> <span class="small muted">Give each record its own: @Model.ShareRecords.Count records, @(undecided == Model.ShareRecords.Count ? "none decided for itself yet" : $"{Model.ShareRecords.Count - undecided} decided for {(Model.ShareRecords.Count - undecided == 1 ? "itself" : "themselves")}")</span></summary>
+            @if (Model.Message == ReviewModel.ShareNothingChosen) { <p class="flash small"><strong>@Model.Message</strong></p> }
             @if (Model.TwoPeople is not null) { <p class="notice small"><strong>@Model.TwoPeople</strong> Choose for each record below; one press decides them all.</p> }
             <p class="small muted">For a name that is one person in some records and another in others. The line under a title is a hint from the candidates' dates and no more: a reprint is published long after its author's death. Each record you give a choice is decided for itself; a record left at "leave it" is not touched, and can be decided later, in any order. The choices are this card's candidates; for anything else, tick the record above and use the card's own buttons or its search.</p>
             <form method="post" asp-page-handler="Share" asp-route-method="@Model.Method" asp-route-context="@Model.Context">
@@ -355,13 +356,19 @@ else
                                     <select name="pick" style="max-width:100%" aria-label="Who or what this record names">
                                         <option value="">leave it</option>
                                         @foreach (var c in Model.ShareChoices) { <option value="@(r.Selector)=>@(c.Target)">@c.Label</option> }
+                                        <option value="@(r.Selector)=>@ReviewModel.ShareLocal">none of these: keep as a local authority</option>
                                     </select>
                                 }
                             </td>
                         </tr>
                     }
                 </table>
-                @if (undecided > 0) { <p style="margin-top:.6rem"><button type="submit">Decide each record as chosen</button></p> }
+                @if (undecided > 0)
+                {
+                    <p class="small" style="margin-top:.6rem"><label style="display:inline">Name for "none of these", where chosen: <input type="text" name="local" value="@(item.Evidence.Reading?.Text is { Length: > 0 } readAs ? readAs : item.String.Raw)" style="width:22rem; max-width:100%" /></label>
+                        <span class="muted">a new authority of the project's own, for the records given that choice; add what tells it from its namesakes ("Quick, Richard, curator")</span></p>
+                    <p><button type="submit">Decide each record as chosen</button></p>
+                }
             </form>
         </details>
     }

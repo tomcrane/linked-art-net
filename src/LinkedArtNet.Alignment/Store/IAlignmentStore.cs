@@ -80,7 +80,13 @@ public interface IAlignmentStore
     Task LinkPartAsync(long parentId, int position, long partId, string? role = null, CancellationToken ct = default);
     /// <summary>Removes every part row of a heading, before it is split again (finding 112's repair); the part strings themselves stay.</summary>
     Task ClearPartsAsync(long parentId, CancellationToken ct = default);
-    /// <summary>Strings of the part contexts given that no heading carries any more: fragments of a split since repaired, never a string of the catalogue's own.</summary>
+    /// <summary>
+    /// Removes the head and sub rows of every heading whose standing decision is not composite: a heading since read whole ("Pre--Raphaelitism",
+    /// found in an index as one name) keeps the rows of the split it once had, and through them its fragments ("Pre") stay at the desk and
+    /// gather the records (2026-11-27, from the desk run of 2026-11-25: "Pre" on 193 records). Returns the rows removed.
+    /// </summary>
+    Task<int> ClearStalePartsAsync(string dataset, CancellationToken ct = default);
+    /// <summary>Strings of the part contexts given that no heading decided as a compound carries any more (a heading with no standing decision counts as carrying, a heading decided whole does not): fragments of a split since repaired, never a string of the catalogue's own.</summary>
     Task<IReadOnlyList<SourceString>> OrphanPartStringsAsync(string dataset, IReadOnlyCollection<string> partContexts, CancellationToken ct = default);
     /// <summary>Deletes strings outright, with their decisions, examples and part rows (the cascade); for fragments only, never for a string the catalogue wrote.</summary>
     Task<int> DeleteStringsAsync(IReadOnlyCollection<long> stringIds, CancellationToken ct = default);

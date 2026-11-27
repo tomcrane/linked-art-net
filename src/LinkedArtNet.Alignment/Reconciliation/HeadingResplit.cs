@@ -122,7 +122,10 @@ public sealed class HeadingResplit(IAlignmentStore store)
     public async Task<(IReadOnlyList<SourceString> Orphans, int Deleted, int PlaceholdersRemoved)> RemoveOrphanPartsAsync(string dataset, IReadOnlyCollection<string> partContexts, bool apply, CancellationToken ct = default)
     {
         var orphans = await store.OrphanPartStringsAsync(dataset, partContexts, ct);
-        if (!apply || orphans.Count == 0) return (orphans, 0, 0);
+        if (!apply) return (orphans, 0, 0);
+        // the rows of a split a heading no longer has (it is read whole now) go first: they are what kept its fragments in the listing's "carried"
+        await store.ClearStalePartsAsync(dataset, ct);
+        if (orphans.Count == 0) return (orphans, 0, 0);
         var deleted = await store.DeleteStringsAsync(orphans.Select(o => o.Id).ToList(), ct);
         var placeholders = await store.RemoveOrphanProvisionalsAsync(dataset, ct);
         return (orphans, deleted, placeholders);

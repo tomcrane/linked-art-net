@@ -82,6 +82,39 @@ check, a desk decision resting on its own knowledge and not the card's, a merge 
 file `project-interim-model-scope.md` has it in full. What is held is written here, a line each, and Fable takes
 it up with the owner:
 
+**Fable's answers to the held items** (2026-11-27 on; the order agreed with the owner: 1 the splitter, 2 the minting
+class and co-publishers, 3 the untangling faults (Undo, Reopen, ticks, after=), 4 the "born after the book" check, 5 the
+date and single-candidate rules, 6 the card's wording and buttons, 7 the design conversations):
+
+- 1, THE HYPHEN FRAGMENTS (summary lines 3 and 14), DONE 2026-11-27. The diagnosis differs from the desk's: finding
+  112's rules already read "Pre--Raphaelitism", "Still--life painting", "Self--portraits" whole, and those headings
+  were decided whole and rightly. What stayed was the part rows of their old split, which the re-split's dry run
+  never read (it reads compounds only), so "Pre", "Self", "Post", "Still", "Avant" stayed strings with decisions (some
+  by the vote rule onto places), at the desk, and gathered the records (the collector gives a known part string every
+  record whose heading splits to it at "--"). No record's heading was wrongly decided by them; the places "Post" and
+  "Avant" were decisions about a string nothing uses. Mended: `ClearStalePartsAsync` (the head and sub rows of a
+  heading whose standing decision is not composite) and the orphan listing counting such rows as gone; `cleanup-parts
+  --apply` removed 228 fragment strings (83 heads, 145 subs) and 138 placeholders. Then three rules in the one
+  splitter (`StringReading.JoinHyphenated`), each counted on the 15,538 compounds first: a piece opening with a
+  bracket qualifies the piece before (14 headings: "Jonah--(Biblical prophet)", "Biennale di Venezia--(50th : 2003)");
+  a "--" inside a bracket a later piece closes is a hyphen (5: "Chamonix--Mont--Blanc"; an unclosed bracket stands);
+  a longer piece ending in a bound prefix joins (4: "Civilization, Anglo--Saxon", "active mid--19th century"; not
+  "co", "re", "pro", "ex", "sub", which end real headings). `resplit-headings --apply`, run
+  `run-20261127-092051-cqt2en`: 22 headings, 13 read whole, 35 more fragments removed. Queue 3,014.
+  LEFT, about ten strings, no rule: double-barrelled surnames the indexes do not hold (Drury--Lowe, Kay--Shuttleworth,
+  Bevan--Petman, Campbell--Wilson, Lennox--Boyd, Mackenzie--Fraser, Hughs--Stanton), compound forenames (Louis--
+  François, Anne--Marie), "Painters in Water--Colours" (26 records), "Easton--Neston", "Kit--Cat Club (London)",
+  "Wallraf--Richartz--Museum", "T--S". Nothing in the text tells "Drury--Lowe family" from "Abbeys--England". PROPOSED
+  (for the owner): a list of hyphenated names in the project's manifest that the splitter consults as it does the
+  indexes, added to from the part's card by one action ("this is half of a hyphenated name": the desk's missing
+  "split wrongly"). Not built.
+  NOT the splitter's, seen on the way: "Sea--Exhibitions" and "Wells--England--London" are split rightly; "Wells" on a
+  place and "Narcissus (Greek mythological character)" on "Battles Wharf" by exact-name are the matcher taking a
+  topic or a qualified name for a place (item 5: a qualifier that is a kind rules a candidate out). The editions
+  ("Summer Exhibition (1917 ...)", "International Architectural Exhibition (15th ...)") now read whole and went by
+  exact-name onto their series: the edition-or-series question (item 7).
+  STILL TO DO here: the reconcile should clear stale part rows itself when it decides a compound whole.
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

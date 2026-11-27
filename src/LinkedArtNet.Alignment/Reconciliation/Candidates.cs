@@ -82,14 +82,38 @@ public sealed record StringReading(
     {
         if (pieces.Length < 2) return pieces;
         var joined = new List<string> { pieces[0] };
-        foreach (var piece in pieces.Skip(1))
+        for (var i = 1; i < pieces.Length; i++)
         {
+            var piece = pieces[i];
             var last = joined[^1];
             var tail = last[(last.LastIndexOf('-') + 1)..];
-            if (IsHyphenTail(piece) || Prefixes.Contains(last) || (last.Contains('-') && !tail.Contains(' ') && LinkingWords.Contains(tail))) joined[^1] = last + "-" + piece;
+            // a piece that opens with a bracket qualifies the piece before it ("Jonah--(Biblical prophet)", "Biennale di Venezia--(50th : 2003)")
+            if (piece.StartsWith('(')) joined[^1] = last + " " + piece;
+            else if (IsHyphenTail(piece) || Prefixes.Contains(last) || EndsWithBoundPrefix(last) || InsideOpenBracket(last, pieces, i)
+                || (last.Contains('-') && !tail.Contains(' ') && LinkingWords.Contains(tail))) joined[^1] = last + "-" + piece;
             else joined.Add(piece);
         }
         return joined.Count == pieces.Length ? pieces : joined.ToArray();
+    }
+
+    // the prefixes that are not also words or abbreviations a heading may end with ("Smith & Co", "Art, Pro")
+    private static readonly HashSet<string> TrailingPrefixes = new(StringComparer.OrdinalIgnoreCase) { "anglo", "franco", "mid", "pre", "post", "neo", "anti", "non", "counter", "pseudo", "proto", "semi", "quasi" };
+
+    /// <summary>Whether a piece of several words ends in a bound prefix ("Civilization, Anglo", "active mid"): the "--" after it is the prefix's hyphen (the desk run of 2026-11-25, "Saxon" in keywords:sub).</summary>
+    private static bool EndsWithBoundPrefix(string last) => last.LastIndexOf(' ') is > 0 and var sp && TrailingPrefixes.Contains(last[(sp + 1)..]);
+
+    /// <summary>Whether the "--" before piece <paramref name="i"/> falls inside a bracket the piece before opened and a later piece closes ("Musée Alpin (Chamonix--Mont--Blanc, France)"): no subdivision begins inside a qualifier. A bracket never closed ("Wye, River (Wales and England--Early works to 1800") is the cataloguer's slip, and the split stands.</summary>
+    private static bool InsideOpenBracket(string last, string[] pieces, int i)
+    {
+        if (last.Count(c => c == '(') <= last.Count(c => c == ')')) return false;
+        for (var j = i; j < pieces.Length; j++)
+        {
+            var close = pieces[j].IndexOf(')');
+            var open = pieces[j].IndexOf('(');
+            if (close >= 0) return open < 0 || close < open;
+            if (open >= 0) return false;
+        }
+        return false;
     }
 
     /// <summary>Reads a string under its context's rule, through the agent parser when the rule names a profile.</summary>

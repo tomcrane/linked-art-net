@@ -31,6 +31,15 @@ public class HeadingResplitTests(PostgresFixture pg)
         await Is("Anglo--Saxons--Exhibitions", "a", "Anglo-Saxons", "Exhibitions");
         await Is("Counter--Reformation--England", "a", "Counter-Reformation", "England");
         await Is("Pre--Raphaelitism--England--Exhibitions", "a", "Pre-Raphaelitism", "England", "Exhibitions");
+        // 2026-11-27, from the desk run of 2026-11-25: a prefix at the end of a longer piece, a "--" inside a bracket, a piece that is a bracket
+        await Is("Civilization, Anglo--Saxon--Exhibitions", "a", "Civilization, Anglo-Saxon", "Exhibitions");
+        await Is("Buchanan, J, active mid--19th century", "a", "Buchanan, J, active mid-19th century");
+        await Is("Musée Alpin (Chamonix--Mont--Blanc, France)", "a", "Musée Alpin (Chamonix-Mont-Blanc, France)");
+        await Is("Beecroft Art Gallery (Westcliff--on--Sea)--Exhibitions", "a", "Beecroft Art Gallery (Westcliff-on-Sea)", "Exhibitions");
+        await Is("Wye, River (Wales and England--Early works to 1800", "", "Wye, River (Wales and England", "Early works to 1800");
+        await Is("Jonah--(Biblical prophet)--Art", "a", "Jonah (Biblical prophet)", "Art");
+        await Is("Biennale di Venezia--(50th : 2003)", "a", "Biennale di Venezia (50th : 2003)");
+        await Is("Smith & Co--Exhibitions", "", "Smith & Co", "Exhibitions");
         // (b) a one-word head whose join is a label an index holds with the hyphen; a plain heading stands
         await Is("New--York Historical Society (New York, New York, USA)", "b", "New-York Historical Society (New York, New York, USA)");
         await Is("Kit--Cat Club (London)--Portraits", "b", "Kit-Cat Club (London)", "Portraits");
@@ -110,5 +119,24 @@ public class HeadingResplitTests(PostgresFixture pg)
         Assert.Null(await pg.Store.DecisionForAsync(carving.Id));
         Assert.Empty((await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: false)).Orphans);
         Assert.NotNull(await pg.Store.DecisionForAsync(england.Id));
+
+        // a heading read whole since (the desk run of 2026-11-25: "Pre" on 193 records, its headings long decided whole) keeps the rows of
+        // its old split, which the dry run over compounds never reads: its fragments are listed as carried by no compound, and go
+        var wholeNow = await pg.Store.CollectAsync(ds, "keywords", "Pre--Raphaelitism");
+        var pre = await pg.Store.CollectAsync(ds, "keywords:head", "Pre");
+        var raph = await pg.Store.CollectAsync(ds, "keywords:sub", "Raphaelitism");
+        await pg.Store.LinkPartAsync(wholeNow.Id, 0, pre.Id, "head"); await pg.Store.LinkPartAsync(wholeNow.Id, 1, raph.Id, "sub");
+        await pg.Store.LinkPartAsync(wholeNow.Id, 2, england.Id, "sub"); // a part other headings carry: its row goes, the string stays
+        await reconciler.RunAsync(ds);
+        Assert.NotEqual(DecisionMethod.Composite, (await pg.Store.DecisionForAsync(wholeNow.Id))!.Method);
+        Assert.Equal(3, (await pg.Store.PartsAsync(wholeNow.Id)).Count);
+        var (fragments, _, _) = await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: false);
+        Assert.Equal([pre.Id, raph.Id], fragments.Select(f => f.Id).Order());
+        Assert.Equal(3, (await pg.Store.PartsAsync(wholeNow.Id)).Count); // the listing writes nothing
+        await resplit.RemoveOrphanPartsAsync(ds, contexts, apply: true);
+        Assert.Empty(await pg.Store.PartsAsync(wholeNow.Id));
+        Assert.Null(await pg.Store.DecisionForAsync(pre.Id));
+        Assert.NotNull(await pg.Store.DecisionForAsync(england.Id));
+        Assert.NotEmpty(await pg.Store.PartsAsync(art.Id)); // a compound's rows are not touched
     }
 }

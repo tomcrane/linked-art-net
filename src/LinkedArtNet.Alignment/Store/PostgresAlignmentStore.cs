@@ -759,12 +759,24 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
+    // a head or sub row whose heading has a standing decision that is not composite: the heading is read whole now, and the row is of an older split
+    private const string StaleParent =
+        "(p.role in ('head', 'sub') and exists (select 1 from decisions d where d.source_string_id = p.parent_id and d.valid and d.method <> 'composite'))";
+
+    public async Task<int> ClearStalePartsAsync(string dataset, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            "delete from source_string_parts p using source_strings h where h.id = p.parent_id and h.dataset = @dataset and " + StaleParent);
+        Add(cmd, "dataset", dataset);
+        return await cmd.ExecuteNonQueryAsync(ct);
+    }
+
     public async Task<IReadOnlyList<SourceString>> OrphanPartStringsAsync(string dataset, IReadOnlyCollection<string> partContexts, CancellationToken ct = default)
     {
         if (partContexts.Count == 0) return [];
         await using var cmd = _db.CreateCommand(
             $"select {StringColumns} from source_strings s where s.dataset = @dataset and s.context = any(@contexts) " +
-            "and not exists (select 1 from source_string_parts p where p.part_id = s.id) order by s.context, s.raw");
+            "and not exists (select 1 from source_string_parts p where p.part_id = s.id and not " + StaleParent + ") order by s.context, s.raw");
         Add(cmd, "dataset", dataset); Add(cmd, "contexts", partContexts.ToArray());
         var list = new List<SourceString>();
         await using var r = await cmd.ExecuteReaderAsync(ct);

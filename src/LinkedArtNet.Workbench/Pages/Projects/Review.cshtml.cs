@@ -61,6 +61,73 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     /// <summary>The checks whose lists the string's entity is on, with where each is decided.</summary>
     public IReadOnlyList<CheckHit> OnChecks { get; private set; } = [];
 
+    /// <summary>Something a record of the string may be given to in the panel "Give each record its own": a candidate group of the card, by the entity or record a press would name.</summary>
+    public sealed record ShareChoice(string Target, string Label, int? Born, int? Died)
+    {
+        /// <summary>Whether a person of these dates was of an age to have made something in the year: fifteen at least, and alive (95 where no death is stated).</summary>
+        public bool? OfAge(int year) => Born is not { } b ? null : year >= b + NamesakePerson.YearsBefore && year <= (Died ?? b + Reconciler.MakerLifeYears);
+    }
+    /// <summary>A record of the string in that panel: its selector as the ticks name it, its year, and the choices whose life holds the year.</summary>
+    public sealed record ShareRecord(string Selector, string? Title, string? Date, int? Year, RecordDecision? Own);
+    public IReadOnlyList<ShareChoice> ShareChoices { get; private set; } = [];
+    public IReadOnlyList<ShareRecord> ShareRecords { get; private set; } = [];
+    /// <summary>Set when the dates say the string may name two people: a candidate of age for some of its records and too young for others. The panel opens with it.</summary>
+    public string? TwoPeople { get; private set; }
+    /// <summary>The most records the panel lists: beyond this the ticks and the groups are the way.</summary>
+    public const int ShareMost = 40;
+
+    private static int? YearOf(string? date) => date is not null && System.Text.RegularExpressions.Regex.Match(date, @"(1[4-9][0-9]{2}|20[0-2][0-9])") is { Success: true } m ? int.Parse(m.Value, System.Globalization.CultureInfo.InvariantCulture) : null;
+
+    /// <summary>
+    /// What the panel "Give each record its own" offers (the owner, 2026-11-27, after "Adam, Robert (author)", two architects in three
+    /// records, decided over two cards: "a UI to make that more clear would be good"). The candidate groups not ruled out, each once,
+    /// by the project's entity that holds it or its first record; the string's records with their years; and, where a candidate with a
+    /// stated birth was of age for some records and too young for others, a sentence that says so before anything is pressed.
+    /// </summary>
+    private async Task LoadSharesAsync()
+    {
+        if (Item is null || Item.Decision.Method is not (DecisionMethod.Queued or DecisionMethod.Minted or DecisionMethod.ByRecord)) return;
+        var examples = await Services.Store.ExamplesForAsync(Item.String.Id, ShareMost + 1, HttpContext.RequestAborted);
+        var records = examples.Where(x => x.StringId == Item.String.Id).DistinctBy(x => x.Source + "|" + x.RecordId).ToList();
+        if (records.Count is < 2 or > ShareMost) return;
+        var choices = new List<ShareChoice>();
+        foreach (var g in Item.Evidence.Groups.Take(12))
+        {
+            var live = g.Members.Where(m => m.Veto != true && m.SetAside != true).ToList();
+            if (live.Count == 0) continue;
+            var held = live.Where(m => CandidateEntity.ContainsKey(m.Uri)).Select(m => CandidateEntity[m.Uri]).DistinctBy(x => x.Id).ToList();
+            // a placeholder of the string's own is no choice: it is what the string stands on until it is decided
+            if (held.Count == 0 && live.All(m => m.IsStore)) continue;
+            int? born = null, died = null;
+            string? dated = null;
+            foreach (var m in live)
+            {
+                Item.Records.TryGetValue(m.Uri, out var rec);
+                born ??= NamesakePerson.BirthInHeading(rec?.Label ?? m.Label) ?? Reconciler.StatedBirthYear(rec?.Lifespan);
+                if (died is null && rec?.Lifespan is { EndEarliest: { } e1, EndLatest: { } e2 } && (e2 - e1).TotalDays <= 800) died = e2.Year;
+                if (dated is null && (rec?.Label ?? m.Label) is { } l && l.Any(char.IsDigit)) dated = l;
+            }
+            var first = live.FirstOrDefault(m => !m.IsStore) ?? live[0];
+            Item.Records.TryGetValue(first.Uri, out var firstRec);
+            var label = held.Count == 1 ? held[0].Label ?? held[0].Id : dated ?? (first.Label ?? firstRec?.Label ?? first.Uri) + (firstRec?.Lifespan?.Display is { } life ? ", " + life : "");
+            var target = held.Count == 1 ? held[0].Id : first.Uri;
+            if (choices.All(c => c.Target != target)) choices.Add(new ShareChoice(target, label + (held.Count == 1 ? "" : $" ({string.Join(" + ", live.Where(m => !m.IsStore).Select(m => m.Source).Distinct())})"), born, died));
+        }
+        if (choices.Count == 0) return;
+        ShareChoices = choices;
+        ShareRecords = records.OrderBy(x => YearOf(x.Date) ?? int.MaxValue).ThenBy(x => x.Title, StringComparer.Ordinal)
+            .Select(x => new ShareRecord($"rec|{x.Source}|{x.RecordId}", x.Title, x.Date, YearOf(x.Date), RecordDecisions.GetValueOrDefault(x.Source + "|" + x.RecordId))).ToList();
+        var years = ShareRecords.Select(r => r.Year).OfType<int>().ToList();
+        foreach (var c in choices.Where(c => c.Born is not null))
+        {
+            var could = years.Where(y => c.OfAge(y) == true).Distinct().Order().ToList();
+            var tooYoung = years.Where(y => y < c.Born + NamesakePerson.YearsBefore).Distinct().Order().ToList();
+            if (could.Count == 0 || tooYoung.Count == 0) continue;
+            TwoPeople = $"This string may name two people. {c.Label}, born {c.Born}, was of an age for the record{(could.Count == 1 ? "" : "s")} of {string.Join(", ", could)} and not for {(tooYoung.Count == 1 ? "that" : "those")} of {string.Join(", ", tooYoung)}.";
+            break;
+        }
+    }
+
     /// <summary>The decisions single records of this string have, by "system|record".</summary>
     public Dictionary<string, RecordDecision> RecordDecisions { get; } = new(StringComparer.Ordinal);
     /// <summary>Queued strings that may be this one written another way: under its name, or a candidate on its card. Ticked, they are decided with it in one act (seen as a user, 2026-11-23: five London street addresses, one card after another).</summary>
@@ -108,6 +175,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         if (Item is not null)
         {
             foreach (var d in await Services.Store.RecordDecisionsForStringAsync(Item.String.Id, HttpContext.RequestAborted)) RecordDecisions[d.System + "|" + d.RecordId] = d;
+            await LoadSharesAsync();
             if (HeadingResplit.PartContexts(Project.Reconciler.Options).Contains(Item.String.Context)) HyphenJoins = await new HeadingResplit(Services.Store).ProposedJoinsAsync(Item.String, HttpContext.RequestAborted);
             if (Item.Decision.Method == DecisionMethod.Queued)
             {
@@ -183,7 +251,42 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             var said = $"{n} record{(n == 1 ? "" : "s")} decided as {entity.Label}, for {(n == 1 ? "that record" : "those records")} only.";
             return all
                 ? Flash(said + " Every record of this string now has its own decision, so the string has left the queue.", new { dataset = Dataset, method = Method, context = Context, after = id }, entity)
-                : Flash(said + " The string's other records are still to decide.", new { dataset = Dataset, method = Method, context = Context, id }, entity);
+                : Flash(said + " " + await StillToDecideAsync(id), new { dataset = Dataset, method = Method, context = Context, id }, entity);
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+    }
+
+    /// <summary>How far a string decided record by record has got, in words for the banner: the order of the presses does not matter, and the card says so (the owner, 2026-11-27: "my concern would be which way round to do it").</summary>
+    private async Task<string> StillToDecideAsync(long id)
+    {
+        var total = await Services.Store.RecordCountAsync(id, HttpContext.RequestAborted);
+        var have = (await Services.Store.RecordDecisionsForStringAsync(id, HttpContext.RequestAborted)).Select(d => d.System + "|" + d.RecordId).Distinct().Count();
+        var left = Math.Max(total - have, 0);
+        return $"{have} of this string's {total} records {(have == 1 ? "has" : "have")} a decision of {(have == 1 ? "its" : "their")} own now; the other {(left == 1 ? "one waits" : left + " wait")} here. Decide {(left == 1 ? "it" : "them")} the same way, in any order: each record's decision stands by itself.";
+    }
+
+    /// <summary>The panel "Give each record its own": every record given a choice is decided as that choice, for itself, in one press.</summary>
+    public async Task<IActionResult> OnPostShareAsync(long id, string[]? pick, string? note)
+    {
+        // a record left at "leave it" posts an empty value, which arrives as null
+        var chosen = (pick ?? []).Where(p => !string.IsNullOrEmpty(p)).Select(p => p.Split("=>", 2)).Where(p => p.Length == 2 && p[0].Length > 0 && p[1].Length > 0).GroupBy(p => p[1], p => p[0], StringComparer.Ordinal).ToList();
+        if (chosen.Count == 0) return FlashAt("Choose who or what at least one record names first.", new { dataset = Dataset, method = Method, context = Context, id }, "share");
+        try
+        {
+            var said = new List<string>();
+            var everyOne = false;
+            Entity? last = null;
+            foreach (var g in chosen)
+            {
+                var (entity, n, all) = await Project.Desk.DecideRecordsAsync(Dataset, id, g.Distinct(StringComparer.Ordinal).ToList(), g.Key, Reviewer, note, HttpContext.RequestAborted);
+                said.Add($"{n} as {entity.Label}");
+                everyOne = all; last = entity; note = null;
+            }
+            var total = chosen.Sum(g => g.Distinct(StringComparer.Ordinal).Count());
+            var message = $"{total} record{(total == 1 ? "" : "s")} decided, each for itself: {string.Join("; ", said)}.";
+            return everyOne
+                ? Flash(message + " Every record of this string now has its own decision, so the string has left the queue.", new { dataset = Dataset, method = Method, context = Context, after = id }, last)
+                : Flash(message + " " + await StillToDecideAsync(id), new { dataset = Dataset, method = Method, context = Context, id }, last);
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
     }

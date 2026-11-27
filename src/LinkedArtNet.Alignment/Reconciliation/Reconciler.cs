@@ -1954,6 +1954,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             var lifespan = best.Lifespan is { IsDated: true } ? best.Lifespan : reading.Lifespan ?? best.Lifespan;
             // a placed qualified name keeps its qualifier as the label ("Heaton, Bradford"), which is also how the store stage tells it from namesakes later
             var label = reading.Qualifier is not null && group.Best.QualifierAgrees == true ? reading.Label : best.Label ?? reading.Text;
+            if (cls == EntityClass.Person) label = DatedHeading(label, external.Select(c => c.Label));
             // but a name placed by a nearby town is labelled by where the record says it is, not by the post town: "Donington (Lincolnshire,
             // England)", not "Donington, Spalding", which no later "Donington, Lincolnshire" would agree with (the owner's desk, 2026-11-14)
             if (group.Members.FirstOrDefault(m => !m.Veto && m.Reason.Contains("qualifier places it (near ", StringComparison.Ordinal))?.Candidate is { Label: { } placedLabel, Placement: { } placedChain })
@@ -1968,6 +1969,19 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
                 if (!scheme.Owns(same) && present.Add(same)) await store.AddEquivalentAsync(entity.Id, new Equivalent(same, AuthorityUris.SourceOf(same), method, group.Score, now, RunId: runId), ct);
         }
         return (await store.GetEntityAsync(entity.Id, ct))!;
+    }
+
+    /// <summary>
+    /// A person's label with dates where the records it is made from have such a heading: ULAN's bare "Adam, Robert" beside the Library
+    /// of Congress's "Adam, Robert, 1948-" for the same man takes the dated one, so that the entity is told from "Adam, Robert, 1728-1792"
+    /// by its name (the owner's desk, 2026-11-27; the desk run of 2026-11-25 met "Scott, Samuel", "White, John"). Only a heading that is
+    /// the same name with dates after it; a label that has a year already is left.
+    /// </summary>
+    public static string DatedHeading(string label, IEnumerable<string?> others)
+    {
+        if (label.Any(char.IsDigit)) return label;
+        return others.OfType<string>().Where(o => o.Length > label.Length + 2 && o.StartsWith(label + ", ", StringComparison.OrdinalIgnoreCase)
+            && System.Text.RegularExpressions.Regex.IsMatch(o[(label.Length + 2)..], @"^[^,]*\d{4}")).OrderBy(o => o.Length).FirstOrDefault() ?? label;
     }
 
     /// <summary>The entity for a URI: one of ours (resolved, or created under that identifier), or the entity that already has the authority URI as an equivalent, or a new confirmed entity built from the cached authority record with that URI as its equivalent. The review desk and overrides use this.</summary>
@@ -1986,7 +2000,14 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         var record = await store.GetAuthorityAsync(target, ct);
         var recordClass = record is not null && Enum.TryParse<EntityClass>(record.Type, true, out var rc) ? rc : reading.Classes[0];
         var labels = (record is null ? [] : record.Labels).Append(reading.Text).Distinct(StringComparer.Ordinal).ToList();
-        var entity = await store.AddEntityAsync(dataset, new NewEntity(recordClass, record?.Label ?? reading.Text, labels, record?.Lifespan ?? reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed, RunId: runId), scheme, ct);
+        var newLabel = record?.Label ?? reading.Text;
+        if (recordClass == EntityClass.Person && record is not null)
+        {
+            var linked = new List<string?>();
+            foreach (var same in record.SameAs.Take(12)) linked.Add((await store.GetAuthorityAsync(same, ct))?.Label);
+            newLabel = DatedHeading(newLabel, linked);
+        }
+        var entity = await store.AddEntityAsync(dataset, new NewEntity(recordClass, newLabel, labels, record?.Lifespan ?? reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed, RunId: runId), scheme, ct);
         var now = DateTimeOffset.UtcNow;
         await store.AddEquivalentAsync(entity.Id, new Equivalent(target, AuthorityUris.SourceOf(target), DecisionMethod.Override, 1.0, now, RunId: runId), ct);
         // the record's own links come along, as a vote's would

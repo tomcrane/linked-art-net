@@ -19,6 +19,15 @@ public class DescribedDatesTests(PostgresFixture pg)
         new("http://vocab.getty.edu/ulan/" + id, "ulan", label, [label], "Person", GettyVocabLoader.LifespanFromYears(start, end, description), [], System.Text.Json.JsonSerializer.Serialize(new { description }), DateTimeOffset.UtcNow, "test");
 
     [Fact]
+    public void A_person_made_from_several_records_takes_the_dated_heading()
+    {
+        Assert.Equal("Adam, Robert, 1948-", Reconciler.DatedHeading("Adam, Robert", ["Adam, Robert", "Adam, Robert, 1948-", null]));
+        Assert.Equal("Adam, Robert, 1728-1792", Reconciler.DatedHeading("Adam, Robert, 1728-1792", ["Adam, Robert, 1948-"]));   // dated already
+        Assert.Equal("Adam, Robert", Reconciler.DatedHeading("Adam, Robert", ["Adam, Robert (Architect)", "Adam, Roberta, 1950-", "Adam, Robert, Sir"])); // not the same name with dates
+        Assert.Equal("Scott, Samuel, 1702?-1772", Reconciler.DatedHeading("Scott, Samuel", ["Scott, Samuel, 1702?-1772"]));
+    }
+
+    [Fact]
     public void Working_dates_are_read_from_a_description()
     {
         var active = Lifespan.ActiveIn("Scottish painter, active 1887-1938")!;

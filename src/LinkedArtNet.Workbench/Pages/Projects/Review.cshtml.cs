@@ -1,3 +1,4 @@
+using LinkedArtNet.Alignment.Authorities;
 using LinkedArtNet.Alignment;
 using LinkedArtNet.Alignment.Reconciliation;
 using LinkedArtNet.Workbench.Services;
@@ -148,6 +149,57 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         }
     }
 
+    /// <summary>
+    /// By a candidate record's URI: the title of a record of this string that the record's own source cites as what its heading was made
+    /// from (LoC's "Found in: Victorian photography, painting and poetry, 1995" for the string's record of that title). The strongest
+    /// thing a card can show for a namesake, and the row is brought to the top for it (the owner, 2026-11-27, at "Smith, Lindsay":
+    /// the right heading sat third at 0.85 under two namesakes at 1.00, and he took none of LoC's to be hers). Not in a subject field,
+    /// where a book about a person has the name in its title and the test fires on that alone (the desk run of 2026-11-25).
+    /// </summary>
+    public Dictionary<string, string> NamesRecord { get; } = new(StringComparer.Ordinal);
+    /// <summary>How many candidate records were fetched from their sources on opening this card, unasked.</summary>
+    public int AutoFetched { get; private set; }
+    /// <summary>The most records a card fetches unasked, and how long it will wait for them all.</summary>
+    public const int AutoFetchMost = 6;
+    private static readonly TimeSpan AutoFetchBudget = TimeSpan.FromSeconds(4);
+
+    /// <summary>
+    /// On opening a queued card with several candidates: what each LoC or ULAN heading was made from is fetched unasked, a few records
+    /// and a few seconds at most, once (the store keeps it). It was a button the reviewer had to think to press, and it is what tells
+    /// namesakes apart (the desk run of 2026-11-25, line 6; the owner's evening of 2026-11-27).
+    /// </summary>
+    private async Task FetchSourcesAsync()
+    {
+        if (Item is null || Look || Item.Decision.Method != DecisionMethod.Queued) return;
+        var live = Item.Evidence.Groups.Where(g => g.Members.Any(m => m.Veto != true)).ToList();
+        if (live.Count < 2) return;
+        var unpulled = live.SelectMany(g => g.Members).Where(m => !m.IsStore && m.Source is "loc" or "ulan" && SourcePull.CanPull(m.Uri)
+            && Item.Records.TryGetValue(m.Uri, out var r) && SourcePull.Read(r) is null).Select(m => m.Uri).Distinct().ToList();
+        if (unpulled.Count is 0 or > AutoFetchMost) return;
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(HttpContext.RequestAborted);
+        budget.CancelAfter(AutoFetchBudget);
+        foreach (var uri in unpulled)
+        {
+            try { if ((await Project.Pull.PullAsync(uri, budget.Token)).Error is null) AutoFetched++; }
+            catch (Exception e) when (e is HttpRequestException or OperationCanceledException or InvalidOperationException) { break; }
+        }
+        if (AutoFetched > 0 && await Project.Desk.GetAsync(Item.String.Id) is { } again) Item = again;
+    }
+
+    private async Task FindNamedRecordsAsync()
+    {
+        if (Item is null || Item.String.Context.StartsWith("keywords", StringComparison.OrdinalIgnoreCase)) return;
+        var titles = (await Services.Store.ExamplesForAsync(Item.String.Id, ShareMost + 1, HttpContext.RequestAborted)).Select(x => x.Title).OfType<string>()
+            .Select(t => t.Split(" / ")[0].Split(':')[0].Trim()).Where(t => t.Length >= 12).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        if (titles.Count == 0) return;
+        foreach (var m in Item.Evidence.Groups.SelectMany(g => g.Members).Where(m => !m.IsStore))
+        {
+            if (!Item.Records.TryGetValue(m.Uri, out var rec) || SourcePull.Read(rec) is not { } pulled) continue;
+            var cited = pulled.Facts.Where(f => f.Key == "Found in").Select(f => f.Value).ToList();
+            if (titles.FirstOrDefault(t => cited.Any(w => w.Contains(t, StringComparison.OrdinalIgnoreCase))) is { } title) NamesRecord[m.Uri] = title;
+        }
+    }
+
     /// <summary>By "system|record": the year of an earlier record of the catalogue with the same title (see <see cref="IAlignmentStore.EarlierCopiesAsync"/>).</summary>
     public IReadOnlyDictionary<string, int> EarlierCopies { get; private set; } = new Dictionary<string, int>();
 
@@ -194,6 +246,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         if (Item is null && Id is null && After > 0 && (Item = await Project.Desk.NextAsync(Dataset, Method, Context, 0)) is not null)
             Message = (Message is null ? "" : Message + " ") + "That was the end of this list; it begins again here with what is still waiting.";
         if (Item is not null && Item.String.Dataset != Dataset) Item = null;
+        await FetchSourcesAsync();
+        await FindNamedRecordsAsync();
         if (Item?.Entity is { } stands) OnChecks = await CheckLists.ForAsync(Project, stands.Id, HttpContext.RequestAborted);
         // a card with no candidate at all is searched for the reviewer under the string's name (the owner, 2026-11-14, sent from the
         // placeholder "Osterley Park" to its publisher string: "there's nothing to do at the desk"). The rules look only among the

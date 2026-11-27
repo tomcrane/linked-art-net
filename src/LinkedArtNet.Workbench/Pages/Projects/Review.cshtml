@@ -429,7 +429,9 @@ else
     // when none abroad outweighs it; elsewhere, among level candidates, the one at home leads (seen as a user, 2026-11-24: "New York",
     // in 1,194 records, led by New York in Lincolnshire, and the map opened on Lincolnshire)
     var rulesOrdered = ev.Groups.Any(g => g.Members.Any(m => (m.Reason ?? "").Contains("sitelinks", StringComparison.Ordinal)));
-    var inOrder = ev.Groups.Select((g, i) => (g, i)).OrderByDescending(x => Math.Round(x.g.Score, 2)).ThenByDescending(x => !rulesOrdered && AtHome(x.g) ? 1 : 0).ThenBy(x => x.i).Select(x => x.g).ToList();
+    // a record whose own source cites a record of this string leads, whatever its score: see ReviewModel.NamesRecord
+    bool Cited(LinkedArtNet.Alignment.Reconciliation.EvidenceGroup g) => g.Members.Any(m => m.Veto != true && m.SetAside != true && Model.NamesRecord.ContainsKey(m.Uri));
+    var inOrder = ev.Groups.Select((g, i) => (g, i)).OrderByDescending(x => Cited(x.g) ? 1 : 0).ThenByDescending(x => Math.Round(x.g.Score, 2)).ThenByDescending(x => !rulesOrdered && AtHome(x.g) ? 1 : 0).ThenBy(x => x.i).Select(x => x.g).ToList();
     var shownGroups = chosenGroup is null ? inOrder : ev.Groups.Where(g => ReferenceEquals(g, chosenGroup)).Concat(ev.Groups.Where(g => !ReferenceEquals(g, chosenGroup))).ToList();
     var foldOpen = false;
     // a reason every candidate shares is said once for the card and not on each (the assistant as a user, 2026-11-19: "Athens" said one
@@ -464,6 +466,12 @@ else
     {
         <p class="small muted">Of every candidate below: @string.Join("; ", saidOnce).</p>
     }
+    @if (chosenGroup is null && Model.NamesRecord.Count > 0 && ev.Groups.SelectMany(g => g.Members).FirstOrDefault(m => m.Veto != true && m.SetAside != true && Model.NamesRecord.ContainsKey(m.Uri)) is { } citedRow)
+    {
+        item.Records.TryGetValue(citedRow.Uri, out var citedRec);
+        <p class="notice small"><strong>One candidate's own source cites a record of this string.</strong> The heading "@(citedRec?.Label ?? citedRow.Label)" was made from "@Model.NamesRecord[citedRow.Uri]", which this string is in. It is first below, whatever its score; read it before the others.</p>
+    }
+    @if (chosenGroup is null && Model.AutoFetched > 0) { <p class="small muted">What @(Model.AutoFetched == 1 ? "one heading" : $"{Model.AutoFetched} headings") below @(Model.AutoFetched == 1 ? "was" : "were") made from has just been fetched from @(Model.AutoFetched == 1 ? "its source" : "their sources"), under each as "made from".</p> }
     @if (chosenGroup is null && unpulled.Count > 0 && ev.Groups.Count(g => g.Members.Any(m => m.Veto != true)) >= 2)
     {
         @* namesakes told apart by what each heading was made from (the owner, 2026-11-19; the assistant at "Robbins, David (editor)": ten of
@@ -737,8 +745,8 @@ else
                         <div class="reason">@lessReason(m.Reason)</div>
                         @if (!m.IsStore && item.Records.TryGetValue(m.Uri, out var madeFromRec) && LinkedArtNet.Alignment.Authorities.SourcePull.Read(madeFromRec) is { } madeFrom && madeFrom.Facts.Where(f => f.Key is "Found in" or "Occupation").Select(f => f.Value).ToList() is { Count: > 0 } works)
                         {
-                            var namesIt = recordTitles.Any(t => works.Any(w => w.Contains(t, StringComparison.OrdinalIgnoreCase)));
-                            <div class="small works"><span class="muted">made from:</span> @string.Join(" · ", works.Take(5))@(works.Count > 5 ? $" · and {works.Count - 5} more" : "")@if (namesIt) { <strong> · names a record of this string</strong> }</div>
+                            var namesIt = Model.NamesRecord.TryGetValue(m.Uri, out var namedTitle);
+                            <div class="small works"><span class="muted">made from:</span> @string.Join(" · ", works.Take(5))@(works.Count > 5 ? $" · and {works.Count - 5} more" : "")@if (namesIt) { <strong> · names a record of this string: "@namedTitle"</strong> }</div>
                         }
                         @* what the project already has of this candidate, in one line (the owner, 2026-11-20: "fold those three lines into one"): the
                            entity that holds the record, how much stands on it (the owner at "Cape", 2026-11-19), and the longer form if it is the one

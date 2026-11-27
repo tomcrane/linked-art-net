@@ -401,6 +401,28 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   (author)" (onto LoC's "(Professor of English)") from the card the same night: "that seemed much easier!"
 
 
+- ITEM 6 BEGUN, 2026-11-27 night. The first piece, from the evening's cards (Lindsay Smith) and Opus's line 6:
+  - WHAT EACH HEADING WAS MADE FROM, FETCHED UNASKED: opening a queued card with two or more candidates fetches its
+    LoC and ULAN records' sources itself, six records and four seconds at most, once (the store keeps them); a line
+    says so. More than six are left to the button as before. Seen on "Gordon, Catherine (author)": three fetched.
+  - A CANDIDATE WHOSE OWN SOURCE CITES A RECORD OF THE STRING LEADS THE CARD, whatever its score, with a notice ("The
+    heading ... was made from ..., which this string is in. It is first below"), and its "made from" line names the
+    title. Not in the subject fields (a book about a person has the name in its title: the false signal Opus met).
+    The titles are all the string's records' (forty at most), not the few shown. NOT SEEN LIVE: no queued card has a
+    fetched candidate that cites one of its books yet (reports/r1.sql: none); Lindsay Smith's, which would, was
+    decided before it was built. To watch for at the desk.
+    A RULE IN WAITING: this is the best evidence there is for a personal author and the rules do not have it,
+    because the sources are fetched a card at a time. A fetch of every queued card's candidates (some ten thousand
+    requests to id.loc.gov and the Getty) and a rule on it is THE OWNER'S TO SAY, as a bulk call on others' services.
+  THE REST OF ITEM 6, in the order I mean to take it: (1) the Checks index and the project home, slow (each check run
+  in full to be counted: counts kept as the banners' lists are); (2) the card's "why it waits" wording where the string
+  has a date or a place; one button where an entity holds two candidate rows; a card's open log entries shown on it;
+  (3) the search: a kind filter and a pasted identifier; auctioneers first on a sale catalogue's card; (4) the jump
+  after a decision, the misspelling hint on a real name, a record outside the shown groups; (5) labels (natural
+  order "Richard Quick", bare names made before today), merge confirmation and unmerge, the same-label merge rows;
+  (6) the duplicates met (Great Britain, Amherst, Newark, Manchester, Derby) through the Compare page.
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

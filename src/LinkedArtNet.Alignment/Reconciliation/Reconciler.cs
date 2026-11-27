@@ -897,7 +897,7 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (_options.AcceptUniqueExactSingleSource && exactTop is not null && !truncated && groups.Count(g => (g.Vetoed || g.Score >= rivalFloor) && !Lookalike(g) && g.Members.Any(m => !m.SetAside && !(m.Candidate.Provisional && m.Candidate.EntityId is not null))) == 1 && (reading.Lifespan is null || loneUndated)
             && wordsEnough
             && exactTop.Score >= _options.AcceptScore && exactTop.Best.Candidate.NameScore >= 0.97
-            && exactTop.Members.All(m => !m.Veto && !m.Candidate.Provisional && m.Candidate.EntityId is null)
+            && exactTop.Members.All(m => !m.Veto && !m.SomeRecordsOnly && !m.Candidate.Provisional && m.Candidate.EntityId is null)
             // a heading that carries dates was disambiguated from namesakes by its cataloguer: an undated string cannot claim it alone
             // unless the string is that dated heading, dates and all ("Williams, Peter, 1914-1995" whole in the keywords field; finding 45)
             // (and a string with working dates that the heading's lifespan holds is not an undated string: finding 75)
@@ -1161,7 +1161,12 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         return scored.Select(m =>
         {
             if (!Born(m) || Year(m) is not { } b) return m;
-            if (b > first - NamesakePerson.YearsBefore) return m with { Veto = true, Reason = m.Reason + $"; born {b}, too late for the first record this string is in, of {first}" };
+            // too late for every record: a namesake. Too late for the earlier ones and of age for the later: the string may name two
+            // people, as "Adam, Robert (author)" does, the architect of 1728-1792 on books of 1931 and 1975 and the architect born in
+            // 1948 on one of 1990 (the owner's desk, 2026-11-27: the first form of the rule ruled the living man out on the first
+            // record alone, and he fell off the card). Shown, not ruled out, and the string is the desk's, to decide by record
+            if (b > last - NamesakePerson.YearsBefore) return m with { Veto = true, Reason = m.Reason + (first == last ? $"; born {b}, too late for the record this string is in, of {first}" : $"; born {b}, too late for every record this string is in ({first} to {last})") };
+            if (b > first - NamesakePerson.YearsBefore) return m with { SomeRecordsOnly = true, Reason = m.Reason + $"; born {b}: too late for this string's earlier records (from {first}), of age for its later ones (to {last}); two people of the name, perhaps, to decide by record" };
             // the heading itself must be the name: a record that bears it only as a variant (a nickname, an earlier surname) is not its
             // source's record of the name (finding 74), and the one doubtful row in sixty read was such ("Hardie, William" on "Hardie, Bill")
             if (!makers || m.Candidate.ByVariant || last > (Died(m.Candidate.Lifespan) ?? b + MakerLifeYears)) return m;
@@ -1897,6 +1902,8 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // member set aside is not live
         var best = group.Members.Where(m => !m.Veto && !m.SetAside && !m.Candidate.ProvisionalQueued).OrderByDescending(m => m.Score).FirstOrDefault();
         if (best is null) return null;
+        // a person of age for only some of the string's records carries nothing alone: the string is decided by record, at the desk
+        if (best.SomeRecordsOnly) return null;
         // a near miss on the dates (finding 115) stands over undated namesakes but does not carry one source alone
         return _options.AcceptSingleSourceWithDates && ((best.DatesAgree && !best.DatesNear) || best.QualifierAgrees == true) && best.Candidate.NameScore >= 0.97 ? DecisionMethod.Single : null;
     }

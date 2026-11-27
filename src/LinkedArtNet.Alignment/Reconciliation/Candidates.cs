@@ -277,8 +277,9 @@ public sealed record Candidate(
 /// <param name="SetAside">Not wanted here by a preference rather than a contradiction (a record outside the context's collections, another vocabulary's second exact term): it is not the answer, but unlike a veto it does not poison a group that the authorities' own links put it in.</param>
 /// <param name="DatesConflict">The candidate's lifespan and the string's cannot be one person's (finding 93 reads it: a namesake vetoed on its dates alone is the desk's, not a mint).</param>
 /// <param name="DatesNear">The dates agree as a near miss (finding 115: a year or two out on one side, the other the same): the record stands over undated namesakes as an agreeing one does, but does not carry a single source alone.</param>
+/// <param name="SomeRecordsOnly">A person born too late for the string's earlier records and of age for its later ones: the string may name two people, and no rule accepts it whole.</param>
 /// <param name="AliveAtRecords">A person whose stated life holds the dates of every record the string is in, in a field that names who made the item: what an undated string has to check a dated heading by.</param>
-public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null, bool SetAside = false, bool DatesConflict = false, bool DatesNear = false, bool AliveAtRecords = false);
+public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null, bool SetAside = false, bool DatesConflict = false, bool DatesNear = false, bool AliveAtRecords = false, bool SomeRecordsOnly = false);
 
 /// <summary>Candidates that are the same real-world thing across sources, joined through their mutual sameAs links, voting as one.</summary>
 /// <param name="Vetoed">Every member is vetoed, or a vetoed member is the same thing as a live one by the authorities' own links: the group cannot be the answer.</param>

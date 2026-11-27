@@ -125,6 +125,17 @@ public class DescribedDatesTests(PostgresFixture pg)
         Assert.Equal(Outcome.Queued, (await reconciler.EvaluateAsync(ds, await Author("Smith", "1868-", "1868", null, "1990"))).Outcome);
         // a living author with no death stated
         Assert.Equal(Outcome.Accepted, (await reconciler.EvaluateAsync(ds, await Author("Cross", "1936-", "1936", null, "2008"))).Outcome);
+        // born too late for the first record and of age for the last: two people of the name, perhaps; shown, not ruled out, and the desk's
+        var adam = await Author("Adam", "1948-", "1948", null, "1931");
+        await pg.Store.PutExamplesAsync([new StringExample(adam.Id, "Adam2" + tag, "library", "Classical architecture", "1990", "persauthorfull", "{}")]);
+        var two = await reconciler.EvaluateAsync(ds, adam);
+        Assert.Equal(Outcome.Queued, two.Outcome);
+        var living = two.Groups.SelectMany(g => g.Members).Single();
+        Assert.False(living.Veto);
+        Assert.Contains("to decide by record", living.Reason);
+        // too late for every record is a namesake, ruled out
+        var late = await reconciler.EvaluateAsync(ds, await Author("Thomson", "1989-", "1989", null, "1824"));
+        Assert.True(late.Groups.SelectMany(g => g.Members).Single().Veto);
         // a heading that bears the name only as a variant is not claimed so
         var nick = $"Hardie{tag}, William";
         await pg.Store.PutAuthorityAsync(new AuthorityRecord($"http://id.loc.gov/authorities/names/{tag}Hardie", "loc", $"Hardie{tag}, Bill, 1916-1995", [nick], "Person",

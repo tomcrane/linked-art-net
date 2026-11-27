@@ -130,7 +130,9 @@ public sealed record StringReading(
     /// <summary>Whether the text itself shows a person: dates of a life or of activity, an honorific of one person ("Mr", "Rev.", not "Messrs"), or the catalogue's inverted name with a role ("Taride, Alphonse (publisher)").</summary>
     private static bool ShowsAPerson(ParsedAgent agent) =>
         agent.Dates is { Kind: not Dates.ResultKind.FormationDissolution }
-        || agent.Honorifics.Any(h => !h.StartsWith("Messrs", StringComparison.OrdinalIgnoreCase) && !h.StartsWith("MM", StringComparison.Ordinal))
+        || agent.Honorifics.Any(h => !h.StartsWith("Messrs", StringComparison.OrdinalIgnoreCase) && !h.StartsWith("MM", StringComparison.Ordinal)
+            // "St" before a name is a church or a parish in a body field ("St Paul's Hammersmith"), seen after the reconcile of 2026-11-27
+            && h.Trim('.') is not ("St" or "Saint" or "Ste" or "SS"))
         || (agent.GivenNames is not null && agent.Roles.Count > 0);
 
     public static StringReading Read(SourceString s, ContextRule rule, AgentStringParser? parser)

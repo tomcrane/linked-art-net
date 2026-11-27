@@ -22,6 +22,7 @@ public class ClassOrderTests(PostgresFixture pg)
         Assert.Equal(EntityClass.Group, First("publisher", "W H Allen"));
         Assert.Equal(EntityClass.Group, First("publisher", "Christopher Helm"));
         Assert.Equal(EntityClass.Group, First("corpauthor", "Messrs Robins"));
+        Assert.Equal(EntityClass.Group, First("publisher", "St Paul's Hammersmith"));
         // the text shows a person: an honorific, the catalogue's inverted name with a role, dates
         Assert.Equal(EntityClass.Person, First("corpauthor", "Mr Stamp"));
         Assert.Equal(EntityClass.Person, First("publisher", "Taride, Alphonse (publisher)"));

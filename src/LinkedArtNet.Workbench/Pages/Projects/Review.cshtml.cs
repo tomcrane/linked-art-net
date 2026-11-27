@@ -158,11 +158,14 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     /// <summary>
     /// Why a record may be a reprint or a later edition, in words for the card, or null: its title says so, or the catalogue has an earlier
     /// record of the same title. The author of a reprint may be long dead, and a living namesake fits its date (the owner, 2026-11-27,
-    /// after "Quick, Richard": a life of 1931 catalogued in an issue of 1970). The stored records have no edition statement or notes,
-    /// so this is all the store can say; that record had neither sign.
+    /// after "Quick, Richard": a life of 1931 catalogued in an issue of 1970, whose edition statement is "2nd edition").
     /// </summary>
     public string? ReprintSign(StringExample x)
     {
+        // the record's own edition statement first: anything but a first edition, or a binding ("Paperback edition", "Library edition")
+        if (x.NamingFields().FirstOrDefault(f => f.Name == "edition").Values?.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v)) is { } edition
+            && !System.Text.RegularExpressions.Regex.IsMatch(edition, @"^\s*\[?(first|1st|paperback|hardback|library|limited|deluxe|special)", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            return $"its edition statement is \"{edition.Trim()}\"";
         if (x.Title is { } title && ReprintWords.Match(title) is { Success: true } m) return $"the title says \"{m.Value.Trim()}\"";
         return EarlierCopies.TryGetValue(x.Source + "|" + x.RecordId, out var year) ? $"the catalogue has a record of this title from {year}" : null;
     }

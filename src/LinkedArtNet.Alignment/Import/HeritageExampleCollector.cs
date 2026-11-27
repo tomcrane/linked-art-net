@@ -215,7 +215,9 @@ public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDic
 
     private static string TrimOuterBrackets(string s) => s.Length >= 2 && s[0] == '[' && s[^1] == ']' ? s[1..^1].Trim() : s;
 
-    private static readonly string[] NamingFields = ["title", "year", "medium", "persauthorfull", "corpauthor", "publisher", "place", "keywords", "class"];
+    // the edition statement and the series are kept for the desk (2026-11-27): "2nd edition" on a record of 1970 is what says its author
+    // may be long dead (the owner's card for "Quick, Richard"), and a series names its publisher
+    private static readonly string[] NamingFields = ["title", "year", "edition", "medium", "persauthorfull", "corpauthor", "publisher", "place", "series", "keywords", "class"];
 
     /// <summary>The record's fields that name things, as JSON of field to values, for the desk's card.</summary>
     private static string NamingFieldsJson(XElement record)

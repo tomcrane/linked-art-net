@@ -371,6 +371,21 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
     settles it is a button the reviewer must think to press (Opus's line 6: fetch unasked). Item 6. Not decided by me.
 
 
+- THE EDITION STATEMENT, the same night, answering "the next question" above: THE LIBRARY EXPORT HAS `<edition>` (1,958
+  of 63,392 records: "2nd edition" 340, "Revised edition" 237, "Reprint" 42 ...) and `<series>` (4,611), neither
+  collected until now. The record for Richard Quick's life of Edwin Long (D7936, 1970) says "2nd edition". Both are
+  now among a record's fields (`HeritageExampleCollector.NamingFields`), the records collected again, and they show on
+  every card with the other fields ("edition: 2nd edition", "series: ..."), and are fields to group by. The reprint
+  sign reads the edition statement first (anything but a first edition or a binding: paperback, library, limited ...),
+  then the title's words, then an earlier record of the title. COUNTED (reports/m4.sql): 152 queued author,
+  corporate-author and publisher cards have a record with such an edition statement (personal authors 100), beside
+  the 58 of the two weaker signs. It would have flagged Quick. Seen on "Bateman, John (author)", "4th edition reprint".
+  NOT DONE WITH IT: the rules do not read it (the item 5 rule "an undated author claims a dated heading whose life
+  holds the records" could take a death before a "2nd edition" for no bar, and the born-too-late veto could leave a
+  reprint out of its first year); the series is shown and not yet used for the publisher hints; the export's other
+  uncollected fields (notescsvx beyond its place segment, collation, relcat, accloc) are not looked at.
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

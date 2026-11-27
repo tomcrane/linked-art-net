@@ -454,6 +454,16 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
     branch far ahead of origin. Item 6 goes on from its list above, at (1) the project home.
 
 
+- FOR LATER, THE OWNER (2026-11-27, at shutdown): MEASURE HOW WELL THE MATCHING MATCHES, and try PostgreSQL's own
+  fuzzy search as his original work did (pg_trgm similarity, perhaps fuzzystrmatch's Levenshtein); "too fuzzy and it
+  matches too much". Two matchers to measure, each against decisions a person made: (1) a citation against a title
+  (`TitleCitation.Cites`): once `load-loc-citations` has run, over the personal authors decided by hand, how often the
+  candidate chosen cites a record of the string (recall) and how often a candidate NOT chosen does (false matches), at
+  the present rules and at trigram thresholds, read row by row at the margin; (2) a string against a label
+  (`NameMatcher`, the keys of `StringKey`): the same against human decisions, where the name chosen scored under 0.97
+  or was found only by search. The measure first, then whichever matcher it favours; not a change to make on feel.
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

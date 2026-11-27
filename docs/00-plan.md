@@ -386,6 +386,21 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   uncollected fields (notescsvx beyond its place segment, collation, relcat, accloc) are not looked at.
 
 
+- SHOULD THE AUTHOR RULE READ THE EDITION STATEMENT? COUNTED 2026-11-27 night, AND NO (reports/p1.sql, p1.txt). Queued
+  personal authors with one candidate, a dated LoC heading, of age for every record and dead before some: 24. Only 2
+  of them have an edition statement on every record after the death ("Russell, A. C.", 1902-1992, "Second edition"
+  1994; "Warren, Wilfred Lewis", 1929-1994, "New edition" 2000; both right). The other 22 are published after the
+  death with no edition statement: about 16 right by my reading (Aldis, Bushnell, McKerrow and Plomer in the 1977
+  Dictionaries of printers; Cokayne; Penzer; Gerson; Wimsatt; Chancellor), and 5 or 6 wrong, each a guidebook of a
+  house whose author bears an ancestor's name (Henry Bedingfeld, 1636-1704, for Oxburgh Hall 1987; the Earl of Rosse,
+  1800-1867, for Birr Castle 1982; Lady Cavendish; and initials "P., C. W.", "T., G. S." onto strangers). So a rule
+  on the edition would settle two strings, and a rule on "dead before the record" alone would be wrong one time in
+  four. NOT BUILT; these stay at the desk, where the sign now shows. The cases are evidence for the assistant (item
+  7): a guidebook by a living owner against a posthumous reference work is a judgement on the title.
+  The owner decided "Bateman, John (author)" (a "4th edition reprint" of 1971, onto 1839-1910) and "Smith, Lindsay
+  (author)" (onto LoC's "(Professor of English)") from the card the same night: "that seemed much easier!"
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

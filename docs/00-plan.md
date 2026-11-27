@@ -64,7 +64,7 @@ current in their status lines.
 
 ## 0. Resume point (written 2026-11-24 night; the one place to read first)
 
-**State.** The last full run is kfg394 (`run-20261124-131349-kfg394`); the pass through the headings is
+**State.** (2026-11-27: the last full run is `run-20261127-100528-s9t8kg`, schema version 15, 3,035 queued; what follows is the state of 2026-11-24.) The last full run was kfg394 (`run-20261124-131349-kfg394`); the pass through the headings is
 `run-20261124-122043-y6bp64` (252 places given a record; undo-run takes it back). Schema version 14. 3,676 strings
 queued, 92 of them places. 63 findings open on the cataloguers' list. The workbench is stopped. The way of working
 is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in, and on
@@ -149,8 +149,23 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   library rules. `undo-run` of kfg394 failed on a by-record decision of the desk's ("Pitman", London, onto a body the
   run had voted): mended, an entity a person's record decision stands on stays with what the run gave it. Then
   44,890 decisions taken back, 36,278 provisional entities removed; 773 human and 35,405 imported decisions stand.
-  TO DO when it ends: command 4's diff against kfg394, read by method; collect-records; the counts of persons minted
-  in the two fields.
+  DONE: THE LAST FULL RUN IS NOW `run-20261127-100528-s9t8kg` (41 minutes; considered 44,890: matched in store 6,226,
+  accepted 9,300, queued 3,036, minted 10,427, lists 698, compounds 15,353; second pass settled 77). The diff
+  against kfg394 (`reports/diff-20261127.txt`, by field and method) is small and as meant: publisher minted to list
+  275 and exact-name to list 17; the rest are tens, nearly all INTO exact-name (the desk's own entities of
+  2026-11-25 found by the rules: 23 country houses "Tapeley Park (Devon)" minted to exact-name, 18 corporate authors
+  queued to exact-name). No shift between vote, single and queued from the class order: the fear that it would move
+  the body-vote rule did not show. Minted as persons now: corporate authors 40 (were 241), publishers 55 (were 1,453);
+  what is left is right (the "(publisher)" names, "Mr Stamp", "Lord Haddington") or small: "St Paul's Hammersmith" and
+  other churches, where "St" was read as a person's honorific (mended in the code, takes effect at the next
+  reconcile), and a few bodies with no word of a body whose entity stood from before ("Alnwick Garden"). Records
+  collected again: the members of the lists have theirs ("Ipswich Borough Council" 6). Queue 3,035.
+  SEEN IN THE DIFF, for later items: "Houses of Parliament", "Palace of Westminster" and "Alfa" (publisher) went
+  queued to exact-name onto the entities the desk had undone them from (Westminster Palace the building, Nuova Alfa
+  editoriale): the residue of "Same as" that Undo leaves, now acted on by a rule (item 3). Place strings
+  "[Great Britain]", "Great Britain", "Amherst", "Newark" went exact-name to queued: two entities of the name since the
+  desk run (item 6, duplicates). The odd members of a publisher list are minted as they stand ("New York : E.P. Dutton
+  & Co", "distributed by A. Zwemmer"): a place prefix and a role phrase to be read off them, counted first.
 
 
 **Held for Fable** (append below; newest last):

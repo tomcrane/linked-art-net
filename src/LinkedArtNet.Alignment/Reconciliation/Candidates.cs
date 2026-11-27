@@ -127,6 +127,12 @@ public sealed record StringReading(
         return (ApproximateMarker.IsMatch(m.Groups["a"].Value), ApproximateMarker.IsMatch(m.Groups["b"].Value));
     }
 
+    /// <summary>Whether the text itself shows a person: dates of a life or of activity, an honorific of one person ("Mr", "Rev.", not "Messrs"), or the catalogue's inverted name with a role ("Taride, Alphonse (publisher)").</summary>
+    private static bool ShowsAPerson(ParsedAgent agent) =>
+        agent.Dates is { Kind: not Dates.ResultKind.FormationDissolution }
+        || agent.Honorifics.Any(h => !h.StartsWith("Messrs", StringComparison.OrdinalIgnoreCase) && !h.StartsWith("MM", StringComparison.Ordinal))
+        || (agent.GivenNames is not null && agent.Roles.Count > 0);
+
     public static StringReading Read(SourceString s, ContextRule rule, AgentStringParser? parser)
     {
         IReadOnlyList<string>? parts = null;
@@ -176,7 +182,10 @@ public sealed record StringReading(
             if (agent.HasName) text = agent.Name!;
             // the parser's reading of the kind puts that class first; the rule still says what is allowed at all
             if (agent.Kind == AgentKind.Group && classes.Contains(EntityClass.Group)) classes = [EntityClass.Group, .. classes.Where(c => c != EntityClass.Group)];
-            else if (agent.Kind == AgentKind.Person && classes.Contains(EntityClass.Person)) classes = [EntityClass.Person, .. classes.Where(c => c != EntityClass.Person)];
+            // a person is the parser's reading when it found no word of a body, not a finding: it puts Person first only where the
+            // text shows a person (2026-11-27; the desk run of 2026-11-25 counted 241 corporate authors and 1,453 publishers minted
+            // as persons: "Lulworth Castle", "Shire Books", "Historic Dockyard Chatham"). Otherwise the field's own order stands.
+            else if (agent.Kind == AgentKind.Person && classes.Contains(EntityClass.Person) && ShowsAPerson(agent)) classes = [EntityClass.Person, .. classes.Where(c => c != EntityClass.Person)];
             if (agent.Dates is { Kind: Dates.ResultKind.BirthDeath or Dates.ResultKind.FormationDissolution } d)
             {
                 lifespan = Lifespan.From(d.Begin, d.End, agent.DateText);

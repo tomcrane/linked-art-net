@@ -94,8 +94,8 @@ public sealed record ProjectManifest
             // the labels and sentences are the assistant's reading of the PMC library export's field names and of the records seen in
             // them (2026-11-13), not the library's own documentation: the cataloguers' to correct
             ["persauthorfull"] = new([EntityClass.Person], "default", Label: "personal author", About: "A person named on the record as author, editor or other contributor, with the role when given."),
-            ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default", Label: "corporate author", About: "A body named as the record's author: a gallery, a society, and on a sale catalogue the auction house or dealer."),
-            ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default", Label: "publisher", About: "Who published the item, as the record gives it; on a sale catalogue often the auctioneer."),
+            ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default", Parts: new(PartsShape.List, ";"), Label: "corporate author", About: "A body named as the record's author: a gallery, a society, and on a sale catalogue the auction house or dealer."),
+            ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default", Parts: new(PartsShape.List, ";"), Label: "publisher", About: "Who published the item, as the record gives it; on a sale catalogue often the auctioneer."),
             ["place"] = new([EntityClass.Place], Qualified: true, Parts: new(PartsShape.List, ";"), Label: "place of publication", About: "Where the item was published, as the record gives it; several places are separated by semicolons."),
             // a precoordinated LCSH heading: looked up whole, else decided as its parts; the head may be a dated name heading
             // a heading without "--" is decided whole, and a dated name heading ("Atken, J, fl 1783", "Reuss, Albert, 1889-1975") reads

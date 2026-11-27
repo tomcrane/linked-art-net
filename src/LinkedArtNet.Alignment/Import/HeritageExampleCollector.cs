@@ -164,6 +164,7 @@ public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDic
         foreach (var v in Values(record, "corpauthor"))
         {
             yield return ("corpauthor", v, "corpauthor", null);
+            foreach (var part in ListParts(v)) yield return ("corpauthor", part, "corpauthor", ("corpauthor", v));
             if (Role(v) == "publisher") yield return ("publisher", v, "corpauthor", null);
         }
         // a publisher the cataloguer supplied stands in square brackets in the export ("[Osterley Park]", "[Agnew?]") and without them in
@@ -173,6 +174,9 @@ public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDic
         {
             yield return ("publisher", v, "publisher", null);
             if (TrimOuterBrackets(v) is var bare && bare != v) yield return ("publisher", bare, "publisher", null);
+            // several publishers in one field, parted by semicolons ("Tate ; Ipswich Borough Council"): each is a string of its own,
+            // carrying the whole value (2026-11-27: 275 such strings had each been minted as one body)
+            foreach (var part in ListParts(TrimOuterBrackets(v))) yield return ("publisher", part, "publisher", ("publisher", TrimOuterBrackets(v)));
         }
         foreach (var raw in Values(record, "keywords"))
         {
@@ -194,6 +198,10 @@ public sealed class HeritageExampleCollector(IAlignmentStore store, IReadOnlyDic
             foreach (var part in parts) yield return ("place", part, "place", ("place", v));
         }
     }
+
+    /// <summary>The members of a value that lists several, parted by semicolons; none when it names one.</summary>
+    private static string[] ListParts(string value) =>
+        value.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) is { Length: >= 2 } parts ? parts : [];
 
     private static IEnumerable<string> Values(XElement record, string field) =>
         record.Elements().Where(e => e.Name.LocalName == field).Select(e => e.Value.Trim()).Where(v => v.Length > 0);

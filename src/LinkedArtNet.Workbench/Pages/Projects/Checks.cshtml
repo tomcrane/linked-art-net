@@ -533,6 +533,7 @@ else
 else
 {
     @* the list of checks (the owner, 2026-11-20, of two links in a line of text, the page opening on a check with two rows while the other had 147: "it doesn't seem right") *@
+    @if (Model.CountedAt is { } counted && counted < DateTimeOffset.UtcNow.AddSeconds(-20)) { <p class="small muted">Counted @((int)Math.Max(1, (DateTimeOffset.UtcNow - counted).TotalMinutes)) minute@((DateTimeOffset.UtcNow - counted).TotalMinutes >= 2 ? "s" : "") ago. Each check's own page lists it afresh.</p> }
     <table class="checks">
         <thead><tr><th>Check</th><th>What it lists</th><th>Waiting</th></tr></thead>
         <tbody>

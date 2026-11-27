@@ -23,6 +23,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     [BindProperty(SupportsGet = true)] public string? Mend { get; set; }
     /// <summary>Which check's list to show: null for the first, the places; "duplicates" for the entities that may be one thing (the second check, 2026-11-20).</summary>
     [BindProperty(SupportsGet = true)] public string? Check { get; set; }
+    /// <summary>When the list of checks' counts were made, where they come from the kept lists.</summary>
+    public DateTimeOffset? CountedAt { get; private set; }
     public IReadOnlyList<PossibleDuplicate> Duplicates { get; private set; } = [];
     /// <summary>The third check (2026-11-22): entities every one of whose strings is no name ("S.l.", "Publisher not identified", "S").</summary>
     public IReadOnlyList<NotNameEntity> NotNames { get; private set; } = [];
@@ -107,7 +109,14 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
             }
             Message ??= "That entity is not on the list any more.";
         }
-        // with no check named the page is the list of checks, each with how much it holds, so both are counted
+        // with no check named the page is the list of checks, each with how much it holds: counted from the lists as kept, a moment
+        // old at most; a check's own page makes its list afresh
+        if (Check is null)
+        {
+            var kept = await CheckLists.ListsAsync(Project, HttpContext.RequestAborted);
+            (Duplicates, Away, NotNames, Namesakes, Thin, CountedAt) = (kept.Duplicates, kept.Away, kept.NotNames, kept.Namesakes, kept.Thin, kept.At);
+            return;
+        }
         if (Check is null or "duplicates") Duplicates = await Project.Curation.PossibleDuplicatesAsync(Dataset, HttpContext.RequestAborted);
         if (Check is null or "places") Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
         if (Check is null or "notnames") NotNames = await Project.Curation.NotNameEntitiesAsync(Dataset, HttpContext.RequestAborted);

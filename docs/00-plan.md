@@ -329,6 +329,28 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
     missing until "Look again" or the next reconcile; the fifth check still reads the first year alone.
 
 
+- THE PANEL, LATER THE SAME EVENING (c49cbff and after), from the owner using it on "Quick, Richard (author)":
+  - "An endless loop": the last record had no right candidate, "leave it" decided nothing, and the message was at the top
+    of a page that had jumped to the panel. Now each record's list ends "none of these: keep as a local authority"
+    (one new authority for the records so chosen, named in a box under the table), and the panel itself says when
+    nothing was chosen.
+  - The right man (Richard Quick the Bournemouth curator, Wikidata Q21466888) was found by the card's search and could
+    not be given to a record from the panel. Now what the card's search finds is added to each record's list, after
+    the candidates, under "Found by the search for ...": six of the project's entities and six index records at most;
+    the search's words go with the press so a string part done comes back with them. Seen on "Smith, Lindsay".
+  - His decisions that evening carry the reviewer `claude`: he was in the browser I am signed into. Told.
+  - The entity person/rf8uf86m "Quick, Richard, 1943-2009" (one identifier, no strings) is still his to remove.
+  - FOR ITEM 7, THE OWNER ON ASK-AN-AI (2026-11-27): "even with my growing familiarity, I am frequently being tempted
+    into the wrong decisions ... I assume that in all of these an AI search would have helped. As a training assistant,
+    such a feature could help teach a user not to be too hasty when they see how often they get it wrong!" The two
+    cases of the evening as evidence: Adam (the dates tell the two men apart: a lookup, now on the card) and Quick (a
+    reprint, which only the book's own history tells: the web, or a model). The hint the panel gives from dates led
+    the wrong way on Quick, and he took it. My view, given to him: the assistant's first use is a second opinion asked
+    BEFORE the press on cards the rules mark as risky (several of one name, a hint that rests on dates alone, a
+    reprint-shaped record), saying what it checked and what it could not; and a record of how often its view and the
+    reviewer's first choice differed is the training he describes. Not built; to design with him.
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

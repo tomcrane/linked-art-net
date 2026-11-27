@@ -62,7 +62,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<CheckHit> OnChecks { get; private set; } = [];
 
     /// <summary>Something a record of the string may be given to in the panel "Give each record its own": a candidate group of the card, by the entity or record a press would name.</summary>
-    public sealed record ShareChoice(string Target, string Label, int? Born, int? Died)
+    /// <param name="Found">Not one of the card's candidates: a result of the search run on the card.</param>
+    public sealed record ShareChoice(string Target, string Label, int? Born, int? Died, bool Found = false)
     {
         /// <summary>Whether a person of these dates was of an age to have made something in the year: fifteen at least, and alive (95 where no death is stated).</summary>
         public bool? OfAge(int year) => Born is not { } b ? null : year >= b + NamesakePerson.YearsBefore && year <= (Died ?? b + Reconciler.MakerLifeYears);
@@ -75,6 +76,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     public string? TwoPeople { get; private set; }
     /// <summary>The most records the panel lists: beyond this the ticks and the groups are the way.</summary>
     public const int ShareMost = 40;
+    /// <summary>The most search results of each kind (the project's entities, the indexes' records) the panel offers.</summary>
+    public const int ShareFound = 6;
 
     private static int? YearOf(string? date) => date is not null && System.Text.RegularExpressions.Regex.Match(date, @"(1[4-9][0-9]{2}|20[0-2][0-9])") is { Success: true } m ? int.Parse(m.Value, System.Globalization.CultureInfo.InvariantCulture) : null;
 
@@ -113,12 +116,29 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             var target = held.Count == 1 ? held[0].Id : first.Uri;
             if (choices.All(c => c.Target != target)) choices.Add(new ShareChoice(target, label + (held.Count == 1 ? "" : $" ({string.Join(" + ", live.Where(m => !m.IsStore).Select(m => m.Source).Distinct())})"), born, died));
         }
+        // what the card's search found, the project's own entities first: the right answer is often not among the candidates (the owner,
+        // 2026-11-27: Richard Quick the curator, found by search, could not be given to a record from the panel). A few of each, so
+        // that the list stays a list
+        if (!string.IsNullOrWhiteSpace(Q))
+        {
+            foreach (var e in EntityMatches.Where(e => e.Status != EntityStatus.Provisional && e.MergedInto is null).Take(ShareFound))
+                if (choices.All(c => c.Target != e.Id))
+                    choices.Add(new ShareChoice(e.Id, e.Label ?? e.Id, NamesakePerson.BirthInHeading(e.Label) ?? Reconciler.StatedBirthYear(e.Lifespan), null, Found: true));
+            foreach (var r in IndexMatches.Take(ShareFound))
+            {
+                var target = CandidateEntity.TryGetValue(r.Uri, out var holder) ? holder.Id : StandingOn.TryGetValue(r.Uri, out var st) ? st.EntityId : r.Uri;
+                if (choices.Any(c => c.Target == target)) continue;
+                var label = (r.Label ?? r.Uri) + (r.Label is { } l && !l.Any(char.IsDigit) && r.Lifespan?.Display is { } life ? ", " + life : "") + $" ({r.Source})";
+                choices.Add(new ShareChoice(target, label, NamesakePerson.BirthInHeading(r.Label) ?? Reconciler.StatedBirthYear(r.Lifespan),
+                    r.Lifespan is { EndEarliest: { } e1, EndLatest: { } e2 } && (e2 - e1).TotalDays <= 800 ? e2.Year : null, Found: true));
+            }
+        }
         if (choices.Count == 0) return;
         ShareChoices = choices;
         ShareRecords = records.OrderBy(x => YearOf(x.Date) ?? int.MaxValue).ThenBy(x => x.Title, StringComparer.Ordinal)
             .Select(x => new ShareRecord($"rec|{x.Source}|{x.RecordId}", x.Title, x.Date, YearOf(x.Date), RecordDecisions.GetValueOrDefault(x.Source + "|" + x.RecordId))).ToList();
         var years = ShareRecords.Select(r => r.Year).OfType<int>().ToList();
-        foreach (var c in choices.Where(c => c.Born is not null))
+        foreach (var c in choices.Where(c => c.Born is not null && !c.Found))
         {
             var could = years.Where(y => c.OfAge(y) == true).Distinct().Order().ToList();
             var tooYoung = years.Where(y => y < c.Born + NamesakePerson.YearsBefore).Distinct().Order().ToList();
@@ -175,7 +195,6 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         if (Item is not null)
         {
             foreach (var d in await Services.Store.RecordDecisionsForStringAsync(Item.String.Id, HttpContext.RequestAborted)) RecordDecisions[d.System + "|" + d.RecordId] = d;
-            await LoadSharesAsync();
             if (HeadingResplit.PartContexts(Project.Reconciler.Options).Contains(Item.String.Context)) HyphenJoins = await new HeadingResplit(Services.Store).ProposedJoinsAsync(Item.String, HttpContext.RequestAborted);
             if (Item.Decision.Method == DecisionMethod.Queued)
             {
@@ -231,6 +250,8 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
                 if (IndexMatches.Count > 0) NearName = name;
             }
         }
+        // after the search, whose results are choices too
+        if (Item is not null) await LoadSharesAsync();
         if (Item is not null && Confirm && Targets is { Length: > 0 })
         {
             try { Plan = await Project.Desk.PlanTogetherAsync(Dataset, Item.String.Id, Targets, Survivor); }
@@ -294,7 +315,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             var message = $"{total} record{(total == 1 ? "" : "s")} decided, each for itself: {string.Join("; ", said)}.";
             return everyOne
                 ? Flash(message + " Every record of this string now has its own decision, so the string has left the queue.", new { dataset = Dataset, method = Method, context = Context, after = id }, last)
-                : Flash(message + " " + await StillToDecideAsync(id), new { dataset = Dataset, method = Method, context = Context, id }, last);
+                : Flash(message + " " + await StillToDecideAsync(id), new { dataset = Dataset, method = Method, context = Context, id, q = string.IsNullOrWhiteSpace(Q) ? null : Q }, last);
         }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
     }

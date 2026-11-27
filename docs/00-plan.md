@@ -474,6 +474,13 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   the load: `load-loc` keeping the citations in the same pass, for every person and body record (count the size
   first: some ten million records, a few citations each; if that is too much for the store, the candidates-only step
   run by `load-loc` at its end and by `reconcile` at its end). Until then the command is run by hand after either.
+  THE OWNER ON THE SECOND WAY (the same evening): a reconcile would then need the source files, which on his machine
+  are on an external drive ("on a different rig that would not be a problem"); "it just has to handle that
+  gracefully and remind me to plug in the drive". So, whichever way is built: the store remembers where each source's
+  file was loaded from (the path given to `load-loc`); a step that needs the file looks for it FIRST, before any work,
+  and when it is not there says which file and where it was, that the drive may be unplugged, and what to run once it
+  is back; a reconcile is never failed or held up by it: it finishes, and its report says the citations of N new
+  candidates are still to read and gives the command. The workbench says the same of a card whose candidates have none.
 
 
 **Held for Fable** (append below; newest last):

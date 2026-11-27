@@ -486,6 +486,13 @@ public sealed record NamesakePerson(string EntityId, string? Label, int FirstYea
     /// <summary>The fewest years a person is before the first record that names them as its author or its subject: a birth later than this before it is another person's.</summary>
     public const int YearsBefore = 15;
     public bool BornTooLate(NamesakeIdentifier i) => i.Born is { } b && b > FirstYear - YearsBefore;
+
+    /// <summary>
+    /// The birth year a heading itself carries ("Housman, Laurence, 1865-1959"): where a source's own date field disagrees with its heading
+    /// the heading is believed (the Library of Congress gives that record a birth of 1965 in its date field, and Ethel Walker's one of 181).
+    /// </summary>
+    public static int? BirthInHeading(string? label) =>
+        label is not null && System.Text.RegularExpressions.Regex.Match(label, @",\s*(?:b\.\s*|born\s+)?(1[0-9]{3}|20[0-2][0-9])\??\s*-") is { Success: true } m ? int.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture) : null;
     /// <summary>The identifiers the check would keep: where one at least was born in time, all but those born too late; where none was, none (the cluster is another person's).</summary>
     public IReadOnlyList<NamesakeIdentifier> Kept => Identifiers.Any(i => i.Born is not null && !BornTooLate(i)) ? Identifiers.Where(i => !BornTooLate(i)).ToList() : [];
 }

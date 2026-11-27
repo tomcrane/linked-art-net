@@ -1899,7 +1899,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
     {
         await using var cmd = _db.CreateCommand(
             """
-            select min(substring(r.date from '(1[0-9]{3}|20[0-2][0-9])')::int)
+            select min(substring(r.date from '(1[4-9][0-9]{2}|20[0-2][0-9])')::int)
             from occurrences o join records r on r.dataset = o.dataset and r.system = o.system and r.record_id = o.record_id
             where o.string_id = @id
             """);
@@ -1920,7 +1920,7 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
                 join entities e on e.id = d.entity_id and e.class = 'Person' and e.merged_into is null
                 where s.dataset = @dataset
             ), ry as (
-                select st.eid, min(substring(r.date from '(1[0-9]{3}|20[0-2][0-9])')::int) as y
+                select st.eid, min(substring(r.date from '(1[4-9][0-9]{2}|20[0-2][0-9])')::int) as y
                 from st join occurrences o on o.string_id = st.sid
                 join records r on r.dataset = o.dataset and r.system = o.system and r.record_id = o.record_id
                 group by st.eid
@@ -1950,8 +1950,10 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         while (await r.ReadAsync(ct))
         {
             var uris = r.GetFieldValue<string[]>(5); var sources = r.GetFieldValue<string[]>(6); var labels = r.GetFieldValue<string[]>(7); var born = r.GetFieldValue<int[]>(8);
-            list.Add(new NamesakePerson(r.GetString(0), Str(r, 1), r.GetInt32(2), r.GetFieldValue<long[]>(3), r.GetFieldValue<string[]>(4),
-                uris.Select((u, i) => new NamesakeIdentifier(u, sources[i], labels[i].Length == 0 ? null : labels[i], born[i] < 0 ? null : born[i])).ToList()));
+            // the birth a heading itself carries is believed before its source's date field; a row none of whose identifiers is then too late is not listed
+            var person = new NamesakePerson(r.GetString(0), Str(r, 1), r.GetInt32(2), r.GetFieldValue<long[]>(3), r.GetFieldValue<string[]>(4),
+                uris.Select((u, i) => new NamesakeIdentifier(u, sources[i], labels[i].Length == 0 ? null : labels[i], NamesakePerson.BirthInHeading(labels[i]) ?? (born[i] < 0 ? null : born[i]))).ToList());
+            if (person.Identifiers.Any(person.BornTooLate)) list.Add(person);
         }
         return list;
     }

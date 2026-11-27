@@ -1138,9 +1138,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// </summary>
     private async Task<IReadOnlyList<ScoredCandidate>> NotYetBornAsync(StringReading reading, IReadOnlyList<ScoredCandidate> scored, CancellationToken ct)
     {
-        bool Born(ScoredCandidate m) => !m.Veto && m.Candidate.Source != "store" && (m.Candidate.Class ?? reading.Classes[0]) == EntityClass.Person && StatedBirthYear(m.Candidate.Lifespan) is not null;
+        int? Year(ScoredCandidate m) => NamesakePerson.BirthInHeading(m.Candidate.Label) ?? StatedBirthYear(m.Candidate.Lifespan);
+        bool Born(ScoredCandidate m) => !m.Veto && m.Candidate.Source != "store" && (m.Candidate.Class ?? reading.Classes[0]) == EntityClass.Person && Year(m) is not null;
         if (reading.String.Id <= 0 || !scored.Any(Born) || await store.EarliestRecordYearAsync(reading.String.Id, ct) is not { } first) return scored;
-        return scored.Select(m => Born(m) && StatedBirthYear(m.Candidate.Lifespan) is { } b && b > first - NamesakePerson.YearsBefore
+        return scored.Select(m => Born(m) && Year(m) is { } b && b > first - NamesakePerson.YearsBefore
             ? m with { Veto = true, Reason = m.Reason + $"; born {b}, too late for the first record this string is in, of {first}" } : m).ToList();
     }
 

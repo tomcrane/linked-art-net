@@ -130,6 +130,27 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   topic or a qualified name for a place (item 5: a qualifier that is a kind rules a candidate out). The editions
   ("Summer Exhibition (1917 ...)", "International Architectural Exhibition (15th ...)") now read whole and went by
   exact-name onto their series: the edition-or-series question (item 7).
+- THE DESK'S SEARCH AND INITIALS (the owner at T. S. Eliot's card, 2026-11-27: "TS Eliot" found nothing, "T.S. Eliot"
+  found him; "I wonder how clever the search there should be"). The indexes are keyed by whole names; the keys held
+  "t s eliot" and "t.s. eliot" but not "ts eliot". Mended for the search only (`ReviewService.SearchKeys`): a run of
+  two to four capitals beside another word is also tried as initials. The rules do not read a catalogue's string so.
+  How clever beyond that (the answer given him): next the two things the desk run asked for, a filter by kind and a
+  pasted identifier (item 6); a search by any words in any order over ten million labels wants a text index of its own,
+  and waits for evidence that the name search with these fails often.
+- 2, THE MINTING CLASS AND CO-PUBLISHERS (summary line 15), the rules written 2026-11-27, the reconcile running.
+  Confirmed in the code: the name parser says "person" when it finds no word of a body (its default), and the reading
+  put Person first on that, before the field's own order; the first class is what a minted entity takes, and it also
+  feeds the rule by which two sources' single records of a body vote. Now Person goes first only where the text shows
+  a person: dates, an honorific of one person ("Mr Stamp", not "Messrs"), or the inverted name with a role ("Taride,
+  Alphonse (publisher)"). Publisher and corporate author are lists at ";" as place is (297 strings with a semicolon:
+  260 split cleanly; the odd members, "New York : E.P. Dutton & Co", "distributed by ...", "and 11, Paternoster
+  Buildings", become strings of their own, no worse than before and to be looked at after); the collector gives the
+  members their records (`collect-records` to be run again after the reconcile). The saved manifest replaced by the
+  library rules. `undo-run` of kfg394 failed on a by-record decision of the desk's ("Pitman", London, onto a body the
+  run had voted): mended, an entity a person's record decision stands on stays with what the run gave it. Then
+  44,890 decisions taken back, 36,278 provisional entities removed; 773 human and 35,405 imported decisions stand.
+  TO DO when it ends: command 4's diff against kfg394, read by method; collect-records; the counts of persons minted
+  in the two fields.
 
 
 **Held for Fable** (append below; newest last):

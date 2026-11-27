@@ -468,6 +468,14 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   or was found only by search. The measure first, then whichever matcher it favours; not a change to make on feel.
 
 
+- TO BUILD NEXT SESSION, the owner's question at shutdown ("in future would that be included in all LoC re-syncs?"):
+  NOT YET. `load-loc-citations` is a command of its own, for the records that are candidates now; `load-loc` replaces a
+  record's data and so drops its citations, and a reconcile brings candidates that have none. It should be part of
+  the load: `load-loc` keeping the citations in the same pass, for every person and body record (count the size
+  first: some ten million records, a few citations each; if that is too much for the store, the candidates-only step
+  run by `load-loc` at its end and by `reconcile` at its end). Until then the command is run by hand after either.
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

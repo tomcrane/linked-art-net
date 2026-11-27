@@ -60,6 +60,21 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         [Gvp + "PhysPlaceConcept"] = nameof(EntityClass.Place),
     };
 
+    /// <summary>
+    /// The languages whose labels are kept ("en" keeps "en", "en-GB", "en-US" and labels with no language), or null for every language.
+    /// AAT gives each concept its terms in Dutch, Spanish, Chinese, German and more, some 340,000 of its 520,000: loaded whole, a
+    /// catalogue in English matched them at full score ("Ark", a magazine, was offered "sheets (paper artifacts)" through the
+    /// Scandinavian "ark (sheet)": the desk run of 2026-11-25). The catalogue's language is the project's to say; names of people and
+    /// places are not words of a language in the same way, and ULAN and TGN are loaded whole.
+    /// </summary>
+    public IReadOnlyList<string>? Languages { get; init; }
+
+    private string LanguageFilter(string alias)
+    {
+        var wanted = (Languages ?? []).Select(l => l.Trim().ToLowerInvariant()).Where(l => l.Length > 0 && l.All(ch => char.IsAsciiLetter(ch) || ch == '-')).ToList();
+        return wanted.Count == 0 ? "" : $" and ({alias}.lang is null or " + string.Join(" or ", wanted.Select(l => $"{alias}.lang = '{l}' or {alias}.lang like '{l}-%'")) + ")";
+    }
+
     public static string SourceName(GettyVocabulary v) => v switch { GettyVocabulary.Ulan => "ulan", GettyVocabulary.Aat => "aat", _ => "tgn" };
 
     /// <summary>Loads one file, or every <c>.nt</c>/<c>.nt.gz</c> in a directory: a Getty zip unpacks to several files whose statements about one concept must be staged together.</summary>
@@ -91,7 +106,7 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
     }
 
     // One row per concept, joined in SQL; normalisation and the record shape are done in code.
-    private static string RecordsSql(string table) => $"""
+    private string RecordsSql(string table) => $"""
         with concepts as (
             select s as uri, min(o) as type from {table} where p = '{RdfType}' group by s
         ),
@@ -103,9 +118,9 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         xlabels as (
             select st.s as uri, t.o as label
             from {table} st join {table} t on t.s = st.o and t.p = '{Xl}literalForm'
-            where st.p in ('{Xl}prefLabel', '{Xl}altLabel')
+            where st.p in ('{Xl}prefLabel', '{Xl}altLabel'){LanguageFilter("t")}
             union
-            select s, o from {table} where p in ('{Skos}prefLabel', '{Skos}altLabel')
+            select s, o from {table} x where p in ('{Skos}prefLabel', '{Skos}altLabel'){LanguageFilter("x")}
         ),
         labels as (select uri, array_agg(distinct label) as labels from xlabels group by uri),
         matches as (
@@ -163,7 +178,7 @@ public sealed class GettyVocabLoader(PostgresAlignmentStore store)
         return bare.Length > 0 && bare != term ? bare : null;
     }
 
-    private static async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, GettyVocabulary vocabulary, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
+    private async IAsyncEnumerable<AuthorityRecord> ReadRecordsAsync(NpgsqlDataSource db, string table, GettyVocabulary vocabulary, string? sourceVersion, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
     {
         var source = SourceName(vocabulary);
         var now = DateTimeOffset.UtcNow;

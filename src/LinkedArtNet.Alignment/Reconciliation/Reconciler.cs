@@ -927,7 +927,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         {
             var all = groups.SelectMany(g => g.Members).ToList();
             bool Exact(ScoredCandidate m) => m.Candidate.NameScore >= 0.97 && (m.Candidate.Class is not { } cls || reading.Classes.Contains(cls));
-            var conflicting = all.Where(m => m.DatesConflict && !m.SetAside && Exact(m) && !lifespan.IsWorking && m.Candidate.Lifespan is { IsWorking: false }
+            // (a record's working dates against the string's life are the desk's too, now that they are read from descriptions, which
+            // are rough: ULAN's "active 1870-1904" for "Vernon, Emile, 1872-1919", minted by run asnfwv, 2026-11-27)
+            var conflicting = all.Where(m => m.DatesConflict && !m.SetAside && Exact(m) && !lifespan.IsWorking
                 && (m.Candidate.EntityId is not null || all.Count(x => Exact(x) && x.Candidate.EntityId is null && x.Candidate.Source == m.Candidate.Source) == 1)).ToList();
             if (conflicting.Count > 0)
             {
@@ -1184,6 +1186,10 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         if (reading.Qualifier is null || reading.QualifierAncestors is null) return candidates;
         var county = Qualified.Tokens(reading.Qualifier);
         if (county.Count == 0) return candidates;
+        // only where the qualifier as written places nothing: a gazetteer record it places already decides, and a heading placed beside
+        // it by its town stood as a rival of the same house (run asnfwv, 2026-11-27: "Shibden Hall (Yorkshire)", "Wakehurst Place
+        // (Sussex)" and "Castle Ashby (Northamptonshire)" went from decided to the queue)
+        if (candidates.Any(c => c.Placement is not null && (Qualified.Agrees(reading.Qualifier, c.Placement) == true || Qualified.Agrees(reading.QualifierForPlacement, c.Placement) == true))) return candidates;
         var list = candidates.ToList();
         for (var i = 0; i < list.Count; i++)
         {

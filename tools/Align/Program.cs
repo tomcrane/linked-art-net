@@ -83,14 +83,15 @@ switch (args[0])
 
     case "load-getty":
     {
-        var optionValues = new HashSet<string>(new[] { Option("--vocab"), Option("--version"), Option("--dataset"), Option("--base") }.OfType<string>(), StringComparer.Ordinal);
+        var optionValues = new HashSet<string>(new[] { Option("--vocab"), Option("--version"), Option("--dataset"), Option("--base"), Option("--languages") }.OfType<string>(), StringComparer.Ordinal);
         var files = args.Skip(1).Where(a => !a.StartsWith("--", StringComparison.Ordinal) && !optionValues.Contains(a)).SelectMany(GettyVocabLoader.Files).ToList();
         if (files.Count == 0) { Console.Error.WriteLine("Give Getty N-Triples files (.nt or .nt.gz) or the directory a Getty zip unpacked to."); return 2; }
         if (!Enum.TryParse<GettyVocabulary>(Option("--vocab"), true, out var vocab)) { Console.Error.WriteLine("Say which vocabulary: --vocab ulan|aat|tgn"); return 2; }
         await store.InitialiseAsync();
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
         Console.Error.WriteLine($"  {files.Count} file(s)");
-        var result = await new GettyVocabLoader(store).LoadAsync(files, vocab, Option("--version"), progress);
+        // --languages en: only the labels in those languages (and the untagged) are kept; for AAT, whose terms are in a dozen
+        var result = await new GettyVocabLoader(store) { Languages = Option("--languages")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) }.LoadAsync(files, vocab, Option("--version"), progress);
         Console.WriteLine($"{result.Vocabulary}: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
         return 0;
     }

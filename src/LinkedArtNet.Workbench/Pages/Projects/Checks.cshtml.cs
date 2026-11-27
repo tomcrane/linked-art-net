@@ -26,6 +26,8 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     public IReadOnlyList<PossibleDuplicate> Duplicates { get; private set; } = [];
     /// <summary>The third check (2026-11-22): entities every one of whose strings is no name ("S.l.", "Publisher not identified", "S").</summary>
     public IReadOnlyList<NotNameEntity> NotNames { get; private set; } = [];
+    /// <summary>The fifth check (2026-11-27): persons an identifier of whose was born after, or too soon before, the first record that names them.</summary>
+    public IReadOnlyList<NamesakePerson> Namesakes { get; private set; } = [];
     /// <summary>The fourth check (2026-11-24): places with no gazetteer's or Wikidata's identifier, whose name the gazetteer has.</summary>
     public IReadOnlyList<ThinPlace> Thin { get; private set; } = [];
     /// <summary>A search of the project's entities on the Mend screen, for a place known by another name (the owner, 2026-11-15, at "Bâle", which is Basel).</summary>
@@ -109,6 +111,7 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
         if (Check is null or "duplicates") Duplicates = await Project.Curation.PossibleDuplicatesAsync(Dataset, HttpContext.RequestAborted);
         if (Check is null or "places") Away = await Project.Curation.PlacesAlignedAwayAsync(Dataset, HomePlace, HttpContext.RequestAborted);
         if (Check is null or "notnames") NotNames = await Project.Curation.NotNameEntitiesAsync(Dataset, HttpContext.RequestAborted);
+        if (Check is null or "namesakes") Namesakes = await Project.Curation.NamesakePeopleAsync(Dataset, HttpContext.RequestAborted);
         if (Check is null or "thin") Thin = await Project.Curation.ThinPlacesAsync(Dataset, HomePlace, HttpContext.RequestAborted);
     }
 
@@ -163,6 +166,31 @@ public sealed class ChecksModel(ProjectServices services, ProjectAccess access) 
     }
 
     /// <summary>Every string of a listed entity is decided as not a name, for the reason the row gave, and the entity goes.</summary>
+    /// <summary>The fifth check's mend: the identifiers left ticked are kept, the rest removed; with none kept, the entity's strings are decided again without it.</summary>
+    public async Task<IActionResult> OnPostMendNamesakeAsync(string id, string[]? keep)
+    {
+        try
+        {
+            var label = (await Services.Store.GetEntityAsync(id, HttpContext.RequestAborted))?.Label ?? id;
+            var (removed, redecided, settled) = await Project.Curation.MendNamesakeAsync(Dataset, id, keep ?? [], Reviewer, HttpContext.RequestAborted);
+            CheckLists.Forget(Dataset);
+            return Flash($"\"{label}\": {removed} identifier{(removed == 1 ? "" : "s")} of a namesake removed." + (redecided == 0 ? "" : $" Its {redecided} string{(redecided == 1 ? "" : "s")} decided again without it: {settled} settled by the rules, {redecided - settled} at the desk."), new { dataset = Dataset, check = "namesakes" });
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, check = "namesakes" }); }
+    }
+
+    /// <summary>The fifth check: the row is right as it stands, and leaves the list with a note saying so.</summary>
+    public async Task<IActionResult> OnPostNotANamesakeAsync(string id, string? why)
+    {
+        try
+        {
+            var entity = await Project.Curation.NotANamesakeAsync(Dataset, id, Reviewer, why, HttpContext.RequestAborted);
+            CheckLists.Forget(Dataset);
+            return Flash($"\"{entity.Label}\" noted as rightly aligned; it is off the list.", new { dataset = Dataset, check = "namesakes" }, entity);
+        }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, check = "namesakes" }); }
+    }
+
     public async Task<IActionResult> OnPostNotANameAsync(string id, string reason)
     {
         try

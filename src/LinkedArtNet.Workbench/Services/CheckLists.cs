@@ -57,6 +57,8 @@ public static class CheckLists
         }
         foreach (var n in await project.Curation.NotNameEntitiesAsync(dataset, ct))
             Add(n.EntityId, new CheckHit("Entities that are not names", "every string on it looks like no name at all", $"/p/{dataset}/checks?check=notnames", "Open the check"));
+        foreach (var n in await project.Curation.NamesakePeopleAsync(dataset, ct))
+            Add(n.EntityId, new CheckHit("People aligned to a namesake", $"an identifier on it was born too late for its first record, of {n.FirstYear}", $"/p/{dataset}/checks?check=namesakes", "Open the check"));
         foreach (var p in await project.Curation.ThinPlacesAsync(dataset, project.Manifest.HomePlace, ct))
             Add(p.Row.EntityId, new CheckHit("Places that say too little", "none of its identifiers says where it is, and the gazetteer has " + (p.Named.Count == 1 ? "a record" : $"{p.Named.Count} records") + " of its name", $"/p/{dataset}/checks?check=thin", "Open the check"));
         return map;

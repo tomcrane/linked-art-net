@@ -356,6 +356,50 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
     /// <summary>The check "entities that may be one thing": pairs of the project's own entities, for a person to merge or to say are two.</summary>
     public Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, CancellationToken ct = default) => store.PossibleDuplicatesAsync(dataset, TwoThings, ct);
 
+    // ---- persons aligned to a namesake (the fifth check) -------------------------------------------------------------
+
+    /// <summary>How a note begins that says a person the namesake check listed is rightly aligned; the entity then leaves the list.</summary>
+    public const string NotANamesake = "At the checks, not a namesake: ";
+
+    /// <summary>The check "people aligned to a namesake": persons an identifier of whose was born after, or too soon before, the first record that names them.</summary>
+    public Task<IReadOnlyList<NamesakePerson>> NamesakePeopleAsync(string dataset, CancellationToken ct = default) => store.NamesakePeopleAsync(dataset, NotANamesake, ct);
+
+    /// <summary>
+    /// The mend of a row: the identifiers not kept are removed. Where none is left the entity was another person's altogether, and its
+    /// strings a rule or the import put there are decided again from the authorities alone (a person's own decision is left, with the
+    /// entity as their local authority). Returns the identifiers removed, the strings decided again, and of those the ones a rule settled.
+    /// </summary>
+    public async Task<(int Removed, int Redecided, int Settled)> MendNamesakeAsync(string dataset, string entityId, IReadOnlyCollection<string> keep, string reviewer, CancellationToken ct = default)
+    {
+        var listed = (await NamesakePeopleAsync(dataset, ct)).FirstOrDefault(p => p.EntityId == entityId) ?? throw new InvalidOperationException("That entity is not on the list any more.");
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        var going = entity.Equivalents.Where(q => !keep.Contains(q.Uri, StringComparer.Ordinal)).ToList();
+        if (going.Count == 0) throw new InvalidOperationException("Untick the identifiers that are another person's first; or say the entity is right as it is.");
+        foreach (var q in going) await RemoveEquivalentAsync(dataset, entity.Id, q.Uri, reviewer, ct);
+        int redecided = 0, settled = 0;
+        if (going.Count == entity.Equivalents.Count)
+            foreach (var id in listed.StringIds)
+            {
+                if (await store.DecisionForAsync(id, ct) is not { } standing || standing.Method is DecisionMethod.Human or DecisionMethod.Override or DecisionMethod.ByRecord) continue;
+                var s = await OwnAsync(dataset, id, ct);
+                await store.ReopenStringAsync(id, ct);
+                var e = await reconciler.ReconcileOneAfreshAsync(dataset, s, null, ct);
+                redecided++;
+                if (e.Outcome is Outcome.Accepted or Outcome.Overridden) settled++;
+            }
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, $"Mended from the checks: {going.Count} identifier{(going.Count == 1 ? "" : "s")} of a namesake born too late for its records (the first is of {listed.FirstYear}) removed"
+            + (redecided == 0 ? "." : $"; {redecided} string{(redecided == 1 ? "" : "s")} decided again without it, {settled} by the rules and {redecided - settled} left for the desk."), ct);
+        return (going.Count, redecided, settled);
+    }
+
+    /// <summary>The row is right as it stands (the source's date is wrong, or the record's year misleads): noted, and it leaves the list.</summary>
+    public async Task<Entity> NotANamesakeAsync(string dataset, string entityId, string reviewer, string? why, CancellationToken ct = default)
+    {
+        var entity = await OwnEntityAsync(dataset, entityId, ct);
+        await store.AddNoteAsync(dataset, entity.Id, reviewer, NotANamesake + (string.IsNullOrWhiteSpace(why) ? "the identifiers are this person's." : why.Trim()), ct);
+        return entity;
+    }
+
     // ---- not a name --------------------------------------------------------------------------------------------------
 
     /// <summary>Why a string is not a name: the cataloguer wrote that nothing is known ("s.n.", sine nomine; "S.l.", sine loco; RDA's "[publisher not identified]"). The record is as it should be.</summary>

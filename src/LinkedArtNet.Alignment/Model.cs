@@ -473,6 +473,23 @@ public sealed record ThinPlace(ThinPlaceRow Row, IReadOnlyList<AuthorityRecord> 
     public IReadOnlyDictionary<string, int> Written { get; init; } = new Dictionary<string, int>();
 }
 
+/// <summary>An identifier on a person the namesake check lists: the record's own name and the year its source says the person was born, when it says.</summary>
+public sealed record NamesakeIdentifier(string Uri, string Source, string? Label, int? Born);
+
+/// <summary>
+/// A person an identifier of whose says was born after, or too few years before, the earliest of the records the entity's strings stand in:
+/// aligned to a namesake (the fifth check, 2026-11-27; the desk run of 2026-11-25 found James Thomson, on a record of 1824, aligned to an
+/// actress born in 1989). <see cref="FirstYear"/> is that earliest record's year.
+/// </summary>
+public sealed record NamesakePerson(string EntityId, string? Label, int FirstYear, IReadOnlyList<long> StringIds, IReadOnlyList<string> Strings, IReadOnlyList<NamesakeIdentifier> Identifiers)
+{
+    /// <summary>The fewest years a person is before the first record that names them as its author or its subject: a birth later than this before it is another person's.</summary>
+    public const int YearsBefore = 15;
+    public bool BornTooLate(NamesakeIdentifier i) => i.Born is { } b && b > FirstYear - YearsBefore;
+    /// <summary>The identifiers the check would keep: where one at least was born in time, all but those born too late; where none was, none (the cluster is another person's).</summary>
+    public IReadOnlyList<NamesakeIdentifier> Kept => Identifiers.Any(i => i.Born is not null && !BornTooLate(i)) ? Identifiers.Where(i => !BornTooLate(i)).ToList() : [];
+}
+
 public sealed record NotNameEntity(string EntityId, string? Label, string Class, IReadOnlyList<long> StringIds, IReadOnlyList<string> Strings, int Records, int Queued);
 
 /// <summary>

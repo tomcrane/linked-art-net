@@ -1895,6 +1895,67 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    public async Task<int?> EarliestRecordYearAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select min(substring(r.date from '(1[0-9]{3}|20[0-2][0-9])')::int)
+            from occurrences o join records r on r.dataset = o.dataset and r.system = o.system and r.record_id = o.record_id
+            where o.string_id = @id
+            """);
+        Add(cmd, "id", stringId);
+        return await cmd.ExecuteScalarAsync(ct) is int y ? y : null;
+    }
+
+    public async Task<IReadOnlyList<NamesakePerson>> NamesakePeopleAsync(string dataset, string rightPrefix, CancellationToken ct = default)
+    {
+        // counted before it was built (2026-11-27, reports/i1.sql): 56 persons with a birth after the first record, 105 with one fewer
+        // than fifteen years before it. A birth of exactly 2000 written "2000-" is a source's "twentieth century" read as a year (the
+        // Library of Congress and Wikidata both; some twenty of the 105) and is not counted against the entity.
+        await using var cmd = _db.CreateCommand(
+            $$"""
+            with st as (
+                select d.entity_id as eid, s.id as sid, s.raw
+                from source_strings s join decisions d on d.source_string_id = s.id and d.valid
+                join entities e on e.id = d.entity_id and e.class = 'Person' and e.merged_into is null
+                where s.dataset = @dataset
+            ), ry as (
+                select st.eid, min(substring(r.date from '(1[0-9]{3}|20[0-2][0-9])')::int) as y
+                from st join occurrences o on o.string_id = st.sid
+                join records r on r.dataset = o.dataset and r.system = o.system and r.record_id = o.record_id
+                group by st.eid
+            ), ids as (
+                select q.entity_id as eid, q.uri, q.source, ar.label,
+                       -- a birth its source states (both edges, a year or so apart), not a window an active date was widened to
+                       case when ar.lifespan_text ~ '^2000-?$' or ar.begin_latest is null or ar.begin_latest - ar.begin_earliest > interval '800 days' then null
+                            else extract(year from ar.begin_earliest)::int end as b
+                from entity_equivalents q left join authority_records ar on ar.uri = q.uri
+                where q.entity_id in (select eid from ry where y is not null)
+            )
+            select e.id, e.label, ry.y,
+                   (select array_agg(st.sid order by st.raw) from st where st.eid = e.id),
+                   (select array_agg(st.raw order by st.raw) from st where st.eid = e.id),
+                   array_agg(ids.uri order by ids.source, ids.uri), array_agg(ids.source order by ids.source, ids.uri),
+                   array_agg(coalesce(ids.label, '') order by ids.source, ids.uri), array_agg(coalesce(ids.b, -1) order by ids.source, ids.uri)
+            from ry join ids on ids.eid = ry.eid join entities e on e.id = ry.eid
+            where not exists (select 1 from notes n where n.dataset = @dataset and n.target = e.id and n.text like @prefix || '%' escape '\')
+            group by e.id, e.label, ry.y
+            having max(ids.b) > ry.y - {{NamesakePerson.YearsBefore}}
+            order by max(ids.b) - ry.y desc, e.label
+            """);
+        cmd.CommandTimeout = 120;
+        Add(cmd, "dataset", dataset); Add(cmd, "prefix", rightPrefix.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_"));
+        var list = new List<NamesakePerson>();
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct))
+        {
+            var uris = r.GetFieldValue<string[]>(5); var sources = r.GetFieldValue<string[]>(6); var labels = r.GetFieldValue<string[]>(7); var born = r.GetFieldValue<int[]>(8);
+            list.Add(new NamesakePerson(r.GetString(0), Str(r, 1), r.GetInt32(2), r.GetFieldValue<long[]>(3), r.GetFieldValue<string[]>(4),
+                uris.Select((u, i) => new NamesakeIdentifier(u, sources[i], labels[i].Length == 0 ? null : labels[i], born[i] < 0 ? null : born[i])).ToList()));
+        }
+        return list;
+    }
+
     public async Task<IReadOnlyList<PossibleDuplicate>> PossibleDuplicatesAsync(string dataset, string twoThingsPrefix, CancellationToken ct = default)
     {
         // counted before it was built (2026-11-20, reports/q-dup1.sql): 74 pairs linked by their records, 76 of one label and class,

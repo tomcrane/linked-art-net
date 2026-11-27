@@ -691,4 +691,61 @@ public class CurationServiceTests(PostgresFixture pg)
         var firmView = (await curation.EntityAsync(ds, view.Parts[0].Entity!.Id))!;
         Assert.False(firmView.IsCompound);
     }
+
+    /// <summary>The fifth check (2026-11-27): a person an identifier of whose was born after the first record that names them is aligned to a namesake; the mend removes the namesake's identifiers and, where none is left, decides the strings again without the entity.</summary>
+    [PostgresFact]
+    public async Task A_person_born_after_the_book_is_listed_and_mended()
+    {
+        var ds = "ns-" + Guid.NewGuid().ToString("N")[..6];
+        var scheme = new IdentifierScheme("https://data.example.org/" + ds);
+        var reconciler = new Reconciler(pg.Store, scheme, [new LocalIndexSource(pg.Store, "ulan"), new LocalIndexSource(pg.Store, "loc")], ProjectManifest.PmcDefault.ToOptions());
+        var curation = new CurationService(pg.Store, scheme, reconciler);
+        var tag = ds[3..];
+        string Uri(string n) => $"http://id.loc.gov/authorities/names/{tag}{n}";
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord(Uri("late"), "loc", "Thomson, James, 1989-", ["Thomson, James"], "Person", GettyVocabLoader.LifespanFromYears("1989", null), [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord(Uri("right"), "loc", "Housman, Laurence, 1865-1959", ["Housman, Laurence"], "Person", GettyVocabLoader.LifespanFromYears("1865", "1959"), [], null, DateTimeOffset.UtcNow, "test"));
+        await pg.Store.PutAuthorityAsync(new AuthorityRecord(Uri("wrong"), "loc", "Housman, Laurence, 1965-", ["Housman, Laurence"], "Person", GettyVocabLoader.LifespanFromYears("1965", null), [], null, DateTimeOffset.UtcNow, "test"));
+
+        // all of one entity's identifiers are the namesake's: the import's work
+        var thomson = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Thomson, James", ["Thomson, James (author)"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(thomson.Id, new Equivalent(Uri("late"), "loc", DecisionMethod.Imported, 1.0, DateTimeOffset.UtcNow));
+        var seasons = await pg.Store.CollectAsync(ds, "persauthorfull", "Thomson, James (author)");
+        await pg.Store.DecideAsync(seasons.Id, thomson.Id, DecisionMethod.Imported);
+        await pg.Store.PutExamplesAsync([new StringExample(seasons.Id, "T1", "library", "The seasons", "1824", "persauthorfull", "{}")]);
+        // one of another's identifiers is the namesake's, the other is his
+        var housman = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Housman, Laurence", ["Housman, Laurence (author)"], Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(housman.Id, new Equivalent(Uri("right"), "loc", DecisionMethod.Imported, 1.0, DateTimeOffset.UtcNow));
+        await pg.Store.AddEquivalentAsync(housman.Id, new Equivalent(Uri("wrong"), "loc", DecisionMethod.Imported, 1.0, DateTimeOffset.UtcNow));
+        var green = await pg.Store.CollectAsync(ds, "persauthorfull", "Housman, Laurence (author)");
+        await pg.Store.DecideAsync(green.Id, housman.Id, DecisionMethod.Imported);
+        await pg.Store.PutExamplesAsync([new StringExample(green.Id, "H1", "library", "Green arras", "1896", "persauthorfull", "{}")]);
+
+        var listed = await curation.NamesakePeopleAsync(ds);
+        Assert.Equal(2, listed.Count);
+        var t = listed.Single(p => p.EntityId == thomson.Id);
+        Assert.Equal(1824, t.FirstYear);
+        Assert.Empty(t.Kept);                                             // no identifier born in time: none is kept
+        var h = listed.Single(p => p.EntityId == housman.Id);
+        Assert.Equal([Uri("right")], h.Kept.Select(i => i.Uri));        // the one born in time stays
+
+        // Housman: the namesake's identifier goes, the string stays where it is
+        Assert.Equal((1, 0, 0), await curation.MendNamesakeAsync(ds, housman.Id, h.Kept.Select(i => i.Uri).ToList(), "tester"));
+        Assert.Equal([Uri("right")], (await pg.Store.GetEntityAsync(housman.Id))!.Equivalents.Select(q => q.Uri));
+        Assert.Equal(housman.Id, (await pg.Store.DecisionForAsync(green.Id))!.EntityId);
+        // Thomson: every identifier goes and his string is decided again without the entity
+        var (removed, redecided, _) = await curation.MendNamesakeAsync(ds, thomson.Id, [], "tester");
+        Assert.Equal((1, 1), (removed, redecided));
+        Assert.NotEqual(thomson.Id, (await pg.Store.DecisionForAsync(seasons.Id))!.EntityId);
+        Assert.Empty(await curation.NamesakePeopleAsync(ds));
+
+        // and a row said to be right leaves the list with a note
+        var again = await pg.Store.AddEntityAsync(ds, new NewEntity(EntityClass.Person, "Prodigy, Pat", Status: EntityStatus.Aligned), scheme);
+        await pg.Store.AddEquivalentAsync(again.Id, new Equivalent(Uri("late"), "loc", DecisionMethod.Imported, 1.0, DateTimeOffset.UtcNow));
+        var pat = await pg.Store.CollectAsync(ds, "persauthorfull", "Prodigy, Pat (author)");
+        await pg.Store.DecideAsync(pat.Id, again.Id, DecisionMethod.Imported);
+        await pg.Store.PutExamplesAsync([new StringExample(pat.Id, "P1", "library", "Early verses", "1999", "persauthorfull", "{}")]);
+        Assert.Single(await curation.NamesakePeopleAsync(ds));
+        await curation.NotANamesakeAsync(ds, again.Id, "tester", "a child's book of verse");
+        Assert.Empty(await curation.NamesakePeopleAsync(ds));
+    }
 }

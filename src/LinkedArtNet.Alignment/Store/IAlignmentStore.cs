@@ -133,6 +133,8 @@ public interface IAlignmentStore
     Task<int> MarkRecordsGoneAsync(string dataset, string system, string collect, CancellationToken ct = default);
     /// <summary>How many records a string occurs in.</summary>
     Task<int> RecordCountAsync(long stringId, CancellationToken ct = default);
+    /// <summary>The year of the earliest record a string stands in, read from the records' dates; null when it stands in none or none is dated.</summary>
+    Task<int?> EarliestRecordYearAsync(long stringId, CancellationToken ct = default);
     /// <summary>
     /// The records a string occurs in, grouped by what one of their naming fields says (the field's values joined), the largest
     /// groups first, each with its count and its first few records (design doc 12 section 14.6).
@@ -205,6 +207,8 @@ public interface IAlignmentStore
 
     Task<IReadOnlyList<ThinPlaceRow>> ThinPlacesAsync(string dataset, string dismissedPrefix, CancellationToken ct = default);
 
+    /// <summary>The fifth check: persons with an identifier whose source says they were born after, or fewer than <see cref="NamesakePerson.YearsBefore"/> years before, the earliest record their strings stand in. An entity with a note beginning <paramref name="rightPrefix"/> has been said to be right and is left out.</summary>
+    Task<IReadOnlyList<NamesakePerson>> NamesakePeopleAsync(string dataset, string rightPrefix, CancellationToken ct = default);
     Task<IReadOnlyList<NotNameEntity>> NotNameEntitiesAsync(string dataset, string pattern, CancellationToken ct = default);
 
     /// <summary>The dataset's records whose title contains the text given, or whose identifier is it, with the strings in each.</summary>

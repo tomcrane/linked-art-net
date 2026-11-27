@@ -1123,7 +1123,28 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     /// of the string's name lies within <see cref="NearKilometres"/> of it, the qualifier places that candidate. The count first, run
     /// rhf5rg: 25 of the 186 queued place strings, all rightly.
     /// </summary>
-    private async Task<IReadOnlyList<ScoredCandidate>> ScoreWithNearbyAsync(StringReading reading, IReadOnlyList<Candidate> candidates, CancellationToken ct)
+    private async Task<IReadOnlyList<ScoredCandidate>> ScoreWithNearbyAsync(StringReading reading, IReadOnlyList<Candidate> candidates, CancellationToken ct) =>
+        await NotYetBornAsync(reading, await ScoreNearbyAsync(reading, candidates, ct), ct);
+
+    /// <summary>The year a candidate's source states it was born: both edges given and a year or so apart, not the window an active date is widened to, and not a "twentieth century" read as the year 2000.</summary>
+    public static int? StatedBirthYear(Lifespan? life) =>
+        life is { BeginEarliest: { } from, BeginLatest: { } to } && (to - from).TotalDays <= 800 && !(from.Year == 2000 && (life.Text ?? "").Trim().TrimEnd('-') == "2000") ? from.Year : null;
+
+    /// <summary>
+    /// A person born after the string's first record, or fewer than <see cref="NamesakePerson.YearsBefore"/> years before it, is a
+    /// namesake and is ruled out (2026-11-27; the desk run of 2026-11-25 sampled thirty strings with one clear Library of Congress
+    /// candidate: two were wrong, a W. N. Smith born in 1868 for a catalogue of 1990 and others born after the book, and the fifth
+    /// check found the import had aligned some eighty so). The record's year is asked for only where a candidate states a birth.
+    /// </summary>
+    private async Task<IReadOnlyList<ScoredCandidate>> NotYetBornAsync(StringReading reading, IReadOnlyList<ScoredCandidate> scored, CancellationToken ct)
+    {
+        bool Born(ScoredCandidate m) => !m.Veto && m.Candidate.Source != "store" && (m.Candidate.Class ?? reading.Classes[0]) == EntityClass.Person && StatedBirthYear(m.Candidate.Lifespan) is not null;
+        if (reading.String.Id <= 0 || !scored.Any(Born) || await store.EarliestRecordYearAsync(reading.String.Id, ct) is not { } first) return scored;
+        return scored.Select(m => Born(m) && StatedBirthYear(m.Candidate.Lifespan) is { } b && b > first - NamesakePerson.YearsBefore
+            ? m with { Veto = true, Reason = m.Reason + $"; born {b}, too late for the first record this string is in, of {first}" } : m).ToList();
+    }
+
+    private async Task<IReadOnlyList<ScoredCandidate>> ScoreNearbyAsync(StringReading reading, IReadOnlyList<Candidate> candidates, CancellationToken ct)
     {
         var known = await KnownPlacesAsync(reading, candidates, ct);
         var scored = Score(reading, candidates, _options.MaxPersonLifetimeYears, known, _options.HomePlace);

@@ -376,6 +376,52 @@ else if (Model.Check == "notnames")
         </table>
     }
 }
+else if (Model.Check == "namesakes")
+{
+    @* the fifth check (2026-11-27, from the desk run of 2026-11-25, which found James Thomson of an 1824 record aligned to an actress born
+       in 1989): counted first, 56 persons born after their first record and 105 fewer than fifteen years before it, a score of them a
+       source's "twentieth century" read as the year 2000 and left out. Ticked is kept (the owner's convention): the identifiers born too
+       late open unticked and struck through, and where no identifier was born in time all of them do *@
+    <h2>People aligned to a namesake <span class="muted small">@Model.Namesakes.Count</span></h2>
+    <p class="small muted">A person one of whose identifiers says they were born after the first record that names them, or fewer than @NamesakePerson.YearsBefore years before it: the identifier is another person's of the same name. The identifiers ticked are kept and the rest removed. Where none is kept, the entity's strings are decided again without it, and what the rules cannot settle goes to the desk. If the source's date is the one that is wrong, say the entity is right.</p>
+    @if (Model.Namesakes.Count == 0) { <p class="notice">Nothing is listed.</p> }
+    else
+    {
+        <table class="checks">
+            <thead><tr><th>Person</th><th>Named in</th><th>Identifiers: ticked is kept</th><th>Decide</th></tr></thead>
+            <tbody>
+            @foreach (var p in Model.Namesakes)
+            {
+                var kept = p.Kept.Select(i => i.Uri).ToHashSet(StringComparer.Ordinal);
+                var formId = "ns-" + p.EntityId.GetHashCode().ToString("x");
+                <tr>
+                    <td><a href="/p/@Model.Dataset/entity?id=@Uri.EscapeDataString(p.EntityId)" target="_blank" rel="noopener"><strong>@(p.Label ?? p.EntityId)</strong></a></td>
+                    <td class="small">first in a record of <strong>@p.FirstYear</strong><br />@for (var k = 0; k < Math.Min(p.Strings.Count, 4); k++) { <a href="/p/@Model.Dataset/review?id=@p.StringIds[k]" target="_blank" rel="noopener" title="The string's card, with its records">“@p.Strings[k]”</a>@(k < Math.Min(p.Strings.Count, 4) - 1 ? " · " : "") }@if (p.Strings.Count > 4) { <span class="muted"> and @(p.Strings.Count - 4) more</span> }</td>
+                    <td class="small">
+                        @foreach (var i in p.Identifiers)
+                        {
+                            <label style="display:block; font-weight:normal; text-transform:none; letter-spacing:0">
+                                <input type="checkbox" name="keep" value="@i.Uri" form="@formId" data-keep-id @(kept.Contains(i.Uri) ? "checked" : "") />
+                                <span data-what style="@(kept.Contains(i.Uri) ? "" : "text-decoration:line-through")"><span class="tag">@i.Source</span> <a href="@i.Uri" target="_blank" rel="noopener">@(i.Label ?? i.Uri.Split('/').Last())</a>@if (i.Born is { } b) { <span class="@(p.BornTooLate(i) ? "" : "muted")"> · born @b</span>@if (p.BornTooLate(i)) { <strong> · too late for @p.FirstYear</strong> } } else { <span class="muted"> · its source gives no birth</span> }</span>
+                            </label>
+                        }
+                    </td>
+                    <td class="small">
+                        <form method="post" asp-page-handler="MendNamesake" id="@formId" class="inline"><input type="hidden" name="id" value="@p.EntityId" /><button type="submit" class="secondary small" style="white-space:nowrap">Remove the unticked</button></form>
+                        <form method="post" asp-page-handler="NotANamesake" class="inline" style="display:block; margin-top:.4rem"><input type="hidden" name="id" value="@p.EntityId" /><input type="text" name="why" placeholder="why (optional)" style="width:10rem" /> <button type="submit" class="quiet small" style="white-space:nowrap">It is right as it is</button></form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <script>
+        document.addEventListener("change", function (e) {
+            var c = e.target; if (!c || !c.hasAttribute || !c.hasAttribute("data-keep-id")) return;
+            var what = c.parentElement.querySelector("[data-what]"); if (what) what.style.textDecoration = c.checked ? "" : "line-through";
+        });
+        </script>
+    }
+}
 else if (Model.Check == "thin")
 {
     @* the fourth check (the owner, 2026-11-23, "entities that say too little"; 2026-11-24, as a pass and then this list): a place with a
@@ -504,6 +550,11 @@ else
                 <td><a href="/p/@Model.Dataset/checks?check=notnames"><strong>Entities that are not names</strong></a></td>
                 <td class="small">Entities made for "s.n.", "S.l.", "[publisher not identified]" or a stray letter: the cataloguer's way of saying nothing is known, or a slip. Each is decided as not a name and removed.</td>
                 <td><strong>@Model.NotNames.Count.ToString("N0")</strong> entit@(Model.NotNames.Count == 1 ? "y" : "ies")<br /><span class="small muted">on @Model.NotNames.Sum(n => n.Records).ToString("N0") records</span></td>
+            </tr>
+            <tr>
+                <td><a href="/p/@Model.Dataset/checks?check=namesakes"><strong>People aligned to a namesake</strong></a></td>
+                <td class="small">A person with an identifier whose source says they were born after the first record that names them, or too few years before it. The identifiers of the namesake are removed, and the strings decided again where none is left.</td>
+                <td><strong>@Model.Namesakes.Count.ToString("N0")</strong> @(Model.Namesakes.Count == 1 ? "person" : "people")<br /><span class="small muted">@Model.Namesakes.Count(p => p.Kept.Count == 0) with no identifier born in time</span></td>
             </tr>
             <tr>
                 <td><a href="/p/@Model.Dataset/checks?check=thin"><strong>Places that say too little</strong></a></td>

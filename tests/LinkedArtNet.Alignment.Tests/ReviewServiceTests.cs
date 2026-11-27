@@ -67,6 +67,13 @@ public class ReviewServiceTests(PostgresFixture pg)
         // undo: the queued decision stands again
         var reverted = (await desk.UndoAsync(ds, smith.Id))!;
         Assert.Equal(DecisionMethod.Queued, reverted.Method);
+        // and its placeholder is its own again, not left inside the entity just refused (2026-11-25: "Pearson" after Undo)
+        Assert.Equal(provisionalId, reverted.EntityId);
+        var placeholderAfter = (await pg.Store.GetEntityAsync(provisionalId))!;
+        Assert.Null(placeholderAfter.MergedInto);
+        Assert.Equal(EntityStatus.Provisional, placeholderAfter.Status);
+        Assert.Equal(provisionalId, (await pg.Store.ResolveEntityAsync(provisionalId))!.Id);
+        Assert.Equal(accepted.Id, (await pg.Store.GetEntityAsync(accepted.Id))!.Id); // the entity refused stays, without the string
         Assert.Equal(1, Assert.Single(await desk.QueueCountsAsync(ds)).Count);
 
         // accepting again reuses the entity that already has the id

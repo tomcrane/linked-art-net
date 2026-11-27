@@ -690,7 +690,7 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var now = DateTimeOffset.UtcNow;
         foreach (var t in targets.Where(t => !scheme.Owns(t)))
             if (entity.Equivalents.All(q => q.Uri != t)) await store.AddEquivalentAsync(entity.Id, new Equivalent(t, AuthorityUris.SourceOf(t), DecisionMethod.Human, 1.0, now), ct);
-        await FoldProvisionalAsync(decided, entity, reviewer, ct);
+        var folded = await FoldProvisionalAsync(decided, entity, reviewer, ct);
         var merged = plan?.Merging.Select(m => m.Id).ToList();
         if (always)
         {
@@ -699,9 +699,9 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
             var previous = await store.OverrideForAsync(dataset, scope, decided.String.Normalised, ct);
             previous = previous is not null && previous.Context == scope ? previous : null;
             await store.PutOverrideAsync(new Override(dataset, scope, decided.String.Normalised, entity.Id, "workbench:" + reviewer, $"\"{decided.String.Raw}\" → {entity.Id}" + (note is null ? "" : $" ({note})")), ct);
-            await store.DecideAsync(stringId, entity.Id, DecisionMethod.Override, Evidence("accept-together", reading, new { targets, entity = entity.Id, merged, note, overrideKey = decided.String.Normalised, overrideContext = scope, previousOverride = previous is null ? null : new { previous.Target, previous.Source, previous.Note } }), reviewer, ct: ct);
+            await store.DecideAsync(stringId, entity.Id, DecisionMethod.Override, Evidence("accept-together", reading, new { targets, entity = entity.Id, merged, folded, note, overrideKey = decided.String.Normalised, overrideContext = scope, previousOverride = previous is null ? null : new { previous.Target, previous.Source, previous.Note } }), reviewer, ct: ct);
         }
-        else await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept-together", reading, new { targets, entity = entity.Id, merged, note }), reviewer, ct: ct);
+        else await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept-together", reading, new { targets, entity = entity.Id, merged, folded, note }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return (await store.GetEntityAsync(entity.Id, ct))!;
     }
@@ -743,20 +743,21 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         await EnsureTargetAsync(dataset, decided, targetUri, ct);
         var reading = reconciler.Read(decided.String);
         var entity = await reconciler.EntityForUriAsync(dataset, targetUri, reading, null, ct);
-        await FoldProvisionalAsync(decided, entity, reviewer, ct);
-        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept", reading, new { target = targetUri, entity = entity.Id, note }), reviewer, ct: ct);
+        var folded = await FoldProvisionalAsync(decided, entity, reviewer, ct);
+        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("accept", reading, new { target = targetUri, entity = entity.Id, note, folded }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return entity;
     }
 
     /// <summary>The provisional entity a queued or minted string pointed at merges into the entity the reviewer chose, so nothing is left behind and its other strings follow. An entity with authority behind it is left alone.</summary>
-    private async Task FoldProvisionalAsync(DecidedString decided, Entity chosen, string reviewer, CancellationToken ct)
+    /// <returns>The placeholder folded, for the decision to keep so that Undo can give it back; null when nothing was folded.</returns>
+    private async Task<string?> FoldProvisionalAsync(DecidedString decided, Entity chosen, string reviewer, CancellationToken ct)
     {
-        if (decided.Decision.EntityId is null || decided.Decision.EntityId == chosen.Id) return;
+        if (decided.Decision.EntityId is null || decided.Decision.EntityId == chosen.Id) return null;
         var current = await store.ResolveEntityAsync(decided.Decision.EntityId, ct);
-        if (current is null || current.Id == chosen.Id || current.Status != EntityStatus.Provisional || current.Equivalents.Count > 0) return;
-        try { await store.MergeAsync(current.Id, chosen.Id, reviewer, ct); }
-        catch (InvalidOperationException) { /* a chain or project mismatch: the decision still re-points below */ }
+        if (current is null || current.Id == chosen.Id || current.Status != EntityStatus.Provisional || current.Equivalents.Count > 0) return null;
+        try { await store.MergeAsync(current.Id, chosen.Id, reviewer, ct); return current.Id; }
+        catch (InvalidOperationException) { return null; /* a chain or project mismatch: the decision still re-points below */ }
     }
 
     /// <summary>The reviewer says the string is the same as an entity already in the store.</summary>
@@ -766,8 +767,8 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         var entity = await store.ResolveEntityAsync(entityId, ct) ?? throw new KeyNotFoundException($"No entity {entityId}.");
         if (entity.Dataset != dataset) throw new InvalidOperationException("The entity belongs to another project.");
         var reading = reconciler.Read(decided.String);
-        await FoldProvisionalAsync(decided, entity, reviewer, ct);
-        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("same-as", reading, new { entity = entity.Id, note }), reviewer, ct: ct);
+        var folded = await FoldProvisionalAsync(decided, entity, reviewer, ct);
+        await store.DecideAsync(stringId, entity.Id, DecisionMethod.Human, Evidence("same-as", reading, new { entity = entity.Id, note, folded }), reviewer, ct: ct);
         await NoteIfAnyAsync(dataset, stringId, reviewer, note, ct);
         return entity;
     }
@@ -814,6 +815,18 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         return entity;
     }
 
+    /// <summary>
+    /// A local authority made for some of a string's records and not the string (2026-11-27; the desk run of 2026-11-25 left "Pitman"
+    /// half done, its London record decided and its Petone one a firm no index holds): a new confirmed entity of the label and kind
+    /// given, the string's own placeholder untouched, for the records ticked to be decided onto.
+    /// </summary>
+    public async Task<Entity> NewLocalAsync(string dataset, long stringId, string? label, EntityClass? cls, CancellationToken ct = default)
+    {
+        var decided = await OwnAsync(dataset, stringId, ct);
+        var reading = reconciler.Read(decided.String);
+        return await store.AddEntityAsync(dataset, new NewEntity(cls ?? reading.Classes[0], string.IsNullOrWhiteSpace(label) ? reading.Label : label.Trim(), [decided.String.Raw], reading.Lifespan, reading.Nationalities, reading.Roles, EntityStatus.Confirmed), scheme, ct);
+    }
+
     /// <summary>The reviewer makes this spelling always mean the target: an override, applied now. Scoped to the field the string came from, since the same spelling in another field may be something else; <paramref name="anyField"/> widens it to every field.</summary>
     public async Task<Entity> OverrideAsync(string dataset, long stringId, string targetUri, string reviewer, string? note = null, bool anyField = false, CancellationToken ct = default)
     {
@@ -852,7 +865,15 @@ public sealed class ReviewService(IAlignmentStore store, IdentifierScheme scheme
         }
         // the findings the decision raised and nobody has acted on go with it
         if (decided.Decision.Method == DecisionMethod.NotAName) await store.RemoveOpenFindingsForStringAsync(stringId, Finding.NotAName, ct);
-        return await store.RevertDecisionAsync(stringId, ct);
+        var restored = await store.RevertDecisionAsync(stringId, ct);
+        // the decision taken back had folded the string's placeholder into the entity chosen: the placeholder is the string's own again,
+        // or the string would wait at the desk inside the entity the reviewer has just said it is not (2026-11-25: "Pearson" after Undo
+        // still read as Pearson/Prentice Hall, its spelling among that entity's names, and a rule later put it back there)
+        if (restored is not null && ParseEvidence(decided.Decision.EvidenceJson).Extra is { ValueKind: JsonValueKind.Object } made
+            && made.TryGetProperty("folded", out var f) && f.ValueKind == JsonValueKind.String && f.GetString() is { } placeholder
+            && await store.UnfoldPlaceholderAsync(placeholder, ct) is not null)
+            restored = await store.DecisionForAsync(stringId, ct);
+        return restored;
     }
 
     private async Task NoteIfAnyAsync(string dataset, long stringId, string reviewer, string? note, CancellationToken ct)

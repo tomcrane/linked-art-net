@@ -324,17 +324,24 @@ public sealed class CurationService(IAlignmentStore store, IdentifierScheme sche
         await store.AddNoteAsync(dataset, loser.Id, reviewer, $"Merged into \"{survivor.Label}\" ({survivor.Id}).", ct);
     }
 
-    /// <summary>Takes chosen strings away from an entity: their decisions are invalidated and they are undecided again for the next reconcile.</summary>
-    public async Task<int> ReopenAsync(string dataset, IReadOnlyList<long> stringIds, string? reviewer = null, string? entityId = null, CancellationToken ct = default)
+    /// <summary>
+    /// Takes chosen strings away from an entity. Taken off by a person from the entity's page (<paramref name="decideAfresh"/>), each is
+    /// decided again there and then from the authorities alone, the project's entities not asked, so the entity it was taken from cannot
+    /// claim it back by its name; what the rules cannot settle waits at the desk. Otherwise the strings are left undecided, for the
+    /// next reconcile or for their card to decide as it opens.
+    /// </summary>
+    public async Task<int> ReopenAsync(string dataset, IReadOnlyList<long> stringIds, string? reviewer = null, string? entityId = null, CancellationToken ct = default, bool decideAfresh = false)
     {
         var n = 0;
         var raws = new List<string>();
         foreach (var id in stringIds.Distinct())
         {
             var s = await OwnAsync(dataset, id, ct);
-            if (await store.ReopenStringAsync(id, ct)) { n++; raws.Add($"\"{s.Raw}\" ({s.Context})"); }
+            if (!await store.ReopenStringAsync(id, ct)) continue;
+            n++; raws.Add($"\"{s.Raw}\" ({s.Context})");
+            if (decideAfresh) await reconciler.ReconcileOneAfreshAsync(dataset, s, null, ct);
         }
-        if (n > 0 && entityId is not null) await store.AddNoteAsync(dataset, entityId, reviewer, $"{n} string{(n == 1 ? "" : "s")} reopened for the next reconcile: {string.Join(", ", raws.Take(6))}{(raws.Count > 6 ? ", ..." : "")}.", ct);
+        if (n > 0 && entityId is not null) await store.AddNoteAsync(dataset, entityId, reviewer, $"{n} string{(n == 1 ? "" : "s")} {(decideAfresh ? "taken off this entity and decided again without it" : "reopened for the next reconcile")}: {string.Join(", ", raws.Take(6))}{(raws.Count > 6 ? ", ..." : "")}.", ct);
         return n;
     }
 

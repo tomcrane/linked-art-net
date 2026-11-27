@@ -80,6 +80,10 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         if (string.IsNullOrWhiteSpace(Context)) Context = null;
         Queue = await Project.Desk.QueueCountsAsync(Dataset, Method);
         Item = Id is { } id ? (Look ? await Project.Desk.LookAgainAsync(Dataset, id) : await Project.Desk.GetAsync(id)) : await Project.Desk.NextAsync(Dataset, Method, Context, After);
+        // past the last of the list while strings still wait in it (the last ones skipped, or the place lost by a jump to another
+        // field): the list begins again, and says so; "Nothing waiting" beside a count of 1,270 was false (the desk run of 2026-11-25)
+        if (Item is null && Id is null && After > 0 && (Item = await Project.Desk.NextAsync(Dataset, Method, Context, 0)) is not null)
+            Message = (Message is null ? "" : Message + " ") + "That was the end of this list; it begins again here with what is still waiting.";
         if (Item is not null && Item.String.Dataset != Dataset) Item = null;
         if (Item?.Entity is { } stands) OnChecks = await CheckLists.ForAsync(Project, stands.Id, HttpContext.RequestAborted);
         // a card with no candidate at all is searched for the reviewer under the string's name (the owner, 2026-11-14, sent from the
@@ -233,17 +237,30 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         return RedirectToPage(new { dataset = Dataset, method = Method, context = Context, id });
     }
 
-    public Task<IActionResult> OnPostLocalAsync(long id, string? label, string? note, string? url, EntityClass? cls) =>
-        Act(id, async () => (string.IsNullOrWhiteSpace(url) ? "Kept as a local authority." : "Kept as a local authority, with the URL as its identifier.", await Project.Desk.KeepLocalAsync(Dataset, id, Reviewer, label, note, url, cls)));
+    /// <summary>Kept as a local authority: the string, with the strings ticked as the same thing; or, with records ticked, those records only, on a new local entity (the ticks are honoured as Accept honours them: 2026-11-27).</summary>
+    public async Task<IActionResult> OnPostLocalAsync(long id, string? label, string? note, string? url, EntityClass? cls, string[]? records, long[]? also)
+    {
+        if (records is not { Length: > 0 })
+            return await Act(id, async () => (string.IsNullOrWhiteSpace(url) ? "Kept as a local authority." : "Kept as a local authority, with the URL as its identifier.", await Project.Desk.KeepLocalAsync(Dataset, id, Reviewer, label, note, url, cls)), also);
+        if (!string.IsNullOrWhiteSpace(url)) return Flash("With records ticked, keep them as a local authority first; its identifier is added on the entity's page.", new { dataset = Dataset, method = Method, context = Context, id });
+        try { return await ByRecord(id, records, (await Project.Desk.NewLocalAsync(Dataset, id, label, cls, HttpContext.RequestAborted)).Id, note); }
+        catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
+    }
 
     /// <summary>The string is not a name (the owner, 2026-11-22): no entity, and it leaves the queue. The reason is one of two, and the desk goes on.</summary>
-    public async Task<IActionResult> OnPostNotANameAsync(long id, string? reason, string? note)
+    public async Task<IActionResult> OnPostNotANameAsync(long id, string? reason, string? note, long[]? also)
     {
-        try { await Project.Curation.NotANameAsync(Dataset, id, Reviewer, reason ?? "", note, HttpContext.RequestAborted); }
+        var with = 0;
+        try
+        {
+            await Project.Curation.NotANameAsync(Dataset, id, Reviewer, reason ?? "", note, HttpContext.RequestAborted);
+            // the strings ticked as the same thing written another way are not names either, in the one act
+            foreach (var other in (also ?? []).Distinct().Where(x => x != id)) { await Project.Curation.NotANameAsync(Dataset, other, Reviewer, reason ?? "", note, HttpContext.RequestAborted); with++; }
+        }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
-        return Flash(reason == CurationService.NothingKnown
+        return Flash((reason == CurationService.NothingKnown
             ? "Decided: not a name, the cataloguer's way of saying nothing is known. No entity stands for it."
-            : "Decided: not a name, and its record wants fixing. No entity stands for it.", new { dataset = Dataset, method = Method, context = Context, after = id });
+            : "Decided: not a name, and its record wants fixing. No entity stands for it.") + (with == 0 ? "" : $" {with} more string{(with == 1 ? "" : "s")} decided with it."), new { dataset = Dataset, method = Method, context = Context, after = id });
     }
 
     /// <summary>A way out: the record is wrong. The finding is raised, and the card comes back searched for what the text should have read.</summary>
@@ -278,9 +295,13 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     }
 
     /// <summary>A way out: set aside, as different things in different records or with a question. The desk goes on.</summary>
-    public async Task<IActionResult> OnPostSetAsideAsync(long id, bool mixed, string? text)
+    public async Task<IActionResult> OnPostSetAsideAsync(long id, bool mixed, string? text, long[]? also)
     {
-        try { await Project.Desk.SetAsideAsync(Dataset, id, Reviewer, mixed, text, HttpContext.RequestAborted); }
+        try
+        {
+            await Project.Desk.SetAsideAsync(Dataset, id, Reviewer, mixed, text, HttpContext.RequestAborted);
+            foreach (var other in (also ?? []).Distinct().Where(x => x != id)) await Project.Desk.SetAsideAsync(Dataset, other, Reviewer, mixed, text, HttpContext.RequestAborted);
+        }
         catch (Exception e) when (e is KeyNotFoundException or InvalidOperationException or ArgumentException) { return Flash(e.Message, new { dataset = Dataset, method = Method, context = Context, id }); }
         return Flash(mixed ? "Set aside: it wants deciding record by record. It is on the Set aside list." : "Set aside with your question. It is on the Set aside list.", new { dataset = Dataset, method = Method, context = Context });
     }

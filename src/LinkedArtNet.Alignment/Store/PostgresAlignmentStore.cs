@@ -2036,6 +2036,51 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
+    public async Task<string?> UnfoldPlaceholderAsync(string placeholderId, CancellationToken ct = default)
+    {
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var tx = await conn.BeginTransactionAsync(ct);
+        string? survivor = null; string? label = null; string[] labels = [];
+        await using (var cmd = new NpgsqlCommand("select merged_into, label, labels from entities where id = @id and status = 'merged' for update", conn, tx))
+        {
+            Add(cmd, "id", placeholderId);
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            if (await r.ReadAsync(ct)) { survivor = Str(r, 0); label = Str(r, 1); labels = r.IsDBNull(2) ? [] : r.GetFieldValue<string[]>(2); }
+        }
+        if (survivor is null) return null;
+        await using (var cmd = new NpgsqlCommand("update entities set status = 'provisional', merged_into = null, updated_at = now() where id = @id", conn, tx)) { Add(cmd, "id", placeholderId); await cmd.ExecuteNonQueryAsync(ct); }
+        // the strings still waiting that had stood on the placeholder went across with it: they come back
+        await using (var cmd = new NpgsqlCommand(
+            """
+            update decisions d set entity_id = @id where d.valid and d.method in ('queued', 'minted') and d.entity_id = @survivor
+              and exists (select 1 from source_strings s where s.id = d.source_string_id and s.raw = any(@names))
+            """, conn, tx)) { Add(cmd, "id", placeholderId); Add(cmd, "survivor", survivor); Add(cmd, "names", labels.Append(label).OfType<string>().Distinct(StringComparer.Ordinal).ToArray()); await cmd.ExecuteNonQueryAsync(ct); }
+        // and the spellings it brought are no longer the other entity's names (its own label stays whatever it is)
+        await using (var cmd = new NpgsqlCommand(
+            """
+            update entities set labels = (select coalesce(array_agg(l), '{}') from unnest(labels) l where l = label or not (l = any(@gone))),
+                                normalised_labels = (select coalesce(array_agg(n), '{}') from unnest(normalised_labels) n where n = any(@keep)),
+                                updated_at = now()
+            where id = @survivor
+            """, conn, tx))
+        {
+            var gone = labels.Append(label).OfType<string>().Distinct(StringComparer.Ordinal).ToArray();
+            // the keys that stay are those of the names that stay: read the survivor's names, drop the placeholder's, key the rest
+            string? sLabel = null; string[] sLabels = [];
+            await using (var read = new NpgsqlCommand("select label, labels from entities where id = @survivor", conn, tx))
+            {
+                Add(read, "survivor", survivor);
+                await using var r = await read.ExecuteReaderAsync(ct);
+                if (await r.ReadAsync(ct)) { sLabel = Str(r, 0); sLabels = r.IsDBNull(1) ? [] : r.GetFieldValue<string[]>(1); }
+            }
+            var staying = sLabels.Where(l => l == sLabel || !gone.Contains(l, StringComparer.Ordinal)).Append(sLabel).OfType<string>();
+            Add(cmd, "gone", gone); Add(cmd, "keep", staying.SelectMany(StringKey.Variants).Distinct(StringComparer.Ordinal).ToArray()); Add(cmd, "survivor", survivor);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        await tx.CommitAsync(ct);
+        return survivor;
+    }
+
     public async Task<Decision?> RevertDecisionAsync(long stringId, CancellationToken ct = default)
     {
         await using var conn = await _db.OpenConnectionAsync(ct);

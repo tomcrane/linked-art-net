@@ -112,7 +112,7 @@ public sealed class EntityModel(ProjectServices services, ProjectAccess access) 
     public Task<IActionResult> OnPostRemoveEquivalentAsync(string id, string uri) => Act(id, async () => { await Project.Curation.RemoveEquivalentAsync(Dataset, id, uri, Reviewer); return "Identifier removed."; });
     public Task<IActionResult> OnPostConfirmAsync(string id, string? note) => Act(id, async () => { await Project.Curation.ConfirmAsync(Dataset, id, Reviewer, note); return "Confirmed."; });
     public Task<IActionResult> OnPostNoteAsync(string id, string text) => Act(id, async () => { if (!string.IsNullOrWhiteSpace(text)) await Project.Curation.NoteAsync(Dataset, id, Reviewer, text.Trim()); return "Note added."; });
-    public Task<IActionResult> OnPostReopenAsync(string id, long[]? strings) => Act(id, async () => { var n = await Project.Curation.ReopenAsync(Dataset, strings ?? [], Reviewer, id, HttpContext.RequestAborted); return $"{n} string(s) reopened."; });
+    public Task<IActionResult> OnPostReopenAsync(string id, long[]? strings) => Act(id, async () => { var n = await Project.Curation.ReopenAsync(Dataset, strings ?? [], Reviewer, id, HttpContext.RequestAborted, decideAfresh: true); return n == 0 ? "Nothing was ticked." : $"{n} string{(n == 1 ? "" : "s")} taken off this entity and decided again without it: what the rules could not settle is at the desk."; });
 
     public async Task<IActionResult> OnPostMergeAsync(string id, string survivor, EntityClass? cls)
     {

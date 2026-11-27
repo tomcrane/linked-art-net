@@ -68,6 +68,15 @@ public interface IAlignmentStore
     /// <summary>The dataset's live entities whose class and label (case folded) another live entity shares, with their equivalents, ordered by class, label and age: the duplicate pass's input (<see cref="Reconciliation.DuplicateMerger"/>).</summary>
     Task<IReadOnlyList<Entity>> EntitiesSharingLabelAsync(string dataset, CancellationToken ct = default);
 
+    /// <summary>
+    /// Takes back the folding of a string's placeholder into the entity a reviewer chose for it (the desk's Accept and Same as fold it, so
+    /// that nothing is left behind): the placeholder is provisional and its own again, the queued and minted strings that went across
+    /// with it come back to it, and the spellings it brought leave the other entity's names. For the desk's Undo, which gave the string
+    /// back its decision and left its placeholder inside the wrong entity (2026-11-25, "Pearson", "Derry"). The entity it had been folded
+    /// into, or null when the placeholder was not merged.
+    /// </summary>
+    Task<string?> UnfoldPlaceholderAsync(string placeholderId, CancellationToken ct = default);
+
     /// <summary>Merges the loser into the survivor: equivalents move, valid decisions re-point, the loser is marked merged and keeps resolving.</summary>
     Task MergeAsync(string loserId, string survivorId, string? reviewer, CancellationToken ct = default);
 

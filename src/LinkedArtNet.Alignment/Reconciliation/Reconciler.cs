@@ -202,6 +202,19 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     public async Task<Outcome> ReconcileOneAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default) =>
         (await ReconcileOneDetailedAsync(dataset, s, runId, ct)).Outcome;
 
+    /// <summary>
+    /// Decides one string from the authorities alone, the project's own entities not asked: for a string a person has taken off an
+    /// entity, which the entity's name would otherwise claim again at once (2026-11-25: "Wood, Christopher, 1901-1930" reopened from the
+    /// wrong Christopher Wood and back on it a minute later by exact name). An accepted record still lands on the entity that holds it.
+    /// </summary>
+    public async Task<Evaluation> ReconcileOneAfreshAsync(string dataset, SourceString s, string? runId = null, CancellationToken ct = default)
+    {
+        var evaluation = await EvaluateAsync(dataset, s, includeStore: false, ct);
+        if (evaluation.Outcome == Outcome.Decomposed) return await DecomposeAsync(dataset, s, evaluation, runId, ct);
+        await CommitAsync(dataset, s, evaluation, runId, ct);
+        return evaluation;
+    }
+
     /// <summary>A string as the manifest's not-names are compared: lower case, no spaces or brackets, no punctuation at either end ("[S. l.]" and "s.l." are one; "SL" is neither).</summary>
     public static string NotNameKey(string raw) => new string(raw.Where(c => !char.IsWhiteSpace(c) && c is not ('[' or ']' or '(' or ')')).ToArray()).Trim('.', ',', ';', ':', '?').ToLowerInvariant();
 

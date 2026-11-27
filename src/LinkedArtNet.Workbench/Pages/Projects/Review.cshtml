@@ -732,7 +732,7 @@ else
                     else if (m.Veto != true && Model.Method != "human")
                     {
                         @* a quiet way to take one row of a group that is one thing, for the rare case the rest are not it *@
-                        <form method="post" asp-page-handler="@(m.IsStore ? "SameAs" : "Accept")" class="inline">
+                        <form method="post" asp-page-handler="@(m.IsStore ? "SameAs" : "Accept")" asp-route-method="@Model.Method" asp-route-context="@Model.Context" class="inline">
                             <input type="hidden" name="id" value="@item.String.Id" /><input type="hidden" name="@(m.IsStore ? "entity" : "target")" value="@m.Uri" />
                             <button type="submit" class="link small" title="@(m.IsStore ? "Only this entity, not the rest of the group" : "Only this record, not the rest of the group")">just this one</button>
                         </form>
@@ -933,10 +933,26 @@ else
         });
         document.addEventListener("submit", function (e) {
             var f = e.target, action = (f.getAttribute && f.getAttribute("action")) || "";
-            if (!/handler=(Accept|SameAs|AcceptTogether)\b/.test(action)) return;
+            // every act that decides honours the ticks: the records ticked are decided and not the string; the strings ticked as the same
+            // thing go with it. Keep as local authority does both; Not a name and the set-asides take the strings (they speak of a
+            // spelling, not of a record); the log for the cataloguers is of the string's records as it always was (2026-11-27: the desk
+            // run of 2026-11-25 found only Accept and Same as honoured them, with the banner on screen all the while)
             function carry(name, sel) { ticked(sel).forEach(function (c) { var h = document.createElement("input"); h.type = "hidden"; h.name = name; h.value = c.value; f.appendChild(h); }); }
-            carry("records", "input[data-records]"); carry("also", "input[data-also]");
+            if (/handler=(Accept|SameAs|AcceptTogether|Local)\b/.test(action)) carry("records", "input[data-records]");
+            if (/handler=(Accept|SameAs|AcceptTogether|Local|NotAName|SetAside)\b/.test(action)) carry("also", "input[data-also]");
         }, true);
+        // and an act that is of the whole string says so while records are ticked
+        function whole() {
+            var any = ticked("input[data-records]").length > 0;
+            document.querySelectorAll("form").forEach(function (f) {
+                if (!/handler=(NotAName|RecordWrong|SetAside|JoinHyphen)\b/.test(f.getAttribute("action") || "")) return;
+                var p = f.querySelector("[data-whole]");
+                if (any && !p) { p = document.createElement("p"); p.className = "small"; p.setAttribute("data-whole", ""); p.textContent = "This is of the whole string: the records ticked are not used by it."; f.appendChild(p); }
+                if (!any && p) p.remove();
+            });
+        }
+        document.addEventListener("change", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-records")) whole(); });
+        whole();
         show();
     })();
     </script>

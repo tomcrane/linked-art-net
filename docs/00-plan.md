@@ -286,6 +286,22 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   - Century dates read as the year 2000 (item 4's loader fault): still not mended; LoC and Wikidata would need loading.
 
 
+- THE OWNER'S CARD, "Adam, Robert (author)" (string 14015), 2026-11-27 evening: ONE STRING, TWO PEOPLE. Three records:
+  the works of Robert and James Adam (1931, 1975), the architect of 1728-1792, and "Classical architecture" (1990),
+  the architect born in 1948. Item 4's rule in the rules ruled the living man out as born after the FIRST record, and
+  with six groups of the name above him he fell off the card. MENDED (99fc0b3): too late for every record is a
+  namesake, ruled out as before; too late for the earlier records and of age for the later is shown with "two people
+  of the name, perhaps, to decide by record", and no rule accepts the string whole (`SomeRecordsOnly`). Counted: 117
+  strings carry the veto, 28 of them with a later record the person was of age for (reports/k1.sql, k2.sql: "Smith,
+  George", "Quick, Richard", "Shakespeare, William"; in the subject headings mostly true namesakes). The stored
+  evidence is as the run wrote it until the next reconcile; "Look again" on a card shows today's reading (seen on
+  14015: the ULAN and LoC records of the man born in 1948, second on the card, with those words).
+  WHAT THE CARD STILL LACKS FOR THIS CASE (item 6): nothing on the card says the string may be two people until a
+  candidate's reason does; the records are not grouped by anything that tells the two apart (their dates would: a
+  "group by date" or the years set beside the candidates' lives); the by-record ticks are the way to decide it, and
+  the card does not lead the reviewer to them. The fifth check has the same blind spot (it reads the first year).
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

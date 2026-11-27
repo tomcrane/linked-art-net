@@ -64,7 +64,7 @@ current in their status lines.
 
 ## 0. Resume point (written 2026-11-24 night; the one place to read first)
 
-**State.** (2026-11-27 evening: the last full run is `run-20261127-150511-bdamw3`, schema version 15, 2,682 queued; AAT loaded again with English labels only; what follows is the state of 2026-11-24.) The last full run was kfg394 (`run-20261124-131349-kfg394`); the pass through the headings is
+**State.** (2026-11-27 evening: the last full run is `run-20261127-150511-bdamw3`, schema version 16, 2,682 queued at the run; AAT loaded again with English labels only; what follows is the state of 2026-11-24.) The last full run was kfg394 (`run-20261124-131349-kfg394`); the pass through the headings is
 `run-20261124-122043-y6bp64` (252 places given a record; undo-run takes it back). Schema version 14. 3,676 strings
 queued, 92 of them places. 63 findings open on the cataloguers' list. The workbench is stopped. The way of working
 is the assistant driving the workbench as a user, signed in as `claude` (the browser has one sign-in, and on
@@ -349,6 +349,26 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
     BEFORE the press on cards the rules mark as risky (several of one name, a hint that rests on dates alone, a
     reprint-shaped record), saying what it checked and what it could not; and a record of how often its view and the
     reviewer's first choice differed is the training he describes. Not built; to design with him.
+
+
+- THE REPRINT SIGN, BUILT 2026-11-27 night on the owner's word ("Add the reprint flag"); schema version 16 (one index,
+  records by title). Under a record on a queued or minted card, and in the panel's row: "A reprint or a later edition,
+  perhaps: the catalogue has a record of this title from 1968. Its author may have died long before 2000, and a
+  namesake alive then is not the author for that alone." Two signs, all the store has: the title's own words
+  (reprint, facsimile, new/revised edition, 2nd ed ...) and an earlier record of the same title, two years or more
+  before. COUNTED FIRST (reports/m1.sql): of 1,647 queued author, corporate-author and publisher cards, 7 by the
+  title's words and 51 by an earlier copy, 58 in all (personal authors 37). SMALL, AND IT WOULD NOT HAVE FLAGGED
+  "Quick, Richard": that record (1970) has neither sign, and I told the owner it would before I had counted; put
+  right with him. The stored records carry title, year, publisher, place, class, medium and subjects only: no edition
+  statement, no notes. Whether the library export has such fields (MARC 250, 500, 534) and they were not collected is
+  THE NEXT QUESTION, and the real reprint sign if so; after that it is a lookup outside (Library Hub by title) or a
+  model. Seen on "Frankl, Paul (author)", Gothic architecture, 2000 beside 1968.
+  - "Smith, Lindsay (author)" (string 20650), the owner sure the four records are one woman (Sussex) and that no LoC
+    record was hers. "Fetch what each heading was made from" shows LoC no2015029990 "Smith, Lindsay (Professor of
+    English)" IS her: "Pre-Raphaelitism, 2013 ... (she is Professor of English at the University of Sussex)";
+    "Victorian photography, painting and poetry, 1995". It sat third on the card at 0.85, under the bare and the
+    dated namesakes at 1.00: A HEADING TOLD APART BY A QUALIFIER RANKS BELOW ITS UNDATED NAMESAKE, and the fetch that
+    settles it is a button the reviewer must think to press (Opus's line 6: fetch unasked). Item 6. Not decided by me.
 
 
 **Held for Fable** (append below; newest last):

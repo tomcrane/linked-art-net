@@ -133,6 +133,12 @@ public interface IAlignmentStore
     Task<int> MarkRecordsGoneAsync(string dataset, string system, string collect, CancellationToken ct = default);
     /// <summary>How many records a string occurs in.</summary>
     Task<int> RecordCountAsync(long stringId, CancellationToken ct = default);
+    /// <summary>
+    /// By "system|record", for the records a string stands in: the year of the earliest other record of the dataset with the same title,
+    /// where that is two years or more before the record's own. A sign of a reprint or a later edition, and no more: the catalogue's
+    /// own copies are all it knows. Titles of fifteen letters or more.
+    /// </summary>
+    Task<IReadOnlyDictionary<string, int>> EarlierCopiesAsync(long stringId, CancellationToken ct = default);
     /// <summary>The years of the earliest and the latest record a string stands in, read from the records' dates; null when it stands in none or none is dated.</summary>
     Task<(int First, int Last)?> RecordYearsAsync(long stringId, CancellationToken ct = default);
     /// <summary>

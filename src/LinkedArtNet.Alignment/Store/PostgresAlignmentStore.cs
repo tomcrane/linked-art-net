@@ -1484,6 +1484,26 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return await cmd.ExecuteNonQueryAsync(ct);
     }
 
+    public async Task<IReadOnlyDictionary<string, int>> EarlierCopiesAsync(long stringId, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            with mine as (
+                select r.dataset, r.system, r.record_id, r.title, substring(r.date from '(1[4-9][0-9]{2}|20[0-2][0-9])')::int as y
+                from occurrences o join records r on r.dataset = o.dataset and r.system = o.system and r.record_id = o.record_id
+                where o.string_id = @id and length(r.title) >= 15)
+            select m.system, m.record_id, min(substring(e.date from '(1[4-9][0-9]{2}|20[0-2][0-9])')::int)
+            from mine m join records e on e.dataset = m.dataset and lower(e.title) = lower(m.title) and (e.system, e.record_id) <> (m.system, m.record_id)
+            where substring(e.date from '(1[4-9][0-9]{2}|20[0-2][0-9])')::int < m.y - 1
+            group by 1, 2
+            """);
+        Add(cmd, "id", stringId);
+        var found = new Dictionary<string, int>(StringComparer.Ordinal);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) found[r.GetString(0) + "|" + r.GetString(1)] = r.GetInt32(2);
+        return found;
+    }
+
     public async Task<int> RecordCountAsync(long stringId, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand("select count(*) from occurrences where string_id = @id");

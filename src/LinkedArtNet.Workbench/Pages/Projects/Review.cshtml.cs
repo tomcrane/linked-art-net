@@ -69,7 +69,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         public bool? OfAge(int year) => Born is not { } b ? null : year >= b + NamesakePerson.YearsBefore && year <= (Died ?? b + Reconciler.MakerLifeYears);
     }
     /// <summary>A record of the string in that panel: its selector as the ticks name it, its year, and the choices whose life holds the year.</summary>
-    public sealed record ShareRecord(string Selector, string? Title, string? Date, int? Year, RecordDecision? Own);
+    public sealed record ShareRecord(string Selector, string? Title, string? Date, int? Year, RecordDecision? Own, string? Reprint = null);
     public IReadOnlyList<ShareChoice> ShareChoices { get; private set; } = [];
     public IReadOnlyList<ShareRecord> ShareRecords { get; private set; } = [];
     /// <summary>Set when the dates say the string may name two people: a candidate of age for some of its records and too young for others. The panel opens with it.</summary>
@@ -136,7 +136,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         if (choices.Count == 0) return;
         ShareChoices = choices;
         ShareRecords = records.OrderBy(x => YearOf(x.Date) ?? int.MaxValue).ThenBy(x => x.Title, StringComparer.Ordinal)
-            .Select(x => new ShareRecord($"rec|{x.Source}|{x.RecordId}", x.Title, x.Date, YearOf(x.Date), RecordDecisions.GetValueOrDefault(x.Source + "|" + x.RecordId))).ToList();
+            .Select(x => new ShareRecord($"rec|{x.Source}|{x.RecordId}", x.Title, x.Date, YearOf(x.Date), RecordDecisions.GetValueOrDefault(x.Source + "|" + x.RecordId), ReprintSign(x))).ToList();
         var years = ShareRecords.Select(r => r.Year).OfType<int>().ToList();
         foreach (var c in choices.Where(c => c.Born is not null && !c.Found))
         {
@@ -146,6 +146,25 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
             TwoPeople = $"This string may name two people. {c.Label}, born {c.Born}, was of an age for the record{(could.Count == 1 ? "" : "s")} of {string.Join(", ", could)} and not for {(tooYoung.Count == 1 ? "that" : "those")} of {string.Join(", ", tooYoung)}.";
             break;
         }
+    }
+
+    /// <summary>By "system|record": the year of an earlier record of the catalogue with the same title (see <see cref="IAlignmentStore.EarlierCopiesAsync"/>).</summary>
+    public IReadOnlyDictionary<string, int> EarlierCopies { get; private set; } = new Dictionary<string, int>();
+
+    private static readonly System.Text.RegularExpressions.Regex ReprintWords = new(
+        @"\b(reprint(ed)?|facsimile|reissued?|new edition|revised edition|enlarged edition|(2nd|3rd|[4-9]th|second|third|fourth|fifth|sixth) ed(ition|n)?\b\.?)",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    /// <summary>
+    /// Why a record may be a reprint or a later edition, in words for the card, or null: its title says so, or the catalogue has an earlier
+    /// record of the same title. The author of a reprint may be long dead, and a living namesake fits its date (the owner, 2026-11-27,
+    /// after "Quick, Richard": a life of 1931 catalogued in an issue of 1970). The stored records have no edition statement or notes,
+    /// so this is all the store can say; that record had neither sign.
+    /// </summary>
+    public string? ReprintSign(StringExample x)
+    {
+        if (x.Title is { } title && ReprintWords.Match(title) is { Success: true } m) return $"the title says \"{m.Value.Trim()}\"";
+        return EarlierCopies.TryGetValue(x.Source + "|" + x.RecordId, out var year) ? $"the catalogue has a record of this title from {year}" : null;
     }
 
     /// <summary>The decisions single records of this string have, by "system|record".</summary>
@@ -195,6 +214,7 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
         if (Item is not null)
         {
             foreach (var d in await Services.Store.RecordDecisionsForStringAsync(Item.String.Id, HttpContext.RequestAborted)) RecordDecisions[d.System + "|" + d.RecordId] = d;
+            if (Item.Decision.Method is DecisionMethod.Queued or DecisionMethod.Minted) EarlierCopies = await Services.Store.EarlierCopiesAsync(Item.String.Id, HttpContext.RequestAborted);
             if (HeadingResplit.PartContexts(Project.Reconciler.Options).Contains(Item.String.Context)) HyphenJoins = await new HeadingResplit(Services.Store).ProposedJoinsAsync(Item.String, HttpContext.RequestAborted);
             if (Item.Decision.Method == DecisionMethod.Queued)
             {

@@ -364,3 +364,9 @@ create table if not exists hyphenated_names (
 );
 
 insert into schema_version (version) values (15) on conflict do nothing;
+
+-- Version 16 (2026-11-27): a record's title, for "an earlier record of this title": the desk's sign of a reprint, whose author may
+-- be long dead when a living namesake fits its date.
+create index if not exists records_title on records (dataset, lower(title));
+
+insert into schema_version (version) values (16) on conflict do nothing;

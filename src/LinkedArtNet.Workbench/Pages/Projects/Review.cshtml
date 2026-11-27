@@ -317,6 +317,7 @@ else
                     <span class="muted">· look up the title: <a href="https://discover.libraryhub.jisc.ac.uk/search?q=@Uri.EscapeDataString(lookFor)" target="_blank" rel="noopener" title="Searches Jisc Library Hub Discover, the union catalogue of UK research libraries, for this title: its records give the publisher's full name and place">Library Hub</a> · <a href="https://www.google.com/search?q=@Uri.EscapeDataString("\"" + lookFor + "\"")" target="_blank" rel="noopener" title="Searches the web for this title, in quotes">web</a> · <a href="https://www.google.com/search?q=@Uri.EscapeDataString("\"" + lookFor + "\" " + item.String.Raw)" target="_blank" rel="noopener" title="Searches the web for this title, in quotes, together with the card's string: for a title that is not the only one of its name (the owner, 2026-11-19: &quot;souvenir white rabbit&quot;)">web, with "@item.String.Raw"</a></span>
                 }
                 @foreach (var (name, values) in x.NamingFields()) { <br /><span class="muted">@name:</span> @string.Join(" · ", values) }
+                @if (Model.ReprintSign(x) is { } reprint) { <br /><span class="hint" title="A sign, not a decision. The store has no edition statement for a record: only its title and the catalogue's other records.">A reprint or a later edition, perhaps: @reprint. Its author may have died long before @(x.Date ?? "its date"), and a namesake alive then is not the author for that alone.</span> }
                 </p>
             }
             @if (g.Records > g.First.Count) { <p class="small muted">and @((g.Records - g.First.Count).ToString("N0")) more@(recs.Groups.Count > 1 ? " in this group" : "")</p> }
@@ -350,6 +351,7 @@ else
                         <tr>
                             <td style="width:4.5rem; vertical-align:top"><strong>@(r.Year?.ToString() ?? r.Date ?? "no date")</strong></td>
                             <td style="vertical-align:top">@(r.Title ?? "(no title)")
+                                @if (r.Reprint is not null) { <br /><span class="hint">a reprint or a later edition, perhaps: @r.Reprint</span> }
                                 @if (r.Own is null && known) { <br /><span class="muted">@(fits.Count == 0 ? "none of the dated candidates was alive and of age then" : "alive and of age then: " + string.Join(" · ", fits.Select(c => c.Label)))</span> }
                             </td>
                             <td style="width:42%; vertical-align:top">

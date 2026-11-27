@@ -302,6 +302,33 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   the card does not lead the reviewer to them. The fifth check has the same blind spot (it reads the first year).
 
 
+- "GIVE EACH RECORD ITS OWN", BUILT 2026-11-27 evening (7a18a1e), ahead of item 6 on the owner's word after he decided
+  "Adam, Robert (author)" over two cards ("my concern would be which way round to do it"; "a UI to make that more
+  clear would be good (subject to the caveat of making other tasks more complicated)").
+  - A panel on the card, under "In the records": "Different in different records? Give each record its own". One row a
+    record (its year first, oldest first), a list of the card's candidates not ruled out beside it, "leave it" the
+    default, and one button, "Decide each record as chosen". Folded to one line on every other card; open when the
+    dates ask for it or when the string is part done. Shown for a string of 2 to 40 records with a candidate.
+  - THE LOOKAHEAD: where a candidate with a stated birth was of age for some records and too young for others, the
+    panel opens with "This string may name two people. X, born 1948, was of an age for the record of 1990 and not for
+    those of 1931, 1975." Under each title, which dated candidates were alive and of age that year. A HINT AND NO MORE,
+    and the panel says so: tried on "Quick, Richard (author)" (1924 and 1970), where the hint pointed the 1970 record
+    at LoC's Richard Quick of 1943-2009, and the book is a reprint of the old curator's life of Edwin Long. Pressed as
+    `claude` to try the button and taken back; the entity it made, person/rf8uf86m "Quick, Richard, 1943-2009", is
+    left with one identifier and no strings: THE OWNER'S TO REMOVE OR KEEP (nothing in the workbench deletes it).
+  - The banner after a part decision: "1 of this string's 3 records has a decision of its own now; the other 2 wait
+    here. Decide them the same way, in any order: each record's decision stands by itself."
+  - LABELS: a person made from several records takes the heading with dates where one of them is the same name with
+    dates after it (`Reconciler.DatedHeading`: ULAN's "Adam, Robert" beside LoC's "Adam, Robert, 1948-"), at the desk
+    and in the rules. The owner's new entity renamed on its page to "Adam, Robert, 1948-". Entities made before today
+    keep their labels; a count of bare-named persons with a dated heading among their identifiers is not made yet.
+  - A fault met trying it: a record left at "leave it" posted null and the handler fell over. Mended. NO TEST of the
+    handler but that press; the workbench tests do not reach it.
+  - NOT DONE, for item 6: the lookahead reads only stated births (a body or a place that differs by record gets no
+    sentence); the choices are the stored evidence's, so a candidate the last run ruled out on the first record is
+    missing until "Look again" or the next reconcile; the fifth check still reads the first year alone.
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

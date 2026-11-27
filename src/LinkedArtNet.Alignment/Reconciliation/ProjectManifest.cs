@@ -93,7 +93,7 @@ public sealed record ProjectManifest
         {
             // the labels and sentences are the assistant's reading of the PMC library export's field names and of the records seen in
             // them (2026-11-13), not the library's own documentation: the cataloguers' to correct
-            ["persauthorfull"] = new([EntityClass.Person], "default", Label: "personal author", About: "A person named on the record as author, editor or other contributor, with the role when given."),
+            ["persauthorfull"] = new([EntityClass.Person], "default", NamesMakers: true, Label: "personal author", About: "A person named on the record as author, editor or other contributor, with the role when given."),
             ["corpauthor"] = new([EntityClass.Group, EntityClass.Person], "default", Parts: new(PartsShape.List, ";"), Label: "corporate author", About: "A body named as the record's author: a gallery, a society, and on a sale catalogue the auction house or dealer."),
             ["publisher"] = new([EntityClass.Group, EntityClass.Person], "default", Parts: new(PartsShape.List, ";"), Label: "publisher", About: "Who published the item, as the record gives it; on a sale catalogue often the auctioneer."),
             ["place"] = new([EntityClass.Place], Qualified: true, Parts: new(PartsShape.List, ";"), Label: "place of publication", About: "Where the item was published, as the record gives it; several places are separated by semicolons."),
@@ -137,10 +137,11 @@ public sealed record ProjectManifest
 /// <summary>A <see cref="ContextRule"/> as the manifest writes it.</summary>
 /// <param name="Label">The field's name in plain words, for a reviewer ("place of publication" for <c>place</c>); the context's own name stands when there is none (the owner, 2026-11-13).</param>
 /// <param name="About">A sentence on what the field holds in this catalogue, for the desk's and the entity page's help.</param>
+/// <param name="NamesMakers">The field names who made the item (author, editor), so a person named in it was alive at the record's date (see <see cref="ContextRule"/>).</param>
 /// <param name="GroupBy">The record field a string's records are grouped by at the desk (design doc 12 section 14.6): the field that most often tells two things of one name apart.</param>
-public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null, List<string>? Collections = null, string? Label = null, string? About = null, string? GroupBy = null)
+public sealed record ContextRuleJson(List<EntityClass> Classes, string? AgentProfile = null, bool? Qualified = null, PartsRuleJson? Parts = null, string? Home = null, bool? ParseDatedOnly = null, List<string>? Collections = null, string? Label = null, string? About = null, string? GroupBy = null, bool? NamesMakers = null)
 {
-    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule(), Home, ParseDatedOnly ?? false, Collections);
+    public ContextRule ToRule() => new(Classes, AgentProfile, Qualified ?? false, Parts?.ToRule(), Home, ParseDatedOnly ?? false, Collections, NamesMakers ?? false);
 }
 
 /// <summary>A source system as the manifest describes it (design doc 12 section 14.1).</summary>

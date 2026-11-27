@@ -1895,16 +1895,18 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return list;
     }
 
-    public async Task<int?> EarliestRecordYearAsync(long stringId, CancellationToken ct = default)
+    public async Task<(int First, int Last)?> RecordYearsAsync(long stringId, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(
             """
-            select min(substring(r.date from '(1[4-9][0-9]{2}|20[0-2][0-9])')::int)
-            from occurrences o join records r on r.dataset = o.dataset and r.system = o.system and r.record_id = o.record_id
-            where o.string_id = @id
+            select min(y), max(y) from (
+                select substring(r.date from '(1[4-9][0-9]{2}|20[0-2][0-9])')::int as y
+                from occurrences o join records r on r.dataset = o.dataset and r.system = o.system and r.record_id = o.record_id
+                where o.string_id = @id) x
             """);
         Add(cmd, "id", stringId);
-        return await cmd.ExecuteScalarAsync(ct) is int y ? y : null;
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) && !r.IsDBNull(0) ? (r.GetInt32(0), r.GetInt32(1)) : null;
     }
 
     public async Task<IReadOnlyList<NamesakePerson>> NamesakePeopleAsync(string dataset, string rightPrefix, CancellationToken ct = default, string? only = null)

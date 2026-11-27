@@ -162,7 +162,10 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
     /// </summary>
     private static bool CrossConflict(DateTimeOffset? beginEarliest, DateTimeOffset? beginLatest, DateTimeOffset? endEarliest, DateTimeOffset? endLatest, int? maxLifetimeYears)
     {
-        var begin = beginEarliest ?? beginLatest;
+        // a begin known only by its latest edge ("born by 1797", the begin of working dates) is after nothing: "op 1797" against a
+        // record "active 1797" met itself here, the last day of the year against the first, once descriptions' working dates were read
+        // (2026-11-27, the dry run over the queue: seven such strings would have been minted)
+        var begin = beginEarliest;
         if (begin is not null && endLatest is not null && begin > endLatest) return true;
         if (begin is not null && endLatest is null && endEarliest is not null && begin > endEarliest) return true;
         var latestBegin = beginLatest ?? beginEarliest;
@@ -193,6 +196,51 @@ public sealed record Lifespan(DateTimeOffset? BeginEarliest, DateTimeOffset? Beg
         if (start is null) return null;
         var l = new Lifespan(null, At(start.EndOfTheEnd), At(end!.BeginOfTheBegin), null, text);
         return l.IsWorking ? l : null;
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex ActiveYears = new(
+        @"\b(?:active|flourished|fl\.)\s+(?:(?:ca\.|circa|about)\s*)?(\d{4})(?![\ds])(?:\s*-\s*(?:(?:ca\.|circa|about)\s*)?(\d{4}|\d{2})(?![\ds]))?",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    /// <summary>
+    /// The working dates a record's description states ("Scottish painter, active 1887-1938", "British artist, active ca. 1906"), as
+    /// working dates (<see cref="IsWorking"/>); null when it states none. ULAN gives such an artist an estimated life span beside the
+    /// description (1857 to 1968 for that painter), which a catalogue's own working dates ("op 1887-1938") were never comparable with,
+    /// and which could conflict with a true birth year (active 2003 was read as born before 1973, against "Gillick, James, 1972-"): the
+    /// desk run of 2026-11-25 met both, and counted 65 queued headings whose candidate states the very years. A decade ("active 1780s")
+    /// or a century is not read.
+    /// </summary>
+    public static Lifespan? ActiveIn(string? description)
+    {
+        if (description is null || ActiveYears.Match(description) is not { Success: true } m) return null;
+        var from = int.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+        var to = !m.Groups[2].Success ? from : m.Groups[2].Length == 2 ? from / 100 * 100 + int.Parse(m.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture)
+            : int.Parse(m.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture);
+        if (from < 2 || to < from || to > 9999) return null;
+        return new Lifespan(null, new DateTimeOffset(from, 12, 31, 23, 59, 59, TimeSpan.Zero), new DateTimeOffset(to, 1, 1, 0, 0, 0, TimeSpan.Zero), null, m.Value.Trim());
+    }
+
+    /// <summary>
+    /// This lifespan with the years another states, where the record's own description states them too: ULAN's "Dutch painter, 1629 or
+    /// 1630-1700" for a record dated 1629, "ca. 1736-1798" for one whose estimate is 1730 to 1789. The description is the source's own
+    /// account of its doubt, and a catalogue that took the other year agrees with it (the desk run of 2026-11-25: Rooker, Barret; nine
+    /// queued headings counted 2026-11-27). Only a side the other dates to a year and this one contradicts is taken; null when nothing is.
+    /// </summary>
+    public Lifespan? AsDescribed(Lifespan other, string? description)
+    {
+        if (description is null || IsWorking || other.IsWorking) return null;
+        bool Stated(int year) => System.Text.RegularExpressions.Regex.IsMatch(description, $@"(?<!\d){year}(?!\d)");
+        static bool Apart(DateTimeOffset? a1, DateTimeOffset? a2, DateTimeOffset? b1, DateTimeOffset? b2) =>
+            (a1 ?? DateTimeOffset.MinValue) > (b2 ?? DateTimeOffset.MaxValue) || (b1 ?? DateTimeOffset.MinValue) > (a2 ?? DateTimeOffset.MaxValue);
+        // a year, or the few a "circa" spans, one of which the description states
+        bool StatedIn(DateTimeOffset from, DateTimeOffset to) => Enumerable.Range(from.Year, to.Year - from.Year + 1).Any(Stated);
+        var begin = Tight(other.BeginEarliest, other.BeginLatest) && (BeginEarliest is not null || BeginLatest is not null)
+            && Apart(BeginEarliest, BeginLatest, other.BeginEarliest, other.BeginLatest) && StatedIn(other.BeginEarliest!.Value, other.BeginLatest!.Value);
+        var end = Tight(other.EndEarliest, other.EndLatest) && (EndEarliest is not null || EndLatest is not null)
+            && Apart(EndEarliest, EndLatest, other.EndEarliest, other.EndLatest) && StatedIn(other.EndEarliest!.Value, other.EndLatest!.Value);
+        if (!begin && !end) return null;
+        return new Lifespan(begin ? other.BeginEarliest : BeginEarliest, begin ? other.BeginLatest : BeginLatest, end ? other.EndEarliest : EndEarliest, end ? other.EndLatest : EndLatest,
+            $"{Text}, or as its description has it");
     }
 }
 

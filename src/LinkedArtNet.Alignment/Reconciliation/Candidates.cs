@@ -12,7 +12,8 @@ namespace LinkedArtNet.Alignment.Reconciliation;
 /// <param name="Home">The vocabulary whose exact term decides a string here (keywords: lcsh): another vocabulary's exact term on the same name is carried as that concept's equivalent rather than a rival (doc 10, section 7.6 item 4).</param>
 /// <param name="ParseDatedOnly">Use the agent profile only for strings that carry dates ("Tuke, Henry Scott, 1858-1929"), so a topical heading ("Art, Modern") in the same context is not read as a person.</param>
 /// <param name="Collections">The vocabulary's own collections the strings here belong to, in order of preference: LCSH holds "Catalogs" as a topic heading (LCSHAuthorizedHeadings), a topical subdivision and a form subdivision (GenreFormSubdivisions, both in Subdivisions), and among a source's exact matches those in the earliest named collection stand while the rest are vetoed.</param>
-public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false, PartsRule? Parts = null, string? Home = null, bool ParseDatedOnly = false, IReadOnlyList<string>? Collections = null)
+/// <param name="NamesMakers">The field names who made the record's item (its author, its editor): a person named here was alive at the record's date, which the rules may check a candidate's life against.</param>
+public sealed record ContextRule(IReadOnlyList<EntityClass> Classes, string? AgentProfile = null, bool Qualified = false, PartsRule? Parts = null, string? Home = null, bool ParseDatedOnly = false, IReadOnlyList<string>? Collections = null, bool NamesMakers = false)
 {
     public static readonly ContextRule Anything = new([EntityClass.Person, EntityClass.Group, EntityClass.Place, EntityClass.Type]);
 }
@@ -238,6 +239,7 @@ public sealed record StringReading(
 /// <param name="Provisional">A store entity minted for an earlier string without any authority behind it: a lookalike that must not make a known entity ambiguous or contradict a vote.</param>
 /// <param name="ProvisionalQueued">A provisional entity whose own string is awaiting review: it never answers another string silently.</param>
 /// <param name="Placement">Where the record's own vocabulary puts it (TGN's parent string, a LoC heading's parenthetical), for a qualified string to check against.</param>
+/// <param name="Kind">What a concept's label says in brackets where the gazetteer knows no place of that name ("Plants" of LCSH's "White ladies (Plants)"): a kind of thing, which a string placed in a known place does not name. Set by the reconciler, which has the gazetteer to ask.</param>
 /// <param name="PlacementAncestors">The TGN chain above a placement read from a label ("England, United Kingdom, Europe, World" above "Northamptonshire"), consulted only when the placement as written does not agree: ancestors widen agreement, never narrow it (finding 84, 2026-10-24).</param>
 /// <param name="Collections">The record's own vocabulary's collections it belongs to, by short name (LCSH's "Subdivisions"), for a context that wants some of them (<see cref="ContextRule.Collections"/>).</param>
 /// <param name="Gives">For a project entity, the identifiers its Wikidata items give for the same thing (their sameAs): what the entity is already aligned to, in the candidate sources' own terms (finding 119).</param>
@@ -259,6 +261,7 @@ public sealed record Candidate(
     bool Disambiguated = false,
     string? Placement = null,
     string? PlacementAncestors = null,
+    string? Kind = null,
     IReadOnlyList<string>? Collections = null,
     string? PlaceType = null,
     bool ByVariant = false,
@@ -274,7 +277,8 @@ public sealed record Candidate(
 /// <param name="SetAside">Not wanted here by a preference rather than a contradiction (a record outside the context's collections, another vocabulary's second exact term): it is not the answer, but unlike a veto it does not poison a group that the authorities' own links put it in.</param>
 /// <param name="DatesConflict">The candidate's lifespan and the string's cannot be one person's (finding 93 reads it: a namesake vetoed on its dates alone is the desk's, not a mint).</param>
 /// <param name="DatesNear">The dates agree as a near miss (finding 115: a year or two out on one side, the other the same): the record stands over undated namesakes as an agreeing one does, but does not carry a single source alone.</param>
-public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null, bool SetAside = false, bool DatesConflict = false, bool DatesNear = false);
+/// <param name="AliveAtRecords">A person whose stated life holds the dates of every record the string is in, in a field that names who made the item: what an undated string has to check a dated heading by.</param>
+public sealed record ScoredCandidate(Candidate Candidate, double Score, bool Veto, string Reason, bool DatesAgree = false, bool? QualifierAgrees = null, string? JoinedTo = null, bool SetAside = false, bool DatesConflict = false, bool DatesNear = false, bool AliveAtRecords = false);
 
 /// <summary>Candidates that are the same real-world thing across sources, joined through their mutual sameAs links, voting as one.</summary>
 /// <param name="Vetoed">Every member is vetoed, or a vetoed member is the same thing as a live one by the authorities' own links: the group cannot be the answer.</param>
@@ -345,12 +349,14 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
         string? parentString = null;
         string? placeTypeUri = null;
         IReadOnlyList<string>? collections = null;
+        string? description = null;
         if (r.DataJson is not null)
         {
             try
             {
                 using var doc = System.Text.Json.JsonDocument.Parse(r.DataJson);
                 if (doc.RootElement.TryGetProperty("parentString", out var ps) && ps.ValueKind == System.Text.Json.JsonValueKind.String) parentString = ps.GetString();
+                if (doc.RootElement.TryGetProperty("description", out var ds) && ds.ValueKind == System.Text.Json.JsonValueKind.String) description = ds.GetString();
                 if (doc.RootElement.TryGetProperty("placeType", out var pt) && pt.ValueKind == System.Text.Json.JsonValueKind.String) placeTypeUri = pt.GetString();
                 if (doc.RootElement.TryGetProperty("collections", out var col) && col.ValueKind == System.Text.Json.JsonValueKind.Array)
                     collections = col.EnumerateArray().Select(e => e.GetString()).OfType<string>().ToArray();
@@ -406,7 +412,13 @@ public sealed class LocalIndexSource(IAlignmentStore store, string source, int l
             // ULAN's parent string is its facet, but a ULAN label may carry a place of its own ("Hampton Court (Richmond upon Thames,
             // London, England)"), which places the body when the string has a qualifier (finding 70)
             : reading.Qualifier is not null && r.Source == "ulan" ? Qualified.PlacementOf(null, labels, placesOnly: true) : null;
-        return new Candidate(r.Uri, r.Source, r.Label, cls, r.Lifespan, sameAs, stage, nameScore, null, nationalities, Disambiguated: disambiguated,
+        // the dates as the record's own description gives them, where they say more than its date fields: working dates for an artist the
+        // source dates only by an estimated life ("active 1887-1938"), and the other year of a doubt the description states ("1728 or 1732")
+        var lifespan = r.Lifespan;
+        if (lifespan is null or { IsDated: false, IsWorking: false } && Lifespan.ActiveIn(description) is { } active) lifespan = active;
+        else if (lifespan is { IsEmpty: false } own && reading.Lifespan is { IsEmpty: false } written && own.Compare(written) == DateAgreement.Conflict && !written.NearMiss(own)
+            && own.AsDescribed(written, description) is { } described && described.Compare(written) != DateAgreement.Conflict) lifespan = described;
+        return new Candidate(r.Uri, r.Source, r.Label, cls, lifespan, sameAs, stage, nameScore, null, nationalities, Disambiguated: disambiguated,
             Placement: placement, Collections: collections, PlaceType: placeType, ByVariant: byVariant, ByPossessive: byPossessive, Labels: r.Labels);
     }
 

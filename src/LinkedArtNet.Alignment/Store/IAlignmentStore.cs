@@ -133,8 +133,8 @@ public interface IAlignmentStore
     Task<int> MarkRecordsGoneAsync(string dataset, string system, string collect, CancellationToken ct = default);
     /// <summary>How many records a string occurs in.</summary>
     Task<int> RecordCountAsync(long stringId, CancellationToken ct = default);
-    /// <summary>The year of the earliest record a string stands in, read from the records' dates; null when it stands in none or none is dated.</summary>
-    Task<int?> EarliestRecordYearAsync(long stringId, CancellationToken ct = default);
+    /// <summary>The years of the earliest and the latest record a string stands in, read from the records' dates; null when it stands in none or none is dated.</summary>
+    Task<(int First, int Last)?> RecordYearsAsync(long stringId, CancellationToken ct = default);
     /// <summary>
     /// The records a string occurs in, grouped by what one of their naming fields says (the field's values joined), the largest
     /// groups first, each with its count and its first few records (design doc 12 section 14.6).

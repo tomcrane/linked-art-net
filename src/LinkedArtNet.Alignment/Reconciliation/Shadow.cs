@@ -115,7 +115,7 @@ public sealed class ShadowRun(IAlignmentStore store, Reconciler reconciler)
     }
 
     /// <summary>One CSV line per item, for the review spreadsheet: the string, the old answer, the new verdict and the new top candidates.</summary>
-    public static string CsvHeader => "context,string,verdict,old_entity,old_label,old_ids,new_outcome,new_read_as,new_lifespan,new_top_uri,new_top_label,new_top_score,new_top_sources,new_second_uri,new_second_label,new_second_score";
+    public static string CsvHeader => "context,string,verdict,old_entity,old_label,old_ids,new_outcome,new_read_as,new_lifespan,new_top_uri,new_top_label,new_top_score,new_top_sources,new_second_uri,new_second_label,new_second_score,new_method,new_top_reason";
 
     public static string CsvLine(ShadowItem item)
     {
@@ -127,6 +127,7 @@ public sealed class ShadowRun(IAlignmentStore store, Reconciler reconciler)
             Q(item.String.Context), Q(item.String.Raw), item.Verdict.ToString(), Q(item.OldEntity?.Id), Q(item.OldEntity?.Label), Q(ids),
             item.New.Outcome.ToString(), Q(item.New.Reading.Text), Q(item.New.Reading.Lifespan?.Text),
             Q(top?.Best.Candidate.Uri), Q(top?.Best.Candidate.Label), top is null ? "" : top.Score.ToString("0.00", CultureInfo.InvariantCulture), Q(top is null ? null : string.Join(" ", top.Sources)),
-            Q(second?.Best.Candidate.Uri), Q(second?.Best.Candidate.Label), second is null ? "" : second.Score.ToString("0.00", CultureInfo.InvariantCulture));
+            Q(second?.Best.Candidate.Uri), Q(second?.Best.Candidate.Label), second is null ? "" : second.Score.ToString("0.00", CultureInfo.InvariantCulture),
+            Q(item.New.AcceptedMethod), Q((item.New.Accepted ?? top)?.Best.Reason));
     }
 }

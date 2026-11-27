@@ -16,7 +16,7 @@
 //   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint] [--verbose | --candidates]
 //                                                                              decide undecided strings from overrides, the store and the local indexes;
 //                                                                              --verbose prints a line per string, --candidates the top candidates too
-//   dotnet run --project tools/Align -- shadow [--dataset pmc] [--method imported] [--context c] [--limit n | --sample n] [--out reports]
+//   dotnet run --project tools/Align -- shadow [--dataset pmc] [--method imported] [--context c] [--limit n | --sample n] [--out reports] [--all]
 //                                                                              re-judge old decisions from scratch and compare; writes a CSV, decides nothing
 //   dotnet run --project tools/Align -- audit [--dataset pmc] [--out reports]  check entities with ULAN ids against the local ULAN index; writes a CSV
 //
@@ -181,7 +181,11 @@ switch (args[0])
     {
         await store.InitialiseAsync();
         var shadowManifest = (await ManifestAsync(store, dataset)).ToOptions();
-        var options = new ReconcilerOptions { Contexts = shadowManifest.Contexts, HomePlace = shadowManifest.HomePlace, AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact") };
+        // the manifest's options whole, as a reconcile reads them (its trades, its strings that are not names), the command line over them
+        var options = shadowManifest with { AcceptSingleSourceWithDates = !args.Contains("--no-single-source"), AcceptUniqueExactSingleSource = !args.Contains("--no-unique-exact") };
+        // --all: every string's line, not the disagreements only: a dry run of the rules over the queue (--method queued), whose old
+        // answer is a placeholder with nothing to compare, is read by what the rules would now do
+        var everyLine = args.Contains("--all");
         var sources = await SourcesAsync(store, dataset);
         var reconciler = new Reconciler(store, scheme, sources, options);
         var sample = int.TryParse(Option("--sample"), out var sn) ? sn : 0;
@@ -195,7 +199,7 @@ switch (args[0])
         await csv.WriteLineAsync(ShadowRun.CsvHeader);
         var progress = new Progress<string>(m => Console.Error.WriteLine($"  {m}"));
         var report = await new ShadowRun(store, reconciler).RunAsync(dataset, method, Option("--context"), limit, sample > 0,
-            onItem: item => item.Verdict is Verdict.Agree or Verdict.OldLocal ? Task.CompletedTask : csv.WriteLineAsync(ShadowRun.CsvLine(item)), progress: progress);
+            onItem: item => !everyLine && item.Verdict is Verdict.Agree or Verdict.OldLocal ? Task.CompletedTask : csv.WriteLineAsync(ShadowRun.CsvLine(item)), progress: progress);
         await csv.FlushAsync();
         var text = report.ToString() + "\n" + string.Join("\n", report.ByContext.Select(x => $"  {x.Context,-16} {x.Verdict,-18} {x.Count}"));
         await store.FinishRunAsync(run.Id, System.Text.Json.JsonSerializer.Serialize(report.Totals.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value)), text);

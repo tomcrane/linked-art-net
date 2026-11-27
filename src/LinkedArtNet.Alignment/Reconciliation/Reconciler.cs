@@ -618,7 +618,13 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
         // not the single's second group, not one of the exact-single's count, not one of the outvoted policy's rivals ("Chartwell (Kent)" lost
         // its single to LoC's "Chartwells (Firm)", "Landmark" its exact-single to ULAN's "Landmarks", "Still" and "Fleming" their votes to
         // the project's "Stills (Gallery)" and Robert Fleming Holdings, "Flemings" among its labels; run v6gjx5, 2026-11-05)
-        var second = live.Skip(1).FirstOrDefault(g => !Lookalike(g) && (!topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional)));
+        // nor is a namesake no date speaks for, beside a record whose dates agree with the string's: "Hilliard, Nicholas, 1537-1619" has
+        // ULAN's man by his dates, and LoC's undated "Hilliard, Nicholas" beside him says nothing against (the desk run of 2026-11-25,
+        // "Morgan, John, 1823-1886"; 77 queued strings counted 2026-11-27, reports/j2.sql). A project entity among the rivals still holds
+        // the string for the desk, and so does a near miss on the dates (finding 115), which carries nothing alone
+        var topDated = top is not null && top.Members.Any(m => !m.Veto && !m.SetAside && !m.Candidate.ProvisionalQueued && m.DatesAgree && !m.DatesNear && m.Candidate.NameScore >= 0.97);
+        bool Undated(CandidateGroup g) => topDated && g.Members.Where(m => !m.Veto && !m.SetAside).All(m => !m.DatesAgree && m.Candidate.EntityId is null);
+        var second = live.Skip(1).FirstOrDefault(g => !Lookalike(g) && !Undated(g) && (!topIsFirm || g.Members.Any(m => !m.Veto && !m.Candidate.Provisional)));
         var carried = top is null ? null : CarriedBy(reading, top);
         if (top is not null && carried is null && !top.Members.Any(m => !m.Veto && !m.SetAside && m.QualifierAgrees == true))
             groups = groups.Select(g => g == top ? g with { Members = g.Members.Select(m => Firm(m) && Contradiction(reading, m) is { } why ? m with { Reason = m.Reason + $"; {why}: not carried alone (finding 106)" } : m).ToList() } : g).ToList();
@@ -895,8 +901,11 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // a heading that carries dates was disambiguated from namesakes by its cataloguer: an undated string cannot claim it alone
             // unless the string is that dated heading, dates and all ("Williams, Peter, 1914-1995" whole in the keywords field; finding 45)
             // (and a string with working dates that the heading's lifespan holds is not an undated string: finding 75)
+            // (nor is an undated name in a field that names who made the item, when the heading's life holds every record's date: the
+            // records are the check. 2026-11-27; the desk run of 2026-11-25 sampled thirty such personal authors, the two wrong ones a
+            // heading dead before the book and one 122 years old at it, and both fail this)
             && !exactTop.Members.Any(m => m.Candidate.Disambiguated && NameMatcher.Score(reading.String.Raw, [m.Candidate.Label ?? ""]) < 0.97
-                && !(reading.Lifespan is { IsWorking: true } && m.Candidate.Lifespan is { IsEmpty: false }))
+                && !(reading.Lifespan is { IsWorking: true } && m.Candidate.Lifespan is { IsEmpty: false }) && !m.AliveAtRecords)
             // a qualifier that the record does not bear out ("Princeton, N.J." against a Princeton elsewhere) is for the desk
             && exactTop.Best.QualifierAgrees != false)
         {
@@ -1140,13 +1149,84 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
     {
         int? Year(ScoredCandidate m) => NamesakePerson.BirthInHeading(m.Candidate.Label) ?? StatedBirthYear(m.Candidate.Lifespan);
         bool Born(ScoredCandidate m) => !m.Veto && m.Candidate.Source != "store" && (m.Candidate.Class ?? reading.Classes[0]) == EntityClass.Person && Year(m) is not null;
-        if (reading.String.Id <= 0 || !scored.Any(Born) || await store.EarliestRecordYearAsync(reading.String.Id, ct) is not { } first) return scored;
-        return scored.Select(m => Born(m) && Year(m) is { } b && b > first - NamesakePerson.YearsBefore
-            ? m with { Veto = true, Reason = m.Reason + $"; born {b}, too late for the first record this string is in, of {first}" } : m).ToList();
+        if (reading.String.Id <= 0 || !scored.Any(Born) || await store.RecordYearsAsync(reading.String.Id, ct) is not { } years) return scored;
+        var (first, last) = years;
+        // and in a field that names who made the item, a life that holds every record's date is what an undated name has to check a dated
+        // heading by: "Fenwick, K. M." on a catalogue of 1960 is LoC's one "Fenwick, Kathleen M., 1901-1973" (see the exact-single rule).
+        // The last year a life holds is the death its source states, or ninety-five years from the birth where it states none
+        var makers = _options.Contexts.TryGetValue(reading.String.Context, out var rule) && rule.NamesMakers;
+        static int? Died(Lifespan? life) => life is { EndEarliest: { } from, EndLatest: { } to } && (to - from).TotalDays <= 800 ? to.Year : null;
+        return scored.Select(m =>
+        {
+            if (!Born(m) || Year(m) is not { } b) return m;
+            if (b > first - NamesakePerson.YearsBefore) return m with { Veto = true, Reason = m.Reason + $"; born {b}, too late for the first record this string is in, of {first}" };
+            // the heading itself must be the name: a record that bears it only as a variant (a nickname, an earlier surname) is not its
+            // source's record of the name (finding 74), and the one doubtful row in sixty read was such ("Hardie, William" on "Hardie, Bill")
+            if (!makers || m.Candidate.ByVariant || last > (Died(m.Candidate.Lifespan) ?? b + MakerLifeYears)) return m;
+            return m with { AliveAtRecords = true, Reason = m.Reason + (first == last ? $"; alive at its record's date ({first})" : $"; alive at its records' dates ({first} to {last})") };
+        }).ToList();
+    }
+
+    /// <summary>How long after a stated birth a person with no stated death is taken to have been alive to write or edit: the assistant's figure, not a sourced one.</summary>
+    public const int MakerLifeYears = 95;
+
+    private readonly Dictionary<string, string?> _townChains = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// A heading placed by its town ("Arundel Castle (Arundel, England)") against a string placed by its county ("Arundel Castle (Sussex)"):
+    /// the two agree when TGN has a place of the town's name inside the county, and inside whatever else the heading says ("England").
+    /// The candidate is given that place's chain as the chain above its placement, which the scoring already reads (finding 84). The
+    /// desk run of 2026-11-25 decided some twenty-five country houses by hand for want of this, each waiting at 0.85 with "qualifier
+    /// not placed"; a historic county the gazetteer's chains do not name ("Middlesex", "Lancashire" for Salford) is not reached.
+    /// </summary>
+    private async Task<IReadOnlyList<Candidate>> PlacedByTownAsync(StringReading reading, IReadOnlyList<Candidate> candidates, CancellationToken ct)
+    {
+        if (reading.Qualifier is null || reading.QualifierAncestors is null) return candidates;
+        var county = Qualified.Tokens(reading.Qualifier);
+        if (county.Count == 0) return candidates;
+        var list = candidates.ToList();
+        for (var i = 0; i < list.Count; i++)
+        {
+            var c = list[i];
+            if (c.Placement is null || c.PlacementAncestors is not null || c.EntityId is not null || c.Placement.EndsWith("World", StringComparison.Ordinal)) continue;
+            if (Qualified.Agrees(reading.Qualifier, c.Placement) == true || Qualified.Agrees(reading.QualifierForPlacement, c.Placement) == true) continue;
+            // a concept's brackets that name no place the gazetteer has say what kind of thing it is: LCSH's "White ladies (Plants)", a
+            // variant of Snowdrops, the only candidate offered for the priory "White Ladies (Shropshire)" (the desk run of 2026-11-25)
+            if (c.Class == EntityClass.Type && c.Source != "aat" && !c.Placement.Contains(',') && !c.Placement.Contains(';'))
+            {
+                var kindKey = "kind|" + c.Placement;
+                if (!_townChains.TryGetValue(kindKey, out var isPlace))
+                {
+                    isPlace = (await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(c.Placement), "tgn", nameof(EntityClass.Place), 1, ct)).Count > 0 ? "place" : null;
+                    _townChains[kindKey] = isPlace;
+                }
+                if (isPlace is null) list[i] = c with { Kind = c.Placement };
+                continue;
+            }
+            foreach (var part in c.Placement.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                var segments = part.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (segments.Length < 2 || segments[0].Length < 3) continue; // a town and where it is; "England" alone names no town
+                var rest = string.Join(", ", segments.Skip(1));
+                var key = $"{segments[0]}|{reading.Qualifier}|{rest}";
+                if (!_townChains.TryGetValue(key, out var chain))
+                {
+                    var within = Qualified.Tokens(rest);
+                    chain = (await store.FindAuthoritiesByLabelsAsync(NameMatcher.Keys(segments[0]), "tgn", nameof(EntityClass.Place), 50, ct))
+                        .Select(Authorities.Coordinates.Parents).FirstOrDefault(parents => parents is not null && Qualified.Contains(parents, county) && (within.Count == 0 || Qualified.Contains(parents, within)));
+                    _townChains[key] = chain;
+                }
+                if (chain is null) continue;
+                list[i] = c with { PlacementAncestors = chain };
+                break;
+            }
+        }
+        return list;
     }
 
     private async Task<IReadOnlyList<ScoredCandidate>> ScoreNearbyAsync(StringReading reading, IReadOnlyList<Candidate> candidates, CancellationToken ct)
     {
+        candidates = await PlacedByTownAsync(reading, candidates, ct);
         var known = await KnownPlacesAsync(reading, candidates, ct);
         var scored = Score(reading, candidates, _options.MaxPersonLifetimeYears, known, _options.HomePlace);
         if (reading.Qualifier is null || scored.Any(m => m.QualifierAgrees == true) || !scored.Any(m => m.QualifierAgrees == false)) return scored;
@@ -1320,6 +1400,9 @@ public sealed class Reconciler(IAlignmentStore store, IdentifierScheme scheme, I
             // project concept with nothing behind it (a keywords placeholder of class Type) may still be the thing named
             if (reading.QualifierAncestors is not null && c.Class == EntityClass.Type && !veto && (c.Source == "aat" || c.SameAs.Any(IsAat)))
             { veto = true; reasons.Add("a string placed in a known place is not an idea"); }
+            // nor a concept whose own label says in brackets what kind of thing it is: "White Ladies (Shropshire)", the priory, was offered
+            // only Snowdrops, through LCSH's variant "White ladies (Plants)" (the desk run of 2026-11-25)
+            if (reading.QualifierAncestors is not null && c.Kind is { } kind && !veto) { veto = true; reasons.Add($"the string is placed ({reading.Qualifier}) and this is a kind of thing ({kind})"); }
             switch (qualifierAgrees)
             {
                 case true:

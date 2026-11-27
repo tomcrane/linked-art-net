@@ -195,6 +195,32 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
     questions the desk run set them aside with. "Castle Ashby" and "Derry" were already right after the reconcile.
   - NOT DONE, of the same family: a merge from an entity's page has no confirmation and no way back (the Compare
     page is the confirmation; an unmerge is not built); the merge search's rows of one label (item 6).
+- 4, THE FIFTH CHECK, "PEOPLE ALIGNED TO A NAMESAKE" (summary line 17), BUILT 2026-11-27, at
+  /p/pmc/checks?check=namesakes. A person an identifier of whose states a birth after the first record that names them,
+  or fewer than fifteen years before it (`NamesakePerson.YearsBefore`). Counted first (reports/i1.sql): 56 born after
+  the record, 105 fewer than fifteen years before; the rows between were read and are real (Bindman on a LoC "1963",
+  John Butt, Mary Evans, Dashwood "1974-" for 1947). What the count taught, each now in the query:
+  - a birth of exactly 2000 written "2000-" is a source's "twentieth century" read as a year (LoC and Wikidata both,
+    a score of rows: Caroline Pegum, Nina Lübbren, Geoffrey Parnell): left out. A LOADER FAULT besides, not mended: it
+    will also make date conflicts at the desk for anyone the sources date only by century.
+  - a birth its source states (both edges, a year apart), not the window an active date is widened to;
+  - a record's year from 1400 on (a "date" of 1067 listed Trumbull and Sizer);
+  - the heading's own birth before its source's date field (LoC's "Housman, Laurence, 1865-1959" carries a birth of
+    1965 in its date field, Ainslie's the same; Ethel Walker's "181" on 2026-11-25 was this too).
+  76 rows after those. A row shows each identifier with its own name and birth; ticked is kept; those born too late
+  open unticked and struck through, and where none was born in time all do (69 of the 76). "Remove the unticked":
+  with an identifier left the strings stay (Aubrey Beardsley: one Wikidata item of 1960 among five right ones
+  removed); with none left the strings a rule or the import put there are decided again from the authorities alone
+  (James Thomson off Lily James; Edmund Malone off a namesake of 1965: both now wait at the desk on placeholders
+  of their own). "It is right as it is" leaves a note and the row leaves the list. The entity's page and the
+  string's card say when it is on the list. Three mended as `claude`; 73 LEFT ON THE LIST for the next desk run.
+  AND IN THE RULES, found by the test of the mend (the afresh reconcile took the namesake straight back as the one
+  candidate of the name): a candidate person whose heading or source states a birth fewer than fifteen years before
+  the string's first record is ruled out ("born 1989, too late for the first record this string is in, of 1824").
+  This is also the record-year check the desk run's sample of single LoC candidates asked for (item 5): at the next
+  reconcile it will show in the diff.
+  The mend asked the whole list first and took ten seconds; it asks of the one entity now (0.6 s). The Checks index
+  runs every check to count it (the 8 to 12 seconds the desk run timed, now more): item 6.
 
 
 **Held for Fable** (append below; newest last):

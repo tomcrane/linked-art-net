@@ -455,8 +455,12 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
 
 
 - FOR LATER, THE OWNER (2026-11-27, at shutdown): MEASURE HOW WELL THE MATCHING MATCHES, and try PostgreSQL's own
-  fuzzy search as his original work did (pg_trgm similarity, perhaps fuzzystrmatch's Levenshtein); "too fuzzy and it
-  matches too much". Two matchers to measure, each against decisions a person made: (1) a citation against a title
+  fuzzy search as his original work did; "too fuzzy and it matches too much". WHAT THE ORIGINAL USED (read on the
+  pmc-2 branch, 2026-11-27): PostgreSQL's `levenshtein(label, @label)` (fuzzystrmatch; 255 characters at most) to fetch
+  the five nearest ULAN labels, the distance turned into a percentage by length (`UlanClient`); and the C# library
+  FuzzySharp 2.0.2 (`Process.ExtractOne` / `ExtractSorted`, a weighted ratio) to pick the closest label among LoC, LUX,
+  VIAF and ULAN results (`AuthorityService`, `ViafClient`, `DbCon`). Those two are the ones to measure beside the
+  present rules, with pg_trgm as a third since the store's lookups are by index. Two matchers to measure, each against decisions a person made: (1) a citation against a title
   (`TitleCitation.Cites`): once `load-loc-citations` has run, over the personal authors decided by hand, how often the
   candidate chosen cites a record of the string (recall) and how often a candidate NOT chosen does (false matches), at
   the present rules and at trigram thresholds, read row by row at the margin; (2) a string against a label

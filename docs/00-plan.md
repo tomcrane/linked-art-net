@@ -423,6 +423,37 @@ date and single-candidate rules, 6 the card's wording and buttons, 7 the design 
   (6) the duplicates met (Great Britain, Amherst, Newark, Manchester, Derby) through the Compare page.
 
 
+- WHERE THE DAY ENDED, 2026-11-27 late (the owner shutting down). RESUME HERE.
+  - THE CITATIONS ARE IN THE BULK FILE (the owner asked): LoC's names file has, for each record, `madsrdf:hasSource`
+    blank nodes with `citationSource` and `citationNote`, the same "found in" a pull of id.loc.gov brings. So NO bulk
+    fetch of LoC is needed. BUILT, NOT RUN: `LocCitationsLoader` and the command
+
+        dotnet run --project tools/Align -- load-loc-citations "D:\datadumps\names.madsrdf.nt.gz"
+
+    One pass over the 7 GB file (my guess: half an hour to an hour; not timed). It takes the LoC records that are
+    candidates in the evidence of the project's standing decisions or identifiers on its entities, and writes each
+    one's citations (forty at most) to its data as `sources`, leaving the rest. `SourcePull.Read` gives them as "Found
+    in" facts where a record has not been pulled, so the card's "made from" line, the candidate that cites a record of
+    the string, and the count of records still to fetch all read them with no further change. The drive must be
+    plugged in. A reload of the LoC names replaces a record's data: run it again after one. A reconcile brings new
+    candidates: run it again after one, too. THE OWNER SAID HE WOULD RUN IT LATER; or I do, on his word.
+    AFTER IT: count, over personal authors, the strings with a candidate whose citation names one of the string's
+    records, queued and decided, and read a sample (the decided ones measure it: is the cited candidate the one
+    chosen?); then the rule, if the count bears it out: such a candidate decides the string. ULAN's sources are in the
+    Getty files too and are not read.
+  - THE MATCH OF A CITATION TO A TITLE (`TitleCitation.Cites`; the owner: "how fuzzy is the match? We need to allow some
+    variation"). It was a plain substring. Now: case, accents, punctuation, "&" and "and", a leading article, the
+    subtitle and the statement of responsibility dropped, initials with or without stops ("R.A.", "RA"), a
+    citation's abbreviations ("Brit. sch. of miniature portrait painters"), and a citation that stops short of a long
+    title after four words, three of substance. Not: words missing from the middle, added or out of order; a title
+    with fewer than two words of substance ("Catalogue", "Notes"). Tests `TitleCitationTests`. NOT MEASURED on real
+    citations yet: the loader's output is the measure.
+  - The workbench running at the owner's shutdown has the card's unasked fetch and the fast list of checks; the
+    citation reading and the looser match are committed and take effect at its next start.
+  - DUE: the full test loop over tests/* (not run today; Alignment 206 and Workbench 3 pass); nothing pushed, the
+    branch far ahead of origin. Item 6 goes on from its list above, at (1) the project home.
+
+
 **Held for Fable** (append below; newest last):
 
 - 2026-11-25, carried over from Fable's own list of the night before, as the first things to take up: the

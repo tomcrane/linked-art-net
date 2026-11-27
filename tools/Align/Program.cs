@@ -16,6 +16,7 @@
 //   dotnet run --project tools/Align -- reconcile [--dataset pmc] [--limit n] [--accept 0.9] [--review 0.6] [--no-single-source] [--no-unique-exact] [--no-mint] [--verbose | --candidates]
 //                                                                              decide undecided strings from overrides, the store and the local indexes;
 //                                                                              --verbose prints a line per string, --candidates the top candidates too
+//   dotnet run --project tools/Align -- load-loc-citations <names.madsrdf.nt.gz> [--dataset pmc]   the "found in" citations of the dataset's LoC candidates, from the bulk file
 //   dotnet run --project tools/Align -- shadow [--dataset pmc] [--method imported] [--context c] [--limit n | --sample n] [--out reports] [--all]
 //                                                                              re-judge old decisions from scratch and compare; writes a CSV, decides nothing
 //   dotnet run --project tools/Align -- audit [--dataset pmc] [--out reports]  check entities with ULAN ids against the local ULAN index; writes a CSV
@@ -105,6 +106,20 @@ switch (args[0])
         var file = string.Equals(Option("--vocab"), "subjects", StringComparison.OrdinalIgnoreCase) ? LocFile.Subjects : LocFile.Names;
         var result = await new LocNamesLoader(store).LoadAsync(path, file, Option("--version"), progress);
         Console.WriteLine($"{(file == LocFile.Subjects ? "LoC subjects" : "LoC names")}: {result.TriplesRead:N0} triples read, {result.TriplesKept:N0} used, {result.Records:N0} records in {result.Elapsed:hh\\:mm\\:ss}");
+        return 0;
+    }
+
+    case "load-loc-citations":
+    {
+        // the source citations ("found in") of the LoC name records this project's strings have as candidates, from the bulk file
+        var path = args.Skip(1).FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal) && a != Option("--dataset"));
+        if (path is null || !File.Exists(path)) { Console.Error.WriteLine("Give the LC Name Authority File MADS/RDF N-Triples download (.nt or .nt.gz)."); return 2; }
+        await store.InitialiseAsync();
+        var progress = new Progress<string>(m => Console.Error.WriteLine($"  {DateTime.Now:HH:mm:ss} {m}"));
+        var wanted = await store.CandidateUrisAsync(dataset, "loc");
+        Console.Error.WriteLine($"  {wanted.Count:N0} LoC records are candidates or identifiers in {dataset}");
+        var result = await new LocCitationsLoader(store).LoadAsync(path, wanted, progress);
+        Console.WriteLine($"LoC citations: {result.TriplesRead:N0} triples read; {result.Records:N0} of {result.Wanted:N0} records given {result.Citations:N0} citations in {result.Elapsed:hh\\:mm\\:ss}; {result.Unplaced:N0} citations passed out of the window unclaimed");
         return 0;
     }
 

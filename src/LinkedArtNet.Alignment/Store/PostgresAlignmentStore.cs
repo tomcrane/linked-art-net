@@ -1484,6 +1484,42 @@ public sealed class PostgresAlignmentStore : IAlignmentStore, IAsyncDisposable
         return await cmd.ExecuteNonQueryAsync(ct);
     }
 
+    /// <summary>The records of a source that a dataset's strings have as candidates (in the evidence of their standing decisions) or its entities hold as identifiers.</summary>
+    public async Task<IReadOnlySet<string>> CandidateUrisAsync(string dataset, string source, CancellationToken ct = default)
+    {
+        await using var cmd = _db.CreateCommand(
+            """
+            select distinct m->>'uri' from decisions d join source_strings s on s.id = d.source_string_id
+            cross join lateral jsonb_array_elements(case when jsonb_typeof(d.evidence->'groups') = 'array' then d.evidence->'groups' else '[]'::jsonb end) g
+            cross join lateral jsonb_array_elements(g->'members') m
+            where d.valid and s.dataset = @dataset and m->>'source' = @source
+            union
+            select q.uri from entity_equivalents q join entities e on e.id = q.entity_id where e.dataset = @dataset and q.source = @source
+            """);
+        cmd.CommandTimeout = 1800;
+        Add(cmd, "dataset", dataset); Add(cmd, "source", source);
+        var uris = new HashSet<string>(StringComparer.Ordinal);
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        while (await r.ReadAsync(ct)) if (!r.IsDBNull(0)) uris.Add(r.GetString(0));
+        return uris;
+    }
+
+    /// <summary>Sets each record's <c>sources</c> (its source citations, as its bulk file gives them), leaving the rest of its data; returns how many records were there to take them.</summary>
+    public async Task<int> PutAuthoritySourcesAsync(IEnumerable<(string Uri, IReadOnlyList<string> Sources)> rows, CancellationToken ct = default)
+    {
+        var written = 0;
+        await using var conn = await _db.OpenConnectionAsync(ct);
+        await using var cmd = new NpgsqlCommand("update authority_records set data = coalesce(data, '{}'::jsonb) || jsonb_build_object('sources', @sources) where uri = @uri", conn);
+        var uri = cmd.Parameters.Add("uri", NpgsqlDbType.Text);
+        var sources = cmd.Parameters.Add("sources", NpgsqlDbType.Jsonb);
+        foreach (var row in rows)
+        {
+            uri.Value = row.Uri; sources.Value = System.Text.Json.JsonSerializer.Serialize(row.Sources);
+            written += await cmd.ExecuteNonQueryAsync(ct);
+        }
+        return written;
+    }
+
     public async Task<IReadOnlyDictionary<string, int>> EarlierCopiesAsync(long stringId, CancellationToken ct = default)
     {
         await using var cmd = _db.CreateCommand(

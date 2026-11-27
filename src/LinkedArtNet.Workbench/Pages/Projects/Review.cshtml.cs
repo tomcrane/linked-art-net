@@ -190,13 +190,13 @@ public sealed class ReviewModel(ProjectServices services, ProjectAccess access) 
     {
         if (Item is null || Item.String.Context.StartsWith("keywords", StringComparison.OrdinalIgnoreCase)) return;
         var titles = (await Services.Store.ExamplesForAsync(Item.String.Id, ShareMost + 1, HttpContext.RequestAborted)).Select(x => x.Title).OfType<string>()
-            .Select(t => t.Split(" / ")[0].Split(':')[0].Trim()).Where(t => t.Length >= 12).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         if (titles.Count == 0) return;
         foreach (var m in Item.Evidence.Groups.SelectMany(g => g.Members).Where(m => !m.IsStore))
         {
             if (!Item.Records.TryGetValue(m.Uri, out var rec) || SourcePull.Read(rec) is not { } pulled) continue;
             var cited = pulled.Facts.Where(f => f.Key == "Found in").Select(f => f.Value).ToList();
-            if (titles.FirstOrDefault(t => cited.Any(w => w.Contains(t, StringComparison.OrdinalIgnoreCase))) is { } title) NamesRecord[m.Uri] = title;
+            if (titles.FirstOrDefault(t => cited.Any(w => TitleCitation.Cites(w, t))) is { } title) NamesRecord[m.Uri] = title.Split(" / ")[0].Trim();
         }
     }
 

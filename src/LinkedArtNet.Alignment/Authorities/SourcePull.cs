@@ -82,6 +82,8 @@ public sealed record Pulled(
 public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierScheme? scheme = null)
 {
     public const string Key = "pulled";
+    /// <summary>Where a record's source citations from its bulk file are kept in its data.</summary>
+    public const string SourcesKey = "sources";
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web) { WriteIndented = false };
 
     /// <summary>The cached pull on a record, if any.</summary>
@@ -91,8 +93,12 @@ public sealed class SourcePull(IAlignmentStore store, IWebFetch web, IdentifierS
         try
         {
             using var doc = JsonDocument.Parse(record.DataJson);
-            if (!doc.RootElement.TryGetProperty(Key, out var p)) return null;
-            return p.Deserialize<Pulled>(JsonOptions);
+            if (doc.RootElement.TryGetProperty(Key, out var p)) return p.Deserialize<Pulled>(JsonOptions);
+            // not pulled, but its source citations were read from its bulk file (LocCitationsLoader): they are what a pull is mostly for
+            if (doc.RootElement.TryGetProperty(SourcesKey, out var s) && s.ValueKind == JsonValueKind.Array && s.GetArrayLength() > 0)
+                return new Pulled(record.Uri, record.Source, record.FetchedAt, record.Label, null, [], s.EnumerateArray().Select(x => x.GetString()).OfType<string>().Select(x => new Fact("Found in", x)).ToList(),
+                    Note: "From the source's bulk file, not asked of the source itself.");
+            return null;
         }
         catch (JsonException) { return null; }
     }
